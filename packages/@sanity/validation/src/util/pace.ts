@@ -1,5 +1,4 @@
-import {asapScheduler, type BehaviorSubject, EMPTY, from, Observable} from 'rxjs'
-import {filter, ignoreElements, observeOn, takeUntil} from 'rxjs/operators'
+import {type BehaviorSubject} from 'rxjs'
 
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 
@@ -19,28 +18,16 @@ import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
  */
 export type ValidationScheduling = 'idle' | 'immediate'
 
-/**
- * What a validation node waits for before it runs: an observable that completes (without
- * emitting) when the node may go ahead. One pacer is shared by all the nodes of a run.
- *
- * @internal
- */
-export type Pace = () => Observable<never>
+/** What every validation node waits for before it runs. @internal */
+export interface Pace {
+  wait(signal?: AbortSignal): Promise<void> | undefined
+  dispose(): void
+}
 
-/**
- * How many nodes an `immediate` run gets through between two yields to the browser. A node
- * is a rule check or a nested value, a few microseconds each for the built-in rules, so this is
- * a yield every millisecond or so of work.
- */
+/** How many nodes an `immediate` run gets through between two yields to the browser. */
 export const IMMEDIATE_YIELD_EVERY = 100
 
-/**
- * What an `immediate` node that does not yield waits for. Never nothing: a gate that completes
- * synchronously lets `mergeMap` recurse through synchronously completing siblings (and nested
- * levels) until the stack overflows, and RxJS drops that error silently. A microtask still runs
- * before paint and input.
- */
-const microtask: Observable<never> = EMPTY.pipe(observeOn(asapScheduler))
+const microtask = Promise.resolve()
 
 // lib.dom declares `scheduler` on every global object, but Safari and Node have none, and it
 // declares no `setImmediate`, which Node has
@@ -49,14 +36,6 @@ interface FeatureDetectedGlobals {
   setImmediate?: (callback: () => void) => unknown
 }
 
-/**
- * How an `immediate` run hands the thread back. `scheduler.yield()` resumes the run ahead of the
- * tasks that were already waiting. Where the browser has none (Safari), the run resumes in a task
- * of its own, behind them, which it gets the way React's scheduler does: from `setImmediate` where
- * there is one (Node), because a `MessageChannel` would keep a Node process alive; otherwise from
- * a `MessageChannel`, because chained timeouts are clamped to 4 ms and throttled in background
- * tabs; and from `setTimeout` as a last resort.
- */
 function getYieldToBrowser(): () => Promise<void> {
   const {scheduler, setImmediate} = globalThis as FeatureDetectedGlobals
   if (typeof scheduler?.yield === 'function') return scheduler.yield.bind(scheduler)
@@ -90,55 +69,136 @@ function yieldThroughTimeout(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
-function idle(): Observable<never> {
-  return new Observable<never>((observer) => {
-    const handle = requestIdleCallback(() => {
-      observer.complete()
-    })
+function abortReason(signal: AbortSignal): unknown {
+  return signal.reason ?? new DOMException('Validation aborted', 'AbortError')
+}
 
-    return () => cancelIdleCallback(handle)
+function cancelWithSignal(wait: Promise<void>, signal?: AbortSignal): Promise<void> {
+  if (!signal) return wait
+  if (signal.aborted) return Promise.reject(abortReason(signal))
+
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort)
+      reject(abortReason(signal))
+    }
+    signal.addEventListener('abort', onAbort, {once: true})
+    void wait.then(
+      () => {
+        signal.removeEventListener('abort', onAbort)
+        resolve()
+      },
+      (error) => {
+        signal.removeEventListener('abort', onAbort)
+        reject(error)
+      },
+    )
+  })
+}
+
+type IdleWaiter = (reason?: unknown) => void
+
+function waitForIdle(signal: AbortSignal | undefined, waiters?: Set<IdleWaiter>): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let settled = false
+    let handle: number | undefined
+
+    const finish: IdleWaiter = (reason) => {
+      if (settled) return
+      settled = true
+      if (handle !== undefined) cancelIdleCallback(handle)
+      waiters?.delete(finish)
+      signal?.removeEventListener('abort', onAbort)
+      if (reason === undefined) resolve()
+      else reject(reason)
+    }
+    const onAbort = () => {
+      if (signal) finish(abortReason(signal))
+    }
+
+    if (signal?.aborted) {
+      onAbort()
+      return
+    }
+
+    waiters?.add(finish)
+    signal?.addEventListener('abort', onAbort, {once: true})
+    handle = requestIdleCallback(() => finish())
   })
 }
 
 /**
  * Yields to the browser once every `every` nodes and lets the others through on a microtask.
- * Every node that comes along while the yield is pending waits for that same yield (rather than
- * requesting one of its own, which would let the run carry on around the waiting nodes), and the
- * count starts over when it resolves.
+ * Every node that comes along while the yield is pending waits for that same yield.
  */
 export function createYieldingPace(yieldToBrowser: () => Promise<void>, every: number): Pace {
   let count = 0
-  let pending: Observable<never> | undefined
-  return () => {
-    if (pending) return pending
-    count += 1
-    if (count < every) return microtask
-    count = 0
-    const settle = () => {
-      if (pending === yielded) pending = undefined
-    }
-    // a yield that fails (only possible with an aborted signal, which is never passed) lets the
-    // run go on rather than fail it
-    const yielded: Observable<never> = from(yieldToBrowser().then(settle, settle)).pipe(
-      ignoreElements(),
-    )
-    pending = yielded
-    return yielded
+  let pending: Promise<void> | undefined
+  return {
+    wait(signal) {
+      signal?.throwIfAborted()
+      if (pending) return cancelWithSignal(pending, signal)
+      count += 1
+      if (count < every) return cancelWithSignal(microtask, signal)
+      count = 0
+      const settle = () => {
+        if (pending === yielded) pending = undefined
+      }
+      // A failed browser yield lets validation continue. Cancellation is checked before the next
+      // node starts and by every async validator that receives the run's signal.
+      const yielded = yieldToBrowser().then(settle, settle)
+      pending = yielded
+      return cancelWithSignal(yielded, signal)
+    },
+    dispose() {},
+  }
+}
+
+/** A pacer for server validation, where yielding to a browser is unnecessary. */
+export function createUnpacedPace(): Pace {
+  return {
+    wait(signal) {
+      signal?.throwIfAborted()
+      return undefined
+    },
+    dispose() {},
   }
 }
 
 /**
- * The pacer for one run, `idle` without a scheduling. The scheduling can change while the run is in
- * flight: each node waits the way the scheduling is when its turn comes, and a switch to
- * `immediate` lets the nodes that are waiting for idle time go ahead, so the run picks up speed
- * where it is instead of starting over.
+ * The pacer for one Studio run, `idle` without a scheduling. One subscription observes scheduling
+ * changes for the whole run rather than creating one RxJS subscription per validation node.
  */
 export function createPace(scheduling?: BehaviorSubject<ValidationScheduling>): Pace {
-  if (!scheduling) return idle
+  if (!scheduling) {
+    return {
+      wait: (signal) => waitForIdle(signal),
+      dispose() {},
+    }
+  }
+
+  let current = scheduling.getValue()
+  let disposed = false
+  const waiters = new Set<IdleWaiter>()
   const immediate = createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
-  const switchedToImmediate = scheduling.pipe(filter((mode) => mode === 'immediate'))
-  return () =>
-    scheduling.getValue() === 'immediate'
-      ? immediate()
-      : idle().pipe(takeUntil(switchedToImmediate))
+  const subscription = scheduling.subscribe((next) => {
+    current = next
+    if (next === 'immediate') {
+      for (const release of waiters) release()
+    }
+  })
+
+  return {
+    wait(signal) {
+      if (disposed) return Promise.reject(new Error('Validation pace has been disposed'))
+      return current === 'immediate' ? immediate.wait(signal) : waitForIdle(signal, waiters)
+    },
+    dispose() {
+      if (disposed) return
+      disposed = true
+      subscription.unsubscribe()
+      for (const release of waiters) release(new Error('Validation pace has been disposed'))
+      immediate.dispose()
+    },
+  }
 }

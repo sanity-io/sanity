@@ -21,13 +21,11 @@ function immediateScheduling() {
   return new BehaviorSubject<ValidationScheduling>('immediate')
 }
 
-/** Starts a node: subscribes to what it waits for, and tracks whether it may run yet. */
+/** Starts a node and tracks whether its pacing wait has completed. */
 function startNode(pace: Pace) {
   const node = {ready: false}
-  pace().subscribe({
-    complete: () => {
-      node.ready = true
-    },
+  void pace.wait()?.then(() => {
+    node.ready = true
   })
   return node
 }
@@ -100,16 +98,16 @@ describe('createYieldingPace', () => {
     expect(batch.map((node) => node.ready)).toEqual([true, true])
     expect(yieldToBrowser).not.toHaveBeenCalled()
 
-    const third = pace()
+    const third = pace.wait()
     expect(yieldToBrowser).toHaveBeenCalledTimes(1)
     // nodes that arrive while the yield is pending wait for that same yield
-    expect(pace()).toBe(third)
-    expect(pace()).toBe(third)
+    expect(pace.wait()).toBe(third)
+    expect(pace.wait()).toBe(third)
     expect(yieldToBrowser).toHaveBeenCalledTimes(1)
 
     const completions: string[] = []
-    third.subscribe({complete: () => completions.push('third')})
-    pace().subscribe({complete: () => completions.push('later')})
+    void third?.then(() => completions.push('third'))
+    void pace.wait()?.then(() => completions.push('later'))
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(completions).toEqual([])
 
@@ -121,18 +119,24 @@ describe('createYieldingPace', () => {
     await Promise.resolve()
     expect(nextBatch.map((node) => node.ready)).toEqual([true, true])
     expect(yieldToBrowser).toHaveBeenCalledTimes(1)
-    pace()
+    void pace.wait()
     expect(yieldToBrowser).toHaveBeenCalledTimes(2)
   })
 
   it('lets the run go on when a yield fails', async () => {
     const pace = createYieldingPace(() => Promise.reject(new Error('aborted')), 1)
-    const outcome: string[] = []
-    pace().subscribe({
-      complete: () => outcome.push('complete'),
-      error: () => outcome.push('error'),
-    })
-    await vi.waitFor(() => expect(outcome).toEqual(['complete']))
+    await expect(pace.wait()).resolves.toBeUndefined()
+  })
+
+  it('cancels a node waiting for a browser yield', async () => {
+    const pace = createYieldingPace(() => new Promise<void>(() => undefined), 1)
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const pending = pace.wait(controller.signal)
+
+    controller.abort(reason)
+
+    await expect(pending).rejects.toBe(reason)
   })
 })
 
@@ -148,8 +152,8 @@ describe('createPace', () => {
     const {createPace} = await importPace()
     const pace = createPace()
 
-    pace().subscribe()
-    pace().subscribe()
+    void pace.wait()
+    void pace.wait()
     expect(requestIdleCallback).toHaveBeenCalledTimes(2)
   })
 
@@ -185,6 +189,7 @@ describe('createPace', () => {
     expect(waiting.some((node) => node.ready)).toBe(false)
 
     scheduling.next('immediate')
+    await Promise.resolve()
     expect(waiting.every((node) => node.ready)).toBe(true)
     expect(cancelIdleCallback.mock.calls).toEqual([[1], [2]])
 
@@ -247,11 +252,11 @@ describe('createPace', () => {
     const runs = [createPace(immediateScheduling()), createPace(immediateScheduling())]
 
     for (const pace of runs) {
-      for (let node = 1; node < IMMEDIATE_YIELD_EVERY; node++) pace().subscribe()
+      for (let node = 1; node < IMMEDIATE_YIELD_EVERY; node++) void pace.wait()
     }
     const released: string[] = []
     runs.forEach((pace, index) => {
-      pace().subscribe({complete: () => released.push(`run ${index + 1}`)})
+      void pace.wait()?.then(() => released.push(`run ${index + 1}`))
     })
 
     expect(channels).toHaveLength(1)
