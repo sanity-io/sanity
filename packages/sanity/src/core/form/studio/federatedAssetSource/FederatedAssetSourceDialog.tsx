@@ -4,7 +4,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
+import {type ReactNode, type Ref, useCallback, useMemo, useRef, useState} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 import {Box, Text} from 'ui5'
 
@@ -66,10 +66,16 @@ export function FederatedAssetSourceDialog(props: {
 
   const [failed, setFailed] = useState(false)
 
-  // Browser back closes the open dialog instead of navigating the Studio
-  // underneath it. The headless upload mount has no visible dialog, so it
-  // must not trap back.
-  useHistoryBackClose(sourceProps.action !== 'upload', sourceProps.onClose)
+  // Browser back first steps back through the view's internal history (the
+  // view registers a handler via `registerBackHandler`), then closes the
+  // dialog instead of navigating the Studio underneath it. The headless
+  // upload mount has no visible dialog, so it must not trap back.
+  const backHandlerRef = useRef<(() => boolean) | null>(null)
+  const registerBackHandler = useCallback((handler: (() => boolean) | null) => {
+    backHandlerRef.current = handler
+  }, [])
+  const requestViewBack = useCallback(() => backHandlerRef.current?.() ?? false, [])
+  useHistoryBackClose(sourceProps.action !== 'upload', sourceProps.onClose, requestViewBack)
 
   // The same workspace-scoped persistence partition the iframe integration
   // computes, so a picker remembers its location per hosting workspace.
@@ -88,6 +94,7 @@ export function FederatedAssetSourceDialog(props: {
       dataset: workspace.dataset,
       pickerPersistenceKey,
       validateCandidate,
+      registerBackHandler,
       ...extraViewProps,
     }),
     [
@@ -97,6 +104,7 @@ export function FederatedAssetSourceDialog(props: {
       workspace.dataset,
       pickerPersistenceKey,
       validateCandidate,
+      registerBackHandler,
       extraViewProps,
     ],
   )

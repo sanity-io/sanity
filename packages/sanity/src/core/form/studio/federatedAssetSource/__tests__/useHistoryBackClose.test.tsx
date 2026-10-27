@@ -4,8 +4,8 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {useHistoryBackClose} from '../useHistoryBackClose'
 
-function Dialog(props: {enabled?: boolean; onClose: () => void}) {
-  useHistoryBackClose(props.enabled ?? true, props.onClose)
+function Dialog(props: {enabled?: boolean; onClose: () => void; onBackRequest?: () => boolean}) {
+  useHistoryBackClose(props.enabled ?? true, props.onClose, props.onBackRequest)
   return null
 }
 
@@ -78,6 +78,39 @@ describe('useHistoryBackClose', () => {
     // One back press closes it — there is exactly one entry to pop.
     window.history.back()
     await settleHistory()
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(markerOnTop()).toBe(false)
+  })
+
+  it('keeps the dialog open while the view handles back internally', async () => {
+    const onClose = vi.fn()
+    // The view has two internal steps to unwind before the dialog may close.
+    let internalSteps = 2
+    const onBackRequest = vi.fn(() => {
+      if (internalSteps === 0) return false
+      internalSteps -= 1
+      return true
+    })
+    render(<Dialog onClose={onClose} onBackRequest={onBackRequest} />)
+    expect(markerOnTop()).toBe(true)
+
+    // First two presses step back inside the view and restore the entry.
+    window.history.back()
+    await settleHistory()
+    expect(onBackRequest).toHaveBeenCalledTimes(1)
+    expect(onClose).not.toHaveBeenCalled()
+    expect(markerOnTop()).toBe(true)
+
+    window.history.back()
+    await settleHistory()
+    expect(onBackRequest).toHaveBeenCalledTimes(2)
+    expect(onClose).not.toHaveBeenCalled()
+    expect(markerOnTop()).toBe(true)
+
+    // Nothing left to unwind: the third press closes the dialog.
+    window.history.back()
+    await settleHistory()
+    expect(onBackRequest).toHaveBeenCalledTimes(3)
     expect(onClose).toHaveBeenCalledTimes(1)
     expect(markerOnTop()).toBe(false)
   })
