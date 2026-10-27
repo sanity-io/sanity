@@ -55,7 +55,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   />
                 ) : (
                   <Inline gap={2} padding={2}>
-                    <Icon size={1} icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
+                    <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
                     <Text
                       weight={'medium'}
                       size={1}
@@ -77,7 +77,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   />
                 ) : (
                   <Inline gap={2} padding={2}>
-                    <Icon size={1} icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
+                    <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
                     <Text
                       weight={'medium'}
                       size={1}
@@ -100,7 +100,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                 />
               ) : (
                 <Inline gap={2} padding={2}>
-                  <Icon size={1} icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
+                  <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
                   <Text
                     weight={'medium'}
                     size={1}
