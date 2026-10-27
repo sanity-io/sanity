@@ -7,8 +7,8 @@ import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 const INVENTORY = 'variants-inventory'
 
 /**
- * T4, the entry to the version inventory: a text button, "Manage versions", with the versions icon, first in the pane header's right-hand group
- * (after the presence avatars). It opens and closes the inventory: an outlined button, with the pressed look while the inventory is open. It replaces the icon-only Versions button,
+ * T4, the entry to the version inventory: a text button, "Manage versions", with the versions icon, in the bottom action bar just before Publish
+ * (27 Oct, Faheem; it was first in the pane header's right-hand group). It opens and closes the inventory: an outlined button, with the pressed look while the inventory is open. It replaces the icon-only Versions button,
  * which said nothing about what it opens (26 Oct, Faheem). The "..." menu still lists Versions.
  */
 export function ManageVersionsButton() {

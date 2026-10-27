@@ -10,6 +10,11 @@ import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 interface PaneContextMenuButtonProps {
   nodes: _PaneMenuNode[]
   actionsNodes?: ReactNode
+  /**
+   * PROPOSED: entries drawn last, after `actionsNodes` (Copy and Paste document). With it set, `actionsNodes` move from the top of the menu to
+   * just above these.
+   */
+  trailingNodes?: _PaneMenuNode[]
 }
 
 const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
@@ -33,7 +38,7 @@ function nodesHasTone(nodes: _PaneMenuNode[], tone: NonNullable<_PaneMenuItem['t
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
-  const {nodes, actionsNodes} = props
+  const {nodes, actionsNodes, trailingNodes} = props
   const id = useId()
 
   const hasCritical = nodesHasTone(nodes, 'critical')
@@ -50,7 +55,7 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
       id={id}
       menu={
         <Menu>
-          {actionsNodes && (
+          {actionsNodes && !trailingNodes && (
             <>
               {actionsNodes}
               <MenuDivider />
@@ -60,6 +65,20 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
             const isAfterGroup = nodes[nodeIndex - 1]?.type === 'group'
             return <PaneMenuButtonItem key={node.key} isAfterGroup={isAfterGroup} node={node} />
           })}
+          {trailingNodes && (
+            <>
+              {actionsNodes && (
+                <>
+                  <MenuDivider />
+                  {actionsNodes}
+                </>
+              )}
+              {trailingNodes.length > 0 && <MenuDivider />}
+              {trailingNodes.map((node) => (
+                <PaneMenuButtonItem key={node.key} isAfterGroup={false} node={node} />
+              ))}
+            </>
+          )}
         </Menu>
       }
       popover={CONTEXT_MENU_POPOVER_PROPS}

@@ -36,8 +36,20 @@ export function resolveDocumentPaneOverride(
         <OpenBetaBanner documentId={documentId} />
       </>
     ),
-    // T4: the text button that opens the inventory, first in the header's right-hand group.
-    headerLead: <ManageVersionsButton />,
+    // T4: the text button that opens the inventory, in the bottom action bar just before Publish (27 Oct, Faheem: it was first in the header's
+    // right-hand group; the "..." menu's Versions entry already opens it from the header).
+    footerLead: <ManageVersionsButton />,
+    // The "..." menu (27 Oct, Faheem): Versions first, then Compare versions, History, Incoming references, Inspect and Inline changes; Create new
+    // task goes to the bottom, just above Copy and Paste document.
+    menuOrder: [
+      'inspect:variants-inventory',
+      'compareVersions',
+      'inspect:sanity/structure/history',
+      'inspect:sanity/structure/incoming-references',
+      'inspect',
+      'toggleInlineChanges',
+    ],
+    menuActionsLast: true,
     // T4: Compare versions' pickers list the versions with the same inventory as the Versions inspector.
     versionPicker: PickerInventory,
     ...(state.c2 === 'a'

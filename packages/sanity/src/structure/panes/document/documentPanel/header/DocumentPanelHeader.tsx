@@ -146,8 +146,19 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
 
   // Compact: only commands stay in the "..." menu. The inspector entries are tabs (the validation one stays a button, it only shows with problems),
   // Inline changes is a switch in Review changes, Share is a menu command.
+  const menuOrder = paneExtension?.menuOrder
+  // PROPOSED: a host's pane actions (Create new task) may go after the entries, just above Copy and Paste document, which are drawn last.
+  const actionsLast = !compact && paneExtension?.menuActionsLast === true
   const headerMenuItems = useMemo(() => {
-    if (!compact) return menuItems
+    // PROPOSED: a host may order the stock menu's entries (listed actions first, in its order; the rest after, in their own).
+    if (!compact) {
+      if (!menuOrder) return menuItems
+      const rank = (item: PaneMenuItem) => {
+        const index = typeof item.action === 'string' ? menuOrder.indexOf(item.action) : -1
+        return index === -1 ? menuOrder.length : index
+      }
+      return menuItems.toSorted((a, b) => rank(a) - rank(b))
+    }
     const order = [
       'compareVersions',
       'inspect',
@@ -155,21 +166,21 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
       `${INSPECT_ACTION_PREFIX}${VALIDATION_INSPECTOR_NAME}`,
     ]
     return order.flatMap((action) => menuItems.filter((item) => item.action === action))
-  }, [compact, menuItems])
+  }, [compact, menuItems, menuOrder])
 
   const menuNodes = useMemo(
     () =>
       resolveMenuNodes({
         actionHandler: onMenuAction,
-        fieldActions: compact ? [] : fieldActions,
+        fieldActions: compact || actionsLast ? [] : fieldActions,
         menuItems: headerMenuItems,
         menuItemGroups,
       }),
-    [compact, onMenuAction, fieldActions, menuItemGroups, headerMenuItems],
+    [compact, actionsLast, onMenuAction, fieldActions, menuItemGroups, headerMenuItems],
   )
   const documentCommandNodes = useMemo(
     () =>
-      compact
+      compact || actionsLast
         ? resolveMenuNodes({
             actionHandler: onMenuAction,
             fieldActions,
@@ -177,7 +188,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
             menuItemGroups: [],
           })
         : [],
-    [compact, onMenuAction, fieldActions],
+    [compact, actionsLast, onMenuAction, fieldActions],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -371,6 +382,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                             : undefined
                         }
                         contextMenuNodes={contextMenuNodes}
+                        trailingNodes={actionsLast ? documentCommandNodes : undefined}
                         setReferenceElement={setReferenceElement}
                         referenceElement={referenceElement}
                         states={states}
@@ -462,6 +474,7 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
     setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
     referenceElement: HTMLElement | null
     contextMenuNodes: _PaneMenuNode[]
+    trailingNodes?: _PaneMenuNode[]
   }) {
     const {setReferenceElement, referenceElement, contextMenuNodes} = props
     /**
@@ -476,6 +489,7 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
         setReferenceElement={setReferenceElement}
         referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
+        trailingNodes={props.trailingNodes}
         // The restore action has a dedicated place in the UI; it's only visible when the user is
         // viewing a different document revision. It must be omitted from this collection.
         states={states.filter((state) =>
@@ -492,8 +506,16 @@ const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionD
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
   referenceElement: HTMLElement | null
   contextMenuNodes: _PaneMenuNode[]
+  trailingNodes?: _PaneMenuNode[]
 }) {
-  const {states, setReferenceElement, contextMenuNodes, referenceElement, commandGroups} = props
+  const {
+    states,
+    setReferenceElement,
+    contextMenuNodes,
+    referenceElement,
+    commandGroups,
+    trailingNodes,
+  } = props
 
   const renderActionDialog = useCallback<
     ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
@@ -524,11 +546,12 @@ const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionD
             key="context-menu"
             nodes={contextMenuNodes}
             actionsNodes={actionsNodes}
+            trailingNodes={trailingNodes}
           />
         </div>
       )
     },
-    [commandGroups, contextMenuNodes, setReferenceElement, states],
+    [commandGroups, contextMenuNodes, setReferenceElement, states, trailingNodes],
   )
 
   return (
