@@ -29,7 +29,11 @@ export const AllTones: Story = {
         {TONES.map((tone) => (
           <Flex key={tone} alignItems="center" flexDirection="column" gap={2}>
             <Badge tone={tone === 'default' ? undefined : tone}>
-              <Icon size={1} icon={<ToneIcon icon={InfoOutlineIcon} tone={tone} />} />
+              <Icon
+                size={1}
+                icon={<ToneIcon icon={InfoOutlineIcon} tone={tone} />}
+                style={{margin: '-0.375rem'}}
+              />
             </Badge>
             <Text muted size={0} as="div" trim={true}>
               {tone}
