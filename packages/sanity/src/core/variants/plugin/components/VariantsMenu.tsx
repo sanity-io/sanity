@@ -2,7 +2,6 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
-import {styled} from 'styled-components'
 import {Text, Flex, Box, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -20,21 +19,8 @@ import {useAllVariants} from '../../store/useAllVariants'
 import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../util/variantType'
+import {menu, sectionHeader} from './VariantsMenu.css'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
-
-const StyledMenu = styled(Menu)`
-  min-width: 240px;
-  max-width: 320px;
-
-  > [data-ui='Stack'] {
-    gap: 0;
-  }
-`
-
-const SectionHeader = styled(Text)`
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`
 
 function VariantMenuItem(props: {
   isSelected: boolean
@@ -138,7 +124,8 @@ export function VariantsMenu({
       id={`variants-nav-menu-${typeKey}`}
       onClose={handleMenuClose}
       menu={
-        <StyledMenu
+        <Menu
+          className={menu}
           data-testid={
             typeKey === DEFAULT_VARIANT_TYPE_KEY
               ? 'variants-nav-menu'
@@ -175,9 +162,9 @@ export function VariantsMenu({
                   {/* Spacer for icon alignment */}
                   <Box className={menuIconSpacer} />
                   <Box>
-                    <SectionHeader muted size={0} weight="medium" trim={true}>
+                    <Text className={sectionHeader} muted size={0} weight="medium" trim={true}>
                       {t('navbar.variant.other')}
-                    </SectionHeader>
+                    </Text>
                   </Box>
                 </Flex>
               </Box>
@@ -193,7 +180,7 @@ export function VariantsMenu({
               </Box>
             </>
           )}
-        </StyledMenu>
+        </Menu>
       }
       popover={{
         __unstable_margins: [0, 0, 32, 0],

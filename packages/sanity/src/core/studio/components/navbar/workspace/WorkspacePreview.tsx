@@ -1,10 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {clsx} from 'clsx'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 import {Text, Box, Flex, Icon, type IconProps} from 'ui5'
 
 import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
+import {media, mediaSize} from './WorkspacePreview.css'
 
 export const STATE_TITLES = {
   'loading': 'Checking…',
@@ -14,22 +15,6 @@ export const STATE_TITLES = {
 }
 
 type PreviewIconSize = 'small' | 'large'
-interface MediaProps {
-  $size: PreviewIconSize
-}
-
-const Media = styled.div<MediaProps>`
-  width: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
-  height: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
-  border-radius: 0.25rem;
-  padding: 0;
-
-  svg {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-  }
-`
 
 export const WorkspacePreviewIcon = ({
   icon,
@@ -40,7 +25,7 @@ export const WorkspacePreviewIcon = ({
 }) => {
   const iconComponent = useMemo(() => createIcon(icon), [icon])
 
-  return <Media $size={size}>{iconComponent}</Media>
+  return <div className={clsx(media, mediaSize[size])}>{iconComponent}</div>
 }
 
 const createIcon = (iconSource: ComponentType | ReactNode) => {
