@@ -2,11 +2,12 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
-import {Box, Flex, Text, TextInput} from '@sanity/ui'
+import {Box, Flex, Label, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type CSSProperties,
+  Fragment,
   type ReactElement,
   type ReactNode,
   useState,
@@ -31,7 +32,7 @@ import {type SystemVariant} from '../../../packages/sanity/src/core/variants/typ
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
-import {DimensionIcon} from '../c1/dimensionIcons'
+import {DimensionIcon, VariantDiamondOutline} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
 import {DEFAULT_LABEL} from '../c1/Picker'
 import {rankSearch, type SearchFields} from '../c1/search'
@@ -163,6 +164,8 @@ function DropdownPill(props: {
     hint?: string
     /** What search matches an option by (the title is its text when this is left out). */
     search?: Omit<SearchFields, 'title'>
+    /** The section the row sits in ("Has 3 variants", "Other variants"). A row with none (All users) stands alone above them. */
+    section?: string
   }[]
   testId: string
   /** The leading glyph, as the stock Published and Draft chips have one: it gives the pill their left inset and size. */
@@ -234,31 +237,52 @@ function DropdownPill(props: {
             data-testid={`${props.testId}-list`}
             style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
           >
-            {found.map(({item, reason}) => (
-              <MenuItem
-                __unstable_subtitle={reason}
-                disabled={!item.onClick}
-                icon={item.icon}
-                pressed={item.selected}
-                selected={item.selected}
-                key={item.key}
-                onClick={item.onClick}
-                text={item.text}
-                tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
-                renderMenuItem={
-                  item.trailing
-                    ? (content) => (
-                        <Flex align="center" gap={3}>
-                          <Box flex={1} style={{minWidth: 0}}>
-                            {content}
-                          </Box>
-                          {item.trailing}
-                        </Flex>
-                      )
-                    : undefined
-                }
-              />
-            ))}
+            {found.map(({item, reason}, index) => {
+              // Sections (27 Oct call, Pedro and Andrej; Studio Patterns PerspectiveMenu.Variant): what this document has on top, the rest
+              // below, each under a divider and a heading. A search result is one ranked list, so it has neither.
+              const previous = found[index - 1]?.item
+              const startsSection =
+                !query.trim() && item.section !== previous?.section && (index > 0 || item.section)
+              return (
+                <Fragment key={item.key}>
+                  {startsSection && index > 0 ? (
+                    <div
+                      aria-hidden
+                      style={{borderTop: '1px solid var(--card-border-color)', margin: '4px 0'}}
+                    />
+                  ) : null}
+                  {startsSection && item.section ? (
+                    <Box paddingLeft={3} paddingTop={3} paddingBottom={2}>
+                      <Label muted size={1} style={{textTransform: 'uppercase'}}>
+                        {item.section}
+                      </Label>
+                    </Box>
+                  ) : null}
+                  <MenuItem
+                    __unstable_subtitle={reason}
+                    disabled={!item.onClick}
+                    icon={item.icon}
+                    pressed={item.selected}
+                    selected={item.selected}
+                    onClick={item.onClick}
+                    text={item.text}
+                    tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
+                    renderMenuItem={
+                      item.trailing
+                        ? (content) => (
+                            <Flex align="center" gap={3}>
+                              <Box flex={1} style={{minWidth: 0}}>
+                                {content}
+                              </Box>
+                              {item.trailing}
+                            </Flex>
+                          )
+                        : undefined
+                    }
+                  />
+                </Fragment>
+              )
+            })}
           </div>
           {!found.length ? (
             <Box padding={3}>
@@ -404,6 +428,7 @@ export function DocumentPillsV1({
           : () => goTo(current, v.variantId === currentVariant ? undefined : definition),
       trailing: SHOW_VERSION_COUNT ? <VersionCount versions={group} /> : undefined,
       selected: Boolean(v.variantId) && v.variantId === currentVariant,
+      section: `Has ${variantGroups.length} ${variantGroups.length === 1 ? 'variant' : 'variants'}`,
       search: {
         condition: name
           ? {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
@@ -423,21 +448,22 @@ export function DocumentPillsV1({
     trailing: SHOW_VERSION_COUNT ? <VersionCount versions={baseVersions} /> : undefined,
     selected: !currentVariant,
   }
-  // Then every other variant, greyed but clickable: picking one moves the global perspective to it (the version in view kept), where the banner
-  // offers Create version (Faheem, 22 Oct). No count: there is no version yet.
+  // Then every other variant, under Other variants with the empty diamond: picking one moves the global perspective to it (the version in
+  // view kept), where the banner offers Create version (Faheem, 22 Oct). No count: there is no version yet.
   const missingItems = definitions
     .filter((d) => !variants.some((v) => v.variantId === d._id.replace(/^_\.variants\./, '')))
     .map((definition) => {
       const id = definition._id.replace(/^_\.variants\./, '')
-      const [name] = Object.keys(definition.conditions)
       return {
         key: `variant-missing-${id}`,
         text: definition.metadata?.title ?? id,
-        icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
+        // The empty diamond: defined, but no version of this document yet. It had the filled icon, like the rows above (27 Oct call, Pedro).
+        icon: <VariantDiamondOutline />,
         onClick: () => goTo(current, id === currentVariant ? undefined : definition),
         hint: `Create ${definition.metadata?.title ?? id} version`,
         selected: id === currentVariant,
         search: {id},
+        section: variants.length ? 'Other variants' : 'Variants',
       }
     })
   // One flat row per RELEASE this document is in (the pill counts releases, not versions); no variants nested under them (22 Oct call).
@@ -452,9 +478,10 @@ export function DocumentPillsV1({
       onClick: () => goTo(current === bundleId ? defaultVersion : bundleId, viewedDefinition),
       selected: current === bundleId,
       search: {id: bundleId},
+      section: `In ${releaseIds.length} ${releaseIds.length === 1 ? 'release' : 'releases'}`,
     }
   })
-  // Then every other active release, greyed but clickable, as the Variants menu lists the variants this document has none of: picking one
+  // Then every other active release, under Other releases, as the Variants menu lists the variants this document has none of: picking one
   // moves to that release and KEEPS the variant in view, where the T6 banner offers Create version (or, for a locked or scheduled release, says
   // so with no button, as it already does).
   const missingReleaseItems = activeReleases
@@ -474,6 +501,7 @@ export function DocumentPillsV1({
       hint: `Add to ${release.metadata.title || 'Untitled release'}`,
       selected: current === id,
       search: {id},
+      section: releaseIds.length ? 'Other releases' : 'Releases',
     }))
   const releaseCount = new Set(releases.map((v) => v.bundleId)).size
   // The release in view, if any (this document's, or another picked from the greyed rows): the pill names it and gets the cross, as the
