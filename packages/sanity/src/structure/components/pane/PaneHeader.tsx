@@ -102,7 +102,13 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
                   )}
                   {!loading && (
                     <Flex alignItems="center" gap={1}>
-                      <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                      <TitleText
+                        size={1}
+                        truncate={1}
+                        weight="semibold"
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         {title}
                       </TitleText>
                       {appendTitle}

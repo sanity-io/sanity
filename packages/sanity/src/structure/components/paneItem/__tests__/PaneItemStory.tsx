@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {LocaleProvider} from 'sanity'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../paneRouter/types'
@@ -60,7 +61,7 @@ export function PaneItemStory() {
             <Stack gap={5}>
               {CASES.map(({label, title, count}) => (
                 <Stack gap={2} key={label}>
-                  <Text muted size={1} weight="medium">
+                  <Text muted size={1} weight="medium" as="div" trim={true}>
                     {label}
                   </Text>
                   <PaneItem id={label} title={title} count={count} />
