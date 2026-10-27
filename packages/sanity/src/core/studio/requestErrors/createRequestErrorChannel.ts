@@ -50,10 +50,10 @@ export function createRequestErrorChannel(): RequestErrorChannel {
    */
   function tryClaim(err: unknown, options: RequestErrorReportOptions, entry: ParkedEntry): boolean {
     if (isInvalidSessionError(err)) {
-      // The API positively signals an invalid session (expired or not found,
-      // see INVALID_SESSION_ERROR_CODES) — force logout. A 401 *without* such
-      // a code is a resource-level denial (some endpoints answer 401, not
-      // 403, for authenticated users lacking a grant) and stays
+      // The API positively signals that no valid session exists (expired,
+      // not found, or no credentials at all) — force logout. A 401 without
+      // that signal is a resource-level denial (some endpoints answer 401,
+      // not 403, for authenticated users lacking a grant) and stays
       // caller-domain, same as a 403.
       parked.push(entry)
       // First invalid-session 401 owns the dialog + logout; concurrent

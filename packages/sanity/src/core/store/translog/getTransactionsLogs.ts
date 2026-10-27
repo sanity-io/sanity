@@ -93,7 +93,11 @@ export async function getTransactionsLogs(
     }?${queryParams.toString()}`,
   )
 
-  const stream = await getJsonStream(transactionsUrl, clientConfig.token)
+  const stream = await getJsonStream(
+    transactionsUrl,
+    clientConfig.token,
+    clientConfig.requestHandler,
+  )
   const transactions: (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[] = []
 
   const reader = stream.getReader()
