@@ -8,6 +8,7 @@ import {type ComponentProps, type CSSProperties, type ReactElement, useState} fr
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
+  isReleaseScheduledOrScheduling,
   ReleaseAvatarIcon,
   useActiveReleases,
   usePerspective,
@@ -31,9 +32,10 @@ import {DEFAULT_LABEL} from '../c1/Picker'
 import {rankSearch, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
+import {sortVersions} from '../c12/sortVersions'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion, dateLabel, inOpenBeta} from '../data/versions'
-import {useOptionState} from '../options/store'
+import {useOption, useOptionState} from '../options/store'
 
 /**
  * Ported from the Handoff Studio (dev/variants-handoff-studio/c2/DocumentPills.tsx, 22 Oct), so C2 option A here is what was handed off.
@@ -319,6 +321,8 @@ export function OpenBetaPills({
   const allVersions = useVersionList(documentId)
   // The open beta stage has one dimension (Audience), as the Handoff Studio: a variant on another dimension is not listed. GA lists them all.
   const {stage} = useOptionState()
+  // C12: B sorts the two menus' rows by one rule (c12/sortVersions.ts); A keeps today's order.
+  const sorted = useOption('c12') === 'b'
   const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const setVariant = useSetVariant()
   const address = usePerspectiveState()
@@ -483,6 +487,35 @@ export function OpenBetaPills({
     (release) => getReleaseIdFromReleaseDocumentId(release._id) === current,
   )
   const hasEarlierGroup = variants.length > 0
+  // C12 B: the Variants menu is the default, then the variants this document has, then the others, each A to Z; the Releases menu goes by
+  // when each release publishes (ASAP, dated, undecided, then scheduled), the ones this document is in first on a tie.
+  const variantMenu = [baseItem, ...variantItems, ...missingItems]
+  const releaseMenu = [...releaseItems, ...missingReleaseItems]
+  const releaseById = new Map(
+    activeReleases.map((release) => [getReleaseIdFromReleaseDocumentId(release._id), release]),
+  )
+  const variantRows = sorted
+    ? sortVersions(variantMenu, (item) => ({
+        variant: item.key === baseItem.key ? null : item.key,
+        has: !('muted' in item && item.muted),
+        title: item.text,
+      }))
+    : variantMenu
+  const releaseRows = sorted
+    ? sortVersions(releaseMenu, (item) => {
+        const release = releaseById.get(item.search.id)
+        return {
+          place: {
+            type: release?.metadata.releaseType,
+            at: release?.metadata.intendedPublishAt,
+            locked: release ? isReleaseScheduledOrScheduling(release) : false,
+          },
+          variant: null,
+          has: !('muted' in item && item.muted),
+          title: item.text,
+        }
+      })
+    : releaseMenu
 
   return (
     // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
@@ -504,7 +537,7 @@ export function OpenBetaPills({
               ? {label: `Back to ${DEFAULT_LABEL}`, onClick: () => goTo(current)}
               : undefined
           }
-          items={[baseItem, ...variantItems, ...missingItems]}
+          items={variantRows}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
           muted={!variants.length && !viewedTitle}
           note={variants.length ? undefined : 'No variants yet. Pick one to create it.'}
@@ -577,7 +610,7 @@ export function OpenBetaPills({
               <DotIcon />
             )
           }
-          items={[...releaseItems, ...missingReleaseItems]}
+          items={releaseRows}
           muted={!releases.length && !inView}
           note={releases.length ? undefined : 'Not in a release yet. Pick one to add it.'}
           // Any release in view, this document's or another (picked from the greyed rows).

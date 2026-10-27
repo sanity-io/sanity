@@ -4,7 +4,14 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactElement, useState} from 'react'
-import {ReleaseAvatarIcon, usePerspective, useSetPerspective} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isReleaseScheduledOrScheduling,
+  ReleaseAvatarIcon,
+  useActiveReleases,
+  usePerspective,
+  useSetPerspective,
+} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
@@ -17,8 +24,10 @@ import {InventoryExpandContext} from '../c4/inventory/expandContext'
 import {LiveInventory} from '../c4/inventory/LiveInventory'
 import {DocumentVersionsLens, WideOverlay} from '../c5/ActionableLenses'
 import {useCorpus} from '../c5/useCorpus'
+import {sortVersions} from '../c12/sortVersions'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
+import {useOption} from '../options/store'
 import {MenuHeading, ShippedRow} from './menuRows'
 
 /**
@@ -200,6 +209,9 @@ export function DocumentPillsV1({documentId, manage}: {documentId: string; manag
   const address = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const corpus = useCorpus()
+  // C12: B sorts the menu's variants A to Z and its releases by when they publish (c12/sortVersions.ts); A keeps today's order.
+  const sorted = useOption('c12') === 'b'
+  const {data: activeReleases} = useActiveReleases()
   const [inventoryOpen, setInventoryOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [otherAnchor, setOtherAnchor] = useState<HTMLElement | null>(null)
@@ -229,8 +241,30 @@ export function DocumentPillsV1({documentId, manage}: {documentId: string; manag
       )
       .values(),
   ]
-  const shownVariants = byAudience.slice(0, SHORT_VARIANTS)
-  const shownReleases = baseReleases.slice(0, SHORT_RELEASES)
+  // Sorted before the short list is cut, so the first rows are the first by the rule.
+  const releaseById = new Map(
+    activeReleases.map((release) => [getReleaseIdFromReleaseDocumentId(release._id), release]),
+  )
+  const variantGroups = sorted
+    ? sortVersions(byAudience, ([audience]) => ({variant: audience, has: true, title: audience}))
+    : byAudience
+  const releaseList = sorted
+    ? sortVersions(baseReleases, (v) => {
+        const release = v.bundleId ? releaseById.get(v.bundleId) : undefined
+        return {
+          place: {
+            type: v.state === 'asap' || v.state === 'scheduled' ? v.state : 'undecided',
+            at: v.releaseAt,
+            locked: release ? isReleaseScheduledOrScheduling(release) : false,
+          },
+          variant: null,
+          has: true,
+          title: v.release ?? '',
+        }
+      })
+    : baseReleases
+  const shownVariants = variantGroups.slice(0, SHORT_VARIANTS)
+  const shownReleases = releaseList.slice(0, SHORT_RELEASES)
   const hidden =
     byAudience.length - shownVariants.length + baseReleases.length - shownReleases.length
   const narrowed = Object.keys(address.chosen).length > 0
