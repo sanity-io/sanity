@@ -57,12 +57,15 @@ const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
 const publishWhen = (type: string, at: string | undefined) =>
   type === 'asap' ? 'ASAP' : at ? DATE_FORMAT.format(new Date(at)) : 'No date'
 
-/** The type list item the click came from: the navbar's New document option or a list pane's create item. */
+/** The type list item the click came from: the navbar's New document option or a list pane's create item. C13 B's "as a variant" items are
+ * not taken: they have their own create (c13/NewDocumentAsVariant.tsx). */
 const ITEM_SELECTOR = [
   'a[data-testid^="create-new-"]',
   'a[data-testid="action-intent-button"]',
   'a[data-testid^="action-intent-button-"]',
-].join(',')
+]
+  .map((selector) => `${selector}:not([href*="--as-variant"])`)
+  .join(',')
 
 interface Opened {
   type: string

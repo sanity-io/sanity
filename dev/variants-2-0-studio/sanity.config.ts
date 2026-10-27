@@ -4,7 +4,9 @@ import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
+import {AddVariantAction} from './c4/AddVariantAction'
 import {inventoryInspector} from './c4/InventoryInspector'
+import {asVariantNewDocumentOptions, asVariantTemplates} from './c13/NewDocumentAsVariant'
 import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
 import {fieldLevel, localization} from './localization/plugin'
 import {structure} from './localization/structure'
@@ -33,9 +35,16 @@ const variants2Options = definePlugin({
   ],
   // The stock Review changes inspector keeps its place; its body is the E9 panel while `reviewPanel` is B or C (A renders the stock one).
   document: {
-    // Open beta header (B5): the primary action names its target ("Publish France").
-    actions: (prev) =>
-      prev.map((action) => (action.action === 'publish' ? namingTarget(action) : action)),
+    // Open beta header (B5): the primary action names its target ("Publish France"). C13 B: Add variant right after Publish, the first action
+    // (27 Oct, Faheem, as in the Handoff Studio); it draws nothing with C13 A.
+    actions: (prev) => {
+      const named = prev.map((action) =>
+        action.action === 'publish' ? namingTarget(action) : action,
+      )
+      return [...named.slice(0, 1), AddVariantAction, ...named.slice(1)]
+    },
+    // C13 B: the list panes' "+" offer "<Type> as a variant…" (c13/NewDocumentAsVariant.tsx).
+    newDocumentOptions: asVariantNewDocumentOptions,
     inspectors: (prev) => [
       ...prev.map((inspector) => {
         if (inspector.name !== 'sanity/structure/history') return inspector
@@ -45,6 +54,8 @@ const variants2Options = definePlugin({
       inventoryInspector,
     ],
   },
+  // C13 B: "<Type> as a variant…" in the create menus. The templates are always there; the layout's source wrapper shows them only with C13 B.
+  schema: {templates: asVariantTemplates},
   // Field marks through the public form.components overrides: the C9 candidates (switch c9) and the E9 marks (switch fieldMarks).
   // Each wrapper renders the shipped form unchanged while its switch is A.
   form: {components: {block: E9Block, field: E9Field, input: E9Input, item: E9Item}},

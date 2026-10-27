@@ -27,6 +27,7 @@ import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {AddressPickerHost} from '../c10/AddressPicker'
 import {TargetingHeader} from '../c11/TargetingHeader'
+import {AsVariantCreateHost, AsVariantSourceProvider} from '../c13/NewDocumentAsVariant'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {ChromeStyles} from '../pane/ChromeStyles'
@@ -116,12 +117,17 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                           value={stock ? null : renderPickerAddFilter}
                         >
                           <FieldSetRollupProvider value={renderFieldSetRollup}>
-                            {props.renderDefault(props)}
+                            {/* C13: the create menus show "<Type> as a variant…" only with option B. */}
+                            <AsVariantSourceProvider>
+                              {props.renderDefault(props)}
+                            </AsVariantSourceProvider>
                           </FieldSetRollupProvider>
                         </VariantFilterAddControlProvider>
                         <DesignOptions />
                         {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
                         <AddressPickerHost />
+                        {/* C13 B: takes the "as a variant" items' clicks (nothing on A). */}
+                        <AsVariantCreateHost />
                         <ShapeStyles />
                         <MarkStyles />
                         <ChromeStyles />
