@@ -103,10 +103,10 @@ function buildVersionTitleResult({
  * Returns the version info title, full title, and whether the title is truncated for a given version.
  * It maps the version status to a release and a variant.
  * So for example:
- * - Published default: "All users (Default) · Published"
+ * - Published default: "All users · Published"
  * - Published variant: "Variant name · Published"
  * - Draft variant: "Variant name · Draft"
- * - Release default: "All users (Default) · Release name"
+ * - Release default: "All users · Release name"
  * - Release variant: "Variant name · Release name"
  */
 export function useDocumentVersionTitle({version}: {version: VersionInfoDocumentStub}) {

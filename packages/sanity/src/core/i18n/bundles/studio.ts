@@ -582,7 +582,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** --- Document group --- */
 
   /** The label given to a document group's base variant */
-  'document-group.base-variant': 'All users (Default)',
+  'document-group.base-variant': 'All users',
   /** The header label for the variant creation flow before a variant definition has been selected */
   'document-group.create-variant': 'Create variant',
   /** The header label for the variant creation flow once a variant definition has been selected */

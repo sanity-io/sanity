@@ -165,8 +165,8 @@ describe('DocumentVersionsStatus', () => {
       variantsEnabled: true,
     })
 
-    expect(screen.getByText('All users (Default) · Published')).toBeInTheDocument()
-    expect(screen.getByText('All users (Default) · Draft')).toBeInTheDocument()
+    expect(screen.getByText('All users · Published')).toBeInTheDocument()
+    expect(screen.getByText('All users · Draft')).toBeInTheDocument()
     expect(screen.queryByText('Published', {exact: true})).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })

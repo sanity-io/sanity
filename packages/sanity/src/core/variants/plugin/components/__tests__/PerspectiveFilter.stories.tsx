@@ -99,7 +99,7 @@ export const Disabled: Story = {
     <Card padding={4}>
       <Flex alignItems="center" gap={4}>
         <PerspectiveFilter prefix="Variant" tone="default">
-          <TriggerButton text="All users (Default)" disabled />
+          <TriggerButton text="All users" disabled />
         </PerspectiveFilter>
         <Text muted size={0} as="div" trim={true}>
           disabled

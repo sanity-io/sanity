@@ -83,7 +83,7 @@ const meta = {
       </TestWrapper>
     ),
   ],
-  args: {name: 'All users (Default)', children: null},
+  args: {name: 'All users', children: null},
 } satisfies Meta<typeof DocumentGroupSet>
 
 export default meta

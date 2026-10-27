@@ -39,7 +39,7 @@ test.describe.configure({mode: 'serial'})
 function getInventoryVariant(
   page: Page,
   variantSet: string = 'Published',
-  variantName: string = 'All users (Default)',
+  variantName: string = 'All users',
 ) {
   return getDocumentGroupInventory(page).locator(
     `[data-variant-set="${variantSet}"] [data-variant-name="${variantName}"]`,
