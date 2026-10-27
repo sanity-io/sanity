@@ -1,6 +1,6 @@
-import {Box, Stack, Text} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Flex, Grid} from 'ui5'
+import {Text, Flex, Grid} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {Popover} from '../Popover'
@@ -24,10 +24,10 @@ type Story = StoryObj<typeof meta>
 const popoverContent = (
   <Box padding={3} style={{maxWidth: 220}}>
     <Stack gap={3}>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         Popover content
       </Text>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         Animates in by default.
       </Text>
     </Stack>
@@ -46,7 +46,9 @@ export const Default: Story = {
 
 const placementContent = (
   <Box padding={3}>
-    <Text size={1}>Placement</Text>
+    <Text size={1} as="div" trim={true}>
+      Placement
+    </Text>
   </Box>
 )
 

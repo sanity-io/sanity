@@ -1,9 +1,8 @@
 /* oxlint-disable no-restricted-imports */
-import {Badge, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
-import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
-import {isValidElementType} from 'react-is'
-import {Flex, Box} from 'ui5'
+import {type ElementType, type ReactNode, useMemo} from 'react'
+import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
@@ -64,8 +63,8 @@ export function MenuItem<E extends ElementType = 'button'>({
   children: childrenProp,
   disabled,
   hotkeys,
-  icon: Icon,
-  iconRight: IconRight,
+  icon: IconComponent,
+  iconRight: IconRightComponent,
   preview = null,
   renderMenuItem,
   text,
@@ -88,18 +87,13 @@ export function MenuItem<E extends ElementType = 'button'>({
             </Flex>
           </Box>
         )}
-        {Icon && (
+        {IconComponent && (
           <Box paddingRight={1}>
-            {isValidElement(Icon) ? (
-              <Flex
-                alignItems="center"
-                style={{marginInline: '-0.4375rem', marginBlock: '-0.5rem'}}
-              >
-                {Icon}
-              </Flex>
-            ) : (
-              <Text size={FONT_SIZE}>{isValidElementType(Icon) && <Icon />}</Text>
-            )}
+            <Icon
+              size={FONT_SIZE}
+              icon={IconComponent as IconProps['icon']}
+              style={{margin: '-0.375rem'}}
+            />
           </Box>
         )}
         {text && (
@@ -109,23 +103,25 @@ export function MenuItem<E extends ElementType = 'button'>({
             gap={__unstable_subtitle ? 1 : 2}
             flexDirection="column"
           >
-            <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
+            <Text size={FONT_SIZE} truncate={1} weight="medium" as="div" trim={true}>
               {text}
             </Text>
             {__unstable_subtitle && (
               <Text
                 className={subtitleText}
                 size={SUBTITLE_FONT_SIZE}
-                textOverflow="ellipsis"
+                truncate={1}
                 weight="medium"
                 muted
+                as="div"
+                trim={true}
               >
                 {__unstable_subtitle}
               </Text>
             )}
           </Flex>
         )}
-        {(badgeText || hotkeys || IconRight) && (
+        {(badgeText || hotkeys || IconRightComponent) && (
           <Flex alignItems="center" gap={3} marginLeft={3}>
             {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
@@ -135,11 +131,12 @@ export function MenuItem<E extends ElementType = 'button'>({
               </Badge>
             )}
 
-            {IconRight && (
-              <Text size={FONT_SIZE}>
-                {isValidElement(IconRight) && IconRight}
-                {isValidElementType(IconRight) && <IconRight />}
-              </Text>
+            {IconRightComponent && (
+              <Icon
+                size={FONT_SIZE}
+                icon={IconRightComponent as IconProps['icon']}
+                style={{margin: '-0.375rem'}}
+              />
             )}
           </Flex>
         )}
@@ -149,12 +146,12 @@ export function MenuItem<E extends ElementType = 'button'>({
     preview,
     disabled,
     __unstable_space,
-    Icon,
+    IconComponent,
     text,
     __unstable_subtitle,
     badgeText,
     hotkeys,
-    IconRight,
+    IconRightComponent,
   ])
 
   const children = (

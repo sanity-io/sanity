@@ -6,11 +6,11 @@ import {DocumentIcon} from '@sanity/icons/Document'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {type ButtonTone, Card, Text} from '@sanity/ui'
+import {type ButtonTone, Card} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {MenuButton} from '../../menuButton/MenuButton'
@@ -78,7 +78,7 @@ export const AllVariants: Story = {
           </MenuGroup>
         </Menu>
       </Card>
-      <Text muted size={1} style={{marginTop: 16}}>
+      <Text muted size={1} style={{marginTop: 16}} as="div" trim={true}>
         closed groups — tones and disabled
       </Text>
     </Card>

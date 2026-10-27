@@ -1,6 +1,7 @@
 import {CogIcon} from '@sanity/icons/Cog'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {type ButtonTone, Stack, TabList, Text} from '@sanity/ui'
+import {type ButtonTone, Stack, TabList} from '@sanity/ui'
+import {Text} from 'ui5'
 
 import {Tab} from '../Tab'
 
@@ -15,7 +16,7 @@ export function TabStory() {
   return (
     <Stack padding={4} gap={5}>
       <Stack gap={2}>
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           tones (first selected)
         </Text>
         <TabList gap={2}>
@@ -32,7 +33,7 @@ export function TabStory() {
         </TabList>
       </Stack>
       <Stack gap={2}>
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           with icon
         </Text>
         <TabList gap={2}>
@@ -50,7 +51,7 @@ export function TabStory() {
         </TabList>
       </Stack>
       <Stack gap={2}>
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           iconRight (studio extension)
         </Text>
         <TabList gap={2}>

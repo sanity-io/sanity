@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {type ButtonTone, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Flex, Grid} from 'ui5'
+import {Text, Flex, Grid} from 'ui5'
 
 import {Button} from '../Button'
 
@@ -40,7 +40,7 @@ export const AllVariants: Story = {
     <Stack padding={4} gap={5}>
       {MODES.map((mode) => (
         <Stack key={mode} gap={3}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             mode="{mode}"
           </Text>
           <Grid
