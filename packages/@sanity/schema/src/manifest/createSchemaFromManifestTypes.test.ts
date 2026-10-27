@@ -68,4 +68,47 @@ describe('createSchemaFromManifestTypes', () => {
       ).toThrow(ValidationError)
     },
   )
+
+  test('can skip validation for an already validated manifest', () => {
+    expect(() =>
+      createSchemaFromManifestTypes(
+        {
+          name: 'trusted',
+          types: [
+            {
+              name: 'article',
+              type: 'document',
+              fields: [{name: 'asset', type: 'reference', to: [{type: 'missingType'}]}],
+            },
+          ],
+        },
+        {validate: false},
+      ),
+    ).not.toThrow()
+  })
+
+  test('can convert an owned manifest without cloning it', () => {
+    const field = {
+      name: 'title',
+      type: 'string',
+      validation: [{level: 'error', rules: [{constraint: 'required', flag: 'presence'}]}],
+    }
+    const types = [{name: 'article', type: 'document', fields: [field]}]
+
+    createSchemaFromManifestTypes({name: 'owned', types}, {cloneTypes: false})
+
+    expect(field.validation).toEqual([expect.any(Function)])
+  })
+
+  test('clones manifest types by default', () => {
+    const validation = [{level: 'error', rules: [{constraint: 'required', flag: 'presence'}]}]
+    const field = {name: 'title', type: 'string', validation}
+
+    createSchemaFromManifestTypes({
+      name: 'cloned',
+      types: [{name: 'article', type: 'document', fields: [field]}],
+    })
+
+    expect(field.validation).toBe(validation)
+  })
 })

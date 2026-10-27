@@ -21,7 +21,10 @@ export {
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
-export {createSchemaFromManifestTypes} from '../manifest/createSchemaFromManifestTypes'
+export {
+  createSchemaFromManifestTypes,
+  type CreateSchemaFromManifestTypesOptions,
+} from '../manifest/createSchemaFromManifestTypes'
 export {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,

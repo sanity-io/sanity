@@ -7,6 +7,7 @@ import type {
   builtinTypes,
   CreateManifest,
   createSchemaFromManifestTypes,
+  CreateSchemaFromManifestTypesOptions,
   createStoredWorkspaceSchemaPayload,
   CreateWorkspaceManifest,
   DEFAULT_MAX_FIELD_DEPTH,
@@ -67,6 +68,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('createSchemaFromManifestTypes', () => {
     expectTypeOf<typeof createSchemaFromManifestTypes>().toBeFunction()
+  })
+  test('CreateSchemaFromManifestTypesOptions', () => {
+    expectTypeOf<CreateSchemaFromManifestTypesOptions>().toBeObject()
   })
   test('createStoredWorkspaceSchemaPayload', () => {
     expectTypeOf<typeof createStoredWorkspaceSchemaPayload>().toBeFunction()
