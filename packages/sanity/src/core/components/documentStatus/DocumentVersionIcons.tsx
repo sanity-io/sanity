@@ -33,7 +33,7 @@ export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStu
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
       {variantsEnabled && variant ? (
         <Card className={variantIconCard} tone="suggest">
-          <Icon size={2} muted icon={RhombusIcon} tone="suggest" style={{margin: '-0.4375rem'}} />
+          <Icon size={2} icon={RhombusIcon} tone="suggest" style={{margin: '-0.4375rem'}} />
         </Card>
       ) : null}
       <ReleaseAvatar
