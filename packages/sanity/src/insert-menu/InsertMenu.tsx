@@ -279,7 +279,7 @@ function GridMenuItem(props: GridMenuItemProps) {
             position: 'relative',
           }}
         >
-          {isValidElementType(Icon) && !hasPreviewImage ? (
+          {isValidElementType(IconComponent) && !hasPreviewImage ? (
             <Flex
               alignItems="center"
               justifyContent="center"
