@@ -82,10 +82,13 @@ describe('checkCors', () => {
     )
     globalThis.fetch = fetchMock as never
     await checkCors(fakeClient({url: 'https://abc123.api.sanity.io/v1/'}), makeCache())
-    expect(fetchMock).toHaveBeenCalledWith('https://abc123.api.sanity.io/v1/check/cors', {
-      method: 'GET',
-      credentials: 'omit',
-    })
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://abc123.api.sanity.io/v1/check/cors?tag=sanity.studio.cors-probe',
+      {
+        method: 'GET',
+        credentials: 'omit',
+      },
+    )
   })
 
   it('evicts a positive verdict after settle so a later failure re-probes', async () => {
