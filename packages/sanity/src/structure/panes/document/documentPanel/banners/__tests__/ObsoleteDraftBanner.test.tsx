@@ -124,7 +124,7 @@ describe('ObsoleteDraftBanner', () => {
   })
 
   it('prefers the action disabled reason over the live-edit continue-editing tooltip', async () => {
-    mockOperations({publishDisabled: 'LIVE_EDIT_ENABLED'})
+    mockOperations({publishDisabled: 'TARGET_NOT_FOUND'})
 
     render(
       <ObsoleteDraftBanner
@@ -139,9 +139,37 @@ describe('ObsoleteDraftBanner', () => {
 
     await hoverButton('Publish draft')
     expect(
-      await screen.findByText('Cannot publish since Live Edit is enabled for this document type'),
+      await screen.findByText('The selected release or variant does not contain this document'),
     ).toBeInTheDocument()
     expect(screen.queryByText('Publish draft to continue editing.')).not.toBeInTheDocument()
+  })
+
+  it('publishes the draft of a live-edit document type', async () => {
+    mockOperations({publishDisabled: 'LIVE_EDIT_ENABLED'})
+
+    render(
+      <ObsoleteDraftBanner
+        displayed={displayed}
+        documentId={DOCUMENT_ID}
+        schemaType={schemaType}
+        i18nKey="banners.live-edit-draft-banner.text"
+        isEditBlocking
+      />,
+      {wrapper},
+    )
+
+    const button = await screen.findByRole('button', {name: 'Publish draft'})
+    expect(button).toBeEnabled()
+
+    await hoverButton('Publish draft')
+    expect(await screen.findByText('Publish draft to continue editing.')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Cannot publish since Live Edit is enabled for this document type'),
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(button)
+    const {publish} = mockUseDocumentOperation.mock.results[0].value
+    expect(publish.execute).toHaveBeenCalledTimes(1)
   })
 
   it('keeps the live-edit continue-editing tooltip when the action is enabled', async () => {
