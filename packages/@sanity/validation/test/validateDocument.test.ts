@@ -154,6 +154,46 @@ describe('validateDocument', () => {
     await expect(validation).rejects.toBe(reason)
   })
 
+  it('rejects cancellation without waiting for a custom validator to settle', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const {client} = createMockClient()
+    let finishValidator: () => void = () => undefined
+    let validatorFinished = false
+    const customValidator = vi.fn(async () => {
+      await new Promise<void>((resolve) => {
+        finishValidator = resolve
+      })
+      validatorFinished = true
+      return true as const
+    })
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+
+    const validation = validateDocument({
+      client,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(customValidator).toHaveBeenCalledOnce())
+
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+    expect(validatorFinished).toBe(false)
+
+    finishValidator()
+    await vi.waitFor(() => expect(validatorFinished).toBe(true))
+  })
+
   it('adds cancellation to custom validator client fetches', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')

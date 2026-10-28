@@ -47,6 +47,30 @@ const DEFAULT_VALIDATION_CLIENT_OPTIONS = {apiVersion: '2025-02-19'} as const
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
 
+/** Rejects on abort without waiting for work that does not observe the signal itself. */
+function raceWithSignal<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return promise
+  if (signal.aborted) return Promise.reject(signal.reason)
+
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort)
+      reject(signal.reason)
+    }
+    signal.addEventListener('abort', onAbort, {once: true})
+    void promise.then(
+      (value) => {
+        signal.removeEventListener('abort', onAbort)
+        resolve(value)
+      },
+      (error) => {
+        signal.removeEventListener('abort', onAbort)
+        reject(error)
+      },
+    )
+  })
+}
+
 function throwClientUnavailable(): never {
   throw new ClientUnavailableError()
 }
@@ -543,7 +567,19 @@ export function evaluateDocumentObservable(
   })
 }
 
-async function evaluateDocument({
+async function evaluateDocument(
+  options: ValidateDocumentObservableOptions & {pace: Pace},
+): Promise<DocumentValidationResult> {
+  const {pace, signal} = options
+  try {
+    signal?.throwIfAborted()
+    return await raceWithSignal(evaluateDocumentWithoutCancellation(options), signal)
+  } finally {
+    pace.dispose()
+  }
+}
+
+async function evaluateDocumentWithoutCancellation({
   document,
   getClient,
   i18n = getFallbackLocaleSource(),
@@ -557,7 +593,6 @@ async function evaluateDocument({
   pace,
 }: ValidateDocumentObservableOptions & {pace: Pace}): Promise<DocumentValidationResult> {
   try {
-    signal?.throwIfAborted()
     if (typeof document?._type !== 'string') {
       throw new Error(`Tried to validate a value without a '_type'`)
     }
@@ -643,8 +678,6 @@ async function evaluateDocument({
     }
 
     return createDocumentValidationResult([errorMarker], false)
-  } finally {
-    pace.dispose()
   }
 }
 
@@ -673,16 +706,22 @@ export type ValidateItemOptions = {
 
 export async function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   opts.signal?.throwIfAborted()
-  if (opts.__internal?.pace) return validateItemAsync(opts)
-
-  const pace = createPace(opts.scheduling)
+  const inheritedPace = opts.__internal?.pace
+  const pace = inheritedPace ?? createPace(opts.scheduling)
   try {
-    return await validateItemAsync({
-      ...opts,
-      __internal: {...opts.__internal, pace},
-    })
+    return await raceWithSignal(
+      validateItemAsync(
+        inheritedPace
+          ? opts
+          : {
+              ...opts,
+              __internal: {...opts.__internal, pace},
+            },
+      ),
+      opts.signal,
+    )
   } finally {
-    pace.dispose()
+    if (!inheritedPace) pace.dispose()
   }
 }
 
