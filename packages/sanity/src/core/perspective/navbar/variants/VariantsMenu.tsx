@@ -22,14 +22,30 @@ import {type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
-import {stickyMenuBottom, stickyMenuTop, suggestIconColor} from './VariantsNav.css'
+import {suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
   max-width: 320px;
 
-  > [data-ui='Stack'] {
+  /* The menu's own rule is overflow: auto, which scrolls the whole popover.
+     Cap this column to the popover height and let the list section scroll. */
+  && {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  && > [data-ui='Stack'] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     gap: 0;
+    overflow: hidden;
   }
 `
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
@@ -157,25 +173,29 @@ export function VariantsMenu({
           }
           padding={0}
         >
-          <Flex flexDirection="column">
-            <Flex
-              className={stickyMenuTop}
-              flexDirection="column"
-              paddingX={3}
-              paddingTop={3}
-              paddingBottom={2}
-              zIndex={2}
-            >
-              <TextInput
-                fontSize={1}
-                icon={SearchIcon}
-                onChange={handleFilterChange}
-                placeholder={t('navbar.variant.filter-placeholder')}
-                radius={2}
-                value={filterQuery}
-              />
-            </Flex>
-            <Flex flexDirection="column" gap={1} paddingX={3} paddingBottom={2}>
+          <Flex flexDirection="column" flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
+            <TextInput
+              fontSize={1}
+              icon={SearchIcon}
+              onChange={handleFilterChange}
+              placeholder={t('navbar.variant.filter-placeholder')}
+              radius={2}
+              value={filterQuery}
+            />
+          </Flex>
+          <Flex
+            flexDirection="column"
+            flexGrow={1}
+            flexShrink={1}
+            minHeight="0"
+            overflowY="auto"
+            paddingX={3}
+            paddingBottom={2}
+          >
+            {/* Menu items are flex children with min-height: 0, so they collapse
+                when they sit directly in this scroller. Keep them in a column
+                that sizes to its content. */}
+            <Flex flexDirection="column" flexShrink={0} gap={1}>
               <MenuItem
                 data-testid="variant-default"
                 onClick={handleSelectDefault}
@@ -192,36 +212,35 @@ export function VariantsMenu({
                 />
               ))}
             </Flex>
-            <Flex
-              className={stickyMenuBottom}
-              flexDirection="column"
-              gap={1}
-              borderTop
-              paddingX={3}
-              paddingTop={2}
-              paddingBottom={3}
-              zIndex={2}
-            >
-              <MenuItem
-                as="a"
-                data-testid="view-all"
-                href={viewAllHref}
-                icon={RhombusIconLarge}
-                onClick={handleViewAll}
-                text={t('navbar.variant.menu.view-all')}
-              />
-              <MenuItem
-                data-testid="new-audience"
-                onClick={handleNewAudience}
-                icon={AddIcon}
-                text={t('navbar.variant.menu.new-audience')}
-                tooltipProps={{
-                  content: 'This action is not yet implemented.',
-                }}
-                // TODO: temporary disabled until we add the create variants form here.
-                disabled
-              />
-            </Flex>
+          </Flex>
+          <Flex
+            flexDirection="column"
+            flexShrink={0}
+            gap={1}
+            borderTop
+            paddingX={3}
+            paddingTop={2}
+            paddingBottom={3}
+          >
+            <MenuItem
+              as="a"
+              data-testid="view-all"
+              href={viewAllHref}
+              icon={RhombusIconLarge}
+              onClick={handleViewAll}
+              text={t('navbar.variant.menu.view-all')}
+            />
+            <MenuItem
+              data-testid="new-audience"
+              onClick={handleNewAudience}
+              icon={AddIcon}
+              text={t('navbar.variant.menu.new-audience')}
+              tooltipProps={{
+                content: 'This action is not yet implemented.',
+              }}
+              // TODO: temporary disabled until we add the create variants form here.
+              disabled
+            />
           </Flex>
         </StyledMenu>
       }
@@ -229,6 +248,7 @@ export function VariantsMenu({
         __unstable_margins: [0, 0, 32, 0],
         constrainSize: true,
         fallbackPlacements: ['bottom-end'],
+        overflow: 'hidden',
         placement: 'bottom-end',
         portal: true,
         // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
