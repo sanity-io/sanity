@@ -24,6 +24,7 @@ import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store/datastores'
+import {useKeepAliveWhileHidden} from '../../studio/mountedTools/useKeepAliveWhileHidden'
 import {isDraftId, getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
@@ -77,6 +78,9 @@ const TEARDOWN_GRACE_PERIOD = 1_000
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const observable = useDocumentVersionsObservable(props)
+  // A cold start re-enters the `loading` state (see `TEARDOWN_GRACE_PERIOD`), which would make
+  // the form read-only every time a hidden tool is shown again.
+  useKeepAliveWhileHidden(observable)
   // Kept synchronous: `useTargetDocumentState` / `useDocumentForm` derive the
   // pair-checkout scope and the form's ready gate from this state, so a
   // deferred snapshot could bind the form to the wrong version scope after

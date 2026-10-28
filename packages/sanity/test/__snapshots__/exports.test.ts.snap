@@ -1326,6 +1326,7 @@ exports[`exports snapshot 1`] = `
   },
   "./_singletons": {
     "ActiveWorkspaceMatcherContext": "object",
+    "ActivityKeepAliveContext": "object",
     "AddonDatasetContext": "object",
     "AppIdCacheContext": "object",
     "ArrayItemRootElementContext": "object",
