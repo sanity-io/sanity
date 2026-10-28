@@ -18,6 +18,7 @@ import {
   validationMarkerCodes,
 } from '../src'
 import {getFallbackLocaleSource} from '../src/_internal'
+import {runValidationTasks} from '../src/validateDocument'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
 
@@ -55,6 +56,43 @@ function createMockClient(omitted: {id: string; reason: 'existence' | 'permissio
 function validateMarkers(options: ValidateDocumentOptions) {
   return validateDocument(options).then(({markers}) => markers)
 }
+
+describe('runValidationTasks', () => {
+  it('stops claiming tasks after a failure and waits for active workers', async () => {
+    let releaseActiveWorkers: () => void = () => undefined
+    const activeWorkers = new Promise<void>((resolve) => {
+      releaseActiveWorkers = resolve
+    })
+    const failure = new Error('Validation failed')
+    let started = 0
+    let settled = false
+    const tasks = Array.from({length: 8}, (_, index) => async () => {
+      started += 1
+      if (index === 0) throw failure
+      await activeWorkers
+      return []
+    })
+
+    const outcome = runValidationTasks(tasks, 4).then(
+      () => {
+        settled = true
+        return undefined
+      },
+      (error: unknown) => {
+        settled = true
+        return error
+      },
+    )
+
+    await vi.waitFor(() => expect(started).toBe(4))
+    expect(settled).toBe(false)
+
+    releaseActiveWorkers()
+
+    await expect(outcome).resolves.toBe(failure)
+    expect(started).toBe(4)
+  })
+})
 
 describe('validateDocument', () => {
   it('rejects pre-aborted validation with the abort reason', async () => {

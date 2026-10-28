@@ -696,24 +696,34 @@ function validateRule(
 
 type ValidationTask = () => Promise<ValidationMarker[]>
 
-async function runValidationTasks(
+export async function runValidationTasks(
   tasks: ValidationTask[],
   concurrency: number,
 ): Promise<ValidationMarker[][]> {
   const results: ValidationMarker[][] = []
   let nextIndex = 0
+  let failed = false
+  let failure: unknown
 
   async function worker() {
-    while (nextIndex < tasks.length) {
+    while (!failed && nextIndex < tasks.length) {
       const task = tasks[nextIndex]
       nextIndex += 1
-      // Each worker intentionally starts its next task only after its current task finishes.
-      // oxlint-disable-next-line no-await-in-loop
-      results.push(await task())
+      try {
+        // Each worker intentionally starts its next task only after its current task finishes.
+        // oxlint-disable-next-line no-await-in-loop
+        results.push(await task())
+      } catch (error) {
+        if (!failed) {
+          failed = true
+          failure = error
+        }
+      }
     }
   }
 
   await Promise.all(Array.from({length: Math.min(concurrency, tasks.length)}, () => worker()))
+  if (failed) throw failure
   return results
 }
 
