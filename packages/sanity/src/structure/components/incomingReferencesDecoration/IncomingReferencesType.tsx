@@ -26,7 +26,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
-import {getIncomingReferences} from './getIncomingReferences'
+import {getIncomingReferences, type IncomingReferencesResult} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
 import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
@@ -128,10 +128,10 @@ function IncomingReferencesTypeList({
   onLinkDocument: IncomingReferencesOptions['onLinkDocument']
   actions: IncomingReferencesOptions['actions']
   creationAllowed: IncomingReferencesOptions['creationAllowed']
-  referencesPromise: ObservablePromise<SanityDocument[]>
+  referencesPromise: ObservablePromise<IncomingReferencesResult>
   schemaType: SchemaType
 }) {
-  const documents = use(referencesPromise)
+  const {documents, resolvedFilter} = use(referencesPromise)
 
   const {t} = useTranslation(structureLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -272,6 +272,8 @@ function IncomingReferencesTypeList({
             onLinkDocument={handleLinkDocument}
             creationAllowed={creationAllowed}
             fieldName={fieldName}
+            filter={resolvedFilter.filter}
+            filterParams={resolvedFilter.filterParams}
           />
         )}
       </Card>
