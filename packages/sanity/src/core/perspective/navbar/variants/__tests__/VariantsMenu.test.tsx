@@ -10,6 +10,7 @@ import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
 import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../variants/util/variantType'
 import {VariantsMenu} from '../VariantsMenu'
 
 const variantsMock = vi.hoisted(() => ({
@@ -21,6 +22,12 @@ const variantsMock = vi.hoisted(() => ({
 
 const setVariant = vi.fn()
 
+const variantOperationsMock = vi.hoisted(() => ({
+  createVariant: vi.fn(),
+  updateVariant: vi.fn(),
+  deleteVariant: vi.fn(),
+}))
+
 vi.mock('../../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => setVariant),
 }))
@@ -29,25 +36,35 @@ vi.mock('../../../../variants/store/useAllVariants', () => ({
   useAllVariants: vi.fn(() => variantsMock),
 }))
 
+vi.mock('../../../../variants/store/useVariantOperations', () => ({
+  useVariantOperations: vi.fn(() => variantOperationsMock),
+}))
+
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    variantOperationsMock.createVariant.mockResolvedValue(undefined)
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
     perspectiveContextValueMock.selectedVariants = []
     perspectiveContextValueMock.selectedVariantNames = []
   })
 
-  const renderMenu = async (config?: Partial<SingleWorkspace>) => {
+  const renderMenu = async (config?: Partial<SingleWorkspace>, typeKey?: string) => {
     const wrapper = await createTestProvider({
       config,
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsMenu trigger={<button type="button">Open variants</button>} />, {
-      wrapper,
-    })
+    const view = render(
+      <VariantsMenu trigger={<button type="button">Open variants</button>} typeKey={typeKey} />,
+      {wrapper},
+    )
     await userEvent.setup().click(await screen.findByRole('button', {name: 'Open variants'}))
-    await screen.findByTestId('variants-nav-menu')
+    await screen.findByTestId(
+      !typeKey || typeKey === DEFAULT_VARIANT_TYPE_KEY
+        ? 'variants-nav-menu'
+        : `variants-nav-menu-${typeKey}`,
+    )
     return view
   }
 
@@ -111,6 +128,38 @@ describe('VariantsMenu', () => {
     })
 
     expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('opens the create form for the menu type and selects the created variant', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu(undefined, 'language')
+
+    await user.click(screen.getByTestId('new-audience'))
+
+    expect(
+      await screen.findByRole('dialog', {name: 'Create variant definition'}),
+    ).toBeInTheDocument()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Spanish readers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'locale')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'es')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.metadata.type).toBe('language')
+    expect(setVariant).toHaveBeenCalledWith({
+      type: 'language',
+      variantId: createdVariant._id,
+    })
+    expect(
+      screen.queryByRole('dialog', {name: 'Create variant definition'}),
+    ).not.toBeInTheDocument()
   })
 
   it('does not show a mismatch error when configured conditions resolve empty', async () => {
