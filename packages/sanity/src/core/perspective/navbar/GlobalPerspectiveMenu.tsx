@@ -19,8 +19,6 @@ import {ReleasesList} from './ReleasesList'
 import {useGlobalPerspectiveLabel} from './useGlobalPerspectiveLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
-const releaseListStyle = {maxHeight: 'min(520px, calc(100vh - 160px))'}
-
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 320px;
@@ -129,7 +127,7 @@ export function GlobalPerspectiveMenu({
                 value={filterQuery}
               />
             </Flex>
-            <Flex flexDirection="column" overflowY="auto" style={releaseListStyle}>
+            <Flex flexDirection="column" overflowY="auto">
               <ReleasesList
                 areReleasesEnabled={areReleasesEnabled}
                 filterQuery={filterQuery}
