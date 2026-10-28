@@ -66,21 +66,24 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     : undefined
 
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
-  const publishDisabledReason = publish.disabled
-    ? t(PUBLISH_DISABLED_REASON[publish.disabled])
+  // Publishing the leftover draft is how this banner resolves a live-edit mismatch, so the
+  // operation's live-edit reason does not block it here.
+  const publishDisabled = publish.disabled === 'LIVE_EDIT_ENABLED' ? false : publish.disabled
+  const publishDisabledReason = publishDisabled
+    ? t(PUBLISH_DISABLED_REASON[publishDisabled])
     : undefined
   const discardDisabledReason = discardChanges.disabled
     ? t(DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled])
     : undefined
 
   const handlePublish = useCallback(() => {
-    if (publish.disabled) {
+    if (publishDisabled) {
       return
     }
     publish.execute()
     setActionRequested('publish')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
-  }, [publish, telemetry])
+  }, [publish, publishDisabled, telemetry])
 
   const handleDiscard = useCallback(() => {
     if (discardChanges.disabled) {
@@ -127,7 +130,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
-            disabled={Boolean(actionRequested) || Boolean(publish.disabled)}
+            disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
             tooltipProps={
               publishDisabledReason
                 ? {content: publishDisabledReason}
