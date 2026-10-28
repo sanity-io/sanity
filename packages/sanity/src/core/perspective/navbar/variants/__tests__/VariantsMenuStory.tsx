@@ -8,10 +8,13 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
-import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
-import {variantsUsEnglishLocaleBundle} from '../../../i18n'
-import {type VariantStore} from '../../../store/createVariantsStore'
-import {type VariantStoreState} from '../../../store/reducer'
+import {
+  variantAlphaAudience,
+  variantNorwegianMarket,
+} from '../../../../variants/__fixtures__/variants.fixture'
+import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {type VariantStore} from '../../../../variants/store/createVariantsStore'
+import {type VariantStoreState} from '../../../../variants/store/reducer'
 import {VariantsMenu} from '../VariantsMenu'
 
 const LOADED_STATE: VariantStoreState = {

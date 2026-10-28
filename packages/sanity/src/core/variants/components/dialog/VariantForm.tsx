@@ -57,9 +57,13 @@ interface ConditionRow {
   value: string
 }
 
+type ConditionMismatchKey = 'conditions.mismatch.unknown-key' | 'conditions.mismatch.unknown-value'
+
+type ConditionValidationKey = VariantsLocaleResourceKeys | ConditionMismatchKey
+
 interface ConditionRowValidation {
-  key: VariantsLocaleResourceKeys | null
-  value: VariantsLocaleResourceKeys | null
+  key: ConditionValidationKey | null
+  value: ConditionValidationKey | null
 }
 
 const EMPTY_DEFINITIONS: readonly NormalizedVariantConditionMap[] = []
@@ -90,6 +94,10 @@ function getConditionsFromRows(rows: ConditionRow[]): EditableSystemVariant['con
 
 function isConditionRowEmpty(row: ConditionRow): boolean {
   return !row.key.trim() && !row.value.trim()
+}
+
+function isConditionMismatchKey(key: ConditionValidationKey): key is ConditionMismatchKey {
+  return key === 'conditions.mismatch.unknown-key' || key === 'conditions.mismatch.unknown-value'
 }
 
 function getEmptyConditionRowValidation(): ConditionRowValidation {
@@ -212,6 +220,11 @@ export function VariantForm(props: {
     value,
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
+  const {t: tStudio} = useTranslation()
+  const translateConditionValidation = (key: ConditionValidationKey, row: ConditionRow) =>
+    isConditionMismatchKey(key)
+      ? tStudio(key, {key: row.key, value: row.value})
+      : t(key, {key: row.key, value: row.value})
   const {data: variants} = useAllVariants()
   const variantTypes = useVariantTypes()
   const typeKey = getVariantType(value)
@@ -541,7 +554,7 @@ export function VariantForm(props: {
                   key={row.id}
                   keyError={
                     showKeyError && validation.key
-                      ? t(validation.key, {key: row.key, value: row.value})
+                      ? translateConditionValidation(validation.key, row)
                       : null
                   }
                   loading={mappedLoading}
@@ -553,7 +566,7 @@ export function VariantForm(props: {
                   usedKeys={usedConditionKeys}
                   valueError={
                     showValueError && validation.value
-                      ? t(validation.value, {key: row.key, value: row.value})
+                      ? translateConditionValidation(validation.value, row)
                       : null
                   }
                 />
@@ -576,7 +589,11 @@ export function VariantForm(props: {
                       <ConditionAutocompleteInput
                         autoFocus={index > 0}
                         ariaLabel={t('dialog.create.condition-key.label')}
-                        customValidity={validation.key ? t(validation.key) : undefined}
+                        customValidity={
+                          validation.key
+                            ? translateConditionValidation(validation.key, row)
+                            : undefined
+                        }
                         invalid={Boolean(validation.key)}
                         onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
                         options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
@@ -588,7 +605,11 @@ export function VariantForm(props: {
                     <Box flexBasis="0%" flexGrow={1}>
                       <ConditionAutocompleteInput
                         ariaLabel={t('dialog.create.condition-value.label')}
-                        customValidity={valueValidation ? t(valueValidation) : undefined}
+                        customValidity={
+                          valueValidation
+                            ? translateConditionValidation(valueValidation, row)
+                            : undefined
+                        }
                         invalid={Boolean(valueValidation)}
                         onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
                         options={getConditionValueOptions(suggestionIndex, row.key)}
@@ -618,7 +639,7 @@ export function VariantForm(props: {
                       size={1}
                       tone="critical"
                     >
-                      {t(conditionValidationError)}
+                      {translateConditionValidation(conditionValidationError, row)}
                     </TextWithTone>
                   ) : null}
                 </VStack>

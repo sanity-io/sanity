@@ -3,7 +3,7 @@ import {lazy, Suspense, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Box} from 'ui5'
 
-import {parseVariantStickyParam} from '../../util/variantSelection'
+import {parseVariantStickyParam} from '../../../variants/util/variantSelection'
 import {navbarFallback, navbarFallbackSkeleton} from './VariantsStudioNavbarLayout.css'
 
 const VariantsStudioNavbar = lazy(() => import('./VariantsStudioNavbar'))
@@ -22,9 +22,9 @@ export function VariantsStudioNavbarFallback() {
 }
 
 /**
- * The navbar middleware of the variants plugin: the default navbar with the perspective bar
- * under it. Imported eagerly, since the bar's filters are what load lazily, behind the
- * `Suspense` here, so the bar itself paints with the navbar.
+ * The variants perspective filters, rendered by `StudioNavbar` when variants are enabled.
+ * Imported eagerly, since the bar's filters are what load lazily, behind the `Suspense`
+ * here, so the bar itself paints with the navbar.
  * @internal
  */
 export function VariantsStudioNavbarLayout() {

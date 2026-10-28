@@ -7,7 +7,6 @@ import {page} from 'vitest/browser'
 import {expectStable} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
-import {PerspectiveFilter} from '../PerspectiveFilter'
 import {VariantsStudioNavbarFallback} from '../VariantsStudioNavbarLayout'
 
 // The bar's fallback reserves one row while the filters' chunk loads, so the filters replace it
@@ -26,14 +25,7 @@ describe('VariantsStudioNavbarLayout fallback', () => {
         </div>
         {/* A settled filter, as `VariantsStudioNavbar` renders it: a default-size trigger button
             inside the pill's bordered card */}
-        <PerspectiveFilter prefix="Version" tone="default" label="Drafts">
-          <Button
-            data-testid="pill-trigger"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            text="Drafts"
-          />
-        </PerspectiveFilter>
+        <Button data-testid="pill-trigger" iconRight={ChevronDownIcon} mode="bleed" text="Drafts" />
       </TestWrapper>,
     )
 

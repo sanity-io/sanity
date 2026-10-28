@@ -11,15 +11,14 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useSetVariant} from '../../../perspective/useSetVariant'
-import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
-import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
-import {variantsLocaleNamespace} from '../../i18n'
-import {useAllVariants} from '../../store/useAllVariants'
-import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
-import {type SystemVariant} from '../../types'
-import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../util/variantType'
+import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
+import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../../variants/tool/util'
+import {type SystemVariant} from '../../../variants/types'
+import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
+import {usePerspective} from '../../usePerspective'
+import {useSetVariant} from '../../useSetVariant'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
@@ -42,7 +41,7 @@ function VariantMenuItem(props: {
   variant: SystemVariant
 }) {
   const {isSelected, onSelect, variant} = props
-  const {t} = useTranslation(variantsLocaleNamespace)
+  const {t} = useTranslation()
   const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
@@ -87,7 +86,7 @@ export function VariantsMenu({
   trigger: JSX.Element
   typeKey?: string
 }): React.JSX.Element {
-  const {t} = useTranslation(variantsLocaleNamespace)
+  const {t} = useTranslation()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
