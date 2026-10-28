@@ -24,24 +24,3 @@ export const rhombusIconLarge = css({
     marginRight: '-2px',
   },
 })
-
-/** Spacer to align section headers with menu item icons. */
-export const menuIconSpacer = css({
-  width: 15,
-})
-
-/**
- * Pins a menu section to the popover scrollport. The popover is the scroll
- * container, so the variant list between these edges is what moves.
- */
-export const stickyMenuTop = css({
-  position: 'sticky',
-  top: 0,
-  backgroundColor: 'var(--card-bg-color)',
-})
-
-export const stickyMenuBottom = css({
-  position: 'sticky',
-  bottom: 0,
-  backgroundColor: 'var(--card-bg-color)',
-})

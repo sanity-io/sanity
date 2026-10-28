@@ -69,7 +69,7 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('view-all')).toHaveAttribute(
       'href',
       // TODO; Temporary source=menu until https://github.com/sanity-io/sanity/pull/15639 lands
-      `/intent/${VARIANTS_INTENT}/source=menu`,
+      `/intent/${VARIANTS_INTENT}/source=menu/`,
     )
   })
 
