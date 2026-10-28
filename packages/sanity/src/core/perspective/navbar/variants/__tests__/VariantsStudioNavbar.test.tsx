@@ -5,10 +5,10 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
-import * as variantConditions from '../../../hooks/useVariantConditions'
-import {variantsUsEnglishLocaleBundle} from '../../../i18n'
-import {getVariantId} from '../../../tool/util'
+import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
+import * as variantConditions from '../../../../variants/hooks/useVariantConditions'
+import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {getVariantId} from '../../../../variants/tool/util'
 import {VariantsStudioNavbarLayout} from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()

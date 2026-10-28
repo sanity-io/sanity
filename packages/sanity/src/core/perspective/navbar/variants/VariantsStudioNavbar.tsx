@@ -2,15 +2,14 @@ import {CSSProperties, useCallback} from 'react'
 
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {GlobalPerspectiveButton} from '../../../perspective/navbar/GlobalPerspectiveButton'
-import {useSetVariant} from '../../../perspective/useSetVariant'
-import {useVariantTypes} from '../../hooks/useVariantConditions'
-import {variantsLocaleNamespace} from '../../i18n'
-import {useAllVariants} from '../../store/useAllVariants'
-import {getVariantId, getVariantTitle} from '../../tool/util'
-import {type SystemVariant} from '../../types'
-import {type VariantSelection} from '../../util/variantSelection'
-import {DEFAULT_VARIANT_TYPE_KEY} from '../../util/variantType'
+import {useVariantTypes} from '../../../variants/hooks/useVariantConditions'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
+import {getVariantId, getVariantTitle} from '../../../variants/tool/util'
+import {type SystemVariant} from '../../../variants/types'
+import {type VariantSelection} from '../../../variants/util/variantSelection'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../variants/util/variantType'
+import {useSetVariant} from '../../useSetVariant'
+import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
 import {suggestIconColor} from './VariantsNav.css'
 
@@ -20,7 +19,7 @@ function VariantTypeFilter(props: {
   variants: SystemVariant[]
 }) {
   const {selectedId, typeKey, variants} = props
-  const {t} = useTranslation(variantsLocaleNamespace)
+  const {t} = useTranslation()
   const setVariant = useSetVariant()
   const selectedVariant = selectedId
     ? variants.find((variant) => getVariantId(variant._id) === selectedId)
