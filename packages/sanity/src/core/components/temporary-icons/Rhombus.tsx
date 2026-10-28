@@ -1,6 +1,6 @@
 /* THIS FILE IS TEMPORARY - IMPORT FROM @SANITY/ICONS WHEN AVAILABLE */
 
-import {type RefAttributes, type SVGProps} from 'react'
+import {type CSSProperties, type RefAttributes, type SVGProps} from 'react'
 
 export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
@@ -21,4 +21,8 @@ export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSV
       />
     </svg>
   )
+}
+
+export function RhombusIconLarge(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
+  return <RhombusIcon viewBox="3.5 3.5 18 18" {...props} />
 }
