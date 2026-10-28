@@ -15,19 +15,9 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {
-  type BehaviorSubject,
-  concat,
-  defer,
-  from,
-  lastValueFrom,
-  type Observable,
-  of,
-  throwError,
-} from 'rxjs'
-import {catchError, map, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {type BehaviorSubject, Observable} from 'rxjs'
+import {map} from 'rxjs/operators'
 
-import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
@@ -36,7 +26,7 @@ import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
-import {createPace, type ValidationScheduling} from './util/pace'
+import {createPace, createUnpacedPace, type Pace, type ValidationScheduling} from './util/pace'
 import {typeString} from './util/typeString'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
@@ -56,6 +46,30 @@ const DEFAULT_VALIDATION_CLIENT_OPTIONS = {apiVersion: '2025-02-19'} as const
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
+
+/** Rejects on abort without waiting for work that does not observe the signal itself. */
+function raceWithSignal<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return promise
+  if (signal.aborted) return Promise.reject(signal.reason)
+
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort)
+      reject(signal.reason)
+    }
+    signal.addEventListener('abort', onAbort, {once: true})
+    void promise.then(
+      (value) => {
+        signal.removeEventListener('abort', onAbort)
+        resolve(value)
+      },
+      (error) => {
+        signal.removeEventListener('abort', onAbort)
+        reject(error)
+      },
+    )
+  })
+}
 
 function throwClientUnavailable(): never {
   throw new ClientUnavailableError()
@@ -468,20 +482,19 @@ function evaluateDocumentsInternal({
 
   return Promise.all(
     documents.map((document) =>
-      lastValueFrom(
-        evaluateDocumentObservable({
-          document,
-          getClient: getConcurrencyLimitedClient,
-          i18n,
-          schema,
-          getDocumentExists: sharedGetDocumentExists,
-          environment,
-          maxCustomValidationConcurrency,
-          currentUser,
-          customValidation,
-          signal,
-        }),
-      ),
+      evaluateDocument({
+        document,
+        getClient: getConcurrencyLimitedClient,
+        i18n,
+        schema,
+        getDocumentExists: sharedGetDocumentExists,
+        environment,
+        maxCustomValidationConcurrency,
+        currentUser,
+        customValidation,
+        signal,
+        pace: createUnpacedPace(),
+      }),
     ),
   )
 }
@@ -527,14 +540,46 @@ export function validateDocumentObservable(
 export function evaluateDocumentObservable(
   options: ValidateDocumentObservableOptions,
 ): Observable<DocumentValidationResult> {
-  const {signal} = options
-  return defer(() => {
-    signal?.throwIfAborted()
-    return evaluateDocumentObservableWithoutCancellation(options)
-  }).pipe(cancelWith(signal))
+  return new Observable((subscriber) => {
+    const controller = new AbortController()
+    const {signal} = options
+    const abort = () => controller.abort(signal?.reason)
+
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, {once: true})
+
+    void evaluateDocument({
+      ...options,
+      signal: controller.signal,
+      pace: createPace(options.scheduling),
+    }).then(
+      (result) => {
+        subscriber.next(result)
+        subscriber.complete()
+      },
+      (error) => subscriber.error(error),
+    )
+
+    return () => {
+      signal?.removeEventListener('abort', abort)
+      controller.abort()
+    }
+  })
 }
 
-function evaluateDocumentObservableWithoutCancellation({
+async function evaluateDocument(
+  options: ValidateDocumentObservableOptions & {pace: Pace},
+): Promise<DocumentValidationResult> {
+  const {pace, signal} = options
+  try {
+    signal?.throwIfAborted()
+    return await raceWithSignal(evaluateDocumentWithoutCancellation(options), signal)
+  } finally {
+    pace.dispose()
+  }
+}
+
+async function evaluateDocumentWithoutCancellation({
   document,
   getClient,
   i18n = getFallbackLocaleSource(),
@@ -545,25 +590,25 @@ function evaluateDocumentObservableWithoutCancellation({
   currentUser,
   customValidation = true,
   signal,
-  scheduling,
-}: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
-  if (typeof document?._type !== 'string') {
-    throw new Error(`Tried to validate a value without a '_type'`)
-  }
-
-  const documentType = schema.get(document._type)
-
-  if (!documentType) {
-    if (environment === 'studio') {
-      console.warn(
-        'Schema type for object type "%s" not found, skipping validation',
-        document._type,
-      )
-      return of(createDocumentValidationResult([], false))
+  pace,
+}: ValidateDocumentObservableOptions & {pace: Pace}): Promise<DocumentValidationResult> {
+  try {
+    if (typeof document?._type !== 'string') {
+      throw new Error(`Tried to validate a value without a '_type'`)
     }
 
-    return of(
-      createDocumentValidationResult(
+    const documentType = schema.get(document._type)
+
+    if (!documentType) {
+      if (environment === 'studio') {
+        console.warn(
+          'Schema type for object type "%s" not found, skipping validation',
+          document._type,
+        )
+        return createDocumentValidationResult([], false)
+      }
+
+      return createDocumentValidationResult(
         [
           {
             code: validationMarkerCodes.documentUnknownType,
@@ -574,21 +619,18 @@ function evaluateDocumentObservableWithoutCancellation({
           },
         ],
         false,
-      ),
-    )
-  }
+      )
+    }
 
-  let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
-  if (!customValidationConcurrencyLimiter) {
-    customValidationConcurrencyLimiter = new ConcurrencyLimiter(
-      maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
-    )
-    customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
-  }
+    let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
+    if (!customValidationConcurrencyLimiter) {
+      customValidationConcurrencyLimiter = new ConcurrencyLimiter(
+        maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
+      )
+      customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
+    }
 
-  // `Rule.validate()` returns markers only, so completeness is tracked separately
-  // while preserving the existing marker pipeline.
-  return defer(() => {
+    // `Rule.validate()` returns markers only, so completeness is tracked separately.
     let complete = true
     const validationOptions: ValidateItemOptions = {
       getClient,
@@ -605,35 +647,38 @@ function evaluateDocumentObservableWithoutCancellation({
       currentUser,
       customValidation,
       signal,
-      scheduling,
       __internal: {
         markIncomplete: () => {
           complete = false
         },
-        pace: createPace(scheduling),
+        pace,
       },
     }
 
-    return from(i18n.loadNamespaces(['validation'])).pipe(
-      switchMap(() => validateItemObservable(validationOptions)),
-      map((markers) => createDocumentValidationResult(markers, complete)),
-      catchError((err) => {
-        if (signal?.aborted) return throwError(() => signal.reason)
-        console.error(err)
+    await i18n.loadNamespaces(['validation'])
+    const markers = await validateItemAsync(validationOptions)
+    return createDocumentValidationResult(markers, complete)
+  } catch (err) {
+    if (signal?.aborted) throw signal.reason
+    if (typeof document?._type !== 'string') throw err
+    console.error(err)
 
-        const message = err?.message || 'Unknown error'
-        const errorMarker: DocumentValidationMarker = {
-          code: validationMarkerCodes.validationException,
-          level: 'error',
-          message,
-          item: {message},
-          path: [],
-        }
+    const message =
+      err instanceof Error
+        ? err.message
+        : isRecord(err) && typeof err.message === 'string'
+          ? err.message
+          : 'Unknown error'
+    const errorMarker: DocumentValidationMarker = {
+      code: validationMarkerCodes.validationException,
+      level: 'error',
+      message,
+      item: {message},
+      path: [],
+    }
 
-        return of(createDocumentValidationResult([errorMarker], false))
-      }),
-    )
-  })
+    return createDocumentValidationResult([errorMarker], false)
+  }
 }
 
 /**
@@ -659,13 +704,25 @@ export type ValidateItemOptions = {
 } & Pick<ValidationContext, 'currentUser'> &
   ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal' | 'currentUser'>>
 
-export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
-  return lastValueFrom(
-    defer(() => {
-      opts.signal?.throwIfAborted()
-      return validateItemObservable(opts)
-    }).pipe(cancelWith(opts.signal)),
-  )
+export async function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
+  opts.signal?.throwIfAborted()
+  const inheritedPace = opts.__internal?.pace
+  const pace = inheritedPace ?? createPace(opts.scheduling)
+  try {
+    return await raceWithSignal(
+      validateItemAsync(
+        inheritedPace
+          ? opts
+          : {
+              ...opts,
+              __internal: {...opts.__internal, pace},
+            },
+      ),
+      opts.signal,
+    )
+  } finally {
+    if (!inheritedPace) pace.dispose()
+  }
 }
 
 function validateRule(
@@ -676,7 +733,40 @@ function validateRule(
   return rule.validate(value, context)
 }
 
-function validateItemObservable({
+type ValidationTask = () => Promise<ValidationMarker[]>
+
+export async function runValidationTasks(
+  tasks: ValidationTask[],
+  concurrency: number,
+): Promise<ValidationMarker[][]> {
+  const results: ValidationMarker[][] = []
+  let nextIndex = 0
+  let failed = false
+  let failure: unknown
+
+  async function worker() {
+    while (!failed && nextIndex < tasks.length) {
+      const task = tasks[nextIndex]
+      nextIndex += 1
+      try {
+        // Each worker intentionally starts its next task only after its current task finishes.
+        // oxlint-disable-next-line no-await-in-loop
+        results.push(await task())
+      } catch (error) {
+        if (!failed) {
+          failed = true
+          failure = error
+        }
+      }
+    }
+  }
+
+  await Promise.all(Array.from({length: Math.min(concurrency, tasks.length)}, () => worker()))
+  if (failed) throw failure
+  return results
+}
+
+async function validateItemAsync({
   value,
   type,
   path = [],
@@ -684,14 +774,15 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
-  scheduling,
+  scheduling: _scheduling,
   __internal: inheritedInternal,
   ...restOfContext
-}: ValidateItemOptions): Observable<ValidationMarker[]> {
+}: ValidateItemOptions): Promise<ValidationMarker[]> {
   // The run's pacer is created once, by `evaluateDocumentObservable` or by the outermost
   // `validateItem` call, and shared with every nested value so that the whole run is paced as one.
-  const pace = inheritedInternal?.pace ?? createPace(scheduling)
-  const __internal = inheritedInternal?.pace ? inheritedInternal : {...inheritedInternal, pace}
+  const pace = inheritedInternal?.pace
+  if (!pace) throw new Error('Validation item was started without a pace')
+  const __internal = inheritedInternal
 
   // Track whether any ancestor in the tree is hidden.
   // It will be true if this field OR any ancestor is hidden.
@@ -754,8 +845,8 @@ function validateItemObservable({
     type,
   })
   // run validation for the current value
-  const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
-    defer(() =>
+  const selfChecks: ValidationTask[] = rules.map(addUnknownFieldsValidator).map(
+    (rule) => () =>
       validateRule(rule, value, {
         ...restOfContext,
         environment,
@@ -769,11 +860,10 @@ function validateItemObservable({
           customValidationConcurrencyLimiter,
         },
       }),
-    ),
   )
 
   // run validation for nested values (conditionally)
-  let nestedChecks: Array<Observable<ValidationMarker[]>> = []
+  let nestedChecks: ValidationTask[] = []
 
   const shouldRunNestedObjectValidation =
     // run nested validation for objects
@@ -809,7 +899,7 @@ function validateItemObservable({
           return normalizeValidationRules({...fieldType, validation}, fieldContext)
             .map(addUnknownFieldsValidator)
             .map((subRule) => {
-              return defer(() =>
+              return () =>
                 validateRule(subRule, nestedValue, {
                   ...fieldContext,
                   __internal: {
@@ -817,18 +907,17 @@ function validateItemObservable({
                     customValidation,
                     customValidationConcurrencyLimiter,
                   },
-                }),
-              )
+                })
             })
         }),
     )
 
-    // Validation from each field's schema `validation: Rule => {/* ... */}` function
-    // Construct child pipelines only when the parent's scheduler starts them.
+    // Validation from each field's schema `validation: Rule => {/* ... */}` function.
+    // Construct child tasks only when the parent's scheduler starts them.
     nestedChecks = nestedChecks.concat(
-      type.fields.map((field) =>
-        defer(() =>
-          validateItemObservable({
+      type.fields.map(
+        (field) => () =>
+          validateItemAsync({
             ...restOfContext,
             hidden,
             parent: value,
@@ -838,10 +927,8 @@ function validateItemObservable({
             environment,
             customValidationConcurrencyLimiter,
             customValidation,
-            scheduling,
             __internal,
           }),
-        ),
       ),
     )
   }
@@ -854,9 +941,9 @@ function validateItemObservable({
 
   if (shouldRunNestedValidationForArrays) {
     nestedChecks = nestedChecks.concat(
-      value.map((item, index) =>
-        defer(() =>
-          validateItemObservable({
+      value.map(
+        (item, index) => () =>
+          validateItemAsync({
             ...restOfContext,
             hidden,
             parent: value,
@@ -866,10 +953,8 @@ function validateItemObservable({
             environment,
             customValidationConcurrencyLimiter,
             customValidation,
-            scheduling,
             __internal,
           }),
-        ),
       ),
     )
   }
@@ -880,23 +965,30 @@ function validateItemObservable({
     nestedChecks.length === 0 &&
     !rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)
   ) {
-    return concat(pace(), selfChecks[0])
+    const wait = pace.wait(restOfContext.signal)
+    if (wait) await wait
+    restOfContext.signal?.throwIfAborted()
+    return selfChecks[0]()
   }
 
   // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
-  return from([...selfChecks, ...nestedChecks]).pipe(
-    mergeMap((validateNode) => concat(pace(), validateNode), 40),
-    toArray(),
-    map(flatten),
-    map((results) => {
-      // Deduplicate markers when `_fieldRules` are present because they can
-      // cause repeat markers (check recursively for nested rules)
-      if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
-        return deduplicateMarkers(results)
-      }
-      return results
-    }),
+  const results = flatten(
+    await runValidationTasks(
+      [...selfChecks, ...nestedChecks].map((validateNode) => async () => {
+        const wait = pace.wait(restOfContext.signal)
+        if (wait) await wait
+        restOfContext.signal?.throwIfAborted()
+        return validateNode()
+      }),
+      40,
+    ),
   )
+
+  // Deduplicate markers when `_fieldRules` are present because they can cause repeat markers.
+  if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
+    return deduplicateMarkers(results)
+  }
+  return results
 }
 
 function deduplicateMarkers(markers: ValidationMarker[]): ValidationMarker[] {
