@@ -7,6 +7,7 @@ import {StudioAnnouncementContext} from 'sanity/_singletons'
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
+import {useShallowUnique} from '../../util/useShallowUnique'
 import {SANITY_VERSION} from '../../version'
 import {
   ProductAnnouncementCardClicked,
@@ -36,6 +37,10 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
   const {currentUser} = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
 
+  // Keyed on contents: a rebuilt-but-equal roles array would otherwise mint a
+  // new observable identity below and refetch the announcements.
+  const currentUserRoles = useShallowUnique(currentUser?.roles)
+
   const getAnnouncements$: Observable<{
     unseen: StudioAnnouncementDocument[]
     all: StudioAnnouncementDocument[]
@@ -50,7 +55,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
               isValidAnnouncementAudience(
                 {audience: doc.audience, studioVersion: doc.studioVersion},
                 SANITY_VERSION,
-              ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
+              ) && isValidAnnouncementRole(doc.audienceRole, currentUserRoles),
           )
           return validDocs
         }),
@@ -66,7 +71,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
         return {unseen: unseen, all: all}
       }),
     )
-  }, [client.observable, currentUser?.roles, seenAnnouncements$])
+  }, [client.observable, currentUserRoles, seenAnnouncements$])
 
   const announcements = useObservable(getAnnouncements$, {unseen: [], all: []})
   const unseenAnnouncements = announcements.unseen

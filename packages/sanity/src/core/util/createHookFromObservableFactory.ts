@@ -3,6 +3,8 @@ import {useObservable, useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
+import {useShallowUnique} from './useShallowUnique'
+
 /** @internal */
 export type LoadingTuple<T> = [T, boolean]
 
@@ -41,7 +43,16 @@ export function createHookFromObservableFactory<T, TArg = void>(
   const initialLoadingTuple: LoadingTuple<T | undefined> = [initialValue, true]
   const initialResult = {type: 'tuple', tuple: initialLoadingTuple} as const
 
-  return function useLoadableFromCreateLoadable(arg: TArg) {
+  return function useLoadableFromCreateLoadable(unstableArg: TArg) {
+    // Key the observable on the arg's CONTENTS, not its reference: hooks
+    // created from this factory take option objects/arrays that callers may
+    // build inline every render, and react-rx keys its store on observable
+    // identity — a fresh identity per render tears the subscription down
+    // every commit and risks React's "Maximum update depth exceeded" abort
+    // when a synchronous replay disagrees with the initial value (see the
+    // useDocumentValues regression, e089afde26, and the AGENTS.md react-rx
+    // section).
+    const arg = useShallowUnique(unstableArg)
     const observable = useMemo(
       () =>
         of(arg).pipe(

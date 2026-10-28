@@ -100,6 +100,11 @@ export function useDivergenceController(
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
 
+  // Memoized: react-rx keys its store on observable identity, so building
+  // these `.pipe(...)` pipelines directly in render would mint a new identity
+  // every render — torn down and resubscribed each commit, with each
+  // resubscription replaying a fresh snapshot object (render churn, and an
+  // abort risk when a sync replay disagrees with the initial value).
   const readUpstreamBase: Observable<HydratedSnapshot> = useMemo(
     () =>
       getDocumentAtRevision({

@@ -627,7 +627,7 @@ wraps the native hook, so check the implementation before trusting one.
 `react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the
 `initialValue` (required — pass `undefined` explicitly when there is nothing better) until the
 subscription started on commit delivers a value, and a synchronous emission arrives one pass later.
-Two rules follow:
+Three rules follow:
 
 - **The observable identity must be stable across renders**: build it with `useMemo`, keep it on a
   store, or hoist it to module scope, and key memos on primitives (a path string, an id) rather than
@@ -640,6 +640,15 @@ Two rules follow:
   exported `INITIAL_RELEASES_STATE`, `useVariantsStore().initialState`), or derive it per render
   when it depends on the observable's parameters (`useEditState`), since react-rx captures
   `initialValue` once per hook instance.
+- **Key memos on contents when the caller owns the reference.** Reference-typed hook parameters
+  (`paths`, `params`, option objects) arrive as inline literals from callers the React Compiler
+  never compiles (customer studios, plugins; it also bails out silently in-repo), so stabilize
+  them inside the hook with `useShallowUnique` (`dequal/lite`-based: plain objects and arrays
+  compare deeply, functions by identity) before they feed an observable memo — as
+  `useDocumentValues`, `createHookFromObservableFactory` and the permission hooks do. Full
+  rubric, fresh-vs-cached store factory inventory, and the render-loop regression-test recipe:
+  the `sanity-observable-identity` skill
+  (`.agents/skills/sanity-observable-identity/SKILL.md`).
 
 ### Translate: never define `components` inline
 
