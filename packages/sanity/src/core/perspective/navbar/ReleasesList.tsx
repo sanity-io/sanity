@@ -4,6 +4,7 @@ import {type JSX, type RefObject, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex, VStack} from 'ui5'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
@@ -39,6 +40,10 @@ const StickyBottomCard = styled(StickyCard)`
   bottom: 0;
 `
 
+function matchesPerspectiveFilter(label: string, normalizedQuery: string): boolean {
+  return label.toLowerCase().includes(normalizedQuery)
+}
+
 export function ReleasesList({
   areReleasesEnabled,
   setScrollContainer,
@@ -47,6 +52,7 @@ export function ReleasesList({
   handleOpenBundleDialog,
   scrollElementRef,
   menuItemProps,
+  filterQuery = '',
 }: {
   areReleasesEnabled: boolean
   setScrollContainer: (el: HTMLElement | null) => void
@@ -55,9 +61,13 @@ export function ReleasesList({
   handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  filterQuery?: string
 }): JSX.Element {
+  const {t} = useTranslation()
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
+  const normalizedQuery = filterQuery.trim().toLowerCase()
+  const isFiltering = normalizedQuery.length > 0
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -70,16 +80,27 @@ export function ReleasesList({
     },
   } = useWorkspace()
 
+  const untitledRelease = t('release.placeholder-untitled-release')
+  const visibleReleases = useMemo(() => {
+    if (!isFiltering) return releases
+
+    return releases.filter((release) =>
+      matchesPerspectiveFilter(release.metadata?.title || untitledRelease, normalizedQuery),
+    )
+  }, [isFiltering, normalizedQuery, releases, untitledRelease])
+
   const sortedReleaseTypeReleases = useMemo(
     () =>
       orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
         (ReleaseTypeReleases, releaseType) => ({
           ...ReleaseTypeReleases,
-          [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
+          [releaseType]: visibleReleases.filter(
+            ({metadata}) => metadata.releaseType === releaseType,
+          ),
         }),
         {} as Record<ReleaseType, ReleaseDocument[]>,
       ),
-    [releases],
+    [visibleReleases],
   )
 
   const range: LayerRange = useMemo(() => {
@@ -124,25 +145,42 @@ export function ReleasesList({
     )
   }
 
+  const showStackLine = !isFiltering
+  const showPublished =
+    !isFiltering || matchesPerspectiveFilter(t('release.navbar.published'), normalizedQuery)
+  const showDrafts =
+    isDraftModelEnabled &&
+    (!isFiltering || matchesPerspectiveFilter(t('release.navbar.drafts'), normalizedQuery))
+  const showAgentBundle =
+    Boolean(agentBundles[0]) &&
+    (!isFiltering ||
+      matchesPerspectiveFilter(t('version.agent-bundle.proposed-changes'), normalizedQuery))
+  const rangePosition = (index: number) =>
+    showStackLine && isRangeVisible ? getRangePosition(range, index) : undefined
+
   return (
     <Card radius={3}>
-      <StickyTopCard borderBottom padding={1}>
-        <VStack gap={1}>
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
-            release={'published'}
-            menuItemProps={menuItemProps}
-          />
-          {isDraftModelEnabled && (
-            <GlobalPerspectiveMenuItem
-              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
-              release={LATEST}
-              menuItemProps={menuItemProps}
-            />
-          )}
-        </VStack>
-      </StickyTopCard>
-      {agentBundles[0] && (
+      {(showPublished || showDrafts) && (
+        <StickyTopCard borderBottom padding={1}>
+          <VStack gap={1}>
+            {showPublished && (
+              <GlobalPerspectiveMenuItem
+                rangePosition={rangePosition(0)}
+                release={'published'}
+                menuItemProps={menuItemProps}
+              />
+            )}
+            {showDrafts && (
+              <GlobalPerspectiveMenuItem
+                rangePosition={rangePosition(1)}
+                release={LATEST}
+                menuItemProps={menuItemProps}
+              />
+            )}
+          </VStack>
+        </StickyTopCard>
+      )}
+      {showAgentBundle && agentBundles[0] && (
         <Card borderBottom padding={1}>
           <VStack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
@@ -159,21 +197,24 @@ export function ReleasesList({
               range={range}
               currentGlobalBundleMenuItemRef={scrollElementRef}
               menuItemProps={menuItemProps}
+              showStackLine={showStackLine}
             />
           ))}
         </VStack>
       )}
-      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-        <VStack gap={1}>
-          <ScheduledDraftsMenuItem />
-          {areReleasesEnabled && (
-            <>
-              <ViewContentReleasesMenuItem />
-              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-            </>
-          )}
-        </VStack>
-      </StickyBottomCard>
+      {!isFiltering && (
+        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+          <VStack gap={1}>
+            <ScheduledDraftsMenuItem />
+            {areReleasesEnabled && (
+              <>
+                <ViewContentReleasesMenuItem />
+                <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+              </>
+            )}
+          </VStack>
+        </StickyBottomCard>
+      )}
     </Card>
   )
 }

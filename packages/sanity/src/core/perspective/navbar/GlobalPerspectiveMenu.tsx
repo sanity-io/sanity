@@ -1,8 +1,12 @@
+import {SearchIcon} from '@sanity/icons/Search'
+import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {useCallback, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
@@ -14,12 +18,24 @@ import {ReleasesList} from './ReleasesList'
 import {useGlobalPerspectiveLabel} from './useGlobalPerspectiveLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
+const releaseListStyle = {maxHeight: 'min(520px, calc(100vh - 160px))'}
+
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 320px;
-  /* Remove the default menu gap*/
-  > [data-ui='Stack'] {
+
+  /* Keep the filter pinned and scroll the release list once the menu is full. */
+  && {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  && > [data-ui='Stack'] {
+    display: flex;
+    flex-direction: column;
     gap: 0;
+    overflow: hidden;
   }
 `
 
@@ -32,9 +48,11 @@ export function GlobalPerspectiveMenu({
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
+  const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useGlobalPerspectiveLabel()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
+  const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -57,6 +75,15 @@ export function GlobalPerspectiveMenu({
     setPerspective(undefined)
   }, [setPerspective])
 
+  const handleFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setFilterQuery(event.currentTarget.value)
+  }, [])
+
+  const handleMenuClose = useCallback(() => {
+    resetRangeVisibility()
+    setFilterQuery('')
+  }, [resetRangeVisibility])
+
   return (
     <>
       <MenuButton
@@ -76,18 +103,39 @@ export function GlobalPerspectiveMenu({
           />
         }
         id="releases-menu"
-        onClose={resetRangeVisibility}
+        onClose={handleMenuClose}
         menu={
           <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
-            <ReleasesList
-              areReleasesEnabled={areReleasesEnabled}
-              setScrollContainer={setScrollContainer}
-              isRangeVisible={isRangeVisible}
-              scrollElementRef={scrollElementRef}
-              selectedPerspectiveName={selectedPerspectiveName}
-              handleOpenBundleDialog={handleOpenBundleDialog}
-              menuItemProps={menuItemProps}
-            />
+            <Flex
+              flexDirection="column"
+              flexShrink={0}
+              paddingX={3}
+              paddingTop={3}
+              paddingBottom={2}
+              borderBottom
+            >
+              <TextInput
+                data-testid="global-perspective-filter"
+                fontSize={1}
+                icon={SearchIcon}
+                onChange={handleFilterChange}
+                placeholder={t('release.navbar.filter-placeholder')}
+                radius={2}
+                value={filterQuery}
+              />
+            </Flex>
+            <Flex flexDirection="column" overflowY="auto" style={releaseListStyle}>
+              <ReleasesList
+                areReleasesEnabled={areReleasesEnabled}
+                filterQuery={filterQuery}
+                setScrollContainer={setScrollContainer}
+                isRangeVisible={isRangeVisible}
+                scrollElementRef={scrollElementRef}
+                selectedPerspectiveName={selectedPerspectiveName}
+                handleOpenBundleDialog={handleOpenBundleDialog}
+                menuItemProps={menuItemProps}
+              />
+            </Flex>
           </StyledMenu>
         }
         popover={{

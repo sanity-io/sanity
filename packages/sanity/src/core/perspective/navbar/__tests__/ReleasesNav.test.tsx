@@ -380,6 +380,72 @@ describe('ReleasesNav', () => {
         expect(indicatorIcon).toHaveStyle({opacity: '0'})
       })
 
+      describe('filtering', () => {
+        beforeEach(() => {
+          // A selected release extends the stack line through the releases under it,
+          // so the filter test can tell the line was removed rather than never painted.
+          usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
+          usePerspectiveMockReturn.selectedPerspective = {
+            ...activeScheduledRelease,
+            _id: '_.releases.rScheduled2',
+            metadata: {...activeScheduledRelease.metadata, title: 'active Scheduled 2'},
+          }
+        })
+
+        it('returns matching releases under their category and drops the stack line', async () => {
+          await renderAndWaitForStableMenu()
+          const releaseMenuElement = screen.getByTestId('release-menu')
+          const releaseMenu = within(releaseMenuElement)
+
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
+
+          await userEvent.type(
+            releaseMenu.getByPlaceholderText('Find a version or release'),
+            'ACTIVE',
+          )
+
+          releaseMenu.getByText('As soon as possible')
+          releaseMenu.getByText('At time')
+          releaseMenu.getByText('active asap Release')
+          releaseMenu.getByText('active asap Error Release')
+          releaseMenu.getByText('active Release')
+          releaseMenu.getByText('active Scheduled 2')
+
+          expect(releaseMenu.queryByText('Undecided')).toBeNull()
+          expect(releaseMenu.queryByText('scheduled Release')).toBeNull()
+          expect(releaseMenu.queryByText('Published')).toBeNull()
+          expect(releaseMenu.queryByText('Drafts')).toBeNull()
+          expect(releaseMenu.queryByTestId('create-new-release-button')).toBeNull()
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
+        })
+
+        it('matches a system perspective and restores the menu when the filter is cleared', async () => {
+          await renderAndWaitForStableMenu()
+          const releaseMenuElement = screen.getByTestId('release-menu')
+          const releaseMenu = within(releaseMenuElement)
+
+          await userEvent.type(
+            releaseMenu.getByPlaceholderText('Find a version or release'),
+            'draft',
+          )
+
+          releaseMenu.getByText('Drafts')
+          expect(releaseMenu.queryByText('Published')).toBeNull()
+          expect(releaseMenu.queryByText('As soon as possible')).toBeNull()
+          expect(releaseMenu.queryByText('active Release')).toBeNull()
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
+
+          await userEvent.clear(releaseMenu.getByPlaceholderText('Find a version or release'))
+
+          releaseMenu.getByText('Published')
+          releaseMenu.getByText('Drafts')
+          releaseMenu.getByText('As soon as possible')
+          releaseMenu.getByText('active Release')
+          releaseMenu.getByTestId('create-new-release-button')
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
+        })
+      })
+
       describe('when releases are disabled', () => {
         beforeEach(() => {
           mockedUseWorkspace.mockReturnValue({releases: {enabled: false}})
