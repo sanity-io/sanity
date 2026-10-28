@@ -232,7 +232,8 @@ export interface ValidationSchema {
 export interface ValidationClient {
   fetch: SanityClient['fetch']
   getDataUrl: SanityClient['getDataUrl']
-  observable: Pick<SanityClient['observable'], 'fetch' | 'request'>
+  request: SanityClient['request']
+  observable: Pick<SanityClient['observable'], 'fetch'>
   withConfig(config: Parameters<SanityClient['withConfig']>[0]): ValidationClient
 }
 

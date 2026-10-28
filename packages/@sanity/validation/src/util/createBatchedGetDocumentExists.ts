@@ -1,76 +1,137 @@
 import {type SanityClient} from '@sanity/client'
-import {bufferTime, filter, firstValueFrom, map, mergeMap, share, Subject} from 'rxjs'
-
-import {cancelWith} from '../abortSignal'
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
 }
 
-/**
- * The amount of time reserved for waiting for new IDs.
- */
+/** The amount of time reserved for waiting for new IDs. */
 const BUFFER_TIME = 250
-/**
- * The upper limit for IDs sent to the `doc` endpoint at once. From some manual
- * testing, 100 seems to be a safe amount.
- */
+
+/** The upper limit for IDs sent to the `doc` endpoint at once. */
 export const MAX_BUFFER_SIZE = 100
-/**
- * The max amount of inflight requests to the `doc` endpoint to check for
- * availability. Currently set to 1 because the endpoint is expensive
- *
- * From: https://www.sanity.io/docs/http-doc
- *
- * "it is less scalable/performant than the other query-mechanisms, so should
- * be used sparingly*
- */
+
+/** The `doc` endpoint is expensive, so batches are sent one at a time. */
 export const MAX_REQUEST_CONCURRENCY = 1
+
+interface PendingCheck {
+  reject: (reason: unknown) => void
+  resolve: (exists: boolean) => void
+  settled: boolean
+  signal?: AbortSignal
+  onAbort?: () => void
+}
+
+type Batch = Map<string, PendingCheck[]>
+
+function settleCheck(check: PendingCheck, result: {exists: boolean} | {error: unknown}): void {
+  if (check.settled) return
+  check.settled = true
+  if (check.signal && check.onAbort) {
+    check.signal.removeEventListener('abort', check.onAbort)
+  }
+  if ('error' in result) check.reject(result.error)
+  else check.resolve(result.exists)
+}
 
 export function createBatchedGetDocumentExists(
   client: SanityClient,
   defaultSignal?: AbortSignal,
 ): (options: {id: string; signal?: AbortSignal}) => Promise<boolean> {
-  const id$ = new Subject<string>()
+  let buffer: Batch = new Map()
+  const queuedBatches: Batch[] = []
+  let bufferTimer: ReturnType<typeof setTimeout> | undefined
+  let draining = false
 
-  const existence$ = id$.pipe(
-    bufferTime(BUFFER_TIME, null, MAX_BUFFER_SIZE),
-    map((ids) => Array.from(new Set(ids))),
-    filter((ids) => ids.length > 0),
-    mergeMap(
-      (ids) =>
-        client.observable
-          .request<AvailabilityResponse>({
+  const rejectBatch = (batch: Batch, reason: unknown) => {
+    for (const checks of batch.values()) {
+      for (const check of checks) settleCheck(check, {error: reason})
+    }
+  }
+
+  const rejectPending = (reason: unknown) => {
+    if (bufferTimer !== undefined) clearTimeout(bufferTimer)
+    bufferTimer = undefined
+    rejectBatch(buffer, reason)
+    buffer = new Map()
+    for (const batch of queuedBatches.splice(0)) rejectBatch(batch, reason)
+  }
+
+  const flush = () => {
+    if (bufferTimer !== undefined) clearTimeout(bufferTimer)
+    bufferTimer = undefined
+    if (buffer.size === 0) return
+
+    queuedBatches.push(buffer)
+    buffer = new Map()
+    void drain()
+  }
+
+  const scheduleFlush = () => {
+    if (buffer.size >= MAX_BUFFER_SIZE) {
+      flush()
+    } else if (bufferTimer === undefined) {
+      bufferTimer = setTimeout(flush, BUFFER_TIME)
+    }
+  }
+
+  async function drain() {
+    if (draining) return
+    draining = true
+    try {
+      while (queuedBatches.length > 0) {
+        defaultSignal?.throwIfAborted()
+        const batch = queuedBatches.shift()
+        if (!batch) continue
+        const ids = [...batch.entries()]
+          .filter(([, checks]) => checks.some((check) => !check.settled))
+          .map(([id]) => id)
+        if (ids.length === 0) continue
+
+        try {
+          // The endpoint is intentionally limited to one request at a time.
+          // oxlint-disable-next-line no-await-in-loop
+          const availability = await client.request<AvailabilityResponse>({
             url: client.getDataUrl('doc', ids.join(',')),
             query: {excludeContent: 'true'},
             signal: defaultSignal,
             tag: 'documents-availability',
           })
-          .pipe(map((availability) => ({availability, ids}))),
-      MAX_REQUEST_CONCURRENCY,
-    ),
-    mergeMap(({availability, ids}) => {
-      const missingIds = new Set(
-        availability.omitted.filter(({reason}) => reason === 'existence').map(({id}) => id),
-      )
-      return ids.map((id) => ({id, exists: !missingIds.has(id)}))
-    }),
-    share(),
-  )
+          const missingIds = new Set(
+            availability.omitted.filter(({reason}) => reason === 'existence').map(({id}) => id),
+          )
+          for (const id of ids) {
+            for (const check of batch.get(id) ?? []) {
+              settleCheck(check, {exists: !missingIds.has(id)})
+            }
+          }
+        } catch (error) {
+          rejectBatch(batch, error)
+          rejectPending(error)
+          return
+        }
+      }
+    } catch (error) {
+      rejectPending(error)
+    } finally {
+      draining = false
+    }
+  }
 
-  return async function getDocumentExists(options) {
+  return function getDocumentExists(options) {
     const signal = options.signal || defaultSignal
-    signal?.throwIfAborted()
+    if (signal?.aborted) return Promise.reject(signal.reason)
 
-    const result = firstValueFrom(
-      existence$.pipe(
-        filter(({id}) => id === options.id),
-        map(({exists}) => exists),
-        cancelWith(signal),
-      ),
-    )
+    return new Promise<boolean>((resolve, reject) => {
+      const check: PendingCheck = {reject, resolve, settled: false, signal}
+      if (signal) {
+        check.onAbort = () => settleCheck(check, {error: signal.reason})
+        signal.addEventListener('abort', check.onAbort, {once: true})
+      }
 
-    id$.next(options.id)
-    return result
+      const checks = buffer.get(options.id)
+      if (checks) checks.push(check)
+      else buffer.set(options.id, [check])
+      scheduleFlush()
+    })
   }
 }
