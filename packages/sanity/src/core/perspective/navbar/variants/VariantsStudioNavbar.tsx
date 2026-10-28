@@ -1,6 +1,7 @@
-import {CSSProperties, useCallback} from 'react'
+import {clsx} from 'clsx'
+import {useCallback} from 'react'
 
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantTypes} from '../../../variants/hooks/useVariantConditions'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -11,7 +12,7 @@ import {DEFAULT_VARIANT_TYPE_KEY} from '../../../variants/util/variantType'
 import {useSetVariant} from '../../useSetVariant'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
-import {suggestIconColor} from './VariantsNav.css'
+import {rhombusIconLarge, suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
   selectedId: string | undefined
@@ -42,7 +43,7 @@ function VariantTypeFilter(props: {
               : `variants-nav-menu-button-${typeKey}`
           }
           handleClearPerspective={selectedId ? handleClear : undefined}
-          icon={<RhombusIcon className={suggestIconColor} />}
+          icon={<RhombusIconLarge className={clsx(suggestIconColor, rhombusIconLarge)} />}
           text={variantLabel}
         />
       }
