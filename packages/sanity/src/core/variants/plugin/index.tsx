@@ -32,10 +32,11 @@ export const variants = definePlugin({
       __internalApplicationType: VARIANTS_NAME,
       canHandleIntent: (intent) => intent === VARIANTS_INTENT,
       getIntentState(intent, params) {
-        if (intent === VARIANTS_INTENT) {
+        // No id opens the tool root, the variants overview. An id opens that variant.
+        if (intent === VARIANTS_INTENT && typeof params.id === 'string') {
           return {variantId: params.id}
         }
-        return null
+        return {}
       },
     },
   ],
