@@ -244,6 +244,7 @@ export function VariantsMenu({
               paddingX={3}
               paddingTop={2}
               paddingBottom={3}
+              hidden={!!filterQuery}
             >
               <MenuItem
                 as="a"
