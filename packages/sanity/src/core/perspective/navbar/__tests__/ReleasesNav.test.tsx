@@ -81,7 +81,7 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [],
   })
-  currentRenderedInstance = render(<ReleasesNav withReleasesToolButton />, {wrapper})
+  currentRenderedInstance = render(<ReleasesNav />, {wrapper})
 
   return currentRenderedInstance
 }
@@ -91,14 +91,14 @@ describe('ReleasesNav', () => {
     vi.clearAllMocks()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    usePerspectiveMockReturn.selectedPerspective = 'drafts'
+    usePerspectiveMockReturn.selectedPerspectiveName = undefined
   })
-  it('should have link to releases tool', async () => {
+
+  it('shows the drafts label when no perspective is chosen', async () => {
     await renderTest()
 
-    const releasesLink = screen.getByRole('link')
-
-    expect(releasesLink).toHaveAttribute('href', '/')
-    expect(releasesLink).not.toHaveAttribute('data-selected')
+    screen.getByRole('button', {name: 'Drafts'})
   })
 
   it('should have dropdown menu for global perspectives', async () => {
@@ -110,7 +110,7 @@ describe('ReleasesNav', () => {
   it('should not have clear button when no perspective is chosen', async () => {
     await renderTest()
 
-    expect(screen.queryByTestId('clear-perspective-button')).toBeNull()
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
   })
 
   it('should list the title of the chosen perspective', async () => {
@@ -120,6 +120,33 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     screen.getByText('active Release')
+  })
+
+  it('clears a chosen perspective', async () => {
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+
+    await userEvent.click(screen.getByTestId('global-perspective-button-clear'))
+
+    expect(mockedSetPerspective).toHaveBeenCalledWith(undefined)
+  })
+
+  it('truncates a long release title and keeps the full title in a tooltip', async () => {
+    const longTitle = 'A'.repeat(60)
+    usePerspectiveMockReturn.selectedPerspective = {
+      ...activeScheduledRelease,
+      metadata: {...activeScheduledRelease.metadata, title: longTitle},
+    }
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+
+    const truncated = `${'A'.repeat(50)}\u2026`
+    screen.getByText(truncated)
+    screen.getByRole('button', {name: longTitle})
+    screen.getByText(longTitle)
   })
 
   describe('global perspective menu', () => {
@@ -216,9 +243,10 @@ describe('ReleasesNav', () => {
     describe('release layering', () => {
       beforeEach(() => {
         // since usePerspective is mocked, and the layering exclude toggle is
-        // controlled by currentGlobalBundleId, we need to manually set it
-        // to the release that will be selected in below tests
+        // controlled by the selected release, set both the name and the document.
+        // Drafts can only be hidden while the selected perspective is a release.
         usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
+        usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
         // add an undecided release to expand testing
         useActiveReleasesMockReturn.data = [
           ...useActiveReleasesMockReturn.data,
