@@ -1417,4 +1417,95 @@ describe('validation behavior', () => {
       },
     ])
   })
+
+  it('keeps error levels on object-type fields outside the studio', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'post',
+          type: 'document',
+          fields: [
+            {name: 'slug', type: 'slug', validation: (rule: Rule) => rule.required()},
+            {name: 'image', type: 'image', validation: (rule: Rule) => rule.required()},
+          ],
+        },
+      ],
+    })
+    // The slug uniqueness query returns `false`, so the slug is taken
+    const slugClient = createMockSanityClient()
+    slugClient.fetch.mockResolvedValue(false)
+
+    const result = await validateDocumentInternal({
+      getClient: () => slugClient as any as ReturnType<ValidationContext['getClient']>,
+      getDocumentExists: async () => true,
+      document: {
+        _id: 'post-id',
+        _type: 'post',
+        _createdAt: '2024-01-19T17:59:04.949Z',
+        _updatedAt: '2024-01-19T17:59:04.949Z',
+        _rev: 'rev',
+        slug: {_type: 'slug', current: 'hello'},
+        unknownField: 'this is a warning',
+      },
+      environment: 'cli',
+      i18n: getFallbackLocaleSource(),
+      schema,
+    })
+
+    expect(result).toHaveLength(3)
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          level: 'error',
+          message: 'Slug is already in use',
+          path: ['slug'],
+        }),
+        expect.objectContaining({level: 'error', message: 'Required', path: ['image']}),
+        expect.objectContaining({
+          level: 'warning',
+          message: "Field 'unknownField' does not exist on type 'post'",
+          path: ['unknownField'],
+        }),
+      ]),
+    )
+  })
+
+  it('checks unknown fields against the field type for `Rule.fields()` rules', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {name: 'inner', type: 'object', fields: [{name: 'knownField', type: 'string'}]},
+        {
+          name: 'post',
+          type: 'document',
+          fields: [{name: 'inner', type: 'inner'}],
+          validation: (rule: Rule) => rule.fields({inner: (fieldRule) => fieldRule.required()}),
+        },
+      ],
+    })
+
+    const result = await validateDocumentInternal({
+      getClient,
+      document: {
+        _id: 'post-id',
+        _type: 'post',
+        _createdAt: '2024-01-19T17:59:04.949Z',
+        _updatedAt: '2024-01-19T17:59:04.949Z',
+        _rev: 'rev',
+        inner: {_type: 'inner', knownField: 'this is fine!', unknownField: 'this is a warning'},
+      },
+      environment: 'cli',
+      i18n: getFallbackLocaleSource(),
+      schema,
+    })
+
+    expect(result).toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'inner'",
+        path: ['inner', 'unknownField'],
+      },
+    ])
+  })
 })
