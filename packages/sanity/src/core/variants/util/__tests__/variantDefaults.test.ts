@@ -1,6 +1,21 @@
 import {describe, expect, it} from 'vitest'
 
-import {createPortableTextDescription} from '../variantDefaults'
+import {createPortableTextDescription, getVariantDefaults} from '../variantDefaults'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../variantType'
+
+describe('getVariantDefaults', () => {
+  it('uses the default variant type when no type is given', () => {
+    expect(getVariantDefaults().metadata?.type).toBe(DEFAULT_VARIANT_TYPE_KEY)
+  })
+
+  it('stores the given type on the new definition', () => {
+    expect(getVariantDefaults('language').metadata?.type).toBe('language')
+  })
+
+  it('falls back to the default type for a blank type', () => {
+    expect(getVariantDefaults('   ').metadata?.type).toBe(DEFAULT_VARIANT_TYPE_KEY)
+  })
+})
 
 describe('createPortableTextDescription', () => {
   it('returns an empty array for whitespace-only input', () => {

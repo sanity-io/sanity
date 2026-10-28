@@ -14,11 +14,12 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
+import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
 import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../../variants/tool/util'
-import {type SystemVariant} from '../../../variants/types'
+import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
@@ -113,7 +114,7 @@ export function VariantsMenu({
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
     [typeKey, variants],
   )
-  const [_creatingVariant, setCreatingVariant] = useState(false)
+  const [creatingVariant, setCreatingVariant] = useState(false)
   const selectedVariant = useMemo(
     () =>
       typeVariants.find((variant) =>
@@ -159,103 +160,128 @@ export function VariantsMenu({
     setCreatingVariant(true)
   }, [])
 
+  const handleCancelCreate = useCallback(() => {
+    setCreatingVariant(false)
+  }, [])
+
+  const handleCreated = useCallback(
+    (createdVariantId: string, createdType: string) => {
+      setCreatingVariant(false)
+
+      if (isVariantId(createdVariantId)) {
+        setVariant({type: createdType, variantId: createdVariantId})
+      }
+    },
+    [setVariant],
+  )
+
   return (
-    <MenuButton
-      button={trigger}
-      id={`variants-nav-menu-${typeKey}`}
-      onClose={handleMenuClose}
-      menu={
-        <StyledMenu
-          data-testid={
-            typeKey === DEFAULT_VARIANT_TYPE_KEY
-              ? 'variants-nav-menu'
-              : `variants-nav-menu-${typeKey}`
-          }
-          padding={0}
-        >
-          <Flex flexDirection="column" flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
-            <TextInput
-              fontSize={1}
-              icon={SearchIcon}
-              onChange={handleFilterChange}
-              placeholder={t('navbar.variant.filter-placeholder')}
-              radius={2}
-              value={filterQuery}
-            />
-          </Flex>
-          <Flex
-            flexDirection="column"
-            flexGrow={1}
-            flexShrink={1}
-            minHeight="0"
-            overflowY="auto"
-            paddingX={3}
-            paddingBottom={2}
+    <>
+      <MenuButton
+        button={trigger}
+        id={`variants-nav-menu-${typeKey}`}
+        onClose={handleMenuClose}
+        menu={
+          <StyledMenu
+            data-testid={
+              typeKey === DEFAULT_VARIANT_TYPE_KEY
+                ? 'variants-nav-menu'
+                : `variants-nav-menu-${typeKey}`
+            }
+            padding={0}
           >
-            {/* Menu items are flex children with min-height: 0, so they collapse
+            <Flex
+              flexDirection="column"
+              flexShrink={0}
+              paddingX={3}
+              paddingTop={3}
+              paddingBottom={2}
+            >
+              <TextInput
+                fontSize={1}
+                icon={SearchIcon}
+                onChange={handleFilterChange}
+                placeholder={t('navbar.variant.filter-placeholder')}
+                radius={2}
+                value={filterQuery}
+              />
+            </Flex>
+            <Flex
+              flexDirection="column"
+              flexGrow={1}
+              flexShrink={1}
+              minHeight="0"
+              overflowY="auto"
+              paddingX={3}
+              paddingBottom={2}
+            >
+              {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-            <Flex flexDirection="column" flexShrink={0} gap={1}>
-              <MenuItem
-                data-testid="variant-default"
-                onClick={handleSelectDefault}
-                pressed={isDefaultSelected}
-                selected={isDefaultSelected}
-                text={t('navbar.variant.menu.default')}
-              />
-              {filteredVariants.map((variant) => (
-                <VariantMenuItem
-                  key={variant._id}
-                  isSelected={selectedVariant?._id === variant._id}
-                  onSelect={handleSelectVariant}
-                  variant={variant}
+              <Flex flexDirection="column" flexShrink={0} gap={1}>
+                <MenuItem
+                  data-testid="variant-default"
+                  onClick={handleSelectDefault}
+                  pressed={isDefaultSelected}
+                  selected={isDefaultSelected}
+                  text={t('navbar.variant.menu.default')}
                 />
-              ))}
+                {filteredVariants.map((variant) => (
+                  <VariantMenuItem
+                    key={variant._id}
+                    isSelected={selectedVariant?._id === variant._id}
+                    onSelect={handleSelectVariant}
+                    variant={variant}
+                  />
+                ))}
+              </Flex>
             </Flex>
-          </Flex>
-          <Flex
-            flexDirection="column"
-            flexShrink={0}
-            gap={1}
-            borderTop
-            paddingX={3}
-            paddingTop={2}
-            paddingBottom={3}
-          >
-            <MenuItem
-              as="a"
-              data-testid="view-all"
-              href={viewAllHref}
-              icon={RhombusIconLarge}
-              onClick={handleViewAll}
-              text={t('navbar.variant.menu.view-all')}
-            />
-            <MenuItem
-              data-testid="new-audience"
-              onClick={handleNewAudience}
-              icon={AddIcon}
-              text={t('navbar.variant.menu.new-audience')}
-              tooltipProps={{
-                content: 'This action is not yet implemented.',
-              }}
-              // TODO: temporary disabled until we add the create variants form here.
-              disabled
-            />
-          </Flex>
-        </StyledMenu>
-      }
-      popover={{
-        __unstable_margins: [0, 0, 32, 0],
-        constrainSize: true,
-        fallbackPlacements: ['bottom-end'],
-        overflow: 'hidden',
-        placement: 'bottom-end',
-        portal: true,
-        // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
-        style: {overflow: 'hidden'} as React.CSSProperties,
-        tone: 'default',
-        zOffset: 3000,
-      }}
-    />
+            <Flex
+              flexDirection="column"
+              flexShrink={0}
+              gap={1}
+              borderTop
+              paddingX={3}
+              paddingTop={2}
+              paddingBottom={3}
+            >
+              <MenuItem
+                as="a"
+                data-testid="view-all"
+                href={viewAllHref}
+                icon={RhombusIconLarge}
+                onClick={handleViewAll}
+                text={t('navbar.variant.menu.view-all')}
+              />
+              <MenuItem
+                data-testid="new-audience"
+                onClick={handleNewAudience}
+                icon={AddIcon}
+                text={t('navbar.variant.menu.new-audience')}
+              />
+            </Flex>
+          </StyledMenu>
+        }
+        popover={{
+          __unstable_margins: [0, 0, 32, 0],
+          constrainSize: true,
+          fallbackPlacements: ['bottom-end'],
+          overflow: 'hidden',
+          placement: 'bottom-end',
+          portal: true,
+          // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
+          style: {overflow: 'hidden'} as React.CSSProperties,
+          tone: 'default',
+          zOffset: 3000,
+        }}
+      />
+      {creatingVariant ? (
+        <CreateVariantDialog
+          onCancel={handleCancelCreate}
+          onSubmit={handleCreated}
+          type={typeKey}
+        />
+      ) : null}
+    </>
   )
 }
