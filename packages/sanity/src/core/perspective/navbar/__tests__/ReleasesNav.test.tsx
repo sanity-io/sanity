@@ -41,6 +41,13 @@ vi.mock('../../../perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
+const mockUseGetDefaultPerspective = vi.hoisted(() =>
+  vi.fn(() => 'drafts' as 'drafts' | 'published'),
+)
+vi.mock('../../useGetDefaultPerspective', () => ({
+  useGetDefaultPerspective: mockUseGetDefaultPerspective,
+}))
+
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
@@ -91,6 +98,7 @@ describe('ReleasesNav', () => {
     vi.clearAllMocks()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    mockUseGetDefaultPerspective.mockReturnValue('drafts')
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
     usePerspectiveMockReturn.selectedPerspectiveName = undefined
   })
@@ -111,6 +119,25 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+  })
+
+  it('hides the clear control when published is the default perspective', async () => {
+    mockUseGetDefaultPerspective.mockReturnValue('published')
+    usePerspectiveMockReturn.selectedPerspective = 'published'
+    usePerspectiveMockReturn.selectedPerspectiveName = 'published'
+
+    await renderTest()
+
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+  })
+
+  it('shows the clear control when published is selected and drafts are the default', async () => {
+    usePerspectiveMockReturn.selectedPerspective = 'published'
+    usePerspectiveMockReturn.selectedPerspectiveName = 'published'
+
+    await renderTest()
+
+    expect(screen.getByTestId('global-perspective-button-clear')).toBeInTheDocument()
   })
 
   it('should list the title of the chosen perspective', async () => {

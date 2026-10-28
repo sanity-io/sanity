@@ -11,6 +11,7 @@ import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleas
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {useGetDefaultPerspective} from '../useGetDefaultPerspective'
 import {useSetPerspective} from '../useSetPerspective'
 import {GlobalPerspectiveButton} from './GlobalPerspectiveButton'
 import {globalPerspectiveMenuItemIcon} from './GlobalPerspectiveMenuItem.css'
@@ -50,7 +51,11 @@ export function GlobalPerspectiveMenu({
 }): React.JSX.Element {
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
+  const defaultPerspective = useGetDefaultPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useGlobalPerspectiveLabel()
+  // Drafts disabled coerces the default name to `published`, so a truthy name
+  // is not enough to tell a selection from the default perspective.
+  const canClearPerspective = selectedPerspective !== defaultPerspective
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
@@ -91,7 +96,7 @@ export function GlobalPerspectiveMenu({
           <GlobalPerspectiveButton
             data-testid="global-perspective-menu-button"
             fullText={fullTitle}
-            handleClearPerspective={selectedPerspectiveName ? handleClearPerspective : undefined}
+            handleClearPerspective={canClearPerspective ? handleClearPerspective : undefined}
             icon={
               <ReleaseAvatarIcon
                 release={selectedPerspective}
