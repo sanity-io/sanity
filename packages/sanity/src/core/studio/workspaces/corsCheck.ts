@@ -19,6 +19,8 @@ const REUSE_PASSING_OR_INCONCLUSIVE_MS = 10_000
  */
 export type CorsCheckCache = QuickLRU<string, Promise<CorsProbeOutcome | null>>
 
+const CORS_PROBE_TAG = 'sanity.studio.cors-probe'
+
 /**
  * Probe `/check/cors` for the current origin, deduping concurrent probes
  * through `cache`. A passing or inconclusive answer is reused for 10 seconds,
@@ -54,7 +56,8 @@ export function checkCors(
   // the request out of the CORS-safe set and force a preflight OPTIONS
   // — but for this probe we want a simple request that bounces straight
   // off the server's CORS policy without extra round trips.
-  const probeUrl = `${baseUrl.replace(/\/+$/, '')}/check/cors`
+  const searchParams = new URLSearchParams({tag: CORS_PROBE_TAG})
+  const probeUrl = `${baseUrl.replace(/\/+$/, '')}/check/cors?${searchParams}`
   const check = fetch(probeUrl, {method: 'GET', credentials: 'omit'})
     .then(async (response): Promise<CorsProbeOutcome | null> => {
       const body = (await response.json().catch(() => null)) as {
