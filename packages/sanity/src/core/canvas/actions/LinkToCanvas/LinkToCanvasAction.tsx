@@ -12,7 +12,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {isReleaseDocument} from '../../../releases/store/types'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
-import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
+import {useIsInDashboard} from '../../../store/renderingContext/useIsInDashboard'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasNavigate} from '../../useCanvasNavigate'
@@ -39,9 +39,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   const isExcludedType = useIsExcludedType(props.type)
 
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
-  const renderingContext = useRenderingContext()
-  const isInDashboard =
-    renderingContext?.name === 'coreUi' || renderingContext?.name === 'messageBus'
+  const isInDashboard = useIsInDashboard()
   const {isAvailable} = useCanvasNavigate()
   const isVersionDocument = Boolean(props.release)
   const getFormValue = useGetFormValue()
