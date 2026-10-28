@@ -29,6 +29,7 @@ export function useDocumentPaneOverrideState() {
   const compare = useOption('compare')
   const paneControl = useOption('paneControl')
   const c1 = useOption('c1')
+  const c14 = useOption('c14')
   const inspectorSwitcher = useOption('inspectorSwitcher')
   const tool = useRouterState((s) => s.tool as string | undefined)
   const comparison = useComparison()
@@ -44,8 +45,9 @@ export function useDocumentPaneOverrideState() {
       inspectorSwitcher,
       tool,
       comparison,
+      c14,
     }),
-    [c2, c7, c4, paneAddress, compare, paneControl, c1, inspectorSwitcher, tool, comparison],
+    [c2, c7, c4, paneAddress, compare, paneControl, c1, inspectorSwitcher, tool, comparison, c14],
   )
 }
 export type DocumentPaneOverrideState = ReturnType<typeof useDocumentPaneOverrideState>
@@ -55,8 +57,23 @@ export function resolveDocumentPaneOverride(
   state: DocumentPaneOverrideState,
 ): ResolveDocumentPaneExtension {
   return ({documentId, documentType}) => {
-    const {c2, c7, c4, paneAddress, compare, paneControl, c1, inspectorSwitcher, tool, comparison} =
-      state
+    const {
+      c2,
+      c7,
+      c4,
+      paneAddress,
+      compare,
+      paneControl,
+      c1,
+      inspectorSwitcher,
+      tool,
+      comparison,
+      c14,
+    } = state
+    // T4's Manage versions, where the inspector opens the inventory. C14: in the header (A), or in the bottom bar before Publish (B, C).
+    const manageButton =
+      c4 !== STOCK_OPTION && c4 !== 'b' && c2 !== 'c' ? <ManageVersionsButton /> : undefined
+    const inFooter = c14 === 'b' || c14 === 'c'
     const manageIcon =
       c4 === 'b' ? <ManageVersions documentId={documentId} form="icon" /> : undefined
     // E9 paneAddress B and C replace the chips with a Documents count; C (and a compare) adds the local row under the header.
@@ -130,8 +147,10 @@ export function resolveDocumentPaneOverride(
       // T4 (from the Handoff Studio's 72144f57b3 and 999ddc54d4): the text button "Manage versions" is the entry to the inventory, first in the header's
       // actions after the presence avatars, for the options that open the inspector. Not in the stock layout, not with option B (its own popover button),
       // and not with the compact header C2 C, whose tab row carries Versions.
-      headerLead:
-        c4 !== STOCK_OPTION && c4 !== 'b' && c2 !== 'c' ? <ManageVersionsButton /> : undefined,
+      headerLead: inFooter ? undefined : manageButton,
+      // C14 B and C: the button sits with the document's actions; C keeps it, alone in the bar, when there is no version to show.
+      footerLead: inFooter ? manageButton : undefined,
+      footerLeadAlways: c14 === 'c' ? true : undefined,
       compactHeader: c2 === 'c' ? true : undefined,
       inspectorTabs:
         c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,

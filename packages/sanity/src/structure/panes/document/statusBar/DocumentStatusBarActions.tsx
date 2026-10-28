@@ -36,6 +36,7 @@ import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
+import {useDocumentPaneExtension} from '../documentPanel/DocumentPaneExtension'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -67,6 +68,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     documentType,
   } = useDocumentPane()
   const {params} = usePaneRouter()
+  // PROPOSED: a host's control before the primary action (the pane extension's `footerLead`).
+  const footerLead = useDocumentPaneExtension({documentId, documentType})?.footerLead
 
   const showingRevision = Boolean(params?.rev)
 
@@ -194,6 +197,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           />
         </DocumentGroupInventoryAction>
       )}
+      {/* PROPOSED: a host's control just before the primary action (the open beta's Manage versions). */}
+      {footerLead}
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">

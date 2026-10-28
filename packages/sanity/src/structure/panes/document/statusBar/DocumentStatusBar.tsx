@@ -12,6 +12,7 @@ import {Flex} from 'ui5'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
+import {useDocumentPaneExtension} from '../documentPanel/DocumentPaneExtension'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
@@ -29,7 +30,11 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
+  const {documentId, documentType, editState, revisionNotFound, targetDocumentState} =
+    useDocumentPane()
+  // PROPOSED: a host control that stays in the bar when the status and actions are hidden (the extension's `footerLeadAlways`).
+  const extension = useDocumentPaneExtension({documentId, documentType})
+  const footerLeadAlone = extension?.footerLeadAlways ? extension.footerLead : undefined
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantName} = usePerspective()
 
@@ -135,6 +140,12 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
+      {!shouldRender && !showingRevision && footerLeadAlone && editState?.ready ? (
+        // PROPOSED: no version to show, so no status and no Publish; the host's control keeps its place at the bar's right end.
+        <Flex justifyContent="flex-end" paddingLeft={1} paddingRight={1}>
+          {footerLeadAlone}
+        </Flex>
+      ) : null}
     </AnimatedCard>
   )
 }

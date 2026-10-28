@@ -41,6 +41,26 @@ export interface DocumentPaneExtension {
    */
   headerLead?: ReactNode
   /**
+   * PROPOSED (open beta, T4): a control drawn in the bottom action bar, just before the primary action (Publish). The open beta moves "Manage
+   * versions" here from the header (27 Oct, Faheem): it sits with the document's actions.
+   */
+  footerLead?: ReactNode
+  /**
+   * PROPOSED: keep the bottom bar, with only `footerLead` in it, when core hides the bar because the chosen variant has no version in the
+   * perspective. Without it the footer control goes with the bar, and the inventory has no entry there (28 Oct, Faheem).
+   */
+  footerLeadAlways?: boolean
+  /**
+   * PROPOSED: the order of the "..." menu's entries, by their action ("inspect:<inspector name>", "compareVersions", "inspect",
+   * "toggleInlineChanges"). Listed entries come first in this order; the others follow in their own order. Only with the stock header.
+   */
+  menuOrder?: string[]
+  /**
+   * PROPOSED: the document's pane actions (Create new task) are drawn after the menu's entries, just above Copy and Paste document, not first.
+   * Only with the stock header.
+   */
+  menuActionsLast?: boolean
+  /**
    * PROPOSED (open beta header): controls drawn in the compact header's right-hand group, just before the "..." menu (for example the panels as icon
    * buttons). Only drawn with `compactHeader`.
    */
