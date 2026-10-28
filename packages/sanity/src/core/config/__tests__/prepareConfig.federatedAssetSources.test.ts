@@ -3,6 +3,8 @@ import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
+import {FederatedMediaLibraryAssetSource} from '../../form/studio/assetSourceMediaLibrary/federated/FederatedMediaLibraryAssetSource'
+import {MediaLibraryAssetSource} from '../../form/studio/assetSourceMediaLibrary/shared/MediaLibraryAssetSource'
 import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {createSourceFromConfig} from '../resolveConfig'
 import {type SingleWorkspace} from '../types'
@@ -115,6 +117,18 @@ async function resolveAssetSources(overrides: Partial<SingleWorkspace>) {
   return {file: source.form.file.assetSources, image: source.form.image.assetSources}
 }
 
+/**
+ * The dialog component behind the resolved Media Library source: the source's
+ * `component` is an inline wrapper whose returned element's `type` identifies
+ * the federated vs iframe implementation. Invoking it only builds the element
+ * (no hooks run).
+ */
+function mediaLibraryDialogComponent(sources: {name: string; component?: unknown}[]): unknown {
+  const source = sources.find((s) => s.name === 'sanity-media-library')
+  const render = source?.component as (props: unknown) => {type: unknown}
+  return render({}).type
+}
+
 beforeEach(() => {
   // The "federated fallback" console.info is a module-level one-shot in
   // prepareConfig; silence it so the first test to trigger it stays quiet.
@@ -206,6 +220,26 @@ describe('prepareConfig — federatedAssetSources composition', () => {
     })
 
     expect(file.map((s) => s.name)).toEqual(['sanity-default', 'dam-app:picker'])
+  })
+
+  it('uses the federated Media Library view by default when the workbench brokers one', async () => {
+    publishViews(defaultEntries())
+
+    const {image} = await resolveAssetSources({
+      mediaLibrary: {enabled: true},
+    })
+
+    expect(mediaLibraryDialogComponent(image)).toBe(FederatedMediaLibraryAssetSource)
+  })
+
+  it('keeps the iframe select dialog when federatedAssetSource is explicitly disabled', async () => {
+    publishViews(defaultEntries())
+
+    const {image} = await resolveAssetSources({
+      mediaLibrary: {enabled: true, __internal: {federatedAssetSource: false}},
+    })
+
+    expect(mediaLibraryDialogComponent(image)).toBe(MediaLibraryAssetSource)
   })
 
   it('never costs the Media Library source: the federated flag without a published view keeps the built-in source', async () => {
