@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
+
+### Features
+
+* **comments-v2:** send `anchor` instead of `range` for inline comments ([#15088](https://github.com/sanity-io/sanity/issues/15088)) ([0a8e2f2](https://github.com/sanity-io/sanity/commit/0a8e2f217172fd685dc18b5c904e3eca91a4e2f8))
+* **core:** download the schema from the diagnostics dialog ([#15430](https://github.com/sanity-io/sanity/issues/15430)) ([3583116](https://github.com/sanity-io/sanity/commit/358311642c06053a4aeae5944152b28147afd0e6))
+* **form:** use the federated Media Library asset source view by default ([#15624](https://github.com/sanity-io/sanity/issues/15624)) ([fb31eee](https://github.com/sanity-io/sanity/commit/fb31eee39ab6dea9547e9488de56f88c3ac0914a))
+* **releases:** add configurable metadata fields to release forms ([#15424](https://github.com/sanity-io/sanity/issues/15424)) ([ffc1e56](https://github.com/sanity-io/sanity/commit/ffc1e56b68e56e4c9d035c8e36ee3bc3f41874fc))
+* **sanity:** add document group inventory inspector ([69b0020](https://github.com/sanity-io/sanity/commit/69b00204bb73ae1df2c32ad3ea4590ac0e30d309))
+* **sanity:** add imperative API for `DocumentGroupInventory` ([09a4ac4](https://github.com/sanity-io/sanity/commit/09a4ac42b17518b2f2538c13c26ac53e9f0207dc))
+* **sanity:** add version management action to document panel header ([27f505c](https://github.com/sanity-io/sanity/commit/27f505c37ab6ee3baf4225fa81117f116efbd252))
+* **sanity:** expose resolved beta config to document inspector resolvers ([b7bd517](https://github.com/sanity-io/sanity/commit/b7bd5172b3eca4dc963305250cd102205afbf48b))
+* **sanity:** move feedback action to document inspector header ([523b162](https://github.com/sanity-io/sanity/commit/523b162f432dea0d02609b2fbe426a788c110b2e))
+* **sanity:** refine document group inventory layout for document inspector ([28d85f2](https://github.com/sanity-io/sanity/commit/28d85f26055259b84f4d1875b9bc3182a19cab2e))
+* **structure:** focus the title field from the document title ([#15454](https://github.com/sanity-io/sanity/issues/15454)) ([72c9187](https://github.com/sanity-io/sanity/commit/72c91872d324bbaa452749e3b165f29f6567aa76))
+* **validation:** expose document validation completeness ([#15495](https://github.com/sanity-io/sanity/issues/15495)) ([1fc5a24](https://github.com/sanity-io/sanity/commit/1fc5a2471e823291dfbb3c56b035ab06654e8f6a))
+
+### Bug Fixes
+
+* **core:** limit /check/cors probes to one per 10 seconds ([#15638](https://github.com/sanity-io/sanity/issues/15638)) ([23b9a5e](https://github.com/sanity-io/sanity/commit/23b9a5e6d0214231f74b88e1e98eac3566527c97))
+* **core:** make dialog breadcrumbs focus fields and scroll dialogs to top ([#15481](https://github.com/sanity-io/sanity/issues/15481)) ([271ebf1](https://github.com/sanity-io/sanity/commit/271ebf1e5ecb0f3fe30fad5560ffd97588e46243))
+* **core:** prevent cors failure for agent proposed changes ([#15498](https://github.com/sanity-io/sanity/issues/15498)) ([3d46a10](https://github.com/sanity-io/sanity/commit/3d46a10efc21a595960c996c29e45200fb6ee963))
+* **core:** respect partial index excluded fields in studio search ([#15502](https://github.com/sanity-io/sanity/issues/15502)) ([7166aac](https://github.com/sanity-io/sanity/commit/7166aac96aea90cdafa4ed18befb65740090f3ee))
+* **core:** restore favoriting in workbench ([#15494](https://github.com/sanity-io/sanity/issues/15494)) ([1cc28af](https://github.com/sanity-io/sanity/commit/1cc28afdcb19d4b5d522d87bdbb17d17d03e13c8))
+* **deps:** update @tanstack/react-virtual to ^3.14.21 ([#15559](https://github.com/sanity-io/sanity/issues/15559)) ([4538849](https://github.com/sanity-io/sanity/commit/45388499b1f633c56559de1ddf36603c431b16e2))
+* **deps:** update dependency @sanity/cli to ^8.22.0 ([#15515](https://github.com/sanity-io/sanity/issues/15515)) ([f54afd0](https://github.com/sanity-io/sanity/commit/f54afd087d0d696c90b72690f910c0e6ccc925cc))
+* **deps:** update dependency @sanity/cli to ^8.22.1 ([#15569](https://github.com/sanity-io/sanity/issues/15569)) ([3ddb17b](https://github.com/sanity-io/sanity/commit/3ddb17bb81fe16394bba20e3c362e2e404e10d5c))
+* **deps:** update dependency motion to ^14.3.0 ([#15440](https://github.com/sanity-io/sanity/issues/15440)) ([e5066fc](https://github.com/sanity-io/sanity/commit/e5066fc7b5ea675fa53dfd871069e69456f46200))
+* **deps:** update dependency motion to ^14.6.0 ([#15595](https://github.com/sanity-io/sanity/issues/15595)) ([3d2966f](https://github.com/sanity-io/sanity/commit/3d2966f4e22d5dd2b6157e2e5768f34f588896d4))
+* **deps:** update portabletext ([#15508](https://github.com/sanity-io/sanity/issues/15508)) ([e6e7336](https://github.com/sanity-io/sanity/commit/e6e73367339f436929190d4e5f13c9874a08c693))
+* **form:** give every field and array item a suspense boundary and warn when a form component suspends ([#15474](https://github.com/sanity-io/sanity/issues/15474)) ([dac77d0](https://github.com/sanity-io/sanity/commit/dac77d066f80883c1b737e712a555673a607a2e4))
+* **form:** make the whole header row toggle collapsible fieldsets and object fields ([#15556](https://github.com/sanity-io/sanity/issues/15556)) ([a92664c](https://github.com/sanity-io/sanity/commit/a92664c79cd1617b0b2a2fec66050f13c23c0f8e))
+* **form:** show the correct day for date fields in review changes ([#15462](https://github.com/sanity-io/sanity/issues/15462)) ([aabb8b4](https://github.com/sanity-io/sanity/commit/aabb8b4ff420612cee7f92853840cdc4c948bd41))
+* **form:** stop grid arrays leaking grid item renderer into nested arrays ([#15490](https://github.com/sanity-io/sanity/issues/15490)) ([e40bd97](https://github.com/sanity-io/sanity/commit/e40bd97d4b3b8832dd5b255bdcedb5da7e4ea2bb))
+* **releases:** align release detail row menu gating with the document footer ([#14354](https://github.com/sanity-io/sanity/issues/14354)) ([7044eb4](https://github.com/sanity-io/sanity/commit/7044eb4520d6e1551af859bf9a5f60e84318e55e))
+* **sanity:** tag cors probe requests ([#15637](https://github.com/sanity-io/sanity/issues/15637)) ([8736bf8](https://github.com/sanity-io/sanity/commit/8736bf86920c585c735c4434547a4580befbe0ef))
+* **schema:** preserve built-in validators in serialized schemas ([#15492](https://github.com/sanity-io/sanity/issues/15492)) ([7015662](https://github.com/sanity-io/sanity/commit/7015662dfc9b63e64ebd5a60d49311c655b23677))
+* **search:** exclude content agent versions from raw perspective search ([#14250](https://github.com/sanity-io/sanity/issues/14250)) ([81d3d9c](https://github.com/sanity-io/sanity/commit/81d3d9c84a9951253a7b882290feac1ef95370bf))
+* **structure:** allow publishing leftover drafts of live-edit document types ([#15634](https://github.com/sanity-io/sanity/issues/15634)) ([aec6c26](https://github.com/sanity-io/sanity/commit/aec6c26b6f59b56248eb8b5394d42ce5d00f045d))
+* **structure:** clear review changes after discarding a draft ([#14128](https://github.com/sanity-io/sanity/issues/14128)) ([3a7b188](https://github.com/sanity-io/sanity/commit/3a7b18889a0da18b6fc6533b2af1fc9506eda9a6))
+* **structure:** reload only the structure tool on errors ([#15431](https://github.com/sanity-io/sanity/issues/15431)) ([9144735](https://github.com/sanity-io/sanity/commit/9144735f6761e45ddc7e00922adb152ae8ad34ee))
+* **test-studio:** disable css code splitting with sanity cli-build 7.0.1 ([#15572](https://github.com/sanity-io/sanity/issues/15572)) ([a19012b](https://github.com/sanity-io/sanity/commit/a19012b7e77ee33888c3b5072e8486dc5997f367))
+* **util:** keep keyed paths with periods or brackets from crashing the structure tool ([#15463](https://github.com/sanity-io/sanity/issues/15463)) ([9b447f8](https://github.com/sanity-io/sanity/commit/9b447f8f14abd1260d50e0f631cd6e4c3ceb260b))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Features

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.6.2 ([#15507](https://github.com/sanity-io/sanity/issues/15507)) ([272da18](https://github.com/sanity-io/sanity/commit/272da186ea3abadb4bd35f87e24cd4e2faff7992))
+* **schema:** preserve built-in validators in serialized schemas ([#15492](https://github.com/sanity-io/sanity/issues/15492)) ([7015662](https://github.com/sanity-io/sanity/commit/7015662dfc9b63e64ebd5a60d49311c655b23677))
+
+### Performance Improvements
+
+* **schema:** allow skipping manifest validation and cloning ([#15625](https://github.com/sanity-io/sanity/issues/15625)) ([64ad107](https://github.com/sanity-io/sanity/commit/64ad10708f57f6efa15b7352e1424051e3ad2993))
+* **schema:** use structuredClone for manifests ([#15627](https://github.com/sanity-io/sanity/issues/15627)) ([89696ee](https://github.com/sanity-io/sanity/commit/89696eed9c846886da6b20024a9d2496b54962f0))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Bug Fixes
