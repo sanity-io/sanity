@@ -297,6 +297,18 @@ export function createMockSanityClient(
   }
 }
 
+/** The object {@link createMockSanityClient} returns, before it is typed as a client. */
+export type MockSanityClient = ReturnType<typeof createMockSanityClient>
+
+/**
+ * A mock typed as the `SanityClient` the studio's seams take (auth stores, providers,
+ * `useClient` mocks). Use this when a test stubs part of the mock first — stubbing is done
+ * against the mock's own shape, and the widening stays here rather than in the test.
+ */
+export function asMockSanityClient(mock: MockSanityClient): SanityClient {
+  return mock as unknown as SanityClient
+}
+
 /**
  * {@link createMockSanityClient} typed as the `SanityClient` the studio's seams take (auth
  * stores, providers, `useClient` mocks). Same object, same coverage; tests that need the
@@ -305,5 +317,5 @@ export function createMockSanityClient(
 export function createMockSanityClientAsClient(
   ...args: Parameters<typeof createMockSanityClient>
 ): SanityClient {
-  return createMockSanityClient(...args) as unknown as SanityClient
+  return asMockSanityClient(createMockSanityClient(...args))
 }
