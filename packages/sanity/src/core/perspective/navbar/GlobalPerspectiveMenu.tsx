@@ -1,16 +1,17 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
-import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {useSetPerspective} from '../useSetPerspective'
+import {GlobalPerspectiveButton} from './GlobalPerspectiveButton'
+import {globalPerspectiveMenuItemIcon} from './GlobalPerspectiveMenuItem.css'
 import {ReleasesList} from './ReleasesList'
+import {useGlobalPerspectiveLabel} from './useGlobalPerspectiveLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 const StyledMenu = styled(Menu)`
@@ -21,25 +22,18 @@ const StyledMenu = styled(Menu)`
     gap: 0;
   }
 `
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
 
 export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
-  trigger,
 }: {
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
-  /**
-   * Overrides the chevron-only trigger. The perspective bar passes a full
-   * labelled button so the whole pill is one touch target.
-   */
-  trigger?: React.ReactElement
 }): React.JSX.Element {
+  const setPerspective = useSetPerspective()
+  const {displayTitle, fullTitle, selectedPerspective} = useGlobalPerspectiveLabel()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
@@ -59,19 +53,27 @@ export function GlobalPerspectiveMenu({
     setCreateBundleDialogOpen(false)
   }, [])
 
+  const handleClearPerspective = useCallback(() => {
+    setPerspective(undefined)
+  }, [setPerspective])
+
   return (
     <>
       <MenuButton
         button={
-          trigger ?? (
-            <OversizedButton
-              data-testid="global-perspective-menu-button"
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              padding={2}
-              radius="full"
-            />
-          )
+          <GlobalPerspectiveButton
+            data-testid="global-perspective-menu-button"
+            fullText={fullTitle}
+            handleClearPerspective={selectedPerspectiveName ? handleClearPerspective : undefined}
+            icon={
+              <ReleaseAvatarIcon
+                release={selectedPerspective}
+                size="small"
+                className={globalPerspectiveMenuItemIcon}
+              />
+            }
+            text={displayTitle}
+          />
         }
         id="releases-menu"
         onClose={resetRangeVisibility}

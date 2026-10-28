@@ -273,7 +273,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 </LayerProvider>
 
                 {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout />}
-                {<ReleasesNav withReleasesToolButton />}
+                <ReleasesNav />
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
