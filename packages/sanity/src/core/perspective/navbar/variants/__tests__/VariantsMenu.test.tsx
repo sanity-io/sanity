@@ -7,6 +7,7 @@ import {type SingleWorkspace} from '../../../../config/types'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {VariantsMenu} from '../VariantsMenu'
@@ -60,6 +61,16 @@ describe('VariantsMenu', () => {
       'data-selected',
     )
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
+  })
+
+  it('links view all to the variants tool overview', async () => {
+    await renderMenu()
+
+    expect(screen.getByTestId('view-all')).toHaveAttribute(
+      'href',
+      // TODO; Temporary source=menu until https://github.com/sanity-io/sanity/pull/15639 lands
+      `/intent/${VARIANTS_INTENT}/source=menu`,
+    )
   })
 
   it('names the unselected option All users', async () => {
