@@ -78,7 +78,7 @@
     "@pierre/diffs": "^1.6.1",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
-    "@sanity-labs/groq-wasm": "^1.1.0",
+    "@sanity-labs/groq-wasm": "^1.1.1",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.9",
     "@sanity/icons": "^5.2.3",
