@@ -41,6 +41,7 @@ describe('checkCors', () => {
   afterEach(() => {
     globalThis.fetch = originalFetch
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
   it('returns null without hitting the network when projectId or url is missing', async () => {
@@ -88,7 +89,8 @@ describe('checkCors', () => {
     })
   })
 
-  it('evicts a positive verdict after settle so a later failure re-probes', async () => {
+  it('reuses a passing answer for 10 seconds instead of probing on every failure', async () => {
+    vi.useFakeTimers({toFake: ['Date']})
     const fetchMock = vi.fn(
       async () =>
         ({
@@ -100,14 +102,82 @@ describe('checkCors', () => {
     const cache = makeCache()
     const client = fakeClient()
 
-    expect(await checkCors(client, cache)).toEqual({allowed: true, withCredentials: true})
-    // A subsequent probe must re-fetch — a positive verdict can go stale if
-    // CORS is changed in Manage while the studio is open.
-    expect(await checkCors(client, cache)).toEqual({allowed: true, withCredentials: true})
+    // A tab whose requests keep failing for a reason other than CORS (an
+    // extension or VPN blocking them) calls checkCors once per failure.
+    const start = Date.now()
+    for (let i = 0; i < 10; i++) {
+      // The last call is 9,999 ms after the first.
+      vi.setSystemTime(start + i * 1111)
+      expect(await checkCors(client, cache)).toEqual({allowed: true, withCredentials: true})
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('counts the 10 seconds from when the probe answers, not from when it starts', async () => {
+    vi.useFakeTimers({toFake: ['Date']})
+    const {fetchMock, release} = deferredFetch({
+      result: {allowed: true, withCredentials: true},
+    })
+    globalThis.fetch = fetchMock as never
+    const cache = makeCache()
+    const client = fakeClient()
+
+    const slowProbe = checkCors(client, cache)
+    vi.setSystemTime(Date.now() + 9000)
+    release()
+    await slowProbe
+    vi.setSystemTime(Date.now() + 9000)
+    await checkCors(client, cache)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not let an older probe replace the answer of a newer forced probe', async () => {
+    const first = deferredFetch({result: {allowed: true, withCredentials: true}})
+    const forced = deferredFetch({result: {allowed: false, withCredentials: false}})
+    const fetchMock = vi
+      .fn()
+      .mockImplementationOnce(first.fetchMock)
+      .mockImplementationOnce(forced.fetchMock)
+    globalThis.fetch = fetchMock as never
+    const cache = makeCache()
+    const client = fakeClient()
+
+    const firstProbe = checkCors(client, cache)
+    const forcedProbe = checkCors(client, cache, {force: true})
+    // The older probe answers first. It must not put its passing answer back
+    // in the cache over the forced probe that is still running.
+    first.release()
+    await firstProbe
+    const laterCall = checkCors(client, cache)
+    forced.release()
+    await forcedProbe
+    expect(await laterCall).toEqual({allowed: false, withCredentials: false})
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('probes again once 10 seconds have passed since a passing answer', async () => {
+    vi.useFakeTimers({toFake: ['Date']})
+    const fetchMock = vi.fn(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({result: {allowed: true, withCredentials: true}}),
+        }) as Response,
+    )
+    globalThis.fetch = fetchMock as never
+    const cache = makeCache()
+    const client = fakeClient()
+
+    await checkCors(client, cache)
+    // CORS can be changed in Manage while the studio is open, so a passing
+    // answer must not be trusted for long.
+    vi.setSystemTime(Date.now() + 10_001)
+    await checkCors(client, cache)
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
   it('caches a negative verdict so repeated failures during an outage reuse it', async () => {
+    vi.useFakeTimers({toFake: ['Date']})
     const fetchMock = vi.fn(
       async () =>
         ({
@@ -120,20 +190,26 @@ describe('checkCors', () => {
     const client = fakeClient()
 
     await checkCors(client, cache)
+    vi.setSystemTime(Date.now() + 60_000)
     await checkCors(client, cache)
-    // Negative verdict drives the CORS screen and its own forced rechecks —
-    // no need to re-probe on every failing request behind it.
+    // Kept longer than a passing answer: a negative verdict drives the CORS
+    // screen and its own forced rechecks, so there is no need to re-probe on
+    // every failing request behind it.
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
-  it('returns null and evicts on a non-ok response (inconclusive)', async () => {
+  it('returns null on a non-ok response and reuses it for 10 seconds', async () => {
+    vi.useFakeTimers({toFake: ['Date']})
     const fetchMock = vi.fn(async () => ({ok: false, json: async () => ({})}) as Response)
     globalThis.fetch = fetchMock as never
     const cache = makeCache()
     const client = fakeClient()
 
     expect(await checkCors(client, cache)).toBeNull()
-    // Inconclusive results are evicted so they can't poison later probes.
+    expect(await checkCors(client, cache)).toBeNull()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    // A probe failure may be transient, so it is only reused briefly.
+    vi.setSystemTime(Date.now() + 10_001)
     await checkCors(client, cache)
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
