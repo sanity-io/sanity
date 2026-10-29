@@ -35,6 +35,7 @@ function VariantTypeFilter(props: {
 
   return (
     <VariantsMenu
+      allowCreate={!fullWidth}
       typeKey={typeKey}
       trigger={
         <GlobalPerspectiveButton

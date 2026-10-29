@@ -205,6 +205,19 @@ describe('VariantsMenu', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('leaves out the new audience item when creating is not allowed', async () => {
+    const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
+    render(
+      <VariantsMenu allowCreate={false} trigger={<button type="button">Open variants</button>} />,
+      {wrapper},
+    )
+    await userEvent.setup().click(await screen.findByRole('button', {name: 'Open variants'}))
+    await screen.findByTestId('variants-nav-menu')
+
+    expect(screen.getByTestId('view-all')).toBeInTheDocument()
+    expect(screen.queryByTestId('new-audience')).not.toBeInTheDocument()
+  })
+
   it('does not show a mismatch error when configured conditions resolve empty', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 

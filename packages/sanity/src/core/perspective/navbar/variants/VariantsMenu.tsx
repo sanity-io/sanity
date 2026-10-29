@@ -81,9 +81,12 @@ function VariantMenuItem(props: {
  * @internal
  */
 export function VariantsMenu({
+  allowCreate = true,
   trigger,
   typeKey = DEFAULT_VARIANT_TYPE_KEY,
 }: {
+  /** Shows the "New audience" item, which opens the create variant dialog. */
+  allowCreate?: boolean
   trigger: JSX.Element
   typeKey?: string
 }): React.JSX.Element {
@@ -244,12 +247,14 @@ export function VariantsMenu({
                 onClick={handleViewAll}
                 text={t('navbar.variant.menu.view-all')}
               />
-              <MenuItem
-                data-testid="new-audience"
-                onClick={handleNewAudience}
-                icon={AddIcon}
-                text={t('navbar.variant.menu.new-audience')}
-              />
+              {allowCreate && (
+                <MenuItem
+                  data-testid="new-audience"
+                  onClick={handleNewAudience}
+                  icon={AddIcon}
+                  text={t('navbar.variant.menu.new-audience')}
+                />
+              )}
             </Flex>
           </Menu>
         }

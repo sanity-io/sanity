@@ -42,7 +42,10 @@ export function VariantsStudioNavbarFallback(props: {fullWidth?: boolean}) {
  * @internal
  */
 export function VariantsStudioNavbarLayout(props: {
-  /** Stretches each filter to its parent's width. */
+  /**
+   * Stretches each filter to its parent's width and leaves "New audience" out of its menu, as in
+   * the mobile nav drawer, where the create variant dialog does not fit.
+   */
   fullWidth?: boolean
 }) {
   const {fullWidth} = props
