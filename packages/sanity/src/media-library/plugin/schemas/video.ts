@@ -17,9 +17,8 @@ export const video = defineType({
       media: 'media',
     },
     prepare: ({asset, media}) => ({
-      // Preview resolvers support structured media sources, although PreviewValue currently only
-      // declares React-renderable media values.
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      // PreviewValue.media is typed for React nodes; prepare returns a structured video source.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- structured video media for SanityDefaultPreview
       media: {
         _type: 'sanity.video' as const,
         asset,
