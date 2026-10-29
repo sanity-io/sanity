@@ -21,6 +21,9 @@ export function parseApiQueryString(qs: URLSearchParams): ParsedApiQueryString {
       continue
     }
 
+    // The options the tool has a setting for. The rest of what `@sanity/client` writes into a
+    // query URL (`tag`, `returnQuery`, `lastLiveEventId`, `cacheMode`, …) is passed over, so a URL
+    // carrying it still loads
     if (key === 'perspective' || key === 'variant' || key === 'resultSourceMap') {
       options[key] = value
       continue

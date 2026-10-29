@@ -6,6 +6,7 @@ import {
 } from '@sanity/client'
 
 import {isApiCdnHost} from '../../util/parseQueryUrl'
+import {type QueryRequestMethod} from '../../util/queryRequestMethod'
 
 /**
  * How a query's response travelled, from the headers the API exposes to browsers
@@ -13,6 +14,11 @@ import {isApiCdnHost} from '../../util/parseQueryUrl'
  * `Cache-Control`). `X-Sanity-Age` and `Server-Timing` are not among them.
  */
 export interface QueryNetwork {
+  /**
+   * How the client sent the query: `GET` with the query and params in the URL, or `POST` with
+   * them as a JSON body once they are too long for a URL (`queryRequestMethod`)
+   */
+  method: QueryRequestMethod | undefined
   /** The API CDN answered rather than the API */
   viaCdn: boolean
   /**
@@ -47,7 +53,21 @@ function urlOf(input: RequestInfo | URL): string {
   return input instanceof URL ? input.href : input.url
 }
 
-function readQueryNetwork(url: string, headers: Headers): QueryNetwork {
+function methodOf(
+  input: RequestInfo | URL,
+  init: RequestInit | undefined,
+): QueryRequestMethod | undefined {
+  // `fetch` defaults to GET; the client sets the method either way
+  const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase()
+  return method === 'GET' || method === 'POST' ? method : undefined
+}
+
+function readQueryNetwork(
+  input: RequestInfo | URL,
+  init: RequestInit | undefined,
+  headers: Headers,
+): QueryNetwork {
+  const url = urlOf(input)
   let viaCdn = false
   try {
     viaCdn = isApiCdnHost(new URL(url).hostname)
@@ -58,6 +78,7 @@ function readQueryNetwork(url: string, headers: Headers): QueryNetwork {
   const cacheHit = viaCdn && traceId !== undefined && rememberedTraces.has(traceId)
   if (traceId) remember(traceId)
   return {
+    method: methodOf(input, init),
     viaCdn,
     cacheHit,
     shard: headers.get('x-sanity-shard') ?? undefined,
@@ -87,7 +108,7 @@ export async function fetchWithNetwork(
       ...request,
       fetch: async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
         const response = await globalThis.fetch(input, {...init, cache: 'no-cache'})
-        network = readQueryNetwork(urlOf(input), response.headers)
+        network = readQueryNetwork(input, init, response.headers)
         return response
       },
     }

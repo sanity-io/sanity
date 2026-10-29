@@ -10,6 +10,7 @@ import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
   createInitialState,
@@ -17,6 +18,7 @@ import {
   getVistaStorageKey,
   saveVistaState,
 } from '../store/vistaStorage'
+import {parseQueryPaste} from '../util/parseQueryPaste'
 import {VistaGui} from './VistaGui'
 
 const theme = buildTheme()
@@ -2548,6 +2550,81 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.paste')
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(1)
+  })
+
+  it('loads a pasted curl command, runs the query from its body, and shows that the request posts it', async () => {
+    const {fetchCalls} = renderVista()
+    // A query too long for a URL, which `@sanity/client` posts as a JSON body; copied from a
+    // browser's network tab, token and all
+    const query = `*[_id == $id] // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
+    const body = JSON.stringify({query, params: {id: 'a'}})
+    // The options in the URL: the ones a tab has a setting for, and two it has not
+    const curl = [
+      `curl 'https://abc.api.sanity.io/v2021-10-21/data/query/staging?perspective=published&tag=my.app&returnQuery=false' \\`,
+      `  -H 'authorization: Bearer skSECRET' \\`,
+      `  -H 'content-type: application/json' \\`,
+      `  --data-raw '${body}' \\`,
+      `  --compressed`,
+    ].join('\n')
+
+    fireEvent.paste(document.body, {clipboardData: {getData: () => curl}})
+
+    await waitFor(() => expect(getQueryEditor().value).toBe(query))
+    await screen.findByText('vista.paste.parsed-curl')
+    expect(selectValue('vista-option-dataset-select')).toBe('staging')
+    expect(selectValue('vista-option-api-version-select')).toBe('v2021-10-21')
+    expect(selectValue('vista-option-perspective-select')).toBe('published')
+    expect(document.body.textContent).not.toContain('skSECRET')
+    // The tab is set up like the request: pinned to its dataset, on its API version and
+    // perspective, with no variant and no source map, to the API; `tag` and `returnQuery` have
+    // no setting and are passed over (the state is written behind a debounce)
+    await waitFor(
+      () =>
+        expect(getStoredState().tabs[0].options).toEqual({
+          datasetMode: 'pinned',
+          dataset: 'staging',
+          apiVersion: 'v2021-10-21',
+          perspective: 'published',
+          variant: 'none',
+          includeSourceMap: false,
+          useCdn: false,
+        }),
+      {timeout: 2_000},
+    )
+
+    // The request runs as pasted, like a pasted URL does: the body's query and params, under
+    // the URL's dataset, API version and perspective
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0]).toMatchObject({
+      query,
+      params: {id: 'a'},
+      config: {dataset: 'staging', apiVersion: 'v2021-10-21', perspective: 'published'},
+    })
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+
+    // The URL field keeps the GET form, which pastes and saves; the note says how it was sent
+    const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
+    expect(url.searchParams.get('query')).toBe(query)
+    expect(screen.getByTestId('vista-query-url-posted')).toBeTruthy()
+    fireEvent.click(document.getElementById('vista-response-network-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-network-method'))).toBe('vista.network.method.post')
+
+    // The curl export writes the POST form back, so it pastes again
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-export-query'))
+    const dialog = await screen.findByTestId('vista-export-query-dialog')
+    fireEvent.click(document.getElementById('vista-export-curl-tab') as HTMLElement)
+    expect(screen.getByTestId('vista-export-post-note')).toBeTruthy()
+    const exported = within(dialog).getByRole('tabpanel').textContent ?? ''
+    expect(exported).toContain('--data-raw')
+    expect(exported).not.toContain(`?query=`)
+    expect(parseQueryPaste(exported, DEFAULTS.datasets)).toMatchObject({
+      source: 'curl',
+      query,
+      params: {id: 'a'},
+      dataset: 'staging',
+      perspective: 'published',
+    })
   })
 
   it('puts the tab on the API default when the pasted URL has no perspective', async () => {
