@@ -1,8 +1,8 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Layer} from '@sanity/ui'
+import {Card, Layer, usePortal} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
-import TrapFocus from 'react-focus-lock'
+import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {styled} from 'styled-components'
 import {Text, Box, Flex, VStack} from 'ui5'
 
@@ -101,8 +101,15 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {currentUser} = useWorkspace()
   const workspaces = useWorkspaces()
   const ToolMenu = useToolMenuComponent()
+  const portal = usePortal()
 
   const {t} = useTranslation()
+
+  // Menus and dialogs opened from the drawer (the perspective pickers, the create release dialog)
+  // render in the portal. Without this, tabbing inside such a dialog lets the lock pull focus
+  // back into the drawer.
+  const trapDrawerFocus: ReactFocusLockProps['whiteList'] = (interactionElement) =>
+    !portal.element?.contains(interactionElement)
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -148,7 +155,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <TrapFocus returnFocus>
+        <TrapFocus returnFocus whiteList={trapDrawerFocus}>
           <Root onKeyDown={handleKeyDown}>
             <BackdropMotion
               animate="open"

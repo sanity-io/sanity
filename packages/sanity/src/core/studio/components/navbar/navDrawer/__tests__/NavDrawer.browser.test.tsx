@@ -2,14 +2,18 @@ import {DashboardIcon} from '@sanity/icons/Dashboard'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
 import noop from 'lodash-es/noop.js'
+import {useState} from 'react'
 import {FreeTrialContext, WorkspacesContext} from 'sanity/_singletons'
 import {RouterProvider} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {expectStable, testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
+import {type NavbarAction} from '../../../../../config/studio/types'
 import {type Tool} from '../../../../../config/types'
 import {LocaleProvider} from '../../../../../i18n/components/LocaleProvider'
 import {createRouter} from '../../../../router/router'
@@ -50,14 +54,44 @@ const NO_FREE_TRIAL: FreeTrialContextProps = {
   toggleShowContent: noop,
 }
 
-function NavDrawerHarness() {
+// Stands in for the drawer's perspective pickers, whose create release dialog
+// renders in the portal, outside the drawer's focus trap.
+function OpenDialogAction() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button mode="bleed" onClick={() => setOpen(true)} text="Open dialog" />
+      {open && (
+        <Dialog
+          header="Dialog from the drawer"
+          id="nav-drawer-dialog"
+          onClose={() => setOpen(false)}
+        >
+          <input aria-label="Dialog input" />
+        </Dialog>
+      )}
+    </>
+  )
+}
+
+const DIALOG_ACTION: NavbarAction[] = [
+  {location: 'sidebar', name: 'open-dialog', render: () => <OpenDialogAction />},
+]
+
+function NavDrawerHarness({actions}: {actions?: NavbarAction[]}) {
   return (
     <TestWrapper schemaTypes={[]}>
       <RouterProvider router={router} state={{tool: 'structure'}} onNavigate={noop}>
         <LocaleProvider>
           <WorkspacesContext.Provider value={WORKSPACES}>
             <FreeTrialContext.Provider value={NO_FREE_TRIAL}>
-              <NavDrawer activeToolName="structure" isOpen onClose={noop} tools={TOOLS} />
+              <NavDrawer
+                __internal_actions={actions}
+                activeToolName="structure"
+                isOpen
+                onClose={noop}
+                tools={TOOLS}
+              />
             </FreeTrialContext.Provider>
           </WorkspacesContext.Provider>
         </LocaleProvider>
@@ -97,6 +131,29 @@ describe('NavDrawer', () => {
     // The spring transition ends with the card flush against the left edge.
     await expectStable(drawerLeft)
     expect(drawerLeft()).toBe(0)
+
+    await settleChromaticEndState()
+  })
+
+  test('lets a dialog opened from the drawer keep focus', async () => {
+    const {settleChromaticEndState} = testHelpers()
+
+    await render(<NavDrawerHarness actions={DIALOG_ACTION} />)
+    await expectStable(drawerLeft)
+
+    await page.getByRole('button', {name: 'Open dialog'}).click()
+    const input = page.getByRole('textbox', {name: 'Dialog input'})
+    await input.click()
+    await userEvent.keyboard('typed in the dialog')
+
+    await expect.element(input).toHaveFocus()
+    await expect.element(input).toHaveValue('typed in the dialog')
+
+    const dialog = page.getByRole('dialog', {name: 'Dialog from the drawer'})
+    await userEvent.keyboard('{Tab}')
+    await expect.poll(() => dialog.element().contains(document.activeElement)).toBe(true)
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}')
+    await expect.element(input).toHaveFocus()
 
     await settleChromaticEndState()
   })
