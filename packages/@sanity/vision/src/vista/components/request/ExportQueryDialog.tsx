@@ -34,6 +34,9 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
   // The snippet the copy button last copied, which it confirms with a checkmark for a moment. A
   // new object per copy restarts the moment when the same snippet is copied again.
   const [lastCopy, setLastCopy] = useState<{id: ExportSnippetId} | null>(null)
+  // `@starting-style` on `.copyButton svg` runs on first paint. Keep that class off until a copy
+  // succeeds so opening the dialog does not play the checkmark enter recipe on the Copy icon.
+  const [copyIconMotion, setCopyIconMotion] = useState(false)
 
   useEffect(() => {
     if (lastCopy === null) return undefined
@@ -63,6 +66,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
   const copy = async () => {
     const snippetId = active.id
     if (await copyToClipboard(active.code, t('vista.export-query.copied'))) {
+      setCopyIconMotion(true)
       setLastCopy({id: snippetId})
     }
   }
@@ -118,7 +122,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
               {active.id === 'curl' ? t('vista.export-query.token-note') : ''}
             </Text>
             <Button
-              className={cx(overlays.pressable, overlays.copyButton)}
+              className={cx(overlays.pressable, copyIconMotion && overlays.copyButton)}
               data-copied={copied ? 'true' : undefined}
               data-testid="vista-export-query-copy"
               icon={copied ? CheckmarkIcon : CopyIcon}
