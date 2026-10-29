@@ -3022,7 +3022,7 @@ describe('checkoutPair -- listener stall', () => {
     vi.useRealTimers()
   })
 
-  async function commitOnce(options: {echo: boolean}) {
+  async function commitOnce(options: {echo: boolean; reconnectWhileCommitting?: boolean}) {
     const onListenerStall = vi.fn()
     const listenerSubject = new Subject()
     const listen = vi.fn(() => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject))
@@ -3031,7 +3031,7 @@ describe('checkoutPair -- listener stall', () => {
       observable: {
         ...client.observable,
         listen,
-        action: vi.fn(() => of({transactionId: 'tx1', results: []})),
+        action: vi.fn(() => of({transactionId: 'tx1', results: []}).pipe(delay(100))),
       },
     }
 
@@ -3043,7 +3043,11 @@ describe('checkoutPair -- listener stall', () => {
 
     draft.mutate(draft.patch([{set: {title: 'test'}}]))
     draft.commit()
-    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(50)
+    if (options.reconnectWhileCommitting) {
+      listenerSubject.next({type: 'welcome'})
+    }
+    await vi.advanceTimersByTimeAsync(50)
     if (options.echo) {
       listenerSubject.next(createMutationEvent('tx1', 'draftId', 'any', 'tx1'))
     }
@@ -3062,6 +3066,16 @@ describe('checkoutPair -- listener stall', () => {
 
   test('leaves the listener alone when the commit is echoed', async () => {
     const {onListenerStall, listen} = await commitOnce({echo: true})
+
+    expect(onListenerStall).not.toHaveBeenCalled()
+    expect(listen).toHaveBeenCalledOnce()
+  })
+
+  test('leaves the listener alone when it reconnects while the commit is in flight', async () => {
+    const {onListenerStall, listen} = await commitOnce({
+      echo: false,
+      reconnectWhileCommitting: true,
+    })
 
     expect(onListenerStall).not.toHaveBeenCalled()
     expect(listen).toHaveBeenCalledOnce()
