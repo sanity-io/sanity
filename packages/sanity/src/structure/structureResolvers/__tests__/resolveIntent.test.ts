@@ -1,4 +1,5 @@
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
+import {Observable} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 // oxfmt-ignore
 import {SerializeError} from '../../structureBuilder/SerializeError'
@@ -404,5 +405,96 @@ describe('resolveIntent', () => {
     }
 
     expect(caught).toBe(true)
+  })
+
+  it('settles as soon as the match is known', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      // @ts-expect-error -- pre-existing, fix later
+      const S = createStructureBuilder({source})
+      const deepChild = vi.fn(() => S.documentTypeList('movie'))
+      let activeStuckSubscriptions = 0
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([
+          S.documentTypeListItem('book').title('Books'),
+          S.listItem()
+            .title('Stuck')
+            .child(
+              () =>
+                new Observable<never>(() => {
+                  activeStuckSubscriptions++
+                  return () => {
+                    activeStuckSubscriptions--
+                  }
+                }),
+            ),
+          S.listItem()
+            .title('Deep')
+            .child(
+              S.list()
+                .title('Nested')
+                .items([S.listItem().title('Deeper').child(deepChild)]),
+            ),
+        ]) as unknown as UnresolvedPaneNode
+
+      const result = resolveIntent({
+        intent: 'edit',
+        params: {id: 'book123', type: 'book'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: null as any,
+      })
+      await vi.advanceTimersByTimeAsync(0)
+
+      await expect(Promise.race([result, Promise.resolve('still resolving')])).resolves.toEqual([
+        [{id: 'book'}],
+        [{id: 'book123', params: {}, payload: undefined}],
+      ])
+      expect(activeStuckSubscriptions).toBe(0)
+      expect(deepChild).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('skips panes that never resolve instead of waiting forever', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    try {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      // @ts-expect-error -- pre-existing, fix later
+      const S = createStructureBuilder({source})
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([
+          S.listItem()
+            .title('Stuck')
+            .child(() => new Promise<never>(() => undefined)),
+          S.documentTypeListItem('book').title('Books'),
+        ]) as unknown as UnresolvedPaneNode
+
+      const result = resolveIntent({
+        intent: 'edit',
+        params: {id: 'book123', type: 'book'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: null as any,
+      })
+      await vi.advanceTimersByTimeAsync(5_000)
+
+      expect(await result).toEqual([
+        [{id: 'book'}],
+        [{id: 'book123', params: {}, payload: undefined}],
+      ])
+    } finally {
+      vi.restoreAllMocks()
+      vi.useRealTimers()
+    }
   })
 })
