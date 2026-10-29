@@ -7,7 +7,7 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {combineLatest, defer, EMPTY, from, merge, Observable, of, timer} from 'rxjs'
+import {combineLatest, defer, EMPTY, from, merge, Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -61,6 +61,7 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
+import {type CommitAcknowledgement} from '../utils/watchForListenerStall'
 import {getShardInfo$} from './getShardInfo'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
@@ -437,6 +438,7 @@ export function checkoutPair(
   const {
     onReportLatency,
     onSyncErrorRecovery,
+    onListenerStall,
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
@@ -455,7 +457,9 @@ export function checkoutPair(
     published.hasPendingMutations() ||
     Boolean(version?.hasPendingMutations())
 
+  const commitAcknowledged$ = new Subject<CommitAcknowledgement>()
   const listenerEvents$ = getPairListener(client, idPair, {
+    commitAcknowledged$,
     onSyncErrorRecovery: onSyncErrorRecovery
       ? (error) => {
           try {
@@ -465,6 +469,7 @@ export function checkoutPair(
           }
         }
       : undefined,
+    onListenerStall,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())
@@ -593,6 +598,12 @@ export function checkoutPair(
         attemptResult.type === 'success',
     ),
     map((attemptResult) => attemptResult.result),
+    tap((result) =>
+      commitAcknowledged$.next({
+        transactionId: result.transactionId,
+        submittedAt: result._perfTimings?.apiRequestSentAt ?? Date.now(),
+      }),
+    ),
     share(),
   )
 
