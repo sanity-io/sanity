@@ -206,4 +206,6 @@ export const article = defineScenario({
       },
     },
   },
+  // The opening paragraph: on screen without scrolling
+  stall: {target: 'body', blockKey: 'fb9224599155'},
 })

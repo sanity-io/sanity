@@ -16,6 +16,7 @@ import {
   collectPageLoad,
   collectRunMetadata,
   collectSettle,
+  collectStall,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
@@ -41,6 +42,7 @@ import {
 } from '../../runner/session/pageLoad'
 import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
 import {runSoakSession} from '../../runner/session/soak'
+import {runStallSession, type StallSessionResult} from '../../runner/session/stall'
 import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
@@ -150,6 +152,10 @@ export async function runBench(argv: RunArgs): Promise<void> {
             `run \`pnpm --filter bench build:customizations\` and pass --dist perf/bench/dist-customizations`,
         ),
       )
+      return false
+    }
+    if (argv.mode === 'stall' && scenario.stall === undefined) {
+      console.log(chalk.yellow(`skipping ${scenario.name}: no stall plan`))
       return false
     }
     if (
@@ -347,6 +353,32 @@ export async function runBench(argv: RunArgs): Promise<void> {
           chalk.red(`\nsettle expectation mismatch:\n  ${expectationMismatches.join('\n  ')}`),
         )
         process.exitCode = 1
+      }
+    } else if (argv.mode === 'stall') {
+      for (const scenario of scenarios) {
+        console.log(`\n${chalk.cyan(scenario.name)} — listener stall, ${argv.sessions} session(s)`)
+        const results: StallSessionResult[] = []
+        for (let i = 0; i < argv.sessions; i++) {
+          const result = await withSessionRetries(scenario.name, () =>
+            runStallSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          results.push(result)
+          const seconds = (result.recoveryMs / 1000).toFixed(1)
+          console.log(
+            `  session ${i + 1}/${argv.sessions}: ` +
+              (result.recovered
+                ? `deleted block gone after ${seconds}s`
+                : chalk.red(`deleted block still shown at the ${seconds}s cap`)) +
+              ` — ${result.keystrokes} keystroke(s), ${result.savesAfterDelete} save(s) after the delete`,
+          )
+        }
+        scenarioReports.push(collectStall(scenario.name, results, scenario.sourceFile))
       }
     } else if (argv.mode === 'inp') {
       for (const scenario of scenarios) {

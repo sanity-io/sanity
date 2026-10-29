@@ -668,6 +668,31 @@ test('red-by-design settle scenarios carry the evidence note in their descriptio
   expect(greenSeries?.description).not.toContain('RED BY DESIGN')
 })
 
+test('listener stall recovery charts as one series under the stall group', () => {
+  const stallRun: TrendRun = {
+    ...settleRun({id: 'a', sha: 'sha-1', day: 0, notSettled: 0}),
+    scenarios: [
+      {
+        scenario: 'article',
+        kind: 'interaction',
+        mode: 'stall',
+        metrics: [
+          {
+            label: 'listener stall recovery',
+            unit: 'ms',
+            experiment: {summary: {median: 31_500, p75: 31_550, p90: 31_600}},
+          },
+        ],
+      },
+    ],
+  }
+  const series = buildSeries([stallRun])
+  expect(series.map((entry) => [entry.key, entry.group, entry.goal])).toEqual([
+    ['stall:article:listener stall recovery', 'stall', 'lower'],
+  ])
+  expect(series[0].lines[0].points[0].value).toBe(31_500)
+})
+
 test('demo data exercises the settle group: controls, a red-by-design row and a re-regression', () => {
   const settle = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'settle')
   expect(settle.length).toBeGreaterThan(0)

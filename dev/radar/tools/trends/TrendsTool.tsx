@@ -15,6 +15,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {PackageIcon} from '@sanity/icons/Package'
+import {PlugIcon} from '@sanity/icons/Plug'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {
   Badge,
@@ -114,6 +115,7 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   styles: ColorWheelIcon,
   soak: DropIcon,
   settle: SyncIcon,
+  stall: PlugIcon,
   engine: BugIcon,
   environment: ControlsIcon,
 }

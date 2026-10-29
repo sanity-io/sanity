@@ -124,7 +124,7 @@ export interface ScenarioReport {
    * `pageload`) key-collide with the interaction/pageLoad reports and the
    * merge throws.
    */
-  mode?: 'interaction' | 'pageload' | 'soak' | 'inp' | 'settle'
+  mode?: 'interaction' | 'pageload' | 'soak' | 'inp' | 'settle' | 'stall'
   metrics: MetricReport[]
   /**
    * Settle mode only: the scenario's declared expectation. `expectedToSettle:
