@@ -20,7 +20,7 @@ import {
 } from './sortDocumentVersionsForStatus'
 
 /** Lines (the base document, then the audiences) the popover shows before its last line counts the rest. */
-const MAX_LINES = 5
+const MAX_LINES = 7
 /** Glyphs a line shows before a "+N" stands for the others. */
 const SHOWN_GLYPHS = 4
 /** The popover's width: 400px as the v1 design draws it, up to 440px when a line needs it. */
@@ -67,7 +67,7 @@ const byGlyphOrder = (left: DocumentVersionStatusItem, right: DocumentVersionSta
  * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Faheem, 22 Oct: each line is the
  * audience's name, ONE muted phrase for the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago", then a glyph per
  * version at the right edge (published, draft, then its releases by date; four at most, then "+N"; open beta design, Figma 751:161463). Release names are not shown (the inventory has them).
- * After five lines a muted last line counts the versions not shown. Information only: nothing in it is clickable.
+ * After seven lines a muted last line counts the versions not shown. Information only: nothing in it is clickable.
  *
  * @internal
  */
