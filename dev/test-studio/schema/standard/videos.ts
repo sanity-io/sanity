@@ -39,6 +39,28 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'arrayOfObjectsWithVideo',
+      title: 'Array of objects with video (no image)',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'videoItem',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              title: 'Title',
+            },
+            defineVideoField({
+              name: 'trailer',
+              title: 'Trailer',
+            }),
+          ],
+        },
+      ],
+    }),
+    defineField({
       name: 'objectWithVideos',
       type: 'object',
       fields: [
