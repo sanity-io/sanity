@@ -977,7 +977,8 @@ export function buildGroups(options: {
     const isSelected = selectedKeys.has(entry.key)
     // The highlight alone marks the version the form edits; only the served row gets a label.
     // With variants off every row is the document itself: no base to name, no diamond.
-    const detail = isBase && variantsOn(world) ? 'Base document' : changesText(entry)
+    const baseDetail = isBase && variantsOn(world) ? baseNames().detail : undefined
+    const detail = baseDetail ?? changesText(entry)
     // By stage's subtitle is the last edit, then the fields changed (Andrej, 2026-10-20: "For the
     // subtitle we just want the last edited date and then which fields changed"); the row puts the
     // edit time in front, in Studio's format.

@@ -354,6 +354,11 @@ export function fellBack(component: ComponentDef, now: State = current()): boole
   return !chosen || chosen.label === NOT_DRAWN_LABEL
 }
 
+/** Calls `listener` after every change to the options (outside React). Returns the unsubscribe. */
+export function onOptionsChange(listener: () => void): () => void {
+  return subscribe(listener)
+}
+
 export function getOptionState(): State {
   return current()
 }

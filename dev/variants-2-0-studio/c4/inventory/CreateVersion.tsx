@@ -505,7 +505,8 @@ export function CreateVersion(props: {
   const {frame, world, variants, draftsEnabled, onCreate, onOpen, onReceived} = props
   // The one create implementation, shared with the T6 banner.
   const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
-  const baseLabel = useBaseNames().inventory
+  const baseNamesNow = useBaseNames()
+  const baseLabel = baseNamesNow.inventory
   // While the banner case is not known yet, the toolbar shows neither its Create version nor its count (no wrong state on screen).
   const decision = useBannerDecision(props.documentId)
   const bannerCreates = bannerOffersCreate(decision.banner)
@@ -651,7 +652,7 @@ export function CreateVersion(props: {
     setMode((m) => (m ? {...m, draft: {...m.draft, ...next, picked: true}} : m))
 
   const variantTitle = (id: string | undefined) =>
-    id ? (variants.find((v) => v.id === id)?.title ?? id) : 'Base'
+    id ? (variants.find((v) => v.id === id)?.title ?? id) : baseNamesNow.short
   const bundleTitle = (group: string) =>
     group === 'drafts'
       ? 'Drafts'

@@ -13,7 +13,7 @@ export const BASE_DOCUMENT_NAME: ComponentDef = {
   scope: 'Open beta',
   cover:
     'What the base document is called: the version every visitor gets unless a variant matches them. Today it has three names. Each option puts one name in the pill that is always on screen, and the same name, with or without an explanation, in menus and the inventory.',
-  pick: 'Reload after you change it: core text (field marks, version tooltips) reads it when the studio loads. Our own pills, menus and the inventory change at once.',
+  pick: 'Changing it reloads the studio, so core text (Compare versions, version titles, field marks) matches the pills, menus and inventory.',
   where:
     'The Variants pill in the navbar and the document pills (with no variant chosen), the Variants menu\'s first row, the version popover\'s first line, the inventory rows and Create version, and the "Back to" link and button.',
   options: [
