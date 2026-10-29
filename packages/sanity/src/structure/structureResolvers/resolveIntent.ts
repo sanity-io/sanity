@@ -1,6 +1,8 @@
 import omit from 'lodash-es/omit.js'
 import {
+  catchError,
   combineLatest,
+  EMPTY,
   filter,
   firstValueFrom,
   map,
@@ -12,6 +14,7 @@ import {
   startWith,
   switchMap,
   take,
+  throwError,
   timeout,
 } from 'rxjs'
 
@@ -92,7 +95,8 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
   const {id: targetId, type, ...otherParams} = params
   const documentType$ = (options.documentType ?? of(type)).pipe(
     take(1),
-    shareReplay({bufferSize: 1, refCount: true}),
+    // not refCount: subscribers come and go between levels, which would restart the lookup
+    shareReplay({bufferSize: 1, refCount: false}),
   )
   const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
 
@@ -241,6 +245,10 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
             childCandidates(candidate, settled.get(index) ?? null),
           ),
         ),
+      ),
+      // a deeper error only matters when this level has no match
+      catchError((error) =>
+        levelMatch$.pipe(switchMap(({match}) => (match ? EMPTY : throwError(() => error)))),
       ),
       startWith(DEEPER_PENDING),
     )
