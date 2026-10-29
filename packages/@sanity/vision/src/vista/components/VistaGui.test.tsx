@@ -2725,6 +2725,27 @@ describe('VistaGui', () => {
     expect(isDisabled(remove)).toBe(true)
   })
 
+  it('waits before the first rail tooltip opens and then opens its neighbours at once', async () => {
+    renderVista()
+    // A closed tooltip can stay mounted under a hidden `<Activity>`, so only a shown one counts
+    const tooltip = (label: string) =>
+      Array.from(document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')).find(
+        (element) => text(element) === label && !element.closest('[style*="display: none"]'),
+      )
+
+    const shared = screen.getByTestId('vista-sidebar-shared')
+    fireEvent.mouseEnter(shared)
+    // A pointer passing over the rail on its way elsewhere opens nothing
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+    expect(tooltip('vista.sidebar.shared-queries')).toBeUndefined()
+    await waitFor(() => expect(tooltip('vista.sidebar.shared-queries')).toBeDefined())
+
+    fireEvent.mouseLeave(shared)
+    fireEvent.mouseEnter(screen.getByTestId('vista-sidebar-saved'))
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+    expect(tooltip('vista.sidebar.saved-queries')).toBeDefined()
+  })
+
   it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {
     const {onSwitchToClassic} = renderVista()
 

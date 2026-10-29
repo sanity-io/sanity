@@ -25,8 +25,10 @@ import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VistaDrawer, type VistaTab} from '../../store/types'
 import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/vistaMachine'
+import {cx} from '../../util/cx'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../vista.module.css'
+import * as sidebarStyles from './sidebar.module.css'
 
 interface QueryListPanelProps {
   mode: VistaDrawer
@@ -247,6 +249,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           <Tooltip animate content={<Text size={1}>{t('vista.saved.save-current')}</Text>} portal>
             <Button
               aria-label={t('vista.saved.save-current')}
+              className={sidebarStyles.pressable}
               data-testid="vista-save-current-query"
               disabled={!canSave}
               icon={AddIcon}
@@ -278,6 +281,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
               return (
                 <Card
                   borderBottom
+                  className={sidebarStyles.queryRow}
                   data-testid="vista-saved-query"
                   key={query._key}
                   padding={1}
@@ -302,7 +306,11 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={styles.listItemButton}
+                          className={cx(
+                            styles.listItemButton,
+                            sidebarStyles.pressable,
+                            sidebarStyles.pressableRow,
+                          )}
                           data-testid="vista-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -332,7 +340,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Button>
                       )}
                     </Box>
-                    <Box paddingTop={1}>
+                    <Box className={sidebarStyles.queryRowMenu} paddingTop={1}>
                       <MenuButton
                         button={<ContextMenuButton />}
                         id={`vista-saved-query-menu-${query._key}`}

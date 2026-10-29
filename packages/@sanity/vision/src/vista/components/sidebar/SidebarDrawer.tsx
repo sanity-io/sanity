@@ -12,6 +12,7 @@ import {cx} from '../../util/cx'
 import * as styles from '../vista.module.css'
 import {QueryListPanel} from './QueryListPanel'
 import {SettingsPanel} from './SettingsPanel'
+import * as sidebarStyles from './sidebar.module.css'
 
 /** The lock's own element takes no part in the layout; the drawer is positioned by its class */
 const TRAP_FOCUS_PROPS = {style: {display: 'contents'}}
@@ -110,8 +111,10 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
         borderRight
         className={cx(
           styles.sidebarDrawer,
+          sidebarStyles.drawer,
           drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
           overlay && styles.sidebarDrawerOverlay,
+          overlay && sidebarStyles.drawerOverlay,
         )}
         data-testid={`vista-drawer-${drawer}`}
         flexDirection="column"
@@ -134,6 +137,7 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
           </Text>
           <Button
             aria-label={t('vista.drawer.close')}
+            className={sidebarStyles.pressable}
             icon={CloseIcon}
             mode="bleed"
             onClick={close}
