@@ -587,7 +587,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The document inventory title (plural) */
   'document-group-inventory.title_other': '{{count}} {{subject}}',
   /** The label text that indicates an item in the document group inventory is currently being viewed */
-  'document-group-inventory.viewing-item-label': 'viewing',
+  'document-group-inventory.viewing-item-label': 'Editing',
 
   /** --- Document group --- */
 

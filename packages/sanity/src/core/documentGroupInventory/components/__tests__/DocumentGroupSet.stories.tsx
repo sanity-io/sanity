@@ -66,7 +66,7 @@ const RELEASES = new Map<string, ReleaseDocument>([
  * Chromatic sentinel for the shared document group set chrome
  * (`DocumentGroupSet`) and the per-version row (`DocumentGroupEntry`) that the
  * inventory and the version picker both render: the published, draft, release
- * and agent avatars, the "viewing" badge and the optional leading selection
+ * and agent avatars, the "editing" badge and the optional leading selection
  * control.
  */
 const meta = {

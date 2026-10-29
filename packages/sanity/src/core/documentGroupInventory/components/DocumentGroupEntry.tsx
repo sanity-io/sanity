@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
 import {Text} from 'ui5'
 
@@ -65,7 +64,7 @@ export function DocumentGroupEntry({
         <div className="atom">
           {isSelected && (
             <StatusBadge radius={2} tone="primary">
-              <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
+              {t('document-group-inventory.viewing-item-label')}
             </StatusBadge>
           )}
           {agentBundleName ? (
