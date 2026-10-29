@@ -367,11 +367,16 @@ export function useOptionState(): State {
   return useSyncExternalStore(subscribe, current)
 }
 
-/** The option id currently in force for a component, e.g. `useOption('c3') === 'b'`. */
+/**
+ * The option id currently in force for a component, e.g. `useOption('c3') === 'b'`. The snapshot is the id itself (a string), so a
+ * component re-renders only when its own option changes, not on every switch in the panel (Faheem, 29 Oct: switches felt slow because
+ * every field mark, pill and inventory row re-rendered on any change).
+ */
 export function useOption(componentId: string): string {
-  const now = useOptionState()
-  const component = getComponent(componentId)
-  return component ? resolveOption(component, now) : 'a'
+  return useSyncExternalStore(subscribe, () => {
+    const component = getComponent(componentId)
+    return component ? resolveOption(component, current()) : 'a'
+  })
 }
 
 export function maxOptionCount(): number {
