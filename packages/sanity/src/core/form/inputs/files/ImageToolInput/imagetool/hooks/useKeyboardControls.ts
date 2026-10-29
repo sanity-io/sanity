@@ -11,8 +11,10 @@ import {
 import {
   type Crop,
   type CropAndHotspot,
+  type CropConstraints,
   type Hotspot,
   type Rect,
+  type Size,
   type ToolHandleType,
   type ToolInteractionTarget,
 } from '../types'
@@ -30,6 +32,8 @@ interface UseKeyboardControlsProps {
   innerRect: Rect
   focusTarget: ToolInteractionTarget | null
   readOnly: boolean
+  sourceSize: Size
+  cropConstraints?: CropConstraints
 }
 
 export function useKeyboardControls({
@@ -39,6 +43,8 @@ export function useKeyboardControls({
   innerRect,
   focusTarget,
   readOnly,
+  sourceSize,
+  cropConstraints,
 }: UseKeyboardControlsProps) {
   const initialCropRef = useRef<Crop | null>(null)
   const initialHotspotRef = useRef<Hotspot | null>(null)
@@ -184,6 +190,8 @@ export function useKeyboardControls({
             pointerPos,
             innerRect,
             activeHandle,
+            sourceSize,
+            constraints: cropConstraints,
           })
         }
       } else {
@@ -221,7 +229,7 @@ export function useKeyboardControls({
 
       return null
     },
-    [innerRect],
+    [innerRect, sourceSize, cropConstraints],
   )
 
   // Main keydown handler for React components

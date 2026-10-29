@@ -1,5 +1,6 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
+import {getImageRefDimensions, resolveAspectRatio} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -25,7 +26,9 @@ import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
 import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
+import {type CropConstraints} from './imagetool/types'
 import {placeholder} from './ImageToolInput.css'
+import {getImageToolPath, isHotspotEnabled} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -46,8 +49,6 @@ function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
     </a>
   )
 }
-
-const HOTSPOT_PATH = ['hotspot']
 
 const DEFAULT_PREVIEWS: HotspotPreview[] = [
   {title: '3:4', aspectRatio: 3 / 4},
@@ -96,16 +97,31 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
 
+  const hotspotEnabled = isHotspotEnabled(schemaType.options)
+  const imageToolPath = getImageToolPath(schemaType.options)
+
+  const {aspectRatio, minDimensions} = schemaType.options ?? {}
+  const cropConstraints = useMemo<CropConstraints>(
+    () => ({
+      aspectRatio: aspectRatio === undefined ? undefined : resolveAspectRatio(aspectRatio),
+      minDimensions,
+    }),
+    [aspectRatio, minDimensions],
+  )
+
+  const assetRef = value?.asset?._ref
+  const sourceSize = useMemo(() => getImageRefDimensions(assetRef), [assetRef])
+
   const handleFocus = useCallback(() => {
-    onPathFocus(HOTSPOT_PATH)
-  }, [onPathFocus])
+    onPathFocus(imageToolPath)
+  }, [imageToolPath, onPathFocus])
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 
-  const hasFocus = focusPath[0] === 'hotspot'
+  const hasFocus = focusPath[0] === imageToolPath[0]
 
   const hotspotPreviews =
     (typeof schemaType.options?.hotspot === 'object' && schemaType.options.hotspot.previews) ||
@@ -131,19 +147,23 @@ export function ImageToolInput(props: ImageToolInputProps) {
         (field) => field.type.name !== 'object' && field.name === 'hotspot',
       )
 
-      // Note: when either hotspot or crop change we fill in the default if the other is missing
-      // (we can't have one without the other)
+      // With the hotspot on, a change to either fills in the default for the other if it is missing
       const crop = cropField
         ? {_type: cropField.type.name, ...(finalValue.crop || DEFAULT_CROP)}
         : finalValue.crop
 
-      const hotspot = hotspotField
-        ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
-        : finalValue.hotspot
+      if (hotspotEnabled) {
+        const hotspot = hotspotField
+          ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
+          : finalValue.hotspot
 
-      onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        return
+      }
+
+      onChange(set(crop, ['crop']))
     },
-    [onChange, readOnly, schemaType.fields],
+    [hotspotEnabled, onChange, readOnly, schemaType.fields],
   )
 
   const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
@@ -151,9 +171,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const {t} = useTranslation()
   return (
     <FormField
-      title={t('inputs.imagetool.title')}
+      title={hotspotEnabled ? t('inputs.imagetool.title') : t('inputs.imagetool.crop-only.title')}
       level={level}
-      description={t('inputs.imagetool.description')}
+      description={
+        hotspotEnabled
+          ? t('inputs.imagetool.description')
+          : t('inputs.imagetool.crop-only.description')
+      }
       deprecated={schemaType.deprecated}
       path={path}
       __unstable_presence={presence}
@@ -189,8 +213,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
           border
         >
           <ChangeIndicator
-            path={path.concat(HOTSPOT_PATH)}
-            hasFocus={focusPath[0] === 'hotspot'}
+            path={path.concat(imageToolPath)}
+            hasFocus={hasFocus}
             isChanged={changed}
           >
             <RatioBox $ratio={3 / 2}>
@@ -214,6 +238,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   <ImageTool
                     value={localValue}
                     src={image.src}
+                    sourceSize={sourceSize}
+                    cropConstraints={cropConstraints}
+                    hotspotEnabled={hotspotEnabled}
                     readOnly={Boolean(readOnly)}
                     onChangeEnd={handleChangeEnd}
                     onChange={setLocalValue}
