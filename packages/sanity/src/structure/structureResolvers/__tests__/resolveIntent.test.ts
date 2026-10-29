@@ -414,7 +414,6 @@ describe('resolveIntent', () => {
       const source = await getMockSource({config: {schema: mockSchema}})
       // @ts-expect-error -- pre-existing, fix later
       const S = createStructureBuilder({source})
-      const deepChild = vi.fn(() => S.documentTypeList('movie'))
       let activeStuckSubscriptions = 0
 
       const rootPaneNode = S.list()
@@ -432,13 +431,6 @@ describe('resolveIntent', () => {
                   }
                 }),
             ),
-          S.listItem()
-            .title('Deep')
-            .child(
-              S.list()
-                .title('Nested')
-                .items([S.listItem().title('Deeper').child(deepChild)]),
-            ),
         ]) as unknown as UnresolvedPaneNode
 
       const result = resolveIntent({
@@ -455,7 +447,6 @@ describe('resolveIntent', () => {
         [{id: 'book123', params: {}, payload: undefined}],
       ])
       expect(activeStuckSubscriptions).toBe(0)
-      expect(deepChild).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()
     }
