@@ -12,6 +12,19 @@ vi.mock('./stickyParams', () => ({
 }))
 
 describe('IntentLink', () => {
+  it('resolves an intent link when params are omitted', () => {
+    const router = route.create('/test', [route.intents('/intent')])
+    render(<IntentLink intent="edit">Edit</IntentLink>, {
+      wrapper: ({children}) => (
+        <RouterProvider onNavigate={noop} router={router} state={{}}>
+          {children}
+        </RouterProvider>
+      ),
+    })
+
+    expect(screen.getByRole('link', {name: 'Edit'}).getAttribute('href')).toBe('/test/intent/edit')
+  })
+
   it('should resolve intent link with query params', () => {
     const router = route.create('/test', [route.intents('/intent')])
     const component = render(
