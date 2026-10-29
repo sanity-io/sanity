@@ -289,6 +289,7 @@ overrides:
 
 patchedDependencies:
   '@stryker-mutator/vitest-runner@10.0.0': 890316bd6edb446e7b450b23c08fe314a14cbba08ae7adedb1ce5614d07913e0
+  motion-dom@14.6.0: d047035a9a07ccf38e4ca58fb9eda936e50030fc79766abfdebb74eb1524faf4
 
 importers:
 
@@ -26515,7 +26516,7 @@ snapshots:
 
   framer-motion@14.6.0(react-dom@19.3.1)(react@19.3.1):
     dependencies:
-      motion-dom: 14.6.0
+      motion-dom: 14.6.0(patch_hash=d047035a9a07ccf38e4ca58fb9eda936e50030fc79766abfdebb74eb1524faf4)
       motion-utils: 14.6.0
       tslib: 2.8.1
     optionalDependencies:
@@ -27992,7 +27993,7 @@ snapshots:
       - socks
     optional: true
 
-  motion-dom@14.6.0:
+  motion-dom@14.6.0(patch_hash=d047035a9a07ccf38e4ca58fb9eda936e50030fc79766abfdebb74eb1524faf4):
     dependencies:
       motion-utils: 14.6.0
 
