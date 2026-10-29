@@ -43,7 +43,7 @@ describe('FormBaseVariantDiffIndicator', () => {
     const tooltip = page.getByTestId('base-variant-diff-tooltip')
     await expect.element(tooltip).toBeVisible()
     await expect.element(tooltip.getByText(LABEL)).toBeVisible()
-    await expect.element(tooltip.getByText('All users (Default)')).toBeVisible()
+    await expect.element(tooltip.getByText('Default')).toBeVisible()
     await expect.element(tooltip.getByText('Draft')).toBeVisible()
   })
 

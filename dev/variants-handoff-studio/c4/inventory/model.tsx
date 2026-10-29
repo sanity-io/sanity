@@ -451,7 +451,7 @@ function priorityOf(world: InventoryWorld, entry: InventoryEntry): number {
 }
 
 function titleOf(world: InventoryWorld, entry: InventoryEntry): string {
-  return variantFor(world, entry)?.metadata?.title ?? 'Base · all visitors'
+  return variantFor(world, entry)?.metadata?.title ?? 'Default'
 }
 
 /** Hours since the edit, from the row's relative time ("1h ago", "2d ago", "2w ago", "1mo ago"). */
@@ -858,7 +858,7 @@ function servedFact(options: {
     : undefined
   const exactTitle = exact?.id
     ? (variantsById(world).get(exact.id)?.metadata?.title ?? exact.id)
-    : 'Base · all visitors'
+    : 'Default'
   // The bar's values, in dimension order, name a variant no definition carries, joined as a
   // sentence (Andrej, 2026-10-21: "No variant for Danish and New visitors.").
   const titles = worldDimensions(world).flatMap((dimension) => {
@@ -976,7 +976,7 @@ export function buildGroups(options: {
     const isSelected = selectedKeys.has(entry.key)
     // The highlight alone marks the version the form edits; only the served row gets a label.
     // With variants off every row is the document itself: no base to name, no diamond.
-    const detail = isBase && variantsOn(world) ? 'Base document' : changesText(entry)
+    const detail = isBase && variantsOn(world) ? 'Default content' : changesText(entry)
     // By stage's subtitle is the last edit, then the fields changed (Andrej, 2026-10-20: "For the
     // subtitle we just want the last edited date and then which fields changed"); the row puts the
     // edit time in front, in Studio's format.

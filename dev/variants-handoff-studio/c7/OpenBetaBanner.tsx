@@ -133,7 +133,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           inventoryOpen
             ? undefined
             : {
-                text: 'Back to All users',
+                text: 'Back to Default',
                 mode: 'default',
                 tone: 'primary',
                 onClick: () => {
@@ -359,7 +359,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
             </>
           ) : null}{' '}
           It shows the{' '}
-          {/* A link to the base: clears the variant and keeps the version in view, as picking All users in the Variants pill does (26 Oct). */}
+          {/* A link to the base: clears the variant and keeps the version in view, as picking Default in the Variants pill does (26 Oct). */}
           <button
             data-testid="banner-base-link"
             onClick={() => {

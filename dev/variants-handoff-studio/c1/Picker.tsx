@@ -52,10 +52,11 @@ export const SAVE_AS_COMPOSITE_REASON =
 
 const ITEM = '[data-ui="MenuItem"]'
 
-/** The value with no variant: what the navbar button says when it is chosen (Faheem, 22 Oct: the button names the value, not the dimension). */
-export const DEFAULT_TITLE = 'All users'
-/** The row with no variant: the base document, worded as the T3 versions popover words it. Only the menu row says "(Default)". */
-export const DEFAULT_LABEL = `${DEFAULT_TITLE} (Default)`
+/** The value with no variant: what the navbar button says when it is chosen (Faheem, 22 Oct: the button names the value, not the dimension).
+ * The base document is "Default" everywhere (team call, 29 Oct; it was "All users", "All users (Default)" and "Base · all visitors"). */
+export const DEFAULT_TITLE = 'Default'
+/** The row with no variant: the base document, as the button names it. */
+export const DEFAULT_LABEL = DEFAULT_TITLE
 
 /**
  * The panel's keyboard model. The rows are `tabindex=-1` items of real Menus, so Tab would leave

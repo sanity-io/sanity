@@ -161,7 +161,7 @@ describe('DocumentVersionsStatus', () => {
     expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
       /^(Published|Edited) 2 days ago$/,
     )
-    expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Default')).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
@@ -172,7 +172,7 @@ describe('DocumentVersionsStatus', () => {
     })
 
     // One line for the variant: its glyphs and one phrase for its latest activity.
-    expect(screen.getAllByText('All users (Default)')).toHaveLength(1)
+    expect(screen.getAllByText('Default')).toHaveLength(1)
     expect(screen.getAllByTestId('state-published')).toHaveLength(1)
     expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
     // One phrase for the line's most recent activity.
@@ -197,7 +197,7 @@ describe('DocumentVersionsStatus', () => {
     expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
       /^(Published|Edited) 2 days ago$/,
     )
-    expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Default')).not.toBeInTheDocument()
     // The v1 popover: one line per audience, a glyph per version, no rhombus.
     expect(screen.getAllByTestId('audience-line')).toHaveLength(1)
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
@@ -216,7 +216,7 @@ describe('DocumentVersionsStatus', () => {
       /^(Published|Edited) 2 days ago$/,
     )
     expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
-    expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Default')).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 

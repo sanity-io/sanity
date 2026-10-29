@@ -369,7 +369,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.file.meta-info-fallback-title': 'Untitled',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
-  /** PROPOSED: the base-variant mark's tooltip, before the chips naming the base variant and the slot: "Differs from [All users] [Draft]" */
+  /** PROPOSED: the base-variant mark's tooltip, before the chips naming the base variant and the slot: "Differs from [Default] [Draft]" */
   'changes.from-base-variant.differs-from': 'Differs from',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
@@ -551,7 +551,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** --- Document group --- */
 
   /** The label given to a document group's base variant */
-  'document-group.base-variant': 'All users (Default)',
+  'document-group.base-variant': 'Default',
   /** The header label for the variant creation flow before a variant definition has been selected */
   'document-group.create-variant': 'Create variant',
   /** The header label for the variant creation flow once a variant definition has been selected */

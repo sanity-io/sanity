@@ -190,7 +190,7 @@ function collapseGroups(frame: HTMLElement | null) {
   }
   return {counts, closed}
 }
-const BASE_LABEL = 'Base · all visitors'
+const BASE_LABEL = 'Default'
 /** A definition's hint when it already has a version where Add to points: what exists, not an action (choosing it only selects it). */
 const alreadyIn = (d: Dest) => `In ${destTitle(d)} already`
 
@@ -647,7 +647,7 @@ export function CreateVersion(props: {
     setMode((m) => (m ? {...m, draft: {...m.draft, ...next, picked: true}} : m))
 
   const variantTitle = (id: string | undefined) =>
-    id ? (variants.find((v) => v.id === id)?.title ?? id) : 'Base'
+    id ? (variants.find((v) => v.id === id)?.title ?? id) : 'Default'
   const bundleTitle = (group: string) =>
     group === 'drafts'
       ? 'Drafts'
