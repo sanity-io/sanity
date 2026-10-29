@@ -77,6 +77,23 @@ describe('VariantsStudioNavbarLayout', () => {
     expect(screen.queryByTestId('perspective-filter-remove')).not.toBeInTheDocument()
   })
 
+  it('keeps the version filter on the default tone for published and a release', async () => {
+    usePerspectiveMockReturn.selectedPerspective = 'published'
+    const view = await renderNavbar()
+    expect(within(getFilter('Version')).getByTestId('perspective-filter-card')).toHaveAttribute(
+      'data-tone',
+      'default',
+    )
+    view.unmount()
+
+    usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
+    await renderNavbar()
+    expect(within(getFilter('Version')).getByTestId('perspective-filter-card')).toHaveAttribute(
+      'data-tone',
+      'default',
+    )
+  })
+
   it('shows version remove when a non-default perspective is selected', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
 

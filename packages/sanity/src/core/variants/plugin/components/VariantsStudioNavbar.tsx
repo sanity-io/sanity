@@ -10,7 +10,6 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
-import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../../studio/workspace'
@@ -107,9 +106,10 @@ export default function VariantsStudioNavbar({
 
   return (
     <>
+      {/* Drafts, published, and releases share one chip color. The avatar still shows the release color. */}
       <PerspectiveFilter
         prefix={t('navbar.version')}
-        tone={getReleaseTone(selectedPerspective)}
+        tone="default"
         onRemove={hasVersionSelection ? handleClearVersion : undefined}
         removeLabel={t('navbar.version.clear')}
         label={versionTitle.displayTitle}

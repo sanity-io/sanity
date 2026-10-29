@@ -22,7 +22,6 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -80,7 +79,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack, selectedVariantNames} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const ToolMenu = useToolMenuComponent()
@@ -184,9 +183,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   return (
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
+        {/* Drafts, published, and releases share one navbar color. */}
         <RootCard
           className={navbar}
-          tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"

@@ -44,7 +44,7 @@ export function PerspectiveFilter({
           {prefix}
         </Text>
       </Box>
-      <Card tone={tone} radius={2} border>
+      <Card tone={tone} radius={2} border data-testid="perspective-filter-card">
         <Flex alignItems="center">
           {label ? <AnimatedTextWidth text={label}>{children}</AnimatedTextWidth> : children}
           {onRemove && removeLabel ? (
