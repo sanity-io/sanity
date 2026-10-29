@@ -225,9 +225,85 @@
   touch-action: none;
 }
 
-.sectionResizer:hover,
 .sectionResizer[data-dragging='true'] {
   background: var(--card-shadow-ambient-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sectionResizer:hover {
+    background: var(--card-shadow-ambient-color);
+    transition: background-color 100ms ease;
+  }
+}
+
+/* Turns a quarter towards the body it opens; the glyph moves on screen, so ease in and out */
+.sectionChevron {
+  transition: transform 200ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.sectionChevron[data-expanded='true'] {
+  transform: rotate(90deg);
+}
+
+/* A body opened by the toggle settles in from just under the header; closing is immediate */
+.sectionBody[data-revealing='true'] {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .sectionBody[data-revealing='true'] {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/*
+ * Press feedback for the editor chrome's buttons: a slight give under the pointer. Icon-only
+ * buttons are small targets and take a little more.
+ */
+.pressable,
+.pressableIcon,
+.tabTitleButton,
+.tabCloseButton {
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pressable:active,
+.tabItem:not([data-dragging='true']) .tabTitleButton:active {
+  transform: scale(0.97);
+}
+
+.pressableIcon:active,
+.tabCloseButton:active {
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionChevron,
+  .pressable,
+  .pressableIcon,
+  .tabTitleButton,
+  .tabCloseButton {
+    transition: none;
+  }
+
+  .pressable:active,
+  .pressableIcon:active,
+  .tabItem .tabTitleButton:active,
+  .tabCloseButton:active {
+    transform: none;
+  }
+}
+
+/* Reduced motion: the body still fades, it just no longer moves */
+@media (prefers-reduced-motion: reduce) {
+  @starting-style {
+    .sectionBody[data-revealing='true'] {
+      transform: none;
+    }
+  }
 }
 
 .sectionResizer:focus-visible {
@@ -387,11 +463,47 @@
   border: 1px solid transparent;
   border-bottom: none;
   border-radius: 3px 3px 0 0;
-  transition: background-color 100ms;
+  transform-origin: bottom center;
 }
 
-.tab:hover {
-  background: var(--card-muted-bg-color);
+/* A tab opened by a click grows up out of the strip's bottom rule */
+.tab[data-entering='true'] {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .tab[data-entering='true'] {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @starting-style {
+    .tab[data-entering='true'] {
+      transform: none;
+    }
+  }
+}
+
+/*
+ * Hover tints ease in; selecting a tab (often from the keyboard) switches its background at once.
+ * Touch devices get no hover, which would otherwise stick after a tap.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .tab:not([data-selected='true']):hover {
+    background: var(--card-muted-bg-color);
+    transition: background-color 100ms ease;
+  }
+
+  .tab:hover .tabCloseButton {
+    opacity: 1;
+    transition:
+      opacity 100ms ease,
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
 }
 
 .tab[data-selected='true'] {
@@ -412,10 +524,8 @@
 .tabCloseButton {
   flex-shrink: 0;
   opacity: 0;
-  transition: opacity 100ms;
 }
 
-.tab:hover .tabCloseButton,
 .tab:focus-within .tabCloseButton,
 .tab[data-selected='true'] .tabCloseButton {
   opacity: 1;

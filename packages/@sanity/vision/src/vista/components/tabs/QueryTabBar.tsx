@@ -2,7 +2,7 @@ import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {Reorder, useDragControls} from 'motion/react'
+import {type Transition, Reorder, useDragControls, useReducedMotion} from 'motion/react'
 import {
   type KeyboardEvent,
   type MouseEvent,
@@ -27,6 +27,16 @@ export const QUERY_TAB_PANEL_ID = 'vista-query-tabpanel'
 export function getQueryTabId(tabId: string): string {
   return `vista-query-tab-${tabId}`
 }
+
+/**
+ * How the other tabs slide when one is dragged past them, added or closed: an ease-in-out for
+ * movement that stays on screen, short enough not to hold up the next click
+ */
+const LAYOUT_TRANSITION: Transition = {layout: {duration: 0.2, ease: [0.77, 0, 0.175, 1]}}
+/** Keyboard reorders and closes, and reduced motion, settle at once */
+const INSTANT_LAYOUT_TRANSITION: Transition = {layout: {duration: 0}}
+
+const NO_IDS: ReadonlySet<string> = new Set()
 
 function getTabTitle(tab: VistaTab, fallback: string): string {
   return tab.title || deriveTabTitle(tab.query) || fallback
@@ -82,6 +92,9 @@ interface TabHandleProps {
   tab: VistaTab
   selected: boolean
   editing: boolean
+  /** Added by a click since the strip mounted, so it fades in rather than popping into place */
+  entering: boolean
+  layoutTransition: Transition
   /** The list the tab may be dragged within */
   listRef: RefObject<HTMLDivElement | null>
   onSelect: () => void
@@ -101,6 +114,8 @@ function TabHandle(props: TabHandleProps) {
     tab,
     selected,
     editing,
+    entering,
+    layoutTransition,
     listRef,
     onSelect,
     onClose,
@@ -151,11 +166,14 @@ function TabHandle(props: TabHandleProps) {
       layout="position"
       onDragEnd={() => setDragging(false)}
       onDragStart={() => setDragging(true)}
+      transition={layoutTransition}
       value={tab}
     >
       <Flex
         alignItems="center"
         className={styles.tab}
+        // On the inner element: motion owns the item's transform
+        data-entering={entering ? 'true' : undefined}
         data-selected={selected ? 'true' : undefined}
         data-testid="vista-tab"
         gap={1}
@@ -216,6 +234,26 @@ export function QueryTabBar() {
   const activeTabId = useVistaSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
+  const reducedMotion = useReducedMotion()
+  // Whether the last change to the strip came from the keyboard. Shift+Arrow and Delete repeat
+  // fast, and a slide on every press makes the strip feel slower than the keys
+  const [keyboardDriven, setKeyboardDriven] = useState(false)
+  const layoutTransition =
+    keyboardDriven || reducedMotion ? INSTANT_LAYOUT_TRANSITION : LAYOUT_TRANSITION
+
+  // Tabs present when the strip mounts (a reload, a remount) are already in place; only tabs
+  // added afterwards by the pointer animate in
+  const [knownIds, setKnownIds] = useState(() => tabs.map((tab) => tab.id))
+  const [enteringIds, setEnteringIds] = useState(NO_IDS)
+  if (knownIds.length !== tabs.length || knownIds.some((id, i) => id !== tabs[i].id)) {
+    const known = new Set(knownIds)
+    setKnownIds(tabs.map((tab) => tab.id))
+    setEnteringIds(
+      keyboardDriven
+        ? NO_IDS
+        : new Set(tabs.filter((tab) => !known.has(tab.id)).map((tab) => tab.id)),
+    )
+  }
 
   const focusTab = useCallback((id: string) => {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
@@ -252,6 +290,7 @@ export function QueryTabBar() {
       }
       if (event.key === 'Delete') {
         event.preventDefault()
+        setKeyboardDriven(true)
         actorRef.send({type: 'tab.close', id: activeTabId})
         // The tab that takes over may be brand new (closing the last tab), so it only exists
         // after React has rendered the new snapshot
@@ -267,6 +306,7 @@ export function QueryTabBar() {
         event.preventDefault()
         const ordered = tabs.slice()
         ;[ordered[index], ordered[target]] = [ordered[target], ordered[index]]
+        setKeyboardDriven(true)
         reorder(ordered)
         return
       }
@@ -289,6 +329,7 @@ export function QueryTabBar() {
       className={styles.tabBar}
       data-testid="vista-tab-bar"
       flexShrink={0}
+      onPointerDownCapture={() => setKeyboardDriven(false)}
       paddingX={1}
     >
       <Reorder.Group
@@ -304,7 +345,9 @@ export function QueryTabBar() {
         {tabs.map((tab) => (
           <TabHandle
             editing={editingId === tab.id}
+            entering={enteringIds.has(tab.id)}
             key={tab.id}
+            layoutTransition={layoutTransition}
             listRef={listRef}
             onKeyDown={handleTabKeyDown}
             onCancelRename={() => stopRenaming(tab.id)}
@@ -323,6 +366,7 @@ export function QueryTabBar() {
       <Flex alignItems="center" paddingX={1}>
         <Button
           aria-label={t('vista.tabs.new-tab')}
+          className={styles.pressableIcon}
           data-testid="vista-new-tab"
           fontSize={1}
           icon={AddIcon}
