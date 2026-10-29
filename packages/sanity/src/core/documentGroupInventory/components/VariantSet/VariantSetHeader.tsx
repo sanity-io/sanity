@@ -3,6 +3,9 @@ import {styled} from 'styled-components'
 import {VariantSetEntry} from './VariantSetEntry'
 
 export const VariantSetHeader = styled(VariantSetEntry)`
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
   background-color: var(--card-muted-bg-color);
 
   .variant-set-leading {

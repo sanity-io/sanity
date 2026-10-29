@@ -8,12 +8,6 @@ export const Body = styled.div(() => {
     overflow-y: auto;
     overscroll-behavior: contain;
 
-    @property --start-mask-color {
-      syntax: '<color>';
-      inherits: false;
-      initial-value: #000;
-    }
-
     @property --end-mask-color {
       syntax: '<color>';
       inherits: false;
@@ -22,16 +16,13 @@ export const Body = styled.div(() => {
 
     @keyframes fade-mask {
       0% {
-        --start-mask-color: #000;
         --end-mask-color: transparent;
       }
       2%,
       98% {
-        --start-mask-color: transparent;
         --end-mask-color: transparent;
       }
       100% {
-        --start-mask-color: transparent;
         --end-mask-color: #000;
       }
     }
@@ -39,8 +30,6 @@ export const Body = styled.div(() => {
     --mask-size: 3rem;
 
     mask-image: linear-gradient(
-      to var(--direction, bottom),
-      var(--start-mask-color),
       #000 var(--mask-size),
       #000 calc(100% - var(--mask-size)),
       var(--end-mask-color)
