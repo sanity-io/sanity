@@ -631,10 +631,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (singular) */
-  'document-group.delete.confirm-button.text_one': 'Delete (1)',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (plural) */
-  'document-group.delete.confirm-button.text_other': 'Delete ({{count}})',
+  /** The label given to the delete action */
+  'document-group.delete.confirm-button.text': 'Delete',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
@@ -662,6 +660,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** The number of variants currently selected in the document group inventory */
+  'document-group.selected-count': '{{count}} selected',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */

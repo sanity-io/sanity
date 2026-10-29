@@ -1,3 +1,4 @@
+import {Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {Button as Ui5Button} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
@@ -24,7 +25,7 @@ export function InventoryHeader({
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
-  const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
+  const selectedCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
     machine.can({type: 'delete.request'}),
@@ -36,12 +37,15 @@ export function InventoryHeader({
 
   return (
     <Header>
+      {selectedCount !== 0 && (
+        <Text size={1}>{t('document-group.selected-count', {count: selectedCount})}</Text>
+      )}
       {canRequestDeletion && (
         <Ui5Button
           // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
           level="tertiary"
           tone="critical"
-          text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
+          text={t('document-group.delete.confirm-button.text')}
           onClick={() => deletionRef.send({type: 'delete.request'})}
         />
       )}

@@ -342,7 +342,7 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($crossDataset).toBeVisible()
     await expect.element($crossDataset).toMatchTextContent('1 document in another dataset')
     await expect.element($crossDataset).toMatchTextContent('Dataset: production')
-    await expect.element($dialog.getByRole('button', {name: 'Delete (2)'})).toBeEnabled()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
 
     await settleChromaticEndState()
   })
@@ -362,7 +362,7 @@ describe('ConfirmDeleteDialog', () => {
     await userEvent.click($dialog.getByText('Dataset: production'))
     await expect.element($dialog.getByText('Project ID')).toBeVisible()
     await expect.element($dialog.getByText('remote-doc')).toBeVisible()
-    await expect.element($dialog.getByRole('button', {name: 'Delete (1)'})).toBeEnabled()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
 
     await settleChromaticEndState()
   })
@@ -396,7 +396,7 @@ describe('InventoryHeader', () => {
     await expect.element($createVariant).not.toBeInTheDocument()
   })
 
-  it('offers deletion from the header once a version is selected', async () => {
+  it('counts the selection and offers deletion from the header once a version is selected', async () => {
     configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
     const refs = startHarness()
@@ -405,14 +405,19 @@ describe('InventoryHeader', () => {
     void render(<InventoryHeaderHarness {...refs} />)
 
     await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
-    await expect.element(page.getByRole('button', {name: /^Delete/})).not.toBeInTheDocument()
+    await expect.element(page.getByRole('button', {name: 'Delete'})).not.toBeInTheDocument()
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
 
     selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
 
-    const $delete = page.getByRole('button', {name: 'Delete (1)'})
+    const $delete = page.getByRole('button', {name: 'Delete', exact: true})
     await expect.element($delete).toBeVisible()
+    await expect.element(page.getByText('1 selected', {exact: true})).toBeVisible()
+
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+    await expect.element(page.getByText('2 selected', {exact: true})).toBeVisible()
     await settleChromaticEndState()
-    await takeSnapshot('one-selected')
+    await takeSnapshot('two-selected')
 
     await userEvent.click($delete)
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
