@@ -7,7 +7,7 @@ import {type ComponentDef} from '../design-options/types'
 export const BASE_DOCUMENT_NAME: ComponentDef = {
   id: 'c15',
   title: 'C15 Base document name',
-  defaultOption: 'a',
+  defaultOption: 'c',
   independent: true,
   built: true,
   scope: 'Open beta',
@@ -22,7 +22,7 @@ export const BASE_DOCUMENT_NAME: ComponentDef = {
       label: 'As today',
       summary: 'Pill: "All users". Menus: "All users (Default)". Inventory: "Base · all visitors".',
       oneLiner: 'Three names.',
-      status: 'final',
+      status: 'candidate',
     },
     {
       id: 'b',
@@ -39,8 +39,8 @@ export const BASE_DOCUMENT_NAME: ComponentDef = {
       summary:
         '"Default" everywhere. Core\'s word today, in brackets; in a pill it reads as the choice a dropdown starts on.',
       oneLiner: 'Default.',
-      status: 'candidate',
-      refs: 'Ash, Slack 29 Oct',
+      status: 'final',
+      refs: 'Ash, Slack 29 Oct; Faheem signed off 29 Oct (iconography for the default can come later)',
     },
     {
       id: 'd',
