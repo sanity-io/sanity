@@ -4,7 +4,6 @@ import {type ActorRefFromLogic} from 'xstate'
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
-import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {type variantCreationMachine} from '../machines/variantCreationMachine'
 import {Header} from './Header'
 
@@ -28,8 +27,6 @@ export function InventoryHeader({
       {canCreateVariant && (
         <Button
           text={t('document-group.create-variant')}
-          tone="suggest"
-          icon={CreateVariantIcon}
           onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
         />
       )}

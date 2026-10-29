@@ -103,7 +103,7 @@ function variant(
 const PUBLISHED = variant(PUBLISHED_ID, 'Published')
 const DRAFT = variant(`drafts.${PUBLISHED_ID}`, 'Draft', {bundleId: 'drafts'})
 // The "Summer sale" variant already exists in the ASAP release, so `SelectBundle`
-// lists that release under "view existing variants" instead of as a target.
+// lists that release under "view existing versions" instead of as a target.
 const SUMMER_SALE_IN_ASAP = variant(
   `versions.${activeASAPRelease.name}.${PUBLISHED_ID}`,
   'Summer sale',
@@ -268,7 +268,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
       </PanelFrame>,
     )
 
-    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Summer sale'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'vip-users'})).toBeVisible()
 
@@ -291,7 +291,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
     )
 
     await expect
-      .element(page.getByRole('button', {name: 'Create variant for Summer sale'}))
+      .element(page.getByRole('button', {name: 'Create version for Summer sale'}))
       .toBeVisible()
     await expect.element(page.getByText('As a draft')).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Drafts'})).toBeEnabled()
@@ -303,7 +303,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
       .element(page.getByRole('button', {name: activeUndecidedRelease.metadata.title}))
       .toBeEnabled()
     // Already holds a "Summer sale" variant, so it is offered for viewing, not as a target.
-    await expect.element(page.getByText('Or view existing variants')).toBeVisible()
+    await expect.element(page.getByText('Or view existing versions')).toBeVisible()
     await expect
       .element(page.getByRole('button', {name: activeASAPRelease.metadata.title}))
       .toBeEnabled()
@@ -381,7 +381,7 @@ describe('InventoryHeader', () => {
       </PanelFrame>,
     )
 
-    const $createVariant = page.getByRole('button', {name: 'Create variant'})
+    const $createVariant = page.getByRole('button', {name: 'Create version'})
     await expect.element($createVariant).toBeVisible()
     await settleChromaticEndState()
     await takeSnapshot('nothing-selected')
