@@ -57,10 +57,8 @@ interface Connection {
 export interface ClientControls {
   commits: CommitPolicy
   listener: ListenerPolicy
-  pendingCommits: () => number
   acceptNextCommit: () => void
   rejectNextCommit: (statusCode: number, description?: string) => void
-  heldEvents: () => number
   releaseHeldEvents: (options?: {count?: number; order?: 'fifo' | 'reverse'}) => void
   dropNextHeldEvent: () => void
   disconnect: () => void
@@ -146,12 +144,9 @@ export class FakeContentLake {
     const controls: ClientControls = {
       commits: {mode: 'auto', latencyMs: 0},
       listener: {mode: 'auto', latencyMs: 0},
-      pendingCommits: () => this.pendingFor(clientId).length,
       acceptNextCommit: () => this.settleNextCommit(clientId, undefined),
       rejectNextCommit: (statusCode, description = `Rejected with ${statusCode}`) =>
         this.settleNextCommit(clientId, httpError(statusCode, description)),
-      heldEvents: () =>
-        this.connectionsOf(clientId).reduce((sum, connection) => sum + connection.held.length, 0),
       releaseHeldEvents: (options) => this.releaseHeld(clientId, options),
       dropNextHeldEvent: () =>
         this.connectionsOf(clientId).forEach((connection) => connection.held.shift()),
@@ -287,57 +282,19 @@ export class FakeContentLake {
 
   private actionsToMutations(actions: Action[]): MutationPayload[] {
     return actions.flatMap((action): MutationPayload[] => {
-      switch (action.actionType) {
-        case 'sanity.action.document.edit': {
-          const draft = this.get(action.draftId)
-          const published = this.get(action.publishedId)
-          if (draft === null && published === null) {
-            throw httpError(404, `Neither ${action.draftId} nor ${action.publishedId} exists`)
-          }
-          const materialise: MutationPayload[] =
-            draft === null && published
-              ? [{createIfNotExists: {...stripSystemFields(published), _id: action.draftId}}]
-              : []
-          return [...materialise, {patch: {id: action.draftId, ...action.patch}}]
+      if (action.actionType === 'sanity.action.document.edit') {
+        const draft = this.get(action.draftId)
+        const published = this.get(action.publishedId)
+        if (draft === null && published === null) {
+          throw httpError(404, `Neither ${action.draftId} nor ${action.publishedId} exists`)
         }
-        case 'sanity.action.document.create': {
-          const id = action.attributes._id
-          if (this.get(id) && action.ifExists === 'fail') {
-            throw httpError(409, `Document ${id} already exists`)
-          }
-          return [{createIfNotExists: action.attributes}]
-        }
-        case 'sanity.action.document.publish': {
-          const draft = this.get(action.draftId)
-          const published = this.get(action.publishedId)
-          if (draft === null) throw httpError(404, `Draft ${action.draftId} does not exist`)
-          if (revisionConflicts(action.ifPublishedRevisionId, published?._rev)) {
-            throw httpError(409, `Published revision mismatch`)
-          }
-          return [
-            {createOrReplace: {...stripSystemFields(draft), _id: action.publishedId}},
-            {delete: {id: action.draftId}},
-          ]
-        }
-        case 'sanity.action.document.version.discard':
-          return [{delete: {id: action.versionId}}]
-        case 'sanity.action.document.unpublish': {
-          const published = this.get(action.publishedId)
-          if (published === null) {
-            throw httpError(404, `Published ${action.publishedId} does not exist`)
-          }
-          return [
-            {createIfNotExists: {...stripSystemFields(published), _id: action.draftId}},
-            {delete: {id: action.publishedId}},
-          ]
-        }
-        case 'sanity.action.document.delete':
-          return [action.publishedId, ...(action.includeDrafts ?? [])].map((id) => ({
-            delete: {id},
-          }))
-        default:
-          throw httpError(400, `Unsupported action type ${action.actionType}`)
+        const materialise: MutationPayload[] =
+          draft === null && published
+            ? [{createIfNotExists: {...stripSystemFields(published), _id: action.draftId}}]
+            : []
+        return [...materialise, {patch: {id: action.draftId, ...action.patch}}]
       }
+      throw httpError(400, `Unsupported action type ${action.actionType}`)
     })
   }
 
