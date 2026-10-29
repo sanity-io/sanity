@@ -52,6 +52,7 @@ export default defineConfig({
       'packages/@repo/oxlint-plugin-i18n',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
+      'packages/@repo/content-lake-model',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
       // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);

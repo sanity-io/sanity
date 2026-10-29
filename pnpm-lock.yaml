@@ -1228,6 +1228,25 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.5)
 
+  packages/@repo/content-lake-model:
+    dependencies:
+      '@sanity/mutate':
+        specifier: ^0.18.2
+        version: 0.18.2(vitest@5.0.4)(xstate@5.33.3)
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      mendoza:
+        specifier: ^3.0.8
+        version: 3.0.8
+      vitest:
+        specifier: ^5.0.4
+        version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.5)
+
   packages/@repo/css-modules-kit:
     devDependencies:
       '@css-modules-kit/codegen':
@@ -2474,6 +2493,9 @@ importers:
       '@pandacss/vite':
         specifier: 'catalog:'
         version: 2.4.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.5)
+      '@repo/content-lake-model':
+        specifier: workspace:*
+        version: link:../@repo/content-lake-model
       '@repo/package.bundle':
         specifier: workspace:*
         version: link:../@repo/package.bundle
@@ -2603,6 +2625,9 @@ importers:
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
+      '@repo/content-lake-model':
+        specifier: workspace:*
+        version: link:../../packages/@repo/content-lake-model
       '@repo/debug-proxy':
         specifier: workspace:*
         version: link:../../packages/@repo/debug-proxy
@@ -2612,9 +2637,6 @@ importers:
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.14.1(vitest@5.0.4)
-      '@sanity/mutator':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/mutator
       '@vitejs/plugin-basic-ssl':
         specifier: ^2.3.0
         version: 2.3.0(vite@8.3.5)

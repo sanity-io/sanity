@@ -1,8 +1,7 @@
 /**
  * `bench run` — the benchmark runner (parser only; the implementation loads
  * lazily from runImpl.ts so CLI commands that don't need the runner — e.g.
- * prepare-reference and report in CI — never resolve its workspace imports
- * such as @sanity/mutator, which may not be built in those jobs).
+ * prepare-reference and report in CI — never load it).
  * - Absolute mode: `bench run --scenario singleString` (one build).
  * - A/B mode: add `--reference-dist <path>` — interleaved sampling with
  *   dynamic stopping and bootstrap CIs (runner/orchestrator.ts). For a local

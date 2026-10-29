@@ -130,6 +130,7 @@
       "project": [
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
+        "test/sync/*.ts",
       ],
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
@@ -205,6 +206,9 @@
       ],
     },
     "packages/@repo/utils": {
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/content-lake-model": {
       "project": ["src/**/*.ts"],
     },
     "engine-confidence": {
