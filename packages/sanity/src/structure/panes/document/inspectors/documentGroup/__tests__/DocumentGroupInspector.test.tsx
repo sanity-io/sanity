@@ -16,6 +16,7 @@ import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspe
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../useDocumentPane'
+import {CompareVersionsAction} from '../CompareVersionsAction'
 import {DocumentGroupInspector} from '../DocumentGroupInspector'
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -163,6 +164,16 @@ describe('DocumentGroupInspector', () => {
       mode: 'manage',
       documentId: 'drafts.doc-123',
       documentType: 'author',
+    })
+  })
+
+  test('gives the inventory the compare versions action for its header', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    expect(lastInventoryProps()).toMatchObject({
+      components: expect.objectContaining({CompareVersionsAction}),
     })
   })
 

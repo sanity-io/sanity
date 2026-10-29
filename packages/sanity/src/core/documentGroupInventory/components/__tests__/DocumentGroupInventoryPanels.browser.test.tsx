@@ -146,6 +146,11 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
       <Text size={1}>{documentVersions.join(', ')}</Text>
     </Card>
   ),
+  CompareVersionsAction: () => (
+    <Card padding={2} radius={2} border data-testid="compare-versions-action">
+      <Text size={1}>Compare versions</Text>
+    </Card>
+  ),
 }
 
 /**
@@ -368,10 +373,14 @@ describe('ConfirmDeleteDialog', () => {
   })
 })
 
-function InventoryHeaderHarness(refs: ReturnType<typeof startHarness>) {
+function InventoryHeaderHarness(
+  props: ReturnType<typeof startHarness> & {
+    components: DocumentGroupInventoryComponents | undefined
+  },
+) {
   return (
     <PanelFrame>
-      <InventoryHeader {...refs} />
+      <InventoryHeader {...props} />
     </PanelFrame>
   )
 }
@@ -384,10 +393,11 @@ describe('InventoryHeader', () => {
     const refs = startHarness()
     const {variantCreationRef} = refs
 
-    void render(<InventoryHeaderHarness {...refs} />)
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
 
     const $createVariant = page.getByRole('button', {name: 'Create version'})
     await expect.element($createVariant).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
     await settleChromaticEndState()
     await takeSnapshot('nothing-selected')
 
@@ -402,7 +412,7 @@ describe('InventoryHeader', () => {
     const refs = startHarness()
     const {selectionRef, deletionRef} = refs
 
-    void render(<InventoryHeaderHarness {...refs} />)
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
 
     await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Delete'})).not.toBeInTheDocument()
@@ -421,5 +431,17 @@ describe('InventoryHeader', () => {
 
     await userEvent.click($delete)
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
+  })
+
+  it('renders no compare versions action without the consumer components of manage mode', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+
+    void render(<InventoryHeaderHarness {...refs} components={undefined} />)
+
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
+
+    await settleChromaticEndState()
   })
 })

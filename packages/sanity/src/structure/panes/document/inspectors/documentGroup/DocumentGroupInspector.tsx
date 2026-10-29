@@ -28,12 +28,14 @@ import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspecti
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
+import {CompareVersionsAction} from './CompareVersionsAction'
 import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
   ReferencePreviewLink,
   VersionsPreviewList,
+  CompareVersionsAction,
 }
 
 export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX.Element {

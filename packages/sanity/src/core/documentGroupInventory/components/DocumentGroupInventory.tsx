@@ -373,6 +373,7 @@ export function DocumentGroupInventory(
                 selectionRef={selectionRef}
                 deletionRef={deletionRef}
                 variantCreationRef={variantCreationRef}
+                components={components}
               />
             )}
             <Body>

@@ -9,6 +9,7 @@ import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type deletionMachine} from '../machines/deletionMachine'
 import {type selectionMachine} from '../machines/selectionMachine'
 import {type variantCreationMachine} from '../machines/variantCreationMachine'
+import {type DocumentGroupInventoryComponents} from '../types'
 import {Header} from './Header'
 
 /**
@@ -19,10 +20,13 @@ export function InventoryHeader({
   selectionRef,
   deletionRef,
   variantCreationRef,
+  components,
 }: {
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
+  /** Absent in read-only mode, where the consumer supplies no pane-coupled components. */
+  components: DocumentGroupInventoryComponents | undefined
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const selectedCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
@@ -49,6 +53,7 @@ export function InventoryHeader({
           onClick={() => deletionRef.send({type: 'delete.request'})}
         />
       )}
+      {components && <components.CompareVersionsAction />}
       {canCreateVariant && (
         <Button
           text={t('document-group.create-variant')}
