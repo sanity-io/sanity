@@ -623,10 +623,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
   /** The versions popover: a line's most recent activity when it is an edit (a draft or a release version), "Edited 3 days ago" */
   'document-group.status.edited-when': 'Edited {{when}}',
-  /** The versions popover's last line, when not every audience fits */
-  'document-group.status.more_one': 'and {{count}} more version',
-  /** The versions popover's last line, when not every audience fits */
-  'document-group.status.more_other': 'and {{count}} more versions',
+  /** The versions popover's last line, when not every audience fits: the versions not shown, "+ 1 version" */
+  'document-group.status.more_one': '+ {{count}} version',
+  /** The versions popover's last line, when not every audience fits: the versions not shown, "+ 6 versions" */
+  'document-group.status.more_other': '+ {{count}} versions',
   /** The versions popover: a line's most recent activity when it is the published version, "Published 1 day ago" */
   'document-group.status.published-when': 'Published {{when}}',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
