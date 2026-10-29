@@ -28,6 +28,7 @@ import {
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
+import {useColorSchemeInternalValue, useColorSchemeSetValue} from 'sanity'
 
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
@@ -663,6 +664,25 @@ function settingsSummary(state: State): string {
 }
 
 /** The settings, in three groups named by what they change: World (data and scope), Look (how things are drawn), Options for all. */
+// The studio's own Light / Dark / System setting. Inside the Dashboard the studio hides its user menu (where core keeps this switch), and the
+// Dashboard's Theme does not reach the studio, so without this the studio follows the system appearance only (Faheem, 29 Oct).
+function ThemeControl() {
+  const scheme = useColorSchemeInternalValue()
+  const setScheme = useColorSchemeSetValue()
+  return (
+    <Segmented
+      ariaLabel="Theme"
+      onChange={(value) => (setScheme ? setScheme(value) : undefined)}
+      options={[
+        {value: 'light', label: 'Light', title: 'Light, whatever the system says'},
+        {value: 'dark', label: 'Dark', title: 'Dark, whatever the system says'},
+        {value: 'system', label: 'System', title: 'Follow the system appearance (the default)'},
+      ]}
+      value={scheme}
+    />
+  )
+}
+
 function SettingsGroups({
   state,
   showOptions,
@@ -741,6 +761,7 @@ function SettingsGroups({
           ? group(
               'Look',
               <>
+                {control('Theme', <ThemeControl />)}
                 {control(
                   'Shape',
                   <Segmented
