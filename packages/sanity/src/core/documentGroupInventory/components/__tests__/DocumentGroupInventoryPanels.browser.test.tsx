@@ -433,6 +433,30 @@ describe('InventoryHeader', () => {
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
   })
 
+  it('swaps the group actions for deselect all while versions are selected', async () => {
+    // The selected header is archived by the test above, and this one ends
+    // back on the empty header.
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness()
+    const {selectionRef} = refs
+    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $deselectAll = page.getByRole('button', {name: 'Deselect all'})
+    await expect.element($deselectAll).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create version'})).not.toBeInTheDocument()
+    await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
+
+    await userEvent.click($deselectAll)
+
+    expect(selectionRef.getSnapshot().context.selectedIds.size).toBe(0)
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+  })
+
   it('renders no compare versions action without the consumer components of manage mode', async () => {
     const {settleChromaticEndState} = testHelpers()
     const refs = startHarness()
