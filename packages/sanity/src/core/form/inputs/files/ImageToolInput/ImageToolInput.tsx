@@ -1,6 +1,16 @@
-import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
+import {
+  type Image,
+  type ImageCropDimensions,
+  type ImageOptions,
+  type ImageSchemaType,
+} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {getImageRefDimensions, resolveAspectRatio} from '@sanity/util/image'
+import {
+  croppedDimensions,
+  cropToPixelRect,
+  getImageRefDimensions,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -28,7 +38,13 @@ import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
 import {type CropConstraints} from './imagetool/types'
 import {placeholder} from './ImageToolInput.css'
-import {getImageToolPath, isHotspotEnabled} from './imageToolOptions'
+import {
+  getCropSizeStatus,
+  getHotspotPreviews,
+  getImageToolPath,
+  hasCropSizeReadout,
+  isHotspotEnabled,
+} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -50,13 +66,6 @@ function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
   )
 }
 
-const DEFAULT_PREVIEWS: HotspotPreview[] = [
-  {title: '3:4', aspectRatio: 3 / 4},
-  {title: 'Square', aspectRatio: 1 / 1},
-  {title: '16:9', aspectRatio: 16 / 9},
-  {title: 'Panorama', aspectRatio: 4 / 1},
-] as const
-
 const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
@@ -71,6 +80,37 @@ function LoadStatus(props: {children: ReactNode}) {
       style={{overflowWrap: 'break-word'}}
     >
       {props.children}
+    </Flex>
+  )
+}
+
+function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions | undefined}) {
+  const {dimensions, options} = props
+  const {t} = useTranslation()
+  const {tone, threshold} = getCropSizeStatus(dimensions, options)
+
+  return (
+    <Flex
+      marginTop={2}
+      gap={2}
+      alignItems="center"
+      flexWrap="wrap"
+      data-testid="image-tool-crop-size"
+      data-tone={tone ?? 'default'}
+    >
+      <Text size={1} weight="medium" tone={tone}>
+        {t('inputs.imagetool.crop-size.dimensions', {...dimensions})}
+      </Text>
+      {tone === 'critical' ? (
+        <Text size={1} tone={tone}>
+          {t('inputs.imagetool.crop-size.below-minimum', {...threshold})}
+        </Text>
+      ) : null}
+      {tone === 'caution' ? (
+        <Text size={1} tone={tone}>
+          {t('inputs.imagetool.crop-size.below-recommended', {...threshold})}
+        </Text>
+      ) : null}
     </Flex>
   )
 }
@@ -123,9 +163,12 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   const hasFocus = focusPath[0] === imageToolPath[0]
 
-  const hotspotPreviews =
-    (typeof schemaType.options?.hotspot === 'object' && schemaType.options.hotspot.previews) ||
-    DEFAULT_PREVIEWS
+  const hotspotPreviews = getHotspotPreviews(schemaType.options)
+
+  const cropSize =
+    sourceSize && hasCropSizeReadout(schemaType.options)
+      ? croppedDimensions(cropToPixelRect(localValue.crop || DEFAULT_CROP, sourceSize))
+      : undefined
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
@@ -251,11 +294,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
           </ChangeIndicator>
         </Card>
 
+        {cropSize ? <CropSize dimensions={cropSize} options={schemaType.options} /> : null}
+
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
             <Grid gridTemplateColumns="repeat(4, minmax(0, 1fr))" gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
-                <Box key={title} marginTop={2}>
+                <Box key={`${title}-${aspectRatio}`} marginTop={2}>
                   <Heading as="h4" size={0}>
                     {title}
                   </Heading>
