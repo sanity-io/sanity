@@ -1,0 +1,12 @@
+{
+  "id": "ENG-006",
+  "title": "Listener stall watchdog is never armed, so a silent listener is not restarted when the session's own saves are not echoed",
+  "severity": "S1",
+  "failureClass": "silent listener never recovered (pair stops receiving listener events)",
+  "source": "Multiplayer incident where a session's listener went silent and kept showing a paragraph another editor deleted; listener stall watchdog (watchForListenerStall) in getPairListener",
+  "filesTouched": ["packages/sanity/src/core/store/document/getPairListener.ts"],
+  "userVisibleEffect": "A session whose listener goes silent, or holds events forever in the multi-document transaction buffer, keeps showing a paragraph another editor deleted; edits to it save as no-ops with no warning, and nothing restarts the listener or reloads the document",
+  "notApplicableSuites": ["unit:mutator", "fuzz:pt"],
+  "expectedCaughtBy": ["unit:engine"],
+  "addedOn": "2026-10-29"
+}

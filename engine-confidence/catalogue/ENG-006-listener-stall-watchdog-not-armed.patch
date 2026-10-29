@@ -1,0 +1,16 @@
+diff --git a/packages/sanity/src/core/store/document/getPairListener.ts b/packages/sanity/src/core/store/document/getPairListener.ts
+index 0e886b3b28..198f64bdf7 100644
+--- a/packages/sanity/src/core/store/document/getPairListener.ts
++++ b/packages/sanity/src/core/store/document/getPairListener.ts
+@@ -273,10 +273,7 @@ export function getPairListener(
+   )
+ 
+   const deliveredEvents$ = merge(draftEvents$, publishedEvents$, versionEvents$)
+-  const {commitAcknowledged$} = options
+-  const watchedEvents$ = commitAcknowledged$
+-    ? deliveredEvents$.pipe(watchForListenerStall({serverEvents$, commitAcknowledged$}))
+-    : deliveredEvents$
++  const watchedEvents$ = deliveredEvents$
+ 
+   return watchedEvents$.pipe(
+     catchError((err, caught$) => {
