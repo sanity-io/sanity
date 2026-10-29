@@ -9,8 +9,8 @@ import {
 import {
   describeAspectRatio,
   dimensionsAtLeast,
+  dimensionsMatchConstraint,
   getCroppedImageDimensions,
-  ratioMatchesConstraint,
   resolveAspectRatio,
 } from '@sanity/util/image'
 
@@ -50,7 +50,7 @@ function checkAspectRatio(
   }
   const resolved = resolveAspectRatio(aspectRatio)
   const actualRatio = dimensions.width / dimensions.height
-  if (ratioMatchesConstraint(actualRatio, resolved)) {
+  if (dimensionsMatchConstraint(dimensions, resolved)) {
     return []
   }
   return [

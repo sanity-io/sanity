@@ -692,6 +692,7 @@ describe('image crop option inference', () => {
   const SQUARE = 'image-a3-1000x1000-png'
   const FOUR_BY_THREE = 'image-a4-1200x900-jpg'
   const SMALL_WIDE = 'image-a5-640x360-jpg'
+  const SMALL_THREE_BY_TWO = 'image-a11-600x400-jpg'
 
   function imageValue(ref: string, crop?: Record<string, number>) {
     return {
@@ -722,6 +723,12 @@ describe('image crop option inference', () => {
 
   afterEach(() => {
     expect(client.fetch).not.toHaveBeenCalled()
+  })
+
+  test('accepts a minimum-size crop the crop tool writes on a small image', async () => {
+    await expect(
+      validateFields({fixed: imageValue(SMALL_THREE_BY_TWO, {right: 0.94074, bottom: 0.95})}),
+    ).resolves.toEqual([])
   })
 
   test('errors when an uncropped image does not match a fixed ratio', async () => {
