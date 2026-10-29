@@ -28,8 +28,11 @@ const MIN_WIDTH = 400
 const MAX_WIDTH = 440
 /** Every line's padding, the last line's too: 8px top, right and bottom, 12px before the name (open beta design, Figma 751:161463). */
 const LINE_PADDING = '8px 8px 8px 12px'
-/** An audience line's height: Figma's 17px glyph box plus the 8px above and below; the glyphs here are trimmed to their cap height. */
+/** Every line's height, the last line's too: Figma's 17px glyph box plus the 8px above and below; the glyphs here are trimmed to their cap height. */
 const LINE_MIN_HEIGHT = 33
+/** The 1px divider above every line but the first. Figma draws it above the line's 33px, so a divided line is 34px and starts 1px lower. */
+const DIVIDER = 1
+const DIVIDED_LINE_PADDING = `${8 + DIVIDER}px 8px 8px 12px`
 
 type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
 
@@ -126,8 +129,8 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
             key={group.variantId ?? 'default'}
             style={{
               boxShadow: index ? 'inset 0 1px 0 var(--card-hairline-soft-color)' : undefined,
-              padding: LINE_PADDING,
-              minHeight: LINE_MIN_HEIGHT,
+              padding: index ? DIVIDED_LINE_PADDING : LINE_PADDING,
+              minHeight: LINE_MIN_HEIGHT + (index ? DIVIDER : 0),
             }}
           >
             {/* The audience's name takes the room left; it ends in an ellipsis before anything else gives way (down to 96px). */}
@@ -152,7 +155,17 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
         )
       })}
       {more > 0 ? (
-        <Card borderTop data-testid="document-versions-status-more" style={{padding: LINE_PADDING}}>
+        <Card
+          borderTop
+          data-testid="document-versions-status-more"
+          style={{
+            // The card's top border is the divider: centred below it, as the audience lines.
+            alignItems: 'center',
+            display: 'flex',
+            minHeight: LINE_MIN_HEIGHT + DIVIDER,
+            padding: LINE_PADDING,
+          }}
+        >
           <Text muted size={1}>
             {t('document-group.status.more', {count: more})}
           </Text>
