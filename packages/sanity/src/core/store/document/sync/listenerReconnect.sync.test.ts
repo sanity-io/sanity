@@ -67,8 +67,7 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     expect(world.clients.A.transactionLocked()).toBe(false)
   })
 
-  // The listener drops the first half of a publish when the connection resumes mid transaction, so B keeps the deleted draft.
-  test.fails('LSN-RECONNECT-MID-TX-RESUME: B converges after a resumed reconnect', async () => {
+  test('LSN-RECONNECT-MID-TX-RESUME: B converges after a resumed reconnect', async () => {
     world = await runSyncTest(reconnectMidTransaction(true))
     expectConverged(world)
     expectHealthy(world)
@@ -79,8 +78,7 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     expectConverged(world)
   })
 
-  // The late second half of the transaction waits forever for its sibling, so the form stays locked.
-  test.fails('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
+  test('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
     world = await runSyncTest(reconnectMidTransaction(false))
     expectHealthy(world)
   })
