@@ -120,7 +120,9 @@ describe('createBatchedGetDocumentExists', () => {
     await expect(cancelled).rejects.toBe(reason)
     await expect(active).resolves.toBe(true)
     expect(mockClient.request).toHaveBeenCalledOnce()
-    expect(mockClient.request).toHaveBeenCalledWith(expect.objectContaining({signal: undefined}))
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({signal: expect.any(AbortSignal)}),
+    )
   })
 
   it('cancels one caller without aborting a shared request', async () => {
@@ -149,7 +151,40 @@ describe('createBatchedGetDocumentExists', () => {
     resolveResponse({omitted: []})
     await expect(active).resolves.toBe(true)
     expect(mockClient.request).toHaveBeenCalledOnce()
-    expect(mockClient.request).toHaveBeenCalledWith(expect.objectContaining({signal: undefined}))
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({signal: expect.any(AbortSignal)}),
+    )
+  })
+
+  it('cancels an abandoned request and starts the next batch', async () => {
+    const controllers = Array.from({length: MAX_BUFFER_SIZE}, () => new AbortController())
+    const reason = new Error('cancelled')
+    let requestCount = 0
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      request: vi.fn(({signal}: {signal?: AbortSignal}) => {
+        requestCount += 1
+        if (requestCount > 1) return Promise.resolve({omitted: []})
+        return new Promise((_resolve, reject) => {
+          signal?.addEventListener('abort', () => reject(signal.reason), {once: true})
+        })
+      }),
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+    const abandonedChecks = controllers.map((controller, index) =>
+      getDocumentExists({id: index.toString(), signal: controller.signal}),
+    )
+    const settledChecks = Promise.allSettled(abandonedChecks)
+
+    await vi.waitFor(() => expect(mockClient.request).toHaveBeenCalledOnce())
+    const nextCheck = getDocumentExists({id: 'next'})
+    for (const controller of controllers) controller.abort(reason)
+
+    await expect(settledChecks).resolves.toEqual(
+      abandonedChecks.map(() => ({status: 'rejected', reason}) satisfies PromiseRejectedResult),
+    )
+    await expect(nextCheck).resolves.toBe(true)
+    expect(mockClient.request).toHaveBeenCalledTimes(2)
   })
 
   it('cancels active and queued batches with the default signal', async () => {
