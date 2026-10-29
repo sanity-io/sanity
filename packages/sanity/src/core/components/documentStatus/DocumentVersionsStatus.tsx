@@ -21,8 +21,6 @@ import {
 
 /** Lines (the base document, then the audiences) the popover shows before its last line counts the rest. */
 const MAX_LINES = 7
-/** Glyphs a line shows before a "+N" stands for the others. */
-const SHOWN_GLYPHS = 4
 /** The popover's width: 400px as the v1 design draws it, up to 440px when a line needs it. */
 const MIN_WIDTH = 400
 const MAX_WIDTH = 440
@@ -63,10 +61,24 @@ const byGlyphOrder = (left: DocumentVersionStatusItem, right: DocumentVersionSta
   GLYPH_ORDER[stateOf(left)] - GLYPH_ORDER[stateOf(right)] || releaseDate(left) - releaseDate(right)
 
 /**
+ * A line's glyphs: three at most, one per slot, drawn release · ring · disc, so published is always first from the right (the Document
+ * Status Icons rule; Figma 751:161463). The release is the line's first by the order above; the others are not counted.
+ */
+function glyphsOf(sorted: readonly DocumentVersionStatusItem[]): DocumentVersionStatusItem[] {
+  const isRelease = (item: DocumentVersionStatusItem) =>
+    stateOf(item) !== 'published' && stateOf(item) !== 'draft'
+  return [
+    sorted.find(isRelease),
+    sorted.find((item) => stateOf(item) === 'draft'),
+    sorted.find((item) => stateOf(item) === 'published'),
+  ].filter((item): item is DocumentVersionStatusItem => item !== undefined)
+}
+
+/**
  * PROPOSED (the v1 versions popover, Variants open beta): what a document's status icons show on hover. One line per audience: the base
  * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Faheem, 22 Oct: each line is the
- * audience's name, ONE muted phrase for the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago", then a glyph per
- * version at the right edge (published, draft, then its releases by date; four at most, then "+N"; open beta design, Figma 751:161463). Release names are not shown (the inventory has them).
+ * audience's name, ONE muted phrase for the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago", then three glyphs
+ * at most at the right edge, one per slot: the first release, the draft, then published (open beta design, Figma 751:161463). Release names are not shown (the inventory has them).
  * After seven lines a muted last line counts the versions not shown. Information only: nothing in it is clickable.
  *
  * @internal
@@ -116,8 +128,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
       style={{margin: -8, maxWidth: MAX_WIDTH, minWidth: MIN_WIDTH, width: 'max-content'}}
     >
       {shown.map((group, index) => {
-        const items = group.items.toSorted(byGlyphOrder)
-        const hidden = items.length - SHOWN_GLYPHS
+        const glyphs = glyphsOf(group.items.toSorted(byGlyphOrder))
         const latest = group.items.reduce((newest, item) =>
           editedAt(item) > editedAt(newest) ? item : newest,
         )
@@ -144,12 +155,9 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
             <LatestActivity item={latest} />
             {/* The glyphs close the line, at its right edge. */}
             <Flex align="center" data-testid="audience-line-glyphs" flex="none">
-              {items.slice(0, SHOWN_GLYPHS).map((item) => (
+              {glyphs.map((item) => (
                 <Glyph item={item} key={item.version._id} />
               ))}
-              {hidden > 0 ? (
-                <Text data-testid="state-more" muted size={1}>{`+${hidden}`}</Text>
-              ) : null}
             </Flex>
           </Flex>
         )

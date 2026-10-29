@@ -203,6 +203,17 @@ describe('DocumentVersionsStatus', () => {
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
+  it('draws the glyphs ring then disc, published at the right edge, with no count', async () => {
+    await renderStatus({versions: [publishedDefault, draftDefault]})
+
+    const glyphs = screen.getByTestId('audience-line-glyphs')
+    const states = Array.from(glyphs.querySelectorAll('[data-state]'), (el) =>
+      el.getAttribute('data-state'),
+    )
+    expect(states).toEqual(['draft', 'published'])
+    expect(screen.queryByTestId('state-more')).not.toBeInTheDocument()
+  })
+
   it('does not render variant documents when variants are disabled', async () => {
     await renderStatus({
       versions: [publishedDefault, draftDefault, publishedVariant, draftVariant],
