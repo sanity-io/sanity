@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 import {
   clampRatio,
   describeAspectRatio,
+  dimensionsMatchConstraint,
   formatAspectRatio,
   FREE_ASPECT_RATIO_RANGE,
   nearestRatio,
@@ -91,6 +92,42 @@ describe('ratioMatchesConstraint', () => {
 
   it('accepts a custom tolerance', () => {
     expect(ratioMatchesConstraint(1.1, resolveAspectRatio(1), 0.2)).toBe(true)
+  })
+})
+
+describe('dimensionsMatchConstraint', () => {
+  it('matches whole-pixel sizes that rounding moved off a fixed ratio', () => {
+    const fixed = resolveAspectRatio(16 / 9)
+    expect(dimensionsMatchConstraint({width: 1600, height: 900}, fixed)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 36, height: 20}, fixed)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 27, height: 20}, fixed)).toBe(false)
+    expect(dimensionsMatchConstraint({width: 10, height: 0}, fixed)).toBe(false)
+  })
+
+  it('matches a near-square size and rejects a different ratio', () => {
+    const square = resolveAspectRatio(1)
+    expect(dimensionsMatchConstraint({width: 53, height: 52}, square)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 1200, height: 900}, square)).toBe(false)
+  })
+
+  it('matches a size inside a range and rejects one outside it', () => {
+    const range = resolveAspectRatio(RANGE)
+    expect(dimensionsMatchConstraint({width: 150, height: 100}, range)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 100, height: 100}, range)).toBe(false)
+    expect(dimensionsMatchConstraint({width: 200, height: 100}, range)).toBe(false)
+  })
+
+  it('matches a snap-list member and rejects a size between members', () => {
+    const snap = resolveAspectRatio([1, 16 / 9])
+    expect(dimensionsMatchConstraint({width: 100, height: 100}, snap)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 36, height: 20}, snap)).toBe(true)
+    expect(dimensionsMatchConstraint({width: 150, height: 100}, snap)).toBe(false)
+  })
+
+  it('accepts a custom tolerance', () => {
+    expect(dimensionsMatchConstraint({width: 110, height: 100}, resolveAspectRatio(1), 0.2)).toBe(
+      true,
+    )
   })
 })
 

@@ -1,4 +1,8 @@
-import {type ImageAspectRatio, type ImageAspectRatioRange} from '@sanity/types'
+import {
+  type ImageAspectRatio,
+  type ImageAspectRatioRange,
+  type ImageCropDimensions,
+} from '@sanity/types'
 
 /**
  * An authored {@link ImageAspectRatio} resolved into the range the crop must stay within, plus the
@@ -18,8 +22,10 @@ export interface ResolvedImageAspectRatio {
  */
 export const FREE_ASPECT_RATIO_RANGE: ImageAspectRatioRange = {min: 0.01, max: 100}
 
-// Absorbs sub-pixel rounding in stored crops while still rejecting a genuinely different ratio.
+// Slack on the ratio itself; rounding to whole pixels is handled separately.
 const RATIO_MATCH_TOLERANCE = 0.01
+
+const HALF_PIXEL = 0.5
 
 // Keeps 2.35 from rendering as 47:20.
 const MAX_LABEL_DENOMINATOR = 16
@@ -78,6 +84,25 @@ export function ratioMatchesConstraint(
 ): boolean {
   const target = snapRatios ? nearestRatio(ratio, snapRatios) : clampRatio(ratio, range)
   return Math.abs(ratio - target) <= target * tolerance
+}
+
+/**
+ * Whether a whole-pixel size could have come from a size within half a pixel per axis whose ratio
+ * satisfies the constraint, so rounding a small crop to pixels never fails it.
+ *
+ * @internal
+ */
+export function dimensionsMatchConstraint(
+  {width, height}: ImageCropDimensions,
+  {range, snapRatios}: ResolvedImageAspectRatio,
+  tolerance = RATIO_MATCH_TOLERANCE,
+): boolean {
+  const narrowest = (width - HALF_PIXEL) / (height + HALF_PIXEL)
+  const widest = (width + HALF_PIXEL) / (height - HALF_PIXEL)
+  const allowed = snapRatios ? snapRatios.map((ratio) => ({min: ratio, max: ratio})) : [range]
+  return allowed.some(
+    ({min, max}) => narrowest <= max * (1 + tolerance) && widest >= min * (1 - tolerance),
+  )
 }
 
 /**
