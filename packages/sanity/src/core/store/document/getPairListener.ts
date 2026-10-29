@@ -125,6 +125,23 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   )
 }
 
+interface TransactionBufferState {
+  next: ListenerEvent[]
+  buffer: MutationEvent[]
+  supersededTransactionIds: Set<string>
+}
+
+function supersedeBuffer(
+  acc: TransactionBufferState,
+  snapshot: InitialSnapshotEvent,
+): TransactionBufferState {
+  return {
+    next: [snapshot, PENDING_END],
+    buffer: [],
+    supersededTransactionIds: new Set(acc.buffer.map((event) => event.transactionId)),
+  }
+}
+
 /** @internal */
 export function getPairListener(
   _client: SanityClient,
@@ -193,42 +210,45 @@ export function getPairListener(
           )
         : of(event)
     }),
-    scan(
-      (
-        acc: {
-          next: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
-          buffer: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
-        },
-        msg,
-      ) => {
-        // we only care about mutation events
+    scan<ListenerEvent, TransactionBufferState>(
+      (acc, msg) => {
+        if (msg.type === 'snapshot') {
+          return acc.buffer.length > 0 ? supersedeBuffer(acc, msg) : {...acc, next: [msg]}
+        }
+
+        // a resumed connection carries on where it left off, so the buffer stays valid
         if (!isMutationEvent(msg)) {
-          return {next: [msg], buffer: []}
+          return {...acc, next: [msg]}
+        }
+
+        // the snapshot that superseded its buffered siblings already includes it
+        if (acc.supersededTransactionIds.has(msg.transactionId)) {
+          return {...acc, next: []}
         }
 
         const isBuffering = acc.buffer.length > 0
         const isMulti = isMultiTransactionEvent(msg)
         if (!isMulti && !isBuffering) {
           // simple case, we have no buffer, and the event is a single-transaction event, so just pass it on
-          return {next: [msg], buffer: []}
+          return {...acc, next: [msg]}
         }
 
         if (!isMulti) {
           // we have received a single transaction event while waiting for the rest of events from a multi transaction
           // put it in the buffer
-          return {next: [], buffer: acc.buffer.concat(msg)}
+          return {...acc, next: [], buffer: acc.buffer.concat(msg)}
         }
 
         const nextBuffer = acc.buffer.concat(msg)
         if (allPendingTransactionEventsReceived(nextBuffer)) {
           // we have received all pending transactions, emit the buffer, and signal end of buffer
-          return {next: nextBuffer.concat(PENDING_END), buffer: []}
+          return {...acc, next: [...nextBuffer, PENDING_END], buffer: []}
         }
         // if we get here, we are still waiting for more multi-transaction messages
         // if nextBuffer only has one element, we know we just started buffering
-        return {next: nextBuffer.length === 1 ? [PENDING_START] : [], buffer: nextBuffer}
+        return {...acc, next: nextBuffer.length === 1 ? [PENDING_START] : [], buffer: nextBuffer}
       },
-      {next: [], buffer: []},
+      {next: [], buffer: [], supersededTransactionIds: new Set()},
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
     mergeMap((v) => v.next),
