@@ -22,6 +22,7 @@ import {
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
 import {
+  type CommitAcknowledgement,
   type ListenerStallDetails,
   ListenerStalledError,
   watchForListenerStall,
@@ -139,7 +140,9 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 export function getPairListener(
   _client: SanityClient,
   idPair: IdPair,
-  options: DocumentStoreExtraOptions & {commitAcknowledged$?: Observable<string>} = {},
+  options: DocumentStoreExtraOptions & {
+    commitAcknowledged$?: Observable<CommitAcknowledgement>
+  } = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
   const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client
