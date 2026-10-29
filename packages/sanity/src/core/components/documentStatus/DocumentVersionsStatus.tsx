@@ -31,6 +31,8 @@ const LINE_MIN_HEIGHT = 33
 /** The 1px divider above every line but the first. Figma draws it above the line's 33px, so a divided line is 34px and starts 1px lower. */
 const DIVIDER = 1
 const DIVIDED_LINE_PADDING = `${8 + DIVIDER}px 8px 8px 12px`
+/** Each glyph's slot: 17px wide, side by side with no gap, the glyph centred in it (Figma 751:161463). */
+const GLYPH_SLOT = 17
 
 type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
 
@@ -187,7 +189,13 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 function Glyph({item}: {item: DocumentVersionStatusItem}) {
   const state = stateOf(item)
   return (
-    <Text data-state={state} data-testid={`state-${state}`} size={1}>
+    <Text
+      align="center"
+      data-state={state}
+      data-testid={`state-${state}`}
+      size={1}
+      style={{width: GLYPH_SLOT}}
+    >
       {state === 'published' ? (
         <ReleaseAvatarIcon release={PUBLISHED} size="small" />
       ) : state === 'draft' ? (
