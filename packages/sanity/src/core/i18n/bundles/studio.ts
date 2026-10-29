@@ -1012,6 +1012,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.actions-menu.edit-details.aria-label': 'Open image edit dialog',
   /** Accessibility label for button to open image options menu */
   'inputs.image.actions-menu.options.aria-label': 'Open image options menu',
+  /** Title of the dialog for editing the crop of an image field without a hotspot */
+  'inputs.image.crop-dialog.title': 'Edit crop',
   /** Cannot upload this file here */
   'inputs.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
   /** Drop image to upload */
@@ -1040,6 +1042,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.image.upload-error.title': 'Upload failed',
+  /** Description of the crop tool for an image field without a hotspot */
+  'inputs.imagetool.crop-only.description': 'Adjust the rectangle to crop image.',
+  /** Title of the crop tool for an image field without a hotspot */
+  'inputs.imagetool.crop-only.title': 'Crop',
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.imagetool.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',

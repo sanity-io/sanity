@@ -25,10 +25,14 @@ export const ImageType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
-    if (!options.hotspot) {
-      hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
-    }
+    const hasHotspot = Boolean(options.hotspot)
+    // A constrained crop is edited in the crop tool even without a hotspot
+    const hasCropTool =
+      hasHotspot || options.aspectRatio !== undefined || options.minDimensions !== undefined
+    const hotspotFields = [
+      hasHotspot ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
+      hasCropTool ? CROP_FIELD : {...CROP_FIELD, hidden: true},
+    ]
 
     const fields = [
       ASSET_FIELD,

@@ -97,7 +97,17 @@ function CropDimensionsBadge(props: {
 }
 
 function ToolSVGComponent(props: ToolSVGProps) {
-  const {value, image, onChange, onChangeEnd, readOnly, size} = props
+  const {
+    value,
+    image,
+    onChange,
+    onChangeEnd,
+    readOnly,
+    size,
+    sourceSize,
+    cropConstraints,
+    hotspotEnabled,
+  } = props
   const svgRef = useRef<SVGSVGElement>(null)
   const cropRef = useRef<SVGRectElement>(null)
   const hotspotRef = useRef<SVGEllipseElement>(null)
@@ -148,6 +158,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
       readOnly,
       hotspotRef,
       cropRef,
+      sourceSize,
+      cropConstraints,
     })
 
   const {handleKeyDown, handleKeyUp} = useKeyboardControls({
@@ -157,15 +169,16 @@ function ToolSVGComponent(props: ToolSVGProps) {
     innerRect,
     focusTarget,
     readOnly,
+    sourceSize,
+    cropConstraints,
   })
 
-  // Calculate cropped pixel dimensions from the original image
   const croppedDimensions = useMemo(() => {
     const crop = value.crop || DEFAULT_CROP
-    const croppedWidth = Math.round(image.naturalWidth * (1 - crop.left - crop.right))
-    const croppedHeight = Math.round(image.naturalHeight * (1 - crop.top - crop.bottom))
+    const croppedWidth = Math.round(sourceSize.width * (1 - crop.left - crop.right))
+    const croppedHeight = Math.round(sourceSize.height * (1 - crop.top - crop.bottom))
     return {width: croppedWidth, height: croppedHeight}
-  }, [image.naturalWidth, image.naturalHeight, value.crop])
+  }, [sourceSize.width, sourceSize.height, value.crop])
 
   const cropHandles = useMemo(() => calculateCropHandles(cropRect), [cropRect])
 
@@ -282,8 +295,10 @@ function ToolSVGComponent(props: ToolSVGProps) {
             preserveAspectRatio="xMidYMid meet"
           />
 
-          {/* Darkened overlay for crop area */}
-          <DarkenedOverlay x="0" y="0" width={cropRect.width} height={cropRect.height} />
+          {/* Dims the crop so the hotspot stands out */}
+          {hotspotEnabled && (
+            <DarkenedOverlay x="0" y="0" width={cropRect.width} height={cropRect.height} />
+          )}
 
           {/* Transparent overlay to make the entire crop area draggable */}
           <rect
@@ -298,77 +313,39 @@ function ToolSVGComponent(props: ToolSVGProps) {
           />
         </svg>
 
-        {/* Hotspot area with full opacity - masked with ellipse */}
-        <defs>
-          <clipPath id={hotspotClipId}>
-            <ellipse
-              cx={getRectCenterX(hotspotRect)}
-              cy={getRectCenterY(hotspotRect)}
-              rx={hotspotRect.width / 2}
-              ry={hotspotRect.height / 2}
+        {hotspotEnabled && (
+          <>
+            {/* Hotspot area with full opacity - masked with ellipse */}
+            <defs>
+              <clipPath id={hotspotClipId}>
+                <ellipse
+                  cx={getRectCenterX(hotspotRect)}
+                  cy={getRectCenterY(hotspotRect)}
+                  rx={hotspotRect.width / 2}
+                  ry={hotspotRect.height / 2}
+                />
+              </clipPath>
+            </defs>
+
+            <image
+              href={image.src}
+              x={innerRect.left}
+              y={innerRect.top}
+              width={innerRect.width}
+              height={innerRect.height}
+              clipPath={`url(#${hotspotClipId})`}
+              preserveAspectRatio="xMidYMid meet"
             />
-          </clipPath>
-        </defs>
 
-        <image
-          href={image.src}
-          x={innerRect.left}
-          y={innerRect.top}
-          width={innerRect.width}
-          height={innerRect.height}
-          clipPath={`url(#${hotspotClipId})`}
-          preserveAspectRatio="xMidYMid meet"
-        />
-
-        {/* Hotspot */}
-        <g>
-          {/* Hotspot ellipse - make it interactive for dragging but allow crop handles to take precedence */}
-          <HotspotEllipse
-            ref={hotspotRef}
-            cx={getRectCenterX(hotspotRect)}
-            cy={getRectCenterY(hotspotRect)}
-            rx={Math.max(0.01, hotspotRect.width / 2)}
-            ry={Math.max(0.01, hotspotRect.height / 2)}
-            $hovered={
-              !readOnly &&
-              (hoverTarget === 'hotspot' ||
-                hoverTarget === 'hotspotHandle' ||
-                dragTarget === 'hotspot' ||
-                dragTarget === 'hotspotHandle')
-            }
-            $focused={!readOnly && focusTarget === 'hotspot'}
-            data-handle="hotspot"
-            onPointerDown={handlePointerDown}
-            tabIndex={readOnly ? -1 : 0}
-            onMouseEnter={handleHotspotMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onFocus={handleHotspotFocus}
-            onBlur={handleHotspotBlur}
-            onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
-            style={{pointerEvents: 'visiblePainted'}}
-          />
-
-          {/* Hotspot handle - only show if not readOnly */}
-          {!readOnly && (
+            {/* Hotspot */}
             <g>
-              {/* Invisible larger hit area for better touch interaction */}
-              <HotspotHandleInteractionArea
-                cx={hotspotHandlePosition.x}
-                cy={hotspotHandlePosition.y}
-                r={hotspotHandlePosition.hitRadius}
-                data-handle="hotspotHandle"
-                onPointerDown={handlePointerDown}
-                onMouseEnter={handleHotspotHandleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                style={{pointerEvents: 'visiblePainted'}}
-              />
-
-              {/* Visible handle */}
-              <HotspotHandle
-                cx={hotspotHandlePosition.x}
-                cy={hotspotHandlePosition.y}
-                r={hotspotHandlePosition.radius}
+              {/* Hotspot ellipse - make it interactive for dragging but allow crop handles to take precedence */}
+              <HotspotEllipse
+                ref={hotspotRef}
+                cx={getRectCenterX(hotspotRect)}
+                cy={getRectCenterY(hotspotRect)}
+                rx={Math.max(0.01, hotspotRect.width / 2)}
+                ry={Math.max(0.01, hotspotRect.height / 2)}
                 $hovered={
                   !readOnly &&
                   (hoverTarget === 'hotspot' ||
@@ -377,57 +354,99 @@ function ToolSVGComponent(props: ToolSVGProps) {
                     dragTarget === 'hotspotHandle')
                 }
                 $focused={!readOnly && focusTarget === 'hotspot'}
-                pointerEvents="none"
+                data-handle="hotspot"
+                onPointerDown={handlePointerDown}
+                tabIndex={readOnly ? -1 : 0}
+                onMouseEnter={handleHotspotMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onFocus={handleHotspotFocus}
+                onBlur={handleHotspotBlur}
+                onKeyDown={handleKeyDown}
+                onKeyUp={handleKeyUp}
+                style={{pointerEvents: 'visiblePainted'}}
               />
-            </g>
-          )}
-        </g>
 
-        {/* Guidelines */}
-        <Guidelines>
-          {/* Vertical center line */}
-          <line
-            x1={getRectCenterX(hotspotRect)}
-            y1={innerRect.top}
-            x2={getRectCenterX(hotspotRect)}
-            y2={getRectBottom(innerRect)}
-          />
-          {/* Horizontal center line */}
-          <line
-            x1={innerRect.left}
-            y1={getRectCenterY(hotspotRect)}
-            x2={getRectRight(innerRect)}
-            y2={getRectCenterY(hotspotRect)}
-          />
-          {/* Left edge line */}
-          <line
-            x1={hotspotRect.left}
-            y1={innerRect.top}
-            x2={hotspotRect.left}
-            y2={getRectBottom(innerRect)}
-          />
-          {/* Right edge line */}
-          <line
-            x1={getRectRight(hotspotRect)}
-            y1={innerRect.top}
-            x2={getRectRight(hotspotRect)}
-            y2={getRectBottom(innerRect)}
-          />
-          {/* Top edge line */}
-          <line
-            x1={innerRect.left}
-            y1={hotspotRect.top}
-            x2={getRectRight(innerRect)}
-            y2={hotspotRect.top}
-          />
-          {/* Bottom edge line */}
-          <line
-            x1={innerRect.left}
-            y1={getRectBottom(hotspotRect)}
-            x2={getRectRight(innerRect)}
-            y2={getRectBottom(hotspotRect)}
-          />
-        </Guidelines>
+              {/* Hotspot handle - only show if not readOnly */}
+              {!readOnly && (
+                <g>
+                  {/* Invisible larger hit area for better touch interaction */}
+                  <HotspotHandleInteractionArea
+                    cx={hotspotHandlePosition.x}
+                    cy={hotspotHandlePosition.y}
+                    r={hotspotHandlePosition.hitRadius}
+                    data-handle="hotspotHandle"
+                    onPointerDown={handlePointerDown}
+                    onMouseEnter={handleHotspotHandleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    style={{pointerEvents: 'visiblePainted'}}
+                  />
+
+                  {/* Visible handle */}
+                  <HotspotHandle
+                    cx={hotspotHandlePosition.x}
+                    cy={hotspotHandlePosition.y}
+                    r={hotspotHandlePosition.radius}
+                    $hovered={
+                      !readOnly &&
+                      (hoverTarget === 'hotspot' ||
+                        hoverTarget === 'hotspotHandle' ||
+                        dragTarget === 'hotspot' ||
+                        dragTarget === 'hotspotHandle')
+                    }
+                    $focused={!readOnly && focusTarget === 'hotspot'}
+                    pointerEvents="none"
+                  />
+                </g>
+              )}
+            </g>
+
+            {/* Guidelines */}
+            <Guidelines>
+              {/* Vertical center line */}
+              <line
+                x1={getRectCenterX(hotspotRect)}
+                y1={innerRect.top}
+                x2={getRectCenterX(hotspotRect)}
+                y2={getRectBottom(innerRect)}
+              />
+              {/* Horizontal center line */}
+              <line
+                x1={innerRect.left}
+                y1={getRectCenterY(hotspotRect)}
+                x2={getRectRight(innerRect)}
+                y2={getRectCenterY(hotspotRect)}
+              />
+              {/* Left edge line */}
+              <line
+                x1={hotspotRect.left}
+                y1={innerRect.top}
+                x2={hotspotRect.left}
+                y2={getRectBottom(innerRect)}
+              />
+              {/* Right edge line */}
+              <line
+                x1={getRectRight(hotspotRect)}
+                y1={innerRect.top}
+                x2={getRectRight(hotspotRect)}
+                y2={getRectBottom(innerRect)}
+              />
+              {/* Top edge line */}
+              <line
+                x1={innerRect.left}
+                y1={hotspotRect.top}
+                x2={getRectRight(innerRect)}
+                y2={hotspotRect.top}
+              />
+              {/* Bottom edge line */}
+              <line
+                x1={innerRect.left}
+                y1={getRectBottom(hotspotRect)}
+                x2={getRectRight(innerRect)}
+                y2={getRectBottom(hotspotRect)}
+              />
+            </Guidelines>
+          </>
+        )}
 
         {/* Crop area */}
         <g>
