@@ -63,6 +63,13 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'object.asset-required_file': 'File is required',
   /** Object is missing a reference to an image asset document in its `asset` field */
   'object.asset-required_image': 'Image is required',
+  /** Cropped image does not match the `aspectRatio` option of its field */
+  'object.image-aspect-ratio-mismatch': 'Cropped image aspect ratio must be {{aspectRatio}}',
+  /** Cropped image is smaller than the `minDimensions` option of its field */
+  'object.image-below-min-dimensions': 'Cropped image must be at least {{width}} × {{height}} px',
+  /** Cropped image is smaller than the `recommendedDimensions` option of its field */
+  'object.image-below-recommended-dimensions':
+    'Cropped image should be at least {{width}} × {{height}} px',
   /** Media can't be found in the Media Library */
   'object.media-not-found': 'The asset could not be found in the Media Library',
   /** Media object is missing a reference to a document in its `_ref` field */

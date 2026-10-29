@@ -25,6 +25,10 @@ export const validationLocaleStrings = {
   'object.asset-required': 'Asset is required',
   'object.asset-required_file': 'File is required',
   'object.asset-required_image': 'Image is required',
+  'object.image-aspect-ratio-mismatch': 'Cropped image aspect ratio must be {{aspectRatio}}',
+  'object.image-below-min-dimensions': 'Cropped image must be at least {{width}} × {{height}} px',
+  'object.image-below-recommended-dimensions':
+    'Cropped image should be at least {{width}} × {{height}} px',
   'object.media-not-found': 'The asset could not be found in the Media Library',
   'object.not-media-library-asset': 'Must be a reference to a Media Library asset',
   'object.not-reference': 'Must be a reference to a document',

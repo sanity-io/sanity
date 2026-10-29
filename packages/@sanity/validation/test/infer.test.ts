@@ -626,6 +626,207 @@ describe('asset `accept` inference', () => {
   })
 })
 
+describe('image crop option inference', () => {
+  const minDimensions = {width: 800, height: 450}
+  const recommendedDimensions = {width: 1600, height: 900}
+
+  const schema = createSchema({
+    name: 'default',
+    types: [
+      {name: 'wideImage', type: 'image', options: {aspectRatio: 16 / 9, minDimensions}},
+      {
+        name: 'cropDocument',
+        type: 'document',
+        fields: [
+          {name: 'fixed', type: 'image', options: {aspectRatio: 16 / 9}},
+          {name: 'range', type: 'image', options: {aspectRatio: {min: 4 / 3, max: 16 / 9}}},
+          {name: 'snap', type: 'image', options: {aspectRatio: [1, 4 / 3, 16 / 9]}},
+          {name: 'minimum', type: 'image', options: {minDimensions}},
+          {name: 'recommended', type: 'image', options: {recommendedDimensions}},
+          {
+            name: 'requiredCrop',
+            type: 'image',
+            options: {aspectRatio: 16 / 9, minDimensions, recommendedDimensions},
+            validation: (rule: Rule) => rule.required(),
+          },
+          {name: 'namedWide', type: 'wideImage'},
+          {name: 'plain', type: 'image'},
+        ],
+      },
+    ],
+  })
+
+  const WIDE = 'image-a1-1600x900-jpg'
+  const THREE_BY_TWO = 'image-a2-1200x800-jpg'
+  const SQUARE = 'image-a3-1000x1000-png'
+  const FOUR_BY_THREE = 'image-a4-1200x900-jpg'
+  const SMALL_WIDE = 'image-a5-640x360-jpg'
+
+  function imageValue(ref: string, crop?: Record<string, number>) {
+    return {
+      _type: 'image',
+      asset: {_type: 'reference', _ref: ref},
+      ...(crop && {
+        crop: {_type: 'sanity.imageCrop', top: 0, bottom: 0, left: 0, right: 0, ...crop},
+      }),
+    }
+  }
+
+  function validateFields(fields: Record<string, unknown>) {
+    return validateDocument({
+      client: sanityClient,
+      document: {
+        _id: 'cropDocument',
+        _type: 'cropDocument',
+        _createdAt: '2021-08-26T18:47:55.497Z',
+        _updatedAt: '2021-08-26T18:47:55.497Z',
+        _rev: 'example-rev',
+        requiredCrop: imageValue(WIDE),
+        ...fields,
+      },
+      getDocumentExists: () => Promise.resolve(true),
+      schema,
+    })
+  }
+
+  afterEach(() => {
+    expect(client.fetch).not.toHaveBeenCalled()
+  })
+
+  test('errors when an uncropped image does not match a fixed ratio', async () => {
+    await expect(validateFields({fixed: imageValue(THREE_BY_TWO)})).resolves.toEqual([
+      {
+        __internal_metadata: undefined,
+        code: validationMarkerCodes.imageAspectRatioMismatch,
+        details: {
+          actual: {width: 1200, height: 800, aspectRatio: 1.5},
+          required: {aspectRatio: 16 / 9},
+        },
+        item: {message: 'Cropped image aspect ratio must be 16:9'},
+        level: 'error',
+        message: 'Cropped image aspect ratio must be 16:9',
+        path: ['fixed'],
+      },
+    ])
+  })
+
+  test('passes an uncropped image that matches a fixed ratio', async () => {
+    await expect(validateFields({fixed: imageValue(WIDE)})).resolves.toEqual([])
+  })
+
+  test('checks the ratio after the crop is applied', async () => {
+    await expect(
+      validateFields({fixed: imageValue(THREE_BY_TWO, {top: 0.078125, bottom: 0.078125})}),
+    ).resolves.toEqual([])
+    await expect(validateFields({fixed: imageValue(WIDE, {left: 0.25})})).resolves.toMatchObject([
+      {
+        code: validationMarkerCodes.imageAspectRatioMismatch,
+        details: {actual: {width: 1200, height: 900}},
+        path: ['fixed'],
+      },
+    ])
+  })
+
+  test('accepts any ratio inside a range', async () => {
+    await expect(validateFields({range: imageValue(THREE_BY_TWO)})).resolves.toEqual([])
+    await expect(validateFields({range: imageValue(SQUARE)})).resolves.toMatchObject([
+      {
+        code: validationMarkerCodes.imageAspectRatioMismatch,
+        level: 'error',
+        message: 'Cropped image aspect ratio must be between 4:3 and 16:9',
+      },
+    ])
+  })
+
+  test('accepts only the listed ratios of a snap list', async () => {
+    await expect(validateFields({snap: imageValue(SQUARE)})).resolves.toEqual([])
+    await expect(validateFields({snap: imageValue(FOUR_BY_THREE)})).resolves.toEqual([])
+    await expect(validateFields({snap: imageValue(THREE_BY_TWO)})).resolves.toMatchObject([
+      {
+        code: validationMarkerCodes.imageAspectRatioMismatch,
+        message: 'Cropped image aspect ratio must be 1:1, 4:3 or 16:9',
+      },
+    ])
+  })
+
+  test('errors when the cropped image is below `minDimensions`', async () => {
+    await expect(validateFields({minimum: imageValue(SMALL_WIDE)})).resolves.toEqual([
+      {
+        __internal_metadata: undefined,
+        code: validationMarkerCodes.imageBelowMinDimensions,
+        details: {actual: {width: 640, height: 360}, required: minDimensions},
+        item: {message: 'Cropped image must be at least 800 × 450 px'},
+        level: 'error',
+        message: 'Cropped image must be at least 800 × 450 px',
+        path: ['minimum'],
+      },
+    ])
+    await expect(validateFields({minimum: imageValue(WIDE, {left: 0.5})})).resolves.toEqual([])
+    await expect(validateFields({minimum: imageValue(WIDE, {left: 0.6})})).resolves.toMatchObject([
+      {code: validationMarkerCodes.imageBelowMinDimensions, details: {actual: {width: 640}}},
+    ])
+  })
+
+  test('warns when the cropped image is below `recommendedDimensions`', async () => {
+    await expect(validateFields({recommended: imageValue(THREE_BY_TWO)})).resolves.toEqual([
+      {
+        __internal_metadata: undefined,
+        code: validationMarkerCodes.imageBelowRecommendedDimensions,
+        details: {actual: {width: 1200, height: 800}, required: recommendedDimensions},
+        item: {message: 'Cropped image should be at least 1600 × 900 px'},
+        level: 'warning',
+        message: 'Cropped image should be at least 1600 × 900 px',
+        path: ['recommended'],
+      },
+    ])
+    await expect(validateFields({recommended: imageValue(WIDE)})).resolves.toEqual([])
+  })
+
+  test('keeps the error and warning levels alongside an authored required rule', async () => {
+    const markers = await validateFields({requiredCrop: imageValue('image-a6-640x480-jpg')})
+    expect(markers).toMatchObject([
+      {code: validationMarkerCodes.imageBelowMinDimensions, level: 'error'},
+      {code: validationMarkerCodes.imageAspectRatioMismatch, level: 'error'},
+      {code: validationMarkerCodes.imageBelowRecommendedDimensions, level: 'warning'},
+    ])
+    expect(markers).toHaveLength(3)
+  })
+
+  test('still reports the authored required rule', async () => {
+    await expect(validateFields({requiredCrop: undefined})).resolves.toMatchObject([
+      {code: validationMarkerCodes.valueRequired, path: ['requiredCrop']},
+    ])
+  })
+
+  test('skips SVG images', async () => {
+    await expect(
+      validateFields({
+        requiredCrop: imageValue('image-a7-svg'),
+        namedWide: imageValue('image-a8-100x400-svg'),
+      }),
+    ).resolves.toEqual([])
+  })
+
+  test('skips values without an asset or without encoded dimensions', async () => {
+    await expect(
+      validateFields({fixed: {_type: 'image'}, minimum: imageValue('image-a9-jpg')}),
+    ).resolves.toEqual([])
+  })
+
+  test('applies constraints inherited from a named type', async () => {
+    await expect(validateFields({namedWide: imageValue(SMALL_WIDE)})).resolves.toMatchObject([
+      {code: validationMarkerCodes.imageBelowMinDimensions, path: ['namedWide']},
+    ])
+    await expect(validateFields({namedWide: imageValue(SQUARE)})).resolves.toMatchObject([
+      {code: validationMarkerCodes.imageAspectRatioMismatch, path: ['namedWide']},
+    ])
+  })
+
+  test('skips images without crop options', async () => {
+    await expect(validateFields({plain: imageValue('image-a10-10x500-jpg')})).resolves.toEqual([])
+  })
+})
+
 describe('assetMatchesAccept', () => {
   test.each([
     [{mimeType: 'image/png', extension: 'png'}, 'image/*', true],
