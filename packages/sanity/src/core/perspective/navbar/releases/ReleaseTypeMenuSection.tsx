@@ -3,16 +3,12 @@ import {Card, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 import {Flex, VStack} from 'ui5'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../../perspective/usePerspective'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
-import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../../types'
+import {usePerspective} from '../../usePerspective'
+import {ReleasesMenuLabelIndicator} from './ReleasesLayerIndicator'
+import {getRangePosition, ReleasesMenuItem, type LayerRange} from './ReleasesMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 
 const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
@@ -57,7 +53,7 @@ export function ReleaseTypeMenuSection({
   return (
     <Card padding={1} borderBottom>
       <VStack gap={1}>
-        <GlobalPerspectiveMenuLabelIndicator
+        <ReleasesMenuLabelIndicator
           $withinRange={labelWithinStack}
           paddingLeft={2}
           paddingTop={3}
@@ -66,10 +62,10 @@ export function ReleaseTypeMenuSection({
           <Label muted style={{textTransform: 'uppercase'}} size={1}>
             {t(RELEASE_TYPE_LABELS[releaseType])}
           </Label>
-        </GlobalPerspectiveMenuLabelIndicator>
+        </ReleasesMenuLabelIndicator>
         <Flex flexDirection="column" gap={1}>
           {releases.map((release, index) => (
-            <GlobalPerspectiveMenuItem
+            <ReleasesMenuItem
               key={release._id}
               release={release}
               ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}

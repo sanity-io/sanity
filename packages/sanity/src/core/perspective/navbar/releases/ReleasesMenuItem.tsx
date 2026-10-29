@@ -11,22 +11,22 @@ import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
-import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
-import {usePerspective} from '../../perspective/usePerspective'
-import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
-import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
-import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
-import {isReleaseDocument} from '../../releases/store/types'
-import {LATEST, PUBLISHED} from '../../releases/util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases/util/util'
-import {useWorkspace} from '../../studio/workspace'
-import {type ReleasesNavMenuItemPropsGetter} from '../types'
-import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
+import {ReleaseTitle} from '../../../releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../../releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseDocument} from '../../../releases/store/types'
+import {LATEST, PUBLISHED} from '../../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../../releases/util/util'
+import {useWorkspace} from '../../../studio/workspace'
+import {type ReleasesNavMenuItemPropsGetter} from '../../types'
+import {useExcludedPerspective} from '../../useExcludedPerspective'
+import {usePerspective} from '../../usePerspective'
+import {useSetPerspective} from '../../useSetPerspective'
+import {ReleasesMenuItemIndicator} from './ReleasesLayerIndicator'
 
 export interface LayerRange {
   lastIndex: number
@@ -84,7 +84,7 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export function GlobalPerspectiveMenuItem(
+export function ReleasesMenuItem(
   props: {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
@@ -139,7 +139,7 @@ export function GlobalPerspectiveMenuItem(
   }, [rangePosition, release, selectedPerspective])
 
   return (
-    <GlobalPerspectiveMenuItemIndicator
+    <ReleasesMenuItemIndicator
       $isDefaultPerspective={isDefaultPerspective}
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
@@ -247,6 +247,6 @@ export function GlobalPerspectiveMenuItem(
           </Box>
         </Flex>
       </MenuItem>
-    </GlobalPerspectiveMenuItemIndicator>
+    </ReleasesMenuItemIndicator>
   )
 }

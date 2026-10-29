@@ -3,7 +3,7 @@ import {Menu} from '@sanity/ui/menu'
 import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {AgentBundleMenuItem} from '../AgentBundleMenuItem'
+import {AgentBundleMenuItem} from '../releases/AgentBundleMenuItem'
 
 const BUNDLE = {id: 'agent-story', applicationKey: 'story-app'}
 

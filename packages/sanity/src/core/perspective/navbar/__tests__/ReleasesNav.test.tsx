@@ -18,7 +18,7 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
-import {ReleasesNav} from '../ReleasesNav'
+import {ReleasesNav} from '../releases/ReleasesNav'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
@@ -52,11 +52,11 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-vi.mock('../ViewContentReleasesMenuItem', () => ({
+vi.mock('../releases/ViewContentReleasesMenuItem', () => ({
   ViewContentReleasesMenuItem: () => null,
 }))
 
-vi.mock('../ScheduledDraftsMenuItem', () => ({
+vi.mock('../releases/ScheduledDraftsMenuItem', () => ({
   ScheduledDraftsMenuItem: () => null,
 }))
 

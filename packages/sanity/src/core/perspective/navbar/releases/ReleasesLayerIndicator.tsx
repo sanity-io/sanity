@@ -6,7 +6,7 @@ const INDICATOR_WIDTH = 1
 const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
 const INDICATOR_BOTTOM_OFFSET = 4
 
-export const GlobalPerspectiveMenuItemIndicator = styled.div<{
+export const ReleasesMenuItemIndicator = styled.div<{
   $inRange: boolean
   $last: boolean
   $first: boolean
@@ -103,7 +103,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
   `,
 )
 
-export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
+export const ReleasesMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
   ({$withinRange}) => css`
     position: relative;
     // 4px padding + 33px release indicator width + 4px gap

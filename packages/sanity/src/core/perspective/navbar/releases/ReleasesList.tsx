@@ -4,21 +4,17 @@ import {type JSX, type RefObject, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex, VStack} from 'ui5'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
-import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST, PUBLISHED} from '../../releases/util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {useAgentBundles} from '../../store/agent/useAgentBundles'
-import {useWorkspace} from '../../studio/workspace'
-import {isCardinalityOneRelease} from '../../util/releaseUtils'
-import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {CreateReleaseMenuItem} from '../../../releases/components/CreateReleaseMenuItem'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {LATEST, PUBLISHED} from '../../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useAgentBundles} from '../../../store/agent/useAgentBundles'
+import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
+import {getRangePosition, ReleasesMenuItem, type LayerRange} from './ReleasesMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
@@ -164,14 +160,14 @@ export function ReleasesList({
         <StickyTopCard borderBottom padding={1}>
           <VStack gap={1}>
             {showPublished && (
-              <GlobalPerspectiveMenuItem
+              <ReleasesMenuItem
                 rangePosition={rangePosition(0)}
-                release={'published'}
+                release={PUBLISHED}
                 menuItemProps={menuItemProps}
               />
             )}
             {showDrafts && (
-              <GlobalPerspectiveMenuItem
+              <ReleasesMenuItem
                 rangePosition={rangePosition(1)}
                 release={LATEST}
                 menuItemProps={menuItemProps}
