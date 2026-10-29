@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
-import {Box, Flex, Label, Text, TextInput} from '@sanity/ui'
+import {Box, Flex, Label, Text, TextInput, useTheme_v2} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
   type ComponentProps,
@@ -184,6 +184,12 @@ function DropdownPill(props: {
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
   const found = rankSearch(props.items, query, (item) => ({title: item.text, ...item.search}))
   const tone = props.selected ? props.tone : undefined
+  // A selected capsule takes the selected ghost chip's colours (as the stock Draft chip beside it): its segments are bleed chips, whose
+  // selected fill is paler and whose border is clear, so the capsule's own outline and hairline showed grey on the tone (Faheem, 29 Oct).
+  const {color} = useTheme_v2()
+  const pressed = tone ? color.button.ghost[tone]?.pressed : undefined
+  const segmentStyle = pressed ? ({'--card-bg-color': pressed.bg} as CSSProperties) : undefined
+  const lineColor = pressed?.border
   const menu = (
     <MenuButton
       button={
@@ -199,7 +205,10 @@ function DropdownPill(props: {
           radius={props.clear ? 0 : 'full'}
           selected={props.selected}
           tone={tone}
-          style={{paddingRight: props.clear ? 8 : 11.3}}
+          style={{
+            paddingRight: props.clear ? 8 : 11.3,
+            ...(props.clear ? segmentStyle : undefined),
+          }}
           text={props.text}
         />
       }
@@ -315,9 +324,9 @@ function DropdownPill(props: {
         aria-hidden
         style={{
           alignSelf: 'stretch',
-          background: 'var(--card-muted-fg-color)',
+          background: lineColor ?? 'var(--card-muted-fg-color)',
           flex: 'none',
-          opacity: 0.35,
+          opacity: lineColor ? 1 : 0.35,
           width: 1,
         }}
       />
@@ -332,6 +341,7 @@ function DropdownPill(props: {
         paddingRight={3}
         radius={0}
         selected={props.selected}
+        style={segmentStyle}
         tone={tone}
       />
       {/* The outline drawn over the segments (so it adds no height): the pill stays the stock chips' 25px. */}
@@ -339,7 +349,7 @@ function DropdownPill(props: {
         aria-hidden
         style={{
           borderRadius: 9999,
-          boxShadow: 'inset 0 0 0 1px var(--card-border-color)',
+          boxShadow: `inset 0 0 0 1px ${lineColor ?? 'var(--card-border-color)'}`,
           inset: 0,
           pointerEvents: 'none',
           position: 'absolute',
