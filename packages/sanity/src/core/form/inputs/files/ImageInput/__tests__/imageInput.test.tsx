@@ -190,15 +190,24 @@ describe('ImageInput default crop', () => {
 
   function renderWithOptions(
     options: ImageOptions,
-    sources: {assetSources: AssetSource[]; resolveUploader?: ReturnType<typeof resolveUploaderFor>},
+    sources: {
+      assetSources: AssetSource[]
+      resolveUploader?: ReturnType<typeof resolveUploaderFor>
+      value?: Record<string, unknown>
+    },
   ) {
+    const {value} = sources
     return renderImageInput({
       assetSources: sources.assetSources,
       configOverrides: {mediaLibrary: {enabled: false}},
       fieldDefinition: {name: 'mainImage', title: 'Main image', type: 'image', options},
+      imageUrlBuilder: value
+        ? createImageUrlBuilder({projectId: 'test', dataset: 'test'})
+        : undefined,
       observeAsset: observeImageAssetStub,
+      props: value ? {documentValue: {mainImage: value}} : undefined,
       resolveUploader: sources.resolveUploader,
-      render: (inputProps) => <BaseImageInput {...inputProps} />,
+      render: (inputProps) => <BaseImageInput {...inputProps} value={value} />,
     })
   }
 
@@ -213,20 +222,43 @@ describe('ImageInput default crop', () => {
     })
   })
 
-  it('writes no crop for a selected asset that already fits', async () => {
+  it('clears the crop for a selected asset that already fits', async () => {
     const assetSource = createMockAssetSourceWithMediaLibraryUploader({browseAssetId: SQUARE_REF})
     const {onChange} = await renderWithOptions({aspectRatio: 1}, {assetSources: [assetSource]})
 
     await userEvent.click(screen.getByTestId(imageBrowseTestId(assetSource.name)))
 
     await waitFor(() => {
-      expect(
-        changePatches(onChange).some((patches) =>
-          patches.some((patch) => patch.path.join('.') === 'asset' && patch.type === 'set'),
-        ),
-      ).toBe(true)
+      expect(cropAfterAsset(onChange)).toMatchObject({type: 'unset'})
     })
-    expect(cropAfterAsset(onChange)).toBeUndefined()
+  })
+
+  it('clears a stale crop when its asset source uploader replaces the asset with one that fits', async () => {
+    const value = {
+      _type: 'image',
+      asset: {_type: 'reference', _ref: WIDE_REF},
+      crop: CENTERED_SQUARE_CROP,
+    }
+    const assetSource: AssetSource = {
+      ...createMockAssetSourceWithMediaLibraryUploader({name: 'patching-source'}),
+      Uploader: createPatchingUploader(SQUARE_REF),
+    }
+    const {onChange} = await renderWithOptions(
+      {aspectRatio: 1},
+      {assetSources: [assetSource], value},
+    )
+
+    await userEvent.click(screen.getByTestId('options-menu-button'))
+    const [uploadButton] = await screen.findAllByTestId('file-input-upload-button')
+    await userEvent.click(uploadButton, {pointerEventsCheck: 0})
+    await userEvent.upload(
+      await screen.findByTestId('open-file-picker-input'),
+      new File(['content'], 'square.jpg', {type: 'image/jpeg'}),
+    )
+
+    await waitFor(() => {
+      expect(cropAfterAsset(onChange)).toMatchObject({type: 'unset'})
+    })
   })
 
   it('writes no crop without an aspect ratio', async () => {

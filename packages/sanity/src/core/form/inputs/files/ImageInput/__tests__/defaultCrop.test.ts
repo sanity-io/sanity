@@ -34,8 +34,12 @@ describe('withDefaultCrop', () => {
     expect(withDefaultCrop(PatchEvent.from(setAsset(WIDE_REF)), 1).patches).toHaveLength(2)
   })
 
-  test('writes no crop when the asset already fits', () => {
-    expect(withDefaultCrop([setAsset(SQUARE_REF)], 1).patches).toHaveLength(1)
+  test('clears the crop when the asset already fits', () => {
+    const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], 1)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'unset crop',
+    ])
   })
 
   test('writes no crop without an aspect ratio', () => {
