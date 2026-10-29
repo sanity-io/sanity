@@ -5,7 +5,7 @@ import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -178,13 +178,7 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Flex
-              flexDirection="column"
-              flexShrink={0}
-              paddingX={3}
-              paddingTop={3}
-              paddingBottom={2}
-            >
+            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
               <TextInput
                 fontSize={1}
                 icon={SearchIcon}
@@ -193,7 +187,7 @@ export function VariantsMenu({
                 radius={2}
                 value={filterQuery}
               />
-            </Flex>
+            </Box>
             {filteredVariants.length === 0 ? (
               <FilterNoMatches filter={filterQuery.trim()} />
             ) : (

@@ -2,7 +2,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {Flex} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -98,7 +98,7 @@ export function ReleasesMenu({
             padding={0}
             style={menuStyle}
           >
-            <Flex flexDirection="column" flexShrink={0} padding={2} borderBottom>
+            <Box flexShrink={0} padding={2} borderBottom>
               <TextInput
                 data-testid="global-perspective-filter"
                 fontSize={1}
@@ -108,7 +108,7 @@ export function ReleasesMenu({
                 radius={2}
                 value={filterQuery}
               />
-            </Flex>
+            </Box>
             <Flex flexDirection="column" overflowY="auto">
               <ReleasesList
                 areReleasesEnabled={areReleasesEnabled}
