@@ -1,4 +1,5 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -9,6 +10,7 @@ import {
   type VideoThumbnailProps,
 } from '../VideoThumbnail'
 
+const theme = buildTheme()
 const dimensions: VideoThumbnailProps['dimensions'] = {width: 100.1, height: 50.1, dpr: 2}
 const value: VideoThumbnailProps['value'] = {
   _type: 'sanity.video',
@@ -20,7 +22,7 @@ const value: VideoThumbnailProps['value'] = {
 
 function renderContent(state: VideoPlaybackInfoLoadable) {
   return render(
-    <ThemeProvider theme={studioTheme}>
+    <ThemeProvider theme={theme}>
       <VideoThumbnailContent state={state} />
     </ThemeProvider>,
   )
