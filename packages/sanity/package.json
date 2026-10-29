@@ -255,6 +255,7 @@
     "@chromatic-com/vitest": "^1.0.1",
     "@pandacss/dev": "catalog:",
     "@pandacss/vite": "catalog:",
+    "@repo/content-lake-model": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",

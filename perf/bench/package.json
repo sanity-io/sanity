@@ -21,10 +21,10 @@
   "dependencies": {
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
+    "@repo/content-lake-model": "workspace:*",
     "@repo/debug-proxy": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
-    "@sanity/mutator": "workspace:*",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "chalk": "^6.0.0",
     "esbuild": "0.28.2",
