@@ -17,6 +17,10 @@ const RULES = `
 [data-testid="variants-button"],
 [data-testid^="doc-pills-"] button { border-radius: ${R} !important; }
 
+/* A pill with a cross is one capsule of two buttons (c2/OpenBetaPills.tsx): the capsule takes the shape and clips, the buttons inside stay
+   square, or each half draws as its own pill with a gap at the seam (Faheem, 29 Oct). */
+[data-testid^="doc-pills-"] [data-testid$="-capsule"] button { border-radius: 0 !important; }
+
 /* A rounded clip cuts the icon at the left edge, so the icon gets its own safe padding (12px, 8px less on the 3px Box). Not the navbar's
    Variants button: its own 6px puts the diamond's ink 14px from the edge, as the chevron's ink is from the other (27 Oct, Faheem). */
 [data-testid^="chip-"]:not([data-testid$="-remove"]) > div > button:first-child,

@@ -319,7 +319,7 @@ function DropdownPill(props: {
       data-testid={`${props.testId}-capsule`}
       style={{
         alignItems: 'stretch',
-        borderRadius: 9999,
+        borderRadius: 'var(--v2-pill-radius, 9999px)',
         display: 'inline-flex',
         flex: 'none',
         overflow: 'hidden',
@@ -357,7 +357,7 @@ function DropdownPill(props: {
       <span
         aria-hidden
         style={{
-          borderRadius: 9999,
+          borderRadius: 'var(--v2-pill-radius, 9999px)',
           boxShadow: `inset 0 0 0 1px ${lineColor ?? 'var(--card-border-color)'}`,
           inset: 0,
           pointerEvents: 'none',
