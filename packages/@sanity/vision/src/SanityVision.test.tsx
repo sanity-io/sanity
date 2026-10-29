@@ -36,7 +36,7 @@ vi.mock('sanity', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
 }))
 
 vi.mock('./containers/VisionContainer', () => ({
