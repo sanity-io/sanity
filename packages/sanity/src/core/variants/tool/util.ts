@@ -92,25 +92,59 @@ export function getVariantDescription(variant: SystemVariant): string {
   return toPlainText(description).trim()
 }
 
+const DEFAULT_VARIANT_ID = '__default_variant__'
+
 /**
+ * The "all users" row in the variants menu. It is not a stored variant document.
+ *
+ * @internal
+ */
+export interface DefaultVariant {
+  _id: typeof DEFAULT_VARIANT_ID
+  title: string
+}
+
+/**
+ * @internal
+ */
+export function isDefaultVariant(
+  variant: SystemVariant | DefaultVariant,
+): variant is DefaultVariant {
+  return variant._id === DEFAULT_VARIANT_ID
+}
+
+/**
+ * Filters `variants` by title, id, and condition keys or values.
+ * When `defaultVariantTitle` is set, a {@link DefaultVariant} is included in the same list and
+ * matched against that title, so callers can render one filtered sequence.
+ *
  * @internal
  */
 export function filterVariantsForSearch(
   variants: SystemVariant[],
   searchTerm: string,
-): SystemVariant[] {
+  defaultVariantTitle?: string,
+): Array<SystemVariant | DefaultVariant> {
   const normalizedSearchTerm = searchTerm.trim().toLowerCase()
+  const defaultVariant: DefaultVariant | undefined = defaultVariantTitle
+    ? {_id: DEFAULT_VARIANT_ID, title: defaultVariantTitle}
+    : undefined
+  const candidates: Array<SystemVariant | DefaultVariant> = defaultVariant
+    ? [defaultVariant, ...variants]
+    : variants
 
   if (!normalizedSearchTerm) {
-    return variants
+    return candidates
   }
 
-  return variants.filter((variant) => {
-    const searchableValues = [
-      getVariantTitle(variant),
-      getVariantId(variant._id),
-      ...Object.entries(variant.conditions).flat(),
-    ]
+  return candidates.filter((variant) => {
+    const searchableValues = isDefaultVariant(variant)
+      ? [variant.title]
+      : [
+          getVariantTitle(variant),
+          getVariantId(variant._id),
+          ...Object.entries(variant.conditions).flat(),
+        ]
 
     return searchableValues.some((value) => value.toLowerCase().includes(normalizedSearchTerm))
   })

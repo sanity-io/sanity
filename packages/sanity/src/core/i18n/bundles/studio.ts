@@ -1542,6 +1542,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
+  'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'All users',
   /** View all option label for the menu item dropdown in the variants selection menu. */

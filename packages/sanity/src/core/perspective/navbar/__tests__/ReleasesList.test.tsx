@@ -102,6 +102,54 @@ describe('ReleasesList', () => {
       await userEvent.click(screen.getByTestId('create-new-release-button'))
       expect(handleOpenBundleDialog).toHaveBeenCalled()
     })
+
+    it('shows a message when the filter matches nothing', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+            filterQuery="zzzz"
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
+        'Nothing matches "zzzz"',
+      )
+      expect(screen.queryByText('Published')).not.toBeInTheDocument()
+      expect(screen.queryByText('active asap Release')).not.toBeInTheDocument()
+    })
+
+    it('keeps a perspective whose label matches the filter', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+            filterQuery="pub"
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByText('Published')).toBeInTheDocument()
+      expect(screen.queryByText('Drafts')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('perspective-filter-no-matches')).not.toBeInTheDocument()
+    })
   })
 
   describe('when releases with cardinality filtering are enabled', () => {

@@ -17,11 +17,17 @@ import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVar
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
 import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
-import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../../variants/tool/util'
+import {
+  filterVariantsForSearch,
+  getVariantId,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../../../variants/tool/util'
 import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
+import {FilterNoMatches} from '../FilterNoMatches'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
@@ -100,9 +106,10 @@ export function VariantsMenu({
     [selectedVariants, typeVariants],
   )
 
+  const defaultVariantTitle = t('document-group.base-variant')
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(typeVariants, filterQuery),
-    [filterQuery, typeVariants],
+    () => filterVariantsForSearch(typeVariants, filterQuery, defaultVariantTitle),
+    [defaultVariantTitle, filterQuery, typeVariants],
   )
 
   const handleSelectDefault = useCallback(() => {
@@ -187,36 +194,44 @@ export function VariantsMenu({
                 value={filterQuery}
               />
             </Flex>
-            <Flex
-              flexDirection="column"
-              flexGrow={1}
-              flexShrink={1}
-              minHeight="0"
-              overflowY="auto"
-              paddingX={3}
-              paddingBottom={2}
-            >
-              {/* Menu items are flex children with min-height: 0, so they collapse
+            {filteredVariants.length === 0 ? (
+              <FilterNoMatches filter={filterQuery.trim()} />
+            ) : (
+              <Flex
+                flexDirection="column"
+                flexGrow={1}
+                flexShrink={1}
+                minHeight="0"
+                overflowY="auto"
+                paddingX={3}
+                paddingBottom={2}
+              >
+                {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1}>
-                <MenuItem
-                  data-testid="variant-default"
-                  onClick={handleSelectDefault}
-                  pressed={isDefaultSelected}
-                  selected={isDefaultSelected}
-                  text={t('document-group.base-variant')}
-                />
-                {filteredVariants.map((variant) => (
-                  <VariantMenuItem
-                    key={variant._id}
-                    isSelected={selectedVariant?._id === variant._id}
-                    onSelect={handleSelectVariant}
-                    variant={variant}
-                  />
-                ))}
+                <Flex flexDirection="column" flexShrink={0} gap={1}>
+                  {filteredVariants.map((variant) =>
+                    isDefaultVariant(variant) ? (
+                      <MenuItem
+                        data-testid="variant-default"
+                        key={variant._id}
+                        onClick={handleSelectDefault}
+                        pressed={isDefaultSelected}
+                        selected={isDefaultSelected}
+                        text={variant.title}
+                      />
+                    ) : (
+                      <VariantMenuItem
+                        key={variant._id}
+                        isSelected={selectedVariant?._id === variant._id}
+                        onSelect={handleSelectVariant}
+                        variant={variant}
+                      />
+                    ),
+                  )}
+                </Flex>
               </Flex>
-            </Flex>
+            )}
             <Flex
               flexDirection="column"
               flexShrink={0}
