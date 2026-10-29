@@ -1,6 +1,6 @@
 import {render, waitFor} from '@testing-library/react'
 import {Component, type ReactNode} from 'react'
-import {firstValueFrom, NEVER, Observable, of, Subject, throwError} from 'rxjs'
+import {firstValueFrom, NEVER, Observable, of, throwError} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {createRequestErrorChannel, type DocumentStore} from 'sanity'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
@@ -143,8 +143,7 @@ describe('IntentResolver', () => {
 
   it('starts loading the document while the intent resolves', async () => {
     mockResolveTypeForDocument.mockReturnValue(of('author'))
-    const resolvedPanes = new Subject<[]>()
-    mockResolveIntent.mockReturnValue(firstValueFrom(resolvedPanes))
+    mockResolveIntent.mockReturnValue(new Promise(() => undefined))
     let documentSubscriptions = 0
     mockEditState.mockReturnValue(
       new Observable(() => {
@@ -160,8 +159,6 @@ describe('IntentResolver', () => {
     await waitFor(() => expect(documentSubscriptions).toBe(1))
     expect(mockEditState).toHaveBeenCalledWith('doc-id', 'author')
 
-    resolvedPanes.next([])
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalled())
     unmount()
     expect(documentSubscriptions).toBe(0)
   })

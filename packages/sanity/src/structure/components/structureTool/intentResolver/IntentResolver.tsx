@@ -1,5 +1,5 @@
 import {memo, useCallback, useEffect, useState} from 'react'
-import {catchError, EMPTY, shareReplay, type Subscription, switchMap} from 'rxjs'
+import {catchError, EMPTY, filter, shareReplay, type Subscription, switchMap} from 'rxjs'
 import {getPublishedId, isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
@@ -59,6 +59,7 @@ export const IntentResolver = memo(function IntentResolver() {
         documentPreload?.unsubscribe()
         documentPreload = documentType
           .pipe(
+            filter(Boolean),
             switchMap((resolvedType) =>
               documentStore.pair.editState(getPublishedId(id), resolvedType),
             ),
