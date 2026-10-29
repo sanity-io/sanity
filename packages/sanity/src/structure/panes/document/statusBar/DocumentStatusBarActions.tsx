@@ -226,15 +226,19 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   )
 })
 
-export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
+export const DocumentStatusBarActions = memo(function DocumentStatusBarActions(props: {
+  /** PROPOSED: every action greyed (the extension's `footerGreyed`, when the chosen variant has no version yet). */
+  disabled?: boolean
+}) {
+  const {disabled} = props
   return (
     <RenderActionCollectionState group="default">
-      {({states}) => <RenderDocumentStatusBarActions states={states} />}
+      {({states}) => <RenderDocumentStatusBarActions disabled={disabled} states={states} />}
     </RenderActionCollectionState>
   )
 })
 
-function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
+function RenderDocumentStatusBarActions(props: {disabled?: boolean; states: ResolvedAction[]}) {
   const {connectionState, documentId} = useDocumentPane()
 
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
@@ -247,7 +251,7 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
     <DocumentStatusBarActionsInner
       // Use document ID as key to make sure that the actions state is reset when the document changes
       key={documentId}
-      disabled={connectionState !== 'connected'}
+      disabled={Boolean(props.disabled) || connectionState !== 'connected'}
       states={states}
     />
   )

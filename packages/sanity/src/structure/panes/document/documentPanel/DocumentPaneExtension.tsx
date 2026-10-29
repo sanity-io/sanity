@@ -51,6 +51,12 @@ export interface DocumentPaneExtension {
    */
   footerLeadAlways?: boolean
   /**
+   * PROPOSED: keep the whole bottom bar when core would hide it because the chosen variant has no version in the perspective: `footerLead`
+   * stays usable and the document's actions show, greyed. The layout does not change between states (team call, 29 Oct). Wins over
+   * `footerLeadAlways`.
+   */
+  footerGreyed?: boolean
+  /**
    * PROPOSED: the order of the "..." menu's entries, by their action ("inspect:<inspector name>", "compareVersions", "inspect",
    * "toggleInlineChanges"). Listed entries come first in this order; the others follow in their own order. Only with the stock header.
    */

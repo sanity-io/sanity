@@ -7,7 +7,7 @@ import {type ComponentDef} from '../design-options/types'
 export const MANAGE_VERSIONS_PLACEMENT: ComponentDef = {
   id: 'c14',
   title: 'C14 Manage versions placement',
-  defaultOption: 'a',
+  defaultOption: 'd',
   independent: true,
   built: true,
   scope: 'Open beta',
@@ -22,7 +22,7 @@ export const MANAGE_VERSIONS_PLACEMENT: ComponentDef = {
       label: 'Header',
       summary: 'Manage versions in the pane header, before the "..." menu. Always there.',
       oneLiner: 'In the header.',
-      status: 'final',
+      status: 'candidate',
     },
     {
       id: 'b',
@@ -41,6 +41,15 @@ export const MANAGE_VERSIONS_PLACEMENT: ComponentDef = {
       oneLiner: 'Before Publish; alone in the bar when there is no version.',
       status: 'candidate',
       refs: 'SAPP-4724 comment, 28 Oct',
+    },
+    {
+      id: 'd',
+      label: 'Bottom bar, actions greyed',
+      summary:
+        'The bottom bar is always there. With no version in the perspective it keeps Manage versions (usable) and the actions (greyed), with no status line, so the layout does not change between states (PROPOSED pane extension slot footerGreyed).',
+      oneLiner: 'Before Publish; the bar stays, actions greyed.',
+      status: 'final',
+      refs: 'Team call, 29 Oct',
     },
   ],
 }

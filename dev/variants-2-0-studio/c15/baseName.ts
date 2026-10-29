@@ -18,7 +18,7 @@ export interface BaseNames {
 const SERVED = 'Default · served when no variant matches'
 
 const NAMES: Record<string, BaseNames> = {
-  // B to D drop the row subtitle "Base document": the title names it, and "Default" over "Base document" says two names.
+  // B and D drop the row subtitle "Base document" ("Default" over "Base document" says two names); C says "Default content".
   // A, as today: the document pill's clear link says "Back to All users (Default)", the banner "Back to All users". One `back` keeps the first.
   a: {
     pill: 'All users',
@@ -29,7 +29,15 @@ const NAMES: Record<string, BaseNames> = {
     detail: 'Base document',
   },
   b: {pill: 'Base', menu: 'Base', inventory: 'Base', back: 'Base', short: 'Base'},
-  c: {pill: 'Default', menu: 'Default', inventory: 'Default', back: 'Default', short: 'Default'},
+  // C (signed off 29 Oct): the inventory row reads "Default" over "Default content" (team call, 29 Oct).
+  c: {
+    pill: 'Default',
+    menu: 'Default',
+    inventory: 'Default',
+    back: 'Default',
+    short: 'Default',
+    detail: 'Default content',
+  },
   d: {pill: 'Default', menu: SERVED, inventory: SERVED, back: 'Default', short: 'Default'},
 }
 

@@ -73,7 +73,7 @@ export function resolveDocumentPaneOverride(
     // T4's Manage versions, where the inspector opens the inventory. C14: in the header (A), or in the bottom bar before Publish (B, C).
     const manageButton =
       c4 !== STOCK_OPTION && c4 !== 'b' && c2 !== 'c' ? <ManageVersionsButton /> : undefined
-    const inFooter = c14 === 'b' || c14 === 'c'
+    const inFooter = c14 === 'b' || c14 === 'c' || c14 === 'd'
     const manageIcon =
       c4 === 'b' ? <ManageVersions documentId={documentId} form="icon" /> : undefined
     // E9 paneAddress B and C replace the chips with a Documents count; C (and a compare) adds the local row under the header.
@@ -151,6 +151,7 @@ export function resolveDocumentPaneOverride(
       // C14 B and C: the button sits with the document's actions; C keeps it, alone in the bar, when there is no version to show.
       footerLead: inFooter ? manageButton : undefined,
       footerLeadAlways: c14 === 'c' ? true : undefined,
+      footerGreyed: c14 === 'd' ? true : undefined,
       compactHeader: c2 === 'c' ? true : undefined,
       inspectorTabs:
         c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,

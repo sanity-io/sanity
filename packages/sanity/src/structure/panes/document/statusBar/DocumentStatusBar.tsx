@@ -34,7 +34,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     useDocumentPane()
   // PROPOSED: a host control that stays in the bar when the status and actions are hidden (the extension's `footerLeadAlways`).
   const extension = useDocumentPaneExtension({documentId, documentType})
-  const footerLeadAlone = extension?.footerLeadAlways ? extension.footerLead : undefined
+  const footerGreyed = Boolean(extension?.footerGreyed)
+  const footerLeadAlone =
+    extension?.footerLeadAlways && !footerGreyed ? extension.footerLead : undefined
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantName} = usePerspective()
 
@@ -140,6 +142,21 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
+      {!shouldRender && !showingRevision && footerGreyed && editState?.ready ? (
+        // PROPOSED: no version to show, so no status line; the host's control and the actions keep their places, the actions greyed.
+        <Flex
+          alignItems="stretch"
+          gap={1}
+          justifyContent="flex-end"
+          paddingLeft={1}
+          paddingRight={1}
+        >
+          <Flex alignItems="flex-start" justifyContent="flex-end" style={{flexShrink: 0}}>
+            <SpacerButton />
+            <DocumentStatusBarActions disabled />
+          </Flex>
+        </Flex>
+      ) : null}
       {!shouldRender && !showingRevision && footerLeadAlone && editState?.ready ? (
         // PROPOSED: no version to show, so no status and no Publish; the host's control keeps its place at the bar's right end.
         <Flex justifyContent="flex-end" paddingLeft={1} paddingRight={1}>
