@@ -1,10 +1,11 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
+import {Flex, Box} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
@@ -37,6 +38,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   } = props
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
@@ -98,14 +100,14 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex gap={3} align="center" justify="space-between">
+          <Flex gap={3} alignItems="center" justifyContent="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}
               size="large"
               tone="neutral"
             />
-            <Flex gap={2} align="center">
+            <Flex gap={2} alignItems="center">
               <Button
                 mode="bleed"
                 onClick={onClose}

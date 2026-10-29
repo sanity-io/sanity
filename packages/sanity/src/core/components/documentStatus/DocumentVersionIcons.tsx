@@ -1,0 +1,47 @@
+import {Card} from '@sanity/ui'
+import {Flex, Icon} from 'ui5'
+
+import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {useWorkspace} from '../../studio/workspace'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
+import {useAllVariants} from '../../variants/store/useAllVariants'
+import {variantIconCard} from './DocumentVersionIcons.css'
+import {getReleasePerspective} from './getReleasePerspective'
+
+/**
+ * Renders the variant rhombus (when the version belongs to a named variant) and the release
+ * avatar that matches the version's bundle — published, draft, a release, or an anonymous
+ * bundle. Looks up the release document and variant definition from the version stub.
+ *
+ * @internal
+ */
+export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStub}) {
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const {byId: releasesById} = useActiveReleases()
+  const {byId: variantsById} = useAllVariants()
+
+  const releaseRef = version._system.release?._ref
+  const release = releaseRef ? releasesById.get(releaseRef) : undefined
+
+  const variantId = getDocumentVersionVariantId(version)
+  const variant = variantId ? variantsById.get(variantId) : undefined
+
+  return (
+    <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
+      {variantsEnabled && variant ? (
+        <Card className={variantIconCard} tone="suggest">
+          <Icon size={2} icon={RhombusIcon} tone="suggest" style={{margin: '-0.4375rem'}} />
+        </Card>
+      ) : null}
+      <ReleaseAvatar
+        fontSize={2}
+        size="small"
+        release={getReleasePerspective({release, version})}
+        padding={0}
+      />
+    </Flex>
+  )
+}

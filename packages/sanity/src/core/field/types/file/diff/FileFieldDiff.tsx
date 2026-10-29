@@ -1,20 +1,25 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Text, Box, Flex} from 'ui5'
 
-import {useUnitFormatter} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {ChangeList, DiffCard, DiffTooltip, FromTo, MetaInfo} from '../../../diff'
-import {useRefValue} from '../../../diff/hooks'
+import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ChangeList} from '../../../diff/components/ChangeList'
+import {DiffCard} from '../../../diff/components/DiffCard'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromTo} from '../../../diff/components/FromTo'
+import {MetaInfo} from '../../../diff/components/MetaInfo'
+import {useRefValue} from '../../../diff/hooks/useRefValue'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg};
+    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   `}
   &:not([hidden]) {
     display: inline-block;
@@ -60,7 +65,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         title={prev.originalFilename || t('changes.file.meta-info-fallback-title')}
         icon={DocumentIcon}
       >
-        <Text size={0} style={{color: 'inherit'}}>
+        <Text size={0} style={{color: 'inherit'}} as="div" trim={true}>
           {prevSize}
         </Text>
       </MetaInfo>
@@ -73,13 +78,18 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         title={next.originalFilename || t('changes.file.meta-info-fallback-title')}
         icon={DocumentIcon}
       >
-        <Flex align="center">
-          <Text size={0} style={{color: 'inherit'}}>
+        <Flex alignItems="center">
+          <Text size={0} style={{color: 'inherit'}} as="div" trim={true}>
             {nextSize}
           </Text>
           {pctDiff !== 0 && (
             <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
-              <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
+              <Text
+                size={0}
+                data-number={pctDiff > 0 ? 'positive' : 'negative'}
+                as="div"
+                trim={true}
+              >
                 {pctDiff > 0 ? '+' : '-'}
                 {pctDiff}%
               </Text>

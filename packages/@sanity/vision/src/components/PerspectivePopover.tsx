@@ -1,32 +1,25 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  type CardTone,
-  Inline,
-  Popover,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {Badge, Button, Card, type CardTone, Inline, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
+import {Box, VStack} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
-import {dot, perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'
+import * as styles from './PerspectivePopover.module.css'
 
 function PerspectivePopoverContent(props: ComponentProps<typeof Box>) {
-  return <Box {...props} className={perspectivePopoverContent} />
+  return <Box {...props} className={styles.perspectivePopoverContent} />
 }
 
 function PerspectivePopoverLink(props: ComponentProps<'a'>) {
-  return <a {...props} className={perspectivePopoverLink} />
+  return <a {...props} className={styles.perspectivePopoverLink} />
 }
 
 function Dot({tone}: {tone: CardTone}) {
-  return <div className={dot} style={{backgroundColor: `var(--card-badge-${tone}-dot-color)`}} />
+  return (
+    <div className={styles.dot} style={{backgroundColor: `var(--card-badge-${tone}-dot-color)`}} />
+  )
 }
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
@@ -47,10 +40,11 @@ export function PerspectivePopover() {
 
   return (
     <Popover
+      animate
       content={
         <PerspectivePopoverContent>
-          <Stack space={4}>
-            <Inline space={2}>
+          <VStack gap={4}>
+            <Inline gap={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
             </Inline>
 
@@ -58,7 +52,7 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Stack space={2}>
+              <VStack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>
@@ -68,7 +62,7 @@ export function PerspectivePopover() {
                     i18nKey="settings.perspective.preview-drafts-renamed-to-drafts.description"
                   />
                 </Text>
-              </Stack>
+              </VStack>
             </Card>
             {SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? (
               <Card>
@@ -92,7 +86,7 @@ export function PerspectivePopover() {
                 </PerspectivePopoverLink>
               </Text>
             </Card>
-          </Stack>
+          </VStack>
         </PerspectivePopoverContent>
       }
       placement="bottom-start"

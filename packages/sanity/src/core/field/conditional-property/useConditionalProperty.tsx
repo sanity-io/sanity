@@ -1,7 +1,7 @@
 import {type ConditionalProperty, type Path, type SanityDocument} from '@sanity/types'
 
-import {useCurrentUser} from '../../store'
-import {useUnique} from '../../util'
+import {useCurrentUser} from '../../store/user/hooks'
+import {useUnique} from '../../util/useUnique'
 import {useCheckCondition} from './utils'
 
 /**
@@ -23,6 +23,7 @@ export interface ConditionalPropertyProps {
  */
 export const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp, path} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const value = useUnique(valueProp)
   const currentUser = useCurrentUser()
 

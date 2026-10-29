@@ -1,0 +1,162 @@
+name: Chromatic
+permissions: {}
+
+# PR runs are label-gated: the Storybook build and the browser-mode capture run
+# each cost a full `pnpm build` on an 8-core runner plus Chromatic snapshots, so
+# a PR only pays for them once someone asks for a visual diff with the
+# `trigger:chromatic` label. Pushes to main are never gated — that is what keeps
+# the auto-accepted baselines current for the labeled PRs to diff against.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+
+# Adding an unrelated label must not cancel an in-flight Chromatic run: the new
+# run's jobs all skip via their label guards, so the cancelled build would never
+# be replaced. Only cancel when the trigger is a real Chromatic trigger: any
+# non-label event, or the `trigger:chromatic` label itself.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic' }}
+
+jobs:
+  storybook:
+    name: Storybook visual tests
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    permissions:
+      contents: read
+    # Fork PRs never run (the Chromatic token is a repository secret). Same-repo
+    # PRs need the `trigger:chromatic` label; the labeled-event guard keeps
+    # unrelated label additions from re-running the build (the label set still
+    # gates via contains(), so later pushes re-run while the label is on).
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.fork == false &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:chromatic') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic'))
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Chromatic needs full git history to find baseline builds and to
+          # trace changed files for TurboSnap.
+          fetch-depth: 0
+          # The PR branch, not GitHub's merge commit, so Chromatic can find the
+          # commits it compares: https://www.chromatic.com/docs/turbosnap/best-practices/
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Build packages
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Run Chromatic
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: chromaui/action@38afd264ef2241136f12d039093c2724748bec08 # v18.11.0
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
+          workingDir: dev/storybook
+          buildScriptName: build
+          onlyChanged: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main
+
+  vitest-visual:
+    name: Vitest browser visual tests
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    permissions:
+      contents: read
+    # Fork PRs never run (the Chromatic token is a repository secret). Same-repo
+    # PRs need the `trigger:chromatic` label; the labeled-event guard keeps
+    # unrelated label additions from re-running the build (the label set still
+    # gates via contains(), so later pushes re-run while the label is on).
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.fork == false &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:chromatic') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic'))
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Chromatic needs full git history to find baseline builds and to
+          # trace changed files for TurboSnap.
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Store Playwright's Version
+        if: steps.changes.outputs.has_changes == 'true'
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        if: steps.changes.outputs.has_changes == 'true'
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium
+
+      # System dependencies live outside ~/.cache/ms-playwright and are not
+      # restored by the cache, so always install them (see browser-tests.yml).
+      - name: Install Playwright system dependencies
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Install Playwright Browsers
+        if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
+
+      - name: Build packages
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Run browser tests with Chromatic archiving
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+          CHROMATIC: 1
+          SANITY_VITEST_BROWSER: chromium
+        run: pnpm --filter sanity test:browser
+
+      - name: Check TurboSnap stats file
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          STATS_FILE=packages/sanity/.vitest/chromatic/preview-stats.json
+          if [ ! -f "$STATS_FILE" ]; then
+            echo "::error::$STATS_FILE not found. Keep turboSnap on in vitest.browser.config.mts; if the capture run is sharded, merge the shards with 'vitest run --merge-reports' before uploading."
+            ls -la packages/sanity/.vitest/chromatic || true
+            exit 1
+          fi
+
+      - name: Upload archives to Chromatic
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: chromaui/action@38afd264ef2241136f12d039093c2724748bec08 # v18.11.0
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
+          workingDir: packages/sanity
+          vitest: true
+          onlyChanged: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main

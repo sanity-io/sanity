@@ -1,8 +1,9 @@
 import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Card, Spinner, Text, useMediaIndex} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
+import {VStack, Flex, Grid, Box} from 'ui5'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetRow} from './AssetRow'
 
 interface Props {
@@ -28,7 +29,7 @@ export function FileListView(props: Props) {
       <Card borderBottom paddingBottom={2} marginBottom={1}>
         {isMobile ? (
           <Grid style={STYLES_GRID}>
-            <Box flex={2} paddingLeft={5}>
+            <Box flexBasis="0%" flexGrow={2} paddingLeft={5}>
               <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.filename')}
               </Text>
@@ -36,22 +37,22 @@ export function FileListView(props: Props) {
           </Grid>
         ) : (
           <Grid gap={1} style={STYLES_GRID}>
-            <Box flex={2} style={STYLES_FILENAME}>
+            <Box flexBasis="0%" flexGrow={2} style={STYLES_FILENAME}>
               <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.filename')}
               </Text>
             </Box>
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.size')}
               </Text>
             </Box>
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.type')}
               </Text>
             </Box>
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.date-added')}
               </Text>
@@ -59,10 +60,10 @@ export function FileListView(props: Props) {
           </Grid>
         )}
       </Card>
-      <Stack>
+      <VStack>
         {isLoading && assets.length === 0 && (
           <Box paddingTop={4} paddingBottom={2}>
-            <Flex justify="center">
+            <Flex justifyContent="center">
               <Spinner muted />
             </Flex>
           </Box>
@@ -78,7 +79,7 @@ export function FileListView(props: Props) {
             onDeleteFinished={onDeleteFinished}
           />
         ))}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

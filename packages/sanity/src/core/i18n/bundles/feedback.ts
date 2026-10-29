@@ -9,6 +9,7 @@ import {type LocaleResourceBundle} from '../types'
  * @internal
  * @hidden
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const feedbackLocaleStrings = defineLocalesResources('feedback', {
   /** Browse button text */
   'feedback.attachment.browse': 'Browse',

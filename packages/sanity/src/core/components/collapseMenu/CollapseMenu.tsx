@@ -1,24 +1,25 @@
-import {Flex} from '@sanity/ui'
 import difference from 'lodash-es/difference.js'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
   Fragment,
   memo,
   type ReactNode,
   useCallback,
+  useImperativeHandle,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, type MarginProps, type GapProps} from 'ui5'
 
-import {type MenuButtonProps, Tooltip} from '../../../ui-components'
-import {ContextMenuButton} from '../contextMenuButton'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
-import {ObserveElement} from './ObserveElement'
+import {ObserveElement, type ObservedIntersection} from './ObserveElement'
 
 /** @internal */
 export interface CollapseMenuProps {
@@ -26,7 +27,7 @@ export interface CollapseMenuProps {
   collapsed?: boolean
   collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -35,6 +36,8 @@ export interface CollapseMenuProps {
 }
 
 const FOCUS_RING_PADDING = 3
+
+const NO_ELEMENTS: React.JSX.Element[] = []
 
 const OPTION_STYLE = css`
   list-style: none;
@@ -85,12 +88,16 @@ interface IntersectionEntry {
 type ElementIntersections = Record<string, IntersectionEntry>
 
 /** @internal */
-export const CollapseMenu = forwardRef(function CollapseMenu(
-  props: CollapseMenuProps,
-  ref: ForwardedRef<any>,
-) {
-  const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
-    props
+export function CollapseMenu(props: CollapseMenuProps & RefAttributes<any>) {
+  const {
+    ref,
+    children,
+    collapsed,
+    disableRestoreFocusOnClose,
+    onMenuClose,
+    menuButtonProps,
+    ...rest
+  } = props
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
@@ -121,14 +128,16 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
       onMenuClose={onMenuClose}
     />
   )
-})
+}
 
 /** @internal */
-export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
-  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: React.JSX.Element[]},
-  ref: ForwardedRef<HTMLDivElement>,
+export function AutoCollapseMenu(
+  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {
+    menuOptions: React.JSX.Element[]
+  } & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     collapseText = true,
     disableRestoreFocusOnClose,
     gap,
@@ -138,7 +147,13 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     ...rest
   } = props
 
+  // The measurement root is the outer element, whose width does not depend on whether the
+  // overflow button is shown. The column the rows sit in gives way to that button, so measuring
+  // against it would judge the expanded options by a width they only have while the button is
+  // provisionally there, and flip to expanded once it is gone.
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
+  // The handle is the root element once it is known; typed nullable for the first commit
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(ref, () => rootEl, [rootEl])
 
   // We use this to keep track of intersections for expanded options
   const [expandedIntersections, setExpandedIntersections] = useState<ElementIntersections>({})
@@ -151,7 +166,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
       root: rootEl,
       // safari needs threshold to be < 1
       threshold: 0.99,
-      rootMargin: '2px',
+      // The outer element clips, so the observer measures against its padding box; the negative
+      // horizontal margin takes the focus-ring padding back out, leaving 2px of tolerance on the
+      // content box like the vertical margin
+      rootMargin: `2px -${FOCUS_RING_PADDING - 2}px`,
     }),
     [rootEl],
   )
@@ -179,7 +197,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleExpandedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
+    (e: ObservedIntersection, element: React.JSX.Element) => {
       setExpandedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -204,7 +222,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleCollapsedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
+    (e: ObservedIntersection, element: React.JSX.Element) => {
       setCollapsedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -243,18 +261,24 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     [menuOptions, collapseText],
   )
 
-  // Even if rendered collapsed, there might not be space to render all,
-  // so put the overflowing ones into the menu
+  const shouldCollapse = overflowingExpandedElements.length > 0
+
+  // Even if rendered collapsed, there might not be space to render all, so put the overflowing
+  // ones into the menu. The collapsed row is measured beside the overflow button, so its answers
+  // only apply once the menu collapses: expanded options that all fit the row render without a
+  // menu, even when they would not fit beside its button (with `collapseText` off they are no
+  // narrower collapsed).
   const overflowingCollapsedOptionElements = useMemo(
     () =>
-      menuOptions.filter((optionElement) => {
-        const intersection = collapsedIntersections[optionElement.key as string]
-        return !intersection?.intersects
-      }),
-    [menuOptions, collapsedIntersections],
+      shouldCollapse
+        ? menuOptions.filter((optionElement) => {
+            const intersection = collapsedIntersections[optionElement.key as string]
+            return !intersection?.intersects
+          })
+        : NO_ELEMENTS,
+    [menuOptions, collapsedIntersections, shouldCollapse],
   )
 
-  const shouldCollapse = overflowingExpandedElements.length > 0
   const visibleMenuOptions = shouldCollapse
     ? collapsedElements.filter((optionElement) => {
         const intersection = collapsedIntersections[optionElement.key as string]
@@ -269,14 +293,13 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
 
   return (
     <OuterFlex
-      align="center"
+      alignItems="center"
       data-ui="CollapseMenu"
       overflow="hidden"
-      sizing="border"
-      ref={ref}
+      ref={setRootEl}
       {...rest}
     >
-      <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
+      <RootFlex flexDirection="column" flexBasis="0%" flexGrow={1} justifyContent="center">
         {/* The actual visible options */}
         <RowFlex gap={gap}>
           {pendingIntersections.length === 0 &&
@@ -301,25 +324,38 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
               )
             })}
         </RowFlex>
-        {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
-        <RenderHidden
-          gap={gap}
-          elements={menuOptions}
-          intersectionOptions={intersectionOptions}
-          onIntersectionChange={handleExpandedIntersection}
-        />
-        {/* Rendered hidden in order to calculate intersections for collapsed menu options */}
-        <RenderHidden
-          gap={gap}
-          elements={collapsedElements}
-          intersectionOptions={intersectionOptions}
-          onIntersectionChange={handleCollapsedIntersection}
-        />
+        {/* The hidden rows measure against the outer element, known after the first commit.
+            Mounting them then, rather than with a viewport root they would re-measure against a
+            commit later, keeps it to one measurement; both commits happen before the first paint. */}
+        {rootEl && (
+          <>
+            {/* Rendered hidden in order to calculate intersections for original (expanded) menu
+                options. Expanded options never share the row with the overflow button, so they
+                are measured against the whole width. */}
+            <RenderHidden
+              gap={gap}
+              elements={menuOptions}
+              intersectionOptions={intersectionOptions}
+              onIntersectionChange={handleExpandedIntersection}
+            />
+            {/* Rendered hidden in order to calculate intersections for collapsed menu options.
+                Collapsed options that do not all fit share the row with the overflow button, so a
+                clone of it leads this row: an option fits when it fits beside the button. When
+                every option does, the button is left out and the extra room goes unused. */}
+            <RenderHidden
+              gap={gap}
+              elements={collapsedElements}
+              intersectionOptions={intersectionOptions}
+              leading={menuButton}
+              onIntersectionChange={handleCollapsedIntersection}
+            />
+          </>
+        )}
       </RootFlex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
       {overflowingCollapsedOptionElements.length > 0 && (
-        <Flex marginLeft={gap}>
+        <Flex marginLeft={gap as MarginProps['marginLeft']}>
           <CollapseOverflowMenu
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
@@ -331,17 +367,30 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
       )}
     </OuterFlex>
   )
-})
+}
 
 const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]
-  gap?: number | number[]
+  gap?: GapProps['gap']
   intersectionOptions: IntersectionObserverInit
-  onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
+  /** An element that takes up room at the start of the row, measured against like the options */
+  leading?: React.JSX.Element
+  onIntersectionChange: (e: ObservedIntersection, element: React.JSX.Element) => void
 }) {
-  const {elements, gap, intersectionOptions, onIntersectionChange} = props
+  const {elements, gap, intersectionOptions, leading, onIntersectionChange} = props
   return (
     <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+      {leading &&
+        // A footprint only: it must not answer queries meant for the element it stands in for,
+        // nor reach the caller through that element's ref (`cloneElement` keeps it otherwise)
+        cloneElement(leading, {
+          'disabled': true,
+          'aria-hidden': true,
+          'tabIndex': -1,
+          'id': undefined,
+          'data-testid': undefined,
+          'ref': null,
+        })}
       {elements.map((element, index) => {
         const {dividerBefore} = element.props
         return (
@@ -350,7 +399,8 @@ const RenderHidden = memo(function RenderHidden(props: {
 
             <OptionObserveElement
               options={intersectionOptions}
-              onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
+              // Entries are delivered oldest first, so the last one is current
+              onIntersectionChange={(e) => onIntersectionChange(e[e.length - 1], element)}
             >
               <Flex>
                 {cloneElement(element, {

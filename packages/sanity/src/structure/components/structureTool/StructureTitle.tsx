@@ -4,7 +4,7 @@ import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
-import {type Panes} from '../../structureResolvers'
+import {type Panes} from '../../structureResolvers/useResolvedPanes'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 
@@ -45,6 +45,7 @@ export const DocumentTitle = ({
     if (!ready || previewValueIsLoading) return
     // Set the title as the document title
     document.title = newTitle
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentTitle, ready, newTitle, previewValueIsLoading])
 
   return null
@@ -56,6 +57,7 @@ const PassthroughTitle = (props: {title?: string}) => {
   useEffect(() => {
     // Set the title as the document title
     document.title = newTitle
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [newTitle, title])
   return null
 }

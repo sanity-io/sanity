@@ -23,6 +23,11 @@ export function defineConfig(config) {
     ...config,
     test: {
       ...config?.test,
+      // Pin the locale so date/number formatting is deterministic regardless of the developer's OS
+      // locale (en-CA renders dates as 2023-10-10, en-US as 10/10/2023), matching the fixed TZ. ICU
+      // resolves its default locale once at worker startup and ignores later changes, so it must be
+      // set via env; the forks pool spawns workers with this env so ICU picks it up.
+      env: {LC_ALL: 'en_US.UTF-8', LANG: 'en_US.UTF-8', ...config?.test?.env},
       // Disable console interception to prevent `EnvironmentTeardownError: Closing rpc while
       // "onUserConsoleLog" was pending` when async emissions (e.g. RxJS catchError logs) fire
       // after a test's body resolves but before the worker finishes teardown. Tradeoff:

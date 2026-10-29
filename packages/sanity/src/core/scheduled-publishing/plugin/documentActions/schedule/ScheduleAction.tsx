@@ -1,7 +1,11 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {Box, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {use, useCallback, useState} from 'react'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
+import {Text, Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
@@ -9,7 +13,8 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
@@ -49,6 +54,7 @@ const debug = debugWithName('ScheduleAction')
  * @beta
  */
 export const useScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {draft, id, liveEdit, onComplete, published, type} = props
   const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
@@ -59,8 +65,18 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     permission: 'publish',
   })
   const {createSchedule} = useScheduleOperation()
-  const {enabled, mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const hasUsedPromise = use(HasUsedScheduledPublishingPromiseContext)
+  const mode = modePromise ? use(modePromise) : null
+  // A failed feature check settles the answer on its own: the probe is not waited for then
+  const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false
+  // The action exists once the feature check passed and the dataset has used scheduling
+  const enabled = mode !== null && hasUsed
   const {handleOpenDialog} = useSchedulePublishingUpsell()
+  // Scheduling operates on the base draft, so it is not available while a variant is selected —
+  // it would silently schedule the base document instead of the variant (SAPP-3986).
+  const {selectedVariantNames} = usePerspective()
+  const isVariantSelected = Boolean(getDefaultVariant(selectedVariantNames))
   // Check if the current project supports Scheduled Publishing
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -127,6 +143,10 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     tooltip =
       'Live Edit is enabled for this content type and publishing happens automatically as you make changes'
   }
+  if (isVariantSelected) {
+    tooltip =
+      'Legacy scheduled publishing is not available for variants, use scheduled drafts instead'
+  }
 
   const dialog: DocumentActionDialogProps = {
     content: fetchError ? (
@@ -139,6 +159,7 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
         {hasExistingSchedules ? (
           <Schedules schedules={schedules} />
         ) : (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           <EditScheduleForm onChange={onFormChange} value={formData}>
             <NewScheduleInfo id={id} schemaType={type} />
           </EditScheduleForm>
@@ -163,17 +184,21 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
   if (!enabled) return null
   return {
     dialog: dialogOpen && dialog,
-    disabled: isInitialLoading || !documentExists || liveEdit,
+    disabled: isInitialLoading || !documentExists || liveEdit || isVariantSelected,
     label: title,
     icon: CalendarIcon,
     onHandle: handleDialogOpen,
     title: tooltip && (
       <Box style={{maxWidth: '315px'}}>
-        <Text size={1}>{tooltip}</Text>
+        <Text size={1} as="div" trim={true}>
+          {tooltip}
+        </Text>
       </Box>
     ),
   }
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 useScheduleAction.action = 'schedule'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 useScheduleAction.displayName = 'ScheduleAction'

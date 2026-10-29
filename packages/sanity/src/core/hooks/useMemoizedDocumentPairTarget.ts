@@ -27,13 +27,17 @@ export function useMemoizedDocumentPairTarget(
     target?.kind === 'version' || target?.kind === 'variant' ? target.scopeId : undefined
   const variantId =
     target?.kind === 'variant' || target?.kind === 'target-missing' ? target.variantId : undefined
+  const allowCreate = target?.kind === 'variant' ? target.allowCreate : undefined
 
   return useMemo((): DocumentPairTarget | undefined => {
     switch (kind) {
       case 'version':
         return {kind: 'version', scopeId: scopeId!}
       case 'variant':
-        return {kind: 'variant', scopeId: scopeId!, variantId: variantId!}
+        // Preserve the input shape exactly: no `allowCreate: undefined` key when none was given.
+        return allowCreate === undefined
+          ? {kind: 'variant', scopeId: scopeId!, variantId: variantId!}
+          : {kind: 'variant', scopeId: scopeId!, variantId: variantId!, allowCreate}
       case 'target-missing':
         // Preserve the input shape exactly: no `variantId: undefined` key when none was given.
         return variantId === undefined
@@ -44,5 +48,5 @@ export function useMemoizedDocumentPairTarget(
       default:
         return undefined
     }
-  }, [kind, scopeId, variantId])
+  }, [kind, scopeId, variantId, allowCreate])
 }

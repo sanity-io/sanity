@@ -1,5 +1,9 @@
 {
-  "extends": "@repo/tsconfig/base.json",
+  // Relative path rather than the `@repo/tsconfig/base.json` package specifier: this file lives in
+  // `dev/`, which is not a workspace package and therefore has no `node_modules` of its own.
+  // Playwright's tsconfig loader only looks for `<tsconfig dir>/node_modules`, so a bare specifier
+  // is unresolvable from here and `playwright test` fails to load configs that extend this file.
+  "extends": "../packages/@repo/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "rootDir": "..",

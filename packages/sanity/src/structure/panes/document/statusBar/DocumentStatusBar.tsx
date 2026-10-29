@@ -1,16 +1,17 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
-  isDocumentInSelectedVariant,
+  getCreatableVariantTarget,
+  getDefaultVariant,
   isPublishedPerspective,
   isReleaseDocument,
-  useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
-import {usePaneRouter} from '../../../components'
-import {SpacerButton} from '../../../components/spacerButton'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
@@ -29,10 +30,10 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {documentId, editState, revisionNotFound} = useDocumentPane()
+  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariant, bundle} = usePerspective()
-  const documentVersions = useDocumentVersions({documentId})
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -47,17 +48,25 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = useMemo(() => {
     const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
 
-    // Hide the footer (status + actions) when the document has no variant-scoped version for the
-    // selected variant. Mirrors the not-in-variant banner and read-only form state.
+    // Hide the footer (status + actions) when a variant is requested but its target document has
+    // not resolved to an editable version (missing, invalid selection, or mid-transition).
+    // Mirrors the not-in-variant banner and read-only form state. Exception: a creatable missing
+    // draft variant is editable (typing creates it), so the footer renders like the base
+    // published-with-no-draft experience.
     if (
-      selectedVariant &&
-      !isDocumentInSelectedVariant({
-        selectedVariant,
-        bundle,
-        documentVersions: documentVersions.versions,
-      })
+      selectedVariantName &&
+      targetDocumentState.status !== 'ready' &&
+      !getCreatableVariantTarget(targetDocumentState)
     ) {
       return false
+    }
+
+    // Prefer `targetDocument` so published / release variants (which are not always present on
+    // `editState.published`) still render the footer.
+    const hasTargetDocument =
+      targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
+    if (hasTargetDocument) {
+      return isReady
     }
 
     if (selectedPerspective) {
@@ -68,8 +77,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
         return isReady && Boolean(editState?.version)
       }
     }
+
     return isReady
-  }, [collapsed, editState, selectedPerspective, selectedVariant, bundle, documentVersions])
+  }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
   let actions: React.JSX.Element | null = null
   if (showingRevision) {
@@ -95,14 +105,21 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     >
       {shouldRender && (
         <Flex
-          align="stretch"
+          alignItems="stretch"
           gap={1}
-          justify="space-between"
+          justifyContent="space-between"
           paddingLeft={showingRevision ? 0 : 1}
           paddingRight={showingRevision ? 0 : 1}
         >
-          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
-            <Flex align="center">
+          <Flex
+            alignItems="center"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={collapsed ? 2 : 3}
+            flexWrap="wrap"
+            paddingRight={3}
+          >
+            <Flex alignItems="center">
               {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
               <SpacerButton />
             </Flex>
@@ -110,8 +127,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
 
           <Flex
-            align="flex-start"
-            justify="flex-end"
+            alignItems="flex-start"
+            justifyContent="flex-end"
             ref={actionsBoxRef}
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >

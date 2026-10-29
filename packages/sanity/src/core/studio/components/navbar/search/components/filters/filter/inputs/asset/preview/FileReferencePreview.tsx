@@ -1,12 +1,13 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Card, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Text, Flex, Icon} from 'ui5'
 
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'
 import {observeFileAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
-import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../../../../store/datastores'
 
 interface FileReferencePreviewProps {
   reference: ReferenceValue
@@ -33,20 +34,18 @@ function FilePreview({asset}: {asset: FileAsset}) {
   // todo: consider replacing with <SanityDefaultPreview>
   return (
     <Card padding={2} shadow={1}>
-      <Flex align="center" justify="space-between" wrap="nowrap">
+      <Flex alignItems="center" justifyContent="space-between" flexWrap="nowrap">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
-          <Text>
-            <BinaryDocumentIcon />
-          </Text>
+          <Icon icon={BinaryDocumentIcon} style={{margin: '-0.4375rem', display: 'block'}} />
         </Card>
-        <Stack flex={1} space={2} marginLeft={3}>
-          <Text muted size={1} textOverflow="ellipsis" weight="medium">
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
+          <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
             {asset?.originalFilename || asset._id}
           </Text>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {formatBytes(asset.size)}
           </Text>
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )
@@ -55,16 +54,14 @@ function FilePreview({asset}: {asset: FileAsset}) {
 function FileSkeleton() {
   return (
     <Card padding={2} shadow={1}>
-      <Flex align="center" justify="flex-start">
+      <Flex alignItems="center" justifyContent="flex-start">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
-          <Text>
-            <BinaryDocumentIcon />
-          </Text>
+          <Icon icon={BinaryDocumentIcon} style={{margin: '-0.4375rem', display: 'block'}} />
         </Card>
-        <Stack flex={1} space={2} marginLeft={3}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )

@@ -1,12 +1,14 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
-import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {type AssetSource, type SchemaAssetSources} from '@sanity/types'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {getAssetSourceDisplayName} from './assetSourceUtils'
 
 /** Derives data-testid prefix from schema type. e.g. file-object-input, image-object-input, video-object-input. */
@@ -20,7 +22,7 @@ export function getDataTestIdPrefix(schemaType: {name?: string; jsonType?: strin
 export interface AssetSourceBrowserProps {
   assetSources: AssetSource[]
   readOnly?: boolean
-  schemaType: {name?: string; jsonType?: string; options?: {sources?: AssetSource[]}}
+  schemaType: {name?: string; jsonType?: string; options?: {sources?: SchemaAssetSources}}
   onSelectAssetSource: (assetSource: AssetSource) => void
   onCloseMenu?: () => void
 }
@@ -50,7 +52,9 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
     [onCloseMenu, onSelectAssetSource],
   )
 
-  if (sourcesFromSchema?.length === 0) {
+  // Legacy support for `options.sources: []` — hides browsing entirely. Only
+  // the array form can mean this; `.length` on the predicate form is arity.
+  if (Array.isArray(sourcesFromSchema) && sourcesFromSchema.length === 0) {
     return null
   }
 

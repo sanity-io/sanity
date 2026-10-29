@@ -1,9 +1,9 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
+import {pathToString} from '@sanity/validation/_internal'
 import {useCallback, useMemo, useState} from 'react'
 import {FullscreenPTEContext} from 'sanity/_singletons'
 
-import {pathToString} from '../../../../../validation/util/pathToString'
 import {
   NestedDialogEditorClosed,
   NestedDialogEditorOpened,
@@ -22,6 +22,7 @@ interface FullscreenPTEProviderProps {
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
   const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const getFullscreenPath = useCallback(

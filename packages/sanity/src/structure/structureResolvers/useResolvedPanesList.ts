@@ -3,7 +3,7 @@ import {ResolvedPanesContext} from 'sanity/_singletons'
 
 import {type Panes} from './useResolvedPanes'
 
-const DEFAULT_VALUE = {
+const DEFAULT_VALUE: Panes = {
   paneDataItems: [],
   routerPanes: [],
   resolvedPanes: [],

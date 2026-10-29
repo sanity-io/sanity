@@ -1,5 +1,5 @@
-import {type Tool} from '../config'
-import {useSource} from '../studio'
+import {type Tool} from '../config/types'
+import {useSource} from '../studio/source'
 
 /**
  *
@@ -7,5 +7,6 @@ import {useSource} from '../studio'
  * @beta
  */
 export function useTools(): Tool[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().tools
 }

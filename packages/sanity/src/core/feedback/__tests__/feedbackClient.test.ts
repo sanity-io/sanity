@@ -4,11 +4,15 @@ import {type FeedbackPayload} from '../types'
 
 const mockCaptureEvent = vi.fn().mockReturnValue('mock-event-id')
 const mockFlush = vi.fn().mockResolvedValue(true)
+const mockBrowserClient = vi.fn()
 
 vi.mock('@sentry/react', () => {
   const mockClient = {init: vi.fn(), flush: mockFlush}
   return {
     BrowserClient: class MockBrowserClient {
+      constructor(options: unknown) {
+        mockBrowserClient(options)
+      }
       init = vi.fn()
     },
     Scope: class MockScope {
@@ -32,6 +36,7 @@ describe('sendFeedbackToSentry', () => {
     vi.resetModules()
     mockCaptureEvent.mockClear()
     mockFlush.mockClear()
+    mockBrowserClient.mockClear()
     const mod = await import('../feedbackClient')
     sendFeedbackToSentry = mod.sendFeedbackToSentry
   })
@@ -53,6 +58,32 @@ describe('sendFeedbackToSentry', () => {
       ...overrides,
     }
   }
+
+  it('opts out of v11 data collection and scrubs automatic user and request data', async () => {
+    await sendFeedbackToSentry(makePayload())
+
+    const [options] = mockBrowserClient.mock.calls[0]
+    expect(options.dataCollection).toMatchObject({
+      userInfo: false,
+      cookies: false,
+      httpBodies: [],
+      queues: false,
+    })
+
+    const [scrubber] = options.integrations
+    const event = {
+      type: 'feedback' as const,
+      user: {email: 'auto@example.com', ip_address: '203.0.113.5'},
+      request: {url: 'https://studio.example/?token=secret', headers: {Cookie: 'sid=abc'}},
+      contexts: {feedback: {contactEmail: 'kept@example.com', message: 'Great feature!'}},
+    }
+
+    expect(scrubber.processEvent(event)).toMatchObject({
+      user: {ip_address: '0.0.0.0'},
+      contexts: {feedback: {contactEmail: 'kept@example.com', message: 'Great feature!'}},
+    })
+    expect(event.request).toBeUndefined()
+  })
 
   it('returns an event ID', async () => {
     const result = await sendFeedbackToSentry(makePayload())

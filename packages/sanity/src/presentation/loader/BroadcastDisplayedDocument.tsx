@@ -17,6 +17,7 @@ function BroadcastDisplayedDocument(props: {
   useEffect(() => {
     const timeout = setTimeout(() => setDisplayedDocument?.(props.value), 10)
     return () => clearTimeout(timeout)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [params?.perspective, props.value, setDisplayedDocument])
 
   return null

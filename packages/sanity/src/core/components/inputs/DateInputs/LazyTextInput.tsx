@@ -2,13 +2,12 @@ import {TextInput, type TextInputProps} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type KeyboardEvent,
   type SyntheticEvent,
   useCallback,
   useState,
+  type RefAttributes,
 } from 'react'
 
 /**
@@ -16,10 +15,15 @@ import {
  * By default it will only emit onChange when: 1) user hits enter or 2) user leaves the
  * field (e.g. onBlur) and the input value at this time is different from the given `value` prop
  */
-export const LazyTextInput = forwardRef(function LazyTextInput(
-  {onChange, onBlur, onKeyPress, value, ...rest}: TextInputProps & HTMLProps<HTMLInputElement>,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function LazyTextInput({
+  ref: forwardedRef,
+  onChange,
+  onBlur,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  onKeyPress,
+  value,
+  ...rest
+}: TextInputProps & HTMLProps<HTMLInputElement> & RefAttributes<HTMLInputElement>) {
   const [inputValue, setInputValue] = useState<string>()
 
   const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +72,8 @@ export const LazyTextInput = forwardRef(function LazyTextInput(
       value={inputValue === undefined ? value : inputValue}
       onChange={handleChange}
       onBlur={handleBlur}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       onKeyPress={handleKeyPress}
     />
   )
-})
+}

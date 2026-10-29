@@ -1,5 +1,6 @@
-import {Card, Code} from '@sanity/ui'
-import isEqual from 'lodash-es/isEqual.js'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
@@ -11,9 +12,8 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
-import {Pane} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
@@ -30,7 +30,6 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
-
 /**
  * Type for custom menu item state storage.
  * Maps menu item IDs to their current state values.
@@ -133,6 +132,15 @@ export const appendRestoreDefaultItems = (options: {
 
   if (suppressRestoreDefaults) return menuItems
 
+  // Only attach a restore item to a group that already has items, so a pane
+  // that removed them (e.g. `menuItems([])`) does not get them back.
+  const hasSortItems = menuItems.some(
+    (item) => item.group === 'sorting' || item.action === 'setSortOrder',
+  )
+  const hasLayoutItems = menuItems.some(
+    (item) => item.group === 'layout' || item.action === 'setLayout',
+  )
+
   const restoreDefaultSortOrderItem: PaneMenuItem = {
     group: 'sorting',
     action: 'restoreDefaultSortOrder',
@@ -151,16 +159,11 @@ export const appendRestoreDefaultItems = (options: {
     ...(isLayoutDefault && {disabled: {reason: restoreLayoutDisabledReason}}),
   }
 
-  return [...menuItems, restoreDefaultSortOrderItem, restoreDefaultLayoutItem]
-}
-
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
-  }
-  return previous
+  return [
+    ...menuItems,
+    ...(hasSortItems ? [restoreDefaultSortOrderItem] : []),
+    ...(hasLayoutItems ? [restoreDefaultLayoutItem] : []),
+  ]
 }
 
 /**
@@ -170,18 +173,22 @@ export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   const {
+    currentMaxWidth = 350,
     defaultLayout = 'default',
     initialValueTemplates = EMPTY_ARRAY,
+    maxWidth = 640,
     menuItemGroups,
     menuItems,
+    minWidth = 320,
     options,
     suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const params = options.params || EMPTY_RECORD
   const sourceName = pane.source
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
@@ -236,14 +243,15 @@ export const PaneContainer = memo(function PaneContainer(
     [setStoredSortOrder, schemaType, defaultSortOrder],
   )
 
-  // Write the default back so its matching menu item regains its checkmark.
+  // Clear the stored preference instead of writing the default: the key is
+  // shared per type, so writing would leak this list's default onto its siblings.
   const handleRestoreDefaultSortOrder = useCallback(async () => {
-    await setStoredSortOrder(toStaticSortOrder(defaultSortOrder))
-  }, [setStoredSortOrder, defaultSortOrder])
+    await setStoredSortOrder(null)
+  }, [setStoredSortOrder])
 
   const handleRestoreDefaultLayout = useCallback(async () => {
-    await setLayout(defaultLayout)
-  }, [setLayout, defaultLayout])
+    await setLayout(null)
+  }, [setLayout])
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
@@ -302,9 +310,9 @@ export const PaneContainer = memo(function PaneContainer(
       <Pane
         data-ui="DocumentListPane"
         id={paneKey}
-        minWidth={320}
-        currentMaxWidth={350}
-        maxWidth={640}
+        minWidth={minWidth}
+        currentMaxWidth={currentMaxWidth}
+        maxWidth={maxWidth}
         selected={isSelected}
       >
         {_DEBUG && (
@@ -331,4 +339,3 @@ export const PaneContainer = memo(function PaneContainer(
     </SourceProvider>
   )
 })
-PaneContainer.displayName = 'Memo(PaneContainer)'

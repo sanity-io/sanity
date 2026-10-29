@@ -46,9 +46,10 @@ export function createPreviewObserver(context: {
       viewOptions?: PrepareViewOptions
       apiConfig?: ApiConfig
       perspective?: StackablePerspective[]
+      variant?: string
     } = {},
   ): Observable<PreparedSnapshot> {
-    const {viewOptions = {}, apiConfig, perspective} = options
+    const {viewOptions = {}, apiConfig, perspective, variant} = options
     if (isCrossDatasetReferenceSchemaType(type)) {
       // if the value is of type crossDatasetReference, but has no _ref property, we cannot prepare any value for the preview
       // and the most appropriate thing to do is to return `undefined` for snapshot
@@ -58,7 +59,7 @@ export function createPreviewObserver(context: {
 
       const refApiConfig = {projectId: value._projectId, dataset: value._dataset}
 
-      return observeDocumentTypeFromId(value._ref, refApiConfig, perspective).pipe(
+      return observeDocumentTypeFromId(value._ref, refApiConfig, perspective, variant).pipe(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.type === typeName)
@@ -67,6 +68,7 @@ export function createPreviewObserver(context: {
                 apiConfig: refApiConfig,
                 viewOptions,
                 perspective,
+                variant,
               })
             }
           }
@@ -83,12 +85,12 @@ export function createPreviewObserver(context: {
       // Previewing references actually means getting the referenced value,
       // and preview using the preview config of its type
       // We do this since there's no way of knowing the type of the referenced value by looking at the reference value alone
-      return observeDocumentTypeFromId(value._ref, undefined, perspective).pipe(
+      return observeDocumentTypeFromId(value._ref, undefined, perspective, variant).pipe(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.name === typeName)
             if (refType) {
-              return observeForPreview(value, refType, {perspective})
+              return observeForPreview(value, refType, {perspective, variant})
             }
           }
           // todo: in case we can't read the document type, we can figure out the reason why e.g. whether it's because
@@ -101,7 +103,7 @@ export function createPreviewObserver(context: {
     }
     const paths = getPreviewPaths(type.preview)
     if (paths) {
-      return observePaths(value, paths, apiConfig, perspective).pipe(
+      return observePaths(value, paths, apiConfig, perspective, variant).pipe(
         map((snapshot) => ({
           type: type,
           snapshot: snapshot ? prepareForPreview(snapshot, type, viewOptions) : null,

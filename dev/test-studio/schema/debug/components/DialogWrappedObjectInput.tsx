@@ -1,9 +1,9 @@
 'use client'
-
 import {EditIcon} from '@sanity/icons/Edit'
-import {Box, Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog} from '@sanity/ui'
 import {useState} from 'react'
 import {type InputProps} from 'sanity'
+import {Text, Box, VStack} from 'ui5'
 
 export function ModalObjectInput(props: InputProps) {
   const {value, renderDefault, schemaType, readOnly} = props
@@ -14,12 +14,12 @@ export function ModalObjectInput(props: InputProps) {
   const hasValue = value !== undefined && value !== null
 
   return (
-    <Stack space={3}>
+    <VStack gap={3}>
       <Card padding={3} radius={2} shadow={1} tone="transparent">
-        <Stack space={3}>
+        <VStack gap={3}>
           <Box>
             {hasValue && (
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 Configured
               </Text>
             )}
@@ -31,7 +31,7 @@ export function ModalObjectInput(props: InputProps) {
             text={hasValue ? 'Edit' : 'Configure'}
             disabled={readOnly}
           />
-        </Stack>
+        </VStack>
       </Card>
 
       {open && (
@@ -45,6 +45,6 @@ export function ModalObjectInput(props: InputProps) {
           <Box padding={4}>{renderDefault(props)}</Box>
         </Dialog>
       )}
-    </Stack>
+    </VStack>
   )
 }

@@ -6,6 +6,7 @@ import {
   type FieldsetDefinition,
   type SchemaTypeDefinition,
 } from '@sanity/types'
+import {normalizeValidationRules, Rule} from '@sanity/validation/_internal'
 import {type ReactNode} from 'react'
 import {assert, describe, expect, test} from 'vitest'
 
@@ -13,8 +14,8 @@ import {
   type EncodedNamedType,
   type ObjectField,
 } from '../../../@sanity/schema/src/descriptors/types'
-import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
-import {Rule} from '../../src/core/validation'
+import {builtinSchema, createSchema} from '../../src/core/schema/createSchema'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 import {expectManifestSchemaConversion} from './utils'
 
 type Descriptor =
@@ -2331,11 +2332,23 @@ describe('Text', () => {
 })
 
 describe('Slug', () => {
-  test('implied validation', async () => {
+  test('preserves the slug type without an implied custom validator', async () => {
     const type = await convertType({name: 'foo', type: 'slug'})
-    expect(type.typeDef).toMatchObject({
-      validation: [{level: 'error', rules: [{type: 'custom'}]}],
+    expect(type.typeDef.extends).toBe('slug')
+    expect(type.typeDef.validation).toBeUndefined()
+  })
+
+  test('omits compiled built-in callbacks while preserving authored rules', async () => {
+    const type = await convertType({
+      name: 'foo',
+      type: 'slug',
+      validation: normalizeValidationRules(builtinSchema.get('slug')).map((rule) =>
+        rule.required().custom(() => true),
+      ),
     })
+    expect(type.typeDef.validation).toEqual([
+      {level: 'error', rules: [{type: 'required'}, {type: 'custom'}]},
+    ])
   })
 })
 

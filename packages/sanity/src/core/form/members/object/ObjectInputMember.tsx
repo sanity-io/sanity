@@ -1,7 +1,7 @@
 import {memo} from 'react'
 
-import {FormRow} from '../../components'
-import {type ObjectMember} from '../../store'
+import {FormRow} from '../../components/layout/FormRow'
+import {type ObjectMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -9,7 +9,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'

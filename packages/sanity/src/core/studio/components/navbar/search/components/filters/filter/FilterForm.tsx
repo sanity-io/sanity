@@ -1,10 +1,12 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
+import {Text, Box, Flex, VStack} from 'ui5'
 
-import {Button, ErrorBoundary} from '../../../../../../../../ui-components'
-import {supportsTouch} from '../../../../../../../util'
+import {Button} from '../../../../../../../../ui-components/button/Button'
+import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition} from '../../../definitions/operators'
@@ -67,7 +69,7 @@ export function FilterForm({filter}: FilterFormProps) {
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex direction="column-reverse">
+        <Flex flexDirection="column-reverse">
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
@@ -83,8 +85,8 @@ export function FilterForm({filter}: FilterFormProps) {
 
           {/* Title, description and operator */}
           <Card padding={3}>
-            <Stack space={3}>
-              <Flex align="flex-start" gap={3} justify="space-between">
+            <VStack gap={3}>
+              <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
                 <Box paddingLeft={1} paddingRight={2} paddingY={1}>
                   <FilterDetails filter={filter} />
                 </Box>
@@ -101,13 +103,13 @@ export function FilterForm({filter}: FilterFormProps) {
               </Flex>
               {filterDefinition?.description && (
                 <Card border padding={3} radius={2} tone="transparent">
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     {filterDefinition.description}
                   </Text>
                 </Card>
               )}
               <OperatorsMenuButton filter={filter} operator={operator} />
-            </Stack>
+            </VStack>
           </Card>
         </Flex>
       </FocusLock>

@@ -1,4 +1,4 @@
-import {type ForwardedRef, forwardRef, useContext} from 'react'
+import {useContext, type RefAttributes} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
 
@@ -7,11 +7,8 @@ import {type ChildLinkProps} from './types'
 /**
  * @internal
  */
-export const ChildLink = forwardRef(function ChildLink(
-  props: ChildLinkProps,
-  ref: ForwardedRef<HTMLAnchorElement>,
-) {
-  const {childId, childPayload, childParameters, ...rest} = props
+export function ChildLink(props: ChildLinkProps & RefAttributes<HTMLAnchorElement>) {
+  const {ref, childId, childPayload, childParameters, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
 
   return (
@@ -26,4 +23,4 @@ export const ChildLink = forwardRef(function ChildLink(
       }}
     />
   )
-})
+}

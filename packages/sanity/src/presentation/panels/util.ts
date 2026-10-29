@@ -94,6 +94,10 @@ export function getPanelWidth(panels: PanelElement[], id: string, widths: number
   return width.toPrecision(10)
 }
 
+export function getContainerRect(containerElement: HTMLDivElement | null): DOMRect | null {
+  return containerElement?.getBoundingClientRect() ?? null
+}
+
 export function getOffset(
   event: MouseEvent,
   handleElement: HTMLDivElement,

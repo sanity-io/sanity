@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "options": {
     "typeAware": true,
+    "typeCheck": true,
     "reportUnusedDisableDirectives": "error"
   },
   "env": {
@@ -23,6 +24,7 @@
     {"name": "tsdoc", "specifier": "eslint-plugin-tsdoc"},
     {"name": "i18next", "specifier": "eslint-plugin-i18next"},
     {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
+    {"name": "@repo/i18n", "specifier": "@repo/oxlint-plugin-i18n"},
     {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
     {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
   ],
@@ -33,25 +35,40 @@
     },
     "boundaries/root-path": "packages/sanity",
     "boundaries/include": ["src/**/*.*"],
+    "boundaries/legacy-warnings": false,
     "boundaries/elements": [
-      {"type": "sanity", "pattern": ["src/_exports/index.ts"], "mode": "full"},
-      {"type": "sanity__contents", "pattern": ["src/core/**/*.*"], "mode": "full"},
-      {"type": "sanity/_internal", "pattern": ["src/_exports/_internal.ts"], "mode": "full"},
-      {"type": "sanity/_internal__contents", "pattern": ["src/_internal/**/*.*"], "mode": "full"},
-      {"type": "sanity/cli", "pattern": ["src/_exports/cli.ts"], "mode": "full"},
-      {"type": "sanity/cli__contents", "pattern": ["src/cli/**/*.*"], "mode": "full"},
-      {"type": "sanity/desk", "pattern": ["src/_exports/desk.ts"], "mode": "file"},
-      {"type": "sanity/desk__contents", "pattern": ["src/desk/**/*.*"], "mode": "file"},
-      {"type": "sanity/router", "pattern": ["src/_exports/router.ts"], "mode": "full"},
-      {"type": "sanity/router__contents", "pattern": ["src/router/**/*.*"], "mode": "full"},
-      {"type": "sanity/structure", "pattern": ["src/_exports/structure.ts"], "mode": "file"},
-      {"type": "sanity/structure__contents", "pattern": ["src/structure/**/*.*"], "mode": "file"},
-      {"type": "sanity/_singletons", "pattern": ["src/_exports/_singletons.ts"], "mode": "file"},
+      {"type": "sanity__contents", "pattern": "src/core", "partialMatch": false},
+      {
+        "type": "sanity/_internal__contents",
+        "pattern": "src/_internal",
+        "partialMatch": false
+      },
+      {"type": "sanity/cli__contents", "pattern": "src/cli", "partialMatch": false},
+      {"type": "sanity/desk__contents", "pattern": "src/desk", "partialMatch": false},
+      {"type": "sanity/router__contents", "pattern": "src/router", "partialMatch": false},
+      {
+        "type": "sanity/structure__contents",
+        "pattern": "src/structure",
+        "partialMatch": false
+      },
       {
         "type": "sanity/_singletons__contents",
-        "pattern": ["src/_singletons/**/*.*"],
-        "mode": "full"
+        "pattern": "src/_singletons",
+        "partialMatch": false
       }
+    ],
+    "boundaries/files": [
+      {"category": "sanity", "pattern": "src/_exports/index.ts"},
+      {
+        "category": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
+        "pattern": "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
+      },
+      {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
+      {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
+      {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
+      {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
+      {"category": "sanity/structure", "pattern": "src/_exports/structure.ts"},
+      {"category": "sanity/_singletons", "pattern": "src/_exports/_singletons.ts"}
     ]
   },
   "ignorePatterns": [
@@ -65,11 +82,20 @@
     "**/lib/*",
     "**/node_modules/*",
     "**/dist/*",
+    // Storybook build output (dev/storybook)
+    "**/storybook-static/*",
     "*.json",
     "*.css",
     "*.snap",
     "*.md",
-    "dev/test-studio/sanity.theme.mjs"
+    "dev/test-studio/sanity.theme.mjs",
+    // Out of scope for type checking (SGH-461); examples are not CI-gated
+    "examples/**",
+    // Intentional .test-d.ts / expectTypeOf fixtures — vitest typechecks these separately
+    "packages/@repo/test-dts-exports/**",
+    // The CSS module typings css-modules-kit writes (`pnpm css:types`): gitignored, `@ts-nocheck`ed
+    // declarations the type checker still reads through `rootDirs`
+    "**/generated/**/*.module.css.d.ts"
   ],
   "categories": {
     "correctness": "error",
@@ -105,6 +131,16 @@
             "name": "react",
             "importNames": ["createRef"],
             "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+          },
+          {
+            "name": "react",
+            "importNames": ["forwardRef"],
+            "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+          },
+          {
+            "name": "react",
+            "importNames": ["useEffectEvent"],
+            "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
           },
           {
             "name": "react/jsx-runtime",
@@ -145,6 +181,7 @@
     ],
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
+    "typescript/no-deprecated": "error",
     "react/jsx-key": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     // Not relevant as we use the modern jsx-runtime transform
@@ -174,14 +211,32 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
-    // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
+    // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
+    "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
+    // Components defined during render get a new identity every render, remounting their subtree
+    "react/no-unstable-nested-components": "error",
+    // React Compiler rules (https://oxc.rs/blog/2026-08-18-react-compiler-support.html#oxlint).
+    // The old nursery `react/react-compiler` rule was replaced by 22 category-specific rules.
+    // The `correctness`, `suspicious`, and `perf` rules are already enabled via `categories`
+    // above; the `restriction`-category rules are not, so they are enabled explicitly here.
     // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
-    "react/react-compiler": "error",
+    "react/unsupported-syntax": "error",
+    "react/invariant": "error",
+    "react/rule-suppression": "error",
+    "react/syntax": "error",
+    "react/todo": "error",
     // Import hygiene previously enforced by eslint-plugin-import
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": ["error", {"prefer-inline": true}],
     "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Prevent new runtime import cycles (type-only imports are not counted). The known
+    // architectural cycles are excluded via an override below; shrink that list over time
+    // instead of adding to it. The tsdown build (`checks.circularDependency`) is the
+    // complementary bundle-level check.
+    "import/no-cycle": "error",
+    // Side-effect CSS imports are intentional (bundler injects styles)
+    "import/no-unassigned-import": ["error", {"allow": ["**/*.css"]}],
     "import/extensions": [
       "error",
       {
@@ -209,6 +264,9 @@
     "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
+    // Ban `export *` barrel files that pull in large module graphs; import
+    // directly from the module that defines a symbol instead
+    "oxc/no-barrel-file": "error",
     "no-restricted-globals": [
       "error",
       {
@@ -277,7 +335,6 @@
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
     // TODO(oxlint): Fix violations and set these back to error.
-    "react/no-unstable-nested-components": "warn",
     "typescript/no-unnecessary-type-conversion": "off",
     "typescript/no-useless-default-assignment": "off",
     "typescript/no-unnecessary-type-parameters": "off",
@@ -298,6 +355,28 @@
     "jsx_a11y/aria-proptypes": "off"
   },
   "overrides": [
+    {
+      // The one known architectural runtime import cycle, excluded from `import/no-cycle` until
+      // it is untangled (tracked in PR 13753): the field diff-component registry.
+      // `defaultComponents` maps schema types to diff components; those components render nested
+      // changes through `ChangeList`/`buildChangeList`, which resolve components from the
+      // registry again (`resolveDiffComponent`) and attach them to the change nodes. Breaking it
+      // needs the resolver to be provided via context instead of imported statically.
+      // Shrink this list when the cycle is fixed; do not add new entries.
+      "files": [
+        "packages/sanity/src/core/field/diff/changes/buildChangeList.ts",
+        "packages/sanity/src/core/field/diff/components/ChangeList.tsx",
+        "packages/sanity/src/core/field/diff/resolve/defaultComponents.ts",
+        "packages/sanity/src/core/field/diff/resolve/resolveDiffComponent.ts",
+        "packages/sanity/src/core/field/types/file/diff/FileFieldDiff.tsx",
+        "packages/sanity/src/core/field/types/image/diff/ImageFieldDiff.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/Annotation.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/InlineObject.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/PortableText.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/PTDiff.tsx"
+      ],
+      "rules": {"import/no-cycle": "off"}
+    },
     {
       "files": ["scripts/**/*", "examples/functions/**/*"],
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
@@ -417,11 +496,15 @@
           }
         ],
         "@sanity/i18n/no-attribute-template-literals": "error",
-        "@sanity/i18n/no-i18next-import": "error"
+        "@sanity/i18n/no-i18next-import": "error",
+        "@repo/i18n/no-inline-translate-components": "error",
+        // Namespaces and resource files are listed in packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs
+        "@repo/i18n/no-missing-translation-key": "error",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "error"
       }
     },
     {
-      // @sanity/vision has been fully migrated off styled-components to vanilla-extract,
+      // @sanity/vision has been fully migrated off styled-components to CSS modules,
       // so ban all styled-components imports here (oxlint overrides replace, rather than
       // merge, the global no-restricted-imports rule, so the other restrictions are repeated)
       "files": ["packages/@sanity/vision/**"],
@@ -432,7 +515,7 @@
             "paths": [
               {
                 "name": "styled-components",
-                "message": "styled-components is banned in @sanity/vision. Please use vanilla-extract (`@vanilla-extract/css`) in a `.css.ts` file instead."
+                "message": "styled-components is banned in @sanity/vision. Please use a CSS module (`*.module.css`) instead."
               },
               {
                 "name": "react",
@@ -448,6 +531,16 @@
                 "name": "react",
                 "importNames": ["createRef"],
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",
@@ -497,7 +590,10 @@
       "rules": {
         "i18next/no-literal-string": "off",
         "@sanity/i18n/no-attribute-string-literals": "off",
-        "@sanity/i18n/no-attribute-template-literals": "off"
+        "@sanity/i18n/no-attribute-template-literals": "off",
+        // Tests use fixture namespaces and keys as plain data
+        "@repo/i18n/no-missing-translation-key": "off",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "off"
       }
     },
     {
@@ -517,105 +613,153 @@
           "error",
           {
             "default": "disallow",
-            "rules": [
+            "policies": [
               {
-                "from": {"type": "sanity/_internal"},
-                "allow": {"to": {"type": "sanity/_internal__contents"}}
+                "from": {"file": {"categories": "sanity/_internal"}},
+                "allow": {"to": {"element": {"type": "sanity/_internal__contents"}}}
               },
               {
-                "from": {"type": "sanity/_internal__contents"},
-                "allow": {"to": {"type": ["sanity", "sanity/_internal__contents"]}}
-              },
-              {"from": {"type": "sanity/cli"}, "allow": {"to": {"type": "sanity/cli__contents"}}},
-              {
-                "from": {"type": "sanity/cli__contents"},
-                "allow": {"to": {"type": "sanity/cli__contents"}}
-              },
-              {"from": {"type": "sanity"}, "allow": {"to": {"type": "sanity__contents"}}},
-              {
-                "from": {"type": "sanity__contents"},
+                "from": {"element": {"type": "sanity/_internal__contents"}},
                 "allow": {
-                  "to": {"type": ["sanity__contents", "sanity/router", "sanity/_singletons"]}
+                  "to": [
+                    {"file": {"categories": "sanity"}},
+                    {"element": {"type": "sanity/_internal__contents"}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/desk"},
+                // The internals entry re-exports @internal declarations from every area. Nothing
+                // inside the package imports it: src/core, src/structure and src/router keep
+                // using relative imports, so the entry never becomes part of an import cycle.
+                "from": {
+                  "file": {
+                    "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                  }
+                },
                 "allow": {
                   "to": {
-                    "type": [
-                      "sanity/desk__contents",
-                      "sanity/structure",
-                      "sanity/structure__contents"
-                    ]
+                    "element": {
+                      "type": [
+                        "sanity__contents",
+                        "sanity/structure__contents",
+                        "sanity/router__contents"
+                      ]
+                    }
                   }
                 }
               },
               {
-                "from": {"type": "sanity/desk__contents"},
+                "from": {"file": {"categories": "sanity/cli"}},
+                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/cli__contents"}},
+                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+              },
+              {
+                "from": {"file": {"categories": "sanity"}},
+                "allow": {"to": {"element": {"type": "sanity__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity__contents"}},
                 "allow": {
-                  "to": {
-                    "type": [
-                      "sanity",
-                      "sanity/desk__contents",
-                      "sanity/router",
-                      "sanity/_internal",
-                      "sanity/structure",
-                      "sanity/structure__contents",
-                      "sanity/_singletons"
-                    ]
-                  }
+                  "to": [
+                    {"element": {"type": "sanity__contents"}},
+                    {"file": {"categories": ["sanity/router", "sanity/_singletons"]}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/router"},
-                "allow": {"to": {"type": "sanity/router__contents"}}
-              },
-              {
-                "from": {"type": "sanity/router__contents"},
-                "allow": {"to": {"type": ["sanity/router__contents", "sanity/_singletons"]}}
-              },
-              {
-                "from": {"type": "sanity/structure"},
-                "allow": {"to": {"type": "sanity/structure__contents"}}
-              },
-              {
-                "from": {"type": "sanity/structure__contents"},
+                "from": {"file": {"categories": "sanity/desk"}},
                 "allow": {
-                  "to": {
-                    "type": [
-                      "sanity",
-                      "sanity/structure__contents",
-                      "sanity/router",
-                      "sanity/_singletons"
-                    ]
-                  }
+                  "to": [
+                    {"element": {"type": ["sanity/desk__contents", "sanity/structure__contents"]}},
+                    {"file": {"categories": "sanity/structure"}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/_singletons"},
-                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+                "from": {"element": {"type": "sanity/desk__contents"}},
+                "allow": {
+                  "to": [
+                    {
+                      "element": {
+                        "type": ["sanity/desk__contents", "sanity/structure__contents"]
+                      }
+                    },
+                    {
+                      "file": {
+                        "categories": [
+                          "sanity",
+                          "sanity/router",
+                          "sanity/_internal",
+                          "sanity/structure",
+                          "sanity/_singletons"
+                        ]
+                      }
+                    }
+                  ]
+                }
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
-                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+                "from": {"file": {"categories": "sanity/router"}},
+                "allow": {"to": {"element": {"type": "sanity/router__contents"}}}
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
+                "from": {"element": {"type": "sanity/router__contents"}},
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/router__contents"}},
+                    {"file": {"categories": "sanity/_singletons"}}
+                  ]
+                }
+              },
+              {
+                "from": {"file": {"categories": "sanity/structure"}},
+                "allow": {"to": {"element": {"type": "sanity/structure__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/structure__contents"}},
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/structure__contents"}},
+                    {
+                      "file": {
+                        "categories": ["sanity", "sanity/router", "sanity/_singletons"]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "from": {"file": {"categories": "sanity/_singletons"}},
+                "allow": {"to": {"element": {"type": "sanity/_singletons__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
+                "allow": {"to": {"element": {"type": "sanity/_singletons__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
                 "allow": {
                   "to": {
-                    "type": [
-                      "sanity__contents",
-                      "sanity/structure__contents",
-                      "sanity/router__contents"
-                    ]
+                    "element": {
+                      "type": [
+                        "sanity__contents",
+                        "sanity/structure__contents",
+                        "sanity/router__contents"
+                      ]
+                    }
                   },
                   "dependency": {"kind": "type"}
                 }
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
                 "disallow": {
-                  "to": {"type": ["sanity", "sanity/structure", "sanity/router"]},
+                  "to": {
+                    "file": {"categories": ["sanity", "sanity/structure", "sanity/router"]}
+                  },
                   "dependency": {"kind": "type"}
                 }
               }
@@ -730,6 +874,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -757,16 +911,31 @@
                   "Dialog",
                   "DialogProps",
                   "ErrorBoundary",
+                  "Tab",
+                  "TabProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/menu",
+                "importNames": [
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
                   "MenuGroupProps",
                   "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
+                  "MenuItemProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/popover",
+                "importNames": ["Popover", "PopoverProps"],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/tooltip",
+                "importNames": [
                   "Tooltip",
                   "TooltipProps",
                   "TooltipDelayGroupProvider",
@@ -841,6 +1010,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -868,16 +1047,31 @@
                   "Dialog",
                   "DialogProps",
                   "ErrorBoundary",
+                  "Tab",
+                  "TabProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/menu",
+                "importNames": [
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
                   "MenuGroupProps",
                   "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
+                  "MenuItemProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/popover",
+                "importNames": ["Popover", "PopoverProps"],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/tooltip",
+                "importNames": [
                   "Tooltip",
                   "TooltipProps",
                   "TooltipDelayGroupProvider",
@@ -910,107 +1104,12 @@
       }
     },
     {
-      // _createContext legitimately calls createContext, so it is exempt from that restriction
-      "files": ["packages/sanity/src/_createContext/**"],
-      "rules": {
-        "eslint/no-restricted-imports": [
-          "error",
-          {
-            "paths": [
-              {
-                "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
-              },
-              {
-                "name": "react",
-                "importNames": ["default"],
-                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
-              },
-              {
-                "name": "react",
-                "importNames": ["createElement"],
-                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
-              },
-              {
-                "name": "react",
-                "importNames": ["createRef"],
-                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
-              },
-              {
-                "name": "react/jsx-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/jsx-dev-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/compiler-runtime",
-                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
-              },
-              {
-                "name": "date-fns",
-                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
-              },
-              {
-                "name": "lodash-es",
-                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
-              },
-              {
-                "name": "@sanity/ui",
-                "importNames": [
-                  "Button",
-                  "ButtonProps",
-                  "Dialog",
-                  "DialogProps",
-                  "ErrorBoundary",
-                  "MenuButton",
-                  "MenuButtonProps",
-                  "MenuGroup",
-                  "MenuGroupProps",
-                  "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
-                  "Tooltip",
-                  "TooltipProps",
-                  "TooltipDelayGroupProvider",
-                  "TooltipDelayGroupProviderProps"
-                ],
-                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
-              }
-            ],
-            "patterns": [
-              {
-                "group": ["**/scheduled-publishing/**"],
-                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
-              },
-              {
-                "group": ["lodash.*", "lodash/*", "lodash"],
-                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              },
-              {
-                "group": ["lodash-es/*", "!lodash-es/*.js"],
-                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
       // Singletons must use relative type imports (the boundaries plugin can't track named type imports)
       "files": ["packages/sanity/src/_singletons/**"],
       "rules": {
         "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+        // Top-level type imports mean a module can be imported twice (`import type` and `import`)
+        "import/no-duplicates": ["error", {"prefer-inline": false}],
         "eslint/no-restricted-imports": [
           "error",
           {
@@ -1039,6 +1138,16 @@
                 "name": "react",
                 "importNames": ["createRef"],
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",
@@ -1063,12 +1172,7 @@
               {"name": "sanity", "message": "Use relative type imports instead"},
               {"name": "sanity/presentation", "message": "Use relative type imports instead"},
               {"name": "sanity/structure", "message": "Use relative type imports instead"},
-              {"name": "sanity/router", "message": "Use relative type imports instead"},
-              {
-                "name": "react",
-                "importNames": ["createContext"],
-                "message": "Use `createContext` from 'sanity/_createContext' instead"
-              }
+              {"name": "sanity/router", "message": "Use relative type imports instead"}
             ],
             "patterns": [
               {
@@ -1089,14 +1193,9 @@
       }
     },
     {
-      // Browser-mode tests and their story/helper files render real Studio inputs and may import
-      // the public API and test-only deps freely
-      "files": [
-        "packages/sanity/**/*.browser.test.{ts,tsx}",
-        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
-      ],
+      // Browser-mode tests (harness components included) render real Studio inputs and may
+      // import the public API and test-only deps freely
+      "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
       "rules": {
         "eslint/no-restricted-imports": "off"
       }

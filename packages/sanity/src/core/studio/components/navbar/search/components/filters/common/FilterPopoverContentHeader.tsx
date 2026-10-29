@@ -1,11 +1,11 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Box, Flex} from '@sanity/ui'
-import {type ChangeEvent, forwardRef} from 'react'
-import {styled} from 'styled-components'
+import {type ChangeEvent, type RefAttributes} from 'react'
+import {Flex, Box} from 'ui5'
 
-import {useTranslation} from '../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
+import {searchHeaderContentFlex} from './FilterPopoverContentHeader.css'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
@@ -14,27 +14,27 @@ interface FilterPopoverContentHeaderProps {
   typeFilter: string
 }
 
-const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  flex-shrink: 0;
-`
-
-const SearchHeaderContentFlex = styled(Flex)`
-  box-sizing: border-box;
-`
-
-export const FilterPopoverContentHeader = forwardRef<
-  HTMLInputElement,
-  FilterPopoverContentHeaderProps
->(function FilterPopoverContentHeader({ariaInputLabel, onChange, onClear, typeFilter}, ref) {
+export function FilterPopoverContentHeader({
+  ref,
+  ariaInputLabel,
+  onChange,
+  onClear,
+  typeFilter,
+}: FilterPopoverContentHeaderProps & RefAttributes<HTMLInputElement>) {
   const {
     state: {fullscreen},
   } = useSearchState()
   const {t} = useTranslation()
 
   return (
-    <SearchHeaderBox>
-      <SearchHeaderContentFlex align="center" flex={1} padding={1}>
+    <Box borderBottom flexShrink={0}>
+      <Flex
+        alignItems="center"
+        className={searchHeaderContentFlex}
+        flexBasis="0%"
+        flexGrow={1}
+        padding={1}
+      >
         <CustomTextInput
           __unstable_disableFocusRing
           $smallClearButton
@@ -53,7 +53,7 @@ export const FilterPopoverContentHeader = forwardRef<
           radius={2}
           value={typeFilter}
         />
-      </SearchHeaderContentFlex>
-    </SearchHeaderBox>
+      </Flex>
+    </Box>
   )
-})
+}

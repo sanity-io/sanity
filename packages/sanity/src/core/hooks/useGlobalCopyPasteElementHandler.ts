@@ -1,10 +1,11 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
-import {useEffect, useEffectEvent} from 'react'
+import {useEffect} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {isFileTargetElement} from '../form/inputs/files/common/fileTarget/fileTarget'
 import {type FormDocumentValue} from '../form/types/formDocumentValue'
-import {useCopyPaste} from '../studio/copyPaste'
+import {useCopyPaste} from '../studio/copyPaste/CopyPasteProvider'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
 
 /** @internal */
@@ -63,6 +64,7 @@ export function useGlobalCopyPasteElementHandler({
   })
 
   useEffect(() => {
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     element?.addEventListener('keydown', handleKeydown)
 
     return () => {

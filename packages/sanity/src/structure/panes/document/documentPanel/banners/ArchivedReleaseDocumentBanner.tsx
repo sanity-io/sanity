@@ -1,18 +1,33 @@
-import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getVersionInlineBadge,
+  getReleaseTone,
   isCardinalityOneRelease,
+  LATEST,
   ReleaseTitle,
+  type TargetPerspective,
   Translate,
   useArchivedReleases,
   useTranslation,
+  VersionInlineBadge,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
+
+function VersionBadge({
+  children,
+  release,
+}: {
+  children?: React.ReactNode
+  release?: TargetPerspective
+}) {
+  return (
+    <VersionInlineBadge $tone={getReleaseTone(release ?? LATEST)}>{children}</VersionInlineBadge>
+  )
+}
 
 export function ArchivedReleaseDocumentBanner({
   releaseId,
@@ -57,7 +72,7 @@ export function ArchivedReleaseDocumentBanner({
     <Banner
       tone="caution"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <ReleaseTitle
             title={release?.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
@@ -69,12 +84,8 @@ export function ArchivedReleaseDocumentBanner({
                 values={{
                   title: displayTitle,
                 }}
-                components={{
-                  VersionBadge: ({children}) => {
-                    const BadgeWithTone = getVersionInlineBadge(release)
-                    return <BadgeWithTone>{children}</BadgeWithTone>
-                  },
-                }}
+                components={{VersionBadge}}
+                componentProps={{release}}
               />
             )}
           </ReleaseTitle>

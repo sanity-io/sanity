@@ -1,8 +1,6 @@
 import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useId,
@@ -10,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {FormField} from '../../../form/components/formField/FormField'
@@ -32,11 +31,9 @@ type Props = CommonProps & {
   timeZoneScope: TimeZoneScope
 }
 
-export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     markers,
     title,
@@ -59,8 +56,9 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   const [localValue, setLocalValue] = useState<string | null>(null)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
@@ -119,6 +117,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       markers.map((m) => ({
         level: m.level,
         path: m.path,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         message: m.message ?? m.item?.message,
       })),
     [markers],
@@ -151,6 +150,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
+          // oxlint-disable-next-line react/purity -- the example placeholder shows the current date and time
           placeholder={placeholder || `e.g. ${formatInputValue(new Date())}`}
           ref={inputRef}
           value={parseResult?.date}
@@ -165,4 +165,4 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       )}
     </FormField>
   )
-})
+}

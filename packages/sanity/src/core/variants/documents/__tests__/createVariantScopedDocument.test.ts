@@ -31,21 +31,25 @@ const releaseDocument: ReleaseDocument = {
   },
 }
 
+function mockClient() {
+  const client = {
+    action: vi.fn().mockResolvedValue(ACTION_RESULT),
+    withConfig: vi.fn(() => client),
+  }
+
+  return client
+}
+
 describe('createVariantScopedDocument', () => {
   it('creates a variant document from a base document in the published perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await expect(
       createVariantScopedDocument({
         client: client as unknown as SanityClient,
-        document: {
-          _id: 'drafts.article-1',
-          _type: 'article',
-          _rev: 'rev-1',
-          title: 'Hello',
-        },
+        baseId: 'drafts.article-1',
+        ifBaseRevisionId: 'rev-1',
+        documentGroupId: 'article-1',
         variant: VARIANT,
         selectedPerspective: 'published',
       }),
@@ -61,20 +65,50 @@ describe('createVariantScopedDocument', () => {
       },
       {tag: 'variants.document.create'},
     )
+
+    // `toHaveBeenCalledWith` does not distinguish absent keys from `undefined`
+    // values, so assert explicitly that no bundle is sent for the published
+    // perspective.
+    expect(client.action.mock.calls[0][0]).not.toHaveProperty('bundleId')
+  })
+
+  it('creates a variant document from an in-memory document', async () => {
+    const client = mockClient()
+
+    await expect(
+      createVariantScopedDocument({
+        client: client as unknown as SanityClient,
+        document: {
+          _type: 'article',
+          title: 'Hello',
+        },
+        documentGroupId: 'article-1',
+        variant: VARIANT,
+        selectedPerspective: 'published',
+      }),
+    ).resolves.toEqual(ACTION_RESULT)
+
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.variant.create',
+        publishedId: 'article-1',
+        variantId: 'Ab12cd34',
+        document: {
+          _type: 'article',
+          title: 'Hello',
+        },
+      },
+      {tag: 'variants.document.create'},
+    )
   })
 
   it('passes release bundleId when creating from a release perspective string', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'drafts.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'drafts.article-1',
+      documentGroupId: 'article-1',
       variant: VARIANT,
       selectedPerspective: 'my-release',
     })
@@ -89,20 +123,20 @@ describe('createVariantScopedDocument', () => {
       },
       {tag: 'variants.document.create'},
     )
+
+    // `toHaveBeenCalledWith` does not distinguish absent keys from `undefined`
+    // values, so assert explicitly that no revision constraint is sent when
+    // none is provided.
+    expect(client.action.mock.calls[0][0]).not.toHaveProperty('ifBaseRevisionId')
   })
 
   it('passes release bundleId when creating from a release document perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'versions.rSummer123.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'versions.rSummer123.article-1',
+      documentGroupId: 'article-1',
       variant: VARIANT,
       selectedPerspective: releaseDocument,
     })
@@ -120,17 +154,12 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('passes drafts bundleId when creating from the drafts perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'drafts.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'drafts.article-1',
+      documentGroupId: 'article-1',
       variant: VARIANT,
       selectedPerspective: 'drafts',
     })
@@ -145,5 +174,43 @@ describe('createVariantScopedDocument', () => {
       },
       {tag: 'variants.document.create'},
     )
+  })
+
+  it('forwards the abort signal to the action request when creating from a base document', async () => {
+    const client = mockClient()
+    const controller = new AbortController()
+
+    await createVariantScopedDocument({
+      client: client as unknown as SanityClient,
+      baseId: 'drafts.article-1',
+      documentGroupId: 'article-1',
+      variant: VARIANT,
+      selectedPerspective: 'published',
+      signal: controller.signal,
+    })
+
+    expect(client.action).toHaveBeenCalledWith(expect.anything(), {
+      tag: 'variants.document.create',
+      signal: controller.signal,
+    })
+  })
+
+  it('forwards the abort signal to the action request when creating from an in-memory document', async () => {
+    const client = mockClient()
+    const controller = new AbortController()
+
+    await createVariantScopedDocument({
+      client: client as unknown as SanityClient,
+      document: {_type: 'article'},
+      documentGroupId: 'article-1',
+      variant: VARIANT,
+      selectedPerspective: 'published',
+      signal: controller.signal,
+    })
+
+    expect(client.action).toHaveBeenCalledWith(expect.anything(), {
+      tag: 'variants.document.create',
+      signal: controller.signal,
+    })
   })
 })

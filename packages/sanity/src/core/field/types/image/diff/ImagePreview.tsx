@@ -2,15 +2,16 @@ import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons/Image'
 import {createImageUrlBuilder} from '@sanity/image-url'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Text, Box, Flex} from 'ui5'
 
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {useDocumentValues} from '../../../../store'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useDocumentValues} from '../../../../store/document/hooks/useDocumentValues'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {MetaInfo} from '../../../diff'
+import {MetaInfo} from '../../../diff/components/MetaInfo'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
 import {type ImagePreviewProps, type MinimalAsset} from './types'
@@ -27,8 +28,8 @@ export const NoImagePreview = () => {
   const {t} = useTranslation()
   return (
     <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">
-      <Flex align="center" justify="center" height="fill">
-        <Text size={1} muted>
+      <Flex alignItems="center" justifyContent="center" height="100%">
+        <Text size={1} muted as="div" trim={true}>
           {t('changes.image.no-image-placeholder')}
         </Text>
       </Flex>
@@ -125,11 +126,11 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const metaAction = action === 'changed' ? undefined : action
 
   return (
-    <Flex direction="column" height="fill" flex={1}>
-      <Box flex={1} padding={2} paddingBottom={0}>
+    <Flex flexDirection="column" height="100%" flexBasis="0%" flexGrow={1}>
+      <Box flexBasis="0%" flexGrow={1} padding={2} paddingBottom={0}>
         <Flex
           as={ImageWrapper}
-          direction="column"
+          flexDirection="column"
           data-changed={is === 'from' && assetChanged ? '' : undefined}
           data-error={imageError ? '' : undefined}
         >
@@ -146,7 +147,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
 
           {(assetIsDeleted || imageError) && (
             <Box paddingY={5}>
-              <Text size={1} muted align="center">
+              <Text size={1} muted align="center" as="div" trim={true}>
                 {t(assetIsDeleted ? 'changes.image.deleted' : 'changes.image.error-loading-image')}
               </Text>
             </Box>

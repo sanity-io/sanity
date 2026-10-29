@@ -1,8 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback} from 'react'
+import {VStack} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 
 // TODO: re-enable locale selection once schema localization is available
@@ -21,7 +22,7 @@ export function LocaleMenu() {
 
   return (
     <Card borderTop flex="none" padding={2} overflow="auto">
-      <Stack as="ul" space={1}>
+      <VStack as="ul" gap={1}>
         {locales.map((item) => (
           <LocaleItem
             key={item.id}
@@ -30,7 +31,7 @@ export function LocaleMenu() {
             selectedLocale={currentLocale.id}
           />
         ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

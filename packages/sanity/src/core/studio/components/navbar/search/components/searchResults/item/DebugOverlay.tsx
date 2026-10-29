@@ -1,20 +1,15 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Card, type CardTone, Inline} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {VStack} from 'ui5'
 
-import {Tooltip} from '../../../../../../../../ui-components'
-import {type WeightedHit} from '../../../../../../../search'
+import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
+import {type WeightedHit} from '../../../../../../../search/common/types'
+import {debugScoreCard} from './DebugOverlay.css'
 
 interface DebugScoreProps {
   data: WeightedHit
 }
-
-const DebugScoreCard = styled(Card)`
-  cursor: help;
-  left: 0;
-  position: absolute;
-  top: 0;
-`
 
 export function DebugOverlay({data}: DebugScoreProps) {
   const {score} = data
@@ -32,11 +27,11 @@ export function DebugOverlay({data}: DebugScoreProps) {
     <>
       <Tooltip
         content={
-          <Stack space={2}>
+          <VStack gap={2}>
             {matchingStories.length ? (
               <>
                 {matchingStories.map((story) => (
-                  <Inline key={story.path} space={3}>
+                  <Inline key={story.path} gap={3}>
                     <Code size={0} weight="medium">
                       {story.path}
                     </Code>
@@ -47,14 +42,14 @@ export function DebugOverlay({data}: DebugScoreProps) {
             ) : (
               <Code size={0}>No matches</Code>
             )}
-          </Stack>
+          </VStack>
         }
         placement="bottom-start"
         portal
       >
-        <DebugScoreCard padding={1} shadow={1} tone={tone}>
+        <Card className={debugScoreCard} padding={1} shadow={1} tone={tone}>
           <Code size={0}>score: {score}</Code>
-        </DebugScoreCard>
+        </Card>
       </Tooltip>
     </>
   )

@@ -1,46 +1,30 @@
 /* oxlint-disable no-restricted-imports */
-import {
-  Badge,
-  Box,
-  Flex,
-  MenuItem as UIMenuItem,
-  type MenuItemProps as UIMenuItemProps,
-  Stack,
-  Text,
-} from '@sanity/ui'
-import {
-  type ElementType,
-  forwardRef,
-  type HTMLProps,
-  isValidElement,
-  type ReactNode,
-  type Ref,
-  useMemo,
-} from 'react'
+import {Badge, Text} from '@sanity/ui'
+import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
+import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
-import {Tooltip, type TooltipProps} from '..'
 import {Hotkeys} from '../../core/components/Hotkeys'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
+import {previewWrapper, subtitleText} from './MenuItem.css'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
 
-/* Using px value here to make title/subtitles align with icon */
-const SubtitleText = styled(Text)`
-  margin-top: 2px;
-`
-
 /** @internal */
-export type MenuItemProps = Pick<
-  UIMenuItemProps<ElementType>,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+export type MenuItemProps<E extends ElementType = 'button'> = Omit<
+  UIMenuItemProps<E>,
+  'children' | 'icon' | 'iconRight' | 'text'
 > & {
   badgeText?: string
   /**
    * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.
    */
   children?: undefined
+  disabled?: boolean
+  icon?: UIMenuItemProps['icon']
+  iconRight?: UIMenuItemProps['iconRight']
   /**
    * Previews should be 25x25.
    */
@@ -63,12 +47,6 @@ export type MenuItemProps = Pick<
   __unstable_space?: number
 }
 
-const PreviewWrapper = styled(Box)`
-  height: 25px;
-  width: 25px;
-  overflow: hidden;
-`
-
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
  * single line menu items.
@@ -80,60 +58,75 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export const MenuItem = forwardRef(function MenuItem(
-  {
-    badgeText,
-    children: childrenProp,
-    disabled,
-    hotkeys,
-    icon: Icon,
-    iconRight: IconRight,
-    preview = null,
-    renderMenuItem,
-    text,
-    tooltipProps,
-    __unstable_subtitle,
-    __unstable_space,
-    ...rest
-  }: MenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
-  ref: Ref<HTMLDivElement>,
-) {
+export function MenuItem<E extends ElementType = 'button'>({
+  ref,
+  badgeText,
+  children: childrenProp,
+  disabled,
+  hotkeys,
+  icon: Icon,
+  iconRight: IconRight,
+  preview = null,
+  renderMenuItem,
+  text,
+  tooltipProps,
+  __unstable_subtitle,
+  __unstable_space,
+  ...rest
+}: MenuItemProps<E>) {
   const menuItemContent = useMemo(() => {
     return (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {preview && (
-          <PreviewWrapper
+          <Box
+            className={previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
-            <Flex align="center" height="fill" justify="center">
+            <Flex alignItems="center" height="100%" justifyContent="center">
               {preview}
             </Flex>
-          </PreviewWrapper>
+          </Box>
         )}
         {Icon && (
           <Box paddingRight={1}>
-            <Text size={FONT_SIZE}>
-              {isValidElement(Icon) && Icon}
-              {isValidElementType(Icon) && <Icon />}
-            </Text>
+            {isValidElement(Icon) ? (
+              <Flex
+                alignItems="center"
+                style={{marginInline: '-0.4375rem', marginBlock: '-0.5rem'}}
+              >
+                {Icon}
+              </Flex>
+            ) : (
+              <Text size={FONT_SIZE}>{isValidElementType(Icon) && <Icon />}</Text>
+            )}
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
+          <Flex
+            flexBasis="0%"
+            flexGrow={1}
+            gap={__unstable_subtitle ? 1 : 2}
+            flexDirection="column"
+          >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
             {__unstable_subtitle && (
-              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+              <Text
+                className={subtitleText}
+                size={SUBTITLE_FONT_SIZE}
+                textOverflow="ellipsis"
+                weight="medium"
+                muted
+              >
                 {__unstable_subtitle}
-              </SubtitleText>
+              </Text>
             )}
-          </Stack>
+          </Flex>
         )}
         {(badgeText || hotkeys || IconRight) && (
-          <Flex align="center" gap={3} marginLeft={3}>
+          <Flex alignItems="center" gap={3} marginLeft={3}>
             {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
             {badgeText && (
@@ -171,7 +164,8 @@ export const MenuItem = forwardRef(function MenuItem(
       paddingRight={3}
       paddingY={preview ? 1 : 3}
       ref={ref}
-      {...rest}
+      // UIMenuItem is not invoked with E, so forwarded `as` props need a wide cast.
+      {...(rest as UIMenuItemProps)}
     >
       {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
         ? renderMenuItem(menuItemContent)
@@ -189,4 +183,4 @@ export const MenuItem = forwardRef(function MenuItem(
   }
 
   return children
-})
+}

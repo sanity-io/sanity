@@ -1,12 +1,12 @@
-import debugit from 'debug'
+import {createDebug} from 'obug'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {LiveUserApplicationContext} from 'sanity/_singletons'
 
 import {type UserApplication, useUserApplicationCache} from '../../store/userApplications'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {findUserApplication} from './liveUserApplication'
 
-const debug = debugit('studio:live-user-application')
+const debug = createDebug('studio:live-user-application')
 
 /** @internal */
 interface LiveUserApplicationProviderProps {
@@ -28,7 +28,7 @@ export function LiveUserApplicationProvider({children}: LiveUserApplicationProvi
 
   useEffect(() => {
     let hasSubscriber = true
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setIsLoading(true)
     findUserApplication(userApplicationCache, workspaces)
       .then((found) => {

@@ -1,17 +1,21 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {type Path} from '@sanity/types'
-import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
+import {Flex, Box} from 'ui5'
 
-import {Button, Popover} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../../components/inputs/DateInputs/DatePicker'
-import {type FormPatch, type PatchEvent, set, unset} from '../../../../form'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {set, unset} from '../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../form/patch/types'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {tasksLocaleNamespace} from '../../../i18n'
 
@@ -76,6 +80,7 @@ export function DateEditFormField(props: {
   const handleDeactivation = useCallback(() => {
     buttonRef.current?.focus()
   }, [buttonRef])
+  // oxlint-disable-next-line react/purity -- the label format depends on the current calendar year
   const dueDateIsThisYear = deserializedValue?.date?.getFullYear() === new Date().getFullYear()
 
   return (
@@ -97,7 +102,7 @@ export function DateEditFormField(props: {
               timeZoneScope={SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE}
             />
             {value && (
-              <Flex justify={'flex-start'} padding={3} paddingTop={0}>
+              <Flex justifyContent={'flex-start'} padding={3} paddingTop={0}>
                 <Button
                   mode="bleed"
                   text={t('form.input.date.buttons.remove.text')}

@@ -1,9 +1,9 @@
 const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180
 
 /**
- * This is a component that renders a progress icon based on the progress percentage
- * @param progress - The progress percentage (0-100)
- * @returns The progress icon based on the progress percentage
+ * This is a component that renders a progress icon based on the progress fraction
+ * @param progress - The progress fraction (0-1)
+ * @returns The progress icon based on the progress fraction
  */
 export function ProgressIcon(props: {progress: number}) {
   const {progress, ...rest} = props

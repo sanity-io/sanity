@@ -253,9 +253,9 @@ export class Expression {
     return result
   }
 
-  toFieldReferences(): number[] | string[] {
+  toFieldReferences(probe?: Probe): number[] | string[] {
     if (this.isIndexReference()) {
-      return this.toIndicies()
+      return this.toIndicies(probe)
     }
     if (this.expr.type === 'attribute') {
       return [this.expr.name]

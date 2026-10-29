@@ -1,18 +1,20 @@
 import {type ReferenceValue, type SchemaType} from '@sanity/types'
-import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
+import {Autocomplete} from '@sanity/ui/autocomplete'
+import {useCallback, useId, useMemo, useRef, useState, type Ref, type RefAttributes} from 'react'
+import {Text, Flex, Box} from 'ui5'
 
-import {Popover} from '../../../../../../../../../../ui-components'
-import {useSchema} from '../../../../../../../../../hooks'
-import {Translate, useTranslation} from '../../../../../../../../../i18n'
-import {type SearchHit} from '../../../../../../../../../search'
-import {getPublishedId} from '../../../../../../../../../util'
+import {Popover} from '../../../../../../../../../../ui-components/popover/Popover'
+import {useSchema} from '../../../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../../../../../../i18n/Translate'
+import {type SearchHit} from '../../../../../../../../../search/common/types'
+import {getPublishedId} from '../../../../../../../../../util/draftUtils'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {styledText} from './ReferenceAutocomplete.css'
 
 type AutocompleteSearchHit = {value: string} & SearchHit
 
@@ -31,14 +33,12 @@ interface ReferenceAutocompleteProps {
 
 const NO_FILTER = () => true
 
-const StyledText = styled(Text)`
-  word-break: break-word;
-`
-
-export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  {onSelect, types = [], value}: ReferenceAutocompleteProps,
-  ref: ForwardedRef<HTMLInputElement>,
-) {
+export function ReferenceAutocomplete({
+  ref,
+  onSelect,
+  types = [],
+  value,
+}: ReferenceAutocompleteProps & RefAttributes<HTMLInputElement>) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   const schema = useSchema()
@@ -144,7 +144,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   }, [])
 
   const renderPopover = useCallback(
-    (props: PopoverContentProps, contentRef: ForwardedRef<HTMLDivElement>) => {
+    (props: PopoverContentProps, contentRef: Ref<HTMLDivElement>) => {
       const {content, hidden, onMouseEnter, onMouseLeave} = props
       const hasResults = hits && hits.length > 0
       return (
@@ -156,14 +156,14 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                 ? content
                 : searchState.terms.query && (
                     <Box padding={4}>
-                      <Flex align="center" height="fill" justify="center">
-                        <StyledText align="center" muted>
+                      <Flex alignItems="center" height="100%" justifyContent="center">
+                        <Text align="center" className={styledText} muted as="div" trim={true}>
                           <Translate
                             t={t}
                             i18nKey="new-document.no-results"
                             values={{searchQuery: searchState.terms.query}}
                           />
-                        </StyledText>
+                        </Text>
                       </Flex>
                     </Box>
                   )}
@@ -205,4 +205,4 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       />
     </div>
   )
-})
+}

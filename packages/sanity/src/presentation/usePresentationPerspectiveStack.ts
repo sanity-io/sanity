@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {useContext, useMemo} from 'react'
 import {usePerspective} from 'sanity'
 import {PaneRouterContext} from 'sanity/structure'
 
@@ -10,8 +10,13 @@ export function usePresentationPerspectiveStack() {
   }
   const scheduledDraftPerspective = paneRouter.params?.scheduledDraft
 
-  if (scheduledDraftPerspective) {
-    return [scheduledDraftPerspective, ...perspectiveStack]
-  }
-  return perspectiveStack
+  // Memoized so consumers can use the stack as a dependency without
+  // rebuilding their streams every render.
+  return useMemo(
+    () =>
+      scheduledDraftPerspective
+        ? [scheduledDraftPerspective, ...perspectiveStack]
+        : perspectiveStack,
+    [scheduledDraftPerspective, perspectiveStack],
+  )
 }

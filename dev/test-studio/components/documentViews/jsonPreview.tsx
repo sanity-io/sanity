@@ -1,4 +1,6 @@
-import {Box, Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {Box} from 'ui5'
 
 export function JSONPreviewDocumentView(props: any) {
   return (

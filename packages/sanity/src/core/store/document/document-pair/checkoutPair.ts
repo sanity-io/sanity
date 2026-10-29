@@ -5,7 +5,7 @@ import {
   type SingleMutationResult,
 } from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {combineLatest, defer, EMPTY, from, merge, type Observable, of, timer} from 'rxjs'
 import {
@@ -26,14 +26,18 @@ import {
 
 import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
+import {getVariantId} from '../../../variants/tool/util'
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
+} from '../buffered-doc/createBufferedDocument'
+import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {
   type DocumentRebaseEvent,
   type MutationPayload,
   type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,
@@ -53,6 +57,7 @@ import {
 } from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
+import {variantsApiClient} from './utils/variantsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
@@ -181,6 +186,17 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     if (mutations.create) {
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
       requireId(mutations.create)
+      const createSystem = (mutations.create as SanityDocumentLike)._system
+      const createVariantRef = getDocumentVersionVariantId({_system: createSystem})
+      if (mutations.create._id === idPair.versionId && createSystem && createVariantRef) {
+        return {
+          actionType: 'sanity.action.document.variant.create',
+          publishedId: idPair.publishedId,
+          variantId: getVariantId(createVariantRef),
+          document: mutations.create,
+          bundleId: createSystem.bundleId,
+        }
+      }
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
@@ -218,12 +234,23 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
   return actions
 }
 
+function isVariantDocumentAction(action: Action): boolean {
+  return action.actionType.startsWith('sanity.action.document.variant.')
+}
+
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
     return commitMutations(client, idPair, mutationParams)
   }
 
-  return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
+  const actions = toActions(idPair, mutationParams)
+  // A variant document action needs the variants API version. That version is newer than the
+  // releases version, so a batch that also contains a plain `document.edit` stays on it.
+  const actionClient = actions.some(isVariantDocumentAction)
+    ? variantsApiClient(client)
+    : actionsApiClient(client, idPair)
+
+  return actionClient.observable.action(actions, {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })
@@ -235,6 +262,7 @@ function commitMutations(
   mutationParams: Mutation['params'],
 ): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
@@ -421,21 +449,20 @@ export function checkoutPair(
     mergeMap((commitRequest) => {
       const apiRequestSentAt = Date.now()
       return submitCommitRequest(client, idPair, commitRequest).pipe(
-        map(
-          (attemptResult): CommitAttemptResult =>
-            attemptResult.type === 'success'
-              ? {
-                  ...attemptResult,
-                  result: {
-                    ...attemptResult.result,
-                    _perfTimings: {
-                      firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-                      apiRequestSentAt,
-                      apiResponseReceivedAt: Date.now(),
-                    },
+        map((attemptResult): CommitAttemptResult =>
+          attemptResult.type === 'success'
+            ? {
+                ...attemptResult,
+                result: {
+                  ...attemptResult.result,
+                  _perfTimings: {
+                    firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+                    apiRequestSentAt,
+                    apiResponseReceivedAt: Date.now(),
                   },
-                }
-              : attemptResult,
+                },
+              }
+            : attemptResult,
         ),
       )
     }),
@@ -601,26 +628,22 @@ function reportLatency(options: {
   }
 
   const submittedMutations = commits$.pipe(
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'submit' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-        perfTimings: ev._perfTimings,
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'submit' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+      perfTimings: ev._perfTimings,
+    })),
     share(),
   )
 
   const receivedMutations = listenerEvents$.pipe(
     filter((ev) => ev.type === 'mutation'),
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'receive' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'receive' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
     share(),
   )
 

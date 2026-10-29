@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -7,19 +7,15 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {activeASAPRelease} from '../../../../releases/__fixtures__/release.fixture'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
+import * as variantConditions from '../../../hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
-import {type SystemVariant} from '../../../types'
-import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
+import {VariantsStudioNavbarLayout} from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()
 
 const routerMock = vi.hoisted(() => ({
   stickyParams: {} as Record<string, string | undefined>,
-}))
-
-const variantsMock = vi.hoisted(() => ({
-  byId: new Map<string, SystemVariant>(),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -30,85 +26,135 @@ vi.mock('sanity/router', async (importOriginal) => ({
   })),
 }))
 
-vi.mock('../../../store/useAllVariants', () => ({
-  useAllVariants: vi.fn(() => ({
-    byId: variantsMock.byId,
-  })),
-}))
-
 vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
-vi.mock('../../../../perspective/navbar/ReleasesNav', () => ({
-  ReleasesNav: () => <div data-testid="releases-nav" />,
+vi.mock('../../../../store/agent/useAgentBundles', () => ({
+  useAgentBundles: vi.fn(() => ({bundles: [], loading: false})),
 }))
 
-vi.mock('../VariantsNav', () => ({
-  VariantsNav: () => <div data-testid="variants-nav" />,
+vi.mock('../../../../perspective/navbar/GlobalPerspectiveMenu', () => ({
+  GlobalPerspectiveMenu: () => <div data-testid="global-perspective-menu" />,
 }))
 
-describe('VariantsStudioNavbar', () => {
+vi.mock('../VariantsMenu', () => ({
+  VariantsMenu: () => <div data-testid="variants-menu" />,
+}))
+
+function getFilter(prefix: string) {
+  const prefixText = screen.getByText(prefix)
+  const filter = prefixText.closest('[data-ui="PerspectiveFilter"]')
+  if (!filter) {
+    throw new Error(`PerspectiveFilter with prefix "${prefix}" not found`)
+  }
+  return filter as HTMLElement
+}
+
+describe('VariantsStudioNavbarLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
-    variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
+    usePerspectiveMockReturn.selectedVariants = []
+    usePerspectiveMockReturn.selectedVariantNames = []
   })
 
+  // The layout lazy-loads the filters behind a Suspense fallback, so wait for them to appear
   const renderNavbar = async () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsStudioNavbar renderDefault={() => null} />, {wrapper})
+    const view = render(<VariantsStudioNavbarLayout renderDefault={() => <span />} />, {wrapper})
+    await screen.findByText('Version')
     await flushMicrotasksThisIsACodeSmell()
     return view
   }
 
-  it('does not show clear when version and variant are at default', async () => {
+  it('hides remove controls when version and variant are at default', async () => {
     await renderNavbar()
 
-    expect(screen.queryByTestId('view-as-clear-button')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('perspective-filter-remove')).not.toBeInTheDocument()
   })
 
-  it('shows clear when a non-default perspective is selected', async () => {
+  it('shows version remove when a non-default perspective is selected', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(
+      within(getFilter('Version')).getByRole('button', {name: 'Clear version selection'}),
+    ).toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).queryByTestId('perspective-filter-remove'),
+    ).not.toBeInTheDocument()
   })
 
-  it('shows clear when a variant is selected', async () => {
+  it('shows variant remove when a variant is selected', async () => {
     routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(
+      within(getFilter('Version')).queryByTestId('perspective-filter-remove'),
+    ).not.toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).getByRole('button', {name: 'Clear variant selection'}),
+    ).toBeInTheDocument()
   })
 
-  it('shows clear when sticky variant is set but not resolved in the store', async () => {
+  it('shows variant remove when sticky variant is set but not resolved in the store', async () => {
     routerMock.stickyParams = {variant: 'missing-variant'}
-    variantsMock.byId = new Map()
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).getByRole('button', {name: 'Clear variant selection'}),
+    ).toBeInTheDocument()
   })
 
-  it('clears version and variant when clear is clicked', async () => {
+  it('clears version when version remove is clicked', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
-    routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
 
     await renderNavbar()
 
     const user = userEvent.setup()
-    await user.click(screen.getByTestId('view-as-clear-button'))
+    await user.click(within(getFilter('Version')).getByTestId('perspective-filter-remove'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
         excludedPerspectives: null,
         perspective: '',
+      },
+    })
+  })
+
+  it('renders one menu per resolved variant type', async () => {
+    const spy = vi.spyOn(variantConditions, 'useVariantTypes').mockReturnValue({
+      status: 'ready',
+      types: [
+        {key: 'variant', label: 'Variant', conditions: {mode: 'freeform'}},
+        {key: 'language', label: 'Language', conditions: {mode: 'freeform'}},
+      ],
+    })
+
+    await renderNavbar()
+
+    expect(screen.getByText('Language')).toBeInTheDocument()
+    expect(screen.getAllByTestId('variants-menu')).toHaveLength(2)
+    spy.mockRestore()
+  })
+
+  it('clears variant when variant remove is clicked', async () => {
+    routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
+
+    await renderNavbar()
+
+    const user = userEvent.setup()
+    await user.click(within(getFilter('Variant')).getByTestId('perspective-filter-remove'))
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      stickyParams: {
         variant: null,
       },
     })

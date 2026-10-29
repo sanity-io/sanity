@@ -12,13 +12,10 @@ import {
   timeout,
 } from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../../preview'
-import {
-  RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
-  resolveInitialValue,
-  type Template,
-} from '../../../templates'
-import {getDraftId, getPublishedId} from '../../../util'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {RESOLVE_INITIAL_VALUE_TIMEOUT_MS, resolveInitialValue} from '../../../templates/resolve'
+import {type Template} from '../../../templates/types'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {
   type InitialValueErrorMsg,
   type InitialValueLoadingMsg,
@@ -44,7 +41,7 @@ const LOADING_MSG: InitialValueLoadingMsg = {type: 'loading'}
 export function getInitialValueStream(
   schema: Schema,
   initialValueTemplates: Template[],
-  documentPreviewStore: DocumentPreviewStore,
+  documentPreviewStore: Pick<DocumentPreviewStore, 'observePaths'>,
   opts: InitialValueOptions,
   context: InitialValueResolverContext,
 ): Observable<InitialValueMsg> {
@@ -66,10 +63,13 @@ export function getInitialValueStream(
     // Wait until we know the state of both draft and published
     filter((res) => 'draft' in res && 'published' in res),
     map((res: any) => res.draft || res.published),
-    // Only update if we didn't previously have a document but we now do
-    distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
-    // Prevent rapid re-resolving when transitioning between different templates
+    // Collapse snapshots that arrive together (a publish deletes the draft and
+    // creates the published document in one transaction) so an existence flip
+    // that reverts within the window never re-resolves the template.
     debounceTime(25),
+    // Only the existence of the document matters downstream: a snapshot that
+    // leaves the document present or missing as before is not a change.
+    distinctUntilChanged((prev, next) => Boolean(prev) === Boolean(next)),
   )
 
   return value$.pipe(
@@ -97,14 +97,12 @@ export function getInitialValueStream(
         // A resolver whose request is parked (network/CORS) never settles —
         // time it out so the failure surfaces rather than hanging the editor.
         timeout({first: RESOLVE_INITIAL_VALUE_TIMEOUT_MS}),
-        map(
-          (initialValue): InitialValueSuccessMsg => ({
-            type: 'success',
-            // The resolver returns an arbitrary record; by contract it's a
-            // document-like value (the template's `_type` was merged in).
-            value: initialValue as SanityDocumentLike,
-          }),
-        ),
+        map((initialValue): InitialValueSuccessMsg => ({
+          type: 'success',
+          // The resolver returns an arbitrary record; by contract it's a
+          // document-like value (the template's `_type` was merged in).
+          value: initialValue as SanityDocumentLike,
+        })),
         catchError((resolveError: Error) => {
           // oxlint-disable no-console
           console.group('Failed to resolve initial value')

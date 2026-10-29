@@ -2,42 +2,19 @@ import {defineContainer} from '@portabletext/editor'
 import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
+import {Box, Button, Dialog} from '@sanity/ui'
+import {useState} from 'react'
 import {
+  type ArrayOfObjectsInputProps,
   defineArrayMember,
   defineField,
   defineType,
   type PortableTextPluginsProps,
   useFormValue,
+  useZIndex,
 } from 'sanity'
 
 const CONTAINER_NODES = [
-  defineContainer({
-    type: 'table',
-    arrayField: 'rows',
-    render: ({children, attributes}) => (
-      <table {...attributes} style={{borderCollapse: 'collapse'}}>
-        <tbody>{children}</tbody>
-      </table>
-    ),
-    of: [
-      defineContainer({
-        type: 'row',
-        arrayField: 'cells',
-        render: ({children, attributes}) => <tr {...attributes}>{children}</tr>,
-        of: [
-          defineContainer({
-            type: 'cell',
-            arrayField: 'content',
-            render: ({children, attributes}) => (
-              <td {...attributes} style={{border: '1px solid #ccc', padding: '4px 8px'}}>
-                {children}
-              </td>
-            ),
-          }),
-        ],
-      }),
-    ],
-  }),
   defineContainer({
     type: 'codeBlock',
     arrayField: 'code',
@@ -71,54 +48,9 @@ function emptyTextBlock(keyGenerator: () => string) {
   }
 }
 
-function emptyTableCell(keyGenerator: () => string) {
-  return {
-    _key: keyGenerator(),
-    _type: 'cell',
-    content: [emptyTextBlock(keyGenerator)],
-  }
-}
-
-function emptyTableRow(keyGenerator: () => string) {
-  return {
-    _key: keyGenerator(),
-    _type: 'row',
-    cells: [
-      emptyTableCell(keyGenerator),
-      emptyTableCell(keyGenerator),
-      emptyTableCell(keyGenerator),
-    ],
-  }
-}
-
 // The guard skips containers that already have content, which also stops the
 // raise below from re-triggering.
 const containerScaffoldBehaviors = [
-  defineBehavior({
-    on: 'insert.block',
-    guard: ({event}) => {
-      if (event.block._type !== 'table') {
-        return false
-      }
-      const rows = 'rows' in event.block ? event.block.rows : undefined
-      return !(Array.isArray(rows) && rows.length > 0)
-    },
-    actions: [
-      ({event, snapshot}) => [
-        raise({
-          ...event,
-          block: {
-            ...event.block,
-            rows: [
-              emptyTableRow(snapshot.context.keyGenerator),
-              emptyTableRow(snapshot.context.keyGenerator),
-              emptyTableRow(snapshot.context.keyGenerator),
-            ],
-          },
-        }),
-      ],
-    ],
-  }),
   defineBehavior({
     on: 'insert.block',
     guard: ({event}) => {
@@ -149,7 +81,13 @@ function ContainerPlugins(props: PortableTextPluginsProps) {
 
   return (
     <>
-      {props.renderDefault(props)}
+      {props.renderDefault({
+        ...props,
+        plugins: {
+          ...props.plugins,
+          table: {enabled: containersEnabled},
+        },
+      })}
       {containersEnabled ? (
         <>
           <NodePlugin nodes={CONTAINER_NODES} />
@@ -158,6 +96,75 @@ function ContainerPlugins(props: PortableTextPluginsProps) {
       ) : null}
     </>
   )
+}
+
+// Binds the built-in table plugin to `sanity-plugin-rich-table`'s schema
+// shape (`richTable` > `rows` > `row` > `cells` > `richTableCell` >
+// `content`) via native `defineContainer` definitions: type and field
+// names come from the containers, renders fall back to the studio's
+// table UI. Module scope so the plugin doesn't re-register per render.
+const richTableContainers = {
+  table: defineContainer({type: 'richTable', arrayField: 'rows'}),
+  row: defineContainer({type: 'row', arrayField: 'cells'}),
+  cell: defineContainer({type: 'richTableCell', arrayField: 'content'}),
+}
+
+function RichTableAdoptionPlugins(props: PortableTextPluginsProps) {
+  return props.renderDefault({
+    ...props,
+    plugins: {
+      ...props.plugins,
+      table: {enabled: true, containers: richTableContainers},
+    },
+  })
+}
+
+function TablePlugins(props: PortableTextPluginsProps) {
+  return props.renderDefault({
+    ...props,
+    plugins: {...props.plugins, table: {enabled: true}},
+  })
+}
+
+// Hosts the input in a dialog at Studio's own `inspectorDialog` offset, a
+// layer that out-ranks the table's trash chips when they portal outside the
+// editor.
+function TableInDialogInput(props: ArrayOfObjectsInputProps) {
+  const [open, setOpen] = useState(false)
+  const zOffsets = useZIndex()
+
+  return (
+    <>
+      <Button mode="ghost" onClick={() => setOpen(true)} text="Edit table in dialog" />
+      {open && (
+        <Dialog
+          header="Table in dialog"
+          id="table-in-dialog"
+          onClose={() => setOpen(false)}
+          width={2}
+          zOffset={zOffsets.inspectorDialog}
+        >
+          <Box padding={4}>{props.renderDefault(props)}</Box>
+        </Dialog>
+      )}
+    </>
+  )
+}
+
+function tableCell(key: string, text: string) {
+  return {
+    _type: 'cell',
+    _key: key,
+    value: [
+      {
+        _type: 'block',
+        _key: `${key}-block`,
+        style: 'normal',
+        markDefs: [],
+        children: [{_type: 'span', _key: `${key}-span`, text, marks: []}],
+      },
+    ],
+  }
 }
 
 export const customPlugins = defineType({
@@ -178,7 +185,7 @@ export const customPlugins = defineType({
       name: 'containerTable',
       title: 'Container Table',
       description:
-        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. The field enables container support.',
+        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. Cell blocks are deliberately narrower than root blocks (styles: normal/quote; decorators: strong/underline; lists: bullet; no annotations), so the toolbar disables the difference while the caret is inside a cell.',
       of: [
         defineArrayMember({
           type: 'block',
@@ -201,6 +208,7 @@ export const customPlugins = defineType({
           type: 'object',
           name: 'table',
           fields: [
+            defineField({type: 'number', name: 'headerRows'}),
             defineField({
               type: 'array',
               name: 'rows',
@@ -219,10 +227,30 @@ export const customPlugins = defineType({
                           fields: [
                             defineField({
                               type: 'array',
-                              name: 'content',
+                              name: 'value',
                               of: [
                                 defineArrayMember({
                                   type: 'block',
+                                  // Deliberately narrower than the root
+                                  // block in every toolbar-gated category
+                                  // (styles, decorators, annotations,
+                                  // lists), so the toolbar's positional
+                                  // disabled state is easy to verify:
+                                  // caret in a cell disables everything
+                                  // the cell doesn't declare, caret at
+                                  // the root enables it all again.
+                                  styles: [
+                                    {title: 'Normal', value: 'normal'},
+                                    {title: 'Quote', value: 'blockquote'},
+                                  ],
+                                  marks: {
+                                    decorators: [
+                                      {title: 'Strong', value: 'strong'},
+                                      {title: 'Underline', value: 'underline'},
+                                    ],
+                                    annotations: [],
+                                  },
+                                  lists: [{title: 'Bullet', value: 'bullet'}],
                                   of: [
                                     defineArrayMember({
                                       type: 'object',
@@ -274,6 +302,123 @@ export const customPlugins = defineType({
       components: {
         portableText: {
           plugins: ContainerPlugins,
+        },
+      },
+    },
+    {
+      type: 'array',
+      name: 'richTableAdoption',
+      title: 'Rich Table Adoption',
+      description:
+        "Built-in table editing bound to sanity-plugin-rich-table's schema shape (richTable > rows > row > cells > richTableCell > content) through the table plugin's containers config. The row's extra title field persists untouched; headerRows is the one field the built-in adds.",
+      of: [
+        defineArrayMember({type: 'block'}),
+        defineArrayMember({
+          type: 'object',
+          name: 'richTable',
+          fields: [
+            // Not part of the rich-table shape: the built-in's header-row
+            // toggle needs it declared or the value is stripped.
+            defineField({type: 'number', name: 'headerRows'}),
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({type: 'string', name: 'title'}),
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'richTableCell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'content',
+                              of: [defineArrayMember({type: 'block'})],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        portableText: {
+          plugins: RichTableAdoptionPlugins,
+        },
+      },
+    },
+    {
+      type: 'array',
+      name: 'tableInDialog',
+      title: 'Table in Dialog',
+      description:
+        'A table-enabled input inside a dialog layer at Studio\'s inspectorDialog offset. Click "Edit table in dialog", hover a cell in the first column and click the column handle above it: a trash button appears above the handle. Click it to delete the column. Broken: the trash button paints beneath the dialog, so it is hidden and clicking where it should be does nothing. Fixed: it shows above the handle and deletes the column. The row handle and its trash button on the left behave the same.',
+      initialValue: [
+        {
+          _type: 'table',
+          _key: 'table',
+          headerRows: 0,
+          rows: [
+            {_type: 'row', _key: 'row-1', cells: [tableCell('a1', 'A1'), tableCell('b1', 'B1')]},
+            {_type: 'row', _key: 'row-2', cells: [tableCell('a2', 'A2'), tableCell('b2', 'B2')]},
+          ],
+        },
+      ],
+      of: [
+        defineArrayMember({type: 'block'}),
+        defineArrayMember({
+          type: 'object',
+          name: 'table',
+          fields: [
+            defineField({type: 'number', name: 'headerRows'}),
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'value',
+                              of: [defineArrayMember({type: 'block'})],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        input: TableInDialogInput,
+        portableText: {
+          plugins: TablePlugins,
         },
       },
     },
@@ -341,8 +486,10 @@ export const customPlugins = defineType({
               plugins: {
                 ...props.plugins,
                 markdown: {
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   boldDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   unorderedList: ({schema}) =>
                     schema.lists.find((list) => list.name === 'dot')?.name,
                 },
@@ -393,8 +540,10 @@ export const customPlugins = defineType({
                 ...props.plugins,
                 markdown: {
                   config: {
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     boldDecorator: ({schema}) =>
                       schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     unorderedListStyle: ({schema}) =>
                       schema.lists.find((list) => list.name === 'dot')?.name,
                   },
@@ -471,6 +620,7 @@ export const customPlugins = defineType({
                   },
                 })}
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -480,6 +630,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -489,6 +640,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -498,6 +650,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }

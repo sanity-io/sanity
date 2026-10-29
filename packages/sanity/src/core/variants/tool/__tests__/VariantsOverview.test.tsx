@@ -1,27 +1,16 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type Ref, forwardRef, type HTMLProps} from 'react'
+import {type Ref, type HTMLProps} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
-
-const mockedSetVariant = vi.fn()
-
-vi.mock('../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => mockedSetVariant),
-}))
-
-vi.mock('../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({
-    selectedVariant: undefined,
-  })),
-}))
 
 const mockNavigate = vi.fn()
 
@@ -42,6 +31,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
+}))
+
 const documentCountsMock = vi.hoisted(() => ({
   data: null as Record<string, number> | null,
   loading: true,
@@ -58,10 +51,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
       variantId ? `/variants/${variantId}` : '/variants',
     ),
   })),
-  StateLink: forwardRef(function MockStateLink(
-    {state, ...rest}: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+  StateLink: function MockStateLink({
     ref,
-  ) {
+    state,
+    ...rest
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
@@ -74,7 +68,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         }}
       />
     )
-  }),
+  },
 }))
 
 vi.mock('../../store/useAllVariants', () => ({
@@ -88,6 +82,10 @@ vi.mock('../../store/useAllVariants', () => ({
 
 vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
+}))
+
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
 }))
 
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
@@ -111,7 +109,6 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
-    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
@@ -123,18 +120,23 @@ describe('VariantsOverview', () => {
       }),
     )
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
   afterEach(() => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  const renderOverview = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
-    await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
+    // Wait on the always-present page description rather than the search box (search now lives in the
+    // shared DocumentTable command lane, which only renders once there are rows) — and not on the
+    // title, which the empty state duplicates as its own h1.
+    await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
     return view
   }
 
@@ -148,13 +150,13 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    expect(screen.getByRole('heading', {level: 1, name: 'Variants'})).toBeInTheDocument()
+    expect(screen.getByRole('heading', {level: 1, name: 'Variant definitions'})).toBeInTheDocument()
     expect(
       screen.getByText(
         'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
@@ -253,19 +255,6 @@ describe('VariantsOverview', () => {
     })
   })
 
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
-  })
-
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
     documentCountsMock.data = {[variantAlphaAudience._id]: 0}
@@ -283,7 +272,8 @@ describe('VariantsOverview', () => {
     if (!menuButton) throw new Error('Variant actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
@@ -307,9 +297,43 @@ describe('VariantsOverview', () => {
     if (!menuButton) throw new Error('Variant actions menu button not found')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
+  it('shows filter empty state when condition filters exclude every definition', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    await user.click(screen.getByRole('button', {name: 'Add filter'}))
+    const filterPopover = (await screen.findByPlaceholderText('Find a dimension…')).closest(
+      '[data-ui="Popover"]',
+    )
+    if (!filterPopover) throw new Error('Filter popover not found')
+    const filterMenu = within(filterPopover as HTMLElement)
+
+    // Drive dimensions and values by testid: the selected dimension's label is echoed as a muted
+    // Text header in the right (values) pane, so getByText('Audience') is ambiguous, and the button's
+    // accessible name doesn't resolve cleanly for getByRole.
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-audience'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-audience-alpha'))
+
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-locale'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-locale-nb-NO'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('table-row')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variants-filter-empty-state')).toHaveTextContent(
+      'No variant definitions match the active filters',
+    )
+    expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
   })
 
   it('shows empty state when there are no variants', async () => {
@@ -322,9 +346,11 @@ describe('VariantsOverview', () => {
     })
 
     expect(screen.getByTestId('variant-illustration')).toBeInTheDocument()
-    expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variants')
+    expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variant definitions')
     const emptyState = screen.getByTestId('variants-empty-state')
-    expect(within(emptyState).getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+    expect(
+      within(emptyState).getByRole('button', {name: 'New variant definition'}),
+    ).toBeInTheDocument()
     expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
       'href',
       'https://www.sanity.io/docs/content-variants',
@@ -347,9 +373,9 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    await user.click(screen.getAllByRole('button', {name: 'Create variant'})[0]!)
+    await user.click(screen.getAllByRole('button', {name: 'New variant definition'})[0]!)
 
-    expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
     await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
@@ -370,6 +396,58 @@ describe('VariantsOverview', () => {
     })
   })
 
+  it('shows a mismatch error when a stored condition is not in the configured list', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: [{name: 'locale', values: ['en-US']}]}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toHaveAccessibleName(
+      'The condition "audience" is not in the configured list. Edit the variant to fix it.',
+    )
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: () => new Promise(() => undefined)}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
   it('shows error copy in the table empty state when load fails with no data', async () => {
     variantsMock.data = []
     variantsMock.loading = false
@@ -378,7 +456,9 @@ describe('VariantsOverview', () => {
     await renderOverview()
 
     await waitFor(() => {
-      expect(screen.getAllByText('Unable to load variants').length).toBeGreaterThanOrEqual(1)
+      expect(
+        screen.getAllByText('Unable to load variant definitions').length,
+      ).toBeGreaterThanOrEqual(1)
     })
   })
 })

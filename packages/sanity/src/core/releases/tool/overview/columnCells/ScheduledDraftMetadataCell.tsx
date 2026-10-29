@@ -1,6 +1,7 @@
-import {Flex, Skeleton, Stack} from '@sanity/ui'
+import {Skeleton} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
-import {AvatarSkeleton, UserAvatar} from '../../../../components'
+import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {ReleaseTime} from '../../components/ReleaseTime'
 import {type VisibleColumn} from '../../components/Table/types'
 import {useReleaseCreator} from '../hooks/useReleaseCreator'
@@ -19,20 +20,20 @@ export const ScheduledDraftMetadataCell: VisibleColumn<TableRelease>['cell'] = (
 
   if (datum.isLoading || !datum.metadata) {
     return (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         <Skeleton animated radius={2} style={{height: '40px', width: '150px'}} />
       </Flex>
     )
   }
 
   return (
-    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-      <Flex align="center" gap={3}>
+    <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
+      <Flex alignItems="center" gap={3}>
         {creatorLoading && <AvatarSkeleton $size={1} animated />}
         {!creatorLoading && createdBy && <UserAvatar user={createdBy} size={1} />}
-        <Stack space={1}>
+        <VStack gap={1}>
           <ReleaseTime release={datum} />
-        </Stack>
+        </VStack>
       </Flex>
     </Flex>
   )

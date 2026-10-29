@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreWorkspaces": [
     "dev/*",
     "perf/*",
@@ -7,7 +7,6 @@
     "packages/@repo/test-dts-exports",
     "packages/@repo/test-config",
     "packages/@repo/tsconfig",
-    "packages/@repo/package.config",
     "packages/@repo/package.bundle",
     "packages/sanity/fixtures/examples/*",
   ],
@@ -26,6 +25,8 @@
         // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
         // which knip can't trace (unlike jsPlugins, which it detects)
         "eslint-import-resolver-typescript",
+        // Pins @babel/core 7 so Stryker's @babel/core 8 does not win the Sanity CLI's @rolldown/plugin-babel peer
+        "@babel/core",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
@@ -36,6 +37,9 @@
         "preview",
         // `pnpm dist-tag` invocations in tag-latest.yml / tag-stable.yml
         "dist-tag",
+        // `pnpm deprecate` / `pnpm undeprecate` invocations in deprecate-version.yml
+        "deprecate",
+        "undeprecate",
         // Installed system-wide via brew/uv/pipx, not npm
         "zizmor",
       ],
@@ -49,20 +53,29 @@
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
       "playwright": false,
+      "ignoreDependencies": [
+        // CLI for local uploads (`pnpm --filter e2e exec chromatic --playwright`, see
+        // .agents/skills/sanity-visual-regression/REFERENCE.md); CI uploads through
+        // chromaui/action, which bundles its own copy. Neither use is traceable by knip.
+        "chromatic",
+      ],
     },
     "packages/sanity": {
-      "entry": [
-        "src/_exports/*.ts",
-        "bin/sanity",
-        "package.config.ts",
-        "mock-browser-env-stub-loader.mjs",
-      ],
+      "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
       "project": [
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
       "ignoreBinaries": ["tzutil"],
-      "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
+      "ignoreDependencies": [
+        // CLI for local uploads (`pnpm --filter sanity exec chromatic --vitest`, see
+        // .agents/skills/sanity-visual-regression/REFERENCE.md); CI uploads through
+        // chromaui/action, which bundles its own copy. Neither use is traceable by knip.
+        "chromatic",
+        // Optional peer of @sanity/tsdown-config that its `panda` option (tsdown.config.ts)
+        // loads with a dynamic import inside node_modules, which knip can't trace
+        "@sanity/pandacss-tsdown-plugin",
+      ],
     },
     "packages/@repo/debug-proxy": {
       "project": ["src/**/*.ts"],
@@ -71,50 +84,51 @@
     "packages/@sanity/schema": {
       "entry": [
         "src/_exports/*.ts",
-        "package.config.ts",
         // Knip can't trace `import * as types from './types'` in Schema.ts
         "src/legacy/types/index.ts",
       ],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/mutator": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/types": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/diff": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/vision": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.{ts,tsx}"],
     },
     "packages/@sanity/util": {
-      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "entry": ["src/_exports/*.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/groq": {
-      "entry": [
-        "src/groq.ts",
-        "src/define.ts",
-        "src/_exports.cts.ts",
-        "src/_exports.mts.ts",
-        "package.config.ts",
-      ],
-      "project": ["src/**/*.ts"],
+      "project": ["*.js", "*.cjs"],
     },
     "packages/@repo/bundle-manager": {
       "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/ailf": {
+      "entry": [".ailf/ailf.config.ts", ".ailf/tasks/*.reference.ts"],
+      "project": [".ailf/**/*.ts"],
+      "ignoreFiles": [".ailf/tasks/*.task.ts"],
     },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
+    },
+    "engine-confidence": {
+      "entry": ["scripts/*.ts", "stryker/*.{mjs,mts,ts}"],
+      "project": ["**/*.{ts,mts,mjs}"],
+    },
+    "packages/@repo/oxlint-plugin-i18n": {
+      // test/fixtures holds locale resource files the rule tests read from disk, not imports
+      "project": ["src/**/*.mjs", "test/*.mjs"],
     },
     "scripts": {
       "entry": [

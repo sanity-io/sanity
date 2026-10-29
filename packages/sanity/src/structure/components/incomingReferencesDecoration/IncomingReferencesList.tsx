@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useTranslation} from 'sanity'
+import {Text, Flex, VStack} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -22,8 +23,8 @@ export function IncomingReferencesList({
   if (!types || types?.length === 0) {
     return (
       <Card border radius={2} padding={3} tone="critical">
-        <Flex align="center" justify="center">
-          <Text size={1} muted>
+        <Flex alignItems="center" justifyContent="center">
+          <Text size={1} muted as="div" trim={true} tone="critical">
             {t('incoming-references-input.types-not-defined')}
           </Text>
         </Flex>
@@ -32,7 +33,7 @@ export function IncomingReferencesList({
   }
 
   return (
-    <Stack space={3}>
+    <VStack gap={3}>
       {types.map((type) => {
         if (isCrossDatasetIncomingReference(type)) {
           return (
@@ -59,6 +60,6 @@ export function IncomingReferencesList({
           />
         )
       })}
-    </Stack>
+    </VStack>
   )
 }

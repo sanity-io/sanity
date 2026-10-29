@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {catchError, map, type Observable, of} from 'rxjs'
 
 import {type VisionConfig} from '../types'
@@ -11,7 +11,7 @@ export function useDatasets({
 }: {
   client: SanityClient
   datasets: VisionConfig['datasets']
-}): string[] | Error | null {
+}): ObservablePromise<string[] | Error> {
   const datasets$: Observable<string[] | Error> = useMemo(() => {
     if (Array.isArray(configDatasets)) {
       return of(configDatasets)
@@ -26,7 +26,6 @@ export function useDatasets({
       catchError((err) => of(err)),
     )
   }, [client, configDatasets])
-  const datasets = useObservable(datasets$, null)
 
-  return datasets
+  return useObservablePromise(datasets$)
 }

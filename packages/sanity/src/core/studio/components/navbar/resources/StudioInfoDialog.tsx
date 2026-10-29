@@ -4,15 +4,19 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Inline, Spinner} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
+import {Text, Flex, Grid, VStack, Icon, Link} from 'ui5'
 
-import {Button, Dialog, Tooltip} from '../../../../../ui-components'
-import {TextWithTone} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {TextWithTone} from '../../../../components/textWithTone/TextWithTone'
 import {isProd} from '../../../../environment'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
@@ -93,6 +97,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     latestTaggedVersion,
     versionCheckStatus,
     checkForUpdates,
+    versionDeprecation,
   } = usePackageVersionStatus()
 
   const isUpToDate =
@@ -119,36 +124,82 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const importMapWarning =
     importMapInfo?.valid && !importMapInfo.appId ? (
       <Card padding={4} tone="caution">
-        <Flex align="flex-start" gap={3}>
-          <TextWithTone tone="caution">
-            <WarningOutlineIcon />
-          </TextWithTone>
-          <Stack space={4}>
+        <Flex alignItems="flex-start" gap={3}>
+          <Icon tone="caution" size={1} icon={WarningOutlineIcon} style={{margin: '-0.375rem'}} />
+          <VStack gap={4}>
             <TextWithTone size={1} tone="caution" weight="medium">
               {t('about-dialog.configuration-issue.header')}
             </TextWithTone>
             <TextWithTone size={1} tone="caution">
               <Translate t={t} i18nKey="about-dialog.configuration-issue.missing-appid" />
             </TextWithTone>
-            <TextWithTone size={1} tone="caution">
-              <Text muted size={1}>
-                <a
-                  href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
-                </a>
-              </Text>
-            </TextWithTone>
-          </Stack>
+            <Text size={1} tone="caution" as="div" trim={true}>
+              <Link
+                href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
+                openInNewTab
+                underlined={true}
+              >
+                {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
+              </Link>
+            </Text>
+          </VStack>
         </Flex>
-        <Stack space={2} />
+        <VStack gap={2} />
       </Card>
     ) : null
 
-  const versionBadgeTone =
-    currentVersionType === 'development'
+  const deprecationWarning = versionDeprecation ? (
+    <Card padding={4} tone="caution" data-testid="studio-version-deprecation-warning">
+      <Flex alignItems="flex-start" gap={3}>
+        <Icon tone="caution" size={1} icon={WarningOutlineIcon} style={{margin: '-0.375rem'}} />
+        <VStack gap={4}>
+          <TextWithTone size={1} tone="caution" weight="medium">
+            {t('about-dialog.version-info.deprecated.header')}
+          </TextWithTone>
+          <TextWithTone size={1} tone="caution">
+            {t('about-dialog.version-info.deprecated.current', {
+              version: versionDeprecation.version.version,
+            })}
+          </TextWithTone>
+          {versionDeprecation.reason ? (
+            <TextWithTone size={1} tone="caution">
+              {t('about-dialog.version-info.deprecated.reason', {
+                reason: versionDeprecation.reason,
+              })}
+            </TextWithTone>
+          ) : null}
+          <TextWithTone size={1} tone="caution">
+            {versionDeprecation.isPinned
+              ? // the "Manage version" button below the card leads to the pin settings
+                t('about-dialog.version-info.deprecated.next-step.pinned')
+              : t('about-dialog.version-info.deprecated.next-step.upgrade')}
+          </TextWithTone>
+          {versionDeprecation.isPinned ? null : (
+            <Text size={1} tone="caution" as="div" trim={true}>
+              <Link
+                href="https://www.sanity.io/docs/studio/upgrade"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('about-dialog.version-info.deprecated.next-step.upgrade.learn-how')} &rarr;
+              </Link>
+            </Text>
+          )}
+        </VStack>
+      </Flex>
+    </Card>
+  ) : null
+
+  const currentVersionDeprecated =
+    versionDeprecation !== undefined && semver.eq(versionDeprecation.version, currentVersion)
+  const autoUpdatingVersionDeprecated =
+    versionDeprecation !== undefined &&
+    autoUpdatingVersion !== undefined &&
+    semver.eq(versionDeprecation.version, autoUpdatingVersion)
+
+  const versionBadgeTone = currentVersionDeprecated
+    ? 'caution'
+    : currentVersionType === 'development'
       ? 'caution'
       : currentVersionType === 'prerelease'
         ? 'suggest'
@@ -161,15 +212,15 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
       ) : null}
 
-      <Stack space={3} paddingY={3}>
-        <Flex align="center" justify="center" paddingY={4}>
+      <Flex gap={3} paddingY={3} flexDirection="column">
+        <Flex alignItems="center" justifyContent="center" paddingY={4}>
           <MonogramContainer>
             <SanityMonogram height={75} width={75} />
           </MonogramContainer>
         </Flex>
-        <Grid columns={2} gap={2}>
-          <Flex justify="flex-end" align="center">
-            <Text as="h2" size={1} weight="semibold">
+        <Grid gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={2}>
+          <Flex justifyContent="flex-end" alignItems="center">
+            <Text as="h2" size={1} weight="semibold" trim={true}>
               Sanity Studio
             </Text>
           </Flex>
@@ -177,22 +228,24 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             placement="bottom"
             content={
               <Card>
-                <Inline space={1}>
+                <Inline gap={1}>
                   <Badge tone={versionBadgeTone}>
                     {ensureVersionPrefix(currentVersion.version)}
                   </Badge>
                   <Badge>
-                    {currentVersionType === 'development'
-                      ? t('about-dialog.version-info.tooltip.development')
-                      : currentVersionType === 'prerelease'
-                        ? t('about-dialog.version-info.tooltip.prerelease')
-                        : t('about-dialog.version-info.tooltip.up-to-date')}
+                    {currentVersionDeprecated
+                      ? t('about-dialog.version-info.tooltip.deprecated')
+                      : currentVersionType === 'development'
+                        ? t('about-dialog.version-info.tooltip.development')
+                        : currentVersionType === 'prerelease'
+                          ? t('about-dialog.version-info.tooltip.prerelease')
+                          : t('about-dialog.version-info.tooltip.up-to-date')}
                   </Badge>
                 </Inline>
               </Card>
             }
           >
-            <Flex gap={2} align="center" paddingRight={2}>
+            <Flex gap={2} alignItems="center" paddingRight={2}>
               <TruncateBadge tone={versionBadgeTone}>
                 {currentVersion ? ensureVersionPrefix(currentVersion.version) : 'unknown'}
               </TruncateBadge>
@@ -212,15 +265,15 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
           {isAutoUpdating && newAutoUpdateVersionAvailable ? (
             <>
-              <Flex justify="flex-end" align="center">
-                <Text size={1} weight="semibold">
+              <Flex justifyContent="flex-end" alignItems="center">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {/* Note that this is not necessary a *higher* version than current, it's the new version made available for auto updates,
                    which in some cases could even be a downgrade compared to current */}
                   {t('about-dialog.version-info.new-version.text')}
                 </Text>
               </Flex>
-              <Flex justify="flex-start" align="center" gap={2}>
-                <Badge tone="primary">
+              <Flex justifyContent="flex-start" alignItems="center" gap={2}>
+                <Badge tone={autoUpdatingVersionDeprecated ? 'caution' : 'primary'}>
                   {autoUpdatingVersion && ensureVersionPrefix(autoUpdatingVersion?.version)}
                 </Badge>
                 <Button
@@ -235,7 +288,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   }
                   tooltipProps={{
                     content: (
-                      <Text size={1}>{t('about-dialog.version-info.reload-to-update')}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {t('about-dialog.version-info.reload-to-update')}
+                      </Text>
                     ),
                   }}
                   icon={RefreshIcon}
@@ -244,12 +299,12 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           ) : isUpToDate ? null : (
             <>
-              <Flex justify="flex-end" align="center">
-                <Text size={1} weight="semibold">
+              <Flex justifyContent="flex-end" alignItems="center">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {t('about-dialog.version-info.latest-version.header')}
                 </Text>
               </Flex>
-              <Flex justify="flex-start" align="center" gap={2}>
+              <Flex justifyContent="flex-start" alignItems="center" gap={2}>
                 <Badge tone="primary">
                   {latestTaggedVersion
                     ? ensureVersionPrefix(latestTaggedVersion.version)
@@ -276,11 +331,11 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           )}
         </Grid>
-        <Stack space={2} paddingY={3}>
+        <Flex gap={2} paddingY={3} flexDirection="column">
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
-              <Flex align="center" justify="space-evenly" gap={2}>
-                <Text size={1} muted>
+              <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
+                <Text size={1} muted as="div" trim={true}>
                   {t('about-dialog.version-info.auto-updates.enabled')}
                 </Text>
                 <Button
@@ -298,8 +353,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             // note: in dev we currently can't tell if auto updates is enabled or not,
             // so instead of showing misleading info, we just don't show anything
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
-              <Flex align="center" justify="space-evenly" gap={2}>
-                <Text size={1} muted>
+              <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
+                <Text size={1} muted as="div" trim={true}>
                   {t('about-dialog.version-info.auto-updates.disabled')}
                 </Text>
                 <Button
@@ -314,12 +369,13 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
+          {deprecationWarning}
           {importMapWarning}
-        </Stack>
-        <Stack paddingX={3}>
+        </Flex>
+        <Flex paddingX={3} flexDirection="column">
           <Button tone="primary" text="OK" paddingY={3} onClick={onClose} />
-        </Stack>
-      </Stack>
+        </Flex>
+      </Flex>
     </Dialog>
   )
 }

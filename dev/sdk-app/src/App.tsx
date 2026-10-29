@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import
 import './App.css'
 
 import {type SanityConfig} from '@sanity/sdk'

@@ -6,10 +6,20 @@ import type {
   CliClientOptions,
   CliConfig,
   createCliConfig,
+  DefineAppInput,
+  defineApplication,
+  defineAssetSourceView,
   defineCliConfig,
+  DefineMediaLibraryInput,
+  definePanelView,
+  defineTileView,
+  defineWebWorker,
+  defineWindowView,
   getCliClient,
   getStudioEnvironmentVariables,
+  MediaLibraryField,
   StudioEnvVariablesOptions,
+  unstable_defineMediaLibrary,
 } from 'sanity/cli'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -23,8 +33,32 @@ describe('sanity/cli', () => {
   test('createCliConfig', () => {
     expectTypeOf<typeof createCliConfig>().toBeFunction()
   })
+  test('DefineAppInput', () => {
+    expectTypeOf<DefineAppInput>().not.toBeNever()
+  })
+  test('defineApplication', () => {
+    expectTypeOf<typeof defineApplication>().toBeFunction()
+  })
+  test('defineAssetSourceView', () => {
+    expectTypeOf<typeof defineAssetSourceView>().toBeFunction()
+  })
   test('defineCliConfig', () => {
     expectTypeOf<typeof defineCliConfig>().toBeFunction()
+  })
+  test('DefineMediaLibraryInput', () => {
+    expectTypeOf<DefineMediaLibraryInput>().toBeObject()
+  })
+  test('definePanelView', () => {
+    expectTypeOf<typeof definePanelView>().toBeFunction()
+  })
+  test('defineTileView', () => {
+    expectTypeOf<typeof defineTileView>().toBeFunction()
+  })
+  test('defineWebWorker', () => {
+    expectTypeOf<typeof defineWebWorker>().toBeFunction()
+  })
+  test('defineWindowView', () => {
+    expectTypeOf<typeof defineWindowView>().toBeFunction()
   })
   test('getCliClient', () => {
     expectTypeOf<typeof getCliClient>().not.toBeNever()
@@ -32,7 +66,13 @@ describe('sanity/cli', () => {
   test('getStudioEnvironmentVariables', () => {
     expectTypeOf<typeof getStudioEnvironmentVariables>().toBeFunction()
   })
+  test('MediaLibraryField', () => {
+    expectTypeOf<MediaLibraryField>().toBeObject()
+  })
   test('StudioEnvVariablesOptions', () => {
     expectTypeOf<StudioEnvVariablesOptions>().toBeObject()
+  })
+  test('unstable_defineMediaLibrary', () => {
+    expectTypeOf<typeof unstable_defineMediaLibrary>().toBeFunction()
   })
 })

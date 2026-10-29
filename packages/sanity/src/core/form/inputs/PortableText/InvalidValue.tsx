@@ -1,18 +1,16 @@
 import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Code,
-  Grid,
-  Stack,
-  Text,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {
   PortableTextInvalidValueIgnore,
   PortableTextInvalidValueResolve,
@@ -53,9 +51,12 @@ export function InvalidValue(props: InvalidValueProps) {
     <Alert
       title={<>{t('inputs.portable-text.invalid-value.title')}</>}
       suffix={
-        <Stack padding={2}>
+        <Flex padding={2} flexDirection="column">
           {resolution.action && (
-            <Grid columns={[1, 2]} gap={1}>
+            <Grid
+              gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
+              gap={1}
+            >
               <Button
                 mode="ghost"
                 onClick={handleOnIgnore}
@@ -80,23 +81,23 @@ export function InvalidValue(props: InvalidValueProps) {
 
           <Box padding={3}>
             {resolution.action && (
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 {t('inputs.portable-text.invalid-value.action-disclaimer')}
               </Text>
             )}
           </Box>
-        </Stack>
+        </Flex>
       }
     >
-      <Stack space={3}>
-        <Text as="p" muted size={1}>
+      <VStack gap={3}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           <Translate t={t} i18nKey={resolution.i18n.description} values={resolution.i18n.values} />
         </Text>
 
         <Card border overflow="auto" padding={2} tone="inherit">
           <Code language="json">{JSON.stringify(resolution.item, null, 2)}</Code>
         </Card>
-      </Stack>
+      </VStack>
     </Alert>
   )
 }

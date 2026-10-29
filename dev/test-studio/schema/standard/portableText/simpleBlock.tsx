@@ -1,5 +1,5 @@
 import {toPlainText} from '@portabletext/react'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType, type PortableTextPluginsProps} from 'sanity'
 
 import {CalloutPreview} from './components/CalloutPreview'
 
@@ -183,7 +183,58 @@ export default defineType({
             },
           ],
         },
+        // A canonical table member so the Presentation preview exercises
+        // editable Portable Text at container depth (overlays over cell
+        // text, focus paths into cells).
+        {
+          type: 'object',
+          name: 'table',
+          fields: [
+            {type: 'number', name: 'headerRows'},
+            {
+              type: 'array',
+              name: 'rows',
+              of: [
+                {
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    {
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        {
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            {
+                              type: 'array',
+                              name: 'value',
+                              of: [{type: 'block'}],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
       ],
+      components: {
+        portableText: {
+          plugins: (props: PortableTextPluginsProps) =>
+            props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                table: {enabled: true},
+              },
+            }),
+        },
+      },
     },
     {
       name: 'notes',

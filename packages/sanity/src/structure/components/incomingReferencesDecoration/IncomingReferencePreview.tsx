@@ -1,5 +1,4 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {type ReactNode, useCallback} from 'react'
 import {
   getPublishedId,
   pathToString,
@@ -9,12 +8,17 @@ import {
 } from 'sanity'
 
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 
 interface IncomingReferencePreviewProps {
   type: SchemaType
   value: SanityDocument
-  path: Path
+  /**
+   * Path of the field holding the reference, used to deep link to that field. It is not always
+   * possible to resolve: the referencing document we have at hand may not contain the reference
+   * yet, for instance when the listener is lagging behind a recently created reference.
+   */
+  path?: Path
 }
 
 export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
@@ -24,21 +28,18 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
 
-  const Link = useCallback(
-    function LinkComponent(linkProps: {children: ReactNode}) {
-      return (
-        <ChildLink
-          childId={getPublishedId(value?._id)}
-          childParameters={{type: type.name, path: pathToString(path)}}
-          {...linkProps}
-        />
-      )
-    },
-    [ChildLink, type.name, value?._id, path],
-  )
-
   return (
-    <PreviewCard __unstable_focusRing as={Link} data-as="a" radius={2}>
+    <PreviewCard
+      __unstable_focusRing
+      as={ChildLink}
+      childId={publishedId}
+      childParameters={{
+        type: type.name,
+        ...(Array.isArray(path) && path.length > 0 ? {path: pathToString(path)} : {}),
+      }}
+      data-as="a"
+      radius={2}
+    >
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type.icon || false}

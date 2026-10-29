@@ -2,7 +2,7 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {Select} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -16,8 +16,6 @@ import {setYear} from 'date-fns/setYear'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
@@ -25,7 +23,9 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
+import {Text, Flex, Grid, Box, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -54,7 +54,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onSelect: (date: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
-  padding?: number
+  padding?: PaddingProps['padding']
   showTimeZone?: boolean
   isPastDisabled?: boolean
   timeZoneScope: TimeZoneScope
@@ -81,11 +81,9 @@ const CALENDAR_ICON_BUTTON_PROPS = {
   padding: 2,
 }
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref: forwardedRef,
     selectTime,
     value,
     timeStep = 1,
@@ -121,6 +119,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
@@ -176,11 +175,12 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     // The change is coming from another source, so we need to update the timeValue to the new value.
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/no-deriving-state-in-effects, react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setTimeValue(timeFromDate)
   }, [timeFromDate])
 
   const handleTimeChangeInputChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => {
       const nextValue = event.currentTarget.value
       if (nextValue) {
@@ -252,6 +252,7 @@ export const Calendar = forwardRef(function Calendar(
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   const handleYesterdayClick = useCallback(
@@ -270,7 +271,7 @@ export const Calendar = forwardRef(function Calendar(
     if (monthPickerVariant === 'carousel') {
       return (
         <Flex
-          align="center"
+          alignItems="center"
           paddingLeft={4}
           style={{
             borderBottom: '1px solid var(--card-border-color)',
@@ -279,12 +280,14 @@ export const Calendar = forwardRef(function Calendar(
             top: 0,
           }}
         >
-          <Flex align="center" flex={1} justify="space-between">
-            <Flex align="center" flex={1}>
-              <Text weight="medium" size={1}>
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
+              {/* oxlint-disable react/purity -- the header falls back to the current month when nothing is focused */}
+              <Text weight="medium" size={1} as="div" trim={true}>
                 {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
                 {(focusedDate || new Date())?.getFullYear()}
               </Text>
+              {/* oxlint-enable react/purity */}
             </Flex>
 
             <Flex paddingRight={3} gap={2}>
@@ -312,7 +315,7 @@ export const Calendar = forwardRef(function Calendar(
 
     return (
       <Flex>
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <CalendarMonthSelect
             onChange={handleFocusedMonthChange}
             monthNames={labels.monthNames}
@@ -357,7 +360,11 @@ export const Calendar = forwardRef(function Calendar(
       <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
+          <Grid
+            gridTemplateColumns="repeat(3, minmax(0, 1fr))"
+            data-ui="CalendaryDayPresets"
+            gap={1}
+          >
             <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
             <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
             <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />
@@ -388,11 +395,11 @@ export const Calendar = forwardRef(function Calendar(
       </Box>
 
       <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
-        <Flex align="center" justify="space-between">
+        <Flex alignItems="center" justifyContent="space-between">
           {/* Select time */}
           {selectTime && (
             <>
-              <Flex align="center">
+              <Flex alignItems="center">
                 <TimeInput
                   aria-label={labels.selectTime}
                   value={timeValue}
@@ -421,7 +428,12 @@ export const Calendar = forwardRef(function Calendar(
               )}
 
               {features.timePresets && (
-                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                <Flex
+                  flexDirection="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{marginTop: 5}}
+                >
                   {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
                     const text = formatTime(hours, minutes)
                     return (
@@ -444,7 +456,7 @@ export const Calendar = forwardRef(function Calendar(
       </Box>
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   'hours': number
@@ -463,6 +475,7 @@ function CalendarTimePresetButton(props: {
 }
 
 function CalendarMonthSelect(props: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
   monthNames: MonthNames
@@ -470,8 +483,8 @@ function CalendarMonthSelect(props: {
   const {onChange, value, monthNames} = props
 
   return (
-    <Flex flex={1} gap={1}>
-      <Box flex={1}>
+    <Flex flexBasis="0%" flexGrow={1} gap={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
             // oxlint-disable-next-line no-array-index-key

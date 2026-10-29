@@ -7,6 +7,7 @@ import type {
   builtinTypes,
   CreateManifest,
   createSchemaFromManifestTypes,
+  CreateSchemaFromManifestTypesOptions,
   createStoredWorkspaceSchemaPayload,
   CreateWorkspaceManifest,
   DEFAULT_MAX_FIELD_DEPTH,
@@ -21,8 +22,10 @@ import type {
   groupProblems,
   IconResolver,
   isActionEnabled,
+  isInternalValidator,
   ManifestSchemaType,
   ManifestWorkspaceFile,
+  markInternalValidator,
   ParsedWorkspaceSchemaId,
   parseWorkspaceSchemaId,
   PreparedSchemaUpload,
@@ -66,6 +69,9 @@ describe('@sanity/schema/_internal', () => {
   test('createSchemaFromManifestTypes', () => {
     expectTypeOf<typeof createSchemaFromManifestTypes>().toBeFunction()
   })
+  test('CreateSchemaFromManifestTypesOptions', () => {
+    expectTypeOf<CreateSchemaFromManifestTypesOptions>().toBeObject()
+  })
   test('createStoredWorkspaceSchemaPayload', () => {
     expectTypeOf<typeof createStoredWorkspaceSchemaPayload>().toBeFunction()
   })
@@ -108,11 +114,17 @@ describe('@sanity/schema/_internal', () => {
   test('isActionEnabled', () => {
     expectTypeOf<typeof isActionEnabled>().not.toBeNever()
   })
+  test('isInternalValidator', () => {
+    expectTypeOf<typeof isInternalValidator>().toBeFunction()
+  })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()
   })
   test('ManifestWorkspaceFile', () => {
     expectTypeOf<ManifestWorkspaceFile>().toBeObject()
+  })
+  test('markInternalValidator', () => {
+    expectTypeOf<typeof markInternalValidator>().toBeFunction()
   })
   test('ParsedWorkspaceSchemaId', () => {
     expectTypeOf<ParsedWorkspaceSchemaId>().toBeObject()

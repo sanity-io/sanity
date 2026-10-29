@@ -1,29 +1,19 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {
-  type AvatarSize,
-  Box,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextSkeleton,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {type AvatarSize, Card, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
+import {Text, Box, Flex, VStack} from 'ui5'
 
-import {useDidUpdate} from '../../../form'
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  useRelativeTime,
-  type UserListWithPermissionsHookValue,
-} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useUser} from '../../../store/user/hooks'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
@@ -35,15 +25,31 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
 import {FLEX_GAP} from '../constants'
-import {CommentMessageSerializer} from '../pte'
-import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
-import {CommentReactionsBar} from '../reactions'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
+import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
+import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
+
+function CommentIntentLink({
+  children,
+  intent,
+}: {
+  children?: React.ReactNode
+  intent?: CommentContext['intent']
+}) {
+  if (!intent) return null
+  return (
+    <IntentLink params={intent.params} intent={intent.name}>
+      {children}
+    </IntentLink>
+  )
+}
 
 const ContextMenuBox = styled(Box)``
 
@@ -52,6 +58,7 @@ const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 const EMPTY_ARRAY: [] = []
 
 const TimeText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -71,6 +78,7 @@ const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 })
 
 const IntentText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -80,7 +88,7 @@ const IntentText = styled(Text)(({theme}) => {
   `
 })
 
-const InnerStack = styled(Stack)`
+const InnerStack = styled(VStack)`
   transition: opacity 200ms ease;
 
   &[data-muted='true'] {
@@ -104,7 +112,8 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const RootStack = styled(Stack)(({theme}) => {
+const RootStack = styled(VStack)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
   return css`
@@ -217,6 +226,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasReactions = Boolean(reactions?.length)
 
+  // oxlint-disable-next-line react/purity -- falls back to the current time while the comment has no `_createdAt` yet
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
@@ -232,7 +242,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     if (isEditing) return
 
     startMessage.current = message
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setValue(message)
   }, [isEditing, message])
 
@@ -327,7 +337,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
-    <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
+    <Text size={1} weight="medium" truncate={1} title={user.displayName} as="div" trim={true}>
       {user.displayName}
     </Text>
   ) : (
@@ -340,32 +350,46 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
-      space={4}
+      gap={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
-        <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
+      <InnerStack gap={1} data-muted={displayError}>
+        <HeaderFlex
+          alignItems="center"
+          gap={FLEX_GAP}
+          flexBasis="0%"
+          flexGrow={1}
+          $size={avatarSize}
+        >
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
-          <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
+          <Flex flexDirection="column" gap={2} paddingY={intent ? 2 : 0}>
             <Flex
-              align="center"
+              alignItems="center"
               paddingBottom={comment.context?.intent ? 0 : 1}
-              sizing="border"
-              flex={1}
+              flexBasis="0%"
+              flexGrow={1}
             >
-              <Flex align="flex-end" gap={2}>
-                <Box flex={1}>{name}</Box>
+              <Flex alignItems="flex-end" gap={2}>
+                <Box flexBasis="0%" flexGrow={1}>
+                  {name}
+                </Box>
 
                 {!displayError && (
-                  <Flex align="center" gap={1}>
-                    <TimeText muted size={0}>
+                  <Flex alignItems="center" gap={1}>
+                    <TimeText muted size={0} forwardedAs="div" trim={true}>
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
                     </TimeText>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
+                      <TimeText
+                        muted
+                        size={0}
+                        title={formattedLastEditAt}
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
@@ -377,20 +401,14 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Flex>
 
             {intent && (
-              <Box flex={1}>
-                <IntentText muted size={0} textOverflow="ellipsis">
+              <Box flexBasis="0%" flexGrow={1}>
+                <IntentText muted size={0} truncate={1} forwardedAs="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
                     values={{title: intent.title, intent: 'edit'}}
-                    components={{
-                      IntentLink: ({children}) =>
-                        intent ? (
-                          <IntentLink params={intent.params} intent={intent.name}>
-                            {children}
-                          </IntentLink>
-                        ) : undefined,
-                    }}
+                    components={{IntentLink: CommentIntentLink}}
+                    componentProps={{intent}}
                   />
                 </IntentText>
               </Box>
@@ -430,10 +448,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         )}
 
         {isEditing && (
-          <Flex align="flex-start" gap={2}>
+          <Flex alignItems="flex-start" gap={2}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-            <Stack flex={1}>
+            <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
               <CommentInput
                 currentUser={currentUser}
                 focusOnMount
@@ -448,7 +466,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 value={value}
                 withAvatar={false}
               />
-            </Stack>
+            </Flex>
           </Flex>
         )}
 
@@ -481,8 +499,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-          <Flex align="center" gap={1} flex={1}>
-            <Text muted size={1}>
+          <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
+            <Text muted size={1} as="div" trim={true}>
               {hasError && t('list-item.layout-failed-sent')}
               {isRetrying && t('list-item.layout-posting')}
             </Text>
@@ -497,7 +515,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 radius={2}
                 tone="primary"
               >
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('list-item.layout-retry')}
                 </Text>
               </RetryCardButton>

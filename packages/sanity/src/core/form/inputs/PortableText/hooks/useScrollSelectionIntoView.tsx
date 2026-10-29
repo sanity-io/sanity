@@ -6,7 +6,9 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 export function useScrollSelectionIntoView(scrollElement: HTMLElement | null) {
   return useMemo(
     () =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       (editor: PortableTextEditor, domRange: Range): void => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         const selection = PortableTextEditor.getSelection(editor)
         if (selection) {
           const leafEl = domRange.startContainer.parentElement

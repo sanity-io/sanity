@@ -1,6 +1,8 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
-import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {type Path} from '@sanity/types'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
+import {type ReactNode, useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -14,28 +16,17 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
+import {Text, Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {TimelineMenu} from '../../timeline'
 import {TimelineError} from '../../timeline/TimelineError'
+import {TimelineMenu} from '../../timeline/timelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
+import {scroller} from './Scroller.css'
 
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
-
-const Grid = styled(Box)`
-  &:not([hidden]) {
-    display: grid;
-  }
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 0.25em;
-`
+function ChangesFieldWrapper(props: {path: Path; children: ReactNode; hasRevertHover: boolean}) {
+  return <ChangeFieldWrapper {...props} hasRevertHover={false} />
+}
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
@@ -59,7 +50,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
     () => ({
       documentId,
       schemaType,
-      FieldWrapper: (props) => <ChangeFieldWrapper {...props} hasRevertHover={false} />,
+      FieldWrapper: ChangesFieldWrapper,
       rootDiff: diff,
       isComparingCurrent,
       value,
@@ -70,7 +61,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
   if (selectedReleaseId) {
     return (
-      <Flex data-testid="review-changes-pane" direction="column" height="fill">
+      <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
         <Card flex={1} padding={2} paddingTop={0}>
           <TimelineError versionError />
         </Card>
@@ -79,15 +70,20 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   }
 
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={2} paddingBottom={2}>
-          <Text size={1} muted>
+        <Grid
+          paddingX={2}
+          paddingBottom={2}
+          gridTemplateColumns="48px 1fr"
+          style={{alignItems: 'center', gap: '0.25em'}}
+        >
+          <Text size={1} muted as="div" trim={true}>
             {structureT('changes.from.label')}
           </Text>
 
           <TimelineMenu mode="since" chunk={sinceTime} placement="bottom-start" />
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {structureT('changes.to.label')}
           </Text>
           <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
@@ -96,8 +92,8 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
-            <Box flex={1} paddingX={3} height="fill">
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
+            <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
                   diff={diff}
@@ -108,7 +104,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>

@@ -6,6 +6,7 @@ import {createDefaultIcon} from '../createDefaultIcon'
 
 function renderIcon(title: string, subtitle = '') {
   return render(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>{createDefaultIcon(title, subtitle)}</ThemeProvider>,
   )
 }

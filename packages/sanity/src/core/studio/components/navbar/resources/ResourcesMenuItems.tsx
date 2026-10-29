@@ -2,26 +2,22 @@
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  Badge,
-  Card,
-  type CardTone,
-  Flex,
-  MenuDivider,
-  MenuItem as UIMenuItem,
-  Text,
-} from '@sanity/ui'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {Badge, Card, type CardTone} from '@sanity/ui'
+import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
+import {Text, Flex, Icon} from 'ui5'
 
-import {MenuItem} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {TextWithTone} from '../../../../components/textWithTone/TextWithTone'
 import {isDev} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
-import {useWorkspaces} from '../../../workspaces'
+import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 import {useCanDeployStudio} from './useCanDeployStudio'
 
@@ -31,6 +27,8 @@ interface ResourcesMenuItemProps {
   currentVersion: SemVer
   newAutoUpdateVersion?: SemVer
   latestTaggedVersion?: SemVer
+  /** A deprecated version the user should be warned about (running, or pinned to) */
+  deprecatedVersion?: SemVer
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
 }
@@ -47,6 +45,7 @@ export function ResourcesMenuItems({
   currentVersion,
   onOpenStudioVersionDialog,
   newAutoUpdateVersion,
+  deprecatedVersion,
 }: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const {t} = useTranslation()
@@ -84,6 +83,7 @@ export function ResourcesMenuItems({
         currentVersion={currentVersion}
         newAutoUpdateVersion={newAutoUpdateVersion}
         latestTaggedVersion={latestTaggedVersion}
+        deprecatedVersion={deprecatedVersion}
         onOpenStudioVersionDialog={onOpenStudioVersionDialog}
       />
 
@@ -111,11 +111,13 @@ function StudioVersion({
   currentVersion,
   newAutoUpdateVersion,
   latestTaggedVersion,
+  deprecatedVersion,
   onOpenStudioVersionDialog,
 }: {
   currentVersion: SemVer
   newAutoUpdateVersion?: SemVer
   latestTaggedVersion?: SemVer
+  deprecatedVersion?: SemVer
   onOpenStudioVersionDialog: () => void
 }) {
   const {t} = useTranslation()
@@ -129,7 +131,13 @@ function StudioVersion({
   let action = onOpenStudioVersionDialog
   let testId = 'menu-item-studio-version'
 
-  if (newAutoUpdateVersion) {
+  if (deprecatedVersion) {
+    // a reload won't fix this (not auto-updating, or pinned to the deprecated version), so send
+    // the user to the dialog which explains what to do
+    subtitle = t('help-resources.studio-version-deprecated', {version: deprecatedVersion.version})
+    versionTone = 'caution'
+    testId = 'menu-item-studio-version-deprecated'
+  } else if (newAutoUpdateVersion) {
     subtitle = t('help-resources.studio-auto-update-now', {
       newVersion: newAutoUpdateVersion.version,
     })
@@ -143,16 +151,36 @@ function StudioVersion({
     versionTone = 'caution'
   }
 
-  return (
+  const menuItem = (
     <UIMenuItem padding={2} onClick={action} data-testid={testId}>
-      <Flex align="flex-start">
-        <Flex direction="column" flex={1} gap={2} padding={1}>
-          <Text size={1} weight="medium">
+      <Flex alignItems="flex-start">
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={2} padding={1}>
+          <Text
+            size={1}
+            weight="medium"
+            tone={deprecatedVersion ? 'caution' : undefined}
+            as="div"
+            trim={true}
+          >
             {t('help-resources.studio')}
           </Text>
-          <Text muted size={1}>
-            {subtitle}
-          </Text>
+          {deprecatedVersion ? (
+            <Flex alignItems="center" gap={2}>
+              <Icon
+                tone="caution"
+                size={1}
+                icon={WarningOutlineIcon}
+                style={{margin: '-0.375rem'}}
+              />
+              <TextWithTone size={1} tone="caution">
+                {subtitle}
+              </TextWithTone>
+            </Flex>
+          ) : (
+            <Text muted size={1} as="div" trim={true}>
+              {subtitle}
+            </Text>
+          )}
         </Flex>
 
         <Badge tone={versionTone}>
@@ -160,6 +188,15 @@ function StudioVersion({
         </Badge>
       </Flex>
     </UIMenuItem>
+  )
+
+  // same caution treatment as the "Register studio" item below
+  return deprecatedVersion ? (
+    <Card tone="caution" radius={4}>
+      {menuItem}
+    </Card>
+  ) : (
+    menuItem
   )
 }
 

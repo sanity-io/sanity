@@ -1,5 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {RELEASES_DOCS_URL} from '../../constants'
 
@@ -8,16 +9,14 @@ import {RELEASES_DOCS_URL} from '../../constants'
 const InfoCallout = () => {
   return (
     <Card overflow="hidden" padding={4} radius={2} shadow={1} tone="suggest">
-      <Flex align="center" gap={4}>
-        <Text size={2}>
-          <InfoOutlineIcon />
-        </Text>
-        <Inline space={3}>
-          <Text size={1} weight="semibold">
+      <Flex alignItems="center" gap={4}>
+        <Icon icon={InfoOutlineIcon} size={2} tone="suggest" style={{flexShrink: 0}} />
+        <VStack gap={4}>
+          <Text size={1} weight="semibold" as="div" trim={true} tone="suggest">
             Schedule Publishing is not enabled
           </Text>
-          <Stack space={3} marginTop={2}>
-            <Text size={1}>
+          <VStack gap={3}>
+            <Text size={1} as="div" trim={true} tone="suggest">
               We recommend using{' '}
               <a target="_blank" href={RELEASES_DOCS_URL} rel="noreferrer">
                 Releases
@@ -25,11 +24,11 @@ const InfoCallout = () => {
               .
             </Text>
 
-            <Text size={1}>
+            <Text size={1} as="div" trim={true} tone="suggest">
               Scheduled Publishing is not enabled by default. It can be enabled in the config by
               setting <code>scheduledPublishing.enabled = true</code>
             </Text>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true} tone="suggest">
               <a
                 target="_blank"
                 href={'https://www.sanity.io/docs/scheduled-publishing'}
@@ -38,8 +37,8 @@ const InfoCallout = () => {
                 Read the docs
               </a>
             </Text>
-          </Stack>
-        </Inline>
+          </VStack>
+        </VStack>
       </Flex>
     </Card>
   )

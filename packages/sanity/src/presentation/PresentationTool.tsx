@@ -14,18 +14,9 @@ import {
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
-import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
+import {BoundaryElementProvider, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
@@ -37,7 +28,8 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
+import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
@@ -53,9 +45,10 @@ import {
 import {PresentationNarrowTabBar} from './panels/PresentationNarrowTabBar'
 import {PresentationContent} from './PresentationContent'
 import {PresentationNavigateProvider} from './PresentationNavigateProvider'
-import {usePresentationNavigator} from './PresentationNavigator'
+import {PresentationNavigator, usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
+import {container} from './PresentationTool.css'
 import {Preview} from './preview/Preview'
 import {
   type FrameState,
@@ -69,9 +62,12 @@ import {
 import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
+import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
+import {useOpenPreviewUrlActorRef} from './useOpenPreviewUrlActorRef'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
 import {usePresentationPerspective} from './usePresentationPerspective'
+import {usePresentationVariant} from './usePresentationVariant'
 import {useStatus} from './useStatus'
 import {useTargetOrigin} from './useTargetOrigin'
 import {debounce} from './util/debounce'
@@ -83,10 +79,6 @@ const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
-
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 // Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
@@ -117,6 +109,7 @@ export default function PresentationTool(props: {
 
   const allowOrigins = useAllowPatterns(previewUrlRef)
   const targetOrigin = useTargetOrigin(previewUrlRef)
+  const openPreviewUrlRef = useOpenPreviewUrlActorRef(tool.options?.previewUrl, targetOrigin)
 
   const components = tool.options?.components
   const name = tool.name || DEFAULT_TOOL_NAME
@@ -125,6 +118,7 @@ export default function PresentationTool(props: {
   const {navigate: routerNavigate, state: routerState} = useRouter() as RouterContextValue & {
     state: PresentationStateParams
   }
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const canSharePreviewAccess = useSelector(
@@ -162,6 +156,7 @@ export default function PresentationTool(props: {
       frameStateRef,
     })
   const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
+  const variant = usePresentationVariant()
 
   const presentationRef = useActorRef(presentationMachine)
 
@@ -182,14 +177,23 @@ export default function PresentationTool(props: {
     targetOrigin,
     resolvers: tool.options?.resolve?.mainDocuments,
     perspective,
+    variant,
   })
 
-  const [overlaysConnection, setOverlaysConnection] = useStatus()
+  const overlaysConnection = useSelector(
+    presentationRef,
+    (state) => state.context.overlaysConnection,
+  )
   const [loadersConnection, setLoadersConnection] = useStatus()
   const [previewKitConnection, setPreviewKitConnection] = useStatus()
   const [_handlesPerspectiveChange, setHandlesPerspectiveChange] = useState(false)
   // Loaders also handle perspective changes, and for legacy reasons we also consider them as a valid handler
   const handlesPerspectiveChange = _handlesPerspectiveChange || loadersConnection === 'connected'
+  const [_handlesVariantChange, setHandlesVariantChange] = useState(false)
+  // Same for variant changes: connected loaders re-register their queries when
+  // `loader/perspective` delivers a new variant, so they count as a valid handler.
+  // Preview apps are required to run loader versions that support variants.
+  const handlesVariantChange = _handlesVariantChange || loadersConnection === 'connected'
 
   const {open: handleOpenPopup} = usePopups(controller)
 
@@ -308,16 +312,19 @@ export default function PresentationTool(props: {
       presentationRef.send({type: 'iframe loaded'})
     })
 
-    comlink.onStatus(setOverlaysConnection)
+    comlink.onStatus((statusEvent) => {
+      presentationRef.send({type: 'overlays status', statusEvent})
+    })
 
     const stop = comlink.start()
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setVisualEditingComlink(comlink)
     return () => {
       stop()
       setVisualEditingComlink(null)
     }
-  }, [controller, presentationRef, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
+  }, [controller, presentationRef, setDocumentsOnPage, targetOrigin])
 
   useEffect(() => {
     if (!controller) return undefined
@@ -346,6 +353,7 @@ export default function PresentationTool(props: {
     })
 
     return comlink.start()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
   const handleFocusPath = useMemo(
@@ -408,43 +416,13 @@ export default function PresentationTool(props: {
   }, [params.id, params.path, visualEditingComlink])
 
   // Dispatch a navigation message when the preview param changes
-  useEffect(() => {
-    if (
-      frameStateRef.current.url &&
-      params.preview &&
-      frameStateRef.current.url !== params.preview
-    ) {
-      try {
-        const frameOrigin = new URL(frameStateRef.current.url, targetOrigin).origin
-        const previewOrigin = new URL(params.preview, targetOrigin).origin
-        if (frameOrigin !== previewOrigin) {
-          return
-        }
-      } catch {
-        // ignore
-      }
-
-      frameStateRef.current.url = params.preview
-      if (overlaysConnection === 'connected') {
-        /**
-         * Translate the possibly absolute params url back to a relative URL
-         */
-        let url = params.preview
-        if (url.startsWith('http')) {
-          try {
-            const newUrl = new URL(params.preview, targetOrigin)
-            url = newUrl.pathname + newUrl.search + newUrl.hash
-          } catch {
-            // ignore
-          }
-        }
-        visualEditingComlink?.post('presentation/navigate', {
-          url,
-          type: 'replace',
-        })
-      }
-    }
-  }, [overlaysConnection, targetOrigin, params.preview, visualEditingComlink])
+  useNavigatePreviewFrame({
+    frameStateRef,
+    overlaysConnection,
+    preview: params.preview,
+    targetOrigin,
+    visualEditingComlink,
+  })
 
   const toggleOverlay = useCallback(
     () => visualEditingComlink?.post('presentation/toggle-overlay'),
@@ -480,7 +458,7 @@ export default function PresentationTool(props: {
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 
-  const [{navigatorEnabled, toggleNavigator}, PresentationNavigator] = usePresentationNavigator({
+  const {navigatorEnabled, toggleNavigator} = usePresentationNavigator({
     unstable_navigator,
   })
 
@@ -499,6 +477,7 @@ export default function PresentationTool(props: {
         refreshRef.current = window.setTimeout(fallback, 300)
         visualEditingComlink.post('presentation/refresh', {
           source: 'manual',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled:
             previewKitConnection === 'connected' || loadersConnection === 'connected',
         })
@@ -559,7 +538,12 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" direction="column" height="fill">
+              <Flex
+                className={container}
+                data-testid="presentation-root"
+                flexDirection="column"
+                height="100%"
+              >
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
@@ -567,11 +551,13 @@ export default function PresentationTool(props: {
                     onTabChange={setActiveTab}
                   />
                 )}
-                <Flex direction="column" flex={1} style={{minHeight: 0}}>
+                <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
                   <Panels>
                     <PresentationNavigator
                       hidden={isNarrow && resolvedTab !== 'navigator'}
+                      navigatorEnabled={navigatorEnabled}
                       resizerHidden={isNarrow}
+                      unstable_navigator={unstable_navigator}
                     />
                     <Panel
                       id="preview"
@@ -581,7 +567,13 @@ export default function PresentationTool(props: {
                       order={3}
                       hidden={isNarrow && resolvedTab !== 'preview'}
                     >
-                      <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
+                      <Flex
+                        flexDirection="column"
+                        flexBasis="0%"
+                        flexGrow={1}
+                        height="100%"
+                        ref={setBoundaryElement}
+                      >
                         <BoundaryElementProvider element={boundaryElement}>
                           <Preview
                             // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
@@ -597,9 +589,11 @@ export default function PresentationTool(props: {
                             onPathChange={handlePreviewPath}
                             onRefresh={handleRefresh}
                             openPopup={handleOpenPopup}
+                            openPreviewUrlRef={openPreviewUrlRef}
                             overlaysConnection={overlaysConnection}
                             previewUrl={params.preview}
                             perspective={perspective}
+                            variant={variant}
                             ref={iframeRef}
                             setViewport={setViewport}
                             targetOrigin={targetOrigin}
@@ -610,6 +604,7 @@ export default function PresentationTool(props: {
                             presentationRef={presentationRef}
                             previewUrlRef={previewUrlRef}
                             handlesPerspectiveChange={handlesPerspectiveChange}
+                            handlesVariantChange={handlesVariantChange}
                           />
                         </BoundaryElementProvider>
                       </Flex>
@@ -632,7 +627,7 @@ export default function PresentationTool(props: {
                     />
                   </Panels>
                 </Flex>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>
@@ -642,6 +637,7 @@ export default function PresentationTool(props: {
           <LiveQueries
             controller={controller}
             perspective={perspective}
+            variant={variant}
             liveDocument={displayedDocument}
             onDocumentsOnPage={setDocumentsOnPage}
             onLoadersConnection={setLoadersConnection}
@@ -657,7 +653,11 @@ export default function PresentationTool(props: {
           />
         )}
         {visualEditingComlink && (
-          <PostMessageSchema comlink={visualEditingComlink} perspective={perspective} />
+          <PostMessageSchema
+            comlink={visualEditingComlink}
+            perspective={perspective}
+            variant={variant}
+          />
         )}
         {visualEditingComlink && documentsOnPage.length > 0 && (
           <PostMessagePreviewSnapshots
@@ -667,14 +667,20 @@ export default function PresentationTool(props: {
           />
         )}
         {visualEditingComlink && (
-          <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
+          <PostMessageDocuments
+            comlink={visualEditingComlink}
+            perspective={perspective}
+            variant={variant}
+          />
         )}
         {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
         {visualEditingComlink && (
           <PostMessagePerspective
             comlink={visualEditingComlink}
             perspective={perspective}
+            variant={variant}
             setHandlesPerspectiveChange={setHandlesPerspectiveChange}
+            setHandlesVariantChange={setHandlesVariantChange}
           />
         )}
         {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}

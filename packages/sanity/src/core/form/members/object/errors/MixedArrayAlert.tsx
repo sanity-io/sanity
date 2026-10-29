@@ -1,15 +1,17 @@
 import {type Path} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import isPlainObject from 'lodash-es/isPlainObject.js'
+import {Flex, VStack} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
-import {FormField} from '../../../components/formField'
-import {PatchEvent, unset} from '../../../patch'
-import {type MixedArrayError} from '../../../store'
+import {FormField} from '../../../components/formField/FormField'
+import {unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type MixedArrayError} from '../../../store/types/memberErrors'
 
 interface Props {
   error: MixedArrayError
@@ -40,13 +42,13 @@ export function MixedArrayAlert(props: Props) {
       <Alert
         status="error"
         suffix={
-          <Stack padding={2}>
+          <Flex padding={2} flexDirection="column">
             <Button
               onClick={handleRemoveNonObjectValues}
               text={t('form.error.mixed-array-alert.remove-button.text')}
               tone="critical"
             />
-          </Stack>
+          </Flex>
         }
         title={t('form.error.mixed-array-alert.title')}
       >
@@ -55,11 +57,11 @@ export function MixedArrayAlert(props: Props) {
         </Text>
 
         <Details marginTop={4} open={isDev} title={t('form.error.mixed-array-alert.details.title')}>
-          <Stack space={3}>
+          <VStack gap={3}>
             <Text as="p" muted size={1}>
               {t('form.error.mixed-array-alert.details.description')}
             </Text>
-          </Stack>
+          </VStack>
           {/* TODO: render array items and highlight the wrong items (sc-26255) */}
         </Details>
       </Alert>

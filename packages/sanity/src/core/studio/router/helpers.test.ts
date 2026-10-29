@@ -35,4 +35,18 @@ describe('resolveIntentState', () => {
       },
     })
   })
+
+  it('treats a missing params object as empty', () => {
+    const resolved = resolveIntentState([testTool], null, {intent: 'edit'})
+
+    expect(resolved).toEqual({
+      type: 'state',
+      isNotFound: false,
+      state: {
+        _searchParams: undefined,
+        tool: 'test',
+        test: {},
+      },
+    })
+  })
 })

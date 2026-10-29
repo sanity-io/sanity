@@ -6,7 +6,7 @@ import {
   type RenderInputCallback,
   type RenderItemCallback,
   type RenderPreviewCallback,
-} from '../types'
+} from '../types/renderCallback'
 import {
   defaultResolveAnnotationComponent,
   defaultResolveBlockComponent,

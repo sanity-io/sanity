@@ -1,14 +1,12 @@
+import {type HotkeysProps, Text} from '@sanity/ui'
 import {
-  Box,
-  Flex,
-  type HotkeysProps,
-  Text,
   // oxlint-disable-next-line no-restricted-imports
   Tooltip as UITooltip,
   // oxlint-disable-next-line no-restricted-imports
   type TooltipProps as UITooltipProps,
-} from '@sanity/ui'
-import {type ForwardedRef, forwardRef} from 'react'
+} from '@sanity/ui/tooltip'
+import {type RefAttributes} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {TOOLTIP_DELAY_PROPS} from './constants'
@@ -39,25 +37,22 @@ const TOOLTIP_SHARED_PROPS: UITooltipProps = {
  *
  * @internal
  */
-export const Tooltip = forwardRef(function Tooltip(
-  props: TooltipProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {content, hotkeys, ...rest} = props
+export function Tooltip(props: TooltipProps & RefAttributes<HTMLDivElement>) {
+  const {ref, content, hotkeys, ...rest} = props
 
   if (typeof content === 'string') {
     return (
       <UITooltip
         {...TOOLTIP_SHARED_PROPS}
         content={
-          <Flex align="center">
+          <Flex alignItems="center">
             {content && (
-              <Box flex={1} padding={1}>
+              <Box flexBasis="0%" flexGrow={1} padding={1}>
                 <Text size={1}>{content}</Text>
               </Box>
             )}
             {hotkeys && (
-              <Box flex="none">
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <Hotkeys keys={hotkeys} />
               </Box>
             )}
@@ -71,4 +66,4 @@ export const Tooltip = forwardRef(function Tooltip(
   }
 
   return <UITooltip {...TOOLTIP_SHARED_PROPS} content={content} ref={ref} {...rest} />
-})
+}

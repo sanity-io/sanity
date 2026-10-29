@@ -35,7 +35,9 @@ export const consistencyStatus: (
           draftIsConsistent && publishedIsConsistent && versionIsConsistent,
       ),
       distinctUntilChanged(),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   },

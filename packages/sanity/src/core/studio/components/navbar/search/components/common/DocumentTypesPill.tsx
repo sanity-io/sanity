@@ -1,8 +1,9 @@
 import {type SchemaType} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Text} from 'ui5'
 
-import {useTranslation} from '../../../../../../i18n'
+import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 
 interface TypePillsProps {
@@ -19,7 +20,7 @@ export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) 
 
   return (
     <Card border padding={2} radius={2}>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {title}
       </Text>
     </Card>

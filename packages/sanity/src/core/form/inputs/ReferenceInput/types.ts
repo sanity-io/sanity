@@ -1,6 +1,5 @@
 import {
   type I18nTextRecord,
-  type Path,
   type PreviewValue,
   type Reference,
   type ReferenceSchemaType,
@@ -9,9 +8,9 @@ import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type ReleaseId} from '../../../perspective/types'
-import {type DocumentAvailability} from '../../../preview'
+import {type DocumentAvailability} from '../../../preview/types'
 import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
-import {type ObjectInputProps} from '../../types'
+import {type ObjectInputProps} from '../../types/inputProps'
 
 type PreviewDocumentValue = PreviewValue & {
   _id: string
@@ -55,12 +54,6 @@ export interface CreateReferenceOption {
   }
 }
 
-export interface ReferenceSearchState {
-  hits: ReferenceSearchHit[]
-  searchString?: string
-  isLoading: boolean
-}
-
 export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSearchHit[]>
 
 export interface ReferenceSearchHit {
@@ -78,13 +71,6 @@ export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps
   onSearch: ReferenceSearchFunction
   selectedState?: 'selected' | 'pressed' | 'none'
   createOptions: CreateReferenceOption[]
-  editReferenceLinkComponent: ComponentType<{
-    children: ReactNode
-    documentId: string
-    documentType: string
-    parentRefPath: Path
-  }>
-
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
 }

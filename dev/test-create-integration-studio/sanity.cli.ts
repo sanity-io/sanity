@@ -12,6 +12,8 @@ export default defineCliConfig({
     return viteConfig
   },
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   studioHost: 'create-integration-test',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   autoUpdates: false,
 })

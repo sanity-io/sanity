@@ -1,26 +1,30 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
+import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
+import {Badge, Button, Inline, Text, useElementSize} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Menu, MenuItem} from '@sanity/ui/menu'
+import {isEqual} from '@sanity/util/paths'
 import {
-  type ForwardedRef,
-  forwardRef,
   type PropsWithChildren,
   useCallback,
+  useContext,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
+import {EnhancedObjectDialogScrollContext} from 'sanity/_singletons'
+import {Box, Flex, PressArea} from 'ui5'
 
-import {MenuButton} from '../../../../ui-components'
-import {pathToString} from '../../../field/paths/helpers'
-import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {NestedObjectOpened} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {useFormBuilder} from '../../useFormBuilder'
+import {breadcrumbItem, breadcrumbSurface} from './DialogBreadcrumbs.css'
 
 const MAX_LENGTH = 5
 const SEPARATOR = '/'
@@ -58,11 +62,8 @@ interface BreadcrumbItemData {
 
 type BreadcrumbItem = BreadcrumbItemData | BreadcrumbItemData[]
 
-const SeparatorItem = forwardRef(function SeparatorItem(
-  props: PropsWithChildren,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {children} = props
+function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>) {
+  const {ref, children} = props
 
   return (
     <Box ref={ref}>
@@ -71,7 +72,7 @@ const SeparatorItem = forwardRef(function SeparatorItem(
       </Text>
     </Box>
   )
-})
+}
 
 /**
  * Individual breadcrumb button that fetches its own preview.
@@ -98,48 +99,49 @@ function BreadcrumbButton({
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
-    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
-      path: pathToString(itemPath),
+    telemetry.log(NestedObjectOpened, {
+      path: 'breadcrumb',
     })
   }, [onPathSelect, itemPath, telemetry])
 
   return (
-    <Button
-      mode="bleed"
-      padding={1}
-      radius={2}
-      onClick={handleClick}
-      style={{minWidth: 0, maxWidth: '250px'}}
-      title={title}
-      aria-label={title}
-      aria-current={isSelected ? 'location' : false}
-      data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
-    >
-      <Flex align="center" style={{minWidth: 0}}>
-        {siblingInfo && (
-          <Box flex="none">
-            <Badge>#{siblingInfo.index}</Badge>
-          </Box>
-        )}
-        <Box
-          padding={1}
-          style={{
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
-          <Text
-            muted={!isSelected}
-            size={1}
-            weight={isSelected ? 'bold' : 'medium'}
-            textOverflow="ellipsis"
-            style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
-          >
-            {title}
-          </Text>
+    <Box className={breadcrumbItem} width="fit-content" minWidth="0">
+      <PressArea
+        type="button"
+        onClick={handleClick}
+        title={title}
+        aria-label={title}
+        aria-current={isSelected ? 'location' : false}
+        data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
+      >
+        <Box className={breadcrumbSurface} padding={1} radius={2}>
+          <Flex alignItems="center" style={{minWidth: 0}}>
+            {siblingInfo && (
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                <Badge>#{siblingInfo.index}</Badge>
+              </Box>
+            )}
+            <Box
+              padding={1}
+              style={{
+                minWidth: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <Text
+                muted={!isSelected}
+                size={1}
+                weight={isSelected ? 'bold' : 'medium'}
+                textOverflow="ellipsis"
+                style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
+              >
+                {title}
+              </Text>
+            </Box>
+          </Flex>
         </Box>
-      </Flex>
-    </Button>
+      </PressArea>
+    </Box>
   )
 }
 
@@ -169,7 +171,7 @@ function BreadcrumbMenuItem({
 
   return (
     <MenuItem padding={1} onClick={handleClick}>
-      <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
+      <Flex alignItems="center" style={{minWidth: 0, maxWidth: '250px'}}>
         {siblingInfo && <Badge>#{siblingInfo.index}</Badge>}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}
@@ -203,7 +205,8 @@ export function DialogBreadcrumbs({
   onNavigate,
   onClose,
 }: DialogBreadcrumbsProps): React.JSX.Element | null {
-  const {onPathOpen} = useFormCallbacks()
+  const {onPathFocus, onPathOpen} = useFormCallbacks()
+  const scrollToTop = useContext(EnhancedObjectDialogScrollContext)
   const {schemaType: documentSchemaType} = useFormBuilder()
   const documentValue = useFormValue([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -215,53 +218,35 @@ export function DialogBreadcrumbs({
 
   const handlePathSelect = useCallback(
     (path: Path) => {
-      // If it's an array item breadcrumb, try to open to the field being viewed
-      if (isKeySegment(path[path.length - 1])) {
-        // Check if currentPath extends this path with at least one field name
-        // Example: path = ['animals', {_key: 'x'}], currentPath = ['animals', {_key: 'x'}, 'friend', ...]
-        // What this means is that we are then moving back in the stack of dialogs
-        if (currentPath && currentPath.length > path.length) {
-          const pathsMatch = path.every((segment, index) => {
-            const currentSegment = currentPath[index]
-            return isKeySegment(segment) && isKeySegment(currentSegment)
-              ? segment._key === currentSegment._key
-              : segment === currentSegment
-          })
+      const lastSegment = path[path.length - 1]
 
-          if (pathsMatch) {
-            const nextSegment = currentPath[path.length]
-            // If the next segment is not a key segment, it's a field name
-            if (!isKeySegment(nextSegment)) {
-              // Verify the field exists in the schema
-              const itemSchemaType = resolveSchemaTypeForPath(
-                documentSchemaType,
-                path,
-                documentValue,
-              )
-              if (
-                isObjectSchemaType(itemSchemaType) &&
-                itemSchemaType.fields.some((field) => field.name === nextSegment)
-              ) {
-                // What this means is that we're opening to the field that was being viewed
-                // Which means that it will focus on the field
-                navigate([...path, nextSegment])
-                return
-              }
-            }
-          }
+      // An array item breadcrumb is the title of the dialog that edits the item:
+      // show that dialog, scrolled to the top.
+      if (isKeySegment(lastSegment)) {
+        if (!currentPath || !isEqual(path, currentPath)) {
+          navigate(path)
         }
+        scrollToTop?.(path)
+        return
+      }
 
-        // Fallback: open to the item itself
+      // Stands for the annotation it edits (the breadcrumb shows the annotated text), not
+      // for a field the user can focus.
+      if (lastSegment === 'markDefs') {
         navigate(path)
-      } else if (path.length === 1) {
-        // Non-key segment (field name like "animals") — this means navigating above
-        // all dialog levels, so close everything rather than navigating to a field path.
+        return
+      }
+
+      // A field breadcrumb shows the dialog the field is in, scrolled to the field, and
+      // moves focus onto it. A top-level field is in the document form, above every dialog.
+      if (path.length === 1) {
         onClose?.(true)
       } else {
         navigate(path)
       }
+      onPathFocus(path)
     },
-    [navigate, onClose, documentSchemaType, documentValue, currentPath],
+    [navigate, onClose, onPathFocus, scrollToTop, currentPath],
   )
 
   // Calculate max visible items based on container width
@@ -368,15 +353,7 @@ export function DialogBreadcrumbs({
     }
 
     // Check if this item's path matches the current path (is selected)
-    const isSelected =
-      currentPath.length === item.path.length &&
-      item.path.every((seg, i) => {
-        const currentSeg = currentPath[i]
-        if (isKeySegment(seg) && isKeySegment(currentSeg)) {
-          return seg._key === currentSeg._key
-        }
-        return seg === currentSeg
-      })
+    const isSelected = isEqual(item.path, currentPath)
     const isLast = index === items.length - 1
 
     return (

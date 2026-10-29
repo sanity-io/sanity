@@ -3,6 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
+  getPairTarget,
   useDocumentOperation,
   useDocumentOperationEvent,
   useTranslation,
@@ -14,9 +15,13 @@ import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
-  const {restore} = useDocumentOperation(id, type, release)
-  const {revisionNotFound} = useDocumentPane()
+export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision}) => {
+  const {revisionNotFound, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const {restore} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
@@ -82,9 +87,9 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
       ),
       icon: RevertIcon,
       dialog,
-      disabled: isRevisionInitial,
+      disabled: isRevisionInitial || !isTargetReady,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, revisionNotFound, t])
+  }, [dialog, handle, isRevisionInitial, isRevisionLatest, isTargetReady, revisionNotFound, t])
 }
 
 useHistoryRestoreAction.action = 'restore'

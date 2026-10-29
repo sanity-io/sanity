@@ -1,20 +1,26 @@
 import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text} from '@sanity/ui'
-import {type ComponentType, useCallback, useEffect, useState} from 'react'
+import {type ComponentType, useCallback, useState} from 'react'
 import {
-  getDraftId,
-  getPublishedId,
+  getDefaultVariant,
+  getTargetSiblings,
   type ObjectSchemaType,
   Translate,
   useDocumentOperation,
+  usePerspective,
   useTranslation,
 } from 'sanity'
+import {Text, Flex} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
+import {
+  DISCARD_CHANGES_DISABLED_REASON,
+  PUBLISH_DISABLED_REASON,
+} from '../../../../documentActions/operationDisabledReasons'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
 
@@ -37,85 +43,114 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   isEditBlocking,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
-  const [isPublishing, setPublishing] = useState(false)
-  const [isDiscarding, setDiscarding] = useState(false)
+  const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
+  const {targetDocumentState} = useDocumentPane()
+  const siblings = getTargetSiblings(targetDocumentState)
+  const publishedId = siblings?.published?._id
+  const draftId = siblings?.draft?._id
+  const isPublishing = actionRequested === 'publish' && Boolean(draftId)
+  const isDiscarding = actionRequested === 'discard' && Boolean(draftId)
+  // Variant leftover drafts pass `pairTarget` so publish/discard hit the variant draft. Base
+  // live-edit leftovers omit it and operate on the draft/published pair.
+  const target = selectedVariant
+    ? siblings?.draft?._system.scopeId
+      ? ({
+          kind: 'variant',
+          scopeId: siblings.draft._system.scopeId,
+          variantId: selectedVariant._id,
+        } as const)
+      : ({kind: 'target-missing', variantId: selectedVariant._id} as const)
+    : undefined
 
-  const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
+  const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
+  // Publishing the leftover draft is how this banner resolves a live-edit mismatch, so the
+  // operation's live-edit reason does not block it here.
+  const publishDisabled = publish.disabled === 'LIVE_EDIT_ENABLED' ? false : publish.disabled
+  const publishDisabledReason = publishDisabled
+    ? t(PUBLISH_DISABLED_REASON[publishDisabled])
+    : undefined
+  const discardDisabledReason = discardChanges.disabled
+    ? t(DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled])
+    : undefined
 
   const handlePublish = useCallback(() => {
+    if (publishDisabled) {
+      return
+    }
     publish.execute()
-    setPublishing(true)
+    setActionRequested('publish')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
-  }, [publish, telemetry])
+  }, [publish, publishDisabled, telemetry])
 
   const handleDiscard = useCallback(() => {
+    if (discardChanges.disabled) {
+      return
+    }
     discardChanges.execute()
-    setDiscarding(true)
+    setActionRequested('discard')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'discard'})
   }, [discardChanges, telemetry])
 
-  useEffect(() => {
-    return () => {
-      setPublishing(false)
-      setDiscarding(false)
-    }
-  })
-
   const diffViewRouter = useDiffViewRouter()
+  if (!draftId) {
+    return null
+  }
 
-  const compareDraft = useCallback(() => {
-    if (typeof displayed?._id === 'undefined') {
+  const compareDraft = () => {
+    if (!publishedId) {
       return
     }
-
     diffViewRouter.navigateDiffView({
       mode: 'version',
-      previousDocument: {
-        type: schemaType.name,
-        id: getPublishedId(displayed?._id),
-      },
-      nextDocument: {
-        type: schemaType.name,
-        id: getDraftId(displayed?._id),
-      },
+      previousDocument: {type: schemaType.name, id: publishedId},
+      nextDocument: {type: schemaType.name, id: draftId},
     })
-  }, [diffViewRouter, displayed?._id, schemaType.name])
+  }
 
   return (
     <Banner
       content={
-        <Flex align="center" justify="space-between" gap={2}>
-          <Text size={1} weight="medium">
+        <Flex alignItems="center" justifyContent="space-between" gap={2}>
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
           </Text>
           <Button
             text={t('banners.obsolete-draft.actions.compare-draft.text')}
             mode="ghost"
+            disabled={!publishedId || Boolean(actionRequested)}
+            tooltipProps={{
+              content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
+              disabled: Boolean(publishedId),
+            }}
             onClick={compareDraft}
           />
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
+            disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
             tooltipProps={
-              isEditBlocking
-                ? {
-                    content: t('banners.live-edit-draft-banner.publish.tooltip'),
-                  }
-                : {}
+              publishDisabledReason
+                ? {content: publishDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
+                  : undefined
             }
             loading={isPublishing}
             tone="positive"
           />
           <Button
             onClick={handleDiscard}
+            disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
             text={t('banners.obsolete-draft.actions.discard-draft.text')}
             tooltipProps={
-              isEditBlocking
-                ? {
-                    content: t('banners.live-edit-draft-banner.discard.tooltip'),
-                  }
-                : {}
+              discardDisabledReason
+                ? {content: discardDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
+                  : undefined
             }
             loading={isDiscarding}
             tone="caution"

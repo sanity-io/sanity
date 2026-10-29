@@ -4,14 +4,16 @@ import {InsertAboveIcon} from '@sanity/icons/InsertAbove'
 import {InsertBelowIcon} from '@sanity/icons/InsertBelow'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType} from '@sanity/types'
-import {Box, Flex, Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {Menu} from '@sanity/ui/menu'
+import {useCallback, useMemo, type RefAttributes} from 'react'
+import {Flex, Box} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
-import {FieldPresence} from '../../../../presence'
-import {FormFieldValidationStatus} from '../../../components/formField'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {FieldPresence} from '../../../../presence/FieldPresence'
+import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {InsertMenuGroup} from '../ArrayOfObjectsInput/InsertMenuGroups'
 import {useArrayValidation} from '../common/ArrayValidationContext'
@@ -27,11 +29,9 @@ export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
 const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const EMPTY_ARRAY: never[] = []
 
-export const ItemRow = forwardRef(function ItemRow(
-  props: DefaultItemProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function ItemRow(props: DefaultItemProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     sortable,
     value,
     insertableTypes,
@@ -204,13 +204,13 @@ export const ItemRow = forwardRef(function ItemRow(
         ) : null
       }
     >
-      <Flex align={schemaType ? 'flex-end' : 'center'} ref={ref}>
-        <Flex align="flex-end" flex={1}>
-          <Box flex={1} marginRight={2}>
+      <Flex alignItems={schemaType ? 'flex-end' : 'center'} ref={ref}>
+        <Flex alignItems="flex-end" flexBasis="0%" flexGrow={1}>
+          <Box flexBasis="0%" flexGrow={1} marginRight={2}>
             {children}
           </Box>
         </Flex>
       </Flex>
     </RowLayout>
   )
-})
+}

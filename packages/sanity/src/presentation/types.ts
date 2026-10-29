@@ -75,6 +75,11 @@ export type DocumentLocationResolver = (
     type: string
     version: string | undefined
     perspectiveStack: StackablePerspective[]
+    /**
+     * The selected editing variant as a bare variant id, or `undefined` when no variant is
+     * selected. Pass it as the variant param in the client, alongside `perspectiveStack`.
+     */
+    variant?: string
   },
   context: {documentStore: DocumentStore},
 ) =>
@@ -251,6 +256,7 @@ export interface PreviewUrlResolverOptions {
 export type DeprecatedPreviewUrlResolver = PreviewUrlResolver<SanityClient>
 
 /** @public */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export type PreviewUrlOption = string | DeprecatedPreviewUrlResolver | PreviewUrlResolverOptions
 
 /**
@@ -431,6 +437,18 @@ export interface PresentationSearchParams {
   preview?: string
   perspective?: string
   viewport?: string
+}
+
+/**
+ * Data needed by the pane link components (`ChildLink`, `BackLink`,
+ * `ReferenceChildLink`) that Presentation provides through the pane router
+ * context. Provided via context so the link components can be defined at
+ * module scope with stable identities.
+ * @internal
+ */
+export interface PresentationPaneLinksContextValue {
+  refs: {_id: string; _type: string}[] | undefined
+  searchParams: PresentationSearchParams
 }
 
 /**

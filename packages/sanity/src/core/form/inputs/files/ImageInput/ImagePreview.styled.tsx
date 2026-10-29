@@ -1,5 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 export const RatioBox = styled(Card)`
   position: relative;
@@ -39,8 +40,6 @@ export const FlexOverlay = styled(Flex)`
 
 export const ErrorIconWrapper = styled.div`
   align-items: center;
-  color: var(--card-icon-color);
   display: flex;
-  font-size: 1.5em;
   justify-content: center;
 `

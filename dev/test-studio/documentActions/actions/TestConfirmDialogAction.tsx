@@ -1,6 +1,6 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 

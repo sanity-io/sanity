@@ -1,10 +1,11 @@
-import {Box, Card, Grid, Label} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
+import {Grid, Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
-import {DEFAULT_WEEK_DAY_NAMES} from '../../DateInputs/calendar/constants'
-import {useWeeksOfMonth} from '../../DateInputs/calendar/utils'
+import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'
+import {getWeekDayNames, useWeeksOfMonth} from '../../DateInputs/calendar/utils'
 import {CalendarDay as DefaultCalendarDay} from './CalendarDay'
 import {type CalendarProps} from './CalendarFilter'
 
@@ -24,17 +25,21 @@ export function CalendarMonth(props: CalendarMonthProps) {
   const {getCurrentZoneDate} = useTimeZone(timeZoneScope)
   const CalendarDay = renderCalendarDay || DefaultCalendarDay
   const weeksOfMonth = useWeeksOfMonth(date)
+  const {
+    weekInfo: {firstDay},
+  } = useCurrentLocale()
+  const weekDayNames = getWeekDayNames(firstDay)
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
       <Grid
         style={{
-          gridGap: '1px',
+          gap: '1px',
           gridTemplateColumns: 'repeat(7, 1fr)',
         }}
       >
         {/* Header */}
-        {DEFAULT_WEEK_DAY_NAMES.map((weekday) => (
+        {weekDayNames.map((weekday) => (
           <Card key={weekday} paddingY={3}>
             <Label size={1} style={{textAlign: 'center'}}>
               {weekday.slice(0, 1)}

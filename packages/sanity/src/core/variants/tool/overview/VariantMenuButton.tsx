@@ -1,12 +1,18 @@
-import {Menu} from '@sanity/ui'
+import {EditIcon} from '@sanity/icons/Edit'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useState} from 'react'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
+import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {getVariantId} from '../util'
+import {getVariantId, getVariantTitle} from '../util'
 
 export function VariantMenuButton({
   documentCount,
@@ -16,27 +22,59 @@ export function VariantMenuButton({
   variant: SystemVariant
 }) {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const {deleteDisabled, deleteDisabledTooltip, handleDelete, isDeleting} = useVariantDeleteAction(
-    variant._id,
-    {documentCount},
-  )
+  const variantTitle = getVariantTitle(variant)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const {
+    deleteDisabled,
+    deleteDisabledTooltip,
+    handleCloseDeleteDialog,
+    handleConfirmDelete,
+    handleDelete,
+    isDeleteDialogOpen,
+    isDeleting,
+    variantTitle: dialogVariantTitle,
+  } = useVariantDeleteAction(variant._id, {documentCount, variantTitle})
 
   return (
-    <MenuButton
-      button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
-      id={`variant-actions-${getVariantId(variant._id)}`}
-      menu={
-        <Menu>
-          <MenuItem
-            disabled={deleteDisabled}
-            onClick={handleDelete}
-            text={t('overview.action.delete-variant')}
-            tone="critical"
-            tooltipProps={deleteDisabledTooltip ? {content: deleteDisabledTooltip} : undefined}
-          />
-        </Menu>
-      }
-      popover={{placement: 'bottom-end', portal: true}}
-    />
+    <>
+      <MenuButton
+        button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
+        id={`variant-actions-${getVariantId(variant._id)}`}
+        menu={
+          <Menu>
+            <MenuItem
+              icon={EditIcon}
+              onClick={() => setIsEditDialogOpen(true)}
+              text={t('overview.action.edit-variant')}
+            />
+            <MenuDivider />
+            <MenuItem
+              disabled={deleteDisabled}
+              icon={TrashIcon}
+              onClick={handleDelete}
+              text={t('overview.action.delete-variant')}
+              tone="critical"
+              tooltipProps={deleteDisabledTooltip ? {content: deleteDisabledTooltip} : undefined}
+            />
+          </Menu>
+        }
+        popover={{placement: 'bottom-end', portal: true}}
+      />
+      {isEditDialogOpen && (
+        <EditVariantDialog
+          onCancel={() => setIsEditDialogOpen(false)}
+          onSubmit={() => setIsEditDialogOpen(false)}
+          variant={variant}
+        />
+      )}
+      {isDeleteDialogOpen && (
+        <DeleteVariantDialog
+          isDeleting={isDeleting}
+          onClose={handleCloseDeleteDialog}
+          onConfirm={handleConfirmDelete}
+          variantTitle={dialogVariantTitle}
+        />
+      )}
+    </>
   )
 }

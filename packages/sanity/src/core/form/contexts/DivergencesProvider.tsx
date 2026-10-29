@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, EMPTY, filter, map, of, Subject, tap} from 'rxjs'
 import {type DocumentDivergencesContextValue, DocumentDivergencesContext} from 'sanity/_singletons'
 
@@ -27,13 +27,12 @@ import {
 import {readMostRecentSharedTransaction} from '../../divergence/readMostRecentSharedTransaction'
 import {type ResolutionMarker} from '../../divergence/types/ResolutionMarker'
 import {useClient} from '../../hooks/useClient'
-import {type EditStateFor} from '../../store'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
 import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
-import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
-import {type FormState} from '../store'
+import {type FormState} from '../store/useFormState'
 
 interface PropsEnabled extends PropsWithChildren {
   enabled: true
@@ -79,16 +78,19 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     ? editState.published
     : (editState.version ?? editState.draft)
 
-  const collatedDivergences =
-    !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
-      ? {
-          context: new Subject<FindDivergencesContext>(),
-          observable: of(collateDocumentDivergencesInitialState),
-        }
-      : collateDocumentDivergences({
-          subjectId: subjectId,
-          upstreamId: upstreamId,
-        })
+  const collatedDivergences = useMemo(
+    () =>
+      !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
+        ? {
+            context: new Subject<FindDivergencesContext>(),
+            observable: of(collateDocumentDivergencesInitialState),
+          }
+        : collateDocumentDivergences({
+            subjectId: subjectId,
+            upstreamId: upstreamId,
+          }),
+    [hasUpstreamVersion, upstreamId, subjectId],
+  )
 
   useCollateDivergencesContext({
     upstreamHead,
@@ -122,7 +124,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
 
   return (
     <DocumentDivergencesContext.Provider value={value}>
-      <FormGutterCustomProperties $enabled>{children}</FormGutterCustomProperties>
+      {children}
     </DocumentDivergencesContext.Provider>
   )
 }
@@ -135,7 +137,7 @@ const disabledContextValue: DocumentDivergencesContextValue = {
 const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {
   return (
     <DocumentDivergencesContext.Provider value={disabledContextValue}>
-      <FormGutterCustomProperties $enabled={false}>{children}</FormGutterCustomProperties>
+      {children}
     </DocumentDivergencesContext.Provider>
   )
 }
@@ -182,7 +184,10 @@ function useCollateDivergencesContext({
     get(subjectHead, ['_system', 'base', 'id']) === upstreamHead?._id &&
     get(subjectHead, ['_system', 'base', 'rev']) === upstreamHead?._rev
 
-  const mostRecentSharedTransaction = useObservable(
+  // Kept synchronous: this is an input to the `readUpstreamAtFork` stream that
+  // is combined with the live document heads below — a deferred snapshot could
+  // pair an outdated fork-point revision with newer heads.
+  const mostRecentSharedTransaction = useSyncObservable(
     shouldFindForkPoint && baseIsForkPoint
       ? EMPTY
       : readMostRecentSharedTransaction({
@@ -190,6 +195,7 @@ function useCollateDivergencesContext({
           b: subjectHead?._id,
           client,
         }),
+    undefined,
   )
 
   const listenUpstreamHead = useMemo(() => new BehaviorSubject<SanityDocument | null>(null), [])
@@ -262,5 +268,8 @@ function useCollateDivergencesContext({
     }).pipe(tap((nextContext) => context.next(nextContext)))
   }, [readUpstreamAtFork, context, listenUpstreamHead, listenSubjectHead, listenResolutions])
 
-  return useObservable(listenContext)
+  // The subscription exists to drive the `context.next` pipeline above; the
+  // returned snapshot is not consumed for rendering, so deferring it would
+  // only desynchronize the pipeline.
+  return useSyncObservable(listenContext, undefined)
 }

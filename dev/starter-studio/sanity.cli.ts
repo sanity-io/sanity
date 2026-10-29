@@ -5,5 +5,6 @@ export default defineCliConfig({
     projectId: 'ppsg7ml5',
     dataset: 'test',
   },
-  reactCompiler: {target: '19'},
+  // React Compiler on `oxc-transform-react` (no babel), see dev/test-studio/sanity.cli.ts
+  reactCompiler: {transform: 'oxc', target: '19'},
 })

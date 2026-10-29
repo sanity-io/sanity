@@ -1,8 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {useClient} from 'sanity'
+import {Text, Flex, Box} from 'ui5'
 
 export function JsonDocumentDump(props: {
   itemId: string
@@ -43,8 +45,10 @@ export function JsonDocumentDump(props: {
   useEffect(() => {
     const subscription = client.observable
       .listen(query, {itemId, draftId}, {includeAllVersions: true})
-      .subscribe((mut) => {
-        setDocument(mut.result || null)
+      .subscribe((event) => {
+        if (event.type === 'mutation') {
+          setDocument(event.result || null)
+        }
       })
     return () => subscription.unsubscribe()
   }, [client.observable, draftId, itemId])
@@ -60,10 +64,10 @@ export function JsonDocumentDump(props: {
 
   if (isLoading) {
     return (
-      <Flex align="center" direction="column" height="fill" justify="center">
+      <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
         <Spinner muted />
         <Box marginTop={3}>
-          <Text align="center" muted size={1}>
+          <Text align="center" muted size={1} as="div" trim={true}>
             Loading document…
           </Text>
         </Box>
@@ -74,13 +78,15 @@ export function JsonDocumentDump(props: {
   if (!document) {
     return (
       <Box padding={4}>
-        <Text muted>Document not found.</Text>
+        <Text muted as="div" trim={true}>
+          Document not found.
+        </Text>
       </Box>
     )
   }
 
   return (
-    <Box height="fill" overflow="auto" padding={4} sizing="border">
+    <Box height="100%" overflow="auto" padding={4}>
       <Code language="json" size={[1, 1, 2]}>
         {JSON.stringify(document, null, 2)}
       </Code>

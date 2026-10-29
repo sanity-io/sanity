@@ -1,8 +1,8 @@
 import {TabList} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
 
-import {Tab} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
@@ -23,7 +23,7 @@ export function DocumentHeaderTabs() {
   const tabPanelId = `${paneKey}tabpanel`
 
   return (
-    <TabList space={1}>
+    <TabList gap={1}>
       {views.map((view, index) => (
         <DocumentHeaderTab
           key={view.id}

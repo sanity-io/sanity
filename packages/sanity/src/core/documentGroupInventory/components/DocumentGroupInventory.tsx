@@ -1,15 +1,24 @@
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
-import {FeedbackIcon} from '@sanity/icons/Feedback'
-import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {type SanityDocumentLike} from '@sanity/types'
-import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {useActorRef, useSelector} from '@xstate/react'
-import {type ComponentType, useMemo, type ChangeEvent, useState, useEffect} from 'react'
-import {useObservable} from 'react-rx'
-import {combineLatest, debounceTime, map, type Observable, of, startWith, Subject} from 'rxjs'
-import {styled, css} from 'styled-components'
+import {
+  type ChangeEvent,
+  type ComponentType,
+  type RefAttributes,
+  useImperativeHandle,
+  useMemo,
+} from 'react'
+import {
+  combineLatest,
+  debounceTime,
+  filter,
+  firstValueFrom,
+  map,
+  type Observable,
+  startWith,
+  Subject,
+  timeout,
+} from 'rxjs'
+import {Text, VStack} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -18,63 +27,73 @@ import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDial
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
-import {useTranslation} from '../../i18n'
-import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
-import {type TargetPerspective} from '../../perspective/types'
-import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
-import {isAgentBundleName} from '../../store'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
-import {useWorkspace} from '../../studio'
+import {useDocumentStore} from '../../store/datastores'
+import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {
-  getPublishedId,
-  getVersionFromId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type SystemBundle,
-} from '../../util/draftUtils'
-import {readVersionType} from '../../util/versionsUtils'
-import {type VariantStoreState} from '../../variants/store/reducer'
+import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
+import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
+import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
-import {isVariantId} from '../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
-import {
-  documentGroupInventoryMachine,
-  type VariantSet as VariantSetType,
-} from '../machines/documentGroupInventoryMachine'
+import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
+import {variantCreationMachine} from '../machines/variantCreationMachine'
 import {
+  type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
-  type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../types'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
+import {CreateVariant} from './CreateVariant/CreateVariant'
+import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
+import {DocumentGroupFilter} from './DocumentGroupFilter'
+import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
-import {StatusBadge} from './VariantSet/StatusBadge'
+import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
+import {TextButton} from './TextButton'
+import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
-import {VariantSet} from './VariantSet/VariantSet'
-import {VariantSetEntry} from './VariantSet/VariantSetEntry'
-import {VariantSetHeader} from './VariantSet/VariantSetHeader'
 
-/**
- * @internal
- */
-export interface DocumentGroupInventoryProps {
+interface DocumentGroupInventoryBaseProps {
   documentId: string
   documentType: string
+  /**
+   * The id of the document version to mark as currently viewed. Defaults to
+   * {@link DocumentGroupInventoryBaseProps.documentId}.
+   */
+  selectedId?: string
+  /**
+   * Called when a version's primary action fires. What "picking" a version
+   * means is the consumer's decision: switching the studio's perspective,
+   * navigating elsewhere, and so on.
+   */
+  onSelect: (document: VersionInfoDocumentStub) => void
+}
+
+/**
+ * Props for the full inventory: the document group's versions plus the actions that mutate
+ * them (selection, deletion, variant creation, and the version context menu).
+ *
+ * @internal
+ */
+export interface DocumentGroupInventoryManageProps extends DocumentGroupInventoryBaseProps {
+  mode: 'manage'
   /**
    * The name of the portal element used to render popovers and dialogs (e.g.
    * the document panel portal provided by the structure tool).
@@ -91,39 +110,64 @@ export interface DocumentGroupInventoryProps {
   /**
    * Pane-coupled presentational components injected by the consumer.
    */
-  components: {
-    DocTitle: ComponentType<{document: SanityDocumentLike}>
-    ReferencePreviewLink: ComponentType<DocumentGroupInventoryReferencePreviewLinkProps>
-    VersionsPreviewList: ComponentType<{documentType: string; documentVersions: string[]}>
-  }
+  components: DocumentGroupInventoryComponents
+}
+
+/**
+ * Props for the selection-only inventory. It renders the same named sets of document versions
+ * (variants, releases, draft/published, anonymous bundles), but every mutative action is refused
+ * by the machines, so none of the manage-mode wiring is required.
+ *
+ * @internal
+ */
+export interface DocumentGroupInventoryReadOnlyProps extends DocumentGroupInventoryBaseProps {
+  mode: 'readOnly'
 }
 
 /**
  * @internal
  */
-export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> = ({
-  documentType,
-  documentId,
-  portalElementName,
-  perspectiveList,
-  referringDocuments$,
-  components,
-}) => {
+export type DocumentGroupInventoryProps =
+  | DocumentGroupInventoryManageProps
+  | DocumentGroupInventoryReadOnlyProps
+
+/**
+ * @internal
+ */
+export interface DocumentGroupInventoryHandle {
+  inventory: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+}
+
+/**
+ * @internal
+ */
+export function DocumentGroupInventory(
+  props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
+) {
+  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  const readOnly = props.mode === 'readOnly'
+
+  // Read the manage-only props into locals
+  const portalElementName = props.mode === 'readOnly' ? undefined : props.portalElementName
+  const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
+  const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
+  const components = props.mode === 'readOnly' ? undefined : props.components
+
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
-  const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()
   const {state$: variants} = useVariantsStore()
-  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
+
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
-  const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
+  const {createVariantDocument} = useVariantDocumentOperations()
+  const documentStore = useDocumentStore()
 
   const filterString = useMemo(
     () =>
@@ -156,6 +200,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     input: {
       t,
       variantsEnabled,
+      readOnly,
       selectionMachine: useMemo(
         () =>
           selectionMachine.provide({
@@ -165,113 +210,235 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           }),
         [filterString],
       ),
+      // Read-only mode passes the machines unprovided: their actors are
+      // unreachable, because the guards refuse every event that would invoke
+      // them, so there is nothing for the caller to wire up.
       deletionMachine: useMemo(
         () =>
-          deletionMachine.provide({
-            actors: {
-              referringDocuments: fromObservable(() => referringDocuments$),
-              deleteVariants: fromPromise(({input, signal}) => {
-                return input.ids
-                  .reduce(
-                    (pendingTransaction, id) => pendingTransaction.delete(id),
-                    client.transaction(),
-                  )
-                  .commit({
-                    tag: 'document.delete',
-                    skipCrossDatasetReferenceValidation: true,
-                    signal,
-                  })
+          typeof referringDocuments$ === 'undefined'
+            ? deletionMachine
+            : deletionMachine.provide({
+                actors: {
+                  referringDocuments: fromObservable(() => referringDocuments$),
+                  deleteVariants: fromPromise(({input, signal}) => {
+                    return input.ids
+                      .reduce(
+                        (pendingTransaction, id) => pendingTransaction.delete(id),
+                        client.transaction(),
+                      )
+                      .commit({
+                        tag: 'document.delete',
+                        skipCrossDatasetReferenceValidation: true,
+                        signal,
+                      })
+                  }),
+                },
               }),
-            },
-          }),
         [referringDocuments$, client],
+      ),
+      variantCreationMachine: useMemo(
+        () =>
+          readOnly
+            ? variantCreationMachine
+            : variantCreationMachine.provide({
+                actors: {
+                  variants: fromObservable(() => variants),
+                  releases: fromObservable(() => releases),
+                  createVariant: fromPromise(async ({input, signal}) => {
+                    const bundleId =
+                      typeof input.bundle === 'string'
+                        ? undefined
+                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
+
+                    const editStateSlot =
+                      typeof input.bundle === 'string'
+                        ? input.bundle === ('drafts' satisfies SystemBundle)
+                          ? 'draft'
+                          : 'published'
+                        : 'version'
+
+                    const readTargetPair = documentStore.pair
+                      .editState(getPublishedId(documentId), documentType, bundleId)
+                      .pipe(
+                        filter(({ready}) => ready),
+                        timeout({first: 30_000}),
+                      )
+
+                    // Live-edit documents have no drafts sibling: create the variant-of-published
+                    // even when the selected bundle is drafts. Release bundles still target the release.
+                    const createPerspective =
+                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
+                        ? 'published'
+                        : input.bundle
+
+                    const [targetPair, versionSnapshot] = await Promise.all([
+                      firstValueFrom(readTargetPair),
+                      firstValueFrom(
+                        versionState.pipe(
+                          filter(({loading}) => !loading),
+                          timeout({first: 30_000}),
+                        ),
+                      ),
+                    ])
+                    // An error snapshot is `{loading: false, versions: []}`. Treating that as
+                    // "no published variant" would copy the base document.
+                    if (versionSnapshot.error) {
+                      throw versionSnapshot.error instanceof Error
+                        ? versionSnapshot.error
+                        : new Error('Failed to load document versions')
+                    }
+                    const {versions} = versionSnapshot
+                    const fallback =
+                      editStateSlot === 'draft'
+                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
+                          targetPair[editStateSlot] || targetPair.published
+                        : targetPair[editStateSlot]
+                    // Published variant of the selected variant wins over the base document.
+                    const baseDocument = resolveManageVersionsCreateBase({
+                      variantId: input.variantDefinition._id,
+                      documentVersions: versions,
+                      fallback,
+                    })
+                    // If there is no base document, create an empty variant.
+                    if (baseDocument === null) {
+                      await createVariantDocument({
+                        documentGroupId: getPublishedId(documentId),
+                        document: {
+                          _type: documentType,
+                        },
+                        variant: input.variantDefinition,
+                        selectedPerspective: createPerspective,
+                        signal,
+                      })
+                    }
+
+                    // If there is a base document, create a variant based on it.
+                    if (baseDocument !== null) {
+                      await createVariantDocument({
+                        documentGroupId: getPublishedId(documentId),
+                        baseId: baseDocument._id,
+                        variant: input.variantDefinition,
+                        selectedPerspective: createPerspective,
+                        signal,
+                      })
+                    }
+
+                    // TODO: Would this be better encapsulated as a machine effect?
+                    setVariant({
+                      variantId: input.variantDefinition._id,
+                      perspective:
+                        typeof input.bundle === 'string'
+                          ? input.bundle
+                          : getReleaseIdFromReleaseDocumentId(input.bundle._id),
+                    })
+                  }),
+                },
+              }),
+        [
+          readOnly,
+          variants,
+          releases,
+          createVariantDocument,
+          setVariant,
+          documentType,
+          documentId,
+          documentStore.pair,
+          schema,
+          versionState,
+        ],
       ),
     },
   })
 
   const selectionRef = useSelector(inventoryRef, ({context}) => context.selectionRef)
   const deletionRef = useSelector(inventoryRef, ({context}) => context.deletionRef)
+  const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
+
+  useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
-  const isReadOnly = useSelector(selectionRef, (snapshot) => snapshot.matches('readonly'))
+  const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
+
+  const isVariantCreationActive = useSelector(inventoryRef, (snapshot) =>
+    snapshot.matches('creatingVariant'),
+  )
+
+  const isVariantCreationPending = useSelector(variantCreationRef, (snapshot) =>
+    snapshot.matches({active: 'creating'}),
+  )
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
     machine.can({type: 'delete.request'}),
   )
 
-  const hasFilter = useSelector(
-    selectionRef,
-    ({context}) => typeof context.filterString === 'string',
+  const canCreateVariant = useSelector(variantCreationRef, (machine) =>
+    machine.can({type: 'createVariant.request'}),
   )
-
-  usePreserveIntrinsicBlockSize({
-    element: containerElement,
-    isActive: hasFilter,
-  })
 
   return (
     <>
-      <Container ref={setContainerElement} data-testid="document-group-inventory">
-        <Header>
-          <Stack gap={4}>
-            <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
-              <Text size={1}>
-                <Flex gap={2} align="center" justify="flex-end">
-                  <FeedbackIcon /> {feedbackT('feedback.menu-item')}
-                </Flex>
-              </Text>
-            </TextButton>
-            <search>
-              <TextInput
-                name={t('document-group-inventory.filter-string.label', {
-                  subject: t('document-group.subject.version_other'),
-                })}
-                placeholder={t('document-group-inventory.filter-string.label', {
-                  subject: t('document-group.subject.version_other'),
-                })}
-                icon={<SearchIcon />}
-                readOnly={isReadOnly}
+      <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
+        {(isVariantCreationActive || isVariantCreationPending) && (
+          <CreateVariant variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
+        )}
+        {!isVariantCreationActive && (
+          <>
+            <Header>
+              <DocumentGroupFilter
+                readOnly={isLocked}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
               />
-            </search>
-          </Stack>
-        </Header>
-        <Body>
-          {schema && (
-            <Select
-              machine={selectionRef}
-              inventoryRef={inventoryRef}
-              documentType={documentType}
-              menuPortalElement={menuPortalElement}
-              perspectiveList={perspectiveList}
-              onPrimaryAction={setVariant}
-            />
-          )}
-        </Body>
-        <Footer>
-          <Button
-            text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-            onClick={() => deletionRef.send({type: 'delete.request'})}
-            disabled={!canRequestDeletion}
-            tone="critical"
-            size="large"
-            icon={TrashIcon}
-          />
-        </Footer>
+            </Header>
+            <Body>
+              {schema && (
+                <Select
+                  machine={selectionRef}
+                  inventoryRef={inventoryRef}
+                  selectedId={selectedId}
+                  documentType={documentType}
+                  readOnly={readOnly}
+                  perspectiveList={perspectiveList}
+                  onSelect={onSelect}
+                />
+              )}
+            </Body>
+            {!readOnly && (
+              <Footer>
+                {canCreateVariant && (
+                  <Button
+                    text={t('document-group.create-variant')}
+                    tone="suggest"
+                    icon={CreateVariantIcon}
+                    onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
+                  />
+                )}
+                {canRequestDeletion && (
+                  <Button
+                    text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
+                    onClick={() => deletionRef.send({type: 'delete.request'})}
+                    tone="critical"
+                    icon={TrashIcon}
+                  />
+                )}
+              </Footer>
+            )}
+          </>
+        )}
       </Container>
-      <div ref={setMenuPortalElement} />
-      {isDeletionActive && (
-        <ConfirmDeleteDialog
-          documentId={documentId}
-          documentType={documentType}
-          deletionRef={deletionRef}
-          selectionRef={selectionRef}
-          portalElementName={portalElementName}
-          components={components}
-        />
-      )}
+      {isDeletionActive &&
+        typeof portalElementName !== 'undefined' &&
+        typeof components !== 'undefined' && (
+          <ConfirmDeleteDialog
+            documentId={documentId}
+            documentType={documentType}
+            deletionRef={deletionRef}
+            selectionRef={selectionRef}
+            portalElementName={portalElementName}
+            components={components}
+          />
+        )}
       {isFeedbackActive && (
         <StudioFeedbackDialog
           dsn={STUDIO_DSN}
@@ -288,23 +455,14 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+  selectedId: string
   documentType: string
-  onPrimaryAction: SetVariant
-  menuPortalElement: HTMLElement | null
-  perspectiveList: DocumentGroupInventoryPerspectiveList
-}> = ({
-  machine,
-  inventoryRef,
-  documentType,
-  onPrimaryAction,
-  menuPortalElement,
-  perspectiveList,
-}) => {
-  const {t} = useTranslation(studioLocaleNamespace)
+  onSelect: (document: VersionInfoDocumentStub) => void
+  readOnly: boolean
+  /** Absent in read-only mode, where the version context menu is not rendered. */
+  perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
+}> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
-
-  // For now, selection mode is constant.
-  const isSelectable = true
 
   const hasFilterString = useSelector(
     machine,
@@ -316,99 +474,126 @@ const Select: ComponentType<{
     ({context}) => context.filterMatchingVariantIds,
   )
 
+  // Selection is refused outright in read-only mode; while a deletion is in
+  // flight the selection is only frozen, so the checkboxes stay rendered.
+  const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
+
   return (
-    <Stack gap={5}>
+    <VStack gap={5}>
       {sets.map((set) => (
-        <VariantSet key={set.key} data-variant-set={set.name}>
-          <VariantSetHeader as="header">
-            <Text size={1} weight="bold">
-              {set.name}
-            </Text>
-            <TextButton
-              onClick={() => {
-                set.variants.forEach((variant) =>
-                  machine.send({type: 'selection.add', variantId: variant.id}),
-                )
-              }}
-            >
-              {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-              <Text size={1}>
-                {isSelectable
-                  ? `Select all ${set.variants.length}`
-                  : `${set.variants.length} documents`}
-              </Text>
-            </TextButton>
-          </VariantSetHeader>
+        <DocumentGroupSet
+          key={set.key}
+          name={set.name}
+          headerActions={
+            isSelectable ? (
+              <TextButton
+                onClick={() => {
+                  set.variants.forEach((variant) =>
+                    machine.send({type: 'selection.add', variantId: variant.id}),
+                  )
+                }}
+              >
+                {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
+                <Text size={1} as="div" trim={true}>{`Select all ${set.variants.length}`}</Text>
+              </TextButton>
+            ) : undefined
+          }
+        >
           {set.variants
             .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
-            .map((variant) => (
-              <Variant
-                key={variant.id}
-                variant={variant}
-                machine={machine}
-                inventoryRef={inventoryRef}
-                documentType={documentType}
-                onPrimaryAction={onPrimaryAction}
-                isSelectable={isSelectable}
-                menuPortalElement={menuPortalElement}
-                perspectiveList={perspectiveList}
-              />
-            ))}
-        </VariantSet>
+            // The version context menu is a hook, so the two rows have to be
+            // separate components rather than one row that skips the actions.
+            .map((variant) =>
+              readOnly ? (
+                <ReadOnlyVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  inventoryRef={inventoryRef}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                />
+              ) : (
+                <ManagedVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  machine={machine}
+                  inventoryRef={inventoryRef}
+                  documentType={documentType}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                  perspectiveList={perspectiveList}
+                />
+              ),
+            )}
+        </DocumentGroupSet>
       ))}
-    </Stack>
+    </VStack>
   )
 }
 
-const Variant: ComponentType<{
+/**
+ * A version row with no actions attached: the primary action reports the pick
+ * to the consumer and nothing else is offered.
+ */
+const ReadOnlyVariantRow: ComponentType<{
+  variant: Variant
+  inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+  onSelect: (document: VersionInfoDocumentStub) => void
+  isSelected: boolean
+}> = ({variant, inventoryRef, onSelect, isSelected}) => {
+  const releases = useSelector(inventoryRef, ({context}) => context.releases)
+
+  return (
+    <DocumentGroupEntry
+      variant={variant}
+      releases={releases}
+      isSelected={isSelected}
+      onPrimaryAction={() => onSelect(variant.document)}
+    />
+  )
+}
+
+const ManagedVariantRow: ComponentType<{
   variant: Variant
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
-  onPrimaryAction: SetVariant
-  isSelectable: boolean
-  menuPortalElement: HTMLElement | null
-  perspectiveList: DocumentGroupInventoryPerspectiveList
-}> = ({
-  variant,
-  machine,
-  inventoryRef,
-  documentType,
-  onPrimaryAction,
-  isSelectable,
-  menuPortalElement,
-  perspectiveList,
-}) => {
-  const {t} = useTranslation(studioLocaleNamespace)
+  onSelect: (document: VersionInfoDocumentStub) => void
+  isSelected: boolean
+  /**
+   * Always supplied by manage mode, where this row is rendered. Optional only
+   * so the caller can pick the row by mode rather than by prop presence.
+   */
+  perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
+}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
-  const isPublishedVersion = isPublishedId(variant.id)
-  const isDraftVersion = isDraftId(variant.id)
-  const isVersion = isVersionId(variant.id)
-  const documentId = getPublishedId(variant.id)
-  const versionName = getVersionFromId(variant.id)
-  const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
+  // Derived from `_system` rather than the id, because `_system` is authoritative: it
+  // distinguishes a variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`)
+  // from a release version, which the id alone cannot.
+  const {document} = variant
+  const versionId = document._id
+  const documentGroupId = document._system.group._ref
+  const isPublishedVersion = !document._system.bundleId
+  const isDraftVersion = document._system.bundleId === 'drafts'
+  const bundleId = isPublishedVersion
+    ? 'published'
+    : isDraftVersion
+      ? 'draft'
+      : (document._system.bundleId ?? '')
 
-  const isReadOnly = useSelector(machine, (s) => s.matches('readonly'))
+  const isLocked = useSelector(machine, (snapshot) => snapshot.matches('locked'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
-  const {
-    filteredReleases,
-    getReleaseChipState,
-    handleCopyToDraftsNavigate,
-    isDraftSelected,
-    isPublishSelected,
-  } = perspectiveList
+  const clearScheduledDraftPerspective = perspectiveList?.clearScheduledDraftPerspective
 
-  const isSelected =
-    (isPublishedVersion && isPublishSelected) ||
-    (isDraftVersion && isDraftSelected) ||
-    (isVersion && getReleaseChipState(getVersionFromId(variant.id) ?? '').selected)
+  const release = resolveVariantRelease(variant, releases)
 
-  const release = versionName
-    ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))
-    : undefined
+  const pendingReleases = useVariantPendingReleases({
+    documentId: documentGroupId,
+    variantId: getDocumentVersionVariantId(document),
+  })
 
   const {
     contextMenu,
@@ -420,203 +605,74 @@ const Variant: ComponentType<{
     closeDialog,
     openDiscardDialog,
     openCreateReleaseDialog,
-    openCopyToDraftsDialog,
+    handleCopyToDrafts,
     handleAddVersion,
     isScheduledDraft,
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    documentGroupId,
+    documentVersionInfoStub: document,
     documentType,
-    bundleId,
-    isVersion,
-    disabled: isReadOnly,
-    release,
+    disabled: isLocked,
+    onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
-  const contextMenuHandler = isReadOnly || !releasesToolAvailable ? undefined : handleContextMenu
+  const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
 
   return (
     <>
-      <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
-        <div className="atom">
-          <button
-            type="button"
-            className="primary-action"
-            ref={setReferenceElement}
-            onClick={() => {
-              let bundle
-
-              switch (readVersionType(variant.document)) {
-                case 'release':
-                  bundle = getReleaseIdFromReleaseDocumentId(
-                    variant?.document?._system.release?._ref ?? '',
-                  )
-                  break
-                case 'published':
-                  bundle = 'published'
-                  break
-                case 'draft':
-                  bundle = 'drafts'
-                  break
-              }
-
-              const variantId = isVariantId(variant.document?._system?.variant?._ref)
-                ? variant.document._system.variant._ref
-                : undefined
-
-              const agentId = isAgentBundleName(getVersionFromId(variant.id))
-                ? getVersionFromId(variant.id)
-                : undefined
-
-              onPrimaryAction({variantId, perspective: agentId ?? bundle})
+      <DocumentGroupEntry
+        variant={variant}
+        releases={releases}
+        isSelected={isSelected}
+        primaryActionRef={setReferenceElement}
+        onContextMenu={contextMenuHandler}
+        onPrimaryAction={() => onSelect(document)}
+        leading={
+          <VariantCheckbox
+            checked={selectedIds.has(variant.id)}
+            readOnly={isLocked}
+            onChange={() => {
+              machine.send({
+                type: 'selection.toggle',
+                variantId: variant.id,
+              })
             }}
-            onContextMenu={contextMenuHandler}
-          >
-            {variant.name}
-          </button>
-          {isSelectable && (
-            <VariantCheckbox
-              checked={selectedIds.has(variant.id)}
-              readOnly={isReadOnly}
-              onChange={() => {
-                machine.send({
-                  type: 'selection.toggle',
-                  variantId: variant.id,
-                })
-              }}
-            />
-          )}
-          <Text size={1} weight="bold" className="inert">
-            {variant.name}
-          </Text>
-        </div>
-        <div className="atom inert">
-          {isSelected && (
-            <StatusBadge radius={2} tone="primary">
-              <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
-            </StatusBadge>
-          )}
-          <Text size={1}>
-            {isAgentBundleName(getVersionFromId(variant.id)) ? (
-              <ReleaseAvatarIcon tone="suggest" />
-            ) : (
-              <ReleaseAvatarIcon
-                release={
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                  (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-                }
-              />
-            )}
-          </Text>
-        </div>
-      </VariantSetEntry>
-      <PortalProvider element={menuPortalElement}>
-        <VersionContextMenuPopover
-          contextMenu={contextMenu}
-          popoverRef={popoverRef}
-          referenceElement={referenceElement}
-          documentId={documentId}
-          documentType={documentType}
-          bundleId={bundleId}
-          isVersion={isVersion}
-          releases={filteredReleases.notCurrentReleases}
-          releasesLoading={releasesLoading}
-          onDiscard={openDiscardDialog}
-          onCreateRelease={openCreateReleaseDialog}
-          onCopyToDrafts={openCopyToDraftsDialog}
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
-          onCreateVersion={handleAddVersion}
-          disabled={isReadOnly}
-          release={release}
-          isScheduledDraft={isScheduledDraft}
-          scheduledDraftMenuActions={scheduledDraftMenuActions}
-          portal={Boolean(menuPortalElement)}
-          isDiscardable={false}
-        />
-      </PortalProvider>
+          />
+        }
+      />
+      <VersionContextMenuPopover
+        contextMenu={contextMenu}
+        popoverRef={popoverRef}
+        referenceElement={referenceElement}
+        documentGroupId={documentGroupId}
+        documentType={documentType}
+        bundleId={bundleId}
+        releases={pendingReleases}
+        releasesLoading={releasesLoading}
+        versionId={versionId}
+        onDiscard={openDiscardDialog}
+        onCreateRelease={openCreateReleaseDialog}
+        onCopyToDrafts={handleCopyToDrafts}
+        onCreateVersion={handleAddVersion}
+        disabled={isLocked}
+        release={release}
+        isScheduledDraft={isScheduledDraft}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+        isDiscardable={false}
+      />
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionId={versionId}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={variant.name}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
       />
     </>
   )
 }
-
-/**
- * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
- * custom property. This custom property must be used by styles to control the element's size.
- */
-function usePreserveIntrinsicBlockSize({
-  isActive,
-  element,
-}: {
-  isActive: boolean
-  element: HTMLElement | null
-}): void {
-  const size = useMemo(() => new Subject<DOMRect | undefined>(), [])
-  const currentSize = useObservable(size)
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActive) {
-        size.next(entry.contentRect)
-      }
-    })
-
-    if (element) {
-      resizeObserver.observe(element)
-    }
-
-    return () => resizeObserver.disconnect()
-  }, [isActive, element, size])
-
-  useEffect(() => {
-    if (!element || !currentSize) {
-      return () => {}
-    }
-
-    const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-    const cleanUp = () => element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-
-    if (isActive) {
-      element?.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${currentSize.height}px`)
-      return cleanUp
-    }
-
-    cleanUp()
-    return () => {}
-  }, [element, currentSize, isActive])
-}
-
-const TextButton = styled.button(({theme}) => {
-  const {color} = getThemeV2(theme)
-
-  return css`
-    display: inline-block;
-    appearance: none;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    all: unset;
-    color: ${color.link.fg};
-
-    * {
-      color: inherit;
-    }
-
-    svg[data-sanity-icon] {
-      color: currentColor;
-    }
-  `
-})

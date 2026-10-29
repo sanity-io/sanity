@@ -1,6 +1,14 @@
 import {type ConsentStatus} from '../studio/telemetry/telemetryConsent'
 
 /** @internal */
+export interface FeedbackContextValue {
+  telemetryConsent: ConsentStatus
+  userName: string | undefined
+  userEmail: string | undefined
+  tags: Record<string, TagValue>
+}
+
+/** @internal */
 export type Sentiment = 'happy' | 'neutral' | 'unhappy'
 
 /** Tags that are always sent regardless of where the dialog is used. */

@@ -1,5 +1,4 @@
 import {SquareIcon} from '@sanity/icons/Square'
-import flatten from 'lodash-es/flatten.js'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'
@@ -253,9 +252,9 @@ describe('Validation test', () => {
     expect(validObjectResult._problems).toHaveLength(0)
 
     const invalidObjectResult = validation.get('invalidObject')
-    const problems = flatten(
-      invalidObjectResult.fields[0].of[0].of.map((item: {_problems: unknown[]}) => item._problems),
-    ).filter(Boolean)
+    const problems = invalidObjectResult.fields[0].of[0].of
+      .flatMap((item: {_problems: unknown[]}) => item._problems)
+      .filter(Boolean)
     expect(problems).toHaveLength(7)
     expect(problems[0]).toMatchObject({
       severity: 'error',
@@ -308,6 +307,56 @@ describe('Validation test', () => {
         name: 'testBlock',
         type: 'block',
         styles: [{title: 'Normal text', value: 'normal'}],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toHaveLength(0)
+  })
+
+  // Regression tests for https://github.com/sanity-io/sanity/issues/13494 —
+  // `i18nTitleKey` is a valid property on decorators, and the built-in
+  // `DEFAULT_BLOCK_STYLES` / `DEFAULT_LIST_TYPES` set it on every entry, so
+  // the validator must accept it on styles and lists as well.
+  test('accepts blocks with i18nTitleKey on styles', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        styles: [
+          {title: 'Normal', value: 'normal', i18nTitleKey: 'inputs.portable-text.style.normal'},
+          {title: 'Heading 1', value: 'h1', i18nTitleKey: 'inputs.portable-text.style.h1'},
+        ],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toHaveLength(0)
+  })
+
+  test('accepts blocks with i18nTitleKey on lists', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        lists: [
+          {
+            title: 'Bulleted list',
+            value: 'bullet',
+            i18nTitleKey: 'inputs.portable-text.list-type.bullet',
+          },
+          {
+            title: 'Numbered list',
+            value: 'number',
+            i18nTitleKey: 'inputs.portable-text.list-type.number',
+          },
+        ],
       },
     ]
 
@@ -715,6 +764,37 @@ describe('Validation test', () => {
       // Both should work without errors
       expect(blockType.marks.annotations[0]._problems).toHaveLength(0)
       expect(blockType.marks.annotations[1]._problems).toHaveLength(0)
+    })
+  })
+
+  describe('array options.collapseItemsAfter', () => {
+    const collapseErrors = (collapseItemsAfter: unknown) => {
+      const validation = validateSchema([
+        {
+          type: 'array',
+          name: 'myArray',
+          of: [{type: 'string'}],
+          options: {collapseItemsAfter},
+        },
+      ])
+
+      return validation
+        .get('myArray')
+        ._problems.filter(
+          (problem: any) =>
+            problem.severity === 'error' &&
+            problem.helpId === 'schema-array-collapse-items-after-invalid',
+        )
+    }
+
+    test.each([[undefined], [false], [1], [4], [50]])('accepts %p', (value) => {
+      expect(collapseErrors(value)).toHaveLength(0)
+    })
+
+    // A fractional limit would slice the members at one position but compare focus against
+    // another, so the same item would be both hidden and treated as visible.
+    test.each([[0], [-1], [2.5], [true], ['4'], [null]])('rejects %p', (value) => {
+      expect(collapseErrors(value)).toHaveLength(1)
     })
   })
 })

@@ -1,7 +1,7 @@
-import {Box, Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
+import {Text, Flex, Box, Icon} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getChangeDetails, NoWrap, UserName, useUpdatedTimeAgo} from './helpers'
 import {type FieldChange} from './helpers/parseTransactions'
 
@@ -19,10 +19,10 @@ export const EditedAt = memo(
       <Flex gap={1}>
         <Box marginTop={1} marginLeft={1} marginRight={3}>
           <Box marginRight={1}>
-            <Text>{icon}</Text>
+            <Icon icon={icon} style={{margin: '-0.4375rem'}} muted />
           </Box>
         </Box>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <UserName userId={activity.author} /> {text} {changeTo} •{' '}
           <Tooltip content={formattedDate} placement="top-end">
             <NoWrap>

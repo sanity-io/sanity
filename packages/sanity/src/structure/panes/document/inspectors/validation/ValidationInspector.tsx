@@ -9,7 +9,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -18,9 +18,10 @@ import {
   useParseErrors,
   useTranslation,
 } from 'sanity'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 
@@ -58,7 +59,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     editState && editState.version && isGoingToUnpublish(editState.version)
 
   return (
-    <Flex direction="column" height="fill" overflow="hidden">
+    <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
         closeButtonLabel={t('panel.close-button-aria-label')}
@@ -70,7 +71,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
       <Card flex={1} overflow="auto" padding={3}>
         {isVersionGoingToUnpublish ? (
           <Box padding={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('panel.unpublish-message')}
             </Text>
           </Box>
@@ -78,13 +79,13 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           <>
             {mergedValidation.length === 0 && (
               <Box padding={2}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('panel.no-errors-message')}
                 </Text>
               </Box>
             )}
             {mergedValidation.length > 0 && (
-              <Stack space={2}>
+              <VStack gap={2}>
                 {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
@@ -95,7 +96,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
                     value={value}
                   />
                 ))}
-              </Stack>
+              </VStack>
             )}
           </>
         )}
@@ -128,13 +129,15 @@ function ValidationCard(props: {
     [marker, onOpen],
   )
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
-  const Icon = MARKER_ICON[marker.level]
+  const MarkerIcon = MARKER_ICON[marker.level]
 
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (
         <Card padding={3} radius={2} tone="critical">
-          <Text size={1}>{errorInfo.error.message}</Text>
+          <Text size={1} as="div" trim={true} tone="critical">
+            {errorInfo.error.message}
+          </Text>
         </Card>
       )}
 
@@ -148,24 +151,32 @@ function ValidationCard(props: {
           style={{userSelect: 'text'}}
           tone={MARKER_TONE[marker.level]}
         >
-          <Flex align="flex-start" gap={3}>
-            <Box flex="none">
-              <Text size={1}>
-                <Icon />
-              </Text>
+          <Flex alignItems="flex-start" gap={3}>
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+              <Icon
+                size={1}
+                icon={MarkerIcon}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+              />
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}
                 value={value}
               />
 
-              <Text muted size={1}>
+              <Text
+                muted
+                size={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {marker.message}
               </Text>
-            </Stack>
+            </Flex>
           </Flex>
         </Card>
       )}
@@ -192,7 +203,7 @@ function DocumentNodePathBreadcrumbs(props: {
   if (!pathTitles?.length) return null
 
   return (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
       {pathTitles.map((t, i) => (
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>

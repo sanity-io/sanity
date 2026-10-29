@@ -1,29 +1,53 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {
+  type ReactNode,
+  type RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {Text, Flex, Box} from 'ui5'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
+import {usePortableTextMemberItems} from '../hooks/usePortableTextMembers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface CombinedAnnotationPopoverProps {
+  annotationOpeningRef: RefObject<boolean>
   referenceBoundary: HTMLElement | null
 }
 
 export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps): ReactNode {
-  const {referenceBoundary} = props
+  const {annotationOpeningRef, referenceBoundary} = props
   const {element: floatingBoundary} = useBoundaryElement()
   const {annotations} = useSelectedAnnotations()
+  const portableTextMemberItems = usePortableTextMemberItems()
+
+  // The popover must stay closed for the whole lifetime of the annotation
+  // edit modal, not only while it is opening: when multiple annotations cover
+  // the same text, the ones not being edited stay registered while the modal
+  // is open, and a selection re-check could otherwise reopen the popover on
+  // top of the modal.
+  const hasOpenAnnotation = portableTextMemberItems.some(
+    (m) => m.kind === 'annotation' && m.member.open,
+  )
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -39,6 +63,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Close popover and return focus to editor
   const handleClosePopover = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     setPopoverOpen(false)
   }, [editor])
@@ -59,6 +84,18 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Track selection changes to position popover
   const handleSelectionChange = useCallback(() => {
+    // Don't show the popover while an annotation object edit modal is opening
+    // or open. Right after inserting an annotation (or clicking "Edit" on
+    // one), the editor renders the annotated text as selected before the form
+    // state reflects the member as open (`annotationOpeningRef` covers that
+    // window), and the popover must stay closed while the modal is open
+    // (`hasOpenAnnotation`).
+    if (annotationOpeningRef.current || hasOpenAnnotation) {
+      setPopoverOpen(false)
+      setCursorRect(null)
+      return
+    }
+
     // Don't show popover if no annotations are selected
     if (annotations.length === 0) {
       setPopoverOpen(false)
@@ -70,6 +107,14 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     if (!sel || sel.rangeCount === 0) return
 
     const range = sel.getRangeAt(0)
+
+    if (!range.collapsed) {
+      // Expanded selections belong to the comments plugin's floating
+      // "Add comment" popover; this one would cover the selected text.
+      setPopoverOpen(false)
+      setCursorRect(null)
+      return
+    }
 
     // Check if selection is within any of the registered annotation elements
     const isWithinAnnotation = annotations.some((annotation) =>
@@ -87,7 +132,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       setCursorRect(rect)
       setPopoverOpen(true)
     }
-  }, [annotations])
+  }, [annotations, annotationOpeningRef, hasOpenAnnotation])
 
   // Listen for selection changes
   useEffect(() => {
@@ -104,7 +149,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   // misses the first click because annotations.length is still 0 when
   // selectionchange runs.
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleSelectionChange()
   }, [handleSelectionChange])
 
@@ -121,6 +166,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     if (sel && sel.rangeCount > 0) {
       rangeRef.current = sel.getRangeAt(0)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [popoverOpen])
 
   // Listen for scroll events
@@ -148,9 +194,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       content={
         <Box padding={1} data-testid="annotation-toolbar-popover">
           {annotations.map((annotation, index) => (
-            <Flex key={annotation.key} gap={1} align="center">
-              <Box padding={2} flex={1}>
-                <Text weight="medium" size={1}>
+            <Flex key={annotation.key} gap={1} alignItems="center">
+              <Box padding={2} flexBasis="0%" flexGrow={1}>
+                <Text weight="medium" size={1} as="div" trim={true}>
                   {annotation.title}
                 </Text>
               </Box>

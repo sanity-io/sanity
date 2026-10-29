@@ -1,7 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {deriveSearchWeightsFromType2024} from '../deriveSearchWeightsFromType2024'
 
 describe('deriveSearchWeightsFromType2024', () => {
@@ -48,6 +48,54 @@ describe('deriveSearchWeightsFromType2024', () => {
       }),
     ).toMatchObject({
       typeName: 'testType',
+    })
+  })
+
+  describe('max depth', () => {
+    const getSlugType = () =>
+      createSchema({
+        name: 'default',
+        types: [
+          defineType({
+            name: 'slugDocument',
+            type: 'document',
+            preview: {select: {title: 'title', subtitle: 'slug.current'}},
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({name: 'slug', type: 'slug'}),
+              defineField({
+                name: 'seo',
+                type: 'object',
+                fields: [defineField({name: 'description', type: 'string'})],
+              }),
+            ],
+          }),
+        ],
+      }).get('slugDocument')!
+
+    const getPaths = (spec: ReturnType<typeof deriveSearchWeightsFromType2024>) =>
+      spec.paths.map(({path}) => path)
+
+    it('counts the slug `current` field towards the depth', () => {
+      const type = getSlugType()
+
+      expect(getPaths(deriveSearchWeightsFromType2024({schemaType: type, maxDepth: 1}))).toEqual(
+        expect.not.arrayContaining(['slug.current']),
+      )
+      expect(getPaths(deriveSearchWeightsFromType2024({schemaType: type, maxDepth: 2}))).toEqual(
+        expect.arrayContaining(['title', 'slug.current']),
+      )
+    })
+
+    it('derives the weights again when the same type is searched at a lower depth', () => {
+      const type = getSlugType()
+
+      expect(getPaths(deriveSearchWeightsFromType2024({schemaType: type, maxDepth: 5}))).toEqual(
+        expect.arrayContaining(['seo.description', 'slug.current']),
+      )
+      expect(getPaths(deriveSearchWeightsFromType2024({schemaType: type, maxDepth: 1}))).toEqual(
+        expect.not.arrayContaining(['seo.description', 'slug.current']),
+      )
     })
   })
 })

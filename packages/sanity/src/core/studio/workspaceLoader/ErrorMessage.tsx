@@ -1,12 +1,9 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Box, Card, Code, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
-import {styled} from 'styled-components'
-
-const ListItem = styled(Flex)``
-
-const ErrorMessageRoot = styled(Box).attrs({padding: 4})``
+import {Text, Flex, Box} from 'ui5'
 
 /**
  * @internal
@@ -29,9 +26,9 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   const last = path[path.length - 1]
 
   return (
-    <ErrorMessageRoot forwardedAs={Flex} direction="column" gap={4}>
-      <Flex direction="column" gap={2}>
-        <Text weight="medium" size={3}>
+    <Flex flexDirection="column" gap={4} padding={4}>
+      <Flex flexDirection="column" gap={2}>
+        <Text weight="medium" size={3} as="div" trim={true}>
           {startCase(last.type)} Error
         </Text>
       </Flex>
@@ -40,31 +37,33 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
         <Code>{message}</Code>
       </Card>
 
-      <Flex as="ul" direction="column" gap={2}>
+      <Flex as="ul" flexDirection="column" gap={2}>
         {path.map(({name, type}, index) => (
           // oxlint-disable-next-line no-array-index-key
-          <ListItem key={index} forwardedAs="li" gap={2} align="center">
+          <Flex key={index} as="li" gap={2} alignItems="center">
             <Box>
               <Code>{name}</Code>
             </Box>
             <Box>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {type}
               </Text>
             </Box>
-          </ListItem>
+          </Flex>
         ))}
       </Flex>
 
       {stack && (
         <details>
-          <Text as="summary">Stack Trace</Text>
+          <Text as="summary" trim={true}>
+            Stack Trace
+          </Text>
 
           <Box overflow="auto" marginTop={4}>
             <Code>{stack}</Code>
           </Box>
         </details>
       )}
-    </ErrorMessageRoot>
+    </Flex>
   )
 }

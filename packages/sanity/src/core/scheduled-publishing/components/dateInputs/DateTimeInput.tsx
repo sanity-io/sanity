@@ -5,7 +5,7 @@ import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
-import {type ForwardedRef, forwardRef, useCallback} from 'react'
+import {useCallback, type RefAttributes} from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useWorkspace} from '../../../studio/workspace'
@@ -78,11 +78,8 @@ function enforceTimeStep(dateString: string, timeStep: number) {
   return serialize(date)
 }
 
-export const DateTimeInput = forwardRef(function DateTimeInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
-  const {type, onChange, timeZoneScope, ...rest} = props
+export function DateTimeInput(props: Props & RefAttributes<HTMLInputElement>) {
+  const {ref: forwardedRef, type, onChange, timeZoneScope, ...rest} = props
   const {title, description, placeholder} = type
 
   const {scheduledPublishing} = useWorkspace()
@@ -156,4 +153,4 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       timeZoneScope={timeZoneScope}
     />
   )
-})
+}

@@ -1,6 +1,6 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {type PreviewValue} from '@sanity/types'
-import {catchError, map, type Observable, of, startWith, switchMap} from 'rxjs'
+import {catchError, map, type Observable, of, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentAvailability,
@@ -14,11 +14,6 @@ import {
 
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
-
-const INITIAL_STATE = {
-  documents: [],
-  loading: true,
-}
 
 interface InputIncomingReferencesOptions {
   documentId: string
@@ -49,22 +44,27 @@ export interface CrossDatasetIncomingReferenceDocument {
   projectId: string
   dataset: string
 }
+/**
+ * Emits the cross-dataset documents referencing `documentId`. The observable
+ * does not emit until the first list has loaded — consumers read it through
+ * `useObservablePromise`, so the pending window renders as a Suspense fallback.
+ */
 export function getCrossDatasetIncomingReferences({
   documentId,
   type,
   client,
   documentPreviewStore,
-}: InputIncomingReferencesOptions | InspectorIncomingReferencesOptions): Observable<{
-  documents: CrossDatasetIncomingReferenceDocument[]
-  loading: boolean
-}> {
+}: InputIncomingReferencesOptions | InspectorIncomingReferencesOptions): Observable<
+  CrossDatasetIncomingReferenceDocument[]
+> {
   // Here we get all the references to this document from the any other dataset.
   // `fetchCrossDatasetReferences` is poll-driven (it re-emits on visibility
   // changes), so we run the per-emission pipeline inside a `switchMap` and catch
   // there. That way a transient failure of a single poll degrades to an empty
   // list without completing the outer observable, allowing a later poll tick to
-  // recover. Consumers render this via `useObservable`, which rethrows stream
-  // errors during render and would crash the document pane.
+  // recover. Consumers read this via `useObservablePromise`, so an uncaught
+  // error would reject the promise and crash the document pane at the nearest
+  // error boundary.
   return fetchCrossDatasetReferences(documentId, {versionedClient: client}).pipe(
     switchMap((referencesResult) =>
       of(referencesResult).pipe(
@@ -146,17 +146,16 @@ export function getCrossDatasetIncomingReferences({
               }),
             )
         }),
-        map((documents) => ({documents: documents.filter(isNonNullable), loading: false})),
+        map((documents) => documents.filter(isNonNullable)),
         // Cross-dataset queries are failure-prone (token / dataset permission
         // errors). Degrade this poll tick to an empty list instead of erroring;
         // catching inside the `switchMap` keeps the outer stream alive so a
         // later poll can recover.
         catchError((err) => {
           console.error(new Error('Failed to load cross-dataset incoming references', {cause: err}))
-          return of({documents: [], loading: false})
+          return of<CrossDatasetIncomingReferenceDocument[]>([])
         }),
       ),
     ),
-    startWith(INITIAL_STATE),
   )
 }

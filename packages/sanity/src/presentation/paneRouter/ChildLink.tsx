@@ -1,17 +1,16 @@
-import {forwardRef} from 'react'
+import {type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
 import {type ChildLinkProps} from 'sanity/structure'
 
 import {type PresentationSearchParams} from '../types'
 
-export const ChildLink = forwardRef(function ChildLink(
+export function ChildLink(
   props: ChildLinkProps & {
     childType: string
     searchParams: PresentationSearchParams
-  },
-  ref: React.ForwardedRef<HTMLAnchorElement>,
+  } & RefAttributes<HTMLAnchorElement>,
 ) {
-  const {childId, childType, childPayload, childParameters, searchParams, ...rest} = props
+  const {ref, childId, childType, childPayload, childParameters, searchParams, ...rest} = props
 
   return (
     <StateLink
@@ -24,4 +23,4 @@ export const ChildLink = forwardRef(function ChildLink(
       }}
     />
   )
-})
+}

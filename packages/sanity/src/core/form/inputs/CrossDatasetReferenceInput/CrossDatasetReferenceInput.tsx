@@ -1,7 +1,9 @@
 import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Inline, useClickOutsideEvent} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {
   type FocusEvent,
   type KeyboardEvent,
@@ -12,22 +14,23 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {type Observable} from 'rxjs'
+import {Flex, VStack} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
-import {PreviewCard, ReferenceInputPreviewCard} from '../../../components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {DashboardLink} from '../../../components/DashboardLink'
+import {PreviewCard, ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
-import {useFeatureEnabled} from '../../../hooks'
-import {FEATURES} from '../../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../../i18n'
-import {getPublishedId, isNonNullable} from '../../../util'
+import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useSearchMachine} from '../../../search/useSearchMachine'
+import {getPublishedId} from '../../../util/draftUtils'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {set, unset} from '../../patch'
-import {type ObjectInputProps} from '../../types'
+import {set, unset} from '../../patch/patch'
+import {type ObjectInputProps} from '../../types/inputProps'
 import {useArrayItemRootElementRef} from '../arrays/common/useArrayItemRootElementRef'
 import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceInput/ReferenceMetadataLoadFailure'
 import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceInput/ReferenceStrengthMismatchAlertStrip'
@@ -35,14 +38,9 @@ import {DisabledFeatureWarning} from './DisabledFeatureWarning'
 import {OptionPreview} from './OptionPreview'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
-import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit, type SearchState} from './types'
+import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit} from './types'
 import {type GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
-
-const INITIAL_SEARCH_STATE: SearchState = {
-  hits: [],
-  isLoading: false,
-}
 
 /** @internal */
 export interface CrossDatasetReferenceInputProps extends ObjectInputProps<
@@ -82,7 +80,23 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const {t} = useTranslation()
   const projectId = useProjectId()
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const inputId = useId()
+
+  const {searchState, handleQueryChange} = useSearchMachine<CrossDatasetSearchHit>({
+    search: onSearch,
+    distinct: true,
+    onSearchFailed: (error) => {
+      push({
+        title: 'Reference search failed',
+        description: error.message,
+        status: 'error',
+        id: `reference-search-fail-${inputId}`,
+      })
+
+      console.error(error)
+    },
+  })
 
   const handleChange = useCallback(
     (id: string) => {
@@ -175,8 +189,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
 
-  const {push} = useToast()
-
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
@@ -199,45 +211,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
   }, [onPathFocus])
-
-  const inputId = useId()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({
-              hits,
-              searchString,
-              isLoading: false,
-            })),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
-              })
-
-              console.error(error)
-              return of({hits: []})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
@@ -289,9 +262,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <VStack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <VStack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete
@@ -321,7 +294,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   />
                 </div>
               </ChangeIndicator>
-            </Stack>
+            </VStack>
           ) : (
             <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
               <Card
@@ -337,10 +310,10 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       : 'default'
                 }
               >
-                <Flex align="center" padding={1}>
+                <Flex alignItems="center" padding={1}>
                   {studioUrl ? (
                     <PreviewCard
-                      as="a"
+                      as={DashboardLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       href={studioUrl}
@@ -361,6 +334,11 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                         showStudioUrlIcon
                         hasStudioUrl={!!studioUrl}
                         type={schemaType}
+                        tone={
+                          !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                            ? 'critical'
+                            : undefined
+                        }
                       />
                     </PreviewCard>
                   ) : (
@@ -380,6 +358,11 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                         referenceInfo={loadableReferenceInfo}
                         showStudioUrlIcon
                         type={schemaType}
+                        tone={
+                          !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                            ? 'critical'
+                            : undefined
+                        }
                       />
                     </PreviewCard>
                   )}
@@ -430,7 +413,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
               </Card>
             </ChangeIndicator>
           )}
-        </Stack>
+        </VStack>
       )}
     </div>
   )

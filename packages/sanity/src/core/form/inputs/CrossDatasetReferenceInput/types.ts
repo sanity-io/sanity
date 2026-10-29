@@ -1,7 +1,7 @@
 import {type PreviewValue} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type DocumentAvailability} from '../../../preview'
+import {type DocumentAvailability} from '../../../preview/types'
 
 /** @internal */
 export interface CrossDatasetReferenceInfo {
@@ -11,13 +11,6 @@ export interface CrossDatasetReferenceInfo {
   preview: {
     published: PreviewValue | undefined
   }
-}
-
-/** @internal */
-export interface SearchState {
-  hits: CrossDatasetSearchHit[]
-  searchString?: string
-  isLoading: boolean
 }
 
 /** @internal */

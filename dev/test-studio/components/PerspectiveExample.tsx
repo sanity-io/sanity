@@ -1,6 +1,7 @@
-import {Card, Container, Flex, Text} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {Card} from '@sanity/ui'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
+import {Text, Box, Container, Flex} from 'ui5'
 
 interface Document {
   string?: string
@@ -10,15 +11,11 @@ interface Document {
 export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}}) => {
   const {options} = props
   const doc$ = options.doc$
-  const [doc, setDoc] = useState<Document | null>(null)
-  useEffect(() => {
-    const subscription = doc$.subscribe((docs: Document) => setDoc(docs))
-    return () => subscription.unsubscribe()
-  }, [doc$])
+  const doc = useObservable(doc$, null)
 
   return (
     <Container padding={4}>
-      <Text size={4} weight="bold">
+      <Text size={4} weight="bold" as="div" trim={true}>
         PerspectiveExample
       </Text>
       <Card paddingTop={2}>
@@ -26,20 +23,20 @@ export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}
         "number" (number) based on the perspective stack from the structure file.
       </Card>
       <Flex marginTop={4}>
-        <Container width={1 / 2}>
-          <Text size={3} weight="bold">
+        <Box width="50%">
+          <Text size={3} weight="bold" as="div" trim={true}>
             Title and Number
           </Text>
           <pre>title: {JSON.stringify(doc?.string, null, 2)}</pre>
 
           <pre>number: {JSON.stringify(doc?.number, null, 2)}</pre>
-        </Container>
-        <Container width={1 / 2}>
-          <Text size={3} weight="bold">
+        </Box>
+        <Box width="50%">
+          <Text size={3} weight="bold" as="div" trim={true}>
             Full JSON
           </Text>
           <pre>{JSON.stringify(doc, null, 2)}</pre>
-        </Container>
+        </Box>
       </Flex>
     </Container>
   )

@@ -1,0 +1,16 @@
+{
+  "name": "@repo/typedoc",
+  "version": "6.6.0",
+  "private": true,
+  "description": "TypeDoc generation for the sanity package. Isolates the TypeScript 6 compiler API (via @typescript/typescript6) because TypeScript 7 ships no programmatic API and typedoc still needs one.",
+  "type": "module",
+  "scripts": {
+    "cleanup": "rimraf ../../sanity/docs",
+    "generate": "typedoc --options ../../sanity/typedoc.config.json"
+  },
+  "devDependencies": {
+    "rimraf": "catalog:",
+    "typedoc": "^0.28.20",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}

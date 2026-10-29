@@ -56,7 +56,9 @@ const wrapWithPublishReplay: PaneResolverMiddleware =
       // need to add publishReplay + refCount to ensure new subscribers always
       // get an emission. without this, memoized observables may get stuck
       // waiting for their first emissions resulting in a loading pane
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   }

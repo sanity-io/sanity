@@ -23,7 +23,7 @@ export const MediaSpan = styled.span`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+    border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   & img + span {
@@ -34,7 +34,7 @@ export const MediaSpan = styled.span`
     bottom: 0;
     box-shadow: inset 0 0 0 1px var(--card-fg-color);
     opacity: 0.2;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+    border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   & svg {
@@ -49,7 +49,9 @@ export const MediaSpan = styled.span`
   }
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const textFont = theme.sanity.fonts.text
   const textSize = textFont.sizes[1]
 

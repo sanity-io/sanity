@@ -1,5 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type DocumentInspectorComponent, type DocumentInspectorProps, useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {IncomingReferencesList} from './IncomingReferencesList'
@@ -10,10 +11,10 @@ export const IncomingReferencesInspector: DocumentInspectorComponent = (
   const {t} = useTranslation()
 
   return (
-    <Flex direction="column" height="fill" overflow="hidden">
+    <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel={t('panel.close-button-aria-label')}
+        closeButtonLabel={t('incoming-references.close-button-aria-label')}
         flex="none"
         onClose={props.onClose}
         title={t('incoming-references.title')}

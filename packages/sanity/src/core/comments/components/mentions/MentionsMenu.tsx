@@ -1,25 +1,27 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {
-  forwardRef,
   type Ref,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Text, Box, Flex, VStack} from 'ui5'
 
-import {CommandList, type CommandListHandle, LoadingBlock} from '../../../components'
-import {type UserWithPermission} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {CommandList} from '../../../components/commandList/CommandList'
+import {type CommandListHandle} from '../../../components/commandList/types'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'
 
 const EMPTY_ARRAY: UserWithPermission[] = []
 
-const Root = styled(Stack)({
+const Root = styled(VStack)({
   maxWidth: '220px', // todo: improve
 })
 
@@ -41,12 +43,9 @@ interface MentionsMenuProps {
   options: UserWithPermission[] | null
 }
 
-export const MentionsMenu = forwardRef(function MentionsMenu(
-  props: MentionsMenuProps,
-  ref: Ref<MentionsMenuHandle>,
-) {
+export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMenuHandle>) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {loading, onSelect, options = [], inputElement} = props
+  const {ref, loading, onSelect, options = [], inputElement} = props
   const [searchTerm, setSearchTerm] = useState<string>('')
   const commandListRef = useRef<CommandListHandle>(null)
 
@@ -115,17 +114,17 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
   const _inputElement = inputElement ? (inputElement as HTMLInputElement) : undefined
 
   return (
-    <Flex direction="column" height="fill" data-testid="comments-mentions-menu">
+    <Flex flexDirection="column" height="100%" data-testid="comments-mentions-menu">
       {filteredOptions.length === 0 && (
         <Box padding={5}>
-          <Text align="center" size={1} muted>
+          <Text align="center" size={1} muted as="div" trim={true}>
             {t('mentions.no-users-found')}
           </Text>
         </Box>
       )}
 
       {filteredOptions.length > 0 && (
-        <FlexWrap direction="column" flex={1} overflow="hidden">
+        <FlexWrap flexDirection="column" flexBasis="0%" flexGrow={1} overflow="hidden">
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('mentions.user-list-aria-label')}
@@ -142,4 +141,4 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
       )}
     </Flex>
   )
-})
+}

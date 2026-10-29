@@ -1,3 +1,5 @@
+import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
+import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
 import {
   createBatchedStore,
   type CreateBatchedStoreOptions,
@@ -15,7 +17,7 @@ import {
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {
@@ -24,7 +26,7 @@ import {
 } from '../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'
@@ -117,6 +119,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       },
       studioVersion: SANITY_VERSION,
       reactVersion,
+      portableTextEditorVersion: portableTextEditorManifest.version,
+      appSdkVersion: appSdkManifest.version,
       environment: isProd ? 'production' : 'development',
       connection: getConnection(),
 
@@ -150,7 +154,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     return {
       flushInterval: 30000,
       resolveConsent: () =>
-        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
+        client.request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
@@ -161,9 +165,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
           context,
         }))
         return client.request({
-          uri: '/intake/batch',
+          url: '/intake/batch',
           method: 'POST',
-          json: true,
           body: {projectId, batch: enrichedBatch},
         })
       },
@@ -184,7 +187,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/refs -- pre-existing violation, to be fixed in a follow-up
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.

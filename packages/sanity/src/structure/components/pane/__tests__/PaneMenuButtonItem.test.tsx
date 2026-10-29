@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 

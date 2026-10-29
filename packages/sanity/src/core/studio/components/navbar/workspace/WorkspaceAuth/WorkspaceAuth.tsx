@@ -1,14 +1,15 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
+import {Container, Box, Flex, VStack} from 'ui5'
 
-import {Button} from '../../../../../../ui-components'
-import {useTranslation} from '../../../../../i18n'
-import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
-import {useVisibleWorkspaces} from '../../../../workspaces'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
@@ -20,6 +21,7 @@ const StyledContainer = styled(Container)((props) => {
   return {
     width: 'auto',
     minWidth: rem(container[0]),
+    minHeight: 0,
   }
 })
 
@@ -40,26 +42,23 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setShowChooser(true), [])
 
   const handleCardSelect = useCallback(
-    (workspaceName: string, state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => {
-      // While loading, navigate; the destination's auth boundary will handle login if needed.
-      if (state === 'logged-in' || state === 'loading' || state === 'logged-out') {
-        // Switch the active workspace so the URL reflects the chosen workspace.
-        // For a logged-out workspace the AuthBoundary keeps us on this screen,
-        // now scoped to (and showing the login for) the new workspace at its own
-        // basePath, instead of leaving the URL pointing at the previous one.
-        if (workspaceName !== activeWorkspace.name) {
-          setActiveWorkspace(workspaceName)
-        }
-        setShowChooser(false)
+    (workspaceName: string) => {
+      // Switch the active workspace so the URL reflects the chosen workspace. Whatever its login
+      // status, the destination's auth boundary handles login if needed: for a logged-out
+      // workspace it keeps us on this screen, now scoped to (and showing the login for) the new
+      // workspace at its own basePath, instead of leaving the URL pointing at the previous one.
+      if (workspaceName !== activeWorkspace.name) {
+        setActiveWorkspace(workspaceName)
       }
+      setShowChooser(false)
     },
     [activeWorkspace.name, setActiveWorkspace],
   )
 
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
-      <Container width={0}>
-        <Stack space={2}>
+      <StyledContainer size={0}>
+        <VStack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
               <Button
@@ -82,7 +81,7 @@ export function WorkspaceAuth() {
               </Box>
             }
           >
-            <Stack padding={2} paddingBottom={3} paddingTop={4}>
+            <Flex padding={2} paddingBottom={3} paddingTop={4} flexDirection="column">
               <LoginComponent
                 key={selectedWorkspace.name}
                 projectId={selectedWorkspace.projectId}
@@ -98,19 +97,19 @@ export function WorkspaceAuth() {
                 // the workspace chooser without a full reload.
                 onChooseAnotherWorkspace={canChooseAnotherWorkspace ? handleBack : undefined}
               />
-            </Stack>
+            </Flex>
           </Layout>
-        </Stack>
-      </Container>
+        </VStack>
+      </StyledContainer>
     )
   }
 
   return (
-    <StyledContainer width={1}>
+    <StyledContainer size={1}>
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={
-          <Stack padding={1}>
+          <Flex padding={1} flexDirection="column">
             <Button
               as="a"
               href={WORKSPACES_DOCS_URL}
@@ -121,18 +120,18 @@ export function WorkspaceAuth() {
               target="__blank"
               text={t('workspaces.action.add-workspace')}
             />
-          </Stack>
+          </Flex>
         }
       >
-        <Stack space={1} paddingX={1} paddingY={2}>
+        <Flex gap={1} paddingX={1} paddingY={2} flexDirection="column">
           {visibleWorkspaces.map((workspace) => (
             <WorkspaceAuthCard
               key={workspace.name}
               workspace={workspace}
-              onSelect={(state) => handleCardSelect(workspace.name, state)}
+              onSelect={() => handleCardSelect(workspace.name)}
             />
           ))}
-        </Stack>
+        </Flex>
       </Layout>
     </StyledContainer>
   )

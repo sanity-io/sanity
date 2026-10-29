@@ -1,11 +1,17 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
+import {Text, Flex, type TextProps} from 'ui5'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {type CrossDatasetReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+
+function JsonValue({value}: {children?: React.ReactNode; value?: unknown}) {
+  return <pre>{JSON.stringify(value, null, 2)}</pre>
+}
 
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReferenceValue
@@ -13,36 +19,38 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: CrossDatasetReferenceSchemaType
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
+  tone?: TextProps['tone']
 }) {
-  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo, tone} = props
   const {t} = useTranslation()
   const projectId = useProjectId()
 
-  if (referenceInfo.isLoading || referenceInfo.error) {
+  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
-      <Stack space={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
-      </Stack>
+      </Flex>
     )
   }
   const showTypeLabel = type.to.length > 1
 
-  const refTypeName = referenceInfo.result?.type
+  const refTypeName = referenceInfo.result.type
   const refType = type.to.find((toType) => toType.type === refTypeName)
 
   if (referenceInfo.result.availability?.available && !refType) {
     return (
-      <Stack space={2} padding={2}>
-        <Text as="p">
+      <Flex gap={2} padding={2} flexDirection="column">
+        <Text as="p" trim={true} tone={tone}>
           <Translate
             t={t}
             i18nKey="inputs.reference.cross-dataset.invalid-type"
             values={{typeName: refTypeName || 'unknown'}}
-            components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
+            components={{JsonValue}}
+            componentProps={{value}}
           />
         </Text>
-      </Stack>
+      </Flex>
     )
   }
 
@@ -57,6 +65,7 @@ export function PreviewReferenceValue(props: {
       dataset={type.dataset}
       id={value._ref}
       showTypeLabel={showTypeLabel}
+      tone={tone}
     />
   )
 }

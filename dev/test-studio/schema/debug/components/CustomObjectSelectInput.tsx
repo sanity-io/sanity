@@ -1,5 +1,5 @@
 import {Select} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {useCallback, useState, type RefAttributes} from 'react'
 import {isValidationError, type ObjectInputProps, type ObjectSchemaType, set, unset} from 'sanity'
 
 type Value = {title: string; value: string}
@@ -17,11 +17,10 @@ function getObjectSelectInputIdx() {
   return String(++objectSelectInputIdx)
 }
 
-export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInput(
-  props: CustomObjectSelectInputProps,
-  forwardedRef: ForwardedRef<HTMLSelectElement>,
+export function CustomObjectSelectInput(
+  props: CustomObjectSelectInputProps & RefAttributes<HTMLSelectElement>,
 ) {
-  const {value, schemaType, onChange, readOnly, validation} = props
+  const {ref: forwardedRef, value, schemaType, onChange, readOnly, validation} = props
 
   const items = (schemaType.options && schemaType.options.list) || EMPTY_ARRAY
   const errors = validation.filter(isValidationError)
@@ -52,4 +51,4 @@ export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInp
       ))}
     </Select>
   )
-})
+}

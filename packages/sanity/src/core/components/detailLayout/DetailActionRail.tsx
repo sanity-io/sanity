@@ -1,0 +1,35 @@
+import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
+
+/**
+ * The top-right action rail of an entity detail page: optional secondary action(s), one prominent
+ * primary action, then an overflow `⋯` menu. Placed top-right so the most primary action is where
+ * the eye lands first (F-pattern), rather than hunted for in a bottom footer. A pure layout shell —
+ * each page supplies its own actions, so the primary's weight can scale to its consequence (a loud,
+ * confirm-gated "Run release" vs. a calm "Edit definition"), with lighter secondary actions (e.g.
+ * an icon-only "Edit details") sitting beside it. Shared by the Releases and Variant-definition
+ * detail pages so both read as one family.
+ *
+ * @internal
+ */
+export function DetailActionRail(props: {
+  secondary?: ReactNode
+  primary?: ReactNode
+  menu?: ReactNode
+}): React.JSX.Element {
+  const {secondary, primary, menu} = props
+  return (
+    <Flex
+      flexBasis="auto"
+      flexGrow={0}
+      flexShrink={0}
+      gap={2}
+      alignItems="center"
+      data-ui="detail-action-rail"
+    >
+      {secondary}
+      {primary}
+      {menu}
+    </Flex>
+  )
+}

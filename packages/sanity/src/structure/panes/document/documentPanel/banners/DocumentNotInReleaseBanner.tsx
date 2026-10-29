@@ -1,10 +1,9 @@
-import {Text, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isAgentBundleName,
-  getVersionInlineBadge,
   LATEST,
   ReleaseTitle,
   type SystemBundle,
@@ -13,7 +12,9 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
+  VersionInlineBadge,
 } from 'sanity'
+import {Text, type TextProps} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -24,6 +25,26 @@ const TOAST_DELAY = 1000
 type VersionCreateState = {
   status: 'creating' | 'created'
   lastUpdate: Date
+}
+
+function VersionBadge({
+  children,
+  currentRelease,
+  fallbackTitle,
+}: {
+  children?: React.ReactNode
+  currentRelease?: Exclude<TargetPerspective, SystemBundle>
+  fallbackTitle?: string
+}) {
+  const tone = getReleaseTone(currentRelease ?? LATEST)
+  if (typeof currentRelease === 'string' || !currentRelease) {
+    return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+  }
+  return (
+    <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
+      {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
+    </ReleaseTitle>
+  )
 }
 
 export function DocumentNotInReleaseBanner({
@@ -92,28 +113,17 @@ export function DocumentNotInReleaseBanner({
     <Banner
       tone={tone}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
           <Translate
             i18nKey="banners.release.not-in-release"
             t={t}
             values={{
               title: releaseTitle,
             }}
-            components={{
-              VersionBadge: ({children}) => {
-                const BadgeWithTone = getVersionInlineBadge(currentRelease)
-                if (isAnonymousBundle) {
-                  return <BadgeWithTone>{children}</BadgeWithTone>
-                }
-                return (
-                  <ReleaseTitle
-                    title={currentRelease.metadata?.title}
-                    fallback={tCore('release.placeholder-untitled-release')}
-                  >
-                    {() => <BadgeWithTone>{children}</BadgeWithTone>}
-                  </ReleaseTitle>
-                )
-              },
+            components={{VersionBadge}}
+            componentProps={{
+              currentRelease,
+              fallbackTitle: tCore('release.placeholder-untitled-release'),
             }}
           />
         </Text>
@@ -137,7 +147,7 @@ export function DocumentNotInReleaseBanner({
 }
 
 function useCurrentTime(updateIntervalMs: number): Date {
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentTime(new Date())

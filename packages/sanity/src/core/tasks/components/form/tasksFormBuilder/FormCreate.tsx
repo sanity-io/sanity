@@ -1,14 +1,19 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useEffectEvent, useState} from 'react'
+import {Switch} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {useCallback, useEffect, useState} from 'react'
+import {Text, Flex, Box} from 'ui5'
+import {useEffectEvent} from 'use-effect-event'
 
-import {Button} from '../../../../../ui-components'
-import {type ObjectInputProps, set} from '../../../../form'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {set} from '../../../../form/patch/patch'
+import {type ObjectInputProps} from '../../../../form/types/inputProps'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {TaskCreated} from '../../../__telemetry__/tasks.telemetry'
-import {useTasks, useTasksNavigation} from '../../../context'
-import {useRemoveTask} from '../../../hooks'
+import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
+import {useTasks} from '../../../context/tasks/useTasks'
+import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
 import {getMentionedUsers} from '../utils'
@@ -66,9 +71,9 @@ export function FormCreate(props: ObjectInputProps) {
     // This useEffect takes care of closing the form when a task entered the "creation" state.
     // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
     if (creating && savedTask?.createdByUser) {
-      // oxlint-disable-next-line react/react-compiler
       handleCreatingSuccess()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating, savedTask?.createdByUser])
 
   const handleCreatingTimeout = useEffectEvent(() => {
@@ -89,6 +94,7 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating])
 
   const handleCreate = useCallback(async () => {
@@ -126,9 +132,9 @@ export function FormCreate(props: ObjectInputProps) {
             />
           )}
 
-          <Flex align="center" gap={2} justify={'flex-end'} flex={1}>
+          <Flex alignItems="center" gap={2} justifyContent={'flex-end'} flexBasis="0%" flexGrow={1}>
             <Switch onChange={handleCreateMore} checked={createMore} />
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t('form.input.create-more.text')}
             </Text>
           </Flex>

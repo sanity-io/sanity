@@ -5,29 +5,34 @@ import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {LoadingBlock} from '../../../components/loadingBlock'
-import {useTranslation} from '../../../i18n'
-import {FieldPresence} from '../../../presence'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {FieldPresence} from '../../../presence/FieldPresence'
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {FormFieldValidationStatus} from '../../components/formField/FormFieldValidationStatus'
 import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
-import {set, unset} from '../../patch'
-import {type ObjectItem, type ObjectItemProps} from '../../types'
+import {set, unset} from '../../patch/patch'
+import {type ObjectItem, type ObjectItemProps} from '../../types/itemProps'
 import {randomKey} from '../../utils/randomKey'
 import {regenerateKeys} from '../../utils/regenerateKeys'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
 import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
 import {RowLayout} from '../arrays/layouts/RowLayout'
+import {EditReferenceLink} from './EditReferenceLink'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
@@ -83,6 +88,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     validation,
     inputId,
     changed,
+    changedFromBaseVariant,
     focused,
     children,
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
@@ -96,12 +102,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
-    useReferenceInput({
-      path,
-      schemaType,
-      value,
-    })
+  const {getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} = useReferenceInput({
+    path,
+    schemaType,
+  })
 
   // this is here to make sure the item is visible if it's being edited behind a modal
   useScrollIntoViewOnFocusWithin(elementRef, open)
@@ -303,7 +307,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                 as={IntentLink}
                 data-as="a"
                 icon={OpenInNewTabIcon}
-                // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
                 intent="edit"
                 params={{id: value?._ref, type: refType?.name}}
                 rel="noopener noreferrer"
@@ -352,6 +355,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               deprecated={schemaType.deprecated}
               schemaType={schemaType}
               path={path}
+              changedFromBaseVariant={changedFromBaseVariant}
               readOnly={readOnly}
             >
               {children}
@@ -364,6 +368,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             radius={2}
             documentId={value?._ref}
             documentType={refType?.name}
+            parentRefPath={path}
+            template={value?._strengthenOnPublish?.template}
             disabled={resolvingInitialValue}
             __unstable_focusRing
             selected={selected}
@@ -377,6 +383,13 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               referenceInfo={loadableReferenceInfo}
               renderPreview={renderPreview}
               type={schemaType}
+              tone={
+                !readOnly && tone === 'critical'
+                  ? 'critical'
+                  : !readOnly && tone === 'caution'
+                    ? 'caution'
+                    : undefined
+              }
             />
             {resolvingInitialValue && <LoadingBlock fill />}
           </ReferenceLinkCard>

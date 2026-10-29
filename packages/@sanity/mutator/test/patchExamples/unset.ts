@@ -147,6 +147,32 @@ const examples: PatchExample[] = [
       b: [{key: '123'}],
     },
   },
+  {
+    name: 'Unset attribute of a primitive value',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      unset: ['a.b'],
+    },
+    after: {
+      a: 'string',
+    },
+  },
+  {
+    name: 'Unset descending into a primitive value',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      unset: ['a.b.c'],
+    },
+    after: {
+      a: 'string',
+    },
+  },
 ]
 
 export default examples

@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import {Fragment, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument, type TaskStatus} from '../../types'
@@ -41,20 +42,23 @@ function TaskList(props: TaskListProps) {
   const {status, tasks, onTaskSelect} = props
 
   return (
-    <DetailsFlex forwardedAs="details" direction="column" open={status === 'open'}>
+    <DetailsFlex forwardedAs="details" flexDirection="column" open={status === 'open'}>
       <SummaryBox forwardedAs="summary" paddingY={1}>
-        <Flex align="center" gap={1} paddingY={1}>
-          <Text size={1} weight="medium" muted>
+        <Flex alignItems="center" gap={1} paddingY={1}>
+          <Text size={1} weight="medium" muted as="div" trim={true}>
             {getLabelForStatus(status)}
           </Text>
-
-          <Text muted size={1}>
-            <ChevronDownIcon data-ui="summary-icon" />
-          </Text>
+          <Icon
+            icon={ChevronDownIcon}
+            muted
+            size={1}
+            data-ui="summary-icon"
+            style={{margin: '-0.375rem'}}
+          />
         </Flex>
       </SummaryBox>
 
-      <Stack space={4} marginTop={3} paddingBottom={5}>
+      <Flex gap={4} marginTop={3} paddingBottom={5} flexDirection="column">
         {tasks?.length > 0 ? (
           tasks.map((task, index) => {
             const showDivider = index < tasks.length - 1
@@ -78,7 +82,7 @@ function TaskList(props: TaskListProps) {
         ) : (
           <EmptyStatusListState status={status} />
         )}
-      </Stack>
+      </Flex>
     </DetailsFlex>
   )
 }
@@ -110,7 +114,7 @@ export function TasksList(props: TasksListProps) {
   const hasClosedTasks = tasksByStatus.closed?.length > 0
 
   return (
-    <Stack space={4} flex={1}>
+    <Flex gap={4} flexBasis="0%" flexGrow={1} flexDirection="column">
       {!hasOpenTasks && !hasClosedTasks ? (
         <EmptyTasksListState />
       ) : (
@@ -120,6 +124,6 @@ export function TasksList(props: TasksListProps) {
           <TaskList status="closed" tasks={tasksByStatus.closed} onTaskSelect={onTaskSelect} />
         </>
       )}
-    </Stack>
+    </Flex>
   )
 }

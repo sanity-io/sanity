@@ -1,13 +1,20 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Spinner, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
+import {Text, Flex} from 'ui5'
 
-import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type ReleaseActionDescription} from '../../../../config/releases/actions'
-import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate, type TranslateComponentMap} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
@@ -34,11 +41,9 @@ export type ActionResult =
     }
 
 const toastActionComponents: Partial<
-  Record<ReleaseAction, (actionResult: ActionResult) => TranslateComponentMap>
+  Record<ReleaseAction, TranslateComponentMap<{actionResult: ActionResult}>>
 > = {
-  duplicate: (actionResult) => ({
-    Link: () => <DuplicateReleaseToastLink actionResult={actionResult} />,
-  }),
+  duplicate: {Link: DuplicateReleaseToastLink},
 }
 
 export type ReleaseMenuButtonProps = {
@@ -151,7 +156,7 @@ export const ReleaseMenuButton = ({
         telemetry.log(actionValues.telemetry)
 
         if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
-          const toastComponents = toastActionComponents[action]?.(actionResult)
+          const toastComponents = toastActionComponents[action]
 
           toast.push({
             closable: true,
@@ -159,10 +164,11 @@ export const ReleaseMenuButton = ({
             title: (
               // toast children need access to the router
               <RouterContext.Provider value={router}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <Translate
                     t={t}
                     components={toastComponents}
+                    componentProps={{actionResult}}
                     i18nKey={actionValues.toastSuccessI18nKey}
                     values={{title: releaseTitle}}
                   />
@@ -180,7 +186,7 @@ export const ReleaseMenuButton = ({
             toast.push({
               status: 'error',
               title: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey={actionValues.toastFailureI18nKey}
@@ -221,6 +227,7 @@ export const ReleaseMenuButton = ({
     if (!selectedAction || isActionPublishOrSchedule) return
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) void handleAction(selectedAction)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
@@ -250,10 +257,10 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack space={4} paddingX={4} paddingBottom={4}>
+        <Flex gap={4} paddingX={4} paddingBottom={4} flexDirection="column">
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey={confirmDialog.dialogDescriptionI18nKey}
@@ -263,7 +270,7 @@ export const ReleaseMenuButton = ({
               />
             </Text>
           )}
-        </Stack>
+        </Flex>
       </Dialog>
     )
   }, [
@@ -316,6 +323,7 @@ export const ReleaseMenuButton = ({
         key={`custom-action-${index}`}
         icon={action.icon}
         text={action.label}
+        tone={action.tone}
         disabled={action.disabled || isPerformingOperation}
         onClick={handleOnActionClick(action)}
         tooltipProps={action.title ? {content: action.title} : undefined}

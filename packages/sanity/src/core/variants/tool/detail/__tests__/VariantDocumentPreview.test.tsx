@@ -23,6 +23,7 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
 }))
 
 vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  // @ts-expect-error -- pre-existing, fix later
   useDocumentPreviewValues: (...args: unknown[]) => useDocumentPreviewValuesMock(...args),
 }))
 
@@ -32,6 +33,7 @@ vi.mock('../../../../store/presence/useDocumentPresence', () => ({
 
 const createRow = (
   bundleId: DocumentInVariantGroup['version']['bundleId'],
+  // @ts-expect-error -- pre-existing, fix later
 ): DocumentInVariantGroup => ({
   memoKey: 'group-1',
   groupId: 'article-1',
@@ -53,6 +55,7 @@ const createRow = (
 })
 
 const VARIANT_ID = 'alpha-audience'
+const releasesById = new Map()
 
 describe('VariantDocumentPreview', () => {
   beforeEach(() => {
@@ -63,12 +66,19 @@ describe('VariantDocumentPreview', () => {
   it('omits perspective search params for drafts', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow('drafts')} variantId={VARIANT_ID} />, {wrapper})
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow('drafts')}
+        variantId={VARIANT_ID}
+      />,
+      {wrapper},
+    )
 
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         intent: 'edit',
-        searchParams: [['variant', VARIANT_ID]],
+        searchParams: [['variant', `variant:${VARIANT_ID}`]],
       }),
     )
   })
@@ -76,14 +86,21 @@ describe('VariantDocumentPreview', () => {
   it('adds perspective=published for published bundle versions', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow(undefined)} variantId={VARIANT_ID} />, {
-      wrapper,
-    })
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow(undefined)}
+        variantId={VARIANT_ID}
+      />,
+      {
+        wrapper,
+      },
+    )
 
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         searchParams: [
-          ['variant', VARIANT_ID],
+          ['variant', `variant:${VARIANT_ID}`],
           ['perspective', 'published'],
         ],
       }),
@@ -93,12 +110,19 @@ describe('VariantDocumentPreview', () => {
   it('adds perspective=<releaseId> for release bundle versions', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow('rASAP')} variantId={VARIANT_ID} />, {wrapper})
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow('rASAP')}
+        variantId={VARIANT_ID}
+      />,
+      {wrapper},
+    )
 
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         searchParams: [
-          ['variant', VARIANT_ID],
+          ['variant', `variant:${VARIANT_ID}`],
           ['perspective', 'rASAP'],
         ],
       }),
@@ -108,7 +132,14 @@ describe('VariantDocumentPreview', () => {
   it('resolves previews in the published perspective stack', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow(undefined)} variantId={VARIANT_ID} />, {wrapper})
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow(undefined)}
+        variantId={VARIANT_ID}
+      />,
+      {wrapper},
+    )
 
     expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -120,7 +151,14 @@ describe('VariantDocumentPreview', () => {
   it('resolves previews in the drafts perspective stack', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow('drafts')} variantId={VARIANT_ID} />, {wrapper})
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow('drafts')}
+        variantId={VARIANT_ID}
+      />,
+      {wrapper},
+    )
 
     expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -132,7 +170,14 @@ describe('VariantDocumentPreview', () => {
   it('resolves previews in the release perspective stack with drafts fallback', async () => {
     const wrapper = await createTestProvider()
 
-    render(<VariantDocumentPreview row={createRow('rASAP')} variantId={VARIANT_ID} />, {wrapper})
+    render(
+      <VariantDocumentPreview
+        releasesById={releasesById}
+        row={createRow('rASAP')}
+        variantId={VARIANT_ID}
+      />,
+      {wrapper},
+    )
 
     expect(useDocumentPreviewValuesMock).toHaveBeenCalledWith(
       expect.objectContaining({

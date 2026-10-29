@@ -19,6 +19,8 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Oxlint files
         run: pnpm check:oxlint
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
 
   knip:
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
+import {defineConfig} from '../../../../config/defineConfig'
 import {createSanityMediaLibraryFileSource} from '../createAssetSource'
 
 const fileAssetSource = createSanityMediaLibraryFileSource({
@@ -85,7 +85,7 @@ describe('provisioning', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const client = createMockSanityClient({
       requestCallback: (request) => {
-        switch (request.uri) {
+        switch (request.url) {
           case '/projects/mock-project-id':
             return {
               statusCode: 200,

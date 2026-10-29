@@ -92,8 +92,10 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
       const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
       return routerProp.encode({
         intent: intentName,
-        params,
-        payload,
+        // A missing params object has to stay off the state. The intent route encodes
+        // that segment with Object.entries, which throws on undefined, and the payload
+        // segment is nested under it, so it cannot be encoded on its own either.
+        ...(params == null ? {} : {params, payload}),
         _searchParams: toPairs({
           ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY_PARAMS.includes(key))),
           ...fromPairs(_searchParams ?? []),

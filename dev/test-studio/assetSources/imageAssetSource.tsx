@@ -1,7 +1,8 @@
 import {ImagesIcon} from '@sanity/icons/Images'
 import {type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Box, Button, Dialog, Text} from '@sanity/ui'
+import {Button, Dialog} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Text, Box} from 'ui5'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
   const {dialogHeaderTitle, onClose, onSelect} = props
@@ -24,7 +25,7 @@ function ImageAssetSource(props: AssetSourceComponentProps) {
       width={1}
     >
       <Box padding={4}>
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           (custom image asset source)
         </Text>
       </Box>
@@ -37,6 +38,7 @@ function ImageAssetSource(props: AssetSourceComponentProps) {
 
 export const imageAssetSource: AssetSource = {
   name: 'test-asset-source',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   title: 'Test',
   icon: ImagesIcon,
   component: ImageAssetSource,

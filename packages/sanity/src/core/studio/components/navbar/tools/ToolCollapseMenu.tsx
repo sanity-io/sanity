@@ -1,13 +1,16 @@
-import {Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {forwardRef, type Ref, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
-import {Button, type MenuButtonProps} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
-import {type Tool} from '../../../../config'
+import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
+import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {ToolLink} from './ToolLink'
+
+const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -40,23 +43,17 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        const Link = forwardRef(function Link(
-          linkProps: ToolLinkProps,
-          ref: Ref<HTMLAnchorElement>,
-        ) {
-          return (
-            <ToolLink {...linkProps} ref={ref} name={tool.name}>
-              {linkProps.children}
-            </ToolLink>
-          )
-        })
-
+        // `ToolLink` is rendered as the button's element directly. A wrapper component defined
+        // here would be a new component type every time this list is rebuilt, so every tool
+        // switch would remount every tool link (and the measurement clones observing them)
+        // instead of updating them in place.
         return (
           <Button
             key={`${tool.name}-${index}`}
-            as={Link}
+            as={ToolLink}
             data-as="a"
             mode="bleed"
+            name={tool.name}
             selected={activeToolName === tool.name}
             text={title}
           />
@@ -66,7 +63,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <Flex justify="center" marginX={4}>
+    <Flex justifyContent="center" marginX={4} style={TOOL_COLLAPSE_MENU_STYLE}>
       <CollapseTabList
         data-testid="tool-collapse-menu"
         gap={1}

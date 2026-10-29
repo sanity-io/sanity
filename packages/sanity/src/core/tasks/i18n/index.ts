@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from '../../i18n'
+import {type LocaleResourceBundle} from '../../i18n/types'
 
 /**
  * The locale namespace for the task tool
@@ -17,11 +17,3 @@ export const tasksUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: tasksLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the task tool.
- *
- * @alpha
- * @hidden
- */
-export type {TasksLocaleResourceKeys} from './resources'

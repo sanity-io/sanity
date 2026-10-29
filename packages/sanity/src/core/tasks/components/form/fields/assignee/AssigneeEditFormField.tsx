@@ -1,27 +1,24 @@
 import {type Path} from '@sanity/types'
 import {
   Badge,
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Flex,
-  Text,
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
+import {Text, Flex, Box} from 'ui5'
 
-import {Tooltip} from '../../../../../../ui-components'
-import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
-import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
+import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
+import {useFormValue} from '../../../../../form/contexts/FormValue'
+import {set} from '../../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../../form/patch/types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import {styledButton} from './AssigneeEditFormField.css'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
-
-const StyledButton = styled(Button)`
-  padding: 3px 6px;
-`
 
 interface AssigneeEditFormFieldProps {
   value: string | undefined
@@ -63,7 +60,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
       onSelect={onSelect}
       value={value}
       menuButton={
-        <StyledButton mode="ghost" padding={0}>
+        <Button className={styledButton} mode="ghost" padding={0}>
           <Tooltip
             content={
               value
@@ -71,24 +68,22 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
                 : t('form.input.assignee.no-user-assigned.tooltip')
             }
           >
-            <Flex align="center" gap={3}>
-              <Flex align="center" gap={2} flex={1}>
+            <Flex alignItems="center" gap={3}>
+              <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
                 <TasksUserAvatar user={mentionedUser} size={0} />
                 <Box>
-                  <Text size={1} textOverflow="ellipsis">
+                  <Text size={1} truncate={1} as="div" trim={true}>
                     {displayText}
                   </Text>
                 </Box>
               </Flex>
 
               {value && mentionedUser && !mentionedUser.granted && (
-                <Badge fontSize={1} mode="outline">
-                  {t('form.input.assignee.unauthorized.text')}
-                </Badge>
+                <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
               )}
             </Flex>
           </Tooltip>
-        </StyledButton>
+        </Button>
       }
     />
   )

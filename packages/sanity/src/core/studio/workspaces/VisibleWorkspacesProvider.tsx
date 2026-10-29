@@ -5,7 +5,7 @@ import {type WorkspaceSummary} from '../../config/types'
 import {
   useWorkspaceAuthStates,
   type WorkspaceAuthStates,
-} from '../components/navbar/workspace/hooks'
+} from '../components/navbar/workspace/hooks/useWorkspaceAuthStates'
 import {evaluateWorkspaceHidden} from './useVisibleWorkspaces'
 import {useWorkspaces} from './useWorkspaces'
 

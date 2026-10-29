@@ -1,6 +1,6 @@
 /* oxlint-disable no-restricted-imports */
 import {Tab as UITab, type TabProps as UITabProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type RefAttributes} from 'react'
 
 /**
  * @internal
@@ -25,9 +25,12 @@ export type TabProps = Pick<
  *
  * @internal
  */
-export const Tab = forwardRef(function Tab(
-  {tone = 'default', ...props}: TabProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
+export function Tab({
+  ref,
+  tone = 'default',
+  ...props
+}: TabProps &
+  Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'> &
+  RefAttributes<HTMLButtonElement>) {
   return <UITab {...props} muted padding={2} ref={ref} tone={tone} />
-})
+}

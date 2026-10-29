@@ -7,21 +7,23 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
+import {useElementSize} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups} from './hooks'
 import {InsertMenu} from './InsertMenu'
 import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
+import {useToolbarSchemaTypes} from './useToolbarSchemaTypes'
 
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */
@@ -85,9 +87,9 @@ const InnerToolbar = memo(function InnerToolbar({
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const rootElementRect = useElementRect(rootElement)
+  const rootElementSize = useElementSize(rootElement)
 
-  const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
+  const collapsed = collapsible && rootElementSize ? rootElementSize.border.width < 400 : false
   const showBlockStyleSelect = blockStyles.length > 1
 
   useRovingFocus({
@@ -99,9 +101,13 @@ const InnerToolbar = memo(function InnerToolbar({
   }, [])
 
   return (
-    <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
+    <RootFlex
+      alignItems="center"
+      ref={setRootElement}
+      onMouseDown={preventEditorBlurOnToolbarMouseDown}
+    >
       {showBlockStyleSelect && (
-        <StyleSelectFlex flex={collapsed ? 1 : undefined}>
+        <StyleSelectFlex {...(collapsed ? {flexBasis: '0%', flexGrow: 1} : undefined)}>
           <StyleSelectBox padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
             <BlockStyleSelect
               disabled={disabled}
@@ -113,10 +119,10 @@ const InnerToolbar = memo(function InnerToolbar({
         </StyleSelectFlex>
       )}
 
-      <Flex flex={1}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showActionMenu && (
           <ActionMenuBox
-            flex={collapsed ? undefined : 1}
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
             padding={isFullscreen ? 2 : 1}
             $withInsertMenu={showInsertMenu}
           >
@@ -130,7 +136,10 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
 
         {showInsertMenu && (
-          <Box flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
+          <Box
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
+            padding={isFullscreen ? 2 : 1}
+          >
             <InsertMenu
               disabled={disabled}
               collapsed={collapsed}
@@ -165,8 +174,10 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = useToolbarSchemaTypes()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -216,6 +227,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -227,6 +239,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -239,7 +252,7 @@ export function Toolbar(props: ToolbarProps) {
     hotkeys,
     onMemberOpen,
     resolveInitialValue,
-    disabled: true,
+    disabled,
   })
 
   const blockStyles = useMemo(() => getBlockStyles(schemaTypes), [schemaTypes])

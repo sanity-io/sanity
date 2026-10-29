@@ -1,17 +1,16 @@
 import {useEffect, useMemo} from 'react'
 
-import {LoadingBlock} from '../../../../components'
-import {type Config, prepareConfig} from '../../../../config'
-import {useClient} from '../../../../hooks'
-import {ResourceCacheProvider} from '../../../../store'
-import {
-  SourceProvider,
-  useAddonDataset,
-  useSource,
-  useWorkspaceLoader,
-  WorkspaceProvider,
-} from '../../../../studio'
-import {API_VERSION} from '../../../constants'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {prepareConfig} from '../../../../config/prepareConfig'
+import {type Config} from '../../../../config/types'
+import {useClient} from '../../../../hooks/useClient'
+import {ResourceCacheProvider} from '../../../../store/ResourceCacheProvider'
+import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
+import {useStudioErrorHandler} from '../../../../studio/requestErrors/useStudioErrorHandler'
+import {SourceProvider, useSource} from '../../../../studio/source'
+import {WorkspaceProvider} from '../../../../studio/workspace'
+import {useWorkspaceLoader} from '../../../../studio/workspaceLoader/WorkspaceLoader'
+import {API_VERSION} from '../../../constants/API_VERSION'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
 
@@ -26,10 +25,15 @@ function TasksAddonWorkspaceProviderInner({
 }) {
   const client = useClient({apiVersion: API_VERSION})
   const apiHost = client.config().apiHost
+  // The add-on workspace's auth store checks the current user while it loads. Handing it the
+  // studio's error handler turns a failed or rate limited check into the studio's retry dialog;
+  // without it, the error is thrown while rendering the task form.
+  const requestErrorHandler = useStudioErrorHandler()
   // TODO: Is basePath necessary here?
   const basePath = ''
 
   // Parent workspace source, we want to use the same project id
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const addonDatasetConfig: Config = useMemo(
     () => ({
@@ -46,8 +50,8 @@ function TasksAddonWorkspaceProviderInner({
   )
 
   const {workspaces} = useMemo(
-    () => prepareConfig(addonDatasetConfig, {basePath}),
-    [addonDatasetConfig, basePath],
+    () => prepareConfig(addonDatasetConfig, {basePath, requestErrorChannel: requestErrorHandler}),
+    [addonDatasetConfig, basePath, requestErrorHandler],
   )
   const addonWorkspace = useWorkspaceLoader(workspaces[0])
   if (!addonWorkspace) return null

@@ -1,11 +1,12 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../../../core/i18n'
+import {defineLocalesResources} from '../../../core/i18n/helpers'
 
 /**
  * Defined locale strings for the media library plugin, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const mediaLibraryLocaleStrings = defineLocalesResources('media-library', {
   /** Warning description for invalid video value */
   'invalid-video-warning.description':

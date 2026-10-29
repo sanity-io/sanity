@@ -133,7 +133,7 @@ describe('RouterProvider', () => {
         act(() => {
           result.current.navigate({stickyParams: {invalidStickyParam: 'invalidValue'}})
         })
-      }).toThrowError('One or more parameters are not sticky')
+      }).toThrow('One or more parameters are not sticky')
     })
 
     it('should throw an error if stickyParams contains disallowed keys', () => {
@@ -143,7 +143,7 @@ describe('RouterProvider', () => {
         act(() => {
           result.current.navigate({stickyParams: {disallowedParam: 'disallowedValue'}})
         })
-      }).toThrowError('One or more parameters are not sticky')
+      }).toThrow('One or more parameters are not sticky')
     })
   })
 
@@ -152,6 +152,7 @@ describe('RouterProvider', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         result.current.navigateStickyParams({stickyFirstParam: 'updatedStickyFirstParamValue'})
       })
 
@@ -166,6 +167,7 @@ describe('RouterProvider', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         result.current.navigateStickyParams({
           stickyFirstParam: 'updatedStickyFirstParamValue',
           anotherStickyParam: 'anotherStickyParamValue',
@@ -187,9 +189,10 @@ describe('RouterProvider', () => {
 
       expect(() => {
         act(() => {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           result.current.navigateStickyParams({disallowedParam: 'disallowedValue'})
         })
-      }).toThrowError('One or more parameters are not sticky')
+      }).toThrow('One or more parameters are not sticky')
     })
   })
 

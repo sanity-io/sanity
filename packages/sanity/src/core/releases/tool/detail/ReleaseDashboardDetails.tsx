@@ -1,50 +1,234 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
+import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import {Text, Container, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {DetailPropertiesPanel, type DetailPropertiesSection} from '../../../components/detailLayout'
+import {RelativeTime} from '../../../components/RelativeTime'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Details} from '../../../form/components/Details'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../studio/workspace'
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
+import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
+import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
+import {ReleaseValidationBadge} from './ReleaseValidationBadge'
 import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
+
+const RELEASE_IDENTITY_MIN_WIDTH = '280px'
+
+function ReleaseDashboardDetailsProduction({
+  release,
+  documents,
+  shouldDisplayError,
+  shouldDisplayWarnings,
+  isAtTimeRelease,
+  isReleaseOpen,
+}: {
+  release: ReleaseDocument
+  documents: DocumentInRelease[]
+  shouldDisplayError: boolean
+  shouldDisplayWarnings: boolean
+  isAtTimeRelease: boolean
+  isReleaseOpen: boolean
+}) {
+  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
+
+  const isSelected = releaseId === selectedReleaseId
+  const releaseFullTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+
+  const handlePinRelease = useCallback(() => {
+    if (isSelected) {
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
+    } else {
+      setPerspective(releaseId)
+    }
+  }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
+
+  return (
+    <Container size={3}>
+      <Flex padding={3} paddingY={[3, 3, 4, 5]} flexDirection="column">
+        <Flex gap={1} alignItems="center">
+          {isReleaseOpen && (
+            <Button
+              icon={isSelected ? PinFilledIcon : PinIcon}
+              tooltipProps={{
+                placement: 'top',
+                content: isSelected
+                  ? tRelease('dashboard.details.unpin-release')
+                  : tRelease('dashboard.details.pin-release'),
+              }}
+              mode="bleed"
+              onClick={handlePinRelease}
+              radius="full"
+              selected={isSelected}
+              aria-label={
+                isSelected
+                  ? `${tRelease('dashboard.details.unpin-release')}: "${releaseFullTitle}"`
+                  : `${tRelease('dashboard.details.pin-release')}: "${releaseFullTitle}"`
+              }
+              aria-live="assertive"
+            />
+          )}
+          {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
+          <ValidationProgressIndicator documents={documents} />
+          {shouldDisplayError && (
+            <Flex gap={2} padding={2} data-testid="release-error-details">
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+              />
+              <TextWithTone size={1} tone="critical">
+                {isAtTimeRelease
+                  ? tRelease('failed-schedule-title')
+                  : tRelease('failed-publish-title')}
+              </TextWithTone>
+            </Flex>
+          )}
+          {shouldDisplayWarnings && (
+            <Flex gap={2} padding={2} data-testid="release-permission-error-details">
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
+              />
+              <TextWithTone size={1} tone="caution">
+                {tRelease('permission-missing-title')}
+              </TextWithTone>
+            </Flex>
+          )}
+        </Flex>
+        <Box padding={2}>
+          <ReleaseDetailsEditor release={release} />
+        </Box>
+        {shouldDisplayError && (
+          <Card padding={4} radius={4} tone="critical">
+            <Flex gap={3}>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
+              <VStack gap={4}>
+                <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
+                  {isAtTimeRelease
+                    ? tRelease('failed-schedule-title')
+                    : tRelease('failed-publish-title')}
+                </Text>
+                <Details title={tRelease('error-details-title')}>
+                  <Text size={1} tone="suggest" as="div" trim={true}>
+                    <code>{release.error?.message}</code>
+                  </Text>
+                </Details>
+              </VStack>
+            </Flex>
+          </Card>
+        )}
+
+        {shouldDisplayWarnings && (
+          <Card padding={4} radius={4} tone="caution">
+            <Flex gap={3}>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={WarningOutlineIcon}
+                tone="caution"
+              />
+              <VStack gap={3}>
+                <Text size={1} as="div" trim={true} tone="caution">
+                  {tRelease('permission-missing-title')}
+                </Text>
+                <Text size={1} muted as="div" trim={true} tone="caution">
+                  {tRelease('permission-missing-description')}
+                </Text>
+              </VStack>
+            </Flex>
+          </Card>
+        )}
+
+        {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
+      </Flex>
+    </Container>
+  )
+}
 
 export function ReleaseDashboardDetails({
   release,
   documents,
+  events,
+  loading = false,
 }: {
   release: ReleaseDocument
   documents: DocumentInRelease[]
+  events: ReleaseEvent[]
+  /** True while the release documents are still loading — skeleton the count/status instead of
+   * rendering an empty ("No documents" / "0") state prematurely. */
+  loading?: boolean
 }) {
   const {state} = release
 
-  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {publishRelease, schedule} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
-  const {selectedReleaseId} = usePerspective()
-  const setPerspective = useSetPerspective()
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const createAuthor = events.find(isCreateReleaseEvent)?.author
 
-  const isSelected = releaseId === selectedReleaseId
-  const releaseFullTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const validation = getDocumentValidationLoading(documents)
+  const isFullyValidated = documents.length > 0 && validation.validatedCount === documents.length
+  const statusTone = validation.hasError ? 'critical' : isFullyValidated ? 'positive' : 'default'
+  const statusGlyphIcon = validation.hasError ? (
+    <ErrorOutlineIcon />
+  ) : isFullyValidated ? (
+    <CheckmarkCircleIcon />
+  ) : (
+    <ClockIcon />
+  )
+  const statusGlyph =
+    documents.length === 0 ? undefined : (
+      <Card tone={statusTone} style={{background: 'transparent'}}>
+        <Icon
+          muted
+          size={1}
+          style={{margin: '-0.375rem', display: 'block'}}
+          icon={statusGlyphIcon}
+          tone={statusTone === 'default' ? undefined : statusTone}
+        />
+      </Card>
+    )
+
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
   const isReleaseOpen = state !== 'archived' && state !== 'published'
   const isActive = release.state === 'active'
@@ -52,10 +236,6 @@ export function ReleaseDashboardDetails({
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
   const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
   const isMounted = useRef(false)
-  const {document} = useWorkspace()
-  const {
-    drafts: {enabled: isDraftModelEnabled},
-  } = document
   useEffect(() => {
     isMounted.current = true
 
@@ -87,107 +267,135 @@ export function ReleaseDashboardDetails({
     schedule,
   ])
 
-  const handlePinRelease = useCallback(() => {
-    if (isSelected) {
-      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
-    } else {
-      setPerspective(releaseId)
-    }
-  }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
+  if (!variantsEnabled) {
+    return (
+      <ReleaseDashboardDetailsProduction
+        release={release}
+        documents={documents}
+        shouldDisplayError={shouldDisplayError}
+        shouldDisplayWarnings={shouldDisplayWarnings}
+        isAtTimeRelease={isAtTimeRelease}
+        isReleaseOpen={isReleaseOpen}
+      />
+    )
+  }
 
   return (
-    <Container width={3}>
-      <Stack padding={3} paddingY={[3, 3, 4, 5]}>
-        <Flex gap={1} align="center">
-          {isReleaseOpen && (
-            <Button
-              icon={isSelected ? PinFilledIcon : PinIcon}
-              tooltipProps={{
-                placement: 'top',
-                content: isSelected
-                  ? tRelease('dashboard.details.unpin-release')
-                  : tRelease('dashboard.details.pin-release'),
-              }}
-              mode="bleed"
-              onClick={handlePinRelease}
-              radius="full"
-              selected={isSelected}
-              aria-label={
-                isSelected
-                  ? `${tRelease('dashboard.details.unpin-release')}: "${releaseFullTitle}"`
-                  : `${tRelease('dashboard.details.pin-release')}: "${releaseFullTitle}"`
-              }
-              aria-live="assertive"
-            />
-          )}
-          {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
-          <ValidationProgressIndicator documents={documents} />
-          {shouldDisplayError && (
-            <Flex gap={2} padding={2} data-testid="release-error-details">
-              <Text size={1}>
-                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-              </Text>
-              <TextWithTone size={1} tone="critical">
-                {isAtTimeRelease
-                  ? tRelease('failed-schedule-title')
-                  : tRelease('failed-publish-title')}
-              </TextWithTone>
-            </Flex>
-          )}
-          {shouldDisplayWarnings && (
-            <Flex gap={2} padding={2} data-testid="release-permission-error-details">
-              <Text size={1}>
-                <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-              </Text>
-              <TextWithTone size={1} tone="caution">
-                {tRelease('permission-missing-title')}
-              </TextWithTone>
-            </Flex>
-          )}
+    <Container size={3}>
+      {/* Tight top padding: the header above already pads its bottom, so the title sits close under
+          the breadcrumb instead of floating in a doubled gap. */}
+      <Flex paddingX={3} paddingBottom={3} paddingTop={1} gap={4} flexDirection="column">
+        {/* Clear zones: identity (title + description) on the left; a label -> value metadata panel
+            on the right. Wraps to a single column on narrow widths (metadata stacks under the
+            description). The pin control was removed (it's a global-perspective mode that belongs in
+            the perspective bar, matching the Variants pin removal). */}
+        <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
+          <Box flexBasis="0%" flexGrow={1} minWidth={RELEASE_IDENTITY_MIN_WIDTH}>
+            <ReleaseDetailsEditor release={release} />
+          </Box>
+          <DetailPropertiesPanel
+            testId="release-detail-metadata"
+            sections={
+              [
+                {
+                  rows: [
+                    isNotArchivedRelease(release) && {
+                      icon: <ReleaseAvatar release={release} padding={0} />,
+                      label: tRelease('dashboard.details.metadata.schedule'),
+                      value: <ReleaseTypePicker release={release} />,
+                    },
+                    {
+                      icon: statusGlyph,
+                      label: tRelease('dashboard.details.metadata.status'),
+                      value: loading ? (
+                        <Skeleton animated radius={1} style={{width: 48, height: 11}} />
+                      ) : (
+                        <ReleaseValidationBadge documents={documents} />
+                      ),
+                    },
+                    {
+                      icon: (
+                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={DocumentsIcon} />
+                      ),
+                      label: tRelease('dashboard.details.metadata.documents'),
+                      value: loading ? (
+                        <Skeleton animated radius={1} style={{width: 24, height: 11}} />
+                      ) : (
+                        String(documents.length)
+                      ),
+                    },
+                    {
+                      icon: createAuthor ? (
+                        <UserAvatar size={0} user={createAuthor} />
+                      ) : (
+                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={UserIcon} />
+                      ),
+                      label: tRelease('dashboard.details.metadata.created'),
+                      value: (
+                        <Text size={1} as="div" trim={true}>
+                          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
+                        </Text>
+                      ),
+                    },
+                  ],
+                },
+              ] satisfies DetailPropertiesSection[]
+            }
+          />
         </Flex>
-        <Box padding={2}>
-          <ReleaseDetailsEditor release={release} />
-        </Box>
         {shouldDisplayError && (
-          <Card padding={4} radius={4} tone="critical">
+          <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Text size={1}>
-                <ErrorOutlineIcon />
-              </Text>
-              <Stack space={4}>
-                <Text size={1} weight="semibold">
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
+              <VStack gap={4}>
+                <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
                     : tRelease('failed-publish-title')}
                 </Text>
                 <Details title={tRelease('error-details-title')}>
-                  <Text size={1} accent>
+                  <Text size={1} tone="suggest" as="div" trim={true}>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
 
         {shouldDisplayWarnings && (
-          <Card padding={4} radius={4} tone="caution">
+          <Card
+            data-testid="release-permission-error-details"
+            padding={4}
+            radius={4}
+            tone="caution"
+          >
             <Flex gap={3}>
-              <Text size={1}>
-                <WarningOutlineIcon />
-              </Text>
-              <Stack space={3}>
-                <Text size={1}>{tRelease('permission-missing-title')}</Text>
-                <Text size={1} muted>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={WarningOutlineIcon}
+                tone="caution"
+              />
+              <VStack gap={3}>
+                <Text size={1} as="div" trim={true} tone="caution">
+                  {tRelease('permission-missing-title')}
+                </Text>
+                <Text size={1} muted as="div" trim={true} tone="caution">
                   {tRelease('permission-missing-description')}
                 </Text>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
 
         {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
-      </Stack>
+      </Flex>
     </Container>
   )
 }

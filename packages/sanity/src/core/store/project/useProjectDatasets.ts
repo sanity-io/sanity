@@ -1,4 +1,5 @@
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {useProjectStore} from '../datastores'
 import {type ProjectDatasetData} from './types'
@@ -6,14 +7,9 @@ import {type ProjectDatasetData} from './types'
 /** @internal */
 export function useProjectDatasets(): {value: ProjectDatasetData[] | null} {
   const projectStore = useProjectStore()
-  const [value, setValue] = useState<ProjectDatasetData[] | null>(null)
 
-  useEffect(() => {
-    const project$ = projectStore.getDatasets()
-    const sub = project$.subscribe(setValue)
-
-    return () => sub.unsubscribe()
-  }, [projectStore])
+  const project$ = useMemo(() => projectStore.getDatasets(), [projectStore])
+  const value = useObservable(project$, null)
 
   return {value}
 }

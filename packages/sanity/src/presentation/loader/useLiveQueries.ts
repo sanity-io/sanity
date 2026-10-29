@@ -1,5 +1,5 @@
 import {type ClientPerspective} from '@sanity/client'
-import isEqual from 'fast-deep-equal'
+import {dequal as isEqual} from 'dequal/lite'
 import {useDeferredValue, useEffect, useReducer} from 'react'
 import {type QueryParams} from 'sanity'
 
@@ -12,6 +12,11 @@ type LiveQueriesState = Map<
     query: string
     params: QueryParams
     perspective: ClientPerspective
+    /**
+     * The editing variant the loader asked for (bare variant id), if any. Loaders that predate
+     * variants never send one.
+     */
+    variant: string | undefined
   }
 >
 
@@ -35,6 +40,7 @@ type QueryListenAction = {
   type: 'query-listen'
   payload: {
     perspective: ClientPerspective
+    variant: string | undefined
     query: string
     params: QueryParams
     heartbeat: number | false
@@ -68,8 +74,13 @@ function gc(state: State): State {
   return {...state, queries: nextQueries, heartbeats: nextHeartbeats}
 }
 function queryListen(state: State, {payload}: QueryListenAction): State {
-  const key = getQueryCacheKey(payload.perspective, payload.query, payload.params)
-  const data = {query: payload.query, params: payload.params, perspective: payload.perspective}
+  const key = getQueryCacheKey(payload.perspective, payload.variant, payload.query, payload.params)
+  const data = {
+    query: payload.query,
+    params: payload.params,
+    perspective: payload.perspective,
+    variant: payload.variant,
+  }
 
   const nextHeartbeats = new Map(state.heartbeats)
   nextHeartbeats.set(key, {
@@ -82,7 +93,7 @@ function queryListen(state: State, {payload}: QueryListenAction): State {
    * The data comes from a postMessage event, which uses the structured clone algorithm to serialize state (https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#message).
    * This impacts `params`, which is an object, as it will be a new object every time even if the sender is sending the same object instance on their end.
    * It also impacts `perspective`, as it's no longer just a string, but can also be an array of strings.
-   * Both cases are handled by fast-deep-equal, which is used to compare the data before deciding wether the state should be updated.
+   * Both cases are handled by the deep comparison, which is used to compare the data before deciding whether the state should be updated.
    */
   if (!state.queries.has(key) || !isEqual(state.queries.get(key), data)) {
     nextQueries = new Map(state.queries)

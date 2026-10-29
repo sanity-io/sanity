@@ -2,7 +2,9 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getVersionFromId,
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -14,35 +16,31 @@ import {
 import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-
-const DISABLED_REASON_KEY = {
-  NO_CHANGES: 'action.discard-changes.disabled.no-change',
-  NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
-  NOT_READY: 'action.discard-changes.disabled.not-ready',
-  TARGET_NOT_FOUND: 'action.discard-changes.disabled.target-not-found',
-} as const
+import {DISCARD_CHANGES_DISABLED_REASON} from './operationDisabledReasons'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDiscardChangesAction: DocumentActionComponent = ({
-  id,
-  type,
-  published,
-  liveEdit,
-  version,
-  draft,
-}) => {
-  const bundleId = version?._id && getVersionFromId(version._id)
-  const {discardChanges} = useDocumentOperation(id, type, bundleId)
+export const useDiscardChangesAction: DocumentActionComponent = ({id, type, version, draft}) => {
+  const {displayed, targetDocumentState} = useDocumentPane()
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  // Confirmation copy depends on whether a published counterpart exists in the current lane
+  // ("revert to published" vs "delete document").
+  const siblings = getTargetSiblings(targetDocumentState)
+  const publishedCounterpartExists = Boolean(siblings?.published)
+
+  const {discardChanges} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: scopeId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
-  const {displayed} = useDocumentPane()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const isPublished = displayed?._id && isPublishedId(displayed?._id)
@@ -85,8 +83,10 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     return {
       tone: 'critical',
       icon: ResetIcon,
-      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
-      title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
+      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading || !isTargetReady,
+      title: t(
+        (discardChanges.disabled && DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled]) || '',
+      ),
       label: t('action.discard-changes.label'),
       onHandle: handle,
       dialog: isConfirmDialogOpen && {
@@ -95,7 +95,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
           <ConfirmDiscardDialog
             onCancel={handleCancel}
             onConfirm={handleConfirm}
-            publishedExists={Boolean(published)}
+            publishedExists={publishedCounterpartExists}
           />
         ),
       },
@@ -106,12 +106,13 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     handleCancel,
     isConfirmDialogOpen,
     discardChanges.disabled,
-    published,
+    publishedCounterpartExists,
     version,
     draft,
     handle,
     isPermissionsLoading,
     isPublished,
+    isTargetReady,
     permissions?.granted,
     t,
   ])

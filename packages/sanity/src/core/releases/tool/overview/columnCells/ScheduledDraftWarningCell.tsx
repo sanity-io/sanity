@@ -1,9 +1,9 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Flex, Text} from '@sanity/ui'
+import {Text, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {type VisibleColumn} from '../../components/Table/types'
@@ -19,18 +19,26 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
   return (
     <Flex
       {...cellProps}
-      align="center"
+      alignItems="center"
       gap={2}
       paddingX={2}
       paddingY={3}
-      sizing="border"
       data-testid="warning-indicator"
     >
       {hasWarning && (
-        <Tooltip content={<Text size={1}>{t('passed-intended-publish-date-draft')}</Text>} portal>
-          <Text size={1}>
-            <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-          </Text>
+        <Tooltip
+          content={
+            <Text size={1} as="div" trim={true}>
+              {t('passed-intended-publish-date-draft')}
+            </Text>
+          }
+          portal
+        >
+          <Icon
+            size={1}
+            style={{margin: '-0.375rem'}}
+            icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
+          />
         </Tooltip>
       )}
     </Flex>

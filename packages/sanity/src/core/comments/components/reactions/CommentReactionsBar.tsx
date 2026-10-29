@@ -1,13 +1,11 @@
 import {type CurrentUser} from '@sanity/types'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Flex,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button as UIButton} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
+import {Text, Flex, Icon} from 'ui5'
 
-import {Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {
   type CommentReactionItem,
@@ -15,7 +13,7 @@ import {
   type CommentReactionShortNames,
   type CommentsUIMode,
 } from '../../types'
-import {ReactionIcon} from '../icons'
+import {ReactionIcon} from '../icons/ReactionIcon'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
@@ -65,9 +63,7 @@ const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
         <Tooltip animate content={tooltipContent} disabled={open}>
-          <Text size={1}>
-            <ReactionIcon />
-          </Text>
+          <Icon size={1} icon={ReactionIcon} style={{margin: '-0.375rem'}} />
         </Tooltip>
       </Flex>
     </UIButton>
@@ -146,7 +142,7 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
   }
 
   return (
-    <Flex align="center" gap={1} wrap="wrap">
+    <Flex alignItems="center" gap={1} flexWrap="wrap">
       <TooltipDelayGroupProvider>
         {sortedReactions.map(([name, reactionsList]) => {
           const hasReacted = currentUserReactionNames.includes(name)
@@ -170,10 +166,12 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
                   selected={hasReacted}
                   tone={hasReacted ? 'primary' : 'default'}
                 >
-                  <Flex align="center" gap={1}>
-                    <EmojiText size={1}>{emoji}</EmojiText>
+                  <Flex alignItems="center" gap={1}>
+                    <EmojiText size={1} forwardedAs="div" trim={true}>
+                      {emoji}
+                    </EmojiText>
 
-                    <Text size={0} weight={hasReacted ? 'semibold' : 'medium'}>
+                    <Text size={0} weight={hasReacted ? 'semibold' : 'medium'} as="div" trim={true}>
                       {reactionsList?.length}
                     </Text>
                   </Flex>
@@ -196,4 +194,3 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
     </Flex>
   )
 })
-CommentReactionsBar.displayName = 'Memo(CommentReactionsBar)'

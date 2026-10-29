@@ -1,10 +1,10 @@
-import {Stack} from '@sanity/ui'
 import {type InputProps} from 'sanity'
+import {VStack} from 'ui5'
 
 export function FormInput(props: InputProps & {testId: string}) {
   const {testId} = props
 
   if (props.id === 'root') return props.renderDefault(props)
 
-  return <Stack data-testid={testId}>{props.renderDefault(props)}</Stack>
+  return <VStack data-testid={testId}>{props.renderDefault(props)}</VStack>
 }

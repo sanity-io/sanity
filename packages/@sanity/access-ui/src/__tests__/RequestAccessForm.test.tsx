@@ -1,0 +1,486 @@
+import {type SanityClient} from '@sanity/client'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {act, render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {Activity, type ReactNode, StrictMode, Suspense, use, useEffect, useState} from 'react'
+import {createRoot, type Root} from 'react-dom/client'
+import {DEFAULT_HOOK_TTL} from 'react-rx'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {RequestAccessForm, type RequestAccessFormProps} from '../RequestAccessForm'
+import {type AccessRequest} from '../types'
+import {createAccessRequest, createApiError, createClientStub} from './testUtils'
+
+declare global {
+  var IS_REACT_ACT_ENVIRONMENT: boolean | undefined
+}
+
+const theme = buildTheme()
+const USER_EMAIL = 'rosti@example.com'
+
+function formUi(props: Partial<RequestAccessFormProps> = {}) {
+  return (
+    <ThemeProvider theme={theme}>
+      <RequestAccessForm
+        client={props.client ?? createClientStub()}
+        resourceId="project-a"
+        currentUser={{
+          name: 'Rosti',
+          email: USER_EMAIL,
+          provider: 'google',
+        }}
+        {...props}
+      />
+    </ThemeProvider>
+  )
+}
+
+// The mount must sit inside an awaited `act`: the content suspends on the load
+// promise with `use()`, and React only resumes work that suspended inside an
+// awaited `act` scope (the synchronous one `render` wraps parks it for good).
+// Awaiting also lets the stubbed requests resolve, so tests can query the
+// loaded form straight away.
+async function renderForm(props: Partial<RequestAccessFormProps> = {}) {
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(formUi(props))
+  })
+  return result
+}
+
+function fetchCounts(client: SanityClient) {
+  const urls = vi.mocked(client.request).mock.calls.map(([options]) => options.url)
+  return {
+    requests: urls.filter((url) => url === '/access/requests/me').length,
+    state: urls.filter((url) => url?.endsWith('/requests/state')).length,
+  }
+}
+
+const submitRequest = async () => {
+  await userEvent.click(await screen.findByRole('button', {name: 'Request access'}))
+}
+
+describe('RequestAccessForm', () => {
+  it('renders the request form with the account identity when no prior requests exist', async () => {
+    await renderForm()
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(screen.getByRole('textbox', {name: 'Message'})).toBeInTheDocument()
+    expect(screen.getAllByText(new RegExp(USER_EMAIL)).length).toBeGreaterThan(0)
+  })
+
+  it('shows the spinner fallback until the requests have loaded', async () => {
+    let answerLoad!: (requests: AccessRequest[]) => void
+    const client = createClientStub({
+      list: () =>
+        new Promise<AccessRequest[]>((resolve) => {
+          answerLoad = resolve
+        }),
+    })
+    const {container} = await renderForm({client})
+
+    expect(container.querySelector('[data-ui="Spinner"]')).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+
+    await act(async () => {
+      answerLoad([])
+    })
+
+    expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(container.querySelector('[data-ui="Spinner"]')).not.toBeInTheDocument()
+  })
+
+  it('renders the pending state instead of the form when a recent request exists', async () => {
+    const client = createClientStub({
+      list: () => Promise.resolve([createAccessRequest()]),
+    })
+    await renderForm({client})
+
+    expect(
+      await screen.findByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('renders the declined title, not the failed-send one, when a prior request was denied', async () => {
+    const client = createClientStub({
+      list: () => Promise.resolve([createAccessRequest({status: 'declined'})]),
+    })
+    await renderForm({client})
+
+    expect(
+      await screen.findByRole('heading', {name: 'Access request declined'}),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('falls back to the request form when the prefetch fails', async () => {
+    const client = createClientStub({
+      list: () => Promise.reject(new Error('boom')),
+    })
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('renders the sso-enforced state with a sign-in CTA on 403 saml_enforcement_required', async () => {
+    const client = createClientStub({
+      submit: () =>
+        Promise.reject(
+          createApiError(403, {
+            code: 'saml_enforcement_required',
+            message: 'SAML login is required for this organization',
+            redirectUrl: 'https://idp.example.com/login',
+          }),
+        ),
+    })
+    await renderForm({client})
+    await submitRequest()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      'https://idp.example.com/login',
+    )
+    // A send did fail here, but the wall is the point, not the failure.
+    expect(screen.getByRole('heading', {name: 'Organization SSO required'})).toBeInTheDocument()
+  })
+
+  const SSO_LOGIN_URL = 'https://www.sanity.io/login/sso/acme?origin=https%3A%2F%2Fexample.test%2F'
+
+  const samlRequired = (redirectUrl?: string) => ({
+    status: () => Promise.resolve({state: 'saml-required', ...(redirectUrl && {redirectUrl})}),
+  })
+
+  it('offers no form at all when the server says the org enforces SSO', async () => {
+    const client = createClientStub(samlRequired(SSO_LOGIN_URL))
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    // The org's own SSO login page, which auto-submits, so this is the only click.
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      SSO_LOGIN_URL,
+    )
+    // The whole point of asking first: no note field, no futile submit.
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+    expect(screen.queryByRole('textbox', {name: 'Message'})).not.toBeInTheDocument()
+  })
+
+  it('does not claim a send failed when SSO blocks the form on mount', async () => {
+    const client = createClientStub(samlRequired(SSO_LOGIN_URL))
+    await renderForm({client})
+
+    expect(
+      await screen.findByRole('heading', {name: 'Organization SSO required'}),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Access request couldn’t be sent')).not.toBeInTheDocument()
+  })
+
+  it('does not name SAML in the message for a SAML session', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({
+      client,
+      currentUser: {name: 'Ada', email: 'ada@example.com', provider: 'saml-other'},
+    })
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(alert).not.toHaveTextContent(/SAML/)
+    expect(screen.getByText('ada@example.com · SAML/SSO')).toBeInTheDocument()
+  })
+
+  it('does not claim an SSO session for an unknown provider', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client, currentUser: {email: 'ada@example.com', provider: 'other'}})
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(alert).not.toHaveTextContent(/signed in with/)
+  })
+
+  it('omits the CTA when the API resolves no login URL', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'Sign in with SSO'})).not.toBeInTheDocument()
+  })
+
+  it('shows SSO over a pending request, which an enforced org can never approve', async () => {
+    const client = createClientStub({
+      ...samlRequired(),
+      list: () => Promise.resolve([createAccessRequest()]),
+    })
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
+  })
+
+  it('blocks rather than offering a form for an unavailable resource', async () => {
+    const client = createClientStub({
+      status: () => Promise.resolve({state: 'resource-not-available'}),
+    })
+    await renderForm({client})
+
+    // Not the submit-failure copy: nothing was submitted.
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The resource currently being requested is no longer available.',
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('keeps the form when the server says eligible', async () => {
+    const client = createClientStub({status: () => Promise.resolve({state: 'eligible'})})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('keeps the form when the state fetch fails, leaving the submit gate as the backstop', async () => {
+    const client = createClientStub({status: () => Promise.reject(new Error('offline'))})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('renders the sent state and reports the submission after a successful submit', async () => {
+    const onRequestSubmitted = vi.fn()
+    const client = createClientStub({
+      submit: () => Promise.resolve(createAccessRequest()),
+    })
+    window.location.hash = '#token=secret'
+    await renderForm({client, onRequestSubmitted})
+    await userEvent.type(screen.getByRole('textbox', {name: 'Message'}), 'please')
+    await submitRequest()
+
+    expect(await screen.findByText('Access request sent')).toBeInTheDocument()
+    expect(onRequestSubmitted).toHaveBeenCalledExactlyOnceWith({note: 'please'})
+    // The fragment can carry auth tokens and must not reach the API.
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'post',
+        body: expect.objectContaining({requestUrl: expect.not.stringContaining('#')}),
+      }),
+    )
+  })
+
+  it('keeps the form up with an inline error when submission fails unexpectedly', async () => {
+    const client = createClientStub({
+      submit: () => Promise.reject(new Error('network down')),
+    })
+    await renderForm({client})
+    await submitRequest()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/problem submitting your request/)
+    expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('lets renderAction vary the action per view', async () => {
+    const client = createClientStub({
+      submit: () => Promise.resolve(createAccessRequest()),
+    })
+    await renderForm({
+      client,
+      renderAction: ({view}) => (view === 'sent' ? <a href="/orgs">View organizations</a> : null),
+    })
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'View organizations'})).not.toBeInTheDocument()
+
+    await submitRequest()
+    expect(await screen.findByRole('link', {name: 'View organizations'})).toBeInTheDocument()
+  })
+
+  it('reloads from the server when the form is mounted again', async () => {
+    let requests: AccessRequest[] = []
+    const client = createClientStub({list: () => Promise.resolve(requests)})
+    const {unmount} = await renderForm({client})
+    expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    unmount()
+
+    requests = [createAccessRequest()]
+    await renderForm({client})
+
+    expect(
+      screen.getByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+  })
+
+  it('reloads from the server when unmounted before the first load settles', async () => {
+    let answerFirstLoad!: (requests: AccessRequest[]) => void
+    const firstLoad = new Promise<AccessRequest[]>((resolve) => {
+      answerFirstLoad = resolve
+    })
+    let calls = 0
+    const client = createClientStub({
+      list: () => (++calls === 1 ? firstLoad : Promise.resolve([createAccessRequest()])),
+    })
+    const {unmount} = await renderForm({client})
+    unmount()
+    answerFirstLoad([])
+
+    await renderForm({client})
+
+    expect(
+      screen.getByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+    expect(fetchCounts(client).requests).toBe(2)
+  })
+
+  it('keeps the note and does not refetch when the host passes a new client for the same resource', async () => {
+    const client = createClientStub()
+    const {rerender} = await renderForm({client})
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    const nextClient = createClientStub()
+    await act(async () => {
+      rerender(formUi({client: nextClient}))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+    expect(fetchCounts(nextClient)).toEqual({requests: 0, state: 0})
+  })
+
+  it('keeps the note and does not refetch when the host hides and shows the form again', async () => {
+    const client = createClientStub()
+    const ui = (mode: 'visible' | 'hidden') => <Activity mode={mode}>{formUi({client})}</Activity>
+    let rerender!: ReturnType<typeof render>['rerender']
+    await act(async () => {
+      rerender = render(ui('visible')).rerender
+    })
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    // Hiding tears the subscription down, so the reveal subscribes afresh; the
+    // microtask gives react-rx a chance to release anything it held per
+    // subscriber. The settled promise must survive on the hook's cache entry.
+    await act(async () => {
+      rerender(ui('hidden'))
+      await Promise.resolve()
+    })
+    await act(async () => {
+      rerender(ui('visible'))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
+  it('does not refetch when hidden for longer than react-rx retains an idle result', async () => {
+    const client = createClientStub()
+    const ui = (mode: 'visible' | 'hidden') => <Activity mode={mode}>{formUi({client})}</Activity>
+    let rerender!: ReturnType<typeof render>['rerender']
+    await act(async () => {
+      rerender = render(ui('visible')).rerender
+    })
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    // Past the TTL the hook evicts its cache entry and lets the shared source
+    // go; the requests have completed by then, so nothing must start them again.
+    await act(async () => {
+      rerender(ui('hidden'))
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_HOOK_TTL + 100))
+    })
+    await act(async () => {
+      rerender(ui('visible'))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
+  it('fetches once under StrictMode', async () => {
+    const client = createClientStub()
+    await act(async () => {
+      render(<StrictMode>{formUi({client})}</StrictMode>)
+    })
+    await screen.findByRole('form', {name: 'Request access'})
+
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
+  it('renders the sign-out action only when onSignOut is provided', async () => {
+    const onSignOut = vi.fn()
+    const {rerender} = await renderForm({onSignOut})
+
+    await userEvent.click(await screen.findByRole('button', {name: /Sign out/}))
+    expect(onSignOut).toHaveBeenCalledTimes(1)
+
+    rerender(formUi({onSignOut: undefined}))
+    expect(screen.queryByRole('button', {name: /Sign out/})).not.toBeInTheDocument()
+  })
+})
+
+function UnrelatedUpdates() {
+  const [tick, setTick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick((value) => value + 1), 10)
+    return () => clearInterval(id)
+  }, [])
+  return <span data-tick={tick} />
+}
+
+/**
+ * Uses a raw root outside `act`: `act` flushes Suspense retries straight away,
+ * which hides the render React throws away in a real host.
+ */
+describe('RequestAccessForm behind a suspending host', () => {
+  let container: HTMLElement
+  let root: Root
+  let previousActEnvironment: boolean | undefined
+
+  beforeEach(() => {
+    previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT
+    globalThis.IS_REACT_ACT_ENVIRONMENT = false
+    container = document.createElement('div')
+    document.body.appendChild(container)
+    root = createRoot(container)
+  })
+
+  afterEach(() => {
+    root.unmount()
+    container.remove()
+    globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
+  })
+
+  it('fetches once when it first mounts in a Suspense retry while the host keeps updating', async () => {
+    const client = createClientStub()
+    // The form first renders in React's retry of this boundary. React holds a
+    // retry back up to 300ms before committing and throws it away when the
+    // ticking sibling updates, so anything fetched during render repeats: 26–27
+    // pairs here when the form fetched in a `useState` initialiser.
+    const hostCheck = new Promise<void>((resolve) => setTimeout(resolve, 20))
+
+    function HostCheck({children}: {children: ReactNode}) {
+      use(hostCheck)
+      return children
+    }
+
+    root.render(
+      <ThemeProvider theme={theme}>
+        <UnrelatedUpdates />
+        <Suspense fallback={null}>
+          <HostCheck>
+            <RequestAccessForm client={client} resourceId="project-a" />
+          </HostCheck>
+        </Suspense>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findByRole('form', {name: 'Request access'}, {timeout: 2000})).toBeVisible()
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+})

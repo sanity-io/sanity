@@ -1,9 +1,10 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
@@ -66,17 +67,22 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
+
     return (
       <Root
-        align="center"
+        alignItems="center"
         className={styles?.placeholder}
         data-testid="default-preview"
         padding={2}
         paddingLeft={media ? 2 : 3}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && (
-            <Box flex="none">
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Skeleton
                 animated
                 delay={SKELETON_DELAY}
@@ -86,12 +92,18 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             </Box>
           )}
 
-          <Stack data-testid="default-preview__heading" flex={1} space={2}>
+          <Flex
+            data-testid="default-preview__heading"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            flexDirection="column"
+          >
             <TitleSkeleton delay={SKELETON_DELAY} />
-            <SubtitleSkeleton delay={SKELETON_DELAY} />
-          </Stack>
+            {showSubtitleSkeleton && <SubtitleSkeleton delay={SKELETON_DELAY} />}
+          </Flex>
 
-          <Box flex="none" padding={1}>
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
             {statusNode}
           </Box>
         </Flex>
@@ -101,15 +113,15 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
   return (
     <Root
-      align="center"
+      alignItems="center"
       className={rootClassName}
       data-testid="default-preview"
       padding={2}
       paddingLeft={media ? 2 : 3}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Media
               dimensions={DEFAULT_MEDIA_DIMENSIONS}
               layout="default"
@@ -119,7 +131,14 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           </Box>
         )}
 
-        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
+        <Flex
+          className={styles?.heading}
+          data-testid="default-preview__header"
+          flexBasis="0%"
+          flexGrow={1}
+          gap={2}
+          flexDirection="column"
+        >
           {isUploading && <LinearProgress value={progress} />}
           {!isUploading && (
             <>
@@ -145,9 +164,9 @@ export function DefaultPreview(props: DefaultPreviewProps) {
               )}
             </>
           )}
-        </Stack>
+        </Flex>
 
-        <Box flex="none" padding={1}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           {statusNode}
         </Box>
 

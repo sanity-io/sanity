@@ -2,8 +2,8 @@ import {Badge, type BadgeTone, Inline} from '@sanity/ui'
 import {memo, useCallback, useDeferredValue} from 'react'
 import {type DocumentBadgeDescription} from 'sanity'
 
-import {Tooltip} from '../../../../ui-components'
-import {RenderBadgeCollectionState} from '../../../components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {RenderBadgeCollectionState} from '../../../components/RenderBadgeCollectionState'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface DocumentBadgesInnerProps {
@@ -22,7 +22,7 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
     return null
   }
   return (
-    <Inline space={1}>
+    <Inline gap={1}>
       {states.map((badge, index) => (
         <Tooltip
           key={`${badge.label}-${index}`}
@@ -33,7 +33,6 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
         >
           <Badge
             fontSize={1}
-            mode="outline"
             paddingX={2}
             paddingY={1}
             radius={4}

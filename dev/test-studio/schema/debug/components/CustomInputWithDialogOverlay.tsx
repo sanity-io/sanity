@@ -2,11 +2,10 @@ import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Button, Dialog} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   Fragment,
   // useCallback,
   useState,
+  type RefAttributes,
 } from 'react'
 import {
   type DocumentPresence,
@@ -15,7 +14,7 @@ import {
   // setIfMissing
 } from 'sanity'
 
-export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithDialogOverlay(
+export function CustomInputWithDialogOverlay(
   props: {
     // focusPath?: Path
     // level?: number
@@ -25,10 +24,10 @@ export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithD
     presence: DocumentPresence[]
     schemaType: ObjectSchemaType
     // value?: any
-  },
-  ref: ForwardedRef<HTMLDivElement>,
+  } & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     // focusPath,
     // level = 0,
     // onBlur,
@@ -92,4 +91,4 @@ export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithD
       </div>
     </>
   )
-})
+}

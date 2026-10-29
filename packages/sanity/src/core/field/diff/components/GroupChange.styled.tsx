@@ -7,9 +7,9 @@ export const ChangeListWrapper = styled.div`
 `
 
 export const GroupChangeContainer = styled.div`
-  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
-  --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1])};
-  --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};
+  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+  --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+  --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 
   position: relative;
   padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);

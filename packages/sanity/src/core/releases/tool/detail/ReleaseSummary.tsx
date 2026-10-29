@@ -1,18 +1,24 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {Text, Container, Flex, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {DocumentTable} from '../components/Table/DocumentTable'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
@@ -66,7 +72,25 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
+  // Behind beta.variants: adopt the shared three-zone DocumentTable (command-lane search + filter
+  // tabs). Otherwise keep the current table (search in the column header). No user-facing change to
+  // production Releases until the flag is on.
+  const {beta} = useWorkspace()
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
+  // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
+
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+
+  const isCardinalityOne = isCardinalityOneRelease(release)
+
+  // Rows of a cardinality-one release are scheduled drafts, and that plugin resolves a different
+  // action list, so the row menu has to ask about the same version type the footer does.
+  const rowVersionType = getDocumentVersionType({
+    isScheduledDraft: isCardinalityOne,
+    isVersionDocument: true,
+  })
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
@@ -74,14 +98,27 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!isBundleDocumentRow(rowProps.datum)) return null
       if (rowProps.datum.isPending) return null
 
-      return <DocumentActions document={rowProps.datum} releaseTitle={release.metadata.title} />
+      return (
+        <DocumentActions
+          document={rowProps.datum}
+          releaseId={releaseId}
+          releaseTitle={release.metadata.title}
+          versionType={rowVersionType}
+        />
+      )
     },
-    [release.metadata.title, release.state],
+    [release.metadata.title, release.state, releaseId, rowVersionType],
   )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release._id, release.state, t),
-    [release._id, release.state, t],
+    () =>
+      getDocumentTableColumnDefs(release._id, release.state, t, {
+        searchInCommandLane: variantsEnabled,
+        variantsById: variantsEnabled ? variantsById : undefined,
+        variantsLoading: variantsEnabled ? variantsLoading : false,
+        variantsEnabled,
+      }),
+    [release._id, release.state, t, variantsEnabled, variantsById, variantsLoading],
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
@@ -161,10 +198,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
     if (documentsNoLongerPending.length)
       // cleanup all resolved added documents
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setPendingAddedDocument((prev) =>
         prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documents, pendingAddedDocument, t, toast])
 
   const tableData = useMemo(
@@ -172,74 +210,143 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
-  const isCardinalityOne = isCardinalityOneRelease(release)
+  // In the DocumentTable (variants-enabled) shape, free-text search is owned by the table; the
+  // caller pre-filters by the active tab and passes those rows in.
+  const filterTabRows = useMemo(
+    () => tableData.filter((doc) => documentMatchesFilter(doc, activeFilter)),
+    [tableData, activeFilter],
+  )
+
   const hasNoDocuments = !isLoading && documents.length === 0
 
   if (isCardinalityOne && hasNoDocuments) {
     return (
       <Flex
-        direction="column"
-        align="center"
-        justify="center"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
         padding={5}
         style={FULL_HEIGHT_STYLE}
         data-testid="cardinality-one-empty-state"
       >
-        <Stack space={3} style={{textAlign: 'center', maxWidth: '300px'}}>
-          <Text size={1} weight="semibold">
+        <VStack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {t('summary.no-documents-cardinality-one.title')}
           </Text>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('summary.no-documents-cardinality-one.description')}
           </Text>
-        </Stack>
+        </VStack>
       </Flex>
     )
   }
 
-  return (
-    <Flex direction="column" style={FULL_HEIGHT_STYLE}>
-      <ReleaseDocumentFilterTabs
-        documents={tableData}
-        releaseState={release.state}
-        isLoading={isLoading}
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
-      <Card
-        ref={setScrollContainerRef}
-        data-testid="document-table-card"
-        flex={1}
-        borderTop
-        style={SCROLL_CONTAINER_STYLE}
-      >
-        <div style={FIT_CONTENT_STYLE}>
-          <Table<DocumentInReleaseDetail>
-            loading={isLoading}
-            data={tableData}
-            emptyState={t('summary.no-documents')}
-            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            rowId="document._id"
-            columnDefs={documentTableColumnDefs}
-            rowActions={renderRowActions}
-            searchFilter={filterRows}
-            scrollContainerRef={scrollContainerRef}
-            defaultSort={{column: 'search', direction: 'asc'}}
-          />
-        </div>
+  // Old (non-variant) path: Add-document lives at the end of the list.
+  const addDocumentFooter = release.state === 'active' && (
+    <Container size={3}>
+      <Card padding={3}>
+        <Button
+          icon={AddIcon}
+          disabled={isLoading}
+          mode="bleed"
+          onClick={handleAddDocumentClick}
+          text={t('action.add-document')}
+        />
       </Card>
-      {release.state === 'active' && (
-        <Container width={3}>
-          <Card padding={3}>
-            <Button
-              icon={AddIcon}
-              disabled={isLoading}
-              mode="bleed"
-              onClick={handleAddDocumentClick}
-              text={t('action.add-document')}
-            />
+    </Container>
+  )
+
+  // New (DocumentTable) path: one action lane. Activity + Share (icons) sit alongside Add document
+  // (the labeled primary), so every "do something" control lives together at the right of the lane
+  // instead of being scattered into the header.
+  const addDocumentButton = release.state === 'active' && (
+    <Button
+      disabled={isLoading}
+      icon={AddIcon}
+      mode="ghost"
+      onClick={handleAddDocumentClick}
+      text={t('action.add-document')}
+    />
+  )
+  // The command lane hosts table operations only (Add document + search). Release-level actions
+  // (Copy, Activity) live in the always-rendered header so they stay reachable when the table is
+  // loading, errored, or an empty cardinality-one release and this lane is not mounted.
+  const commandLaneActions = addDocumentButton || undefined
+
+  // ReleaseDocumentFilterTabs renders nothing for archived/published releases or an empty
+  // (non-loading) document set. Passing the element unconditionally would still read as "tabs
+  // present" to DocumentTable, pinning search to a fixed width and stranding an empty left gutter.
+  // Gate it here so the table falls back to a full-width search lane when there are no tabs to show.
+  const showFilterTabs =
+    release.state !== 'archived' &&
+    release.state !== 'published' &&
+    (isLoading || tableData.length > 0)
+
+  return (
+    <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
+      {variantsEnabled ? (
+        <DocumentTable<DocumentInReleaseDetail>
+          alwaysShowCommandLane
+          columnDefs={documentTableColumnDefs}
+          defaultSort={{column: 'search', direction: 'asc'}}
+          emptyState={t('summary.no-documents')}
+          commandLaneActions={commandLaneActions}
+          filterTabs={
+            showFilterTabs ? (
+              <ReleaseDocumentFilterTabs
+                activeFilter={activeFilter}
+                documents={tableData}
+                inline
+                isLoading={isLoading}
+                onFilterChange={setActiveFilter}
+                releaseState={release.state}
+              />
+            ) : undefined
+          }
+          getRowKey={(row) => row.document._id}
+          id="document-table-card"
+          loading={isLoading}
+          rowActions={renderRowActions}
+          rows={filterTabRows}
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="document._id"
+          searchPlaceholder={t('search-documents-placeholder')}
+          searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
+          searchTestId="release-documents-search"
+        />
+      ) : (
+        <>
+          <ReleaseDocumentFilterTabs
+            documents={tableData}
+            releaseState={release.state}
+            isLoading={isLoading}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+          />
+          <Card
+            ref={setScrollContainerRef}
+            data-testid="document-table-card"
+            flex={1}
+            borderTop
+            style={SCROLL_CONTAINER_STYLE}
+          >
+            <div style={FIT_CONTENT_STYLE}>
+              <Table<DocumentInReleaseDetail>
+                loading={isLoading}
+                data={tableData}
+                emptyState={t('summary.no-documents')}
+                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="document._id"
+                columnDefs={documentTableColumnDefs}
+                rowActions={renderRowActions}
+                searchFilter={filterRows}
+                scrollContainerRef={scrollContainerRef}
+                defaultSort={{column: 'search', direction: 'asc'}}
+              />
+            </div>
           </Card>
-        </Container>
+          {addDocumentFooter}
+        </>
       )}
       <AddDocumentSearch
         open={openAddDocumentDialog}

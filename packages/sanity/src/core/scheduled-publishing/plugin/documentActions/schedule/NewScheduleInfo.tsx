@@ -1,4 +1,5 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, Flex, VStack} from 'ui5'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
 import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
@@ -14,15 +15,17 @@ interface Props {
 
 export function NewScheduleInfo({id, schemaType}: Props) {
   return (
-    <Stack space={4}>
-      <Text size={1}>
+    <VStack gap={4}>
+      <Text size={1} as="div" trim={true}>
         Schedule this document to be published at any time in the future.
         <br />
         Any edits in the meantime will be added to the scheduled document.
       </Text>
-      <Text size={1}>Visit the Schedules page to get an overview of all schedules.</Text>
+      <Text size={1} as="div" trim={true}>
+        Visit the Schedules page to get an overview of all schedules.
+      </Text>
       <ValidationWarning id={id} type={schemaType} />
-    </Stack>
+    </VStack>
   )
 }
 
@@ -30,6 +33,9 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
   const schema = useSchemaType(type)
   const draftId = getDraftId(id)
   const publishedId = getPublishedId(id)
+  // No `getTargetScopeId(useTargetDocumentState())` here: scheduled publishing deliberately validates the
+  // explicit draft of the scheduled document, independent of the selected perspective.
+  // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
   const validationStatus = useValidationStatus(draftId, type, true)
   const {hasError} = useValidationState(validationStatus.validation)
 
@@ -39,13 +45,15 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
 
   return (
     <Card padding={2} radius={1} shadow={1} tone="critical">
-      <Flex gap={1} align="center">
+      <Flex gap={1} alignItems="center">
         <ValidationInfo
           markers={validationStatus.validation}
           type={schema}
           documentId={publishedId}
         />
-        <Text size={1}>{DOCUMENT_HAS_ERRORS_TEXT}</Text>
+        <Text size={1} as="div" trim={true} tone="critical">
+          {DOCUMENT_HAS_ERRORS_TEXT}
+        </Text>
       </Flex>
     </Card>
   )

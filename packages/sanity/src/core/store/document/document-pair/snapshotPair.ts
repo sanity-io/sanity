@@ -3,7 +3,8 @@ import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 
-import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
+import {type BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
+import {type MutationPayload, type SnapshotEvent} from '../buffered-doc/types'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {
   type IdPair,
@@ -32,7 +33,9 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
     snapshots$: pair.events.pipe(
       filter(isSnapshotEvent),
       map((event) => event.document),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     ),
 
@@ -93,7 +96,9 @@ export const snapshotPair = memoize(
           ...(version ? {version: withSnapshots(version)} : {}),
         }
       }),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   },

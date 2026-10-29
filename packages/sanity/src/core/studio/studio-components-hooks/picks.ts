@@ -1,11 +1,12 @@
-import {type ComponentType} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {
   type ActiveToolLayoutProps,
   type NavbarProps,
-  type PluginOptions,
   type ToolMenuProps,
-} from '../../config'
+} from '../../config/studio/types'
+import {type PluginOptions} from '../../config/types'
+import {warnIfSuspendsOnCriticalPath} from './warnIfSuspendsOnCriticalPath'
 
 export function pickToolMenuComponent(
   plugin: PluginOptions,
@@ -20,7 +21,15 @@ export function pickNavbarComponent(
 }
 
 export function pickLayoutComponent(plugin: PluginOptions): ComponentType {
-  return plugin.studio?.components?.layout as ComponentType
+  const layout = plugin.studio?.components?.layout
+  warnIfSuspendsOnCriticalPath('studio.components.layout', plugin.name, layout)
+  return layout as ComponentType
+}
+
+export function pickProviderComponent(plugin: PluginOptions): ComponentType<{children: ReactNode}> {
+  const provider = plugin.studio?.components?.provider
+  warnIfSuspendsOnCriticalPath('studio.components.provider', plugin.name, provider)
+  return provider as ComponentType<{children: ReactNode}>
 }
 
 export function pickActiveToolLayoutComponent(

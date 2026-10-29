@@ -4,11 +4,8 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {
-  type GeopointDefinition,
-  type GeopointOptions,
-  type StringDefinition,
-} from '../src/schema/definition'
+import {type GeopointDefinition, type GeopointOptions} from '../src/schema/definition/type/geopoint'
+import {type StringDefinition} from '../src/schema/definition/type/string'
 import {defineType} from '../src/schema/types'
 
 describe('geopoint types', () => {

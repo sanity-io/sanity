@@ -1,18 +1,27 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex, useToast} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, useCallback, useState} from 'react'
+import {Box, Flex} from 'ui5'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
-import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {
+  CreatedRelease,
+  type OriginInfo,
+  ReleaseDescriptionSet,
+} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
+import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
@@ -33,15 +42,23 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const invalid = getIsReleaseInvalid(release)
+  // True when the form is not mounted, so create is not waiting on a check that will never run.
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
+  const invalid = getIsReleaseInvalid(release) || !metadataValid
+  const handleValidityChange = useCallback((valid: boolean) => {
+    setMetadataValid(valid)
+  }, [])
 
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
+      if (!metadataValid) return
 
       setIsSubmitting(true)
       const inQuota = await releasePromise
@@ -58,6 +75,12 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         // Close the dialog after creating the release.
         onCancel()
         telemetry.log(CreatedRelease, {origin})
+        if (release.metadata?.description) {
+          telemetry.log(
+            ReleaseDescriptionSet,
+            getReleaseDescriptionTelemetry('create', release.metadata.description),
+          )
+        }
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
         await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -95,6 +118,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       toast,
       t,
       clearReleaseDataFromStorage,
+      metadataValid,
     ],
   )
 
@@ -122,9 +146,13 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       <Card padding={4} borderTop>
         <form onSubmit={handleOnSubmit}>
           <Box paddingBottom={4}>
-            <ReleaseForm onChange={handleOnChange} value={release} />
+            <ReleaseForm
+              onChange={handleOnChange}
+              onValidityChange={handleValidityChange}
+              value={release}
+            />
           </Box>
-          <Flex justify="flex-end" paddingTop={5}>
+          <Flex justifyContent="flex-end" paddingTop={5}>
             <Button
               size="large"
               disabled={isSubmitting || invalid}

@@ -2,10 +2,11 @@ import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {beforeEach, describe, expect, it, test} from 'vitest'
 
-import {pathToString} from '../../../field'
+import {pathToString} from '../../../field/paths/helpers'
 import {createPrepareFormState, type PrepareFormState} from '../formState'
-import {type FieldMember, type ObjectFormNode} from '../types'
 import {isObjectFormNode} from '../types/asserters'
+import {type FieldMember} from '../types/members'
+import {type ObjectFormNode} from '../types/nodes'
 import {DEFAULT_PROPS} from './shared'
 
 type CollapsibleOptions = {
@@ -96,6 +97,7 @@ test("doesn't make primitive fields collapsed even if they are configured to be"
     numberField: {collapsed: true},
     booleanField: {collapsed: true},
   })
+  // @ts-expect-error -- pre-existing, fix later
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
@@ -124,6 +126,7 @@ describe('collapsible object fields', () => {
     const bookType = getBookType({
       objectField: {collapsed: true},
     })
+    // @ts-expect-error -- pre-existing, fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
@@ -144,6 +147,7 @@ describe('collapsible object fields', () => {
     const bookType = getBookType({
       objectField: {collapsible: true, collapsed: false},
     })
+    // @ts-expect-error -- pre-existing, fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
@@ -166,6 +170,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
+      // @ts-expect-error -- pre-existing, fix later
       value: {_id: 'foo', _type: 'book'},
     })
 
@@ -187,6 +192,7 @@ describe('collapsible object fields', () => {
   })
   it('supports overriding collapsible behavior at nesting level 3 or deeper', () => {
     const bookType = getBookType({deep: {collapsible: false}})
+    // @ts-expect-error -- pre-existing, fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,

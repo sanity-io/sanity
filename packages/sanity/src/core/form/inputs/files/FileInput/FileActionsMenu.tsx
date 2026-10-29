@@ -1,6 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -35,7 +36,7 @@ export function FileActionsMenu(props: Props) {
   } = props
 
   return (
-    <Flex wrap="nowrap" justify="space-between" align="center">
+    <Flex flexWrap="nowrap" justifyContent="space-between" alignItems="center">
       <Card
         as={muted || disabled ? undefined : 'button'}
         radius={2}
@@ -45,31 +46,31 @@ export function FileActionsMenu(props: Props) {
         flex={1}
       >
         {/* todo: consider replacing with <SanityDefaultPreview> */}
-        <Flex wrap="nowrap" align="center">
+        <Flex flexWrap="nowrap" alignItems="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
-            <Text muted={muted}>
-              <BinaryDocumentIcon />
-            </Text>
+            <Icon muted={muted} icon={BinaryDocumentIcon} style={{margin: '-0.4375rem'}} />
           </Card>
-          <Stack flex={1} space={2} marginLeft={3}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
             <Text
               size={1}
-              textOverflow="ellipsis"
+              truncate={1}
               muted={muted}
               data-testid="file-name"
               weight="medium"
+              as="div"
+              trim={true}
             >
               {originalFilename}
             </Text>
-            <Text size={1} muted data-testid="file-size">
+            <Text size={1} muted data-testid="file-size" as="div" trim={true}>
               {formatBytes(size)}
             </Text>
-          </Stack>
+          </Flex>
         </Flex>
       </Card>
 
       <Box padding={2}>
-        <Flex justify="center" gap={2}>
+        <Flex justifyContent="center" gap={2}>
           {accessPolicy === 'private' && <AccessPolicyBadge />}
           <OptionsMenuPopover
             // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal

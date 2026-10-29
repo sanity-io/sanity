@@ -137,7 +137,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type ObjectDiff} from '../../field'
+import {type ObjectDiff} from '../../field/types'
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 
 /**
@@ -213,6 +213,20 @@ export const isUnscheduleDocumentVersionEvent = (
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is DeleteDocumentGroupEvent => event.type === 'deleteDocumentGroup'
+
+/**
+ * Discard of a published document's draft emits `deleteDocumentVersion`.
+ * Deleting the document group (or the last remaining draft, per the events
+ * lifecycle docs) emits `deleteDocumentGroup`. Neither is selectable in Review
+ * Changes; treat both as a terminal event for the live revision.
+ *
+ * @hidden
+ * @beta
+ */
+export const isNonSelectableTerminalEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is DeleteDocumentVersionEvent | DeleteDocumentGroupEvent =>
+  isDeleteDocumentVersionEvent(event) || isDeleteDocumentGroupEvent(event)
 
 /**
  * @hidden
@@ -324,7 +338,9 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
   contributors?: string[]
 
   /**
-   * This is added client side to enhance the UI.
+   * @deprecated No longer populated by the events store — resolve the release from the
+   * releases store (`useAllReleases`) using `event.releaseId` instead. Will be removed in the
+   * next major.
    */
   release?: ReleaseDocument | {_id: string; metadata?: undefined}
 
@@ -433,6 +449,10 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   documentId: string
   // Given this event could be a result of multiple edits, we could have more than one author.
   contributors: string[]
+  /**
+   * @deprecated No longer populated by the events store. Resolve membership from the version document's
+   * `_system.release` instead. Will be removed in the next major.
+   */
   releaseId?: string
   /**
    * One edit event could contain multiple transactions that are merged together.
@@ -488,3 +508,26 @@ export interface EventsStore {
  * @internal
  **/
 export type DocumentVersionEventType = DocumentGroupEvent['type']
+
+/**
+ * Shape of the accumulated events state emitted by the events observable pipeline
+ * (see `getInitialFetchEvents` and `createEventsObservable`).
+ * @internal
+ */
+export interface EventsObservableValue {
+  events: DocumentGroupEvent[]
+  nextCursor: string
+  loading: boolean
+  error: null | Error
+}
+
+/**
+ * Initial (loading) state of the events observable pipeline.
+ * @internal
+ */
+export const INITIAL_EVENTS_VALUE: EventsObservableValue = {
+  events: [],
+  nextCursor: '',
+  loading: true,
+  error: null,
+}

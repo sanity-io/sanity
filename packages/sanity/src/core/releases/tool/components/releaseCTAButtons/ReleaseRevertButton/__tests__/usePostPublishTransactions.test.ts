@@ -28,6 +28,7 @@ describe('usePostPublishTransactions', () => {
 
   const mockClient = {getUrl: vi.fn(), config: vi.fn()}
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockUseClient = useClient as Mock
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 
@@ -53,6 +54,7 @@ describe('usePostPublishTransactions', () => {
   ] as TransactionLogEventWithEffects[]
 
   it('should return null initially', () => {
+    // @ts-expect-error -- pre-existing, fix later
     mockGetTransactionsLogs.mockResolvedValue(undefined)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -67,6 +69,7 @@ describe('usePostPublishTransactions', () => {
   })
 
   it('should call getTransactionsLogs with the correct params', async () => {
+    // @ts-expect-error -- pre-existing, fix later
     mockGetTransactionsLogs.mockResolvedValue(mockTransactionLogs)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -82,6 +85,7 @@ describe('usePostPublishTransactions', () => {
   })
 
   it('should return true if there are post-publish transactions', async () => {
+    // @ts-expect-error -- pre-existing, fix later
     mockGetTransactionsLogs.mockResolvedValue(mockTransactionLogs)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -93,6 +97,7 @@ describe('usePostPublishTransactions', () => {
 
   it('should return false if there are no post-publish transactions', async () => {
     mockGetTransactionsLogs.mockResolvedValue([
+      // @ts-expect-error -- pre-existing, fix later
       {
         id: 'trans1',
         author: 'author1',

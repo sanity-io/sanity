@@ -1,30 +1,16 @@
-import {Grid, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {useElementSize} from '@sanity/ui'
+import {type ReactNode, type Ref, useCallback, useState} from 'react'
+import {Grid} from 'ui5'
 
-const NARROW_LAYOUT = css`
-  grid-template-columns: minmax(0px, 1fr);
-`
+import {root} from './AutocompleteContainer.css'
 
-const WIDE_LAYOUT = css`
-  grid-template-columns: 1fr min-content;
-`
-
-const Root = styled(Grid)<{$narrow: boolean}>((props: {$narrow: boolean}) =>
-  props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT,
-)
-
-export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
-  props: {
-    children: ReactNode
-  },
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function AutocompleteContainer(props: {children: ReactNode; ref?: Ref<HTMLDivElement>}) {
+  const {children, ref: forwardedRef} = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const handleNewRef = useCallback(
     (element: HTMLDivElement) => {
-      // there's a bit of "double bookkeeping" here. since useElementRect needs to re-run whenever the ref updates,
+      // there's a bit of "double bookkeeping" here. since useElementSize needs to re-run whenever the ref updates,
       // and thus we need to keep it in the state
       setForwardedRef(forwardedRef, element)
       setRootElement(element)
@@ -32,16 +18,17 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
     [forwardedRef],
   )
 
-  const inputWrapperRect = useElementRect(rootElement)
+  const inputWrapperSize = useElementSize(rootElement)
+  const narrow = (inputWrapperSize?.border.width || 480) < 480
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 480) < 480}>
-      {props.children}
-    </Root>
+    <Grid ref={handleNewRef} gap={1} className={narrow ? root.narrow : root.wide}>
+      {children}
+    </Grid>
   )
-})
+}
 
-function setForwardedRef<T>(ref: ForwardedRef<T>, instance: T) {
+function setForwardedRef<T>(ref: Ref<T> | undefined, instance: T) {
   if (typeof ref === 'function') {
     ref(instance)
   } else if (ref) {

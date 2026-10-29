@@ -12,15 +12,16 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
+import {type Intent} from './structureBuilder/Intent'
+import {type ListItemCount, type ListItemDisplayOptions} from './structureBuilder/ListItem'
+import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
 import {
   type DefaultDocumentNodeResolver,
-  type Intent,
-  type MenuItem as StructureToolMenuItem,
   type StructureBuilder,
   type StructureContext,
   type UserComponent,
   type View,
-} from './structureBuilder'
+} from './structureBuilder/types'
 
 /** @internal */
 export interface StructureToolFeatures {
@@ -68,6 +69,15 @@ export interface StructureResolverContext extends ConfigContext {
    * See {@link PerspectiveStack}
    */
   perspectiveStack: PerspectiveStack
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected.
+   * It can be used as the variant param in the client, alongside `perspectiveStack`, to get the
+   * view of the documents as seen through that variant.
+   *
+   * Always provided by the Studio. Declared optional so that structure resolvers written before
+   * variants existed keep type checking when they construct this context themselves.
+   */
+  selectedVariantName?: string | undefined
 }
 
 /**
@@ -157,6 +167,33 @@ export interface StructureToolOptions {
    * The title that will be displayed for the tool. Defaults to Structure
    */
   title?: string
+  /**
+   * Keeps the navigation panes in place when a document is created from a pane
+   * that sits deeper than the intent matcher looks.
+   *
+   * The matcher only answers for the two outermost panes, and a
+   * `documentTypeList().child()` drops its intent handler entirely, so a
+   * "create" action offered by a deeper pane is handed to structure-wide intent
+   * resolution instead. Finding no match there, the studio replaces the whole
+   * pane path with a lone document editor, and the editor loses their place in
+   * the tree.
+   *
+   * With this enabled, a create action offered by one of the open panes opens
+   * the new document as that pane's child, the way opening an existing document
+   * from a list does: the navigation panes stay visible and collapse when there
+   * is not enough room.
+   *
+   * Only create actions offered by a pane that is currently open are affected,
+   * matched on the template and its parameters. Anything the structure search
+   * has to find is untouched and still jumps to the matching location: deep
+   * links, intents from other tools, and create actions for a type no open pane
+   * offers. Note that a pane offering the requested action counts even when the
+   * action was triggered elsewhere, so the navbar's "create new document" opens
+   * in an open list pane for that type rather than navigating to another one.
+   *
+   * @beta
+   */
+  keepPanesOnCreate?: boolean
 }
 
 /**
@@ -292,6 +329,9 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
   // component: React.ComponentType<Props> | React.ReactNode
 }
 
@@ -327,6 +367,9 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
   suppressRestoreDefaultMenuItems?: boolean
   schemaTypeName: string
   source?: string
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
 }
 
 /** @internal */
@@ -341,9 +384,11 @@ export interface PaneListItem<TParams = unknown> {
   title: string
   i18n?: I18nTextRecord<'title'>
   icon?: React.ComponentType | false
-  displayOptions?: {showIcon?: boolean}
+  displayOptions?: ListItemDisplayOptions
   action?: (t: TParams) => unknown
   params?: TParams
+  /** Document schema type to show a live count for. See {@link ListItemCount} */
+  count?: ListItemCount
 }
 
 /** @internal */
@@ -366,6 +411,9 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   items?: Array<PaneListItem | PaneListItemDivider>
   // TODO: mark as unstable or remove
   source?: string
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
 }
 
 /** @internal */

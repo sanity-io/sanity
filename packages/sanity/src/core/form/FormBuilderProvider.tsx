@@ -2,29 +2,32 @@ import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/t
 import {type ReactNode, useMemo} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
 
-import {type DocumentFieldAction, type Source} from '../config'
-import {type FormNodePresence} from '../presence'
-import {EMPTY_ARRAY} from '../util'
+import {type DocumentFieldAction} from '../config/document/fieldActions/types'
+import {type Source} from '../config/types'
+import {type FormNodePresence} from '../presence/types'
+import {EMPTY_ARRAY} from '../util/empty'
 import {DocumentIdProvider} from './contexts/DocumentIdProvider'
-import {HoveredFieldProvider} from './field'
+import {HoveredFieldProvider} from './field/HoveredFieldProvider'
 import {type FormBuilderContextValue} from './FormBuilderContext'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
-import {type PatchChannel, type PatchEvent} from './patch'
-import {type FormFieldGroup, type StateTree} from './store'
+import {type PatchChannel} from './patch/PatchChannel'
+import {type PatchEvent} from './patch/PatchEvent'
+import {type FormFieldGroup} from './store/types/fieldGroup'
+import {type StateTree} from './store/types/state'
 import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
+import {type FormBuilderFilterFieldFn} from './types/_transitional'
 import {
-  type FormBuilderFilterFieldFn,
   type RenderAnnotationCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderItemCallback,
   type RenderPreviewCallback,
-} from './types'
+} from './types/renderCallback'
 
 export interface FormBuilderProviderProps {
   /** @internal */
@@ -39,6 +42,7 @@ export interface FormBuilderProviderProps {
   children?: ReactNode
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
+  documentId?: string
   file: Source['form']['file']
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
@@ -88,6 +92,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     children,
     collapsedFieldSets,
     collapsedPaths,
+    documentId,
     file,
     filterField,
     focusPath,
@@ -208,7 +213,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         onSetPathCollapsed={onSetPathCollapsed}
         onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       >
-        <DocumentIdProvider id={id}>
+        <DocumentIdProvider id={documentId ?? id}>
           <PresenceProvider presence={presence}>
             <ValidationProvider validation={validation}>
               <HoveredFieldProvider>{children}</HoveredFieldProvider>

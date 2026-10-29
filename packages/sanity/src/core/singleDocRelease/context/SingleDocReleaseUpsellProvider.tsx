@@ -1,11 +1,11 @@
-import {useContext} from 'react'
+import {Suspense, useContext} from 'react'
 import {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
 } from 'sanity/_singletons'
 
-import {getDialogPropsFromContext, useUpsellContext} from '../../hooks/useUpsellContext'
-import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
+import {useUpsellContext} from '../../hooks/useUpsellContext'
+import {UpsellContextDialog} from '../../studio/upsell/UpsellContextDialog'
 
 /**
  * @beta
@@ -19,7 +19,9 @@ export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode
   return (
     <SingleDocReleaseUpsellContext.Provider value={contextValue}>
       {props.children}
-      <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
+      <Suspense>
+        <UpsellContextDialog contextValue={contextValue} />
+      </Suspense>
     </SingleDocReleaseUpsellContext.Provider>
   )
 }

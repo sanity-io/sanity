@@ -1,0 +1,63 @@
+import {Card, Heading} from '@sanity/ui'
+import {Text, Flex, Box, VStack} from 'ui5'
+
+import {useQuery} from './loader'
+
+export function LongList(): React.JSX.Element {
+  const {data, loading, error} = useQuery<{
+    _id: string
+    _type: string
+    title: string | null
+    objectArrayWithPrefinedStringField: Array<{
+      _key: string
+      _type: string
+      fieldA: string | null
+      fieldB: string | null
+      fieldC: string | null
+    }>
+  } | null>(
+    /* groq */ `*[_type == "arraysTest" && count(objectArrayWithPrefinedStringField) >= 20][0]{_id, _type, title, objectArrayWithPrefinedStringField[]{_key, _type, fieldA, fieldB, fieldC}}`,
+  )
+
+  if (error) {
+    throw error
+  }
+
+  if (loading) {
+    return <p>Loading...</p>
+  }
+
+  if (!data) {
+    return <p>No data</p>
+  }
+
+  return (
+    <Flex padding={4} gap={4} flexDirection="column">
+      <Box>
+        <Heading as="h1" size={1}>
+          {data.title}
+        </Heading>
+      </Box>
+      {data.objectArrayWithPrefinedStringField.map((item, i) => (
+        <Card key={item._key} padding={4} shadow={2} radius={2}>
+          <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
+            <VStack gap={2}>
+              <Text as="div" trim={true}>
+                {item.fieldA || 'N/A'}
+              </Text>
+              <Text as="div" trim={true}>
+                {item.fieldB || 'N/A'}
+              </Text>
+              <Text as="div" trim={true}>
+                {item.fieldC || 'N/A'}
+              </Text>
+            </VStack>
+            <Text size={1} as="div" trim={true}>
+              {i + 1}
+            </Text>
+          </Flex>
+        </Card>
+      ))}
+    </Flex>
+  )
+}

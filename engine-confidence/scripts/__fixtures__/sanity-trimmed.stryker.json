@@ -1,0 +1,541 @@
+{
+  "schemaVersion": "1.0",
+  "projectRoot": "/repo/packages/sanity",
+  "files": {
+    "src/core/form/patch/PatchChannel.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 76
+            },
+            "start": {
+              "column": 52,
+              "line": 54
+            }
+          }
+        },
+        {
+          "id": "1",
+          "mutatorName": "ArrayDeclaration",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 48,
+              "line": 55
+            },
+            "start": {
+              "column": 46,
+              "line": 55
+            }
+          }
+        },
+        {
+          "id": "2",
+          "mutatorName": "ObjectLiteral",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 75
+            },
+            "start": {
+              "column": 10,
+              "line": 57
+            }
+          }
+        },
+        {
+          "id": "3",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 62
+            },
+            "start": {
+              "column": 28,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "4",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 61
+            },
+            "start": {
+              "column": 46,
+              "line": 59
+            }
+          }
+        },
+        {
+          "id": "5",
+          "mutatorName": "CallExpression",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 24,
+              "line": 60
+            },
+            "start": {
+              "column": 9,
+              "line": 60
+            }
+          }
+        },
+        {
+          "id": "6",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 74
+            },
+            "start": {
+              "column": 27,
+              "line": 64
+            }
+          }
+        },
+        {
+          "id": "7",
+          "mutatorName": "CallExpression",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 36,
+              "line": 65
+            },
+            "start": {
+              "column": 7,
+              "line": 65
+            }
+          }
+        },
+        {
+          "id": "8",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 73
+            },
+            "start": {
+              "column": 20,
+              "line": 67
+            }
+          }
+        },
+        {
+          "id": "9",
+          "mutatorName": "ConditionalExpression",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 70
+            },
+            "start": {
+              "column": 13,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "10",
+          "mutatorName": "ConditionalExpression",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 70
+            },
+            "start": {
+              "column": 13,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "11",
+          "mutatorName": "EqualityOperator",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 70
+            },
+            "start": {
+              "column": 13,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "12",
+          "mutatorName": "EqualityOperator",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 70
+            },
+            "start": {
+              "column": 13,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "13",
+          "mutatorName": "UnaryOperator",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 70
+            },
+            "start": {
+              "column": 19,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "14",
+          "mutatorName": "BlockStatement",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 72
+            },
+            "start": {
+              "column": 23,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "15",
+          "mutatorName": "CallExpression",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 38,
+              "line": 71
+            },
+            "start": {
+              "column": 11,
+              "line": 71
+            }
+          }
+        }
+      ]
+    },
+    "src/core/store/document/document-pair/memoizedPair.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "1010",
+          "mutatorName": "ArrowFunction",
+          "status": "NoCoverage",
+          "static": false,
+          "coveredBy": [],
+          "location": {
+            "end": {
+              "column": 55,
+              "line": 37
+            },
+            "start": {
+              "column": 44,
+              "line": 37
+            }
+          }
+        },
+        {
+          "id": "1004",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 46
+            },
+            "start": {
+              "column": 26,
+              "line": 28
+            }
+          }
+        },
+        {
+          "id": "1005",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 39
+            },
+            "start": {
+              "column": 49,
+              "line": 29
+            }
+          }
+        },
+        {
+          "id": "1006",
+          "mutatorName": "ArrowFunction",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 52,
+              "line": 35
+            },
+            "start": {
+              "column": 41,
+              "line": 35
+            }
+          }
+        },
+        {
+          "id": "1007",
+          "mutatorName": "ArrowFunction",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 56,
+              "line": 36
+            },
+            "start": {
+              "column": 45,
+              "line": 36
+            }
+          }
+        },
+        {
+          "id": "1009",
+          "mutatorName": "OptionalChaining",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 29,
+              "line": 37
+            },
+            "start": {
+              "column": 9,
+              "line": 37
+            }
+          }
+        },
+        {
+          "id": "1008",
+          "mutatorName": "LogicalOperator",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 37
+            },
+            "start": {
+              "column": 9,
+              "line": 37
+            }
+          }
+        },
+        {
+          "id": "1011",
+          "mutatorName": "ObjectLiteral",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 44
+            },
+            "start": {
+              "column": 13,
+              "line": 40
+            }
+          }
+        },
+        {
+          "id": "1012",
+          "mutatorName": "ArrowFunction",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 46,
+              "line": 41
+            },
+            "start": {
+              "column": 20,
+              "line": 41
+            }
+          }
+        },
+        {
+          "id": "1013",
+          "mutatorName": "BooleanLiteral",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 30,
+              "line": 42
+            },
+            "start": {
+              "column": 26,
+              "line": 42
+            }
+          }
+        },
+        {
+          "id": "1014",
+          "mutatorName": "ArrowFunction",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["239"],
+          "location": {
+            "end": {
+              "column": 63,
+              "line": 43
+            },
+            "start": {
+              "column": 30,
+              "line": 43
+            }
+          }
+        }
+      ]
+    }
+  },
+  "testFiles": {
+    "src/core/store/document/hooks/__tests__/useDocumentValuesRenderLoop.repro.test.tsx": {
+      "tests": [
+        {
+          "id": "0",
+          "name": "useDocumentValues render stability > settles despite an inline paths array (regression: render loop)"
+        },
+        {
+          "id": "1",
+          "name": "useDocumentValues render stability > settles with a stable paths array"
+        },
+        {
+          "id": "2",
+          "name": "useDocumentValues render stability > still propagates value updates from the store"
+        },
+        {
+          "id": "3",
+          "name": "useDocumentValues render stability > rebuilds the observable when the path contents actually change"
+        }
+      ],
+      "source": "/** Uses a raw root because `act` masks the scheduling that caused the original loop. */\nimport {createRoot, type Root} from 'react-dom/client'\nimport {BehaviorSubject} from 'rxjs'\nimport {map} from 'rxjs/operators'\nimport {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'\n\nimport {useDocumentValues} from '../useDocumentValues'\n\ndeclare global {\n  var IS_REACT_ACT_ENVIRONMENT: boolean | undefined\n}\n\nconst cachedValue$ = new BehaviorSubject<Record<string, unknown>>({title: 'hello'})\n// Each call must return a new observable identity to reproduce the original bug.\nconst observePaths = vi.fn(() => cachedValue$.pipe(map((value) => value)))\nconst mockPreviewStore = {observePaths}\nvi.mock('../../../datastores', () => ({\n  useDocumentPreviewStore: () => mockPreviewStore,\n}))\n\nconst counters = {inline: 0, stable: 0}\n\nfunction InlineProbe() {\n  // oxlint-disable-next-line react/immutability -- deliberate render counter: this guard exists to make a loop measurable\n  counters.inline++\n  const {value} = useDocumentValues<{title?: string}>('doc-inline', ['title'])\n  return <div data-testid=\"inline\">{value?.title}</div>\n}\n\nconst STABLE_PATHS = ['title']\n\nfunction StableProbe() {\n  // oxlint-disable-next-line react/immutability -- deliberate render counter: this guard exists to make a loop measurable\n  counters.stable++\n  useDocumentValues('doc-stable', STABLE_PATHS)\n  return null\n}\n\nfunction PathsProbe(props: {paths: string[]}) {\n  useDocumentValues('doc-paths', props.paths)\n  return null\n}\n\nfunction sleep(ms: number) {\n  return new Promise((resolve) => {\n    setTimeout(resolve, ms)\n  })\n}\n\ndescribe('useDocumentValues render stability', () => {\n  let container: HTMLElement\n  let root: Root\n  let previousActEnvironment: boolean | undefined\n\n  beforeEach(() => {\n    counters.inline = 0\n    counters.stable = 0\n    observePaths.mockClear()\n    cachedValue$.next({title: 'hello'})\n    previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT\n    globalThis.IS_REACT_ACT_ENVIRONMENT = false\n    container = document.createElement('div')\n    document.body.appendChild(container)\n    root = createRoot(container)\n  })\n\n  afterEach(() => {\n    root.unmount()\n    container.remove()\n    globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment\n  })\n\n  it('settles despite an inline paths array (regression: render loop)', async () => {\n    root.render(<InlineProbe />)\n    await sleep(500)\n    expect(counters.inline).toBeLessThan(10)\n    // One observable for the one logical (id, paths) pair — not one per render\n    expect(observePaths).toHaveBeenCalledTimes(1)\n  })\n\n  it('settles with a stable paths array', async () => {\n    root.render(<StableProbe />)\n    await sleep(500)\n    expect(counters.stable).toBeLessThan(10)\n  })\n\n  it('still propagates value updates from the store', async () => {\n    root.render(<InlineProbe />)\n    await sleep(100)\n    expect(container.textContent).toBe('hello')\n    cachedValue$.next({title: 'updated'})\n    await sleep(100)\n    expect(container.textContent).toBe('updated')\n  })\n\n  it('rebuilds the observable when the path contents actually change', async () => {\n    root.render(<PathsProbe paths={['title']} />)\n    await sleep(100)\n    expect(observePaths).toHaveBeenCalledTimes(1)\n    // Same contents, new array identity: no rebuild\n    root.render(<PathsProbe paths={['title']} />)\n    await sleep(100)\n    expect(observePaths).toHaveBeenCalledTimes(1)\n    // Different contents: rebuild\n    root.render(<PathsProbe paths={['name']} />)\n    await sleep(100)\n    expect(observePaths).toHaveBeenCalledTimes(2)\n    expect(observePaths).toHaveBeenLastCalledWith({_type: 'reference', _ref: 'doc-paths'}, ['name'])\n  })\n})\n"
+    },
+    "src/core/store/document/hooks/__tests__/useDocumentType.test.tsx": {
+      "tests": [
+        {
+          "id": "4",
+          "name": "should return passed document type if already resolved"
+        },
+        {
+          "id": "5",
+          "name": "should resolve document type from API on undefined type (with loading state)"
+        },
+        {
+          "id": "6",
+          "name": "should return correct document type on document type transition"
+        },
+        {
+          "id": "7",
+          "name": "should return correct document type on document ID transition"
+        },
+        {
+          "id": "8",
+          "name": "should return correct document type when transitioning from undefined type to specified type"
+        },
+        {
+          "id": "9",
+          "name": "should return correct document type when transitioning from specified to undefined type"
+        },
+        {
+          "id": "10",
+          "name": "should cancel ongoing requests when transitioning document ID"
+        }
+      ],
+      "source": "import {type SanityClient} from '@sanity/client'\nimport {renderHook, waitFor} from '@testing-library/react'\nimport {asyncScheduler, defer, of} from 'rxjs'\nimport {delay, observeOn, tap} from 'rxjs/operators'\nimport {expect, test, vi} from 'vitest'\n\nimport {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'\nimport {createTestProvider} from '../../../../../../test/testUtils/TestProvider'\nimport {defineConfig} from '../../../../config/defineConfig'\nimport {useDocumentType} from '../useDocumentType'\n\nfunction createWrapperComponent(client: SanityClient) {\n  const config = defineConfig({\n    projectId: 'foo',\n    dataset: 'test',\n  })\n\n  return createTestProvider({\n    client,\n    config,\n  })\n}\n\ntest('should return passed document type if already resolved', async () => {\n  const client = createMockSanityClient()\n  const wrapper = await createWrapperComponent(client as any)\n\n  const {result} = renderHook(() => useDocumentType('grrm', 'author'), {wrapper})\n  expect(result.current).toEqual({isLoaded: true, documentType: 'author'})\n})\n\ntest('should resolve document type from API on undefined type (with loading state)', async () => {\n  const client = createMockSanityClient()\n  const response = defer(() => of('book').pipe(observeOn(asyncScheduler)))\n\n  client.observable.fetch = vi.fn(() => response)\n\n  const {result} = renderHook(() => useDocumentType('asoiaf-got', undefined), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n\n  await waitFor(() => {\n    expect(result.current).toEqual({isLoaded: true, documentType: 'book'})\n  })\n\n  expect(client.observable.fetch).toHaveBeenCalledTimes(1)\n})\n\ntest('should return correct document type on document type transition', async () => {\n  const client = createMockSanityClient()\n  client.observable.fetch = vi.fn<typeof client.observable.fetch>()\n\n  let documentType = 'book'\n\n  const {result, rerender} = renderHook(() => useDocumentType('abc123', documentType), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  // At this point, it is a book\n  expect(result.current).toEqual({isLoaded: true, documentType: 'book'})\n  expect(client.observable.fetch).not.toHaveBeenCalled()\n\n  // Now switch the document type variable to an author and rerender\n  documentType = 'author'\n  rerender()\n\n  // We should still not have triggered a request, since we explicitly passed it a type,\n  // but the _value_ should be different now\n  expect(client.observable.fetch).not.toHaveBeenCalled()\n  expect(result.current).toEqual({isLoaded: true, documentType: 'author'})\n})\n\ntest('should return correct document type on document ID transition', async () => {\n  const client = createMockSanityClient()\n\n  const responseGrrm = defer(() => of('author').pipe(observeOn(asyncScheduler)))\n  const responseGot = defer(() => of('book').pipe(observeOn(asyncScheduler)))\n\n  client.observable.fetch = (_query, params) =>\n    params.publishedId === 'grrm' ? responseGrrm : responseGot\n\n  let documentId = 'grrm'\n  const {result, rerender} = renderHook(() => useDocumentType(documentId, undefined), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  // First lookup (author)\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  await waitFor(() => expect(result.current).toEqual({isLoaded: true, documentType: 'author'}))\n\n  // Change to look up a book instead\n  documentId = 'agot'\n  rerender()\n\n  // Second lookup (book)\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  await waitFor(() => expect(result.current).toEqual({isLoaded: true, documentType: 'book'}))\n})\n\ntest('should return correct document type when transitioning from undefined type to specified type', async () => {\n  const client = createMockSanityClient()\n\n  const responseGrrm = defer(() => of('author').pipe(observeOn(asyncScheduler)))\n\n  client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)\n\n  let documentType: string | undefined = undefined\n\n  const {result, rerender} = renderHook(() => useDocumentType('grrm', documentType), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  // First lookup - undefined type specified, but is an author\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  await waitFor(() => expect(result.current).toEqual({isLoaded: true, documentType: 'author'}))\n  expect(client.observable.fetch).toHaveBeenCalled()\n\n  // Now lets say we for some reason decide that document type is something else\n  documentType = 'person'\n  rerender()\n\n  // We shouldn't need to look anything up, since the value is passed\n  expect(result.current).toEqual({isLoaded: true, documentType: 'person'})\n\n  // Should not have been called again on updated document type\n  expect(client.observable.fetch).toHaveBeenCalledTimes(1)\n})\n\ntest('should return correct document type when transitioning from specified to undefined type', async () => {\n  const client = createMockSanityClient()\n\n  const responseGrrm = defer(() => of('person').pipe(observeOn(asyncScheduler)))\n\n  client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)\n\n  let documentType: string | undefined = 'author'\n\n  const {result, rerender} = renderHook(() => useDocumentType('grrm', documentType), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  // First lookup - specified type, so is an author\n  expect(result.current).toEqual({isLoaded: true, documentType: 'author'})\n  expect(client.observable.fetch).not.toHaveBeenCalled()\n\n  // Now lets say we for some reason decide that we don't know the document type\n  documentType = undefined\n  rerender()\n\n  // We must look up the type, thus loading state\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  await waitFor(() => expect(result.current).toEqual({isLoaded: true, documentType: 'person'}))\n\n  // Should have been called only once (when transitioning)\n  expect(client.observable.fetch).toHaveBeenCalledTimes(1)\n})\n\ntest('should cancel ongoing requests when transitioning document ID', async () => {\n  const client = createMockSanityClient()\n\n  const hasResolvedFirst = vi.fn()\n  const responseDelayedGrrm = defer(() =>\n    of(['person']).pipe(observeOn(asyncScheduler), delay(5000), tap(hasResolvedFirst)),\n  )\n  const responseGot = defer(() => of('book').pipe(observeOn(asyncScheduler)))\n\n  client.observable.fetch = vi\n    .fn<typeof client.observable.fetch>()\n    .mockReturnValueOnce(responseDelayedGrrm)\n    .mockReturnValueOnce(responseGot)\n\n  let documentId = 'grrm'\n  const {result, rerender} = renderHook(() => useDocumentType(documentId, undefined), {\n    wrapper: await createWrapperComponent(client as any),\n  })\n\n  // First lookup - must be looked up\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  expect(client.observable.fetch).toHaveBeenCalled()\n\n  // Now, before the request has time to resolve, switch the ID\n  documentId = 'agot'\n  rerender()\n\n  // Should still be in loading state\n  expect(result.current).toEqual({isLoaded: false, documentType: undefined})\n  await waitFor(() => expect(result.current).toEqual({isLoaded: true, documentType: 'book'}))\n\n  // Should have been called twice (once for each document ID)\n  expect(client.observable.fetch).toHaveBeenCalledTimes(2)\n\n  // Should never have resolved the first one\n  expect(hasResolvedFirst).not.toHaveBeenCalled()\n})\n"
+    }
+  }
+}

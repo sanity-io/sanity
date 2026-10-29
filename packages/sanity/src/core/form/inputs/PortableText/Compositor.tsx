@@ -1,8 +1,12 @@
 import {
-  type BlockAnnotationRenderProps,
+  type AnnotationRenderProps,
   type BlockObjectRenderProps,
+  type DecoratorRenderProps,
+  defineAnnotation,
   defineBlockObject,
+  defineDecorator,
   defineInlineObject,
+  defineSpan,
   defineTextBlock,
   type EditorSelection,
   type HotkeyOptions,
@@ -12,6 +16,7 @@ import {
   type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
+  type SpanRenderProps,
   type TextBlockRenderProps,
   useEditor,
 } from '@portabletext/editor'
@@ -22,22 +27,26 @@ import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
   Portal,
   PortalProvider,
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {toString as pathToString} from '@sanity/util/paths'
+import {type ReactNode, Suspense, useCallback, useMemo, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
-import {ChangeIndicator} from '../../../changeIndicators'
-import {EMPTY_ARRAY} from '../../../util'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {PortalBoundaryProvider} from '../../../components/portalBoundary/PortalBoundaryProvider'
+import {usePortalBoundary} from '../../../components/portalBoundary/usePortalBoundary'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
-import {type RenderBlockActionsCallback} from '../../types/_transitional'
-import {type OnPasteFn} from '../../types/inputProps'
+import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
+import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
 import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
+import {BlockObjectFallback, TextBlockFallback} from './BlockFallback'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
@@ -50,9 +59,12 @@ import {BlockObject} from './object/BlockObject'
 import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
-import {TextBlock} from './text'
+import {Decorator} from './text/Decorator'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
+import {TextBlock} from './text/TextBlock'
+import {UnknownMarks, UnknownValue} from './text/UnknownValue'
+import {warnOnce} from './warnOnce'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -67,7 +79,9 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onToggleFullscreen: () => void
   path: Path
   rangeDecorations?: RangeDecoration[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
 }
 
@@ -112,6 +126,32 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
   const editor = useEditor()
+  const {t} = useTranslation()
+
+  // Tracks that an annotation object edit modal has been requested to open,
+  // but the form state doesn't reflect it as open yet. Inserting an annotation
+  // from the toolbar (or clicking "Edit" on an existing one) renders the
+  // annotated text as selected before `member.open` propagates, and without
+  // this signal the CombinedAnnotationPopover would flash in that window.
+  // The flag is set synchronously when the open is requested, and cleared by
+  // AnnotationObjectEditModal once the modal renders (or on item close).
+  const annotationOpeningRef = useRef(false)
+
+  const handleItemOpen = useCallback(
+    (itemPath: Path) => {
+      const relativePath = itemPath.slice(path.length)
+      if (relativePath.some((segment) => segment === 'markDefs')) {
+        annotationOpeningRef.current = true
+      }
+      onItemOpen(itemPath)
+    },
+    [onItemOpen, path],
+  )
+
+  const handleItemClose = useCallback(() => {
+    annotationOpeningRef.current = false
+    onItemClose()
+  }, [onItemClose])
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -132,6 +172,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
+  // In fullscreen the editor covers the pane's content area and its own scroll element is the
+  // region popovers that escape object modals must respect (below the fullscreen toolbar),
+  // so it replaces the pane's declared portal boundary while expanded.
+  const inheritedPortalBoundary = usePortalBoundary()
+  const portalBoundary = isFullscreen ? scrollElement : inheritedPortalBoundary
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -161,54 +206,125 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
       const block = node
       const fullyQualifiedPath = path.concat(blockPath)
+      // The position's sub-schema is the single source for resolving the
+      // block's vocabulary: `Style` and `ListItem` receive the resolved
+      // types instead of looking them up themselves, so the affordance and
+      // the rendering can never disagree (a merged-schema lookup could
+      // resolve a style the block's own sub-schema doesn't declare).
+      const subSchema = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        blockPath,
+      )
+      const styleSchemaType =
+        block.style !== undefined
+          ? subSchema.styles.find((style) => style.value === block.style)
+          : undefined
+      const listSchemaType =
+        block.listItem !== undefined
+          ? subSchema.lists.find((list) => list.value === block.listItem)
+          : undefined
+
       let inner = textBlockProps.children
       if (block.style !== undefined) {
         inner = (
-          <Style block={block} focused={blockFocused} selected={selected}>
+          <Style
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={styleSchemaType}
+            selected={selected}
+          >
             {inner}
           </Style>
         )
       }
       if (block.listItem !== undefined) {
         inner = (
-          <ListItem block={block} focused={blockFocused} selected={selected}>
+          <ListItem
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={listSchemaType}
+            selected={selected}
+          >
             {inner}
           </ListItem>
         )
       }
 
+      // One affordance per block, with the labels joined, so an
+      // unknown style and an unknown list type on the same block don't nest
+      // two bordered wrappers with two competing tooltips.
+      const unknownValueLabels: string[] = []
+      if (block.style !== undefined && styleSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for style: ${block.style} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(t('inputs.portable-text.unknown-value.style', {name: block.style}))
+      }
+      if (block.listItem !== undefined && listSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for list item: ${block.listItem} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(
+          t('inputs.portable-text.unknown-value.list-item', {name: block.listItem}),
+        )
+      }
+      if (unknownValueLabels.length > 0) {
+        inner = (
+          <UnknownValue block labels={unknownValueLabels}>
+            {inner}
+          </UnknownValue>
+        )
+      }
+
+      // One boundary per top-level block, inside the shell that carries the editor's element
+      // attributes: a lazy block, inline object or annotation component holds up this block only,
+      // and the rest of the document keeps rendering (and streaming in) around it.
       return (
         <TextBlockShell attributes={attributes} block={block} path={blockPath}>
           <BlockDropIndicator path={blockPath} edge="start" />
-          <TextBlock
-            floatingBoundary={floatingBoundary}
-            focused={blockFocused}
-            isFullscreen={isFullscreen}
-            onItemClose={onItemClose}
-            onItemOpen={onItemOpen}
-            onItemRemove={onItemRemove}
-            onPathFocus={onPathFocus}
-            path={fullyQualifiedPath}
-            readOnly={readOnly}
-            referenceBoundary={scrollElement}
-            renderAnnotation={renderAnnotation}
-            renderField={renderField}
-            renderInlineBlock={renderInlineBlock}
-            renderInput={renderInput}
-            renderItem={renderItem}
-            renderBlockActions={_renderBlockActions}
-            renderCustomMarkers={_renderCustomMarkers}
-            renderPreview={renderPreview}
-            renderBlock={renderBlock}
-            schemaType={schemaTypes.block}
-            selected={selected}
-            setElementRef={setElementRef}
-            value={block}
-            anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
-            relativePath={blockPath}
+          <Suspense
+            fallback={
+              <TextBlockFallback
+                hasBlockActions={Boolean(_renderBlockActions)}
+                isFullscreen={isFullscreen}
+                listItem={block.listItem}
+                nested={blockPath.length > 1}
+                style={block.style}
+              />
+            }
           >
-            {inner}
-          </TextBlock>
+            <TextBlock
+              floatingBoundary={floatingBoundary}
+              focused={blockFocused}
+              isFullscreen={isFullscreen}
+              listItem={listSchemaType !== undefined ? block.listItem : undefined}
+              onItemClose={handleItemClose}
+              onItemOpen={handleItemOpen}
+              onItemRemove={onItemRemove}
+              onPathFocus={onPathFocus}
+              path={fullyQualifiedPath}
+              readOnly={readOnly}
+              referenceBoundary={scrollElement}
+              renderAnnotation={renderAnnotation}
+              renderField={renderField}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={renderInput}
+              renderItem={renderItem}
+              renderBlockActions={_renderBlockActions}
+              renderCustomMarkers={_renderCustomMarkers}
+              renderPreview={renderPreview}
+              renderBlock={renderBlock}
+              schemaType={schemaTypes.block}
+              selected={selected}
+              setElementRef={setElementRef}
+              value={block}
+              anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
+              relativePath={blockPath}
+            >
+              {inner}
+            </TextBlock>
+          </Suspense>
           <BlockDropIndicator path={blockPath} edge="end" />
         </TextBlockShell>
       )
@@ -216,10 +332,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
+      editor,
       floatingBoundary,
       isFullscreen,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onItemRemove,
       onPathFocus,
       path,
@@ -232,8 +349,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       schemaTypes.block,
+      schemaTypes.portableText,
       scrollElement,
       setElementRef,
+      t,
     ],
   )
 
@@ -244,43 +363,55 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         blockPath,
-      ).blockObjects.find((t) => t.name === node._type)
+      ).blockObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // block-object type in it matches `node._type`.
         throw new Error(`Could not find Sanity schema type for block object: ${node._type}`)
       }
+      // Same per-block boundary as text blocks; the element attributes and the editor's void
+      // children stay mounted outside it.
       return (
         <div {...attributes}>
           <BlockDropIndicator path={blockPath} edge="start" />
           {blockProps.children}
           <div contentEditable={false} draggable={!readOnly}>
-            <BlockObject
-              floatingBoundary={floatingBoundary}
-              focused={blockFocused}
-              isFullscreen={isFullscreen}
-              onItemClose={onItemClose}
-              onItemOpen={onItemOpen}
-              onItemRemove={onItemRemove}
-              onPathFocus={onPathFocus}
-              path={path.concat(blockPath)}
-              readOnly={readOnly}
-              referenceBoundary={scrollElement}
-              relativePath={blockPath}
-              renderAnnotation={renderAnnotation}
-              renderBlock={renderBlock}
-              renderBlockActions={_renderBlockActions}
-              renderCustomMarkers={_renderCustomMarkers}
-              renderField={renderField}
-              renderInlineBlock={renderInlineBlock}
-              renderInput={renderInput}
-              renderItem={renderItem}
-              renderPreview={renderPreview}
-              schemaType={sanitySchemaType}
-              selected={selected}
-              setElementRef={setElementRef}
-              value={node}
-            />
+            <Suspense
+              fallback={
+                <BlockObjectFallback
+                  hasBlockActions={Boolean(_renderBlockActions)}
+                  isFullscreen={isFullscreen}
+                  nested={blockPath.length > 1}
+                />
+              }
+            >
+              <BlockObject
+                floatingBoundary={floatingBoundary}
+                focused={blockFocused}
+                isFullscreen={isFullscreen}
+                onItemClose={handleItemClose}
+                onItemOpen={handleItemOpen}
+                onItemRemove={onItemRemove}
+                onPathFocus={onPathFocus}
+                path={path.concat(blockPath)}
+                readOnly={readOnly}
+                referenceBoundary={scrollElement}
+                relativePath={blockPath}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
+                renderBlockActions={_renderBlockActions}
+                renderCustomMarkers={_renderCustomMarkers}
+                renderField={renderField}
+                renderInlineBlock={renderInlineBlock}
+                renderInput={renderInput}
+                renderItem={renderItem}
+                renderPreview={renderPreview}
+                schemaType={sanitySchemaType}
+                selected={selected}
+                setElementRef={setElementRef}
+                value={node}
+              />
+            </Suspense>
           </div>
           <BlockDropIndicator path={blockPath} edge="end" />
         </div>
@@ -291,8 +422,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       scrollElement,
       schemaTypes.portableText,
       isFullscreen,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onItemRemove,
       onPathFocus,
       path,
@@ -318,7 +449,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         childPath,
-      ).inlineObjects.find((t) => t.name === node._type)
+      ).inlineObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // inline-object type in it matches `node._type`.
@@ -331,8 +462,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             <InlineObject
               floatingBoundary={floatingBoundary}
               focused={childFocused}
-              onItemClose={onItemClose}
-              onItemOpen={onItemOpen}
+              onItemClose={handleItemClose}
+              onItemOpen={handleItemOpen}
               onPathFocus={onPathFocus}
               path={path.concat(childPath)}
               readOnly={readOnly}
@@ -358,12 +489,102 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       schemaTypes.portableText,
       floatingBoundary,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onPathFocus,
       path,
       readOnly,
       scrollElement,
+      renderAnnotation,
+      renderBlock,
+      renderCustomMarkers,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+      setElementRef,
+      editor,
+    ],
+  )
+
+  const renderSpan = useCallback(
+    (spanProps: SpanRenderProps) => <UnknownMarks {...spanProps} portableTextPath={path} />,
+    [path],
+  )
+
+  const renderDecoratorNode = useCallback(
+    (decoratorProps: DecoratorRenderProps) => (
+      <Decorator {...decoratorProps} portableTextPath={path} />
+    ),
+    [path],
+  )
+
+  const renderAnnotationNode = useCallback(
+    (annotationProps: AnnotationRenderProps) => {
+      const {
+        annotation,
+        children,
+        focused: editorNodeFocused,
+        path: aPath,
+        selected,
+      } = annotationProps
+      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: annotation._key}]
+      const sanitySchemaType = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        annotationPath,
+      ).annotations.find((t) => t.name === annotation._type)
+      if (!sanitySchemaType) {
+        // The value predates a schema change (for example an annotation type
+        // that was removed). Render the annotated text plainly instead of
+        // crashing.
+        warnOnce(
+          `Could not find schema type for annotation: ${annotation._type} at ${pathToString(path.concat(aPath))}`,
+        )
+        // No affordance here: the span render (`UnknownMarks`) resolves the
+        // annotation type against the same sub-schema and already wraps the
+        // text, so wrapping again would nest two affordances.
+        return <>{children}</>
+      }
+      return (
+        <Annotation
+          editorNodeFocused={editorNodeFocused}
+          floatingBoundary={floatingBoundary}
+          focused={Boolean(focused)}
+          onItemClose={handleItemClose}
+          onItemOpen={handleItemOpen}
+          onPathFocus={onPathFocus}
+          path={path.concat(aPath)}
+          readOnly={readOnly}
+          referenceBoundary={scrollElement}
+          renderAnnotation={renderAnnotation}
+          renderBlock={renderBlock}
+          renderCustomMarkers={renderCustomMarkers}
+          renderField={renderField}
+          renderInlineBlock={renderInlineBlock}
+          renderInput={renderInput}
+          renderItem={renderItem}
+          renderPreview={renderPreview}
+          schemaType={sanitySchemaType}
+          selected={selected}
+          setElementRef={setElementRef}
+          value={annotation}
+        >
+          {children}
+        </Annotation>
+      )
+    },
+    [
+      schemaTypes.portableText,
+      floatingBoundary,
+      scrollElement,
+      focused,
+      handleItemClose,
+      handleItemOpen,
+      onPathFocus,
+      path,
+      readOnly,
       renderAnnotation,
       renderBlock,
       renderCustomMarkers,
@@ -384,78 +605,17 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       defineTextBlock({type: '*', render: renderTextBlock}),
       defineBlockObject({type: '*', render: renderBlockObject}),
       defineInlineObject({type: '*', render: renderInlineObject}),
+      defineSpan({type: '*', render: renderSpan}),
+      defineDecorator({type: '*', render: renderDecoratorNode}),
+      defineAnnotation({type: '*', render: renderAnnotationNode}),
     ],
-    [renderTextBlock, renderBlockObject, renderInlineObject],
-  )
-
-  const editorRenderAnnotation = useCallback(
-    (annotationProps: BlockAnnotationRenderProps) => {
-      const {
-        children,
-        focused: editorNodeFocused,
-        path: aPath,
-        selected,
-        schemaType: aSchemaType,
-        value: aValue,
-      } = annotationProps
-      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: aValue._key}]
-      const sanitySchemaType = getSanitySubSchema(
-        schemaTypes.portableText,
-        editor.getSnapshot().context.value,
-        annotationPath,
-      ).annotations.find((t) => t.name === aSchemaType.name)
-      if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
-      }
-      return (
-        <Annotation
-          editorNodeFocused={editorNodeFocused}
-          floatingBoundary={floatingBoundary}
-          focused={Boolean(focused)}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
-          onPathFocus={onPathFocus}
-          path={path.concat(aPath)}
-          readOnly={readOnly}
-          referenceBoundary={scrollElement}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderCustomMarkers={renderCustomMarkers}
-          renderField={renderField}
-          renderInlineBlock={renderInlineBlock}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          schemaType={sanitySchemaType}
-          selected={selected}
-          setElementRef={setElementRef}
-          value={aValue}
-        >
-          {children}
-        </Annotation>
-      )
-    },
     [
-      schemaTypes.portableText,
-      floatingBoundary,
-      scrollElement,
-      focused,
-      onItemClose,
-      onItemOpen,
-      onPathFocus,
-      path,
-      readOnly,
-      renderAnnotation,
-      renderBlock,
-      renderCustomMarkers,
-      renderField,
-      renderInlineBlock,
-      renderInput,
-      renderItem,
-      renderPreview,
-      setElementRef,
-      editor,
+      renderTextBlock,
+      renderBlockObject,
+      renderInlineObject,
+      renderSpan,
+      renderDecoratorNode,
+      renderAnnotationNode,
     ],
   )
   const ariaDescribedBy = elementProps['aria-describedby']
@@ -507,14 +667,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isActive={isActive}
             isFullscreen={isFullscreen}
             isOneLine={isOneLineEditor}
-            onItemOpen={onItemOpen}
+            onItemOpen={handleItemOpen}
             onCopy={onCopy}
             onPaste={wrappedOnPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
             readOnly={readOnly}
-            renderAnnotation={editorRenderAnnotation}
             setPortalElement={setPortalElement}
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
@@ -538,13 +697,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isActive,
       isFullscreen,
       isOneLineEditor,
-      onItemOpen,
+      handleItemOpen,
       onCopy,
       wrappedOnPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,
-      editorRenderAnnotation,
       scrollElement,
     ],
   )
@@ -566,7 +724,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     focusPath,
     ptInputPath: path,
     boundaryElement: scrollElement,
-    onItemClose,
+    onItemClose: handleItemClose,
   })
 
   // The editor should have a focus ring when the field itself is focused,
@@ -580,34 +738,40 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         <ListIndexProvider>
           <NodePlugin nodes={catchAllNodes} />
           <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-            <BoundaryElementProvider element={floatingBoundary}>
-              <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-                <ChangeIndicator
-                  disabled={isFullscreen}
-                  hasFocus={Boolean(focused)}
-                  isChanged={changed}
-                  path={path}
-                >
-                  <Root
-                    data-focused={editorFocused ? '' : undefined}
-                    data-read-only={readOnly ? '' : undefined}
+            <PortalBoundaryProvider element={portalBoundary} portalElement={portal.element}>
+              <BoundaryElementProvider element={floatingBoundary}>
+                <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+                  <ChangeIndicator
+                    disabled={isFullscreen}
+                    hasFocus={Boolean(focused)}
+                    isChanged={changed}
+                    path={path}
                   >
-                    <Box data-wrapper="" ref={setWrapperElement}>
-                      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                        {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                        <AnnotationObjectEditModal
-                          focused={focused}
-                          onItemClose={onItemClose}
-                          referenceBoundary={scrollElement}
-                        />
-                        <CombinedAnnotationPopover referenceBoundary={scrollElement} />
-                      </Portal>
-                    </Box>
-                    <div data-border="" />
-                  </Root>
-                </ChangeIndicator>
-              </ActivateOnFocus>
-            </BoundaryElementProvider>
+                    <Root
+                      data-focused={editorFocused ? '' : undefined}
+                      data-read-only={readOnly ? '' : undefined}
+                    >
+                      <Box data-wrapper="" ref={setWrapperElement}>
+                        <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                          {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                          <AnnotationObjectEditModal
+                            annotationOpeningRef={annotationOpeningRef}
+                            focused={focused}
+                            onItemClose={handleItemClose}
+                            referenceBoundary={scrollElement}
+                          />
+                          <CombinedAnnotationPopover
+                            annotationOpeningRef={annotationOpeningRef}
+                            referenceBoundary={scrollElement}
+                          />
+                        </Portal>
+                      </Box>
+                      <div data-border="" />
+                    </Root>
+                  </ChangeIndicator>
+                </ActivateOnFocus>
+              </BoundaryElementProvider>
+            </PortalBoundaryProvider>
           </PortalProvider>
         </ListIndexProvider>
       </DndProvider>

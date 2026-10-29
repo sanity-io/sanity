@@ -29,6 +29,7 @@ function stub(id: string, system: Partial<DocumentSystem> = {}): VersionInfoDocu
     _rev: 'rev',
     _createdAt: '2026-01-01T00:00:00.000Z',
     _updatedAt: '2026-01-01T00:00:00.000Z',
+    _type: 'article',
     _system: {
       group: {_ref: PUBLISHED_ID, _weak: true},
       ...system,
@@ -64,7 +65,7 @@ function agentVersion(bundleId: string): VersionInfoDocumentStub {
 function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`drafts.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: 'drafts',
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -72,7 +73,7 @@ function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocum
 // A published variant, outside any release.
 function variantPublished(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`published.${scopeId}.${PUBLISHED_ID}`, {
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -86,7 +87,7 @@ function variantInRelease(
   return stub(`versions.${releaseId}.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: releaseId,
     release: {_ref: getReleaseDocumentIdFromReleaseId(releaseId), _weak: true},
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -142,6 +143,7 @@ describe('computeSets', () => {
             {
               id: `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
               name: 'version.agent-bundle.proposed-changes',
+              document: versions[3],
             },
             {id: `drafts.${PUBLISHED_ID}`, name: 'release.chip.draft', document: versions[0]},
             {id: PUBLISHED_ID, name: 'release.chip.published', document: versions[1]},
@@ -189,6 +191,7 @@ describe('computeSets', () => {
             {
               id: `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
               name: 'version.agent-bundle.proposed-changes',
+              document: versions[8],
             },
           ],
         },

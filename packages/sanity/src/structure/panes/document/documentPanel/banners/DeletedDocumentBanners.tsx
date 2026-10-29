@@ -1,6 +1,5 @@
 import {DocumentRemoveIcon} from '@sanity/icons/DocumentRemove'
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   isDraftPerspective,
@@ -13,6 +12,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -35,6 +35,8 @@ export function DeletedDocumentBanners() {
 
 function DeletedDocumentBanner() {
   const {documentId, documentType} = useDocumentPane()
+  // No `getTargetScopeId(useTargetDocumentState())` here: restoring a deleted document deliberately operates on
+  // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
 
@@ -52,7 +54,7 @@ function DeletedDocumentBanner() {
         text: t('banners.deleted-document-banner.restore-button.text'),
       }}
       content={
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('banners.deleted-document-banner.text')}
         </Text>
       }
@@ -69,10 +71,10 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
     <Banner
       tone="caution"
       content={
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true} tone="caution">
           <Translate
             t={t}
-            i18nKey="banners.deleted-release-banner.text"
+            i18nKey="banners.archived-release-banner.text"
             values={{
               title: release.metadata?.title || t('release.placeholder-untitled-release'),
             }}

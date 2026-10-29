@@ -2,6 +2,8 @@
 
 This document describes the current architecture of the Variants Studio tool, what functionality is already covered, and the main work that is still pending.
 
+For how variant _document editing_ works through the document pair (target resolution, store guards, operation routing, publish-state UI), see [`EDITING.md`](./EDITING.md). For the underlying plan and per-workstream checklists, see [`EDITING_PLAN.md`](./EDITING_PLAN.md). For the user-facing guide (what variants are and how editors work with them), see [`USER_GUIDE.md`](./USER_GUIDE.md).
+
 ## Scope
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
@@ -109,7 +111,7 @@ Covered behavior:
 
 ## Condition Autocomplete
 
-Condition key/value autocomplete is intentionally data-driven. We do not maintain a separate list of allowed keys or values.
+When a variant type's `conditions` is **not** set, condition key/value autocomplete is data-driven. We do not maintain a separate list of allowed keys or values. Types are configured on `beta.variants.types`. Omitting `types` uses a single freeform `variant` type.
 
 `components/dialog/conditionSuggestions.ts` derives suggestions from existing variants:
 
@@ -129,6 +131,23 @@ Important behavior:
 - while the input is focused, the wrapper avoids forcing the current row value back into `Autocomplete.value`, because doing so closes the suggestion popover while typing
 
 The autocomplete is a consistency aid, not a schema constraint. Users can still introduce new condition patterns when needed.
+
+## Configured conditions picker
+
+When a type's `conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive dropdown picker for that type. The function receives `projectId`, `dataset`, `getClient`, and the type key, and is resolved when a surface needs the list, not during studio boot. Condition keys must be unique across types.
+
+- each row is two select-like `MenuButton`s (`ConditionMenuButton`): the key, then its value
+- menu rows follow the workspace switcher (`MenuItem` with icon, title, and description as subtitle); the current choice is checked
+- the trigger stays one line in every state and only takes the selected look while its menu is open, so picking never shifts the form
+- the value dropdown is disabled until a key is chosen; switching keys resets the value
+- already-used keys are omitted from later rows
+- while the list loads, the rows render disabled with a spinner instead of a skeleton, so the ready state lands in place
+- existing conditions that are not in the list stay visible in a critical tone, are marked as errors, and block save
+- a load failure shows an error and retry; the form does not fall back to free-text
+- an empty static list, or a static list where every entry is dropped as invalid, shows a configuration error without retry — not a picker with no options
+- overview rows, detail condition rows, and navbar menu items show the same mismatch error after the list is ready
+
+`useVariantConditions` reads the resolved config from the workspace. Invalid keys and values are dropped by `normalizeVariantConditions` so the picker never offers them.
 
 ## Detail Page
 
@@ -157,18 +176,21 @@ Data flow:
 
 To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
 
-## Footer
+## Header and action rail
 
-`VariantDetailFooter.tsx` mirrors the release detail footer pattern.
+The footer pattern was replaced by the shared detail-spine header (matches the release detail
+page): `VariantActionRail.tsx` holds the right-side action rail and overflow `⋯` menu
+(`VariantMenuButton.tsx`); the created status moved into the `DetailPropertiesPanel` alongside the
+other detail metadata.
 
 Covered behavior:
 
-- created status on the left
-- right-side action slot
+- created status in the details properties panel
+- right-side action rail
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
-The delete action currently does not confirm or check whether the variant has documents.
+Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition, and when the user lacks permission (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, or while a dry run of the delete (`store/useVariantPermissions.ts`, mirroring the releases permission guard) reports missing permission, and asks for confirmation before deleting. If the server still refuses, the error toast reuses the same "contains documents" / "no permission" copy.
 
 ## Test Coverage
 
@@ -184,6 +206,7 @@ Covered areas include:
 - create/edit dialog validation and submit behavior
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
+- conditions config reduction, normalization, mapped dropdown-picker form flow, and condition mismatch errors
 - detail page rendering, edit dialog, footer, and detail delete menu
 
 Focused command:
@@ -207,7 +230,7 @@ Covered areas include:
 Useful e2e type check:
 
 ```sh
-pnpm exec tsgo --project e2e/tsconfig.json --noEmit
+pnpm exec tsc --project e2e/tsconfig.json --noEmit
 ```
 
 The focused browser e2e command is:
@@ -221,7 +244,5 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 ## Pending Work
 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
-- Decide how document counts affect deleting variants.
-- Add a delete confirmation or disabled state once variants can have documents.
 - Expand the detail-specific actions menu independently from the overview row menu.
 - Reassess whether inline detail editing is needed after the dialog-based edit flow has been used.

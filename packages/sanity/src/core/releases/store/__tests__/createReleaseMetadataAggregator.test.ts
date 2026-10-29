@@ -42,6 +42,7 @@ describe('createReleaseMetadataAggregator', () => {
 
     const values = await createReleaseMetadataAggregator(mockClient)(['_.releases.release-1'])
       .pipe(take(2), toArray())
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       .toPromise()
 
     expect(values).toEqual([
@@ -81,6 +82,7 @@ describe('createReleaseMetadataAggregator', () => {
           ]),
         ),
       )
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       .toPromise()
 
     expect(values).toEqual([

@@ -11,14 +11,14 @@
     "start": "sanity preview --port 3340"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "catalog:",
+    "@repo/pandacss": "workspace:*",
     "rimraf": "catalog:",
     "vite": "catalog:"
   }

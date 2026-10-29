@@ -1,6 +1,9 @@
+import {type Path} from '@sanity/types'
 import {Card, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+
+import {type TemplateOption} from '../../studio/contexts/ReferenceInputOptions'
 
 const StyledCard = styled(Card)`
   /* this is a hack to avoid layout jumps while previews are loading
@@ -23,13 +26,16 @@ interface ReferenceLinkCardProps extends CardProps {
   as: any
   documentId: string
   documentType: string | undefined
+  parentRefPath: Path
+  template?: TemplateOption
 }
 
-export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
-  props: ReferenceLinkCardProps & HTMLProps<HTMLElement>,
-  ref: ForwardedRef<HTMLElement>,
+export function ReferenceLinkCard(
+  props: ReferenceLinkCardProps &
+    Omit<HTMLProps<HTMLElement>, 'as' | 'ref'> &
+    RefAttributes<HTMLElement>,
 ) {
-  const {as, documentId, documentType, ...cardProps} = props
+  const {ref, as, documentId, documentType, parentRefPath, template, ...cardProps} = props
 
   // If the child link is clicked without a document type, an error will be thrown.
   // This usually happens when the link is clicked before the document type has been resolved.
@@ -42,6 +48,8 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       'forwardedAs': as,
       'documentId': documentId,
       'documentType': documentType,
+      'parentRefPath': parentRefPath,
+      'template': template,
     }
 
   return (
@@ -49,7 +57,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       {...cardProps}
       {...linkProps}
       data-ui="ReferenceLinkCard"
-      ref={ref as unknown as ForwardedRef<HTMLDivElement>}
+      ref={ref as unknown as Ref<HTMLDivElement>}
     />
   )
-})
+}

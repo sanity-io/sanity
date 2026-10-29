@@ -30,8 +30,9 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
   await expect(deleteAction).toBeVisible()
   await deleteAction.click()
   await expect(page.getByTestId('pane-footer-document-status')).toBeHidden()
-  await expect(page.getByRole('button', {name: 'Delete all versions'})).toBeVisible()
-  await page.getByRole('button', {name: 'Delete all versions'}).click()
+  const confirmDeleteButton = page.getByTestId('confirm-button')
+  await expect(confirmDeleteButton).toBeVisible()
+  await confirmDeleteButton.click()
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })

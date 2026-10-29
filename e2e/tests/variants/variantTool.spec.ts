@@ -9,7 +9,7 @@ const VARIANT_DOCUMENT_TYPE = 'system.variant'
 // Variant definition actions are only routable on a newer API version than the
 // shared e2e client default (2021-08-31). This matches the version the studio
 // uses for these calls (VARIANTS_STUDIO_CLIENT_OPTIONS).
-const VARIANTS_API_VERSION = 'X'
+const VARIANTS_API_VERSION = 'v2025-08-18'
 
 function getVariantsClient(sanityClient: SanityClient): SanityClient {
   return sanityClient.withConfig({apiVersion: VARIANTS_API_VERSION})
@@ -148,16 +148,16 @@ function escapeRegExp(value: string): string {
 
 async function openVariantsTool(page: Page): Promise<void> {
   await page.goto('/variants')
-  await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
+  await expect(page.getByRole('heading', {name: 'Variant definitions'}).first()).toBeVisible()
   // The heading renders before the overview has settled its data subscriptions.
   // Wait for the create button to be interactive so the first dialog-open click
   // is not dispatched while the page is still mounting and silently dropped.
-  await expect(page.getByRole('button', {name: 'Create variant'}).first()).toBeEnabled()
+  await expect(page.getByRole('button', {name: 'New variant definition'}).first()).toBeEnabled()
 }
 
 async function openCreateVariantDialog(page: Page) {
-  const createVariantButton = page.getByRole('button', {name: 'Create variant'}).first()
-  const dialog = page.getByRole('dialog', {name: 'Create variant'})
+  const createVariantButton = page.getByRole('button', {name: 'New variant definition'}).first()
+  const dialog = page.getByRole('dialog', {name: 'Create variant definition'})
 
   // Under parallel CI load the studio occasionally drops the first click while it
   // is still reconciling the shared variants subscription, leaving the dialog
@@ -341,18 +341,22 @@ test.describe('Variants create flow', () => {
   }) => {
     const runId = createRunId('duplicate')
     const title = `${createVariantTitlePrefix()} Duplicate Keys ${runId}`
+    // Run-unique values so a leaked definition from an earlier attempt can never
+    // trip the duplicate-condition-set validation on submit.
+    const firstValue = `us-${runId}`
+    const secondValue = `fr-${runId}`
 
     await openVariantsTool(page)
     const dialog = await openCreateVariantDialog(page)
 
     await dialog.getByTestId('variant-form-title').fill(title)
-    await fillConditionRow(dialog, 0, 'audience', 'us')
+    await fillConditionRow(dialog, 0, 'audience', firstValue)
     await dialog.getByRole('button', {name: 'Add condition'}).click()
 
     const secondKeyInput = getConditionKeyInputs(dialog).nth(1)
 
     await secondKeyInput.fill('audience')
-    await getConditionValueInputs(dialog).nth(1).fill('fr')
+    await getConditionValueInputs(dialog).nth(1).fill(secondValue)
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toHaveText(
       'Condition keys must be unique',
     )
@@ -368,8 +372,8 @@ test.describe('Variants create flow', () => {
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
     expect(document.conditions).toEqual({
-      audience: 'us',
-      audience2: 'fr',
+      audience: firstValue,
+      audience2: secondValue,
     })
   })
 
@@ -379,34 +383,40 @@ test.describe('Variants create flow', () => {
   }) => {
     const runId = createRunId('partial')
     const title = `${createVariantTitlePrefix()} Partial Key ${runId}`
+    // Run-unique values so a leaked definition from an earlier attempt can never
+    // trip the duplicate-condition-set validation on submit.
+    const firstValue = `us-${runId}`
+    const secondValue = `gb-${runId}`
 
     await openVariantsTool(page)
     const dialog = await openCreateVariantDialog(page)
 
     await dialog.getByTestId('variant-form-title').fill(title)
-    await fillConditionRow(dialog, 0, 'new', 'us')
+    await fillConditionRow(dialog, 0, 'new', firstValue)
     await dialog.getByRole('button', {name: 'Add condition'}).click()
 
     const secondKeyInput = getConditionKeyInputs(dialog).nth(1)
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     await secondKeyInput.type('new')
     await expect(secondKeyInput).toHaveValue('new')
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toHaveText(
       'Condition keys must be unique',
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     await secondKeyInput.type('ton')
     await expect(secondKeyInput).toHaveValue('newton')
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toBeHidden()
 
-    await getConditionValueInputs(dialog).nth(1).fill('gb')
+    await getConditionValueInputs(dialog).nth(1).fill(secondValue)
     await expect(dialog.getByTestId('submit-variant-button')).toBeEnabled()
 
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
     expect(document.conditions).toEqual({
-      new: 'us',
-      newton: 'gb',
+      new: firstValue,
+      newton: secondValue,
     })
   })
 
@@ -420,6 +430,7 @@ test.describe('Variants create flow', () => {
     const title = `${createVariantTitlePrefix()} Autocomplete Created ${runId}`
     const audienceValue = `returning-${runId}`
     const languageValue = `en-${runId}`
+    const sessionValue = `session-${runId}`
 
     await createVariantDefinition(sanityClient, {
       variantId: `${runId}-audience`,
@@ -449,9 +460,68 @@ test.describe('Variants create flow', () => {
     await expect(page.getByRole('option', {name: languageValue, exact: true})).toBeHidden()
     await page.getByRole('option', {name: audienceValue, exact: true}).click()
 
+    // The picked suggestion replicates the audience seed's entire condition set, and duplicate
+    // condition sets can no longer be submitted. Add a run-unique second condition so the
+    // created definition is a superset of the seed rather than a duplicate.
+    await dialog.getByRole('button', {name: 'Add condition'}).click()
+    await fillConditionRow(dialog, 1, 'session', sessionValue)
+
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
-    expect(document.conditions).toEqual({audience: audienceValue})
+    expect(document.conditions).toEqual({audience: audienceValue, session: sessionValue})
+  })
+
+  test('blocks duplicate titles and condition sets and links to the existing definition', async ({
+    page,
+    sanityClient,
+  }) => {
+    const runId = createRunId('uniqueness')
+    const seedVariantId = `${runId}-seed`
+    const seedTitle = `${createVariantTitlePrefix()} Uniqueness Seed ${runId}`
+    const seedValue = `loyal-${runId}`
+
+    await createVariantDefinition(sanityClient, {
+      variantId: seedVariantId,
+      conditions: {audience: seedValue},
+      metadata: {title: seedTitle},
+    })
+
+    await openVariantsTool(page)
+    await expect(getVariantRow(page, seedTitle)).toBeVisible()
+
+    const dialog = await openCreateVariantDialog(page)
+
+    // Duplicate title (title matching is case-insensitive) and the seed's exact condition set.
+    await dialog.getByTestId('variant-form-title').fill(seedTitle.toUpperCase())
+    await fillConditionRow(dialog, 0, 'audience', seedValue)
+
+    await dialog.getByTestId('submit-variant-button').click()
+
+    // Submission is blocked: the dialog stays open, no navigation happens, and both
+    // errors name the seeded definition.
+    await expect(dialog).toBeVisible()
+    expect(new URL(page.url()).pathname).toMatch(/\/variants$/)
+
+    const titleError = dialog.getByTestId('variant-form-title-error')
+    const conditionsError = dialog.getByTestId('variant-form-conditions-duplicate-error')
+
+    await expect(titleError).toContainText('A variant definition with this title already exists:')
+    await expect(titleError.getByRole('link', {name: seedTitle})).toBeVisible()
+    await expect(conditionsError).toContainText(
+      'A variant definition with the same conditions already exists:',
+    )
+    await expect(conditionsError.getByRole('link', {name: seedTitle})).toBeVisible()
+
+    // Making the condition set unique clears the conditions error; the title error remains.
+    await getConditionValueInputs(dialog).first().fill(`${seedValue}-unique`)
+    await expect(conditionsError).toBeHidden()
+    await expect(titleError).toBeVisible()
+
+    // The error links to the existing definition's detail page.
+    await titleError.getByRole('link', {name: seedTitle}).click()
+    await expect(page).toHaveURL(new RegExp(`/variants/${escapeRegExp(seedVariantId)}$`))
+    await expect(page.getByRole('heading', {name: seedTitle})).toBeVisible()
+    await expect(dialog).toBeHidden()
   })
 
   test('deletes a seeded variant from the overview', async ({page, sanityClient}) => {
@@ -475,8 +545,8 @@ test.describe('Variants create flow', () => {
     // Target the stable actions-menu id rather than the last button in the row,
     // which would break if the row gains more buttons. `variantId` is the short id.
     await page.locator(`#variant-actions-${variantId}`).click()
-    await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
+    await page.getByTestId('confirm-button').click()
 
     await expect(row).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
@@ -499,11 +569,11 @@ test.describe('Variants create flow', () => {
     await page.goto(`/variants/${shortVariantId}`)
     await expect(page.getByRole('heading', {name: title})).toBeVisible()
 
-    await page.locator(`#variant-detail-actions-${shortVariantId}`).click()
-    await page.getByRole('menuitem', {name: 'Delete variant'}).click()
-    await expect(page.getByRole('menuitem', {name: 'Delete variant'})).toBeHidden()
+    await page.getByTestId('variant-detail-menu-button').click()
+    await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
+    await page.getByTestId('confirm-button').click()
 
-    await expect(page.getByRole('heading', {name: 'Variants'}).first()).toBeVisible()
+    await expect(page.getByRole('heading', {name: 'Variant definitions'}).first()).toBeVisible()
     await expect(getVariantRow(page, title)).toBeHidden()
     await expect.poll(async () => sanityClient.getDocument(documentId)).toBeUndefined()
   })

@@ -3,11 +3,11 @@ import orderBy from 'lodash-es/orderBy.js'
 import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {MenuItem} from '../../../../../ui-components'
-import {UserAvatar} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {type GlobalPresence} from '../../../../store'
-import {getPublishedId, getVersionFromId} from '../../../../util'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type GlobalPresence} from '../../../../store/presence/types'
+import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 
 interface PresenceListRowProps {
   focused: boolean
@@ -50,7 +50,6 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
     return (
       <MenuItem
         as={IntentLink}
-        // @ts-expect-error - `intent` is valid when using `IntentLink`
         intent="edit"
         params={{
           id: getPublishedId(lastActiveLocation.documentId),

@@ -1,12 +1,11 @@
 import range from 'lodash-es/range.js'
-import {type ForwardedRef, forwardRef, useCallback} from 'react'
+import {useCallback, type RefAttributes} from 'react'
 import {FieldPresence, type ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
 
-export const CustomInputWithDefaultPresence = forwardRef(function CustomInputWithDefaultPresence(
-  props: ObjectInputProps,
-  ref: ForwardedRef<HTMLDivElement>,
+export function CustomInputWithDefaultPresence(
+  props: ObjectInputProps & RefAttributes<HTMLDivElement>,
 ) {
-  const {elementProps, onPathFocus, value, onChange, presence, readOnly, schemaType} = props
+  const {ref, elementProps, onPathFocus, value, onChange, presence, readOnly, schemaType} = props
 
   const {onFocus} = elementProps
 
@@ -64,4 +63,4 @@ export const CustomInputWithDefaultPresence = forwardRef(function CustomInputWit
       </div>
     </>
   )
-})
+}

@@ -1,13 +1,13 @@
 import {useMemo} from 'react'
 
+import {isArrayOfPrimitivesInputProps} from '../../types/asserters'
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
-  isArrayOfPrimitivesInputProps,
-} from '../../types'
-import {ArrayOfObjectsInput} from './ArrayOfObjectsInput'
+} from '../../types/inputProps'
+import {ArrayOfObjectsInput} from './ArrayOfObjectsInput/ArrayOfObjectsInput'
 import {ArrayOfOptionsInput} from './ArrayOfOptionsInput'
-import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput'
+import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 
 /**
  * Universal array input that will introspect its schemaType and delegate to the right implementation

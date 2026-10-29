@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Box, Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Heading, Inline} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
@@ -11,6 +11,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,
@@ -21,30 +22,30 @@ const COMPONENT_COLORS = {
 
 export function FormInput(props: InputProps) {
   return (
-    <Stack space={5} padding={3}>
-      <Stack space={4}>
-        <Stack space={4}>
+    <Flex gap={5} padding={3} flexDirection="column">
+      <VStack gap={4}>
+        <VStack gap={4}>
           <Heading>Form components API test</Heading>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             The borders are configured in the schema, and the backgrounds are configured in the
             config and in a plugin.
           </Text>
-        </Stack>
+        </VStack>
 
-        <Flex align="center" gap={4}>
+        <Flex alignItems="center" gap={4}>
           {Object.entries(COMPONENT_COLORS).map(([key, value]) => (
-            <Inline key={key} space={2}>
+            <Inline key={key} gap={2}>
               <div style={{width: '1em', height: '1em', background: value, borderRadius: '50%'}} />
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="semibold" as="div" trim={true}>
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Text>
             </Inline>
           ))}
         </Flex>
-      </Stack>
+      </VStack>
 
       <CustomInput {...props} testId="" />
-    </Stack>
+    </Flex>
   )
 }
 
@@ -102,7 +103,11 @@ function ArrayActions(props: ArrayInputFunctionsProps<string | number | boolean,
   }, [props])
 
   return (
-    <Grid columns={1} gap={2} data-testid="input-schema-array-primitives-custom-functions">
+    <Grid
+      gridTemplateColumns="repeat(1, minmax(0, 1fr))"
+      gap={2}
+      data-testid="input-schema-array-primitives-custom-functions"
+    >
       <Button text="Custom array function" onClick={handleAdd} />
 
       <ArrayOfPrimitivesFunctions {...props} />

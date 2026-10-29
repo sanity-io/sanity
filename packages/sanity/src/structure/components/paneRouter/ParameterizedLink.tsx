@@ -1,4 +1,4 @@
-import {type ForwardedRef, forwardRef, type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useMemo, type RefAttributes} from 'react'
 import {useUnique} from 'sanity'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
@@ -12,13 +12,14 @@ interface ParameterizedLinkProps {
 /**
  * @internal
  */
-export const ParameterizedLink = forwardRef(function ParameterizedLink(
-  props: ParameterizedLinkProps,
-  ref: ForwardedRef<HTMLAnchorElement>,
+export function ParameterizedLink(
+  props: ParameterizedLinkProps & RefAttributes<HTMLAnchorElement>,
 ) {
   const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
-  const {params, payload, ...rest} = props
+  const {ref, params, payload, ...rest} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const nextParams = useUnique(params)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const nextPayload = useUnique(payload)
 
   const nextState = useMemo(() => {
@@ -47,4 +48,4 @@ export const ParameterizedLink = forwardRef(function ParameterizedLink(
   }, [currentPanes, groupIndex, nextParams, nextPayload, siblingIndex])
 
   return <StateLink ref={ref} {...rest} state={nextState} />
-})
+}

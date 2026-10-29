@@ -4,47 +4,41 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Code,
-  Dialog,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Tab,
-  TabList,
-  Text,
-  TextInput,
-  Tooltip,
-  useToast,
-} from '@sanity/ui'
-import isEqual from 'lodash-es/isEqual.js'
+import {Badge, Button, Card, Dialog, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
+import {Tooltip} from '@sanity/ui/tooltip'
+import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
+import {Flex, Box, VStack} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
-import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
+import * as styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
-function FixedHeader(props: ComponentProps<typeof Stack>) {
-  return <Stack {...props} className={fixedHeader} />
+function FixedHeader(props: ComponentProps<typeof VStack>) {
+  return <VStack {...props} className={styles.fixedHeader} />
 }
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
   return (
-    <Flex {...props} direction="column" flex={1} overflow="hidden" className={scrollContainer} />
+    <Flex
+      {...props}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      overflow="hidden"
+      className={styles.scrollContainer}
+    />
   )
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flex={1} overflow="auto" className={queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={styles.queryList} />
 }
 
 export function QueryRecall({
@@ -66,7 +60,8 @@ export function QueryRecall({
 }): ReactElement {
   type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
-  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting} = useSavedQueries()
+  const {saveQuery, updateQuery, queries, deleteQuery, shareQuery, unshareQuery, saving, deleting} =
+    useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
   const formatDate = useDateTimeFormat({
     month: 'short',
@@ -161,19 +156,10 @@ export function QueryRecall({
   const handleConfirmShareQuery = useCallback(async () => {
     if (!shareDialogQuery) return
 
-    const sharedQueryKey = shareDialogQuery._key
-    const sharedQueryUrl = shareDialogQuery.url
-    const sharedQueryTitle = shareDialogQuery.title || t('label.untitled-query')
-
     try {
-      await saveQuery({
-        shared: true,
-        title: sharedQueryTitle,
-        url: sharedQueryUrl,
-        savedAt: new Date().toISOString(),
-      })
-
-      await deleteQuery(sharedQueryKey)
+      // One move: when removing the personal copy fails, the shared one is taken back and the
+      // move rejects, rather than the query staying in both lists behind a success toast
+      await shareQuery(shareDialogQuery._key)
       toast.push({
         closable: true,
         status: 'success',
@@ -188,7 +174,7 @@ export function QueryRecall({
       })
     }
     setShareDialogQuery(null)
-  }, [deleteQuery, saveQuery, shareDialogQuery, t, toast])
+  }, [shareDialogQuery, shareQuery, t, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
@@ -207,8 +193,6 @@ export function QueryRecall({
           isEqual(existingQueryObj.params, nextQueryObj.params)
         )
       })
-      const unsharedQueryTitle = query.title || t('label.untitled-query')
-
       if (duplicatePersonalQuery) {
         toast.push({
           closable: true,
@@ -223,20 +207,13 @@ export function QueryRecall({
       }
 
       try {
-        await saveQuery({
-          shared: false,
-          title: unsharedQueryTitle,
-          url: query.url,
-          savedAt: new Date().toISOString(),
-        })
-
-        await deleteQuery(query._key)
+        // One move, like sharing: a personal copy that cannot replace the shared one is taken back
+        await unshareQuery(query._key)
         toast.push({
           closable: true,
           status: 'success',
           title: t('save-query.unshared-success'),
         })
-        clearPending()
       } catch (err) {
         toast.push({
           closable: true,
@@ -244,10 +221,10 @@ export function QueryRecall({
           title: t('save-query.error'),
           description: err instanceof Error ? err.message : String(err),
         })
-        clearPending()
       }
+      clearPending()
     },
-    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, t, toast],
+    [formatDate, getStateFromUrl, queries, t, toast, unshareQuery],
   )
 
   const handleTitleSave = useCallback(
@@ -368,8 +345,14 @@ export function QueryRecall({
 
   return (
     <ScrollContainer>
-      <FixedHeader space={3}>
-        <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
+      <FixedHeader gap={3}>
+        <Flex
+          padding={3}
+          paddingTop={2}
+          paddingBottom={0}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
             aria-label={t('action.save-query')}
@@ -388,7 +371,7 @@ export function QueryRecall({
           />
         </Box>
         <Box paddingX={3} paddingBottom={2}>
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               id="query-filter-all"
               aria-controls="vision-query-recall-list"
@@ -414,7 +397,7 @@ export function QueryRecall({
         </Box>
       </FixedHeader>
       <QueryList id="vision-query-recall-list">
-        <Stack paddingY={3}>
+        <Flex paddingY={3} flexDirection="column">
           {filteredQueries?.map((q, index) => {
             const queryObj = getStateFromUrl(q.url)
             const fullQueryPreview = queryObj?.query || ''
@@ -454,9 +437,13 @@ export function QueryRecall({
                   cursor: 'pointer',
                 }}
               >
-                <Stack space={compactMode ? 2 : 3}>
-                  <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
-                    <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
+                <VStack gap={compactMode ? 2 : 3}>
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems={'center'}
+                    style={{minHeight: '25px'}}
+                  >
+                    <Flex alignItems="center" gap={2} paddingRight={1} style={{flex: 1}}>
                       {editingKey === q._key ? (
                         <TextInput
                           value={editingTitle}
@@ -512,7 +499,7 @@ export function QueryRecall({
                         />
                       )}
                     </Flex>
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Box
                         data-query-actions="true"
                         style={{
@@ -564,7 +551,12 @@ export function QueryRecall({
                                 )}
                               </Menu>
                             }
-                            popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                            popover={{
+                              animate: true,
+                              portal: true,
+                              placement: 'bottom-end',
+                              tone: 'default',
+                            }}
                           />
                         )}
                       </Box>
@@ -573,6 +565,7 @@ export function QueryRecall({
 
                   {fullQueryPreview ? (
                     <Tooltip
+                      animate
                       content={
                         <Box
                           padding={2}
@@ -591,8 +584,8 @@ export function QueryRecall({
                   )}
 
                   {compactMode ? (
-                    <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
-                      <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                    <VStack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                      <Flex alignItems="center" gap={2} style={{minHeight: '18px'}}>
                         <Box
                           style={{
                             display: 'flex',
@@ -619,7 +612,6 @@ export function QueryRecall({
                           )}
                         </Box>
                         <Badge
-                          mode="outline"
                           tone={q.shared ? 'primary' : 'default'}
                           style={{
                             whiteSpace: 'nowrap',
@@ -633,9 +625,13 @@ export function QueryRecall({
                       <Text size={1} muted>
                         {formatDate.format(new Date(q.savedAt || ''))}
                       </Text>
-                    </Stack>
+                    </VStack>
                   ) : (
-                    <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      style={{paddingTop: '2px', minHeight: '20px'}}
+                    >
                       <Box
                         style={{
                           display: 'flex',
@@ -662,7 +658,6 @@ export function QueryRecall({
                         )}
                       </Box>
                       <Badge
-                        mode="outline"
                         tone={q.shared ? 'primary' : 'default'}
                         style={{
                           whiteSpace: 'nowrap',
@@ -700,20 +695,21 @@ export function QueryRecall({
                       }}
                     />
                   )}
-                </Stack>
+                </VStack>
               </Card>
             )
           })}
-        </Stack>
+        </Flex>
       </QueryList>
       {shareDialogQuery && (
         <Dialog
+          animate
           id="vision-query-recall-share-dialog"
           width={1}
           header={t('label.share')}
           onClose={() => setShareDialogQuery(null)}
           footer={
-            <Flex justify="flex-end" gap={3} padding={3} align="center">
+            <Flex justifyContent="flex-end" gap={3} padding={3} alignItems="center">
               <Button
                 mode="bleed"
                 padding={2}

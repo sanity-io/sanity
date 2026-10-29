@@ -1,9 +1,10 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
+import {Text, Flex, Icon} from 'ui5'
 
-import {ProgressIcon} from '../../../../ui-components/progressIcon'
+import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -46,13 +47,14 @@ export function ValidationProgressIndicator({
       return () => clearTimeout(timer)
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [isFinished, showCheckmark])
 
   useEffect(() => {
     // If it's not validating, we should not be showing the checkmark
     // it is only shown after a delay set by the previous useEffect
     if (isValidating) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setShowCheckmark(false)
     }
   }, [isValidating])
@@ -83,19 +85,31 @@ export function ValidationProgressIndicator({
       }}
     >
       <Flex gap={2}>
-        <Text size={1}>
-          {isValidating ? (
-            <ProgressIcon progress={validatedCount / totalCount} />
-          ) : (
-            <Tooltip
-              content={hasError ? t('summary.errors-found') : t('summary.all-documents-validated')}
-            >
-              {hasError ? <ErrorOutlineIcon /> : <CheckmarkCircleIcon />}
-            </Tooltip>
-          )}
-        </Text>
+        {isValidating ? (
+          <Icon
+            size={1}
+            style={{margin: '-0.375rem'}}
+            icon={<ProgressIcon progress={validatedCount / totalCount} />}
+          />
+        ) : (
+          <Tooltip
+            content={hasError ? t('summary.errors-found') : t('summary.all-documents-validated')}
+          >
+            <Icon
+              size={1}
+              style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
+              icon={hasError ? ErrorOutlineIcon : CheckmarkCircleIcon}
+            />
+          </Tooltip>
+        )}
         {!showCheckmark && !isMinimal && (
-          <Text muted size={1}>
+          <Text
+            muted
+            size={1}
+            as="div"
+            trim={true}
+            tone={tone === 'transparent' ? undefined : tone}
+          >
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})
               : hasError

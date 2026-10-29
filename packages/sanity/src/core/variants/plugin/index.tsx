@@ -3,15 +3,9 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
+import {VariantsStudioNavbarLayout} from './components/VariantsStudioNavbarLayout'
 
-const VariantsTool = lazy(() =>
-  import('../tool/VariantsTool').then((module) => ({default: module.VariantsTool})),
-)
-const VariantsStudioNavbar = lazy(() =>
-  import('./components/VariantsStudioNavbar').then((module) => ({
-    default: module.VariantsStudioNavbar,
-  })),
-)
+const VariantsTool = lazy(() => import('../tool/VariantsTool'))
 
 /**
  * @internal
@@ -32,7 +26,7 @@ export const variants = definePlugin({
   name: VARIANTS_NAME,
   studio: {
     components: {
-      navbar: VariantsStudioNavbar,
+      navbar: VariantsStudioNavbarLayout,
     },
   },
   tools: [

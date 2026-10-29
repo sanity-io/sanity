@@ -1,22 +1,28 @@
 import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MoonIcon} from '@sanity/icons/Moon'
 import {SunIcon} from '@sanity/icons/Sun'
+import {type MessageBusConnection} from '@sanity/sdk/dashboard'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import {useSyncObservable} from 'react-rx'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
-import {type TFunction} from '../i18n'
+import {type TFunction} from '../i18n/types'
+import {getMessageBusConnection} from '../store/messageBus/getMessageBusConnection'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
+import {getSnapshot, LOCAL_STORAGE_KEY, setSnapshot, subscribe} from './colorSchemeStore'
+import {setDocumentColorScheme} from './documentColorScheme'
 
 /** @internal */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function useSystemScheme(): ThemeColorSchemeKey {
   const prefersDark = usePrefersDark()
   return prefersDark ? 'dark' : 'light'
@@ -25,14 +31,32 @@ function useSystemScheme(): ThemeColorSchemeKey {
 function ColorThemeProvider({
   children,
   scheme: _scheme,
+  pinsColorScheme = true,
 }: {
   children: ReactNode
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: StudioThemeColorSchemeKey
+  pinsColorScheme?: boolean
 }) {
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
+  useLayoutEffect(() => {
+    // Act only on an explicitly pinned scheme. In system mode the browser's own
+    // `prefers-color-scheme` resolution is already correct for both native and down-leveled
+    // `light-dark()`, and on a cold mount the store snapshot is undefined until the subscribe
+    // effect initialises it - writing then would pin a scheme nobody chose.
+    if (pinsColorScheme && (_scheme === 'light' || _scheme === 'dark')) {
+      return setDocumentColorScheme(_scheme)
+    }
+    return undefined
+    // systemScheme is deliberate: the helper's mismatch check reads matchMedia, so an OS flip
+    // while the appearance is pinned must re-run the write
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- see above
+  }, [_scheme, pinsColorScheme, systemScheme])
+
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={scheme} theme={studioTheme}>
       {/* Note: this is a fallback ThemeProvider that is for any components */}
       {/* that may render before the StudioThemeProvider renders. this is */}
@@ -43,12 +67,12 @@ function ColorThemeProvider({
   )
 }
 
-const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
-
 /** @internal */
 export interface ColorSchemeProviderProps {
   children: ReactNode
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme?: StudioThemeColorSchemeKey
 }
 
@@ -63,6 +87,18 @@ export function ColorSchemeProvider({
       <ColorSchemeCustomProvider scheme={schemeProp} onSchemeChange={onSchemeChange}>
         {children}
       </ColorSchemeCustomProvider>
+    )
+  }
+
+  const messageBusConnection = getMessageBusConnection()
+  if (messageBusConnection) {
+    return (
+      <ColorSchemeMessageBusProvider
+        connection={messageBusConnection}
+        onSchemeChange={onSchemeChange}
+      >
+        {children}
+      </ColorSchemeMessageBusProvider>
     )
   }
 
@@ -81,6 +117,7 @@ export function ColorSchemeLocalStorageProvider({
   children,
   onSchemeChange,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const scheme = useSyncExternalStore<StudioThemeColorSchemeKey>(
     subscribe,
     getSnapshot,
@@ -105,6 +142,34 @@ export function ColorSchemeLocalStorageProvider({
   )
 }
 
+// The message bus host owns the appearance, so Studio offers no way to change it.
+function ColorSchemeMessageBusProvider({
+  children,
+  connection,
+  onSchemeChange,
+}: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
+  connection: MessageBusConnection
+}) {
+  const colorScheme = useMemo(() => connection.subscribe('preferences.color-scheme'), [connection])
+  const scheme = useSyncObservable(colorScheme, colorScheme.getCurrent() ?? 'system')
+
+  useEffect(() => {
+    if (typeof onSchemeChange === 'function') {
+      onSchemeChange(scheme)
+    }
+  }, [onSchemeChange, scheme])
+
+  return (
+    <ColorSchemeSetValueContext.Provider value={false}>
+      <ColorSchemeValueContext.Provider value={scheme}>
+        <ColorThemeProvider scheme={scheme} pinsColorScheme={false}>
+          {children}
+        </ColorThemeProvider>
+      </ColorSchemeValueContext.Provider>
+    </ColorSchemeSetValueContext.Provider>
+  )
+}
+
 /**
  * If the `scheme` prop is provided we don't need to setup any logic to handle localStorage
  * @internal
@@ -114,6 +179,7 @@ export function ColorSchemeCustomProvider({
   onSchemeChange,
   scheme,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: StudioThemeColorSchemeKey
 }): React.JSX.Element {
   return (
@@ -130,6 +196,7 @@ export function ColorSchemeCustomProvider({
 /** @alpha */
 export function useColorSchemeSetValue():
   | false
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   | ((nextScheme: StudioThemeColorSchemeKey) => void) {
   const setValue = useContext(ColorSchemeSetValueContext)
   if (setValue === null) throw new Error('Could not find `ColorSchemeSetValueContext` context')
@@ -137,6 +204,7 @@ export function useColorSchemeSetValue():
 }
 
 /** @internal */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
   const value = useContext(ColorSchemeValueContext)
   if (value === null) throw new Error('Could not find `ColorSchemeValueContext` context')
@@ -144,6 +212,7 @@ export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
 }
 
 /** @alpha */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeValue(): ThemeColorSchemeKey {
   const scheme = useColorSchemeInternalValue()
   const systemScheme = useSystemScheme()
@@ -169,6 +238,7 @@ export function useColorScheme() {
 interface ColorSchemeOption {
   icon: ComponentType
   label: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   name: StudioThemeColorSchemeKey
   onSelect: () => void
   selected: boolean
@@ -178,6 +248,7 @@ interface ColorSchemeOption {
  * @internal
  */
 export function useColorSchemeOptions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
   t: TFunction<'studio'>,
 ) {

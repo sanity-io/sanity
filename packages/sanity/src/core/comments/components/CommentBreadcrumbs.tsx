@@ -1,8 +1,8 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
@@ -11,16 +11,12 @@ export interface CommentBreadcrumbsProps {
 
 type Item = string | string[]
 
-const separator = (
-  <Text muted>
-    <ChevronRightIcon />
-  </Text>
-)
+const separator = <Icon muted icon={ChevronRightIcon} style={{margin: '-0.4375rem'}} />
 
 const renderItem = (item: string, index: number) => {
   return (
     <Box key={`${item}-${index}`} as="li">
-      <Text textOverflow="ellipsis" size={1} weight="medium">
+      <Text truncate={1} size={1} weight="medium" as="div" trim={true}>
         {item}
       </Text>
     </Box>
@@ -56,9 +52,9 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
           <Fragment key={key}>
             <Tooltip
               content={
-                <Stack space={2} padding={2}>
+                <Flex gap={2} padding={2} flexDirection="column">
                   {item.map(renderItem)}
-                </Stack>
+                </Flex>
               }
             >
               <Box>{renderItem('...', index)}</Box>
@@ -80,7 +76,7 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
   }, [items])
 
   return (
-    <Flex align="center" as="ol" gap={2}>
+    <Flex alignItems="center" as="ol" gap={2}>
       {nodes}
     </Flex>
   )

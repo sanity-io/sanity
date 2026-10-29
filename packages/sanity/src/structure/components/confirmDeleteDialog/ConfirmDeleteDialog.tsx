@@ -1,25 +1,13 @@
-import {Box, Flex} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
+import {Box, Flex} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
+import {dialogBody, loadingContainer} from './ConfirmDeleteDialog.css'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useReferringDocuments} from './useReferringDocuments'
-
-const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
-})`
-  height: 110px;
-`
 
 /**
  * The reference counts known at the point a delete is confirmed, surfaced so
@@ -50,6 +38,12 @@ export interface ConfirmDeleteDialogProps {
    * the same document deletion confirmation).
    */
   action?: 'delete' | 'unpublish'
+  /**
+   * When `false`, skips loading incoming references and shows a simple
+   * confirmation. Used when unpublishing a published content variant — refs
+   * always target the base published id, not the variant id.
+   */
+  checkIncomingReferences?: boolean
   onCancel: () => void
   onConfirm: (versions: string[], referenceCounts: DeleteReferenceCounts) => void
 }
@@ -65,6 +59,7 @@ export function ConfirmDeleteDialog({
   id,
   type,
   action = 'delete',
+  checkIncomingReferences = true,
   onCancel,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
@@ -78,12 +73,15 @@ export function ConfirmDeleteDialog({
     projectIds,
     datasetNames,
     hasUnknownDatasetNames,
-  } = useReferringDocuments(id)
+  } = useReferringDocuments(id, {enabled: checkIncomingReferences})
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
-  const showConfirmButton = !isLoading
   const {data: documentVersions, loading: versionsLoading} = useDocumentVersions({
     documentId: getPublishedId(id),
   })
+  // Wait for the version count too, so the button copy doesn't flash from
+  // "Delete all versions" to "Delete document" while the count loads. If incoming
+  // references are disabled, show the confirm button immediately.
+  const showConfirmButton = !checkIncomingReferences || (!isLoading && !versionsLoading)
 
   const handleConfirm = useCallback(() => {
     onConfirm(documentVersions, {
@@ -107,8 +105,14 @@ export function ConfirmDeleteDialog({
           ? {
               text:
                 totalCount > 0
-                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
-                  : t('confirm-delete-dialog.confirm-button.text', {context: action}),
+                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    })
+                  : t('confirm-delete-dialog.confirm-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    }),
               onClick: handleConfirm,
             }
           : undefined,
@@ -116,7 +120,7 @@ export function ConfirmDeleteDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <DialogBody>
+      <Box className={dialogBody}>
         {crossDatasetReferences && internalReferences && !isLoading && !versionsLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}
@@ -134,11 +138,17 @@ export function ConfirmDeleteDialog({
             documentVersions={documentVersions}
           />
         ) : (
-          <LoadingContainer data-testid="loading-container">
+          <Flex
+            alignItems="center"
+            flexDirection="column"
+            justifyContent="center"
+            className={loadingContainer}
+            data-testid="loading-container"
+          >
             <LoadingBlock showText title={t('confirm-delete-dialog.loading.text')} />
-          </LoadingContainer>
+          </Flex>
         )}
-      </DialogBody>
+      </Box>
     </Dialog>
   )
 }

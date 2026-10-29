@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
@@ -66,7 +66,10 @@ export function createHookFromObservableFactory<T, TArg = void>(
       [arg],
     )
     const result = useObservable(observable, initialResult)
+    // Read errors synchronously so they reach the boundary before the deferred result catches up.
+    const liveResult = useSyncObservable(observable, initialResult)
 
+    if (liveResult.type === 'error') throw liveResult.error
     if (result.type === 'error') throw result.error
 
     return result.tuple

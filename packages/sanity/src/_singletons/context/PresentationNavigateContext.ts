@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {PresentationNavigateContextValue} from '../../presentation/types'
 
@@ -6,6 +6,5 @@ import type {PresentationNavigateContextValue} from '../../presentation/types'
  * @internal
  */
 export const PresentationNavigateContext = createContext<PresentationNavigateContextValue | null>(
-  'sanity/_singletons/context/presentation/navigate',
   null,
 )

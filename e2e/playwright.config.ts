@@ -1,5 +1,6 @@
 import os from 'node:os'
 
+import {type ChromaticConfig} from '@chromatic-com/playwright'
 import {
   defineConfig,
   devices,
@@ -77,7 +78,7 @@ const FIREFOX_PROJECT: PlaywrightTestProject = {
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const playwrightConfig: PlaywrightTestConfig = {
+const playwrightConfig: PlaywrightTestConfig<ChromaticConfig> = {
   globalSetup: './globalSetup',
   testDir: TESTS_PATH,
   // Auth tests use a separate config (playwright.auth.config.ts) with their own
@@ -102,6 +103,12 @@ const playwrightConfig: PlaywrightTestConfig = {
   retries: 2,
   reporter: excludeGithub([['list'], ['blob']]),
   use: {
+    // The suite runs against per-PR staging datasets (live timestamps,
+    // presence, parallel mutations), so automatic end-of-test Chromatic
+    // snapshots would be diff noise. Visual snapshots are opt-in at
+    // deterministic moments via `takeChromaticSnapshot` in specs that use the
+    // Chromatic-composed fixtures from ./studio-visual-test.
+    disableAutoSnapshot: true,
     actionTimeout: 10000,
     trace: 'on-first-retry',
     viewport: {width: 1728, height: 1000},
@@ -137,9 +144,15 @@ const playwrightConfig: PlaywrightTestConfig = {
     : {
         /**
          * If it is running in CI just start the production build assuming that studio is already build
-         * Locally run the dev server
+         * Locally run the dev server.
+         *
+         * Run from the studio package with `node --run`, not `pnpm`. pnpm 12.6+
+         * (@pnpm/exe) detaches the script into its own process group, so
+         * Playwright's teardown kill never reaps the server and the runner
+         * hangs. CI against a `.sanity.dev` URL never starts this server.
          */
-        command: CI ? 'pnpm start' : 'pnpm dev',
+        command: CI ? 'node --run start' : 'node --run dev',
+        cwd: '../dev/studio-e2e-testing',
         port: 3339,
         reuseExistingServer: !CI,
         stdout: 'pipe',

@@ -1,5 +1,6 @@
 import {defineLocalesResources} from 'sanity'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',

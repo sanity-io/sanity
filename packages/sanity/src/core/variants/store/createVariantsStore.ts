@@ -3,7 +3,7 @@ import {type Dispatch} from 'react'
 import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store'
+import {listenQuery} from '../../store/document/listenQuery'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -33,6 +33,10 @@ const INITIAL_STATE: VariantStoreState = {
 
 export interface VariantStore {
   state$: Observable<VariantStoreState>
+  /**
+   * What `state$` emits first; hooks render it until the subscription started on commit emits.
+   */
+  initialState: VariantStoreState
   dispatch: Dispatch<VariantStoreAction>
 }
 
@@ -58,6 +62,7 @@ export function createVariantsStore(context: {
 
     return {
       state$: of(disabledState),
+      initialState: disabledState,
       dispatch: () => {
         // noop
       },
@@ -102,6 +107,7 @@ export function createVariantsStore(context: {
 
   return {
     state$,
+    initialState: INITIAL_STATE,
     dispatch,
   }
 }

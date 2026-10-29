@@ -1,6 +1,7 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
+import {Card, LayerProvider, useElementSize} from '@sanity/ui'
+import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
@@ -26,11 +27,9 @@ export interface PaneHeaderProps {
  * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export const PaneHeader = forwardRef(function PaneHeader(
-  props: PaneHeaderProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     actions,
     backButton,
     border,
@@ -43,13 +42,13 @@ export const PaneHeader = forwardRef(function PaneHeader(
     appendTitle,
   } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
-  const paneRect = useElementRect(paneElement || null)
+  const paneSize = useElementSize(paneElement || null)
 
   const layoutStyle = useMemo(
     () => ({
-      width: collapsed ? paneRect?.height || window.innerHeight : undefined,
+      width: collapsed ? paneSize?.border.height || window.innerHeight : undefined,
     }),
-    [collapsed, paneRect],
+    [collapsed, paneSize],
   )
 
   const handleTitleClick = useCallback(() => {
@@ -75,15 +74,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              direction="column"
+              flexDirection="column"
               gap={3}
               onClick={handleLayoutClick}
               padding={3}
-              sizing="border"
               style={layoutStyle}
             >
-              <Flex align="flex-start" gap={3}>
-                {backButton && <Box flex="none">{backButton}</Box>}
+              <Flex alignItems="center" gap={3}>
+                {backButton && (
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                    {backButton}
+                  </Box>
+                )}
 
                 <TitleCard
                   __unstable_focusRing
@@ -99,8 +101,14 @@ export const PaneHeader = forwardRef(function PaneHeader(
                     </Box>
                   )}
                   {!loading && (
-                    <Flex align="center" gap={1}>
-                      <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                    <Flex alignItems="center" gap={1}>
+                      <TitleText
+                        size={1}
+                        truncate={1}
+                        weight="semibold"
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         {title}
                       </TitleText>
                       {appendTitle}
@@ -116,8 +124,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
               </Flex>
 
               {showTabsOrSubActions && (
-                <Flex align="center" hidden={collapsed} overflow="auto">
-                  <Box flex={1} marginRight={subActions ? 3 : 0}>
+                <Flex alignItems="center" hidden={collapsed} overflow="auto">
+                  <Box flexBasis="0%" flexGrow={1} marginRight={subActions ? 3 : 0}>
                     {tabs}
                   </Box>
 
@@ -132,4 +140,4 @@ export const PaneHeader = forwardRef(function PaneHeader(
       </Root>
     </LayerProvider>
   )
-})
+}

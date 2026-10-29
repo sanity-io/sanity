@@ -58,7 +58,8 @@ export function useTranslation<
   const {t} = useOriginalTranslation(
     ns,
     options
-      ? {keyPrefix: options.keyPrefix, lng: options.lng, ...translationOptionOverrides}
+      ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        {keyPrefix: options.keyPrefix, lng: options.lng, ...translationOptionOverrides}
       : translationOptionOverrides,
   )
 

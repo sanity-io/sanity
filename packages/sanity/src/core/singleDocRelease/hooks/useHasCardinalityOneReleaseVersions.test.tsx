@@ -29,6 +29,7 @@ const mockActiveReleasesReturn = {
   loading: false,
   error: undefined,
   dispatch: vi.fn(),
+  byId: new Map<string, ReleaseDocument>(),
 }
 
 const mockDocumentVersionsReturn = {
@@ -48,6 +49,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [],
     })
+    // @ts-expect-error -- pre-existing, fix later
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: [],
@@ -62,7 +64,9 @@ describe('useHasCardinalityOneReleaseVersions', () => {
     useActiveReleases.mockReturnValue({
       ...mockActiveReleasesReturn,
       data: [activeASAPRelease], // This has cardinality 'many'
+      byId: new Map([[activeASAPRelease._id, activeASAPRelease]]),
     })
+    // @ts-expect-error -- pre-existing, fix later
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.rASAP.test-document'],
@@ -77,7 +81,9 @@ describe('useHasCardinalityOneReleaseVersions', () => {
     useActiveReleases.mockReturnValue({
       ...mockActiveReleasesReturn,
       data: [cardinalityOneRelease],
+      byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
     })
+    // @ts-expect-error -- pre-existing, fix later
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.scheduled-draft.test-document'],
@@ -92,7 +98,9 @@ describe('useHasCardinalityOneReleaseVersions', () => {
     useActiveReleases.mockReturnValue({
       ...mockActiveReleasesReturn,
       data: [cardinalityOneRelease],
+      byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
     })
+    // @ts-expect-error -- pre-existing, fix later
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.scheduled-draft.test-document', 'drafts.test-document', 'test-document'],

@@ -1,15 +1,32 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'
 import {useMemo} from 'react'
+import {Text, Flex, VStack, Icon, Link} from 'ui5'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {releasesLocaleNamespace} from '../../i18n'
+
+function HistoryExperienceLink({children}: {children?: React.ReactNode}) {
+  return (
+    <Link
+      href="https://www.sanity.io/docs/user-guides/history-experience"
+      openInNewTab
+      underlined={false}
+      style={{
+        color: 'var(--card-link-color)',
+      }}
+    >
+      {children}
+    </Link>
+  )
+}
 
 export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   const {state} = release
@@ -30,34 +47,32 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   return (
     <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
       <Flex gap={3}>
-        <Text size={1}>
-          <InfoOutlineIcon />
-        </Text>
-        <Stack space={4}>
-          <Text size={1} weight="semibold">
+        <Icon
+          size={1}
+          icon={InfoOutlineIcon}
+          style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+        />
+        <VStack gap={4}>
+          <Text
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>
           {retentionDays && (
-            <Text size={1} accent>
+            <Text size={1} tone="suggest" as="div" trim={true}>
               <Translate
                 t={tRelease}
                 i18nKey="archive-info.description"
                 values={{retentionDays, removalDate: removalDate || ''}}
-                components={{
-                  Link: ({children}) => (
-                    <a
-                      href="https://www.sanity.io/docs/user-guides/history-experience"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {children}
-                    </a>
-                  ),
-                }}
+                components={{Link: HistoryExperienceLink}}
               />
             </Text>
           )}
-        </Stack>
+        </VStack>
       </Flex>
     </Card>
   )

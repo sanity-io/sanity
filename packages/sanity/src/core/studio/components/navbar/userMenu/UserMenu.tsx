@@ -1,27 +1,21 @@
-import {LeaveIcon} from '@sanity/icons/Leave'
-import {
-  Box,
-  // oxlint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling, user avatar .
-  Card,
-  Flex,
-  Menu,
-  MenuDivider,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {getProviderTitle} from '@sanity/access-ui'
+// oxlint-disable-next-line no-restricted-imports -- Button with specific styling, user avatar.
+import {Button, Card} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Text, Box, Flex} from 'ui5'
 
-import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
-import {UserAvatar} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {getProviderTitle} from '../../../../store'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
+import {UserMenuAuthAction} from './UserMenuAuthAction'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -30,12 +24,12 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
+  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `
 
 export function UserMenu() {
-  const {currentUser, auth} = useWorkspace()
+  const {currentUser} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
 
@@ -66,7 +60,7 @@ export function UserMenu() {
       menu={
         <StyledMenu data-testid="user-menu">
           <Card padding={2}>
-            <Flex align="center">
+            <Flex alignItems="center">
               <Tooltip
                 disabled={!providerTitle}
                 portal
@@ -78,32 +72,22 @@ export function UserMenu() {
                 </AvatarBox>
               </Tooltip>
 
-              <Stack space={2} flex={1}>
-                <Text size={1} weight="medium" textOverflow="ellipsis">
+              <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
+                <Text size={1} weight="medium" truncate={1} as="div" trim={true}>
                   {currentUser?.name}
                 </Text>
 
-                <Text size={1} muted textOverflow="ellipsis">
+                <Text size={1} muted truncate={1} as="div" trim={true}>
                   {currentUser?.email}
                 </Text>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
           <LocaleMenu />
 
-          {auth.logout && (
-            <>
-              <MenuDivider />
-              <MenuItem
-                iconRight={LeaveIcon}
-                text={t('user-menu.action.sign-out')}
-                disabled={!auth.logout}
-                {...(auth.logout && {onClick: auth.logout})}
-              />
-            </>
-          )}
+          <UserMenuAuthAction layout="menu" />
         </StyledMenu>
       }
       popover={popoverProps}

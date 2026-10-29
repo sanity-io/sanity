@@ -256,7 +256,9 @@ function* traverseForm(
       case 'fieldSet': {
         for (const fieldsetMember of member.fieldSet.members) {
           if (fieldsetMember.kind === 'error') continue
+          // @ts-expect-error -- pre-existing, fix later
           yield* traverseForm(fieldsetMember.field as FormNode, {
+            // @ts-expect-error -- pre-existing, fix later
             member: fieldsetMember,
             fieldset: member.fieldSet,
           })
@@ -337,6 +339,13 @@ const rootFormNodeOptions: Partial<{
           },
         })
       }
+    },
+  },
+  baseVariantValue: {
+    deriveInput: (path) => updateDocumentAtPath(path, documentValue),
+    assertOutput: ([node]) => {
+      expect(node.changedFromBaseVariant).toBe(true)
+      expect(node.baseVariantValue).toBe('CHANGED')
     },
   },
   readOnly: {
@@ -447,6 +456,8 @@ const defaultOptions: RootFormStateOptions = {
   collapsedPaths: {},
   documentValue,
   comparisonValue: documentValue,
+  baseVariantValue: documentValue,
+  hasBaseVariant: true,
   fieldGroupState: {},
   hidden: undefined,
   readOnly: undefined,

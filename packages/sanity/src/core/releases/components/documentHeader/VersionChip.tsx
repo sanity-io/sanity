@@ -6,12 +6,14 @@ import {type BadgeTone} from '@sanity/ui'
 import {memo, type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanionDocsStore'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
+import {LATEST} from '../../util/const'
 import {Chip} from '../Chip'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenuDialogs} from './contextMenu/VersionContextMenuDialogs'
@@ -29,8 +31,8 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
     () => companionDocsStore.getCompanionDocs(documentId),
     [documentId, companionDocsStore],
   )
-  const companionDocs = useObservable(companionDocs$)
-  return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
+  const companionDocs = useObservable(companionDocs$, INITIAL_COMPANION_DOCS)
+  return companionDocs.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 
 /**
@@ -47,9 +49,10 @@ export const VersionChip = memo(function VersionChip(props: {
   contextMenuPortal?: boolean
   tone: BadgeTone
   locked?: boolean
-  onCopyToDraftsNavigate: () => void
+  onCopyToDraftsComplete?: () => void
   contextValues: {
-    documentId: string
+    documentGroupId: string
+    versionId: string
     documentType: string
     releases: ReleaseDocument[]
     releasesLoading: boolean
@@ -69,9 +72,10 @@ export const VersionChip = memo(function VersionChip(props: {
     contextMenuPortal = true,
     tone,
     locked = false,
-    onCopyToDraftsNavigate,
+    onCopyToDraftsComplete,
     contextValues: {
-      documentId,
+      documentGroupId,
+      versionId,
       releases,
       releasesLoading,
       documentType,
@@ -83,8 +87,7 @@ export const VersionChip = memo(function VersionChip(props: {
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
-  const isLinked = useVersionIsLinked(documentId, bundleId)
-
+  const isLinked = useVersionIsLinked(documentGroupId, bundleId)
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -101,23 +104,25 @@ export const VersionChip = memo(function VersionChip(props: {
     closeDialog,
     openDiscardDialog,
     openCreateReleaseDialog,
-    openCopyToDraftsDialog,
+    handleCopyToDrafts,
     handleAddVersion,
     isScheduledDraft,
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
-    bundleId,
-    isVersion,
     disabled: contextMenuDisabled,
-    release,
+    onCopyToDraftsComplete,
   })
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
   const isPaused = isPausedCardinalityOneRelease(release)
+  // Draft chips may act on the published document when no draft exists (so "add
+  // to a release" copies what's on screen). The avatar still represents drafts.
+  const avatarRelease = bundleId === 'draft' ? LATEST : sourceReleasePerspective
 
   const rightIcon = useMemo(() => {
     if (isLinked) return <ComposeSparklesIcon />
@@ -140,7 +145,7 @@ export const VersionChip = memo(function VersionChip(props: {
             selected={selected}
             tone={tone}
             onContextMenu={contextMenuHandler}
-            icon={<ReleaseAvatarIcon release={sourceReleasePerspective} />}
+            icon={<ReleaseAvatarIcon release={avatarRelease} />}
             iconRight={rightIcon}
             text={text}
           />
@@ -151,16 +156,15 @@ export const VersionChip = memo(function VersionChip(props: {
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}
-        documentId={documentId}
+        documentGroupId={documentGroupId}
+        versionId={versionId}
         documentType={documentType}
         bundleId={bundleId}
-        isVersion={isVersion}
         releases={releases}
         releasesLoading={releasesLoading}
         onDiscard={openDiscardDialog}
         onCreateRelease={openCreateReleaseDialog}
-        onCopyToDrafts={openCopyToDraftsDialog}
-        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         onCreateVersion={handleAddVersion}
         disabled={contextMenuDisabled}
         locked={locked}
@@ -174,14 +178,12 @@ export const VersionChip = memo(function VersionChip(props: {
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionId={versionId}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={text}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}
-        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         isGoingToUnpublish={isGoingToUnpublish}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
       />

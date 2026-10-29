@@ -1,14 +1,17 @@
 import {type Path} from '@sanity/types'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Inline} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
-import {Tooltip, type TooltipProps} from '../../../../ui-components'
-import {LegacyLayerProvider, UserAvatar} from '../../../components'
-import {useRelativeTime} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {Tooltip, type TooltipProps} from '../../../../ui-components/tooltip/Tooltip'
+import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {useRelativeTime} from '../../../hooks/useRelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../store/user/hooks'
 import {type AnnotationDetails, type Diff} from '../../types'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {getAnnotationAtPath} from '../annotations/helpers'
+import {useAnnotationColor} from '../annotations/hooks'
 import {Event} from '../components/Event'
 
 /** @internal */
@@ -47,17 +50,17 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack space={2} style={{minWidth: '240px'}} paddingTop={1}>
-      <Text muted size={1} weight="medium">
+    <Flex gap={2} style={{minWidth: '240px'}} paddingTop={1} flexDirection="column" flexShrink={0}>
+      <Text muted size={1} weight="medium" as="div" trim={true}>
         {description || t('changes.changed-label')}
       </Text>
-      <Stack space={2}>
+      <VStack gap={2}>
         {annotations.map((annotation, idx) => (
           // oxlint-disable-next-line no-array-index-key
           <AnnotationItem key={idx} annotation={annotation} />
         ))}
-      </Stack>
-    </Stack>
+      </VStack>
+    </Flex>
   )
 
   return (
@@ -84,9 +87,9 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
           <Event event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
-        <Inline space={2}>
+        <Inline gap={2}>
           <Flex
-            align="center"
+            alignItems="center"
             paddingRight={3}
             style={{
               backgroundColor: color.background,
@@ -98,14 +101,14 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
               <>
                 <UserAvatar user={author} />
                 <Inline paddingLeft={2}>
-                  <Text muted size={1} style={{color: color.text}}>
+                  <Text muted size={1} style={{color: color.text}} as="div" trim={true}>
                     {user ? user.displayName : t('changes.loading-author')}
                   </Text>
                 </Inline>
               </>
             )}
           </Flex>
-          <Text as="time" muted size={1} dateTime={timestamp}>
+          <Text as="time" muted size={1} dateTime={timestamp} trim={true}>
             {timeAgo}
           </Text>
         </Inline>

@@ -38,15 +38,15 @@ vi.mock('@sanity/ui', async (importActual) => ({
 // Render the dialog chrome as plain pass-throughs so the test stays focused on the
 // global keydown handler (no theme/portal/presence setup required). Partial mocks
 // preserve the other real exports (e.g. Button used by DialogBreadcrumbs).
-vi.mock('../../../ui-components', async (importActual) => ({
+vi.mock('../../../ui-components/dialog/Dialog', async (importActual) => ({
   ...((await importActual()) as Record<string, unknown>),
   Dialog: ({children}: {children: React.ReactNode}) => <div data-testid="dialog">{children}</div>,
 }))
-vi.mock('../../components', async (importActual) => ({
+vi.mock('../../components/popoverDialog/PopoverDialog', async (importActual) => ({
   ...((await importActual()) as Record<string, unknown>),
   PopoverDialog: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
-vi.mock('../../presence', async (importActual) => ({
+vi.mock('../../presence/overlay/PresenceOverlay', async (importActual) => ({
   ...((await importActual()) as Record<string, unknown>),
   PresenceOverlay: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))

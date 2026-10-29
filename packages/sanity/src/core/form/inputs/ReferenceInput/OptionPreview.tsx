@@ -1,8 +1,8 @@
 import {type ReferenceSchemaType} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Flex} from 'ui5'
 
-import {useTranslation} from '../../../i18n'
-import {type RenderPreviewCallback} from '../../types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 import {ReferencePreview} from './ReferencePreview'
 
 /**
@@ -23,11 +23,11 @@ export function OptionPreview(props: {
 
   if (!refType) {
     return (
-      <Stack space={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         {t('inputs.reference.error.invalid-search-result-type-title', {
           returnedType: type,
         })}
-      </Stack>
+      </Flex>
     )
   }
   return (

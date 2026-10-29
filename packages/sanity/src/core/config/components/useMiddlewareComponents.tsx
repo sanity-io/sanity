@@ -1,8 +1,7 @@
-import {Skeleton} from '@sanity/ui'
-import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
+import {type ComponentType, Fragment, useMemo} from 'react'
 
-import {flattenConfig} from '..'
-import {useSource} from '../../studio'
+import {useSource} from '../../studio/source'
+import {flattenConfig} from '../flattenConfig'
 import {type PluginOptions} from '../types'
 
 const emptyRender = () => <Fragment />
@@ -25,17 +24,13 @@ function _createMiddlewareComponent<T extends {}>(
       next = (props) => <Middleware {...props} renderDefault={renderDefault} />
     }
 
-    return (
-      <Suspense fallback={<Skeleton padding={3} radius={1} animated />}>
-        {next({
-          ...outerProps,
-          // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
-          // NOTE: it's important that the default component does not use `renderDefault`, since it will
-          // get the `emptyRender` callback will be passed when the middleware stack is empty.
-          renderDefault: emptyRender,
-        })}
-      </Suspense>
-    )
+    return next({
+      ...outerProps,
+      // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
+      // NOTE: it's important that the default component does not use `renderDefault`, since it will
+      // get the `emptyRender` callback will be passed when the middleware stack is empty.
+      renderDefault: emptyRender,
+    })
   }
   return MiddlewareComponent
 }
@@ -49,6 +44,13 @@ function _createMiddlewareComponent<T extends {}>(
  *   The `renderDefault` function is added to the props of the middleware components so that they can render the default
  *   component and continue the middleware chain.
  *
+ * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`, so
+ * the render site wraps it in `<Suspense>` with a fallback shaped like the component it stands in
+ * for. Form nodes are the exception: they suspend up to the nearest boundary, which is the one
+ * the default components put around each field member and array item (`FormNodeSuspense`), the
+ * Portable Text editor's per-block boundary, or, for the root input, the one `FormBuilder` keeps
+ * around the whole form.
+ *
  * @example
  * Example usage of:
  *
@@ -58,13 +60,18 @@ function _createMiddlewareComponent<T extends {}>(
  *   defaultComponent: StudioLayout,
  *  })
  *
- * return <StudioLayout />
+ * return (
+ *   <Suspense fallback={<LoadingBlock />}>
+ *     <StudioLayout />
+ *   </Suspense>
+ * )
  *```
  */
 export function useMiddlewareComponents<T extends {}>(props: {
   pick: (plugin: PluginOptions) => ComponentType<T>
   defaultComponent: ComponentType<T>
 }): ComponentType<T> {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {options} = useSource().__internal
   const {defaultComponent, pick} = props
 

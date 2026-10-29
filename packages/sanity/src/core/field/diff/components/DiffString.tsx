@@ -1,12 +1,13 @@
-import {Card, rem, Text} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+  border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 `
 
 const ChangeSegment = styled(Text)`
@@ -47,7 +48,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         tooltip={{description: t('changes.added-label')}}
         as={RoundedCard}
       >
-        <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
+        <ChangeSegment forwardedAs="ins" style={{textDecoration: 'none'}}>
           {text}
         </ChangeSegment>
       </DiffCard>
@@ -62,7 +63,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         disableHoverEffect
         tooltip={{description: t('changes.removed-label')}}
       >
-        <ChangeSegment as="del">{text}</ChangeSegment>
+        <ChangeSegment forwardedAs="del">{text}</ChangeSegment>
       </DiffCard>
     )
   }

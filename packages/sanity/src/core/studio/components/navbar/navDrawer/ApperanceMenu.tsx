@@ -1,14 +1,16 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {VStack} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type StudioThemeColorSchemeKey} from '../../../../theme'
 import {useColorSchemeOptions} from '../../../colorScheme'
 
 export function AppearanceMenu({
   setScheme,
 }: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void
 }) {
   const {t} = useTranslation()
@@ -17,9 +19,9 @@ export function AppearanceMenu({
 
   return (
     <Card borderTop flex="none" padding={2} overflow="auto">
-      <Stack as="ul" space={1}>
+      <VStack as="ul" gap={1}>
         {options.map(({icon, label, name, onSelect, selected, title}) => (
-          <Stack key={name} as="li">
+          <VStack key={name} as="li">
             <Button
               aria-label={label}
               icon={icon}
@@ -31,9 +33,9 @@ export function AppearanceMenu({
               size="large"
               text={title}
             />
-          </Stack>
+          </VStack>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

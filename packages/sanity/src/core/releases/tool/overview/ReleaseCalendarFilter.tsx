@@ -3,7 +3,7 @@ import {format} from 'date-fns/format'
 import {AnimatePresence, motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {
   CalendarDay,
   type CalendarDayProps,
@@ -50,14 +50,25 @@ const ReleaseCalendarFilterDayWithCardinality = (
   )
 }
 
-export const createReleaseCalendarFilterDay = (
-  cardinalityView: CardinalityView,
-): CalendarProps['renderCalendarDay'] => {
-  const ReleaseCalendarFilterDayComponent = (props: CalendarDayProps) => (
-    <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView={cardinalityView} />
-  )
-  ReleaseCalendarFilterDayComponent.displayName = 'ReleaseCalendarFilterDayComponent'
-  return ReleaseCalendarFilterDayComponent
+function ReleasesCalendarFilterDay(props: CalendarDayProps) {
+  return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="releases" />
+}
+
+function DraftsCalendarFilterDay(props: CalendarDayProps) {
+  return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="drafts" />
+}
+
+/**
+ * One module-scope day component per cardinality view. `CalendarMonth` mounts `renderCalendarDay`
+ * as a component type, so creating it per render (or per `cardinalityView` through a factory)
+ * would remount every day cell of the calendar whenever the overview re-rendered.
+ */
+export const RELEASE_CALENDAR_FILTER_DAY: Record<
+  CardinalityView,
+  NonNullable<CalendarProps['renderCalendarDay']>
+> = {
+  releases: ReleasesCalendarFilterDay,
+  drafts: DraftsCalendarFilterDay,
 }
 
 const MotionButton = motion.create(Button)

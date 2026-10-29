@@ -3,15 +3,15 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  useToast,
 } from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
@@ -212,12 +212,19 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         tabIndex={0}
         data-id={_id}
         mode="ghost"
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onKeyPress={onKeyPress}
         padding={0}
         style={{padding: 2}}
       >
         <Container __unstable_checkered>
-          <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
+          <Image
+            alt={originalFilename}
+            src={imageUrl}
+            onClick={onClick}
+            data-id={_id}
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
           {isDeleting && <LoadingBlock />}
         </Container>
       </Button>

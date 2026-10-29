@@ -1,7 +1,7 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ARCHIVED_RELEASE_STATES} from '../../util/const'
@@ -17,14 +17,14 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
 
   if (metadata.releaseType === 'asap') {
     return (
-      <Text size={1} muted weight="medium">
+      <Text size={1} muted weight="medium" as="div" trim={true}>
         {t('release.type.asap')}
       </Text>
     )
   }
   if (metadata.releaseType === 'undecided') {
     return (
-      <Text size={1} muted weight="medium" style={{opacity: 0.5}}>
+      <Text size={1} muted weight="medium" style={{opacity: 0.5}} as="div" trim={true}>
         {t('release.type.undecided')}
       </Text>
     )
@@ -36,30 +36,34 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
   const isInArchivedView = ARCHIVED_RELEASE_STATES.includes(release.state)
 
   return (
-    <Flex gap={1} align="center" wrap="wrap">
+    <Flex gap={1} alignItems="center" flexWrap="wrap">
       {isScheduledOrScheduling && (
         <Box paddingY={1}>
-          <Text size={1} muted>
-            <LockIcon data-testid="release-lock-icon" />
-          </Text>
+          <Icon
+            size={1}
+            muted
+            style={{margin: '-0.375rem'}}
+            icon={LockIcon}
+            data-testid="release-lock-icon"
+          />
         </Box>
       )}
       {!isInArchivedView && (
         <>
           <Box paddingY={1}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {isScheduledOrScheduling ? tRelease('time.scheduled') : tRelease('time.estimated')}
             </Text>
           </Box>
           <Box paddingY={1}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {'·'}
             </Text>
           </Box>
         </>
       )}
       <Box paddingY={1}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {getReleaseTime(release)}
         </Text>
       </Box>

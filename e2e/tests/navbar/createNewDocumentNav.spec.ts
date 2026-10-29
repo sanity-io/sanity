@@ -8,13 +8,13 @@ test('create new document from menu button', async ({page, baseURL}) => {
   await expect(page.getByTestId('new-document-button')).toBeEnabled()
   await page.getByTestId('new-document-button').click()
   await page.getByTestId('new-document-button-search-input').fill('Author')
-  const authorLink = page.getByTestId('create-new-author')
+  const authorLink = page.getByTestId('create-new-author-non-singleton')
 
   await expect(authorLink).toBeVisible()
 
   // Forcing due to aria-hidden=true
   // https://github.com/sanity-io/sanity/blob/6d5b4e88c4cb0fbd41fcebbaebabd88e9fac16b5/packages/sanity/src/core/components/commandList/CommandList.tsx#L596
-  await page.getByTestId('create-new-author').click({force: true})
+  await page.getByTestId('create-new-author-non-singleton').click({force: true})
 
   await expect(page.getByTestId('document-pane')).toBeVisible()
 

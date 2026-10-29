@@ -1,16 +1,20 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
+import {Text, Box} from 'ui5'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {EMPTY_ARRAY} from '../../../util'
-import {useTasks, useTasksNavigation} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {EMPTY_ARRAY} from '../../../util/empty'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
+import {useTasks} from '../../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
+import {styledMenu} from './TasksHeaderDraftsMenu.css'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -18,10 +22,6 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
   portal: true,
 }
-
-const StyledMenu = styled(Menu)`
-  width: 220px;
-`
 
 interface TasksDraftsMenuItemProps {
   isSelected: boolean
@@ -83,9 +83,9 @@ export function TasksHeaderDraftsMenu() {
       button={<Button text={t('buttons.draft.text')} mode="ghost" iconRight={ChevronDownIcon} />}
       id="edit-task-menu"
       menu={
-        <StyledMenu>
+        <Menu className={styledMenu}>
           <Box padding={3}>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {t('panel.drafts.title')}
             </Text>
           </Box>
@@ -102,7 +102,7 @@ export function TasksHeaderDraftsMenu() {
               />
             )
           })}
-        </StyledMenu>
+        </Menu>
       }
       popover={MENU_BUTTON_POPOVER_PROPS}
     />

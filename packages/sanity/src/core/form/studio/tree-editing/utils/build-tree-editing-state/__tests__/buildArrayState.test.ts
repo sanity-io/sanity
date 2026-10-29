@@ -231,15 +231,13 @@ const mockDocumentValue = {
 }
 
 // Mock recursive function
-const mockRecursive = vi.fn(
-  (): TreeEditingState => ({
-    breadcrumbs: [],
-    menuItems: [],
-    relativePath: [],
-    rootTitle: '',
-    siblings: new Map(),
-  }),
-)
+const mockRecursive = vi.fn((): TreeEditingState => ({
+  breadcrumbs: [],
+  menuItems: [],
+  relativePath: [],
+  rootTitle: '',
+  siblings: new Map(),
+}))
 
 // Helper function to create test props
 function createTestProps(overrides: Partial<Parameters<typeof buildArrayState>[0]> = {}) {

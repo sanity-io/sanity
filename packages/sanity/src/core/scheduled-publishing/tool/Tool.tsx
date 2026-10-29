@@ -1,14 +1,17 @@
-import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
-import {useEffect, useMemo, useRef} from 'react'
+import {use, useEffect, useMemo, useRef} from 'react'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Text, Container, Box, Flex} from 'ui5'
 
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
@@ -28,8 +31,7 @@ import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
 
-const Column = styled(Box)`
-  flex-direction: column;
+const Column = styled(Flex).attrs({flexDirection: 'column'})`
   &:not(:last-child) {
     border-right: 1px solid var(--card-border-color);
   }
@@ -47,8 +49,8 @@ function ScheduledDraftsBanner() {
   if (isScheduledDraftsEnabled) {
     return (
       <Card padding={4} tone="caution">
-        <Flex gap={3} align="center" justify="center">
-          <Text size={1} weight="medium">
+        <Flex gap={3} alignItems="center" justifyContent="center">
+          <Text size={1} weight="medium" as="div" trim={true} tone="caution">
             Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}
             <Link href={releasesUrl}>available here</Link>
           </Text>
@@ -65,14 +67,22 @@ export default function Tool() {
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {t} = useTranslation()
-  const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
+  // Both settle under the tool's own loading block (`RenderTool` wraps each tool in a `Suspense`)
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const hasUsedPromise = use(HasUsedScheduledPublishingPromiseContext)
+  const mode = modePromise ? use(modePromise) : null
+  // A failed feature check settles the answer on its own: the probe is not waited for then
+  const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false
+  const enabled = mode !== null && hasUsed
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
+  // oxlint-disable react/purity -- `new Date()` is only date-fns `parse`'s reference date; kept as-is rather than changing the parser input
   const selectedDate = router.state.date
     ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
     : undefined
+  // oxlint-enable react/purity
 
   //Store last active schedule state
   useEffect(() => {
@@ -111,7 +121,7 @@ export default function Tool() {
   if (!enabled) {
     if (scheduledPublishing.__internal__workspaceEnabled) {
       return (
-        <Container width={1} paddingTop={4}>
+        <Container size={1} paddingTop={4}>
           <Box paddingTop={4} paddingX={4}>
             <ErrorCallout
               description="Something went wrong loading permissions, please try again."
@@ -123,9 +133,9 @@ export default function Tool() {
     }
     // This is for the case users lands in the tool rout without having the feature enabled.
     return (
-      <Container width={1} paddingTop={4}>
+      <Container size={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
+          <InfoCallout />
         </Box>
       </Container>
     )
@@ -133,11 +143,11 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
-      <Flex direction="column" height="fill" flex={1} overflow="hidden">
-        <Flex flex={1} height="fill">
+      <Flex flexDirection="column" height="100%" flexBasis="0%" flexGrow={1} overflow="hidden">
+        <Flex flexBasis="0%" flexGrow={1} height="100%">
           {/* LHS Column */}
           <Column
-            display={['none', null, null, 'flex'] as any}
+            display={['none', null, null, 'flex']}
             style={{
               position: 'sticky',
               top: 0,
@@ -151,10 +161,11 @@ export default function Tool() {
             />
           </Column>
           {/* RHS Column */}
-          <Column display="flex" flex={1} overflow="hidden">
+          <Column flexBasis="0%" flexGrow={1} overflow="hidden">
             <ScheduledDraftsBanner />
             <TimeZoneButtonElementQuery
               style={{
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 background: theme.color.card.enabled.bg,
                 position: 'sticky',
                 top: 0,
@@ -163,7 +174,7 @@ export default function Tool() {
             >
               {/* Header */}
               <Flex
-                align="center"
+                alignItems="center"
                 paddingLeft={4}
                 paddingRight={3}
                 style={{
@@ -171,12 +182,17 @@ export default function Tool() {
                   minHeight: `${TOOL_HEADER_HEIGHT}px`,
                 }}
               >
-                <Flex align="center" flex={1} justify="space-between">
+                <Flex
+                  alignItems="center"
+                  flexBasis="0%"
+                  flexGrow={1}
+                  justifyContent="space-between"
+                >
                   {/* Filters */}
                   <ScheduleFilters onClearDate={handleClearDate} selectedDate={selectedDate} />
 
                   {/* Time zone select + context menu */}
-                  <Flex align="center" gap={1}>
+                  <Flex alignItems="center" gap={1}>
                     <TimeZoneButton
                       tooltipContent={t('time-zone.time-zone-tooltip-content-releases', {
                         alternativeName: timeZone.alternativeName,
@@ -190,7 +206,7 @@ export default function Tool() {
                 </Flex>
               </Flex>
             </TimeZoneButtonElementQuery>
-            <Flex direction="column" flex={1}>
+            <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
               {/* Error */}
               {error && (
                 <Box paddingTop={4} paddingX={4}>
@@ -201,10 +217,12 @@ export default function Tool() {
                 </Box>
               )}
 
-              <Box flex={1} overflow="auto">
+              <Box flexBasis="0%" flexGrow={1} overflow="auto">
                 {isInitialLoading ? (
                   <Box padding={4}>
-                    <Text muted>Loading...</Text>
+                    <Text muted as="div" trim={true}>
+                      Loading...
+                    </Text>
                   </Box>
                 ) : (
                   // Loaded schedules

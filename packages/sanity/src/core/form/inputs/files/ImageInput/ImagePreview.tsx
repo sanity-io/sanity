@@ -1,9 +1,10 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type Card, Text} from '@sanity/ui'
+import {type Card} from '@sanity/ui'
 import {type ComponentProps, useCallback, useEffect, useState} from 'react'
+import {Icon, Text} from 'ui5'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type AssetAccessPolicy} from '../types'
 import {ErrorIconWrapper, FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
@@ -21,9 +22,10 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLoaded(false)
     setHasError(false)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [src])
 
   const onLoadChange = useCallback(() => {
@@ -61,7 +63,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
 function LoadingOverlay() {
   return (
     <Overlay padding={3} tone="transparent">
-      <FlexOverlay direction="column" align="center" justify="center">
+      <FlexOverlay flexDirection="column" alignItems="center" justifyContent="center">
         <LoadingBlock showText />
       </FlexOverlay>
     </Overlay>
@@ -73,11 +75,14 @@ function AccessWarningOverlay() {
 
   return (
     <Overlay padding={3} tone="critical" border>
-      <FlexOverlay direction="column" align="center" justify="center" gap={2}>
+      <FlexOverlay flexDirection="column" alignItems="center" justifyContent="center" gap={2}>
         <ErrorIconWrapper>
-          <WarningOutlineIcon />
+          <Icon
+            icon={WarningOutlineIcon}
+            style={{color: 'var(--card-icon-color)', fontSize: '1.5em'}}
+          />
         </ErrorIconWrapper>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true} tone="critical">
           {t('inputs.image.error.possible-access-restriction')}
         </Text>
       </FlexOverlay>

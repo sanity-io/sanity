@@ -1,10 +1,10 @@
 /* oxlint-disable no-restricted-imports */
 
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
-import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
-import {styled} from 'styled-components'
+import {type ElementType, type HTMLProps, type RefAttributes} from 'react'
 
-import {Tooltip, type TooltipProps} from '..'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
+import {tooltipButtonWrapper} from './Button.css'
 
 type BaseButtonProps = Pick<
   UIButtonProps<ElementType>,
@@ -44,34 +44,31 @@ type IconButton = {
 export type ButtonProps = BaseButtonProps & (ButtonWithText | IconButton)
 
 const LARGE_BUTTON_PROPS = {
-  space: 3,
+  gap: 3,
   padding: 3,
 }
 const DEFAULT_BUTTON_PROPS = {
-  space: 2,
+  gap: 2,
   padding: 2,
 }
 
-const TooltipButtonWrapper = styled.span`
-  display: inline-flex;
-`
 /**
  * Customized Sanity UI <Button> with pre-defined layout options.
  *
  * @internal
  */
-export const Button = forwardRef(function Button(
-  {
-    size = 'default',
-    mode = 'default',
-    paddingY,
-    paddingLeft,
-    tone = 'default',
-    tooltipProps,
-    ...rest
-  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
+export function Button({
+  ref,
+  size = 'default',
+  mode = 'default',
+  paddingY,
+  paddingLeft,
+  tone = 'default',
+  tooltipProps,
+  ...rest
+}: ButtonProps &
+  Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'> &
+  RefAttributes<HTMLButtonElement>) {
   const sizeProps = size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS
 
   const children = (
@@ -90,10 +87,10 @@ export const Button = forwardRef(function Button(
     return (
       <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <TooltipButtonWrapper>{children}</TooltipButtonWrapper>
+        <span className={tooltipButtonWrapper}>{children}</span>
       </Tooltip>
     )
   }
 
   return children
-})
+}

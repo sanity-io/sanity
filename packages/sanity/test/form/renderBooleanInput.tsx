@@ -1,6 +1,9 @@
 import {type BooleanSchemaType, type FieldDefinition} from '@sanity/types'
 
-import {type BooleanInputProps, type PrimitiveInputElementProps} from '../../src/core'
+import {
+  type BooleanInputProps,
+  type PrimitiveInputElementProps,
+} from '../../src/core/form/types/inputProps'
 import {renderInput, type RenderInputResult, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 
@@ -20,6 +23,7 @@ export async function renderBooleanInput(options: {
   ): BooleanInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
+    // @ts-expect-error -- pre-existing, fix later
     return {
       ...restProps,
       changed: false,

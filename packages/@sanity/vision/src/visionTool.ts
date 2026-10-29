@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'

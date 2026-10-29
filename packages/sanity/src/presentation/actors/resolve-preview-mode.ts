@@ -24,9 +24,12 @@ export function defineResolvePreviewModeActor({
     /**
      * Handle legacy draftMode options
      */
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     if (typeof previewUrlOption === 'object' && previewUrlOption?.draftMode) {
       return {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         enable: previewUrlOption.draftMode.enable,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         shareAccess: previewUrlOption.draftMode.shareAccess ?? true,
       }
     }

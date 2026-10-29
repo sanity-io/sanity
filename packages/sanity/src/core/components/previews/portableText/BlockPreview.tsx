@@ -1,5 +1,6 @@
-import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
+import {rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex, Box, VStack} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -15,7 +16,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   min-height: ${rem(PREVIEW_SIZES.block.media.height)};
 `
 
@@ -38,11 +39,11 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
   const isUploading = typeof progress === 'number' && progress > -1
 
   return (
-    <Stack data-testid="block-preview" space={1}>
+    <VStack data-testid="block-preview" gap={1}>
       <HeaderFlex data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
-        <Box flex={1} paddingLeft={media ? 2 : 1}>
+        <Box flexBasis="0%" flexGrow={1} paddingLeft={media ? 2 : 1}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             {title ? renderPreviewNode(title, 'block') : 'Untitled'}
           </Text>
@@ -82,6 +83,6 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
       </HeaderFlex>
 
       {children && <div data-testid="block-preview__children">{children}</div>}
-    </Stack>
+    </VStack>
   )
 }

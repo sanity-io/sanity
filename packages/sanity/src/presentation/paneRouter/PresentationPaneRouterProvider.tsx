@@ -1,6 +1,7 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {forwardRef, type PropsWithChildren, useCallback, useMemo} from 'react'
+import {type PropsWithChildren, useCallback, useContext, useMemo, type RefAttributes} from 'react'
 import {getPublishedId, useUnique} from 'sanity'
+import {PresentationPaneLinksContext} from 'sanity/_singletons'
 import {StateLink, useRouter} from 'sanity/router'
 import {
   type BackLinkProps,
@@ -12,6 +13,7 @@ import {
 
 import {
   type PresentationNavigate,
+  type PresentationPaneLinksContextValue,
   type PresentationParamsContextValue,
   type PresentationSearchParams,
   type StructureDocumentPaneParams,
@@ -50,11 +52,12 @@ function resolveQueryStringFromParams(nextParams: Record<string, string | undefi
   return encodeQueryString(safeNextParams)
 }
 
-const BackLink = forwardRef(function BackLink(
-  props: BackLinkProps & {searchParams: PresentationSearchParams},
-  ref: React.ForwardedRef<HTMLAnchorElement>,
+function BackLink(
+  props: BackLinkProps & {
+    searchParams: PresentationSearchParams
+  } & RefAttributes<HTMLAnchorElement>,
 ) {
-  const {searchParams, ...restProps} = props
+  const {ref, searchParams, ...restProps} = props
   return (
     <StateLink
       {...restProps}
@@ -66,7 +69,53 @@ const BackLink = forwardRef(function BackLink(
       title={undefined}
     />
   )
-})
+}
+
+function usePaneLinks(): PresentationPaneLinksContextValue {
+  const value = useContext(PresentationPaneLinksContext)
+  if (!value) {
+    throw new Error('Presentation: missing pane links context')
+  }
+  return value
+}
+
+function PaneRouterChildLink(props: ChildLinkProps & RefAttributes<HTMLAnchorElement>) {
+  const {refs, searchParams} = usePaneLinks()
+  const {ref, childId, childParameters, ...rest} = props
+  const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
+
+  if (!doc) {
+    return (
+      <StructureIntentChildLink
+        {...rest}
+        ref={ref}
+        childId={childId}
+        childParameters={childParameters}
+      />
+    )
+  }
+  return (
+    <ChildLink
+      {...rest}
+      ref={ref}
+      childId={childId}
+      childType={doc._type}
+      searchParams={searchParams}
+    />
+  )
+}
+
+function PaneRouterBackLink(props: BackLinkProps & RefAttributes<HTMLAnchorElement>) {
+  const {searchParams} = usePaneLinks()
+  return <BackLink {...props} searchParams={searchParams} />
+}
+
+function PaneRouterReferenceChildLink(
+  props: ReferenceChildLinkProps & RefAttributes<HTMLAnchorElement>,
+) {
+  const {searchParams} = usePaneLinks()
+  return <ReferenceChildLink {...props} searchParams={searchParams} />
+}
 
 export type PresentationPaneRouterProviderProps = PropsWithChildren<{
   onEditReference: PresentationNavigate
@@ -83,6 +132,7 @@ export function PresentationPaneRouterProvider(
 
   const {state: routerState, resolvePathFromState} = useRouter()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const createPathWithParams: PaneRouterContextValue['createPathWithParams'] = useCallback(
@@ -108,42 +158,9 @@ export function PresentationPaneRouterProvider(
       hasGroupSiblings: false,
       groupLength: 1,
       routerPanesState: [],
-      ChildLink: forwardRef<HTMLAnchorElement, ChildLinkProps>(
-        function ContextChildLink(childLinkProps, ref) {
-          const {childId, childParameters, ...rest} = childLinkProps
-          const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
-
-          if (!doc) {
-            return (
-              <StructureIntentChildLink
-                {...rest}
-                ref={ref}
-                childId={childId}
-                childParameters={childParameters}
-              />
-            )
-          }
-          return (
-            <ChildLink
-              {...rest}
-              ref={ref}
-              childId={childId}
-              childType={doc._type}
-              searchParams={searchParams}
-            />
-          )
-        },
-      ),
-      BackLink: forwardRef<HTMLAnchorElement, BackLinkProps>(
-        function ContextBackLink(backLinkProps, ref) {
-          return <BackLink {...backLinkProps} ref={ref} searchParams={searchParams} />
-        },
-      ),
-      ReferenceChildLink: forwardRef<HTMLAnchorElement, ReferenceChildLinkProps>(
-        function ContextReferenceChildLink(childLinkProps, ref) {
-          return <ReferenceChildLink {...childLinkProps} ref={ref} searchParams={searchParams} />
-        },
-      ),
+      ChildLink: PaneRouterChildLink,
+      BackLink: PaneRouterBackLink,
+      ReferenceChildLink: PaneRouterReferenceChildLink,
       ParameterizedLink: () => {
         throw new Error('ParameterizedLink not implemented')
       },
@@ -182,14 +199,16 @@ export function PresentationPaneRouterProvider(
       },
       createPathWithParams,
     }
-  }, [
-    createPathWithParams,
-    onEditReference,
-    onStructureParams,
-    refs,
-    searchParams,
-    structureParams,
-  ])
+  }, [createPathWithParams, onEditReference, onStructureParams, structureParams])
 
-  return <PaneRouterContext.Provider value={context}>{children}</PaneRouterContext.Provider>
+  const paneLinks: PresentationPaneLinksContextValue = useMemo(
+    () => ({refs, searchParams}),
+    [refs, searchParams],
+  )
+
+  return (
+    <PresentationPaneLinksContext.Provider value={paneLinks}>
+      <PaneRouterContext.Provider value={context}>{children}</PaneRouterContext.Provider>
+    </PresentationPaneLinksContext.Provider>
+  )
 }

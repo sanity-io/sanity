@@ -2,11 +2,11 @@ import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {DESCRIPTOR_CONVERTER} from '../../../schema'
+import {DESCRIPTOR_CONVERTER} from '../../../schema/descriptors'
 import {_clearClaimPromiseCache, uploadSchema} from '../uploadSchema'
 
 // Mock DESCRIPTOR_CONVERTER.get() to return a controlled descriptorId
-vi.mock('../../../schema', () => ({
+vi.mock('../../../schema/descriptors', () => ({
   DESCRIPTOR_CONVERTER: {
     get: vi.fn(),
   },
@@ -64,7 +64,7 @@ describe('uploadSchema', () => {
     expect(client.request).toHaveBeenCalledTimes(1)
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({
-        uri: '/descriptors/claim',
+        url: '/descriptors/claim',
         method: 'POST',
       }),
     )

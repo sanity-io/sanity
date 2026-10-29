@@ -1,13 +1,19 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useToast} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useToast} from '@sanity/ui/toast'
+import {useCallback, useEffect, useMemo} from 'react'
 
-import {useClient, useSchema, useTemplates} from '../hooks'
+import {useClient} from '../hooks/useClient'
+import {useSchema} from '../hooks/useSchema'
+import {useTemplates} from '../hooks/useTemplates'
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import {createDocumentPreviewStore, type DocumentPreviewStore} from '../preview'
-import {useSource, useStudioErrorHandler, useWorkspace} from '../studio'
+import {
+  createDocumentPreviewStore,
+  type DocumentPreviewStore,
+} from '../preview/documentPreviewStore'
+import {useStudioErrorHandler} from '../studio/requestErrors/useStudioErrorHandler'
+import {useSource} from '../studio/source'
+import {useWorkspace} from '../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {createComlinkStore} from './comlink/createComlinkStore'
 import {type ComlinkStore} from './comlink/types'
@@ -15,34 +21,37 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {
-  createDocumentStore,
-  type DocumentPairLoadedEvent,
-  type DocumentRebaseTelemetryEvent,
-  type DocumentStore,
-  type LatencyReportEvent,
-  type MutationPerformanceEvent,
-} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
+import {createDocumentStore, type DocumentStore} from './document/document-store'
+import {
+  type DocumentPairLoadedEvent,
+  type DocumentRebaseTelemetryEvent,
+  type LatencyReportEvent,
+  type MutationPerformanceEvent,
+} from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
-import {createGrantsStore, type GrantsStore} from './grants'
-import {createHistoryStore, type HistoryStore} from './history'
-import {createKeyValueStore, type KeyValueStore} from './key-value'
+import {createGrantsStore} from './grants/grantsStore'
+import {type GrantsStore} from './grants/types'
+import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
+import {createKeyValueStore} from './key-value/keyValueStore'
+import {type KeyValueStore} from './key-value/types'
 import {createPresenceStore, type PresenceStore} from './presence/presence-store'
-import {createProjectStore, type ProjectStore} from './project'
+import {createProjectStore} from './project/projectStore'
+import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
-import {type RenderingContextStore} from './renderingContext/types'
+import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
-import {useCurrentUser} from './user'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * Latencies below this value will not be logged
  */
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
+
 const IGNORE_LATENCY_BELOW_MS = 1000
 
 /** Minimum time between slow commit toast notifications */
@@ -53,6 +62,7 @@ const slowCommitCooldown = {lastToastAt: 0}
  * @hidden
  * @beta */
 export function useUserStore(): UserStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -78,9 +88,11 @@ export function useUserStore(): UserStore {
  * @hidden
  * @beta */
 export function useGrantsStore(): GrantsStore {
-  const {getClient} = useSource()
+  // `currentUser` is read from the source directly (instead of via `useCurrentUser` from
+  // `./user/hooks`) to avoid a circular import: `./user/hooks` imports `useUserStore` from here.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const {getClient, currentUser} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const currentUser = useCurrentUser()
   const resourceCache = useResourceCache()
   const errorHandler = useStudioErrorHandler()
 
@@ -153,6 +165,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
@@ -295,6 +308,7 @@ export function useDocumentStore(): DocumentStore {
 
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {bifur} = useSource().__internal
   const resourceCache = useResourceCache()
 
@@ -321,6 +335,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const resourceCache = useResourceCache()
   const userStore = useUserStore()
@@ -432,21 +447,31 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  const capabilities = useObservable(renderingContext.capabilities, {})
 
-  return useMemo(() => {
-    const comlinkStore =
+  const comlinkStore = useMemo(() => {
+    const store =
       resourceCache.get<ComlinkStore>({
-        dependencies: [capabilities],
+        dependencies: [renderingContext],
         namespace: 'ComlinkStore',
-      }) || createComlinkStore({capabilities})
+      }) ||
+      // Read once: Comlink only comes from the URL, which doesn't change.
+      createComlinkStore({capabilities: renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES})
 
     resourceCache.set({
-      dependencies: [capabilities],
+      dependencies: [renderingContext],
       namespace: 'ComlinkStore',
-      value: comlinkStore,
+      value: store,
     })
 
-    return comlinkStore
-  }, [capabilities, resourceCache])
+    return store
+  }, [renderingContext, resourceCache])
+
+  // The store is created during render, which React may abandon; the node is
+  // only held once a consumer commits. Holding is idempotent, so every
+  // consumer may ask for it.
+  useEffect(() => {
+    comlinkStore.start()
+  }, [comlinkStore])
+
+  return comlinkStore
 }

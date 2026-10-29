@@ -359,27 +359,25 @@ export function readDocumentDivergences({
               const [, moveInSubject] = moves
               return typeof moveInSubject !== 'undefined'
             }),
-            map(
-              ([, positionDelta]): DivergenceAtPath => [
-                path,
-                {
-                  documentId: upstreamHead._id,
-                  documentType: subjectHead._type,
-                  subjectId: subjectHead._id,
-                  status: 'unresolved',
-                  isAddressable: true,
-                  effect: 'move',
-                  delta: positionDelta,
-                  upstreamPosition: upstreamHeadIndex,
-                  sinceRevisionId: createDocumentRevisionMarker(
-                    upstreamAtFork._id,
-                    upstreamAtFork?._rev,
-                  ),
-                  path: path,
-                  snapshots,
-                },
-              ],
-            ),
+            map(([, positionDelta]): DivergenceAtPath => [
+              path,
+              {
+                documentId: upstreamHead._id,
+                documentType: subjectHead._type,
+                subjectId: subjectHead._id,
+                status: 'unresolved',
+                isAddressable: true,
+                effect: 'move',
+                delta: positionDelta,
+                upstreamPosition: upstreamHeadIndex,
+                sinceRevisionId: createDocumentRevisionMarker(
+                  upstreamAtFork._id,
+                  upstreamAtFork?._rev,
+                ),
+                path: path,
+                snapshots,
+              },
+            ]),
           )
         }
 
@@ -557,35 +555,33 @@ export function readDocumentDivergences({
               })
             }),
             delayTask(),
-            map(
-              (hashes): DivergenceAtPath => [
-                path,
-                {
-                  documentId: upstreamHead._id,
-                  documentType: subjectHead._type,
-                  subjectId: subjectHead._id,
-                  path: path,
-                  snapshots,
-                  status:
-                    // The upstream has not changed since the resolution.
-                    hashes.upstreamHead === resolutionMarker[1] ||
-                    // The upstream is not different to the current value in the subject document.
-                    hashes.upstreamHead === hashes.subjectHead
-                      ? 'resolved'
-                      : 'unresolved',
-                  // A resolution already exists for the node, so it can be assumed the divergence
-                  // is addressable.
-                  isAddressable: true,
-                  effect: selectEffectFromHash({
-                    fromHash: resolutionMarker[1],
-                    toHash: hashes.upstreamHead,
-                    upstreamParentIsArray: Array.isArray(snapshots.upstreamHead),
-                    path,
-                  }),
-                  sinceRevisionId: resolutionMarker[0],
-                },
-              ],
-            ),
+            map((hashes): DivergenceAtPath => [
+              path,
+              {
+                documentId: upstreamHead._id,
+                documentType: subjectHead._type,
+                subjectId: subjectHead._id,
+                path: path,
+                snapshots,
+                status:
+                  // The upstream has not changed since the resolution.
+                  hashes.upstreamHead === resolutionMarker[1] ||
+                  // The upstream is not different to the current value in the subject document.
+                  hashes.upstreamHead === hashes.subjectHead
+                    ? 'resolved'
+                    : 'unresolved',
+                // A resolution already exists for the node, so it can be assumed the divergence
+                // is addressable.
+                isAddressable: true,
+                effect: selectEffectFromHash({
+                  fromHash: resolutionMarker[1],
+                  toHash: hashes.upstreamHead,
+                  upstreamParentIsArray: Array.isArray(snapshots.upstreamHead),
+                  path,
+                }),
+                sinceRevisionId: resolutionMarker[0],
+              },
+            ]),
           )
         }
 

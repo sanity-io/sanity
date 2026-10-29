@@ -1,4 +1,4 @@
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 
 /** @internal */
 export interface ConfigPropertyErrorOptions {

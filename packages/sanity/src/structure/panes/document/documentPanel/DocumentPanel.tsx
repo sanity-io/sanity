@@ -1,11 +1,10 @@
-import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isCardinalityOneRelease,
-  isDocumentInSelectedVariant,
-  getTargetDocument,
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
@@ -15,44 +14,49 @@ import {
   isReleaseScheduledOrScheduling,
   isSystemBundle,
   LegacyLayerProvider,
+  PortalBoundaryProvider,
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
-  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
-import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {PaneContent} from '../../../components/pane/PaneContent'
+import {usePane} from '../../../components/pane/usePane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
+import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
-import {
-  DeletedDocumentBanners,
-  DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
-  ReferenceChangedBanner,
-  ScheduledDraftOverrideBanner,
-} from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
+import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
+import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
+import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
+import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
+import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
+import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
-import {FormView} from './documentViews'
+import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -63,24 +67,6 @@ interface DocumentPanelProps {
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
-
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -103,6 +89,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    targetDocumentState,
   } = useDocumentPane()
 
   const {params} = usePaneRouter()
@@ -122,10 +109,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeViewId, views],
   )
 
-  // Use a local portal container when split panes is supported
-  const portalElement: HTMLElement | null = features.splitPanes
-    ? _portalElement || parentPortal.element
-    : parentPortal.element
+  const showInspector = Boolean(!collapsed && inspector)
+  // Keep the form mounted when the inspector takes over a collapsed layout.
+  // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
+  // full-pane mode comes back inline after the window is widened again.
+  const showFormView = features.resizablePanes || !showInspector
+
+  // Fullscreen PTE portals to this element. When the form is hidden, keep that
+  // target inside the hidden subtree so the editor cannot cover the inspector.
+  const portalElement: HTMLElement | null =
+    features.splitPanes || !showFormView
+      ? _portalElement || parentPortal.element
+      : parentPortal.element
 
   // Calculate the height of the header
   const margins: [number, number, number, number] = useMemo(() => {
@@ -192,17 +187,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ) : null
   }, [isInspectOpen, displayed, value])
 
-  const showInspector = Boolean(!collapsed && inspector)
-  const {bundle, selectedReleaseId, selectedPerspectiveName, selectedVariant, selectedPerspective} =
-    usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
 
-  const documentVersions = useDocumentVersions({documentId})
-  const targetDocument = getTargetDocument({
-    variant: selectedVariant?._id,
-    bundle: bundle,
-    documentVersions: documentVersions.versions,
-  })
-  const hasDocumentInRelease = selectedPerspectiveName && Boolean(targetDocument)
+  const hasDocumentInRelease =
+    selectedPerspectiveName &&
+    targetDocumentState.status === 'ready' &&
+    Boolean(targetDocumentState.targetDocument)
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -228,15 +218,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ),
     [archivedReleases, selectedPerspectiveName],
   )
-  const isInSelectedVariant =
-    selectedVariant && !documentVersions.loading
-      ? isDocumentInSelectedVariant({
-          selectedVariant,
-          bundle,
-          documentVersions: documentVersions.versions,
-        })
-      : true
-
   const banners = useMemo(() => {
     const archivedReleaseId =
       params?.historyVersion ??
@@ -246,6 +227,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (archivedReleaseId) {
       return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
+
+    const deletedDocumentBanners = activeView.type === 'form' ? <DeletedDocumentBanners /> : null
 
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
@@ -269,13 +252,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       })
     ) {
       return (
-        !isSelectedPerspectiveWriteable.result && (
-          <ChooseNewDocumentDestinationBanner
-            schemaType={schemaType}
-            selectedPerspective={selectedPerspective}
-            reason={isSelectedPerspectiveWriteable.reason}
-          />
-        )
+        <>
+          {!isSelectedPerspectiveWriteable.result && (
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={selectedPerspective}
+              reason={isSelectedPerspectiveWriteable.reason}
+            />
+          )}
+          {deletedDocumentBanners}
+        </>
       )
     }
 
@@ -302,8 +288,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    if (!isInSelectedVariant) {
+    // A creatable missing draft variant renders no banner: the form is simply editable — typing
+    // creates the document at the server-advertised id — matching the base draft/published
+    // experience where editing the published fallback creates the draft.
+    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
       return <DocumentNotInVariantBanner />
+    }
+
+    if (targetDocumentState.status === 'variant-definition-document-not-found') {
+      return (
+        <VariantDefinitionNotFoundBanner
+          requestedVariantName={targetDocumentState.requestedVariantName}
+        />
+      )
     }
 
     const isCurrentVersionGoingToUnpublish =
@@ -328,11 +325,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    const displayedHasObsoleteDraft = hasObsoleteDraft({
-      editState,
-      workspace,
-      schemaType,
-    })
+    const displayedHasObsoleteDraft = hasObsoleteDraft({targetDocumentState, workspace, schemaType})
 
     if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
       if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {
@@ -377,8 +370,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <CanvasLinkedBanner />
-        <DeletedDocumentBanners />
+        {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
+        <SeeDraftBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
           isPinnedDraftOrPublished={isPinnedDraftOrPublish}
@@ -405,64 +399,82 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
-    isInSelectedVariant,
+    targetDocumentState,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
-  const showFormView = features.resizablePanes || !showInspector
+
+  const inspectorPortalElements = {
+    ...parentPortal.elements,
+    [DOCUMENT_PANEL_PORTAL_ELEMENT]: showFormView ? portalElement : parentPortal.element,
+  }
+
   return (
     <PaneContent>
-      <Flex height="fill">
-        {showFormView && (
-          <Flex height="fill" direction="column" flex={2}>
+      <Flex height="100%">
+        <div
+          data-testid="document-panel-form-view"
+          hidden={!showFormView}
+          style={{display: showFormView ? 'contents' : 'none'}}
+        >
+          <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2}>
-              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
+            <Box className={documentBox} flexBasis="0%" flexGrow={2}>
+              {/* The scroll container is the visible region for everything portaled into the pane
+                  (between the sticky header and footer): popovers that escape dialogs use it as
+                  their boundary, see PortalBoundaryProvider. */}
+              <PortalBoundaryProvider element={documentScrollElement} portalElement={portalElement}>
+                <PortalProvider element={portalElement} __unstable_elements={portalElements}>
+                  <BoundaryElementProvider element={documentScrollElement}>
+                    <VirtualizerScrollInstanceProvider
+                      scrollElement={documentScrollElement}
+                      containerElement={formContainerElement}
                     >
-                      <FormView
-                        hidden={formViewHidden}
-                        margins={margins}
-                        ref={formContainerElement}
-                      />
-                      {activeViewNode}
-                    </Scroller>
+                      <ScrollContainer
+                        className={clsx(scroller, !layoutCollapsed && scrollerEnabled)}
+                        data-testid="document-panel-scroller"
+                        ref={setDocumentScrollElement}
+                      >
+                        <FormView
+                          hidden={formViewHidden}
+                          margins={margins}
+                          ref={formContainerElement}
+                        />
+                        {activeViewNode}
+                      </ScrollContainer>
 
-                    {inspectDialog}
+                      {inspectDialog}
 
-                    <div data-testid="document-panel-portal" ref={setPortalElement} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
+                      <div data-testid="document-panel-portal" ref={setPortalElement} />
+                    </VirtualizerScrollInstanceProvider>
+                  </BoundaryElementProvider>
+                </PortalProvider>
+              </PortalBoundaryProvider>
+            </Box>
 
             {footer}
           </Flex>
-        )}
+        </div>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
+            <PortalProvider
+              element={parentPortal.element}
+              __unstable_elements={inspectorPortalElements}
+            >
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </PortalProvider>
           </BoundaryElementProvider>
         )}
       </Flex>
     </PaneContent>
   )
 }
-DocumentPanel.displayName = 'DocumentPanel'

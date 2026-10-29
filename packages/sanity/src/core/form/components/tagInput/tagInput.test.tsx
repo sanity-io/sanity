@@ -4,7 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {TagInput} from './tagInput'
 
-vi.mock('../../../i18n', () => ({
+vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
@@ -22,6 +22,7 @@ vi.mock('../../../i18n', () => ({
 // left-only padding, so the text sits flush against the left edge.
 function renderTag({readOnly}: {readOnly: boolean}) {
   return render(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <TagInput readOnly={readOnly} value={[{value: 'Robert De Niro'}]} />
     </ThemeProvider>,
@@ -64,6 +65,7 @@ describe('TagInput tag padding (regression: #13429)', () => {
     // structural issue as readOnly (remove button hidden, so the Box needs
     // its own right-side padding to keep the text centered).
     render(
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <TagInput disabled value={[{value: 'Robert De Niro'}]} />
       </ThemeProvider>,

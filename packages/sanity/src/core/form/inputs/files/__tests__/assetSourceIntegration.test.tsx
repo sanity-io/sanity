@@ -14,12 +14,14 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
+import {renderFileInput} from '../../../../../../test/form/renderFileInput'
+import {renderImageInput} from '../../../../../../test/form/renderImageInput'
+import {renderVideoInput} from '../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
-import {BaseFileInput} from '../FileInput'
-import {BaseImageInput} from '../ImageInput'
+import {BaseFileInput} from '../FileInput/FileInput'
+import {BaseImageInput} from '../ImageInput/ImageInput'
 
 function getBrowseTestId(schemaTypeName: string, sourceName: string): string {
   const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})
@@ -56,7 +58,7 @@ vi.mock('../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', (
 
 // Mock VideoPlayer to avoid loading @mux/mux-player-react and media-chrome (slow startup)
 vi.mock('../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
-  VideoPlayer: () => null,
+  default: () => null,
 }))
 
 const INPUT_CONFIGS = [
@@ -179,7 +181,8 @@ describe.each(INPUT_CONFIGS)(
         {timeout: 10000},
       )
 
-      // Verify reset: a second upload should work. Without signalCompletion the input would stay stuck.
+      // Verify reset: a second upload should work. Without the terminal statuses
+      // firing all-complete, the input would stay stuck.
       const file2 =
         _inputType === 'video'
           ? new File(['more content'], 'test2.mp4', {type: 'video/mp4'})
@@ -545,6 +548,7 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
     it('passes selectedAssets when opened via browse with existing value', async () => {
       const SelectedAssetsTestSource: AssetSource = {
         name: 'media-library-mock',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         title: 'Test',
         component: (props) => (
           <div

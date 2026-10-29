@@ -13,6 +13,28 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
+/**
+ * Whether `element` can be brought fully into view: its height against the shortest of the
+ * viewport and every ancestor that clips its content vertically — the same frames
+ * `scrollIntoView` scrolls, so all of them have to be able to show it.
+ */
+function fitsInScrollport(element: HTMLElement): boolean {
+  const {defaultView, documentElement} = element.ownerDocument
+  let scrollportHeight = defaultView?.visualViewport?.height ?? documentElement.clientHeight
+
+  for (let node = element.parentElement; node; node = node.parentElement) {
+    // An ancestor that isn't overflowed shows all of its content whatever its overflow is, so
+    // it constrains nothing.
+    if (node.clientHeight >= node.scrollHeight) continue
+    const overflowY = defaultView?.getComputedStyle(node).overflowY
+    if (overflowY && overflowY !== 'visible' && overflowY !== 'clip') {
+      scrollportHeight = Math.min(scrollportHeight, node.clientHeight)
+    }
+  }
+
+  return element.getBoundingClientRect().height <= scrollportHeight
+}
+
 interface Props {
   focusPath: Path
   ptInputPath: Path
@@ -27,7 +49,9 @@ export function useTrackFocusPath(props: Props): void {
   const portableTextMemberItems = usePortableTextMemberItems()
   const elementRefs = usePortableTextMemberItemElementRefs()
   const editor = useEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const legacyEditor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   // Read selection from a ref instead of subscribing to it, so our own select() calls below don't
@@ -37,9 +61,33 @@ export function useTrackFocusPath(props: Props): void {
     selectionRef.current = selection
   }, [selection])
 
+  // The focusPath value that has already been effectuated: either applied to the editor
+  // (selected/focused below), or confirmed to match a selection the editor already owns.
+  // The effect re-runs on member/element-ref churn so that a focusPath whose target hasn't
+  // rendered yet can be retried, but a handled one must never be re-applied: unrelated re-runs
+  // (e.g. validation markers arriving while the user types) would otherwise re-select at
+  // offset 0 and hijack the caret to the start of the block (SAPP-4053). This matters whenever
+  // the editor transiently loses DOM focus while the form focusPath stays put — such as a brief
+  // readOnly flip toggling `contenteditable` off. Tracking by reference is safe because form
+  // paths are interned (`pathFor`), so the value only changes when focus actually moves; the
+  // ref is cleared whenever it does, keeping re-entry from outside (Visual Editing, #12894)
+  // working when the same path is focused again later.
+  const handledFocusPathRef = useRef<Path | null>(null)
+
   useLayoutEffect(() => {
+    // Focus moved elsewhere (or was cleared on blur): forget the handled path so that focusing
+    // the previous path again later is applied anew.
+    if (handledFocusPathRef.current !== focusPath) {
+      handledFocusPathRef.current = null
+    }
+
     // Don't do anything if no focusPath to track
     if (focusPath.length === 0) {
+      return
+    }
+
+    // This exact focusPath has already been effectuated; don't re-apply it on unrelated re-runs.
+    if (handledFocusPathRef.current === focusPath) {
       return
     }
 
@@ -71,6 +119,7 @@ export function useTrackFocusPath(props: Props): void {
       ) &&
       (editorHasDomFocus || Boolean(openEditingItem))
     ) {
+      handledFocusPathRef.current = focusPath
       return
     }
 
@@ -100,16 +149,27 @@ export function useTrackFocusPath(props: Props): void {
 
     if (relatedEditorItem && elementRef) {
       if (boundaryElement) {
-        // Scroll the boundary element into view (the scrollable element itself)
-        scrollIntoView(boundaryElement, {
-          scrollMode: 'if-needed',
-          block: 'start',
-          inline: 'start',
-        })
-        // Scroll the member into view (the member within the scroll-boundary)
+        // The boundary element is the editor's own scroll container. Aligning its top is what
+        // brings the editor into view when focus arrives from outside it (a validation marker,
+        // the Presentation tool), leaving the member scroll below to move the editor's own
+        // scroll only. An editor styled to grow with its content (`height: auto`,
+        // `overflow: visible`) is taller than the scroll container around it, so aligning its
+        // top scrolls the member being revealed out of view instead — and the bounded member
+        // scroll cannot correct that, as the editor no longer scrolls internally (SAPP-4475).
+        // Reveal the member across every scrollable ancestor in that case.
+        const revealEditor = fitsInScrollport(boundaryElement)
+
+        if (revealEditor) {
+          scrollIntoView(boundaryElement, {
+            scrollMode: 'if-needed',
+            block: 'start',
+            inline: 'start',
+          })
+        }
+
         scrollIntoView(elementRef, {
           scrollMode: 'if-needed',
-          boundary: boundaryElement,
+          boundary: revealEditor ? boundaryElement : null,
           block: 'nearest',
           inline: 'start',
         })
@@ -144,17 +204,21 @@ export function useTrackFocusPath(props: Props): void {
             currentSelection?.focus.path &&
             isEqual(currentSelection.focus.path.slice(0, path.length), path)
           if (isTextBlock && isSameSelection) {
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.select(legacyEditor, null)
           }
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.select(legacyEditor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
           })
           // Object blocks open their interface when focused, so only call focus for text blocks.
           if (isTextBlock) {
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.focus(legacyEditor)
           }
+          handledFocusPathRef.current = focusPath
         }
       }
     }
@@ -164,6 +228,7 @@ export function useTrackFocusPath(props: Props): void {
     elementRefs,
     focusPath,
     legacyEditor,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     onItemClose,
     portableTextMemberItems,
     ptInputPath,

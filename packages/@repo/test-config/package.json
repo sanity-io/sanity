@@ -1,11 +1,13 @@
 {
   "name": "@repo/test-config",
-  "version": "6.5.0",
+  "version": "6.9.2",
   "private": true,
   "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
   "type": "module",
   "exports": {
-    "./vitest": "./vitest/index.mjs"
+    "./vitest": "./vitest/index.mjs",
+    "./vitest/failOnReactDomPropWarnings": "./vitest/failOnReactDomPropWarnings.mjs",
+    "./vitest/reactDomPropWarnings": "./vitest/reactDomPropWarnings.mjs"
   },
   "devDependencies": {
     "vite": "catalog:",

@@ -1,10 +1,11 @@
 import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
-import {forwardRef, memo, useMemo, useState} from 'react'
+import {BoundaryElementProvider} from '@sanity/ui'
+import {memo, useMemo, useState, type RefAttributes} from 'react'
+import {Flex} from 'ui5'
 
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {type CommentsSelectedPath} from '../../context'
-import {applyCommentsGroupAttr} from '../../hooks'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
+import {applyCommentsGroupAttr} from '../../hooks/useCommentsScroll'
 import {
   type CommentBaseCreatePayload,
   type CommentReactionOption,
@@ -75,11 +76,9 @@ export interface CommentsListHandle {
   scrollToComment: (id: string) => void
 }
 
-const CommentsListInner = forwardRef(function CommentsListInner(
-  props: CommentsListProps,
-  ref: React.Ref<HTMLUListElement>,
-) {
+function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListElement>) {
   const {
+    ref,
     beforeListNode,
     comments,
     currentUser,
@@ -109,12 +108,12 @@ const CommentsListInner = forwardRef(function CommentsListInner(
   return (
     <Flex
       data-testid="comments-list"
-      direction="column"
-      flex={1}
-      height="fill"
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      height="100%"
       overflow="hidden"
       ref={setBoundaryElement}
-      sizing="border"
     >
       {mode !== 'upsell' && (
         <CommentsListStatus
@@ -126,16 +125,17 @@ const CommentsListInner = forwardRef(function CommentsListInner(
       )}
 
       {(showComments || beforeListNode) && (
-        <Stack
+        <Flex
           as="ul"
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           overflow="auto"
           padding={3}
           paddingTop={1}
           paddingBottom={6}
-          sizing="border"
-          space={1}
+          gap={1}
           ref={ref}
+          flexDirection="column"
         >
           {beforeListNode}
 
@@ -156,11 +156,13 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                 selectedPath?.fieldPath === fieldPath && !selectedPath.threadId
 
               return (
-                <Stack
+                <Flex
                   key={fieldPath}
                   as="li"
                   paddingTop={3}
                   {...applyCommentsGroupAttr(firstThreadId)}
+                  flexDirection="column"
+                  flexShrink={0}
                 >
                   <CommentThreadLayout
                     key={fieldPath}
@@ -217,15 +219,15 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                       )
                     })}
                   </CommentThreadLayout>
-                </Stack>
+                </Flex>
               )
             })}
           </BoundaryElementProvider>
-        </Stack>
+        </Flex>
       )}
     </Flex>
   )
-})
+}
 
 /**
  * @beta

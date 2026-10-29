@@ -1,18 +1,15 @@
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
+import {Text, Flex} from 'ui5'
 
-import {CommandList} from '../../../../components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {Translate, useTranslation} from '../../../../i18n'
-import {supportsTouch} from '../../../../util'
+import {CommandList} from '../../../../components/commandList/CommandList'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
+import {supportsTouch} from '../../../../util/supportsTouch'
+import {contentFlex} from './NewDocumentList.css'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 import {type NewDocumentOption, type PreviewLayout} from './types'
-
-const ContentFlex = styled(Flex)`
-  min-height: 100px;
-`
 
 export interface NewDocumentListProps {
   currentUser: CurrentUser | null
@@ -62,43 +59,45 @@ export function NewDocumentList(props: NewDocumentListProps) {
   // Render no search results state
   if (!hasOptions && searchQuery) {
     return (
-      <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
+      <Flex
+        alignItems="center"
+        className={contentFlex}
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        justifyContent="center"
         padding={4}
-        sizing="border"
       >
-        <Text align="center" muted size={1}>
+        <Text align="center" muted size={1} as="div" trim={true}>
           <Translate t={t} i18nKey="new-document.no-results" values={{searchQuery}} />
         </Text>
-      </ContentFlex>
+      </Flex>
     )
   }
 
   // Render no options state
   if (!hasOptions) {
     return (
-      <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
+      <Flex
+        alignItems="center"
+        className={contentFlex}
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        justifyContent="center"
         padding={4}
-        sizing="border"
       >
-        <Text align="center" muted size={1}>
+        <Text align="center" muted size={1} as="div" trim={true}>
           {t('new-document.no-document-types-found')}
         </Text>
-      </ContentFlex>
+      </Flex>
     )
   }
 
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel={t('new-document.new-document')}
+      ariaLabel={t('new-document.new-document-aria-label')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}

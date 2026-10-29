@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 
 import {type TFunction} from '../../i18n/types'
-import {type VersionInfoDocumentStub} from '../../releases'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../util/versionsUtils'
 import {type SystemVariant} from '../../variants/types'
 import {type Meta, type VariantSet} from '../machines/documentGroupInventoryMachine'
@@ -31,14 +32,14 @@ export function computeSets({
   const {variants} = meta.variants
   const userBundleIds = new Set(meta.agentBundles.bundles.map(({id}) => id))
 
-  const proposedChangesId = meta.versionState.data.find((id) => {
-    const bundleId = getVersionFromId(id)
+  const proposedChanges = meta.versionState.versions.find((version) => {
+    const bundleId = getVersionFromId(version._id)
     return typeof bundleId === 'string' && userBundleIds.has(bundleId)
   })
 
   if (!variantsEnabled) {
-    const hasVariants = meta.versionState.versions.some(
-      (version) => typeof version._system.variant !== 'undefined',
+    const hasVariants = meta.versionState.versions.some((version) =>
+      Boolean(getDocumentVersionVariantId(version)),
     )
 
     if (hasVariants) {
@@ -54,10 +55,11 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
         document: version,
       }))
 
-    if (typeof proposedChangesId !== 'undefined') {
+    if (proposedChanges) {
       variants.unshift({
-        id: proposedChangesId,
+        id: proposedChanges._id,
         name: t('version.agent-bundle.proposed-changes'),
+        document: proposedChanges,
       })
     }
 
@@ -119,14 +121,15 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
     }
   })
 
-  if (typeof proposedChangesId !== 'undefined') {
+  if (proposedChanges) {
     return sets.toSpliced(0, 0, {
       key: 'studio:content-agent',
       name: t('content-agent'),
       variants: [
         {
-          id: proposedChangesId,
+          id: proposedChanges._id,
           name: t('version.agent-bundle.proposed-changes'),
+          document: proposedChanges,
         },
       ],
     })
@@ -148,9 +151,9 @@ function getVariantName({
   document: VersionInfoDocumentStub
   variants: Map<string, SystemVariant>
 }): string {
-  const releaseDocumentId = document._system.variant?._ref
-  const release = releaseDocumentId ? variants.get(releaseDocumentId) : undefined
-  return release?.metadata?.title ?? t('document-group.base-variant')
+  const variantDocumentId = getDocumentVersionVariantId(document)
+  const variant = variantDocumentId ? variants.get(variantDocumentId) : undefined
+  return variant?.metadata?.title ?? t('document-group.base-variant')
 }
 
 function getVersionName({

@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 
-import {useCurrentUser} from '../../store'
-import {useAddonDataset} from '../../studio'
+import {useCurrentUser} from '../../store/user/hooks'
+import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../types'
 
 /**

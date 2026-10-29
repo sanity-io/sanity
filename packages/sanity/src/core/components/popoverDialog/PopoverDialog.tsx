@@ -1,32 +1,33 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {
-  Box,
-  Flex,
-  Layer,
-  type ResponsiveWidthProps,
-  Stack,
-  Text,
-  type Theme,
-  usePortal,
-} from '@sanity/ui'
+import {Layer, type ResponsiveWidthProps, type Theme, usePortal} from '@sanity/ui'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
+import {Text, Flex, Box, VStack} from 'ui5'
 
-import {Button, Popover, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    /* Make the popover scrollable if it overflows the viewport */
+    /* Make the popover scrollable if it overflows the viewport.
+     * Reserve space for the scrollbar so content that grows past the viewport
+     * (e.g. when switching tabs) doesn't cause a horizontal layout shift.
+     * position:relative makes the wrapper an offsetParent so change-connector
+     * geometry subtracts its scrollTop. */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
+      position: relative;
+      scrollbar-gutter: stable;
     }
   `
 })
 
 // This layer is sticky so that the header is always visible when scrolling
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const radii = props.theme.sanity.radius[3]
 
   return css`
@@ -78,12 +79,12 @@ export function PopoverDialog(props: PopoverDialogProps) {
   const content = (
     <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus whiteList={trapPaneFocus}>
-        <Stack ref={containerRef}>
+        <VStack ref={containerRef}>
           <StickyLayer>
             <Box padding={2} paddingLeft={4}>
-              <Flex align="center" gap={2}>
-                <Box flex={1}>
-                  <Text size={1} textOverflow="ellipsis" weight="medium">
+              <Flex alignItems="center" gap={2}>
+                <Box flexBasis="0%" flexGrow={1}>
+                  <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
                     {header}
                   </Text>
                 </Box>
@@ -97,7 +98,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
             </Box>
           </StickyLayer>
           <Box padding={4}>{children}</Box>
-        </Stack>
+        </VStack>
       </TrapFocus>
     </PopoverContainer>
   )

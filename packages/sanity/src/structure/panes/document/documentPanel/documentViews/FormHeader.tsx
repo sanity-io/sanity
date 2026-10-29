@@ -1,17 +1,27 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Heading, Inline} from '@sanity/ui'
+import {type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
+import {Text, Box, PressArea, VStack} from 'ui5'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
 
 interface DocumentHeaderProps {
   documentId: string
   schemaType: ObjectSchemaType
   title?: string
+  /**
+   * When given, the title is a button that calls this. Left out when no
+   * single field sets the title or the form is read-only.
+   */
+  onTitleClick?: () => void
 }
+
+// Leave focus where it is until the title field mounts and takes it.
+const preventDefault = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
 /**
  * Use CSS container queries to conditionally render headings at different sizes.
@@ -23,7 +33,7 @@ interface DocumentHeaderProps {
  * the largest heading size here, even if their browser supports it!
  */
 
-const TitleContainer = styled(Stack)`
+const TitleContainer = styled(VStack)`
   ${({theme}) => {
     return css`
       @supports not (container-type: inline-size) {
@@ -33,23 +43,23 @@ const TitleContainer = styled(Stack)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
+        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         overflow-wrap: break-word;
         text-wrap: pretty;
       }
 
       @container (max-width: 560px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
 
       @container (max-width: 420px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
     `
@@ -61,7 +71,7 @@ const TitleContainer = styled(Stack)`
  * Document type is hidden if the document `_id` matches the current document `_type`.
  * The entire header is hidden if container queries are not supported.
  */
-export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
+export const FormHeader = ({documentId, schemaType, title, onTitleClick}: DocumentHeaderProps) => {
   const isSingleton = documentId === schemaType.name
   const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)
@@ -69,11 +79,14 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
   if (schemaType.__experimental_formPreviewTitle === false) {
     return null
   }
+
+  const titleText = title ?? t('document-view.form-view.form-title-fallback')
+
   return (
-    <TitleContainer marginBottom={6} space={4}>
+    <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
-        <Inline space={1}>
-          <Text muted size={1}>
+        <Inline gap={1}>
+          <Text muted size={1} as="div" trim={true}>
             {schemaType.title ?? schemaType.name}
           </Text>
           {description && (
@@ -84,7 +97,23 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
         </Inline>
       )}
       <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
-        {title ?? t('document-view.form-view.form-title-fallback')}
+        {onTitleClick ? (
+          // The heading wraps the button rather than sitting inside it: a button's children are
+          // presentational, so a heading inside one loses its role. The text keeps the heading's
+          // container-query sizes, which a v5 Text would override.
+          <Box as="span" width="fit-content">
+            <PressArea
+              data-testid="document-panel-document-title-field"
+              onClick={onTitleClick}
+              onMouseDown={preventDefault}
+              type="button"
+            >
+              {titleText}
+            </PressArea>
+          </Box>
+        ) : (
+          titleText
+        )}
       </Heading>
     </TitleContainer>
   )

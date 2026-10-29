@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import chalk from 'chalk'
 
 import {EXPERIMENT, REFERENCE} from '../../constants'
@@ -14,19 +15,23 @@ import {
   collectInp,
   collectPageLoad,
   collectRunMetadata,
+  collectSettle,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
 import {measureBundleSize} from '../../runner/bundleSize'
-import {bundleInstrumentation} from '../../runner/inject'
+import {
+  bundleInstrumentation,
+  bundleSettleInstrumentation,
+  bundleStyleProbe,
+} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
+import {SessionError} from '../../runner/session/errors'
 import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
-  runSoakSession,
-  SessionError,
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
@@ -34,11 +39,16 @@ import {
   type PageLoadSample,
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
+import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
+import {runSoakSession} from '../../runner/session/soak'
+import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
-import {gate, PAGELOAD_THRESHOLDS} from '../../stats/gate'
+import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
+import {settleMismatch} from '../../stats/settle'
+import {sparkline} from '../../stats/sparkline'
 import {resolveFromInvocation} from '../benchRoot'
 import {type RunArgs} from './run'
 
@@ -92,6 +102,30 @@ async function withSessionRetries<T>(label: string, run: () => Promise<T>): Prom
   }
 }
 
+/**
+ * One log line for a scenario's style census (the style-migration rows): the
+ * first session's numbers — a build renders the same page every session, so
+ * one is representative — or a warning when every session's probe failed, so
+ * a silently missing row set is visible in the run log.
+ */
+function logStyleCensus(sessions: {styles: StyleCensus | null}[]): void {
+  const census = sessions.find((session) => session.styles !== null)?.styles
+  console.log(
+    census
+      ? `  ${chalk.bold('styles')}: ${describeStyleCensus(census)}`
+      : chalk.yellow('  styles: census unavailable (the style probe failed in every session)'),
+  )
+}
+
+/** Flags stamped into a dist by its build script (absent = pristine build). */
+function readBuildFlags(dist: string): {customizations?: boolean} {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dist, 'bench-build-flags.json'), 'utf8'))
+  } catch {
+    return {}
+  }
+}
+
 export async function runBench(argv: RunArgs): Promise<void> {
   const dist = resolveFromInvocation(argv.dist)
   if (!fs.existsSync(path.join(dist, 'index.html'))) {
@@ -101,9 +135,42 @@ export async function runBench(argv: RunArgs): Promise<void> {
     process.exit(1)
   }
 
-  const scenarios = argv.scenario.length
+  const requested = argv.scenario.length
     ? argv.scenario.map((name) => getScenario(name))
     : SCENARIOS
+
+  const buildFlags = readBuildFlags(dist)
+  const scenarios = requested.filter((scenario) => {
+    if (scenario.requiresCustomizations && !buildFlags.customizations) {
+      // The workspace does not exist in a pristine dist — a session against
+      // it fails confusingly, so skip with the fix instead.
+      console.log(
+        chalk.yellow(
+          `skipping ${scenario.name}: its workspace only exists in the customization build — ` +
+            `run \`pnpm --filter bench build:customizations\` and pass --dist perf/bench/dist-customizations`,
+        ),
+      )
+      return false
+    }
+    if (
+      argv.mode !== 'pageload' &&
+      scenario.load !== undefined &&
+      scenario.interactions.length === 0
+    ) {
+      console.log(chalk.yellow(`skipping ${scenario.name}: pageload-only scenario`))
+      return false
+    }
+    const hasLoadSteps = argv.mode === 'pageload' && scenario.load !== undefined
+    if (argv.mode !== 'settle' && !hasLoadSteps && scenario.interactions.length === 0) {
+      // Every mode except settle types into interactions[0]; pageload runs
+      // the scenario's load steps instead when it declares them.
+      console.log(
+        chalk.yellow(`skipping ${scenario.name}: no interaction targets (settle-only scenario)`),
+      )
+      return false
+    }
+    return true
+  })
 
   const referenceDist = argv.referenceDist ? resolveFromInvocation(argv.referenceDist) : undefined
   if (referenceDist && !fs.existsSync(path.join(referenceDist, 'index.html'))) {
@@ -112,6 +179,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
   }
 
   const instrumentation = await bundleInstrumentation()
+  // The style census (UI v5 adoption, styled-components footprint) is taken
+  // once per session in every mode that opens a document
+  const styleProbe = await bundleStyleProbe()
   const running = await startSide(EXPERIMENT, dist)
   const reference = referenceDist ? await startSide(REFERENCE, referenceDist) : undefined
   const browser = await launchBrowser(!argv.headed, (await getBenchTls()).spki)
@@ -123,7 +193,10 @@ export async function runBench(argv: RunArgs): Promise<void> {
   try {
     const calibration = await calibrateHost(browser)
     console.log(
-      `host calibration: ${calibration.toFixed(0)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
+      // One decimal: the score lives at 5–9ms and is measured at 0.1ms
+      // granularity — whole-ms rounding collapses its whole range (see the
+      // dashboard's formatValue, which made the same call)
+      `host calibration: ${calibration.toFixed(1)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
         `${reference ? `, mode: A/B (seed ${argv.seed})` : ', mode: absolute'}`,
     )
     const runMetadata = collectRunMetadata({
@@ -132,6 +205,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
       cpuThrottleRate: argv.throttle,
       seed: argv.seed,
       startedAt,
+      browserVersion: browser.version(),
     })
 
     if (argv.mode === 'soak') {
@@ -151,7 +225,8 @@ export async function runBench(argv: RunArgs): Promise<void> {
         if (first && last) {
           console.log(
             `  heap ${first.heapMb.toFixed(1)} → ${last.heapMb.toFixed(1)} MB, ` +
-              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}`,
+              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}` +
+              ` (steady state from minute ${soak.settleMinute})`,
           )
         }
         scenarioReports.push({
@@ -165,8 +240,113 @@ export async function runBench(argv: RunArgs): Promise<void> {
           failures: [],
           interruptions: {experiment: soak.interruptions},
           loafAttribution: [],
-          soak: {minutes: soak.minutes, samples: soak.samples},
+          soak: {minutes: soak.minutes, settleMinute: soak.settleMinute, samples: soak.samples},
         })
+      }
+    } else if (argv.mode === 'settle') {
+      // Absolute-only in v1 (track-main cron); A/B promotion is a follow-up.
+      // Non-settlement and never-ready are RESULTS from the session, so
+      // withSessionRetries only sees broken-scenario tripwires (console
+      // errors, hermeticity, unexpected endpoints) — a genuine render loop
+      // is never retried as a flake.
+      const settleInstrumentation = await bundleSettleInstrumentation()
+      const expectationMismatches: string[] = []
+      const staleRedFlags: string[] = []
+      for (const scenario of scenarios) {
+        const expected = scenario.expectedToSettle ?? true
+        console.log(
+          `\n${chalk.cyan(scenario.name)} — settle, ${argv.sessions} session(s)` +
+            (expected ? '' : chalk.yellow(' (expected NOT to settle — red by design)')),
+        )
+        const results: SettleSessionResult[] = []
+        for (let i = 0; i < argv.sessions; i++) {
+          const result = await withSessionRetries(scenario.name, () =>
+            runSettleSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              settleInstrumentation,
+              styleProbe,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          results.push(result)
+          const status = !result.ready
+            ? chalk.red('never became ready')
+            : result.settled
+              ? `settled after ${result.settleTimeMs?.toFixed(0)}ms`
+              : chalk.red('did not settle')
+          console.log(
+            `  session ${i + 1}/${argv.sessions}: ${status} — ` +
+              `${result.reactCommits} commits (${result.commitsPerSecond.toFixed(1)}/s), ` +
+              `${result.loafCount} LoAF (${result.loafBlockingMs.toFixed(0)}ms blocking)` +
+              `${result.cpuAfterReadyMs === null ? '' : `, cpu ${result.cpuAfterReadyMs.toFixed(0)}ms`}` +
+              `${result.hookInstalled ? '' : chalk.yellow(' [commit hook not installed]')}`,
+          )
+          // Per-poll activity charts: the session's shape over time. A loop
+          // reads as a sustained plateau; a healthy open as a short burst
+          // followed by flatline.
+          if (result.timeline.length > 0) {
+            const commitRates = result.timeline.map((sample) => sample.commitsPerSecond)
+            const cpuRates = result.timeline.map((sample) => sample.cpuUtilization ?? 0)
+            const seconds = ((result.timeline.at(-1)?.atMs ?? 0) / 1000).toFixed(1)
+            console.log(
+              `    commits/s ${chalk.cyan(sparkline(commitRates))} peak ${Math.round(Math.max(...commitRates))}/s over ${seconds}s`,
+            )
+            if (result.timeline.some((sample) => sample.cpuUtilization !== null)) {
+              console.log(
+                `    cpu       ${chalk.magenta(sparkline(cpuRates, Math.max(1, ...cpuRates)))} peak ${Math.round(Math.max(...cpuRates) * 100)}%`,
+              )
+            }
+          }
+        }
+        const settledCount = results.filter((result) => result.settled).length
+        const settleTimes = results
+          .map((result) => result.settleTimeMs)
+          .filter((value): value is number => value !== null)
+        console.log(
+          `  ${chalk.bold('settle')}: ${settledCount}/${results.length} settled` +
+            (settleTimes.length > 0
+              ? `, time-to-settle p50 ${summarize(settleTimes).median.toFixed(0)}ms`
+              : ''),
+        )
+        // Only ready sessions take the census; a scenario that never opened
+        // its pane has nothing to count, and that is not a probe failure
+        if (results.some((result) => result.ready)) logStyleCensus(results)
+        if (
+          settleMismatch({
+            expectedToSettle: expected,
+            settledCount,
+            sessionCount: results.length,
+          })
+        ) {
+          if (expected) {
+            expectationMismatches.push(
+              `${scenario.name}: expected to settle, ${results.length - settledCount}/${results.length} session(s) did not`,
+            )
+          } else {
+            staleRedFlags.push(
+              `${scenario.name}: expected NOT to settle but every session settled — the footgun ` +
+                `appears fixed; flip expectedToSettle in ${scenario.sourceFile}`,
+            )
+          }
+        }
+        scenarioReports.push(collectSettle(scenario, results))
+      }
+      // A red-by-design scenario that settles is good news with a chore
+      // attached (flip the flag) — loud, but not an alarm: a backfill of a
+      // commit that never had the hazard must still store its numbers.
+      if (staleRedFlags.length > 0) {
+        console.error(chalk.yellow(`\nsettle expectation stale:\n  ${staleRedFlags.join('\n  ')}`))
+      }
+      if (expectationMismatches.length > 0) {
+        // Fail AFTER the report/JSON is assembled and written below — the
+        // numbers are the evidence; the exit code is just the alarm.
+        console.error(
+          chalk.red(`\nsettle expectation mismatch:\n  ${expectationMismatches.join('\n  ')}`),
+        )
+        process.exitCode = 1
       }
     } else if (argv.mode === 'inp') {
       for (const scenario of scenarios) {
@@ -197,14 +377,19 @@ export async function runBench(argv: RunArgs): Promise<void> {
         scenarioReports.push(collectInp(scenario.name, results, scenario.sourceFile))
       }
     } else if (argv.mode === 'pageload') {
-      const sizes = await measureBundleSize(dist)
+      // sizesByPath feeds the per-scenario "boot JS" metric but must not be
+      // stored — it's ~400 map entries of per-chunk noise in a document
+      const {sizesByPath, ...sizes} = await measureBundleSize(dist)
+      let referenceSizesByPath: Map<string, number> | undefined
       console.log(
         `bundle (experiment): initial JS ${(sizes.initialJsBytes / 1024).toFixed(1)} KB gzip, ` +
           `total ${(sizes.totalJsBytes / 1024).toFixed(1)} KB gzip across ${sizes.chunkCount} chunks`,
       )
       bundleReport = {experiment: sizes}
       if (referenceDist) {
-        const referenceSizes = await measureBundleSize(referenceDist)
+        const {sizesByPath: refSizesByPath, ...referenceSizes} =
+          await measureBundleSize(referenceDist)
+        referenceSizesByPath = refSizesByPath
         bundleReport = {experiment: sizes, reference: referenceSizes}
         console.log(
           `bundle (reference):  initial JS ${(referenceSizes.initialJsBytes / 1024).toFixed(1)} KB gzip ` +
@@ -236,6 +421,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
                 running: side,
                 scenario,
                 instrumentation,
+                styleProbe,
                 config: {
                   cpuThrottleRate: argv.throttle,
                   ...(argv.networkEmulation ? {} : {network: null}),
@@ -245,12 +431,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             bySide.set(name, [...(bySide.get(name) ?? []), ...samples])
             console.log(
               `  sample ${i + 1}/${argv.sessions} ${name}: ` +
-                samples
-                  .map(
-                    (sample) =>
-                      `${sample.condition} time-to-editable ${sample.timeToEditableMs.toFixed(0)}ms`,
-                  )
-                  .join(', '),
+                samples.map(describeLoadSample).join(', '),
             )
           }
         }
@@ -263,16 +444,24 @@ export async function runBench(argv: RunArgs): Promise<void> {
           const experimentSamples = (bySide.get('experiment') ?? []).filter(
             (sample) => sample.condition === condition,
           )
-          const stats = summarize(experimentSamples.map((sample) => sample.timeToEditableMs))
+          // A scenario may sample only some conditions (BenchScenario.load)
+          if (experimentSamples.length === 0) continue
+          const experimentEditable = editableTimes(experimentSamples)
           console.log(
-            `  ${chalk.bold(condition)} (experiment): time-to-editable p50 ${stats.median.toFixed(0)}ms, ` +
+            `  ${chalk.bold(condition)} (experiment): ` +
+              (experimentEditable.length > 0
+                ? `time-to-editable p50 ${summarize(experimentEditable).median.toFixed(0)}ms, `
+                : '') +
+              [...milestoneTimes(experimentSamples)]
+                .map(([name, times]) => `${name} p50 ${summarize(times).median.toFixed(0)}ms, `)
+                .join('') +
               `fcp p50 ${summarize(experimentSamples.map((s) => s.fcpMs ?? 0)).median.toFixed(0)}ms, ` +
               `lcp p50 ${summarize(experimentSamples.map((s) => s.lcpMs ?? 0)).median.toFixed(0)}ms, ` +
               `cls p50 ${summarize(experimentSamples.map((s) => s.cls)).median.toFixed(3)}, ` +
               `blocking p50 ${summarize(experimentSamples.map((s) => s.blockingMs)).median.toFixed(0)}ms`,
           )
           console.log(
-            `  ${chalk.bold(condition)} auth: ${summarize(experimentSamples.map((s) => s.auth.trips)).median.toFixed(0)} round trip(s) before editable, ` +
+            `  ${chalk.bold(condition)} auth: ${summarize(experimentSamples.map((s) => s.auth.trips)).median.toFixed(0)} round trip(s) before load end, ` +
               `first request p50 ${summarize(experimentSamples.map((s) => s.auth.firstRequestMs ?? 0)).median.toFixed(0)}ms, ` +
               `in flight p50 ${summarize(experimentSamples.map((s) => s.auth.inFlightMs)).median.toFixed(0)}ms`,
           )
@@ -296,15 +485,15 @@ export async function runBench(argv: RunArgs): Promise<void> {
           const referenceSamples = (bySide.get('reference') ?? []).filter(
             (sample) => sample.condition === condition,
           )
-          if (referenceSamples.length > 0) {
+          const referenceEditable = editableTimes(referenceSamples)
+          // Only time to editable is gated; milestone rows are report-only
+          if (referenceEditable.length > 0 && experimentEditable.length > 0) {
             const interval = bootstrapDiffOfMedians({
-              aSessions: referenceSamples.map((sample) => [sample.timeToEditableMs]),
-              bSessions: experimentSamples.map((sample) => [sample.timeToEditableMs]),
+              aSessions: referenceEditable.map((value) => [value]),
+              bSessions: experimentEditable.map((value) => [value]),
               rng: mulberry32(argv.seed),
             })
-            const referenceMedian = summarize(
-              referenceSamples.map((s) => s.timeToEditableMs),
-            ).median
+            const referenceMedian = summarize(referenceEditable).median
             const verdict = gate(interval, referenceMedian, PAGELOAD_THRESHOLDS)
             conditionComparisons.set(condition, {interval, verdict})
             console.log(
@@ -313,8 +502,12 @@ export async function runBench(argv: RunArgs): Promise<void> {
             )
           }
         }
+        logStyleCensus(bySide.get('experiment') ?? [])
         scenarioReports.push(
-          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile),
+          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile, {
+            experiment: sizesByPath,
+            reference: referenceSizesByPath,
+          }),
         )
       }
     } else {
@@ -327,6 +520,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             reference,
             experiment: running,
             instrumentation,
+            styleProbe,
             rng: mulberry32(argv.seed),
             config: {
               minSessionsPerSide: argv.sessions,
@@ -345,6 +539,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           console.log(
             `  stopped by: ${result.stoppedBy} (${result.reference.sessions.length}+${result.experiment.sessions.length} sessions, ${result.failures.length} retried failure(s))`,
           )
+          logStyleCensus(result.experiment.sessions)
           scenarioReports.push(collectAbInteraction(result, scenario.sourceFile))
           continue
         }
@@ -358,6 +553,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               running,
               scenario,
               instrumentation,
+              styleProbe,
               config: {cpuThrottleRate: argv.throttle},
             }),
           )
@@ -405,6 +601,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               `blocking p50 ${summarize(results.map((r) => r.blockingMs)).median.toFixed(0)}ms`,
           )
         }
+        logStyleCensus(results)
         scenarioReports.push(
           collectAbsoluteInteraction(scenario.name, results, scenario.sourceFile),
         )
@@ -424,13 +621,16 @@ export async function runBench(argv: RunArgs): Promise<void> {
       console.log(`\nwrote ${outPath}`)
     }
     if (argv.failOnVerdict) {
-      const nonNeutral = scenarioReports
+      // Only decided verdicts fail; see isDecidedVerdict for why inconclusive
+      // must not (it is the designed absorber for a noisy run, and this flag's
+      // only caller is the self-test)
+      const decided = scenarioReports
         .flatMap((scenarioReport) => scenarioReport.metrics)
-        .filter((metric) => metric.comparison && metric.comparison.verdict !== 'neutral')
-      if (nonNeutral.length > 0) {
+        .filter((metric) => isDecidedVerdict(metric.comparison?.verdict))
+      if (decided.length > 0) {
         console.error(
-          `fail-on-verdict: ${nonNeutral.length} non-neutral comparison(s): ` +
-            nonNeutral.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
+          `fail-on-verdict: ${decided.length} non-neutral comparison(s): ` +
+            decided.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
         )
         process.exitCode = 1
       }
@@ -440,4 +640,31 @@ export async function runBench(argv: RunArgs): Promise<void> {
     await running.close()
     await reference?.close()
   }
+}
+
+function editableTimes(samples: PageLoadSample[]): number[] {
+  return samples.flatMap((sample) =>
+    sample.timeToEditableMs === null ? [] : [sample.timeToEditableMs],
+  )
+}
+
+/** Milestone name → its times across samples, in first-reached order. */
+function milestoneTimes(samples: PageLoadSample[]): Map<string, number[]> {
+  const byName = new Map<string, number[]>()
+  for (const sample of samples) {
+    for (const {name, atMs} of sample.milestones) {
+      byName.set(name, [...(byName.get(name) ?? []), atMs])
+    }
+  }
+  return byName
+}
+
+function describeLoadSample(sample: PageLoadSample): string {
+  const parts = [
+    ...(sample.timeToEditableMs === null
+      ? []
+      : [`time-to-editable ${sample.timeToEditableMs.toFixed(0)}ms`]),
+    ...sample.milestones.map((milestone) => `${milestone.name} ${milestone.atMs.toFixed(0)}ms`),
+  ]
+  return `${sample.condition} ${parts.join(', ')}`
 }

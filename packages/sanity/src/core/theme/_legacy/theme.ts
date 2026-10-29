@@ -32,12 +32,16 @@ import {type LegacyThemeProps} from './types'
  * @public
  * @deprecated – Will be removed in upcoming major version
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
   const legacyPalette = buildLegacyPalette(legacyTheme)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const legacyTones = buildLegacyTones(legacyPalette)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = buildColor(legacyPalette, legacyTones)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fonts = buildFonts(legacyTheme)
 
   return {
@@ -48,8 +52,11 @@ export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>):
   }
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const defaultCustomProperties: LegacyThemeProps = {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--font-family-monospace': defaults.fonts.code.family,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--font-family-base': defaults.fonts.text.family,
 
   '--black': black.hex,
@@ -77,9 +84,13 @@ const defaultCustomProperties: LegacyThemeProps = {
   '--focus-color': blue[500].hex,
 
   // Screen
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--screen-medium-break': '512px',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--screen-default-break': '640px',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--screen-large-break': '960px',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   '--screen-xlarge-break': '1600px',
 
   // State
@@ -93,7 +104,9 @@ const defaultCustomProperties: LegacyThemeProps = {
   '--main-navigation-color--inverted': white.hex,
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function resolveLegacyTheme(legacyTheme: Partial<LegacyThemeProps>): LegacyThemeProps {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const props: LegacyThemeProps = {
     ...defaultCustomProperties,
     ...legacyTheme,

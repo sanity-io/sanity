@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {type AvatarSize, useLayer} from '@sanity/ui'
 import {
   type KeyboardEvent,
   memo,
@@ -11,13 +11,14 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {type PaddingProps, Flex, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {type CommentsSelectedPath} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
-import {applyCommentIdAttr} from '../../hooks'
+import {applyCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,
@@ -28,8 +29,8 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {SpacerAvatar} from '../avatars'
-import {CommentInput, type CommentInputHandle} from '../pte'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -74,6 +75,7 @@ const StyledThreadCard = styled(ThreadCard)(() => {
 })
 
 const ExpandButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {medium} = theme.sanity.fonts.text.weights
 
   return css`
@@ -100,7 +102,7 @@ export interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   hasReferencedValue?: boolean
-  innerPadding?: StackProps['padding']
+  innerPadding?: PaddingProps['padding']
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
@@ -260,15 +262,16 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         aria-label={t('list-item.go-to-field-button.aria-label')}
       />
 
-      <Stack
+      <Flex
         as="ul"
         padding={innerPadding}
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
-        space={4}
+        gap={4}
+        flexDirection="column"
       >
-        <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
+        <VStack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
@@ -292,10 +295,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             readOnly={readOnly}
             withAvatar={avatarConfig.parentCommentAvatar}
           />
-        </Stack>
+        </VStack>
 
         {showCollapseButton && collapsed && (
-          <Flex gap={1} paddingY={1} sizing="border">
+          <Flex gap={1} paddingY={1}>
             <SpacerAvatar />
 
             <ExpandButton
@@ -308,7 +311,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         )}
 
         {splicedReplies.map((reply) => (
-          <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
+          <VStack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
             <CommentsListItemLayout
               avatarSize={avatarConfig.avatarSize}
               canDelete={reply.authorId === currentUser.id}
@@ -329,7 +332,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
               readOnly={readOnly}
               withAvatar={avatarConfig.threadCommentsAvatar}
             />
-          </Stack>
+          </VStack>
         ))}
 
         {canReply && (
@@ -354,8 +357,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             withAvatar={avatarConfig.replyAvatar}
           />
         )}
-      </Stack>
+      </Flex>
     </StyledThreadCard>
   )
 })
-CommentsListItem.displayName = 'Memo(CommentsListItem)'

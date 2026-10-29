@@ -1,4 +1,13 @@
 import {type PortableTextBlock} from '@portabletext/react'
+import {type Path} from '@sanity/types'
+
+/**
+ * The path at which {@link packageValue} stores the primitive string inside the produced
+ * Portable Text value.
+ *
+ * @internal
+ */
+export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 
 /**
  * Package a primitive string field value into a Portable Text value. This

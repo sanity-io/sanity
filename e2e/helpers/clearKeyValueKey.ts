@@ -17,7 +17,7 @@ function getStatusCode(err: unknown): number | undefined {
 export async function clearKeyValueKey(client: SanityClient, key: string): Promise<void> {
   try {
     await client.withConfig({apiVersion: '2024-03-12'}).request({
-      uri: `/users/me/keyvalue/${encodeURIComponent(key)}`,
+      url: `/users/me/keyvalue/${encodeURIComponent(key)}`,
       method: 'DELETE',
     })
   } catch (err) {

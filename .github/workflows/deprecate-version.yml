@@ -1,0 +1,150 @@
+name: Deprecate version
+run-name: ${{ github.event.inputs.action }} ${{ github.event.inputs.version }} on module server and npm
+
+# Marks (or unmarks) a version as deprecated, both in the module server manifest (auto-updating
+# studio bundles) and on npm (`pnpm deprecate` for every published package). Deprecated versions
+# keep being served to studios explicitly pinned to them, but are skipped when resolving
+# tags/ranges and flagged in the studio's version status UI.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver version to deprecate (e.g., 3.2.1)"
+        required: true
+        type: string
+      reason:
+        description: "Why the version is deprecated (shown to studio users and as the npm deprecation message, keep it short)"
+        required: false
+        type: string
+      action:
+        description: "Deprecate, or remove an existing deprecation"
+        required: true
+        default: deprecate
+        type: choice
+        options:
+          - deprecate
+          - undeprecate
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate version
+    runs-on: ubuntu-latest
+    env:
+      INPUT_VERSION: ${{ github.event.inputs.version }}
+    steps:
+      - name: Validate semver version
+        run: |
+          echo "Validating version: $INPUT_VERSION"
+
+          # Validate semver format (basic check for X.Y.Z or X.Y.Z-prerelease)
+          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "Error: Invalid semver format: $INPUT_VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-prerelease (e.g., 3.2.1 or 3.2.1-next.1.abc)"
+            exit 1
+          fi
+
+          echo "✅ Version validation passed: $INPUT_VERSION"
+
+  npm-deprecate:
+    name: Update npm deprecation
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+      INPUT_VERSION: ${{ github.event.inputs.version }}
+      INPUT_REASON: ${{ github.event.inputs.reason }}
+      INPUT_ACTION: ${{ github.event.inputs.action }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(pnpm --silent whoami)
+          echo "pnpm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Update npm deprecation for all published packages
+        run: |
+          # Get all published (non-private) packages in the workspace
+          packages=$(pnpm tsx scripts/listPublishedPackages.ts)
+          message="${INPUT_REASON:-This version is deprecated, please update to a newer version}"
+
+          echo "Action: $INPUT_ACTION, version: $INPUT_VERSION"
+          echo "Packages: $packages"
+
+          # Convert relative paths to package names and (un)deprecate the version
+          for pkg_dir in $packages; do
+            pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
+            if [ "$INPUT_ACTION" = "undeprecate" ]; then
+              echo "Removing deprecation of $pkg_name@$INPUT_VERSION"
+              pnpm undeprecate "$pkg_name@$INPUT_VERSION"
+            else
+              echo "Deprecating $pkg_name@$INPUT_VERSION"
+              pnpm deprecate "$pkg_name@$INPUT_VERSION" "$message"
+            fi
+          done
+
+          echo "✅ npm deprecation updated for all packages"
+
+  update-manifest:
+    name: Update bundle manifest
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      INPUT_VERSION: ${{ github.event.inputs.version }}
+      INPUT_REASON: ${{ github.event.inputs.reason }}
+      INPUT_ACTION: ${{ github.event.inputs.action }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Update manifest (staging)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: |
+          if [ "$INPUT_ACTION" = "undeprecate" ]; then
+            pnpm bundle-manager undeprecate --target-version="$INPUT_VERSION"
+          elif [ -n "$INPUT_REASON" ]; then
+            pnpm bundle-manager deprecate --target-version="$INPUT_VERSION" --reason="$INPUT_REASON"
+          else
+            pnpm bundle-manager deprecate --target-version="$INPUT_VERSION"
+          fi
+
+      - name: Update manifest (production)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: |
+          if [ "$INPUT_ACTION" = "undeprecate" ]; then
+            pnpm bundle-manager undeprecate --target-version="$INPUT_VERSION"
+          elif [ -n "$INPUT_REASON" ]; then
+            pnpm bundle-manager deprecate --target-version="$INPUT_VERSION" --reason="$INPUT_REASON"
+          else
+            pnpm bundle-manager deprecate --target-version="$INPUT_VERSION"
+          fi

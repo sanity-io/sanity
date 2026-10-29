@@ -1,23 +1,18 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextInput,
-  type TextInputProps,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {Card, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
+import {Text, Flex, VStack} from 'ui5'
 
-import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../../components'
-import {useSchema} from '../../../../hooks'
-import {useGetI18nText, useTranslation} from '../../../../i18n'
-import {useCurrentUser} from '../../../../store'
+import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
+import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
+import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useGetI18nText} from '../../../../i18n/hooks/useGetI18nText'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
 import {
@@ -176,11 +171,19 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
+      return (
+        <Text size={1} as="div" trim={true}>
+          {t('new-document.no-document-types-label')}
+        </Text>
+      )
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>{t('new-document.create-new-document-label')}</Text>
+      return (
+        <Text size={1} as="div" trim={true}>
+          {t('new-document.create-new-document-label')}
+        </Text>
+      )
     }
 
     return (
@@ -218,7 +221,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             scheme={scheme}
             width={1}
           >
-            <RootFlex direction="column" flex={1} height="fill">
+            <RootFlex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
               <DialogHeaderCard padding={2} borderBottom>
                 <TextInput
                   data-testid="new-document-button-search-input"
@@ -226,7 +229,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
                 />
               </DialogHeaderCard>
 
-              <Flex direction="column" overflow="hidden">
+              <Flex flexDirection="column" overflow="hidden">
                 <NewDocumentList {...sharedListProps} />
               </Flex>
             </RootFlex>
@@ -249,24 +252,25 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       scheme={scheme}
       content={
         <RootFlex
-          direction="column"
-          flex={1}
+          flexDirection="column"
+          flexBasis="0%"
+          flexGrow={1}
           forwardedAs={ReactFocusLock}
-          height="fill"
+          height="100%"
           returnFocus
         >
           <PopoverHeaderCard sizing="border">
-            <Stack>
+            <VStack>
               <Card borderBottom padding={1}>
                 <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
               </Card>
-            </Stack>
+            </VStack>
           </PopoverHeaderCard>
 
           <PopoverListFlex
             $itemHeight={INLINE_PREVIEW_HEIGHT}
             $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
-            direction="column"
+            flexDirection="column"
             overflow="hidden"
           >
             <NewDocumentList {...sharedListProps} />

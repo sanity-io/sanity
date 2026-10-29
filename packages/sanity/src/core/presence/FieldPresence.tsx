@@ -4,7 +4,7 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
-import {UserAvatar} from '../components/userAvatar'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {AVATAR_DISTANCE, AVATAR_SIZE, DEFAULT_MAX_AVATARS_FIELDS} from './constants'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {usePresenceReporter} from './overlay/tracker'
@@ -30,7 +30,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   stack = true,
 }: FieldPresenceInnerProps) {
   const uniquePresence = uniqBy(presence || [], (item) => item.user.id)
-  const sorted = sortBy(uniquePresence, (_presence) => _presence.lastActiveAt)
+  const sorted = sortBy(uniquePresence, (_presence) => _presence.user.id)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [
@@ -57,7 +57,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
     <FlexWrapper>
       <div />
 
-      <InnerBox direction="row-reverse">
+      <InnerBox flexDirection="row-reverse">
         {avatars.map(
           (av, i) =>
             av && (
@@ -85,6 +85,14 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
 export interface FieldPresenceProps {
   presence: FormNodePresence[]
   maxAvatars: number
+  /**
+   * The presence overlay draws the avatars where this component's placeholder was last measured,
+   * and it re-measures when this component re-renders (the reporter publishes on every render).
+   * Pass a value that changes whenever the surrounding layout moves the placeholder without
+   * otherwise re-rendering this component (e.g. a field header making room for its actions on
+   * hover): the changed prop is enough to trigger the re-render, it is not read.
+   */
+  layoutKey?: string
 }
 
 /** @internal */

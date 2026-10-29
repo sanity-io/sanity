@@ -1,4 +1,4 @@
-import {type FieldReference} from '../../../validation'
+import {type FieldReference} from '../../../validation/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {
   type AutocompleteString,
@@ -107,6 +107,17 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSche
    * @beta
    */
   disableActions?: ArrayActionName[]
+
+  /**
+   * The number of items to render before the remaining items are collapsed behind a
+   * "show all items" toggle. Must be a positive integer, or `false` to always render every item
+   * in this array.
+   *
+   * Overrides the studio-wide `form.arrays.collapseItems` configuration.
+   *
+   * @beta
+   */
+  collapseItemsAfter?: number | false
 }
 
 /** @public */

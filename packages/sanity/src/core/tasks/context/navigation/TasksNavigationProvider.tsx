@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'

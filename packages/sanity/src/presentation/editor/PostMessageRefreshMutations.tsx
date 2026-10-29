@@ -56,6 +56,7 @@ function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInne
       if (version) {
         comlink?.post('presentation/refresh', {
           source: 'mutation',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled,
           document: parseDocument(version),
         })
@@ -66,6 +67,7 @@ function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInne
       if (draft) {
         comlink?.post('presentation/refresh', {
           source: 'mutation',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled,
           document: parseDocument(draft),
         })
@@ -76,6 +78,7 @@ function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInne
       if (published) {
         comlink?.post('presentation/refresh', {
           source: 'mutation',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled,
           document: parseDocument(published),
         })

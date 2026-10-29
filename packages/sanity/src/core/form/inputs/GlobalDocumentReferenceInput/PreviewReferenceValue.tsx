@@ -2,12 +2,18 @@ import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
 } from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
+import {Text, Flex, type TextProps} from 'ui5'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
 import {type GlobalDocumentReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
+
+function JsonValue({value}: {children?: React.ReactNode; value?: unknown}) {
+  return <pre>{JSON.stringify(value, null, 2)}</pre>
+}
 
 export function PreviewReferenceValue(props: {
   value: GlobalDocumentReferenceValue
@@ -15,35 +21,37 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: GlobalDocumentReferenceSchemaType
   referenceInfo: Loadable<GlobalDocumentReferenceInfo>
+  tone?: TextProps['tone']
 }): React.JSX.Element {
-  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo, tone} = props
   const {t} = useTranslation()
 
-  if (referenceInfo.isLoading || referenceInfo.error) {
+  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
-      <Stack space={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
-      </Stack>
+      </Flex>
     )
   }
   const showTypeLabel = type.to.length > 1
 
-  const refTypeName = referenceInfo.result?.type
+  const refTypeName = referenceInfo.result.type
   const refType = type.to.find((toType) => toType.type === refTypeName)
 
   if (referenceInfo.result.availability?.available && !refType) {
     return (
-      <Stack space={2} padding={2}>
-        <Text as="p">
+      <Flex gap={2} padding={2} flexDirection="column">
+        <Text as="p" trim={true} tone={tone}>
           <Translate
             t={t}
             i18nKey="inputs.reference.global.invalid-type"
             values={{typeName: refTypeName || 'unknown'}}
-            components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
+            components={{JsonValue}}
+            componentProps={{value}}
           />
         </Text>
-      </Stack>
+      </Flex>
     )
   }
 
@@ -58,6 +66,7 @@ export function PreviewReferenceValue(props: {
       resourceId={type.resourceId}
       id={value._ref}
       showTypeLabel={showTypeLabel}
+      tone={tone}
     />
   )
 }

@@ -1,13 +1,13 @@
-import type {MutableRefObject} from 'react'
-import {createContext} from 'sanity/_createContext'
+import type {RefObject} from 'react'
+import {createContext} from 'react'
 
 /**
  * @internal
  */
 export interface ReferenceItemRef {
-  menuRef: MutableRefObject<HTMLDivElement | null>
-  menuButtonRef: MutableRefObject<HTMLButtonElement | null>
-  containerRef: MutableRefObject<HTMLDivElement | null>
+  menuRef: RefObject<HTMLDivElement | null>
+  menuButtonRef: RefObject<HTMLButtonElement | null>
+  containerRef: RefObject<HTMLDivElement | null>
 }
 
 /**
@@ -15,7 +15,4 @@ export interface ReferenceItemRef {
  * so it can be used down the tree for clickOutside handling
  * @internal
  */
-export const ReferenceItemRefContext = createContext<ReferenceItemRef | null>(
-  'sanity/_singletons/context/reference-item-ref',
-  null,
-)
+export const ReferenceItemRefContext = createContext<ReferenceItemRef | null>(null)

@@ -1,24 +1,26 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Box, Button, Menu, MenuDivider, Text, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-import {useRouter} from 'sanity/router'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {TextInput} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useCallback, useMemo, useState, type JSX} from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, Box, Icon} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {oversizedButtonStyle} from '../../../perspective/styles'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
+import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {
-  decodeVariantIdFromRoute,
-  filterVariantsForSearch,
-  getVariantId,
-  getVariantTitle,
-} from '../../tool/util'
+import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
-import {RhombusIcon} from './PersonalizationIcons'
+import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../util/variantType'
+import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
@@ -34,47 +36,90 @@ const SectionHeader = styled(Text)`
   letter-spacing: 0.04em;
 `
 
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
+function VariantMenuItem(props: {
+  isSelected: boolean
+  onSelect: (variant: SystemVariant) => void
+  variant: SystemVariant
+}) {
+  const {isSelected, onSelect, variant} = props
+  const {t} = useTranslation(variantsLocaleNamespace)
+  const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
+  const mismatchMessage =
+    mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
+
+  return (
+    <MenuItem
+      data-testid={`variant-${getVariantId(variant._id)}`}
+      icon={<Icon icon={RhombusIcon} size={2} className={suggestIconColor} />}
+      iconRight={
+        mismatches.length > 0 ? (
+          <span data-testid="variant-condition-mismatch">
+            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+          </span>
+        ) : undefined
+      }
+      onClick={() => onSelect(variant)}
+      pressed={isSelected}
+      selected={isSelected}
+      text={getVariantTitle(variant)}
+      tooltipProps={
+        mismatchMessage
+          ? {
+              content: (
+                <Text muted size={1} as="div" trim={true}>
+                  {mismatchMessage}
+                </Text>
+              ),
+            }
+          : undefined
+      }
+    />
+  )
+}
 
 /**
  * @internal
  */
-export function VariantsMenu(): React.JSX.Element {
+export function VariantsMenu({
+  trigger,
+  typeKey = DEFAULT_VARIANT_TYPE_KEY,
+}: {
+  trigger: JSX.Element
+  typeKey?: string
+}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
-
-  const selectedVariantDocumentId = decodeVariantIdFromRoute(
-    router.stickyParams.variant ?? undefined,
+  const {selectedVariants} = usePerspective()
+  const typeVariants = useMemo(
+    () => variants.filter((variant) => getVariantType(variant) === typeKey),
+    [typeKey, variants],
   )
   const selectedVariant = useMemo(
     () =>
-      selectedVariantDocumentId
-        ? variants.find((variant) => variant._id === selectedVariantDocumentId)
-        : undefined,
-    [selectedVariantDocumentId, variants],
+      typeVariants.find((variant) =>
+        selectedVariants.some((selected) => selected?._id === variant._id),
+      ),
+    [selectedVariants, typeVariants],
   )
 
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variants, filterQuery),
-    [filterQuery, variants],
+    () => filterVariantsForSearch(typeVariants, filterQuery),
+    [filterQuery, typeVariants],
   )
 
   const handleSelectDefault = useCallback(() => {
-    setVariant({variantId: undefined})
+    setVariant({type: typeKey, variantId: undefined})
     setFilterQuery('')
-  }, [setVariant])
+  }, [setVariant, typeKey])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant({variantId: variant._id})
+      setVariant({type: typeKey, variantId: variant._id})
       setFilterQuery('')
     },
-    [setVariant],
+    [setVariant, typeKey],
   )
 
   const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,19 +134,18 @@ export function VariantsMenu(): React.JSX.Element {
 
   return (
     <MenuButton
-      button={
-        <OversizedButton
-          data-testid="variants-nav-menu-button"
-          iconRight={ChevronDownIcon}
-          mode="bleed"
-          padding={2}
-          radius="full"
-        />
-      }
-      id="variants-nav-menu"
+      button={trigger}
+      id={`variants-nav-menu-${typeKey}`}
       onClose={handleMenuClose}
       menu={
-        <StyledMenu data-testid="variants-nav-menu" padding={0}>
+        <StyledMenu
+          data-testid={
+            typeKey === DEFAULT_VARIANT_TYPE_KEY
+              ? 'variants-nav-menu'
+              : `variants-nav-menu-${typeKey}`
+          }
+          padding={0}
+        >
           <Box padding={2}>
             <TextInput
               fontSize={1}
@@ -112,40 +156,41 @@ export function VariantsMenu(): React.JSX.Element {
             />
           </Box>
 
+          <Box paddingX={2} paddingY={1}>
+            <MenuItem
+              data-testid="variant-default"
+              icon={<Icon icon={RhombusOutlinedIcon} size={2} className={suggestIconColor} />}
+              onClick={handleSelectDefault}
+              pressed={isDefaultSelected}
+              selected={isDefaultSelected}
+              text={t('navbar.variant.default')}
+            />
+          </Box>
           <MenuDivider />
-
-          <MenuItem
-            data-testid="variant-default"
-            icon={RhombusIcon}
-            onClick={handleSelectDefault}
-            pressed={isDefaultSelected}
-            selected={isDefaultSelected}
-            text={t('navbar.variant.default')}
-          />
 
           {filteredVariants.length > 0 && (
             <>
-              <Box padding={3} paddingBottom={2}>
-                <SectionHeader muted size={0} weight="medium">
-                  {t('navbar.variant.other')}
-                </SectionHeader>
+              <Box paddingX={2}>
+                <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
+                  {/* Spacer for icon alignment */}
+                  <Box className={menuIconSpacer} />
+                  <Box>
+                    <SectionHeader muted size={0} weight="medium" trim={true}>
+                      {t('navbar.variant.other')}
+                    </SectionHeader>
+                  </Box>
+                </Flex>
               </Box>
-
-              {filteredVariants.map((variant) => {
-                const isSelected = selectedVariant?._id === variant._id
-
-                return (
-                  <MenuItem
+              <Box paddingX={2}>
+                {filteredVariants.map((variant) => (
+                  <VariantMenuItem
                     key={variant._id}
-                    data-testid={`variant-${getVariantId(variant._id)}`}
-                    icon={RhombusIcon}
-                    onClick={() => handleSelectVariant(variant)}
-                    pressed={isSelected}
-                    selected={isSelected}
-                    text={getVariantTitle(variant)}
+                    isSelected={selectedVariant?._id === variant._id}
+                    onSelect={handleSelectVariant}
+                    variant={variant}
                   />
-                )
-              })}
+                ))}
+              </Box>
             </>
           )}
         </StyledMenu>

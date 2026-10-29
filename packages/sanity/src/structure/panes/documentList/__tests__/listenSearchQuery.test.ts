@@ -1,7 +1,19 @@
-import {type SearchSort} from 'sanity'
-import {describe, expect, it} from 'vitest'
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {firstValueFrom, of} from 'rxjs'
+import {createSearch, type SearchSort} from 'sanity'
+import {describe, expect, it, vi} from 'vitest'
 
-import {resolveSearchOrdering} from '../listenSearchQuery'
+import {listenSearchQuery, resolveSearchOrdering} from '../listenSearchQuery'
+
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  compileFieldPath: vi.fn(),
+  createSearch: vi.fn(() => vi.fn(() => of({hits: []}))),
+  getSearchableTypes: vi.fn(() => [{name: 'author'}]),
+}))
+
+const mockCreateSearch = vi.mocked(createSearch)
 
 const CONFIGURED_SORT: SearchSort[] = [{field: '_updatedAt', direction: 'desc'}]
 
@@ -58,5 +70,60 @@ describe('resolveSearchOrdering', () => {
         useRelevance: false,
       }),
     ).toEqual({skipSortByScore: true, sort: chosenSort})
+  })
+})
+
+describe('listenSearchQuery', () => {
+  function runListenSearchQuery(variant?: string) {
+    const client = {
+      listen: vi.fn(() => of({type: 'welcome'})),
+      observable: {fetch: vi.fn(() => of(['author']))},
+    } as unknown as SanityClient
+
+    return firstValueFrom(
+      listenSearchQuery({
+        client,
+        filter: '_type == "author"',
+        limit: 25,
+        params: {},
+        schema: {} as Schema,
+        searchQuery: '',
+        sort: {by: [{field: '_updatedAt', direction: 'desc'}]},
+        staticTypeNames: ['author'],
+        perspective: ['drafts'],
+        variant,
+      }),
+    )
+  }
+
+  it('searches within the selected variant', async () => {
+    mockCreateSearch.mockClear()
+    const search = vi.fn(() => of({hits: []}))
+    mockCreateSearch.mockReturnValue(search as never)
+
+    await runListenSearchQuery('alpha-audience')
+
+    expect(mockCreateSearch).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.objectContaining({variant: 'alpha-audience'}),
+    )
+    expect(search).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({perspective: ['drafts'], variant: 'alpha-audience'}),
+    )
+  })
+
+  it('omits the variant when none is selected', async () => {
+    mockCreateSearch.mockClear()
+    const search = vi.fn(() => of({hits: []}))
+    mockCreateSearch.mockReturnValue(search as never)
+
+    await runListenSearchQuery()
+
+    expect(search).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({variant: undefined}),
+    )
   })
 })

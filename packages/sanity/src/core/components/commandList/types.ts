@@ -1,6 +1,7 @@
 import {type ResponsivePaddingProps} from '@sanity/ui'
 import {type ScrollToOptions} from '@tanstack/react-virtual'
 import {type ReactNode} from 'react'
+import {type PaddingProps} from 'ui5'
 
 /** @internal */
 export type CommandListElementType = 'input' | 'list'
@@ -37,7 +38,7 @@ export interface CommandListHandle {
 }
 
 /** @internal */
-export interface CommandListProps<T = any> extends ResponsivePaddingProps {
+export interface CommandListProps<T = any> extends PaddingProps {
   /** The data attribute to apply to any active virtual list items */
   activeItemDataAttr?: string
   /** `aria-label` to apply to the virtual list container element */
@@ -48,6 +49,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   autoFocus?: CommandListElementType
   /** Whether the virtual list can receive focus */
   canReceiveFocus?: boolean
+  /** Class name to apply to the virtual list container (scroller) element */
+  className?: string
   /** Pixel offset of the virtual list focus ring. Negative values will cause the focus ring to appear inset */
   focusRingOffset?: number
   /** Force a fixed height for all virtual list children and skip measurement (faster). */

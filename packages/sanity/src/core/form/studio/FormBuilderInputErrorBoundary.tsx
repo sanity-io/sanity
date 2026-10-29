@@ -1,12 +1,14 @@
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
+import {VStack, Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {ErrorBoundary} from '../../../ui-components/errorBoundary'
-import {SchemaError} from '../../config'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
+import {SchemaError} from '../../config/SchemaError'
 import {isDev} from '../../environment'
-import {useTranslation} from '../../i18n'
-import {isRecord} from '../../util'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {isRecord} from '../../util/isRecord'
 import {Alert} from '../components/Alert'
 
 /**
@@ -59,13 +61,13 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
 
   return (
     <Alert status="error" title={<>{t('form.error.unhandled-runtime-error.title')}</>}>
-      <Stack space={4}>
+      <VStack gap={4}>
         <Text as="p" muted size={1}>
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
         {callStack && (
           <Box key="call-stack">
-            <Stack space={2}>
+            <VStack gap={2}>
               <Text as="p" size={1}>
                 <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
               </Text>
@@ -76,12 +78,12 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
                   </Code>
                 )}
               </Card>
-            </Stack>
+            </VStack>
           </Box>
         )}
         {isDev && componentStack && (
           <Box key="component-stack">
-            <Stack space={2}>
+            <VStack gap={2}>
               <Text as="p" size={1}>
                 <>{t('form.error.unhandled-runtime-error.component-stack.title')}</>
               </Text>
@@ -92,10 +94,10 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
                   </Code>
                 )}
               </Card>
-            </Stack>
+            </VStack>
           </Box>
         )}
-      </Stack>
+      </VStack>
     </Alert>
   )
 }

@@ -8,6 +8,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isDocumentGroupId,
   removeDupes,
 } from '../draftUtils'
 
@@ -101,6 +102,16 @@ describe('getVersionFromId', () => {
   })
 })
 
+test.each([
+  ['published id', 'agot', true],
+  ['draft id', 'drafts.agot', false],
+  ['version id', 'versions.summer-drop.agot', false],
+  ['id starting with the drafts folder name', 'draftsy', true],
+  ['id starting with the versions folder name', 'versionsy', true],
+])('isDocumentGroupId(): %s', (_, documentId, shouldEqual) => {
+  expect(isDocumentGroupId(documentId)).toBe(shouldEqual)
+})
+
 describe('getIdPair', () => {
   test.each([
     ['foo', undefined, {draftId: 'drafts.foo', publishedId: 'foo'}],
@@ -131,12 +142,12 @@ describe('getIdPair', () => {
     expect(getIdPair(id, options)).toEqual(result)
   })
   it("should return error if version is 'drafts'", () => {
-    expect(() => getIdPair('foo', {version: 'drafts'})).toThrowError(
+    expect(() => getIdPair('foo', {version: 'drafts'})).toThrow(
       'Version can not be "published" or "drafts"',
     )
   })
   it("should return error if version is 'published'", () => {
-    expect(() => getIdPair('foo', {version: 'published'})).toThrowError(
+    expect(() => getIdPair('foo', {version: 'published'})).toThrow(
       'Version can not be "published" or "drafts"',
     )
   })

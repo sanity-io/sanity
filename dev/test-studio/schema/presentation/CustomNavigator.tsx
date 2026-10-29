@@ -1,8 +1,9 @@
 import {AddDocumentIcon} from '@sanity/icons/AddDocument'
-import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card} from '@sanity/ui'
 import {useActiveWorkspace} from 'sanity'
 import {usePresentationNavigate, usePresentationParams} from 'sanity/presentation'
 import {useIntentLink} from 'sanity/router'
+import {Text, Flex, VStack} from 'ui5'
 
 export function CustomNavigator(): React.JSX.Element {
   const navigate = usePresentationNavigate()
@@ -17,8 +18,14 @@ export function CustomNavigator(): React.JSX.Element {
 
   return (
     <Card flex={1} height="fill">
-      <Flex height="fill" direction="column" justify="space-between" flex={1}>
-        <Stack padding={2} space={1}>
+      <Flex
+        height="100%"
+        flexDirection="column"
+        justifyContent="space-between"
+        flexBasis="0%"
+        flexGrow={1}
+      >
+        <Flex padding={2} gap={1} flexDirection="column">
           <Card
             as="button"
             onClick={() => navigate('https://preview-kit-next-app-router.sanity.dev/')}
@@ -26,12 +33,14 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-next-app-router')}
             radius={2}
           >
-            <Stack space={2}>
-              <Text size={0} muted>
+            <VStack gap={2}>
+              <Text size={0} muted as="div" trim={true}>
                 Next.js
               </Text>
-              <Text>App Router</Text>
-            </Stack>
+              <Text as="div" trim={true}>
+                App Router
+              </Text>
+            </VStack>
           </Card>
           <Card
             as="button"
@@ -40,12 +49,14 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-next-pages-router')}
             radius={2}
           >
-            <Stack space={2}>
-              <Text size={0} muted>
+            <VStack gap={2}>
+              <Text size={0} muted as="div" trim={true}>
                 Next.js
               </Text>
-              <Text>Pages Router</Text>
-            </Stack>
+              <Text as="div" trim={true}>
+                Pages Router
+              </Text>
+            </VStack>
           </Card>
           <Card
             as="button"
@@ -54,7 +65,9 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-remix')}
             radius={2}
           >
-            <Text>Remix</Text>
+            <Text as="div" trim={true}>
+              Remix
+            </Text>
           </Card>
           <Card
             as="button"
@@ -63,7 +76,9 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://next.sanity.build')}
             radius={2}
           >
-            <Text>Blocked test</Text>
+            <Text as="div" trim={true}>
+              Blocked test
+            </Text>
           </Card>
           <Card
             as="button"
@@ -83,10 +98,12 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith(`${location.origin}${studioBasePath}`)}
             radius={2}
           >
-            <Text>Recursion test</Text>
+            <Text as="div" trim={true}>
+              Recursion test
+            </Text>
           </Card>
-        </Stack>
-        <Stack padding={2} space={1}>
+        </Flex>
+        <Flex padding={2} gap={1} flexDirection="column">
           <Button
             icon={AddDocumentIcon}
             text="New Page"
@@ -95,7 +112,7 @@ export function CustomNavigator(): React.JSX.Element {
             href={createPageIntent.href}
             as="a"
           />
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )

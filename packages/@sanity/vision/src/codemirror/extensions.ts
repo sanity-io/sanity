@@ -4,11 +4,12 @@ import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {
   bracketMatching,
   defaultHighlightStyle,
+  foldGutter,
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
 import {highlightSelectionMatches} from '@codemirror/search'
-import {type Extension} from '@codemirror/state'
+import {EditorState, type Extension} from '@codemirror/state'
 import {
   drawSelection,
   highlightActiveLine,
@@ -16,6 +17,7 @@ import {
   highlightSpecialChars,
   keymap,
   lineNumbers,
+  type KeyBinding,
 } from '@codemirror/view'
 import {groq} from '@sanity/lezer-groq'
 
@@ -31,20 +33,24 @@ const sharedExtensions: Extension[] = [
   history(),
   drawSelection(),
   syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
-  keymap.of(
-    [
-      // Override the default keymap for Mod-Enter to not insert a new line, we have a custom event handler for executing queries
-      {key: 'Mod-Enter', run: () => true},
+  keymap.of([
+    // Override the default keymap for Mod-Enter to not insert a new line, we have a custom event handler for executing queries
+    {key: 'Mod-Enter', run: () => true},
 
-      // Add the default keymap and history keymap
-      defaultKeymap,
-      historyKeymap,
-    ]
-      .flat()
-      .filter(Boolean),
-  ),
+    // Add the default keymap and history keymap
+    ...defaultKeymap,
+    ...historyKeymap,
+  ] as unknown as readonly KeyBinding[]),
 ]
 
 export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]
 
 export const paramsExtensions: Extension[] = [javascriptLanguage, ...sharedExtensions]
+
+/** A result's JSON: read only, but focusable and selectable, with its objects and arrays foldable */
+export const resultJsonExtensions: Extension[] = [
+  javascriptLanguage,
+  ...sharedExtensions,
+  foldGutter(),
+  EditorState.readOnly.of(true),
+]

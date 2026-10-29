@@ -1,14 +1,15 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {Card, Container, Heading} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+import {Text, Box, Flex, VStack, Link} from 'ui5'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
-import {SerializeError} from '../../structureBuilder'
-import {PaneResolutionError} from '../../structureResolvers'
+import {SerializeError} from '../../structureBuilder/SerializeError'
+import {PaneResolutionError} from '../../structureResolvers/PaneResolutionError'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {
@@ -33,9 +34,10 @@ function formatStack(stack: string) {
 
 interface StructureErrorProps {
   error: unknown
+  onReload: () => void
 }
 
-export function StructureError({error}: StructureErrorProps) {
+export function StructureError({error, onReload}: StructureErrorProps) {
   if (!(error instanceof PaneResolutionError)) {
     throw error
   }
@@ -52,10 +54,6 @@ export function StructureError({error}: StructureErrorProps) {
   const path = cause instanceof SerializeError ? cause.path : []
   const helpId = (cause instanceof SerializeError && cause.helpId) || error.helpId
 
-  const handleReload = useCallback(() => {
-    window.location.reload()
-  }, [])
-
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
       <Container>
@@ -63,8 +61,8 @@ export function StructureError({error}: StructureErrorProps) {
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
-            <Stack space={2}>
-              <Text size={1} weight="medium">
+            <VStack gap={2}>
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('structure-error.structure-path.label')}
               </Text>
               <Code>
@@ -74,22 +72,27 @@ export function StructureError({error}: StructureErrorProps) {
                   <PathSegment key={`${segment}-${i}`}>{segment}</PathSegment>
                 ))}
               </Code>
-            </Stack>
+            </VStack>
           )}
 
-          <Stack marginTop={4} space={2}>
-            <Text size={1} weight="medium">
+          <Flex marginTop={4} gap={2} flexDirection="column">
+            <Text size={1} weight="medium" as="div" trim={true} tone="critical">
               {t('structure-error.error.label')}
             </Text>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
-          </Stack>
+          </Flex>
 
           {helpId && (
             <Box marginTop={4}>
-              <Text>
-                <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
+              <Text as="div" trim={true} tone="critical">
+                <Link
+                  href={generateHelpUrl(helpId)}
+                  openInNewTab
+                  underlined={false}
+                  style={{color: 'var(--card-link-fg-color)'}}
+                >
                   {t('structure-error.docs-link.text')}
-                </a>
+                </Link>
               </Text>
             </Box>
           )}
@@ -99,7 +102,7 @@ export function StructureError({error}: StructureErrorProps) {
               text={t('structure-error.reload-button.text')}
               icon={SyncIcon}
               tone="primary"
-              onClick={handleReload}
+              onClick={onReload}
             />
           </Box>
         </Card>

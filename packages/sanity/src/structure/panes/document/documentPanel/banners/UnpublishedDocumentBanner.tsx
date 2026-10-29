@@ -1,18 +1,37 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Stack, Text} from '@sanity/ui'
 import {
-  getVersionInlineBadge,
+  getReleaseTone,
   isGoingToUnpublish,
   isReleaseDocument,
   ReleaseTitle,
   Translate,
   usePerspective,
   useTranslation,
+  VersionInlineBadge,
 } from 'sanity'
+import {Text, VStack} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+
+function VersionBadge({
+  children,
+  fallbackTitle,
+  release,
+}: {
+  children?: React.ReactNode
+  fallbackTitle?: string
+  release?: ReleaseDocument
+}) {
+  if (!release) return null
+  return (
+    <ReleaseTitle title={release.metadata?.title} fallback={fallbackTitle ?? ''}>
+      {() => <VersionInlineBadge $tone={getReleaseTone(release)}>{children}</VersionInlineBadge>}
+    </ReleaseTitle>
+  )
+}
 
 export function UnpublishedDocumentBanner() {
   const {value, editState} = useDocumentPane()
@@ -31,33 +50,25 @@ export function UnpublishedDocumentBanner() {
       <Banner
         tone="critical"
         content={
-          <Stack space={2}>
-            <Text size={1}>
+          <VStack gap={2}>
+            <Text size={1} as="div" trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="banners.unpublished-release-banner.text"
                 values={{
                   title: releaseTitle,
                 }}
-                components={{
-                  VersionBadge: ({children}) => {
-                    const BadgeWithTone = getVersionInlineBadge(selectedPerspective)
-                    return (
-                      <ReleaseTitle
-                        title={selectedPerspective.metadata?.title}
-                        fallback={tCore('release.placeholder-untitled-release')}
-                      >
-                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
-                      </ReleaseTitle>
-                    )
-                  },
+                components={{VersionBadge}}
+                componentProps={{
+                  fallbackTitle: tCore('release.placeholder-untitled-release'),
+                  release: selectedPerspective,
                 }}
               />
             </Text>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true} tone="critical">
               <Translate t={t} i18nKey="banners.unpublished-release-banner.text-with-published" />
             </Text>
-          </Stack>
+          </VStack>
         }
         icon={UnpublishIcon}
       />

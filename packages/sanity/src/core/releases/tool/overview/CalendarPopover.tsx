@@ -34,7 +34,7 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
         selected={isCalendarOpen}
         onClick={() => setIsCalendarOpen((prev) => !prev)}
         ref={buttonRef}
-        space={2}
+        gap={2}
       />
     </Tooltip>
   )

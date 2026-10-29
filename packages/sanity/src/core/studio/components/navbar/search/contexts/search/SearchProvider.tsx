@@ -1,13 +1,14 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal} from 'dequal/lite'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
-import {type CommandListHandle} from '../../../../../../components'
-import {useSchema} from '../../../../../../hooks'
+import {type CommandListHandle} from '../../../../../../components/commandList/types'
+import {useSchema} from '../../../../../../hooks/useSchema'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
-import {type SearchHit, type SearchTerms} from '../../../../../../search'
-import {useCurrentUser} from '../../../../../../store'
+import {isEqualSearchTerms} from '../../../../../../search/common/isEqualSearchTerms'
+import {type SearchHit, type SearchTerms} from '../../../../../../search/common/types'
+import {useCurrentUser} from '../../../../../../store/user/hooks'
 import {useSource} from '../../../../../source'
 import {GlobalSearchLatencyMeasured} from '../../__telemetry__/search.telemetry'
 import {SEARCH_LIMIT} from '../../constants'
@@ -58,6 +59,7 @@ export function SearchProvider({
   const currentUser = useCurrentUser()
   const {
     search: {operators, filters, strategy},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const telemetry = useTelemetry()
 
@@ -202,9 +204,9 @@ export function SearchProvider({
    * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
-    const orderingChanged = !isEqual(ordering, previousOrderingRef.current)
+    const orderingChanged = !dequal(ordering, previousOrderingRef.current)
     const cursorChanged = cursor !== previousCursorRef.current
-    const termsChanged = !isEqual(terms, previousTermsRef.current)
+    const termsChanged = !isEqualSearchTerms(terms, previousTermsRef.current)
 
     if (orderingChanged || cursorChanged || termsChanged) {
       let sortLabel = 'findability-sort:'
@@ -232,6 +234,9 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
+          // Raw so drafts, published, and release versions are all findable. Content Agent
+          // versions are excluded by `createSearch` — they are only readable by their author
+          // and would otherwise appear as duplicate hits that open an empty document.
           perspective: 'raw',
         },
         terms: {
@@ -252,6 +257,7 @@ export function SearchProvider({
     previousTermsRef.current = terms
   }, [
     completeFilters.length,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     currentFilters,
     documentTypes,
     handleSearch,
@@ -275,6 +281,7 @@ export function SearchProvider({
     }
 
     isMountedRef.current = true
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   const value = useMemo(

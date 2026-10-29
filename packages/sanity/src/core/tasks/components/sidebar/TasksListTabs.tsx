@@ -1,10 +1,10 @@
-import {TabList, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {type CSSProperties} from 'styled-components'
+import {TabList} from '@sanity/ui'
+import {useCallback, useMemo, type CSSProperties} from 'react'
+import {Text} from 'ui5'
 
-import {Tab} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {type SidebarTabsIds} from '../../context'
+import {Tab} from '../../../../ui-components/tab/Tab'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type SidebarTabsIds} from '../../context/navigation/types'
 import {tasksLocaleNamespace} from '../../i18n'
 
 const LIST_STYLES: CSSProperties = {
@@ -55,7 +55,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   )
 
   return (
-    <TabList space={2} style={LIST_STYLES}>
+    <TabList gap={2} style={LIST_STYLES}>
       {tabs.map((tab) => (
         <Tab
           key={`${tab.id}-tab`}
@@ -64,7 +64,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
           onClick={() => handleTabChange(tab)}
           selected={tab.id === activeTabId}
         >
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {tab.label}
           </Text>
         </Tab>

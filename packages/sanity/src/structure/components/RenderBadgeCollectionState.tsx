@@ -31,4 +31,3 @@ export const RenderBadgeCollectionState = memo((props: RenderBadgeCollectionProp
     </GetHookCollectionState>
   )
 })
-RenderBadgeCollectionState.displayName = 'Memo(RenderBadgeCollectionState)'

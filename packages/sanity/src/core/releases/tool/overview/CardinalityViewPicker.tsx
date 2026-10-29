@@ -2,13 +2,14 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Menu, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useMemo} from 'react'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../ui-components/menuItem'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
   NavigatedToReleasesOverview,
@@ -87,9 +88,9 @@ export const CardinalityViewPicker = ({
   //  If only one is enabled, show the label
   if (pickerView === 'contentReleases' || pickerView === 'singleDocReleases') {
     return (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <CalendarIcon />
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="semibold" as="div" trim={true}>
           {pickerView === 'contentReleases' ? t('action.releases') : t('action.drafts')}
         </Text>
       </Flex>

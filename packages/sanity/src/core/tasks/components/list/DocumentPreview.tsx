@@ -1,13 +1,14 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Text, Flex, Icon} from 'ui5'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewValues} from '../../hooks'
+import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -27,44 +28,35 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
     perspectiveStack,
+    variant: selectedVariantName,
   })
-
-  const Link = useMemo(
-    () =>
-      forwardRef(function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'>,
-        ref: React.ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <StyledIntentLink
-            {...linkProps}
-            intent="edit"
-            params={{id: documentId, type: documentType}}
-            ref={ref}
-          />
-        )
-      }),
-    [documentId, documentType],
-  )
 
   if (!documentSchema) {
     return null
   }
 
   return (
-    <Flex align="center" gap={2}>
-      <Text size={1}>
-        <DocumentIcon />
-      </Text>
+    <Flex alignItems="center" gap={2}>
+      <Icon icon={DocumentIcon} size={1} style={{margin: '-0.375rem'}} />
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
+        <Text
+          size={1}
+          as={StyledIntentLink}
+          intent="edit"
+          params={{id: documentId, type: documentType}}
+          weight="medium"
+          style={{maxWidth: '20ch'}}
+          truncate={1}
+          trim={true}
+        >
           {value?.title || 'Untitled'}
         </Text>
       )}

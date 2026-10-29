@@ -11,6 +11,7 @@ export default function CustomMyObjectInput(props: ObjectInputProps) {
           <input
             type="text"
             value={(value && value[field.name]) || ''}
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             placeholder={schemaType.placeholder}
             onChange={(event) => {
               onChange([

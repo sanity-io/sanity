@@ -1,16 +1,17 @@
-import {Box} from '@sanity/ui'
 import {Suspense, useCallback} from 'react'
 import {Resizable} from 'sanity'
+import {Box} from 'ui5'
 
-import {usePane} from '../../../components'
+import {usePane} from '../../../components/pane/usePane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
+import {DocumentInspectorErrorBoundary} from './DocumentInspectorErrorBoundary'
 
 interface DocumentInspectorPanelProps {
   documentId: string
   documentType: string
-  flex?: number | number[]
+  flex?: number
 }
 
 export function DocumentInspectorPanel(
@@ -29,9 +30,12 @@ export function DocumentInspectorPanel(
 
   const Component = inspector.component
   const element = (
-    <Suspense fallback={null}>
-      <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
-    </Suspense>
+    // Keying on the inspector name clears a caught error when switching inspectors
+    <DocumentInspectorErrorBoundary key={inspector.name} onClose={handleClose}>
+      <Suspense fallback={null}>
+        <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+      </Suspense>
+    </DocumentInspectorErrorBoundary>
   )
 
   if (features.resizablePanes) {
@@ -39,7 +43,10 @@ export function DocumentInspectorPanel(
       <Resizable
         as="aside"
         data-ui="DocumentInspectorPanel"
-        flex={flex}
+        {...(flex !== undefined && {
+          flexGrow: flex,
+          flexBasis: '0%',
+        })}
         resizerPosition="left"
         maxWidth={DOCUMENT_INSPECTOR_MAX_WIDTH}
         minWidth={DOCUMENT_INSPECTOR_MIN_WIDTH}
@@ -50,7 +57,7 @@ export function DocumentInspectorPanel(
   }
 
   return (
-    <Box as="aside" data-ui="DocumentInspectorPanel" flex={flex}>
+    <Box as="aside" data-ui="DocumentInspectorPanel" flexBasis="0%" flexGrow={flex}>
       {element}
     </Box>
   )

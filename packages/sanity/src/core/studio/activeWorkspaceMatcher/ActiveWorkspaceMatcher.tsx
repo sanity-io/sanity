@@ -1,8 +1,9 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
-import {type RouterHistory} from '../router'
-import {useVisibleWorkspaces, useWorkspaces} from '../workspaces'
+import {type RouterHistory} from '../router/types'
+import {useVisibleWorkspaces} from '../workspaces/useVisibleWorkspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
 
@@ -58,17 +59,12 @@ export function ActiveWorkspaceMatcher({
     case 'match': {
       const matchedWorkspace = result.workspace
 
-      if (
-        typeof matchedWorkspace.hidden === 'function' &&
-        workspaceAuthStates[matchedWorkspace.name] === undefined
-      ) {
-        return <LoadingComponent />
-      }
-
       const matchedWorkspaceIsVisible = visibleWorkspaces.some(
         (workspace) => workspace.name === matchedWorkspace.name,
       )
 
+      // Only reachable when every workspace is hidden: matchWorkspace redirects
+      // away from a hidden workspace whenever a visible one exists.
       if (!matchedWorkspaceIsVisible) {
         return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
       }

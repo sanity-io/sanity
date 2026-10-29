@@ -23,6 +23,7 @@ import {
   getSearchableTypes,
   type SanityDocumentLike,
   type Schema,
+  type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
   type SearchStrategy,
@@ -40,8 +41,14 @@ interface ListenQueryOptions {
   searchQuery: string
   sort: SortOrder
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, the list resolves documents as
+   * seen through that variant, on top of `perspective`.
+   */
+  variant?: string
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
+  partialIndexFieldPaths?: SearchFactoryOptions['partialIndexFieldPaths']
   searchStrategy?: SearchStrategy
   /**
    * Whether to rank results by relevance when a search term is present.
@@ -119,6 +126,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     schema,
     sort,
     perspective,
+    variant,
     limit,
     params,
     filter: groqFilter,
@@ -126,6 +134,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     staticTypeNames,
     sortByRelevance,
     maxFieldDepth,
+    partialIndexFieldPaths,
     searchStrategy,
   } = options
   const sortBy = sort.by
@@ -168,6 +177,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     params,
     searchQuery,
     perspective,
+    variant,
     sort: toStaticSortOrder(sort),
     staticTypeNames,
   })
@@ -208,6 +218,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             params,
             strategy: searchStrategy,
             maxDepth: maxFieldDepth,
+            partialIndexFieldPaths,
+            variant,
           })
 
           const doFetch = () => {
@@ -229,6 +241,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               skipSortByScore,
               sort,
               perspective,
+              variant,
             }
 
             return search(searchTerms, searchOptions).pipe(

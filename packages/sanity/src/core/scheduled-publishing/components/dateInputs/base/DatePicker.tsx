@@ -1,9 +1,9 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {type ComponentProps, useCallback, useState, type RefAttributes} from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import {Calendar} from './calendar/Calendar'
 
-export const DatePicker = forwardRef(function DatePicker(
+export function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
     value?: Date
     onChange: (nextDate: Date) => void
@@ -11,10 +11,10 @@ export const DatePicker = forwardRef(function DatePicker(
     timeStep?: number
     customValidation?: (selectedDate: Date) => boolean
     timeZoneScope: TimeZoneScope
-  },
-  ref: ForwardedRef<HTMLDivElement>,
+  } & RefAttributes<HTMLDivElement>,
 ) {
-  const {value: _value, onChange, customValidation, timeZoneScope, ...rest} = props
+  const {ref, value: _value, onChange, customValidation, timeZoneScope, ...rest} = props
+  // oxlint-disable-next-line react/purity -- defaults to the current time while no value is set
   const value = _value ?? new Date()
   const {utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [focusedDate, setFocusedDay] = useState<Date>()
@@ -39,4 +39,4 @@ export const DatePicker = forwardRef(function DatePicker(
       timeZoneScope={timeZoneScope}
     />
   )
-})
+}

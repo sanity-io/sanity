@@ -1,6 +1,7 @@
+import semver from 'semver'
 import {describe, expect, it} from 'vitest'
 
-import {parseImportMapModuleCdnUrl} from './utils'
+import {getVersionDeprecation, parseDeprecatedVersions, parseImportMapModuleCdnUrl} from './utils'
 
 describe('parseImportMapModuleCdnUrl for legacy urls', () => {
   it('returns undefined but warns if an invalid module url is given', () => {
@@ -94,5 +95,50 @@ describe('parseImportMapModuleCdnUrl for app-id urls', () => {
         "valid": false,
       }
     `)
+  })
+})
+
+describe('parseDeprecatedVersions()', () => {
+  it('returns undefined when the field is missing or malformed', () => {
+    expect(parseDeprecatedVersions(undefined)).toBeUndefined()
+    expect(parseDeprecatedVersions(null)).toBeUndefined()
+    expect(parseDeprecatedVersions('4.2.0')).toBeUndefined()
+    expect(parseDeprecatedVersions(['4.2.0'])).toBeUndefined()
+  })
+
+  it('returns an empty map when nothing is deprecated', () => {
+    expect(parseDeprecatedVersions({})).toEqual({})
+  })
+
+  it('keeps reasons and normalizes version keys', () => {
+    expect(
+      parseDeprecatedVersions({
+        '4.2.0': {reason: 'Data loss bug', timestamp: 1},
+        'v4.1.0': {},
+        '4.0.0': null,
+        'not-a-version': {reason: 'ignored'},
+      }),
+    ).toEqual({
+      '4.2.0': {reason: 'Data loss bug'},
+      '4.1.0': {},
+      '4.0.0': {},
+    })
+  })
+})
+
+describe('getVersionDeprecation()', () => {
+  const deprecated = {'4.2.0': {reason: 'Data loss bug'}, '4.1.0': {}}
+
+  it('looks up the deprecation notice for a version', () => {
+    expect(getVersionDeprecation(deprecated, semver.parse('4.2.0')!)).toEqual({
+      reason: 'Data loss bug',
+    })
+    expect(getVersionDeprecation(deprecated, semver.parse('4.1.0')!)).toEqual({})
+    expect(getVersionDeprecation(deprecated, semver.parse('4.3.0')!)).toBeUndefined()
+  })
+
+  it('returns undefined without a list or version', () => {
+    expect(getVersionDeprecation(undefined, semver.parse('4.2.0')!)).toBeUndefined()
+    expect(getVersionDeprecation(deprecated, undefined)).toBeUndefined()
   })
 })

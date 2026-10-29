@@ -1,5 +1,4 @@
 import {
-  type BlockDecoratorRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -7,7 +6,6 @@ import {
   PortableTextEditable,
   type PortableTextEditableProps,
   type RangeDecoration,
-  type RenderAnnotationFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -15,14 +13,21 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {PresenceOverlay} from '../../../presence/overlay/PresenceOverlay'
 import {useFormBuilder} from '../../useFormBuilder'
-import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {
+  EditableCard,
+  EditableContent,
+  EditableWrapper,
+  Root,
+  Scroller,
+  ToolbarCard,
+} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text'
-import {Toolbar} from './toolbar'
+import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 
@@ -52,7 +57,6 @@ interface EditorProps {
   path: Path
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
-  renderAnnotation: RenderAnnotationFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -78,7 +82,6 @@ export function Editor(props: EditorProps): ReactNode {
     path,
     readOnly,
     rangeDecorations,
-    renderAnnotation,
     scrollElement,
     setPortalElement,
     setScrollElement,
@@ -115,9 +118,6 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
-    return <Decorator {...decoratorProps} />
-  }, [])
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
@@ -129,8 +129,6 @@ export function Editor(props: EditorProps): ReactNode {
       onPaste,
       rangeDecorations,
       'ref': elementRef,
-      renderAnnotation,
-      renderDecorator,
       renderPlaceholder,
       scrollSelectionIntoView,
       'selection': initialSelection,
@@ -147,8 +145,6 @@ export function Editor(props: EditorProps): ReactNode {
     onCopy,
     onPaste,
     rangeDecorations,
-    renderAnnotation,
-    renderDecorator,
     renderPlaceholder,
     scrollSelectionIntoView,
     spellCheck,
@@ -163,6 +159,20 @@ export function Editor(props: EditorProps): ReactNode {
 
   // Always collapse toolbars at smaller container widths when in 'default' (document pane) FormBuilder instances
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
+
+  const editableContent = (
+    <EditableContent $isFullscreen={isFullscreen}>
+      <EditableWrapper
+        $isFullscreen={isFullscreen}
+        $isOneLine={isOneLine}
+        tone={readOnly ? 'transparent' : 'default'}
+      >
+        <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+          {editable}
+        </BoundaryElementProvider>
+      </EditableWrapper>
+    </EditableContent>
+  )
 
   return (
     <Root
@@ -189,18 +199,14 @@ export function Editor(props: EditorProps): ReactNode {
       )}
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
-        <Scroller ref={setScrollElement}>
-          <div>
-            <EditableWrapper
-              $isFullscreen={isFullscreen}
-              $isOneLine={isOneLine}
-              tone={readOnly ? 'transparent' : 'default'}
-            >
-              <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
-                {editable}
-              </BoundaryElementProvider>
-            </EditableWrapper>
-          </div>
+        <Scroller ref={setScrollElement} data-testid="pt-editor__scroller">
+          {/*
+           * The presence cursors of other users register with the surrounding presence overlay
+           * (the document pane's), which shows their avatar at the edge of this scroller when a
+           * cursor is scrolled out of it. In fullscreen the editor is portaled out of the pane, so
+           * it gets its own overlay inside the scroller instead.
+           */}
+          {isFullscreen ? <PresenceOverlay>{editableContent}</PresenceOverlay> : editableContent}
         </Scroller>
 
         <div data-portal="" ref={setPortalElement} />

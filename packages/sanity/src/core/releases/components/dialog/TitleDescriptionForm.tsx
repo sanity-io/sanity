@@ -1,12 +1,14 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
+// Cap the description height and let it scroll internally past this point, so the dialog stays a
+// sensible size regardless of how long the description is.
 const MAX_DESCRIPTION_HEIGHT = 200
 
 const TitleTextArea = styled.textarea((props) => {
@@ -89,6 +91,11 @@ function resizeTextarea(element: HTMLTextAreaElement): void {
   element.style.height = `${element.scrollHeight}px`
 }
 
+/**
+ * The editable title + description form for a release. Used inside the create/edit dialogs — the
+ * release detail page itself is a read-only display surface (see ReleaseDetailsEditor), and routes
+ * edits here through a dialog so editing is an explicit, intentional action.
+ */
 export function TitleDescriptionForm({
   release,
   onChange,
@@ -121,6 +128,7 @@ export function TitleDescriptionForm({
     if (titleRef.current) {
       resizeTextarea(titleRef.current)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [release.metadata.title])
 
   useEffect(() => {
@@ -128,6 +136,7 @@ export function TitleDescriptionForm({
       resizeTextarea(descriptionRef.current)
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [release.metadata.description])
 
   const handleTitleChange = useCallback(
@@ -165,7 +174,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
-    <Stack space={3}>
+    <VStack gap={3}>
       <TitleTextArea
         ref={titleRef}
         onChange={handleTitleChange}
@@ -196,6 +205,6 @@ export function TitleDescriptionForm({
           readOnly={!isReleaseOpen}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

@@ -80,6 +80,12 @@ export function calculateStyles(options: Options = {}): CalculatedStyles {
     },
     image: {
       position: 'absolute',
+      // The image is scaled past its crop viewport on purpose (it is clipped by
+      // the crop box), so it has to opt out of the global
+      // `img {max-width: 100%}` reset the studio ships, which would otherwise
+      // squash it back to the viewport width.
+      maxWidth: 'none',
+      maxHeight: 'none',
       height: toStylePercentage(result.image.height),
       width: toStylePercentage(result.image.width),
       top: toStylePercentage(result.image.top),

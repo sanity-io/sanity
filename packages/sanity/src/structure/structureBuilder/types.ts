@@ -98,6 +98,12 @@ export interface StructureContext extends Source {
    * See {@link PerspectiveStack}
    */
   perspectiveStack: PerspectiveStack
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected.
+   * It can be used as the variant param in the client, alongside `perspectiveStack`, to get the
+   * view of the documents as seen through that variant.
+   */
+  selectedVariantName?: string
 }
 
 /**
@@ -161,7 +167,13 @@ export interface StructureBuilder {
    * @returns an array of initial value template item builders. See {@link ListItemBuilder}
    */
   defaultInitialValueTemplateItems: () => InitialValueTemplateItemBuilder[]
-  /** Get the default List builder
+  /**
+   * Get the default List builder.
+   *
+   * The default structure contains a document type list for each document type,
+   * followed by a single list item for each registered singleton (in
+   * registration order).
+   *
    * @returns a List builder. See {@link ListBuilder}
    */
   defaults: () => ListBuilder

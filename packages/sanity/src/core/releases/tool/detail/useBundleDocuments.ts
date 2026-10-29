@@ -11,11 +11,11 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {catchError, delay, filter, finalize, map, shareReplay, switchMap} from 'rxjs/operators'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
@@ -42,7 +42,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
 export interface BundleDocument {
   memoKey: string
   isPending?: boolean
-  document: SanityDocument & {publishedDocumentExists: boolean}
+  document: SanityDocument & {publishedDocumentExists: boolean; draftDocumentExists?: boolean}
   validation: DocumentValidationStatus
 }
 
@@ -56,6 +56,7 @@ interface BundleDocumentsObservableOptions {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   currentUser?: Omit<CurrentUser, 'role'> | null
   /**
@@ -72,6 +73,11 @@ interface BundleDocumentsObservableOptions {
    * Used, for example, to skip documents that are going to be unpublished in a release.
    */
   skipValidation?: (document: SanityDocument) => boolean
+  /**
+   * API version for the membership query and each document observation. Release callers keep the
+   * releases version. `sanity::partOfVariant` passes the variants version.
+   */
+  apiVersion?: string
 }
 
 const buildBundleDocumentsObservable = ({
@@ -83,6 +89,7 @@ const buildBundleDocumentsObservable = ({
   groqFilter,
   params,
   skipValidation,
+  apiVersion = RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
 }: Omit<BundleDocumentsObservableOptions, 'cacheKey'>): BundleDocumentsObservableResult => {
   // Helper function to create validation observable
   const createValidationObservable = (ctx: any, document: SanityDocument) => {
@@ -122,7 +129,7 @@ const buildBundleDocumentsObservable = ({
 
     const document$ = documentPreviewStore
       .unstable_observeDocument(id, {
-        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+        apiVersion,
       })
       .pipe(
         filter(Boolean),
@@ -131,6 +138,7 @@ const buildBundleDocumentsObservable = ({
             map((availability) => ({
               ...doc,
               publishedDocumentExists: availability.published.available,
+              draftDocumentExists: availability.draft.available,
             })),
           )
         }),
@@ -163,7 +171,7 @@ const buildBundleDocumentsObservable = ({
 
   return documentPreviewStore
     .unstable_observeDocumentIdSet(groqFilter, params, {
-      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      apiVersion,
     })
     .pipe(
       map((state) => state.documentIds || []),
@@ -254,13 +262,15 @@ export function useBundleDocuments(options: {
   cacheKey: string
   skipValidation?: (document: SanityDocument) => boolean
   enabled?: boolean
+  apiVersion?: string
 }): {
   loading: boolean
   results: BundleDocument[]
   error: null | Error
 } {
-  const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options
+  const {groqFilter, params, cacheKey, skipValidation, enabled = true, apiVersion} = options
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
 
@@ -277,6 +287,7 @@ export function useBundleDocuments(options: {
             params,
             cacheKey,
             skipValidation,
+            apiVersion,
           })
         : of(BUNDLE_DOCUMENTS_EMPTY),
     [
@@ -290,6 +301,7 @@ export function useBundleDocuments(options: {
       params,
       cacheKey,
       skipValidation,
+      apiVersion,
     ],
   )
 

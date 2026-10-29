@@ -80,6 +80,53 @@ src/
     ...
 ```
 
+## Standard property value sets
+
+Some interactions happen on more than one UI surface or through more than one
+trigger. Rather than baking that context into the event name (which fragments a
+single action across many high-cardinality names), encode it as a property on a
+generic event. For those properties to be aggregatable, the values must come
+from a shared, low-cardinality vocabulary.
+
+The value sets below are canonical. When instrumenting a new event, reuse an
+existing value where one fits; only introduce a new value when no existing one
+describes the surface or trigger, and coordinate additions with the Data /
+Analytics team so downstream dbt models and Looker dashboards stay in sync.
+
+**Owner:** Studio App team (`SAPP`), in coordination with Data / Analytics.
+
+### `location`
+
+The UI surface an interaction happened on.
+
+| Value                  | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `document_pane`        | The main document editor pane                         |
+| `array_list`           | An array-of-objects list field                        |
+| `nested_object_dialog` | A nested object edit dialog or popover (tree editing) |
+
+### `position`
+
+Where in a collection an object was created or edited. Pairs with
+`location: "array_list"`.
+
+| Value       | Description                                 |
+| ----------- | ------------------------------------------- |
+| `new`       | Created via the array's primary add control |
+| `appended`  | Inserted after an existing item             |
+| `prepended` | Inserted before an existing item            |
+| `nested`    | An existing nested item opened for editing  |
+
+### `path`
+
+How a navigation or open interaction was triggered.
+
+| Value               | Description               |
+| ------------------- | ------------------------- |
+| `breadcrumb`        | Via a breadcrumb control  |
+| `close_button`      | Via a dialog close button |
+| `keyboard_shortcut` | Via a keyboard shortcut   |
+
 ## How Events Are Sent
 
 ### React Hook
@@ -88,6 +135,7 @@ Components log events using the `useTelemetry()` hook from `@sanity/telemetry/re
 
 ```typescript
 import {useTelemetry} from '@sanity/telemetry/react'
+
 import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
 function MyComponent() {
@@ -153,6 +201,8 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
         screen: { density: 2, height: 1080, width: 1920, innerHeight: 900, innerWidth: 1600 },
         studioVersion: "5.18.0",
         reactVersion: "19.2.3",
+        portableTextEditorVersion: "8.1.5",
+        appSdkVersion: "3.3.0",
         environment: "production",
         connection: { effectiveType: "4g", downlink: 10, rtt: 50, saveData: false },
 
@@ -173,6 +223,15 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
 Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
+
+### Dependency versions
+
+`portableTextEditorVersion` and `appSdkVersion` come from `@portabletext/editor` and `@sanity/sdk-react`'s own `package.json`. The `sanity` npm build leaves that JSON import external, which has two consequences for reading the data:
+
+- A studio built from its own `node_modules` reports the versions it resolved. `sanity` declares both as semver ranges, so these can run ahead of the versions `sanity` was released against.
+- An auto-updating studio reports the versions the CDN bundle was built against. That bundle inlines both manifests, so every studio on a given bundle reports the same pair regardless of what the project installed.
+
+The published ESM therefore carries an `import ... with {type: 'json'}` statement. A studio embedded in another app needs a bundler that supports import attributes; the Sanity CLI's own build does.
 
 ## Consent
 
@@ -229,16 +288,27 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Releases
 
-| Event                               | When                        |
-| ----------------------------------- | --------------------------- |
-| `Version Document Added to Release` | Document added to a release |
-| `Release Created/Deleted/Published` | Release lifecycle           |
-| `Release Scheduled/Unscheduled`     | Release scheduling          |
-| `Release Archived/Unarchived`       | Release archival            |
-| `Release Reverted/Duplicated`       | Release management          |
-| `Release Link/ID/Title Copied`      | Clipboard actions           |
-| `Navigated to Releases Overview`    | Navigation                  |
-| `Navigated to Scheduled Drafts`     | Navigation                  |
+| Event                               | When                                                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `Version Document Added to Release` | Document added to a release                                                                                                |
+| `Release Created/Deleted/Published` | Release lifecycle                                                                                                          |
+| `Release Scheduled/Unscheduled`     | Release scheduling                                                                                                         |
+| `Release Archived/Unarchived`       | Release archival                                                                                                           |
+| `Release Reverted/Duplicated`       | Release management                                                                                                         |
+| `Release Description Set`           | Release description usage - set at creation or edited in Studio (action, character count, contains-URL; never the content) |
+| `Release Link/ID/Title Copied`      | Clipboard actions                                                                                                          |
+| `Navigated to Releases Overview`    | Navigation                                                                                                                 |
+| `Navigated to Scheduled Drafts`     | Navigation                                                                                                                 |
+
+### Scheduled Drafts
+
+Scheduled drafts (cardinality-one releases) emit their own events so their usage can be distinguished from content releases. Each is logged from `useScheduleDraftOperations` after its operation succeeds.
+
+| Event                         | When                                        | Payload           |
+| ----------------------------- | ------------------------------------------- | ----------------- |
+| `Scheduled Draft Created`     | A draft is scheduled for publishing         | none              |
+| `Scheduled Draft Rescheduled` | A scheduled draft's publish time is changed | `{ fromPaused }`  |
+| `Scheduled Draft Cancelled`   | A scheduled draft is cancelled              | `{ keptAsDraft }` |
 
 ### Comments
 
@@ -325,6 +395,7 @@ A divergence session starts on the first `Inspected Divergence` event for a docu
 
    ```typescript
    import {useTelemetry} from '@sanity/telemetry/react'
+
    import {MyFeatureUsed} from './__telemetry__/myFeature.telemetry'
 
    function MyFeature() {

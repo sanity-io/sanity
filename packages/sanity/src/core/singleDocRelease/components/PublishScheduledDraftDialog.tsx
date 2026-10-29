@@ -1,13 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
+import {Text, Box, Flex} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
-import {LoadingBlock} from '../../components'
-import {useSchema} from '../../hooks'
-import {Translate, useTranslation} from '../../i18n'
-import {Preview} from '../../preview'
-import {getErrorMessage} from '../../util'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
+import {Preview} from '../../preview/components/Preview'
+import {getErrorMessage} from '../../util/getErrorMessage'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
@@ -97,18 +99,18 @@ export function PublishScheduledDraftDialog(
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Flex gap={3} paddingX={3} marginBottom={2} flexDirection="column">
         {schemaType && firstDocument ? (
           <Preview value={firstDocument} schemaType={schemaType} />
         ) : (
           <LoadingBlock />
         )}
         <Box paddingX={2}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('release.dialog.publish-scheduled-draft.body')}
           </Text>
         </Box>
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

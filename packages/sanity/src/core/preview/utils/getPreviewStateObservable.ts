@@ -38,11 +38,16 @@ export function getPreviewStateObservable(
   documentId: string,
   perspective?: PerspectiveStack,
   viewOptions?: PrepareViewOptions,
+  /**
+   * The selected editing variant as a bare variant id. When set, both the perspective snapshot and
+   * the fallback snapshot are resolved as seen through that variant.
+   */
+  variant?: string,
 ): Observable<PreviewState> {
   const perspectiveSnapshot = documentPreviewStore.observeForPreview(
     {_id: getPublishedId(documentId)},
     schemaType,
-    {perspective, viewOptions},
+    {perspective, variant, viewOptions},
   )
 
   const versionOrDraftId = isVersionId(documentId) ? getVersionFromId(documentId) : 'drafts'
@@ -50,6 +55,7 @@ export function getPreviewStateObservable(
   const preparedVersionSnapshot = versionOrDraftId
     ? documentPreviewStore.observeForPreview({_id: getPublishedId(documentId)}, schemaType, {
         perspective: [versionOrDraftId],
+        variant,
         viewOptions,
       })
     : of(null)

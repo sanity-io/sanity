@@ -1,27 +1,26 @@
 import {hues} from '@sanity/color'
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
+import {useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {use, useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {VStack} from 'ui5'
 
-import {type FieldProps} from '../../../form'
-import {getSchemaTypeTitle} from '../../../schema'
-import {useCurrentUser} from '../../../store'
+import {type FieldProps} from '../../../form/types/fieldProps'
+import {getSchemaTypeTitle} from '../../../schema/helpers'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
-import {
-  applyCommentsFieldAttr,
-  useComments,
-  useCommentsAuthoringPath,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
-} from '../../hooks'
-import {type CommentCreatePayload, type CommentMessage, type CommentsUIMode} from '../../types'
+import {useComments} from '../../hooks/useComments'
+import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../hooks/useCommentsMode'
+import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
+import {type CommentCreatePayload, type CommentMessage} from '../../types'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form
@@ -44,17 +43,18 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   },
 }
 
-export function CommentsField(props: FieldProps) {
-  const {enabled, mode} = useCommentsEnabled()
+export default function CommentsField(props: FieldProps) {
+  const enabled = useCommentsEnabled()
 
   if (!enabled) {
     return props.renderDefault(props)
   }
 
-  return <CommentFieldInner {...props} mode={mode} />
+  return <CommentFieldInner {...props} />
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {radius, space, color} = theme.sanity
   const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
 
@@ -74,7 +74,7 @@ const HighlightDiv = styled(motion.div)(({theme}) => {
   `
 })
 
-const FieldStack = styled(Stack)`
+const FieldStack = styled(VStack)`
   position: relative;
 
   // Hide when the field component renders nothing (e.g. a custom
@@ -85,12 +85,10 @@ const FieldStack = styled(Stack)`
   }
 `
 
-function CommentFieldInner(
-  props: FieldProps & {
-    mode: CommentsUIMode
-  },
-) {
-  const {mode} = props
+function CommentFieldInner(props: FieldProps) {
+  // Settled in place by the plugin's provider long before a form renders, so this reads
+  // synchronously; a form that does get here first waits under the document pane's boundary
+  const mode = use(useCommentsMode())
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -107,7 +105,8 @@ function CommentFieldInner(
     setStatus,
     status,
   } = useComments()
-  const {upsellData, handleOpenDialog} = useCommentsUpsell()
+  // The upsell content is read where it renders (the dialog), never by the form's fields
+  const {handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
   const {scrollToGroup} = useCommentsScroll({
@@ -193,13 +192,15 @@ function CommentFieldInner(
       return
     }
 
+    if (mode === null) {
+      // The feature check failed: the inspector explains that comments are unavailable
+      onCommentsOpen?.()
+      return
+    }
+
     if (mode === 'upsell') {
-      if (upsellData) {
-        handleOpenDialog('field_action')
-      } else {
-        // Open the comments inspector
-        onCommentsOpen?.()
-      }
+      // The dialog reads the upsell content itself and reports a failed request
+      handleOpenDialog('field_action')
       return
     }
 
@@ -221,7 +222,6 @@ function CommentFieldInner(
     setStatus,
     status,
     stringPath,
-    upsellData,
   ])
 
   const handleCommentAdd = useCallback(
@@ -331,6 +331,7 @@ function CommentFieldInner(
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments: internalComments,
       })}
 

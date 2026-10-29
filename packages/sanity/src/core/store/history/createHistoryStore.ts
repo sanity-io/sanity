@@ -11,9 +11,12 @@ import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../environment'
-import {getDraftId, getIdPair, getPublishedId, getVersionFromId, isRecord} from '../../util'
+import {getDraftId, getPublishedId, getVersionFromId, getIdPair} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
+import {type VariantVersionInfo} from '../../variants/documents/getVariantVersionInfo'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
-import {Timeline, TimelineController} from './history'
+import {Timeline} from './history/Timeline'
+import {TimelineController} from './history/TimelineController'
 
 /**
  * Represents a document revision identifier.
@@ -47,17 +50,28 @@ export interface HistoryStore {
     options?: RestoreOptions,
   ) => Observable<void>
 
-  /** @internal */
+  /**
+   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+   * @internal
+   */
   getTimelineController: (options: {
     client: SanityClient
     documentId: string
     documentType: string
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   }) => TimelineController
 }
 
 interface RestoreOptions {
   fromDeleted: boolean
   useServerDocumentActions?: boolean
+  /**
+   * Set when the target is a variant-scoped version. Variant version ids share the
+   * `versions.<scope>.<id>` shape with release versions, so the caller derives this from the
+   * version snapshot's `_system` (see `getVariantVersionInfo`). Variant documents keep the raw-id
+   * draft actions; the `document.version.*` actions are for release versions only.
+   */
+  variant?: VariantVersionInfo
 }
 
 const documentRevisionCache: Record<string, Promise<SanityDocument | undefined> | undefined> =
@@ -147,11 +161,14 @@ const getTimelineController = ({
   client: SanityClient
   documentId: string
   documentType: string
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
 }): TimelineController => {
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   const timeline = new Timeline({
     enableTrace: isDev,
     publishedId: documentId,
   })
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   return new TimelineController({
     client,
     documentId,
@@ -261,15 +278,38 @@ function restore(
         isDraftId(targetDocumentId as DocumentId) || isVersionId(targetDocumentId as DocumentId)
 
       if (options?.useServerDocumentActions && canUseServerAction) {
+        const actionsClient = actionsApiClient(
+          client,
+          // The pair derives from the *target* id: `documentId` is always the published group id
+          // (its bundle segment is always undefined), while the target may be a version document
+          // (release or variant scoped) whose actions require the versioned API client.
+          getIdPair(documentId, {version: getVersionFromId(targetDocumentId)}),
+        )
+
+        // Release versions are not drafts. `document.create` + `replaceDraft` with a version
+        // `_id` trips the one-version-per-published-id guard (409 documentAlreadyExistsError).
+        // Variant-scoped versions are excluded: they have no `document.variant.replace` action
+        // and are addressed by the draft actions at their raw version id.
+        if (isVersionId(targetDocumentId as DocumentId) && !options.variant) {
+          const versionAction: Action = options.fromDeleted
+            ? {
+                actionType: 'sanity.action.document.version.create',
+                publishedId: documentId,
+                document: restoredDraft,
+              }
+            : {
+                actionType: 'sanity.action.document.version.replace',
+                document: restoredDraft,
+              }
+          return actionsClient.observable.action(versionAction)
+        }
+
         const replaceDraftAction: Action = {
           actionType: 'sanity.action.document.replaceDraft',
           publishedId: documentId,
           attributes: restoredDraft,
         }
-        return actionsApiClient(
-          client,
-          getIdPair(documentId, {version: getVersionFromId(documentId)}),
-        ).observable.action(
+        return actionsClient.observable.action(
           options.fromDeleted
             ? [
                 {
@@ -308,6 +348,7 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev, options) => restore(client, id, targetId, rev, options),
 
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     getTimelineController,
   }
 }

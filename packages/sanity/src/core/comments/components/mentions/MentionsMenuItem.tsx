@@ -1,12 +1,13 @@
-import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, TextSkeleton} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Text, Box, Flex} from 'ui5'
 
-import {type UserWithPermission} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CommentsAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
 
 const InnerFlex = styled(Flex)``
 
@@ -25,7 +26,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
   const avatar = <CommentsAvatar user={loadedUser} status={user.granted ? undefined : 'inactive'} />
 
   const text = loadedUser ? (
-    <Text size={1} textOverflow="ellipsis" title={loadedUser.displayName}>
+    <Text size={1} truncate={1} title={loadedUser.displayName} as="div" trim={true}>
       {loadedUser.displayName}
     </Text>
   ) : (
@@ -38,17 +39,13 @@ export function MentionsMenuItem(props: MentionsItemProps) {
 
   return (
     <Card as="button" disabled={!user.granted} onClick={handleSelect} padding={2} radius={2}>
-      <Flex align="center" gap={3}>
-        <InnerFlex align="center" gap={2} flex={1}>
+      <Flex alignItems="center" gap={3}>
+        <InnerFlex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
           {avatar}
           <Box>{text}</Box>
         </InnerFlex>
 
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            {t('mentions.unauthorized-user')}
-          </Badge>
-        )}
+        {!user.granted && <Badge fontSize={1}>{t('mentions.unauthorized-user')}</Badge>}
       </Flex>
     </Card>
   )

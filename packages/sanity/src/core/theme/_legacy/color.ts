@@ -12,9 +12,13 @@ const NEUTRAL_TONES = ['default', 'transparent']
  * @deprecated – Will be removed in upcoming major version
  */
 export function buildColor(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   legacyPalette: LegacyPalette,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   legacyTones: LegacyTones,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 ): ThemeColorSchemes {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return createColorTheme({
     base: ({dark: navbar, name}) => {
       const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
@@ -252,6 +256,7 @@ export function buildColor(
       const defaultTints = stateTones[name] || stateTones.default
       const isNeutral = NEUTRAL_TONES.includes(name) && NEUTRAL_TONES.includes(tone)
 
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       let tints: LegacyThemeTints = stateTones[tone === 'default' ? name : tone] || defaultTints
 
       if (state === 'disabled') {
@@ -459,6 +464,7 @@ export function buildColor(
 
       const isNeutral = NEUTRAL_TONES.includes(name)
       const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const tints: LegacyThemeTints = stateTones[name] || stateTones.default
 
       const dark = stateTones.dark

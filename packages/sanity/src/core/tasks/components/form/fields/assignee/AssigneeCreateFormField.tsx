@@ -1,11 +1,13 @@
-import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Text, Flex} from 'ui5'
 
-import {set, type StringInputProps} from '../../../../../form'
-import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
+import {set} from '../../../../../form/patch/patch'
+import {type StringInputProps} from '../../../../../form/types/inputProps'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
@@ -19,6 +21,10 @@ const FocusableCard = styled(Card)((props) => {
         border: 1px solid var(--card-focus-ring-color);
       }
       --card-muted-fg-color: ${theme.color.input.default.enabled.placeholder};
+      &[data-selected] [data-ui='Text'] {
+        --text-color-muted: light-dark(var(--blue-200), var(--blue-800));
+        --text-color: light-dark(var(--white), var(--black));
+      }
     }
   `
 })
@@ -48,18 +54,16 @@ export function AssigneeCreateFormField(props: StringInputProps) {
       value={value}
       menuButton={
         <FocusableCard data-as="button" padding={1} radius={2} tabIndex={0}>
-          <Flex align="center" gap={3}>
-            <Flex align="center" gap={1} flex={1}>
+          <Flex alignItems="center" gap={3}>
+            <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
               <TasksUserAvatar user={mentionedUser} size={1} border={false} />
-              <Text size={1} textOverflow="ellipsis" muted={!mentionedUser}>
+              <Text size={1} truncate={1} muted={!mentionedUser} as="div" trim={true}>
                 {displayText}
               </Text>
             </Flex>
 
             {value && mentionedUser && !mentionedUser.granted && (
-              <Badge fontSize={1} mode="outline">
-                {t('form.input.assignee.unauthorized.text')}
-              </Badge>
+              <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
             )}
           </Flex>
         </FocusableCard>

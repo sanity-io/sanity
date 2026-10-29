@@ -1,6 +1,9 @@
 import {type SchemaType} from '@sanity/types'
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 import {
+  getDefaultVariant,
   getPreviewStateObservable,
   type PreviewValue,
   type SanityDocument,
@@ -13,27 +16,27 @@ interface PreviewState {
   snapshot?: PreviewValue | Partial<SanityDocument> | null
 }
 
+const EMPTY_STATE: PreviewState = {}
+
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const [preview, setPreview] = useState<PreviewState>({})
-  const {perspectiveStack} = usePerspective()
-  useEffect(() => {
-    if (!schemaType) {
-      return undefined
-    }
-    const subscription = getPreviewStateObservable(
-      documentPreviewStore,
-      schemaType,
-      documentId,
-      perspectiveStack,
-    ).subscribe((state) => {
-      setPreview(state)
-    })
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
-    return () => {
-      subscription?.unsubscribe()
-    }
-  }, [documentPreviewStore, schemaType, documentId, perspectiveStack])
+  const preview$ = useMemo(
+    () =>
+      schemaType
+        ? getPreviewStateObservable(
+            documentPreviewStore,
+            schemaType,
+            documentId,
+            perspectiveStack,
+            undefined,
+            selectedVariantName,
+          )
+        : of(EMPTY_STATE),
+    [documentPreviewStore, schemaType, documentId, perspectiveStack, selectedVariantName],
+  )
 
-  return preview
+  return useObservable(preview$, EMPTY_STATE)
 }

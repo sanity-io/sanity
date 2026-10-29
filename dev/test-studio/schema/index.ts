@@ -72,6 +72,7 @@ import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
+import {issue13494I18nTitleKeyStylesLists} from './debug/issue13494I18nTitleKeyStylesLists'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
@@ -86,6 +87,7 @@ import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
+import {presenceDebug} from './debug/presenceDebug'
 import previewImageUrlTest from './debug/previewImageUrlTest'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
@@ -99,12 +101,22 @@ import recursivePopover from './debug/recursivePopover'
 import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
+import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
+import {sdkProjectionGuardOnly, sdkProjectionWrapped} from './debug/sdkProjectionInput'
+import {sdkProjectionNoSuspense} from './debug/sdkProjectionNoSuspense'
 import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {
+  suspendingInputCached,
+  suspendingInputLazy,
+  suspendingInputPerInstance,
+  suspendingInputPerInstanceWrapped,
+} from './debug/suspendingInputs'
+import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -118,6 +130,7 @@ import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import geopoint from './plugins/geopoint'
+import {singletonCampaign, singletonSettings} from './singletons'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -136,7 +149,7 @@ import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
-import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {ptCustomMarkersTestType} from './standard/portableText/customMarkers/schemaTypes'
 import {customPlugins} from './standard/portableText/customPlugins'
 import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
@@ -260,6 +273,7 @@ export function createSchemaTypes(projectId: string) {
     ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
+    restrictedVersionActions,
 
     fieldValidationInferReproSharedObject,
     fieldValidationInferReproDoc,
@@ -273,10 +287,19 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    presenceDebug,
     issue4516AddFilterIntentLink,
+    issue13494I18nTitleKeyStylesLists,
     languageFilterDebugType,
     localeBlockContentType,
     lazyComponents,
+    suspendingInputCached,
+    suspendingInputLazy,
+    suspendingInputPerInstance,
+    suspendingInputPerInstanceWrapped,
+    sdkProjectionGuardOnly,
+    sdkProjectionNoSuspense,
+    sdkProjectionWrapped,
     locationResolverTest,
     liveEdit,
     localeString,
@@ -318,6 +341,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     navbarSettingsDialogRepro,
+    twoArgValidationRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,
@@ -349,6 +373,8 @@ export function createSchemaTypes(projectId: string) {
     house,
     playlist,
     playlistTrack,
+    singletonCampaign,
+    singletonSettings,
 
     // CI documents
     allNativeInputComponents,

@@ -8,7 +8,12 @@ import {
 } from '../../releases/util/releasesClient'
 import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
-import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
+import {variantApiVersion} from '../../variants/util/variantApiVersion'
+import {
+  type SearchStrategyFactory,
+  type SearchTerms,
+  type WeightedSearchResults,
+} from '../common/types'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
 
@@ -43,9 +48,12 @@ export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResults> 
       ...searchOptions,
     })
 
-    const apiVersion = isReleasePerspective(options?.perspective as string | string[] | undefined)
-      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
-      : undefined
+    const apiVersion = variantApiVersion(
+      options?.variant as string | undefined,
+      isReleasePerspective(options?.perspective as string | string[] | undefined)
+        ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+        : undefined,
+    )
 
     return versionedClient(client, apiVersion)
       .observable.fetch<SanityDocumentLike[]>(query, params, options)

@@ -4,11 +4,12 @@ import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
-import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
+import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayoutComponent'
 
 // StudioLayout renders `@sanity/ui` components that require a `ThemeProvider`
 // via context. Wrap every render in a minimal studio theme.
 const wrapper = ({children}: {children: ReactNode}) => (
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 )
 
@@ -24,9 +25,11 @@ vi.mock('../networkCheck/useNetworkProtocolCheck', () => ({
   useNetworkProtocolCheck: vi.fn(),
 }))
 
-vi.mock('../studio-components-hooks', () => ({
-  useLayoutComponent: vi.fn(),
+vi.mock('../studio-components-hooks/useNavbarComponent', () => ({
   useNavbarComponent: () => () => <div data-testid="navbar" />,
+}))
+
+vi.mock('../studio-components-hooks/useActiveToolLayoutComponent', () => ({
   useActiveToolLayoutComponent:
     () =>
     ({activeTool}: {activeTool: {name: string}}) => (
@@ -41,13 +44,23 @@ vi.mock('sanity/router', () => ({
 }))
 
 vi.mock('sanity/_singletons', () => ({
+  MountedToolsContext: {
+    Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  },
   NavbarContext: {
+    Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  },
+  RouterContext: {
     Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
   },
 }))
 
 vi.mock('../StudioErrorBoundary', () => ({
   StudioErrorBoundary: ({children}: {children: React.ReactNode}) => <>{children}</>,
+}))
+
+vi.mock('../unclaimedProject/UnclaimedProjectNudge', () => ({
+  UnclaimedProjectNudge: () => null,
 }))
 
 vi.mock('../screens/NoToolsScreen', () => ({
@@ -62,7 +75,7 @@ vi.mock('../screens/ToolNotFoundScreen', () => ({
   ToolNotFoundScreen: () => <div data-testid="tool-not-found" />,
 }))
 
-vi.mock('../../components/loadingBlock', () => ({
+vi.mock('../../components/loadingBlock/LoadingBlock', () => ({
   LoadingBlock: () => <div data-testid="loading-block" />,
 }))
 
@@ -104,7 +117,7 @@ describe('StudioLayoutComponent telemetry', () => {
 
     const {useTelemetry} = await import('@sanity/telemetry/react')
     ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: telemetryLog})
-    ;({StudioLayoutComponent} = await import('../StudioLayout'))
+    ;({StudioLayoutComponent} = await import('../StudioLayoutComponent'))
     ;({StudioReadyMeasured} = await import('../__telemetry__/bootstrap.telemetry'))
   })
 
@@ -125,13 +138,18 @@ describe('StudioLayoutComponent telemetry', () => {
     )
   }
 
+  // `ToolMountTimer` logs its own event for the mounted tool; these tests only care about the
+  // Studio Ready event.
+  const studioReadyCalls = () =>
+    telemetryLog.mock.calls.filter(([event]) => event === StudioReadyMeasured)
+
   it('fires Studio Ready Measured once when active tool resolves', async () => {
     await setupWorkspace([makeTool('structure'), makeTool('vision')], 'structure')
 
     render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioReadyCalls()).toHaveLength(1)
     })
 
     expect(telemetryLog).toHaveBeenCalledWith(
@@ -146,7 +164,7 @@ describe('StudioLayoutComponent telemetry', () => {
         firstHiddenTime: null,
       }),
     )
-    expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)
+    expect(studioReadyCalls()[0][1].durationMs).toBeGreaterThanOrEqual(0)
   })
 
   it('does not fire Studio Ready Measured when no active tool is resolved', async () => {
@@ -157,7 +175,7 @@ describe('StudioLayoutComponent telemetry', () => {
     // Give effects a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(telemetryLog).not.toHaveBeenCalled()
+    expect(studioReadyCalls()).toHaveLength(0)
   })
 
   it('fires Studio Ready Measured only once across re-renders', async () => {
@@ -166,13 +184,13 @@ describe('StudioLayoutComponent telemetry', () => {
     const {rerender} = render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioReadyCalls()).toHaveLength(1)
     })
 
     rerender(<StudioLayoutComponent />)
     rerender(<StudioLayoutComponent />)
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
+    expect(studioReadyCalls()).toHaveLength(1)
   })
 })

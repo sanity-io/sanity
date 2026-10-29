@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {Container, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {
   type VersionInfoDocumentStub,
@@ -12,14 +12,16 @@ import {
   useTranslation,
   VersionChip,
 } from 'sanity'
+import {Flex} from 'ui5'
 
-import {Popover, Tooltip} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 
 export function NonReleaseVersionsSelect(props: {
   nonReleaseVersions: VersionInfoDocumentStub[]
   selectedPerspective?: string
   onSelectBundle: (version: VersionInfoDocumentStub) => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDraftsComplete: () => void
   releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
@@ -30,7 +32,7 @@ export function NonReleaseVersionsSelect(props: {
     nonReleaseVersions,
     selectedPerspective,
     onSelectBundle,
-    onCopyToDraftsNavigate,
+    onCopyToDraftsComplete,
     documentType,
     getVersionDisplay,
     releasesLoading,
@@ -84,9 +86,10 @@ export function NonReleaseVersionsSelect(props: {
               text={versionDisplay?.displayName ?? bundleId}
               tone={versionDisplay?.tone ?? 'default'}
               onClick={() => onSelectBundle(selectedNonReleaseVersion)}
-              onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+              onCopyToDraftsComplete={onCopyToDraftsComplete}
               contextValues={{
-                documentId: getPublishedId(selectedNonReleaseVersion._id),
+                documentGroupId: getPublishedId(selectedNonReleaseVersion._id),
+                versionId: selectedNonReleaseVersion._id,
                 releases,
                 releasesLoading: releasesLoading,
                 documentType: documentType,
@@ -129,7 +132,7 @@ export function NonReleaseVersionsSelect(props: {
         zOffset={10}
         content={
           <Container width={1}>
-            <Flex padding={3} gap={2} wrap="wrap">
+            <Flex padding={3} gap={2} flexWrap="wrap">
               {otherNonReleaseVersions.map((nonReleaseVersion) => {
                 const scopeId = nonReleaseVersion._system.scopeId!
                 const selected = selectedPerspective === scopeId
@@ -144,9 +147,10 @@ export function NonReleaseVersionsSelect(props: {
                     contextMenuPortal={false}
                     tone={versionDisplay?.tone ?? 'default'}
                     onClick={() => onSelectBundle(nonReleaseVersion)}
-                    onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+                    onCopyToDraftsComplete={onCopyToDraftsComplete}
                     contextValues={{
-                      documentId: getPublishedId(nonReleaseVersion._id),
+                      documentGroupId: getPublishedId(nonReleaseVersion._id),
+                      versionId: nonReleaseVersion._id,
                       releases,
                       releasesLoading: releasesLoading,
                       documentType: documentType,

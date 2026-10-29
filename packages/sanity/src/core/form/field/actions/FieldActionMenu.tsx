@@ -1,10 +1,16 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {Card, Menu} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {memo, type PointerEvent, useCallback, useId, useMemo, useState} from 'react'
 
-import {Button, type ButtonProps, MenuButton, type MenuButtonProps} from '../../../../ui-components'
-import {type DocumentFieldActionGroup, type DocumentFieldActionNode} from '../../../config'
-import {useI18nText} from '../../../i18n'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
+import {
+  type DocumentFieldActionGroup,
+  type DocumentFieldActionNode,
+} from '../../../config/document/fieldActions/types'
+import {useI18nText} from '../../../i18n/hooks/useI18nText'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 /** @internal */
@@ -24,6 +30,7 @@ function renderAsButton(node: DocumentFieldActionNode) {
 /** @internal */
 export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionMenuProps) {
   const {nodes, onMenuOpenChange} = props
+  const {t} = useTranslation()
   const [open, setOpen] = useState(false)
 
   const handleOpen = useCallback(() => {
@@ -61,13 +68,13 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
               type: 'group',
               children: menuNodes,
               icon: EllipsisHorizontalIcon,
-              title: 'Field actions',
+              title: t('form.field.actions-menu.title'),
             },
           ] satisfies DocumentFieldActionNode[])
         : []),
       ...buttonNodes,
     ],
-    [buttonNodes, menuNodes],
+    [buttonNodes, menuNodes, t],
   )
 
   return (
@@ -151,7 +158,7 @@ function RootFieldActionMenuGroup(props: {
           tabIndex={0}
           tooltipProps={{
             ...STATUS_BUTTON_TOOLTIP_PROPS,
-            content: node.title,
+            content: title,
           }}
         />
       }

@@ -5,8 +5,8 @@ import {
   type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
-import {BoundaryElementProvider, Box} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {BoundaryElementProvider} from '@sanity/ui'
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {
   createPatchChannel,
   type DocumentFieldAction,
@@ -29,13 +29,16 @@ import {
   type Workspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
-import {type FormDocumentValue} from '../../src/core/form/types'
+import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from './createMockSanityClient'
+import {setValidationPending} from './validationPending'
 
 const NOOP = () => null
+const NO_MARKERS: ValidationMarker[] = []
 
 // Tests read the current document value off `window.documentState` (see the
 // `waitForDocumentState` helper). Use a narrow cast rather than augmenting the
@@ -44,12 +47,14 @@ const NOOP = () => null
 const windowWithDocumentState = window as Window & {documentState?: unknown}
 
 interface TestFormProps {
+  baseVariantDocument?: SanityDocument
   document?: SanityDocument
   focusPath?: Path
   id?: string
   onPathFocus?: (path: Path) => void
   openPath?: Path
   presence?: FormNodePresence[]
+  readOnly?: boolean
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
@@ -68,17 +73,22 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export function TestForm(props: TestFormProps) {
   const {
+    baseVariantDocument,
     document: documentFromProps,
     focusPath: focusPathFromProps,
     id: idFromProps = 'root',
     onPathFocus: onPathFocusFromProps,
     openPath: openPathFromProps = EMPTY_ARRAY,
     presence: presenceFromProps = EMPTY_ARRAY,
+    readOnly,
   } = props
 
   const {setDocumentMeta} = useCopyPaste()
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [validation, setValidation] = useState<ValidationMarker[]>([])
+  const [validationState, setValidationState] = useState<{
+    document: SanityDocument
+    markers: ValidationMarker[]
+  } | null>(null)
   const [openPath, onSetOpenPath] = useState<Path>(openPathFromProps)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
@@ -91,8 +101,9 @@ export function TestForm(props: TestFormProps) {
     documentFromProps || {
       _id: documentId,
       _type: documentType,
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
+      // Fixed timestamps keep Chromatic archive DOM deterministic across runs.
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
       _rev: '123',
     },
   )
@@ -107,7 +118,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (documentFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setDocument(documentFromProps)
       windowWithDocumentState.documentState = documentFromProps
     }
@@ -115,7 +126,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (focusPathFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setFocusPath(focusPathFromProps)
 
       const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]
@@ -144,6 +155,7 @@ export function TestForm(props: TestFormProps) {
   const schemaType = workspace.schema.get('test')
   const {
     document: {unstable_fieldActions: fieldActionsResolver},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   if (!schemaType) {
@@ -159,8 +171,35 @@ export function TestForm(props: TestFormProps) {
     [documentId, documentType, fieldActionsResolver, schemaType],
   )
 
+  const validation = validationState?.markers ?? NO_MARKERS
+  // Every document change starts a validation run that ends in a re-render
+  // with the resulting markers. Tests wait on `validationPending()` in
+  // `testHelpers` (see `waitForPortableTextSelection` and
+  // `settleChromaticEndState`) so that re-render cannot land in the middle of
+  // a keystroke sequence or after the Chromatic capture. Published as module
+  // state, not a DOM attribute: the archive is the serialized DOM, and a test
+  // that ends without settling would otherwise archive the marker or not
+  // depending on whether the run had finished. A layout effect so the value
+  // changes in the same commit as `document`, before any poll can read it.
+  const validationPending = validationState?.document !== document
+  const formId = useId()
+  useLayoutEffect(() => {
+    setValidationPending(formId, validationPending)
+    return () => setValidationPending(formId, false)
+  }, [formId, validationPending])
+
   useEffect(() => {
-    void validateStaticDocument(document, workspace, (result) => setValidation(result))
+    // Validation is gated on `requestIdleCallback`, so a run for a superseded
+    // document would otherwise land whenever the browser next idles and
+    // re-render the form with stale markers. Abort it instead.
+    const controller = new AbortController()
+    void validateStaticDocument(
+      document,
+      workspace,
+      (markers) => setValidationState({document, markers}),
+      controller.signal,
+    )
+    return () => controller.abort()
   }, [document, workspace])
 
   const formState = useFormState({
@@ -172,10 +211,13 @@ export function TestForm(props: TestFormProps) {
     fieldGroupState,
     openPath,
     presence: presenceFromProps,
+    readOnly,
     validation,
     documentValue: document,
     perspective: 'published',
     hasUpstreamVersion: false,
+    baseVariantValue: baseVariantDocument,
+    hasBaseVariant: Boolean(baseVariantDocument),
   })
 
   const formStateRef = useRef(formState)
@@ -261,23 +303,24 @@ export function TestForm(props: TestFormProps) {
     () => ({
       __internal_patchChannel: patchChannel,
       __internal_fieldActions: fieldActions,
+      baseVariantValue: baseVariantDocument,
       changed: false,
+      changedFromBaseVariant: formState?.changedFromBaseVariant,
       changesOpen: false,
       collapsedFieldSets: undefined,
       collapsedPaths: undefined,
       focused: formState?.focused,
       focusPath: formState?.focusPath || EMPTY_ARRAY,
       groups: formState?.groups || EMPTY_ARRAY,
+      hasBaseVariant: Boolean(baseVariantDocument),
       hasUpstreamVersion: false,
       id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      // oxlint-disable-next-line react/react-compiler
       onChange: handleChange,
       onFieldGroupSelect: NOOP,
       onPathBlur: handleBlur,
       onPathFocus: handleFocus,
-      // oxlint-disable-next-line react/react-compiler
       onPathOpen: setOpenPath,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,
@@ -285,12 +328,15 @@ export function TestForm(props: TestFormProps) {
       openPath,
       path: EMPTY_ARRAY,
       presence: presenceFromProps,
+      readOnly,
       schemaType: formState?.schemaType || schemaType,
       validation,
       value: formState?.value as FormDocumentValue,
     }),
     [
+      baseVariantDocument,
       fieldActions,
+      formState?.changedFromBaseVariant,
       formState?.focused,
       formState?.focusPath,
       formState?.groups,
@@ -308,6 +354,7 @@ export function TestForm(props: TestFormProps) {
       openPath,
       patchChannel,
       presenceFromProps,
+      readOnly,
       schemaType,
       setOpenPath,
       validation,
@@ -341,14 +388,23 @@ async function validateStaticDocument(
   document: SanityDocument,
   workspace: Workspace,
   setCallback: (result: ValidationMarker[]) => void,
+  signal: AbortSignal,
 ) {
-  const result = await validateDocument({
-    document,
-    workspace,
-    getClient,
-    getDocumentExists: () => Promise.resolve(true),
-  })
-  setCallback(result)
+  let result: ValidationMarker[]
+  try {
+    result = await validateDocument({
+      document,
+      workspace,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      getClient,
+      getDocumentExists: () => Promise.resolve(true),
+      signal,
+    })
+  } catch (err) {
+    if (signal.aborted) return
+    throw err
+  }
+  if (!signal.aborted) setCallback(result)
 }
 
 const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>

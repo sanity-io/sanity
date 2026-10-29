@@ -17,6 +17,7 @@ const publishedVersion: VersionInfoDocumentStub = {
   _rev: 'published-rev',
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-02T00:00:00Z',
+  _type: 'article',
   _system: {
     group: {_ref: publishedId, _weak: true},
   },
@@ -27,6 +28,7 @@ const draftVersion: VersionInfoDocumentStub = {
   _rev: 'draft-rev',
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-03T00:00:00Z',
+  _type: 'article',
   _system: {
     bundleId: 'drafts',
     group: {_ref: publishedId, _weak: true},
@@ -38,6 +40,7 @@ const releaseVersion: VersionInfoDocumentStub = {
   _rev: 'release-rev',
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-04T00:00:00Z',
+  _type: 'article',
   _system: {
     bundleId: 'release1',
     release: {_ref: '_.releases.release1', _weak: true},
@@ -51,9 +54,10 @@ const variantVersion: VersionInfoDocumentStub = {
   _rev: 'variant-rev',
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-05T00:00:00Z',
+  _type: 'article',
   _system: {
     bundleId: 'drafts',
-    variant: {_ref: '_.variants.test', _weak: true},
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'scope1',
   },
@@ -72,6 +76,7 @@ describe('useDocumentVersionInfo', () => {
       loading: true,
     })
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {result} = renderHook(() => useDocumentVersionInfo(publishedId))
 
     expect(result.current).toEqual({
@@ -91,6 +96,7 @@ describe('useDocumentVersionInfo', () => {
       loading: false,
     })
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {result} = renderHook(() => useDocumentVersionInfo(`drafts.${publishedId}`))
 
     expect(result.current).toEqual({

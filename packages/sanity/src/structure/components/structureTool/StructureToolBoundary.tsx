@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react'
 import {SourceProvider, type Tool, useWorkspace} from 'sanity'
 
-import {ErrorBoundary} from '../../../ui-components/errorBoundary'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'
 import {StructureToolProvider} from '../../StructureToolProvider'
 import {type StructureToolOptions} from '../../types'
-import {IntentResolver} from './intentResolver'
+import {IntentResolver} from './intentResolver/IntentResolver'
 import {StructureError} from './StructureError'
 import {StructureTool} from './StructureTool'
 
@@ -27,7 +27,7 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
   const [{error}, setError] = useState<{error: unknown}>({error: null})
 
   // this re-throws if the error it catches is not a PaneResolutionError
-  if (error) return <StructureError error={error} />
+  if (error) return <StructureError error={error} onReload={() => setError({error: null})} />
 
   return (
     <ErrorBoundary onCatch={setError}>

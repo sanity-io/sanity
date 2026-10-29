@@ -1,0 +1,61 @@
+import {Card, Heading} from '@sanity/ui'
+import {Text, Flex, Box, VStack} from 'ui5'
+
+import {useQuery} from './loader'
+
+export function InitialValues(): React.JSX.Element {
+  const {data, loading, error} = useQuery<
+    {
+      _id: string
+      _type: string
+      title: string | null
+      author: {
+        name: string | null
+      } | null
+    }[]
+  >(/* groq */ `*[_type == "book" && defined(title)] | order(_updatedAt desc) [0..9]{
+      _id, 
+      _type, 
+      title, 
+      "author": author->{name}
+    }`)
+
+  if (error) {
+    throw error
+  }
+
+  if (loading) {
+    return <p>Loading...</p>
+  }
+
+  if (!data?.length) {
+    return <p>No books found</p>
+  }
+
+  return (
+    <Flex padding={4} gap={4} flexDirection="column">
+      <Box>
+        <Heading as="h1" size={1}>
+          Books: Add an author
+        </Heading>
+      </Box>
+      {data.map((item, i) => (
+        <Card key={item._id} padding={4} shadow={2} radius={2}>
+          <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
+            <VStack gap={2}>
+              <Heading as="h1" size={1}>
+                {item.title}
+              </Heading>
+              <Text size={1} as="div" trim={true}>
+                {item.author?.name || 'No Author'}
+              </Text>
+            </VStack>
+            <Text size={1} as="div" trim={true}>
+              {i + 1}
+            </Text>
+          </Flex>
+        </Card>
+      ))}
+    </Flex>
+  )
+}

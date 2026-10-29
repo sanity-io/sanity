@@ -1,7 +1,9 @@
 import {rem, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, fonts, space} = theme.sanity
 
   return css`

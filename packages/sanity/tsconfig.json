@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.settings.json",
-  "include": ["./package.json", "./scripts", "./src", "./test", "./typings"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "package.json"],
+  "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
     "customConditions": ["monorepo"]
   }

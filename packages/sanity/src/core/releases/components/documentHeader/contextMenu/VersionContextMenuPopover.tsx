@@ -1,8 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {memo, type RefObject} from 'react'
 
-import {Popover} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {type VersionContextMenuState} from '../../../hooks/useVersionContextMenu'
 import {VersionContextMenu} from './VersionContextMenu'
 
@@ -16,17 +17,16 @@ export interface VersionContextMenuPopoverProps {
   popoverRef: RefObject<HTMLDivElement | null>
   /** The element the menu popover is positioned relative to. */
   referenceElement: HTMLElement | null
-  documentId: string
+  documentGroupId: string
   documentType: string
   /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
   bundleId: string
-  isVersion: boolean
   releases: ReleaseDocument[]
   releasesLoading: boolean
+  versionId: string
   onDiscard: () => void
   onCreateRelease: () => void
-  onCopyToDrafts: () => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   onCreateVersion: (targetRelease: string) => void
   disabled?: boolean
   locked?: boolean
@@ -61,16 +61,15 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     contextMenu,
     popoverRef,
     referenceElement,
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
-    isVersion,
     releases,
     releasesLoading,
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
-    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled = false,
     locked = false,
@@ -87,15 +86,14 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
       animate={false}
       content={
         <VersionContextMenu
-          documentId={documentId}
+          documentGroupId={documentGroupId}
           releases={releases}
           releasesLoading={releasesLoading}
           fromRelease={bundleId}
-          isVersion={isVersion}
+          versionId={versionId}
           onDiscard={onDiscard}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
-          onCopyToDraftsNavigate={onCopyToDraftsNavigate}
           disabled={disabled}
           onCreateVersion={onCreateVersion}
           locked={locked}

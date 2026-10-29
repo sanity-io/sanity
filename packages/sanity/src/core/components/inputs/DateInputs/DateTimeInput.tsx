@@ -1,10 +1,8 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {Card, LayerProvider, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {isPast} from 'date-fns/isPast'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   type ReactNode,
   useCallback,
@@ -13,14 +11,16 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -40,7 +40,7 @@ export interface DateTimeInputProps {
   calendarLabels: CalendarLabels
   constrainSize?: boolean
   monthPickerVariant?: CalendarProps['monthPickerVariant']
-  padding?: number
+  padding?: CalendarProps['padding']
   disableInput?: boolean
   isPastDisabled?: boolean
   showTimeZone?: boolean
@@ -62,11 +62,9 @@ function DatePickerPopoverContent({
   return <>{children}</>
 }
 
-export const DateTimeInput = forwardRef(function DateTimeInput(
-  props: DateTimeInputProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function DateTimeInput(props: DateTimeInputProps & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     inputValue,
     onInputChange,
@@ -189,7 +187,9 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       <FocusLock onDeactivation={handleDeactivation}>
                         {isDateInPastWarningShown && (
                           <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                            <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
+                            <Text size={1} as="div" trim={true} tone="critical">
+                              {t('inputs.dateTime.past-date-warning')}
+                            </Text>
                           </Card>
                         )}
                         <DatePicker
@@ -227,4 +227,4 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       )}
     </>
   )
-})
+}

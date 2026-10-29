@@ -12,7 +12,7 @@
   ],
   "branchConcurrentLimit": 3,
   "prConcurrentLimit": 5,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "1 day",
   "packageRules": [
     {
       "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
@@ -50,6 +50,14 @@
         "rollback"
       ],
       "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
+    },
+    {
+      "description": "Upgrade @sanity/sdk and @sanity/sdk-react together across all workspaces and dependency types, bumping every manifest to keep a single version throughout the repository",
+      "matchPackageNames": ["@sanity/sdk", "@sanity/sdk-react"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "sanity-sdk",
+      "rangeStrategy": "bump"
     },
     {
       "matchDepTypes": ["dependencies"],
@@ -94,10 +102,10 @@
         "@sanity/export",
         "@sanity/icons",
         "@sanity/mutate",
-        "@sanity/pkg-utils",
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
         "@sanity/template-validator",
+        "@sanity/tsdown-config",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
         "esbuild",
@@ -115,16 +123,44 @@
       "schedule": ["every weekday"]
     },
     {
-      "description": "Upgrade @portabletext/* packages together",
+      "description": "ui5 is the exact-pinned npm alias for the @sanity/ui v5 prerelease (pnpm catalog): strictly follow the alpha dist-tag so the pin is bumped whenever a new alpha is published, bypassing the default ignoreUnstable logic that would skip a rebased prerelease (e.g. a beta) and tracking tag rollbacks",
+      "matchDepNames": ["ui5"],
+      "followTag": "alpha"
+    },
+    {
+      "description": "Upgrade @portabletext/* packages together, majors included: the editor monorepo versions its packages independently but releases them in lockstep (plugins peer-depend on the editor), so a new major line must land as one PR instead of one per major number",
       "matchPackageNames": ["@portabletext/*"],
       "dependencyDashboardApproval": false,
       "schedule": ["every weekday"],
-      "groupName": "portabletext"
+      "groupName": "portabletext",
+      "separateMajorMinor": false
     },
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+      "matchPackageNames": [
+        "@sanity/tsdown-config",
+        "tsdown",
+        "@tsdown/css",
+        "typescript",
+        "@typescript/typescript6"
+      ]
+    },
+    {
+      "description": "Keep typedoc/ts-morph workspaces on the TypeScript 6 API alias (dep name typescript -> @typescript/typescript6); block bumps to typescript@7",
+      "matchDepNames": ["typescript"],
+      "matchFileNames": [
+        "packages/@repo/css-modules-kit/package.json",
+        "packages/@repo/test-dts-exports/package.json",
+        "packages/@repo/typedoc/package.json"
+      ],
+      "allowedVersions": "/^6\\./"
+    },
+    {
+      "description": "Hold rexxars/bundle-stats on v1: v2 measures with Rolldown, which removed CSS bundling and does not externalize CSS, so every sanity scenario fails on `sanity/bundle.css`. Digest and v1 updates still flow. Drop this rule once v2 externalizes CSS, and move the workflow inputs to a bundle-stats.config.ts at the same time",
+      "matchDepNames": ["rexxars/bundle-stats"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     },
     {
       "description": "Always upgrade oxlint together",

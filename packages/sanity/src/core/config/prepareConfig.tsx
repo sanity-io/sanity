@@ -2,44 +2,64 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
-import debugit from 'debug'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
+import {createDebug} from 'obug'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
+import {isDev} from '../environment'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
 } from '../form/studio/assetSourceDataset'
 import {
+  createFederatedSanityMediaLibraryFileSource,
+  createFederatedSanityMediaLibraryImageSource,
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
-import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
 import {
-  type AuthStore,
-  createAuthStore,
-  isAuthStore,
-  type RequestFailureDiagnostics,
-} from '../store'
-import {validateWorkspaces} from '../studio'
+  createFederatedAssetSource,
+  getCurrentFederatedAssetSourceViews,
+  isMediaLibraryView,
+} from '../form/studio/federatedAssetSource'
+import {prepareI18n} from '../i18n/i18nConfig'
+import {type LocaleSource} from '../i18n/types'
+import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
+import {createSchema} from '../schema/createSchema'
+import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {type AuthStore} from '../store/auth/types'
+import {isAuthStore} from '../store/auth/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
-import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {type RequestFailureDiagnostics} from '../studio/requestErrors/diagnoseRequestFailure'
+import {type StudioErrorHandler} from '../studio/requestErrors/types'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {
+  type InitialValueTemplateItem,
+  type ResolvedTemplate,
+  type Template,
+  type TemplateItem,
+} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {getPublishedId, isPublishedId} from '../util/draftUtils'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
+import {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../util/validateStructureNodeId'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  collapseArrayItemsReducer,
+  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentAskToEditEnabledReducer,
@@ -52,38 +72,47 @@ import {
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
+  initialCollapseArrayItems,
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalTasksReducer,
+  federatedAssetSourcesReducer,
   mediaLibraryEnabledReducer,
+  mediaLibraryFederatedAssetSourceReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  reactActivityModeEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
+  singletonsReducer,
   toolsReducer,
+  variantsTypesReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
-import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {initialDocumentFieldActions} from './document/fieldActions'
+import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
 import {SchemaError} from './SchemaError'
 import {
+  type BetaFeatures,
   type Config,
   type ConfigContext,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type SingletonDefinition,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -94,7 +123,7 @@ import {
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
-const debug = debugit('sanity:config')
+const debug = createDebug('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -195,8 +224,8 @@ function fingerprintAuth(auth: unknown): string {
   if (auth === null || typeof auth !== 'object') return String(auth)
 
   // Pre-built `AuthStore` instances are compared by reference identity.
-  // `createAuthStore` is memoized by a canonical hash of its options, so two
-  // `createAuthStore(equivalentOptions)` calls return the same instance —
+  // `createLegacyAuthStore` is memoized by a canonical hash of its options, so two
+  // `createLegacyAuthStore(equivalentOptions)` calls return the same instance —
   // meaning reference identity is sufficient to detect "same auth" even when
   // the calls were made separately per workspace.
   if (isAuthStore(auth)) return `AuthStore@${getObjectId(auth)}`
@@ -222,25 +251,106 @@ function getObjectId(value: object): number {
   return id
 }
 
+// The iframe fallback is legitimate (cold start, non-dashboard studio, org
+// without a brokered view) but easy to mistake for the federated view since
+// both render the full Media Library UI. Announce it once so a dev session
+// that silently degraded is diagnosable from the console.
+let notifiedFederatedFallback = false
+const notifyFederatedFallbackOnce = (reason: string) => {
+  if (notifiedFederatedFallback) return
+  notifiedFederatedFallback = true
+  // oxlint-disable-next-line no-console -- intentional one-shot diagnostic
+  console.info(
+    `[sanity] Media Library federated asset source unavailable (${reason}); ` +
+      'falling back to the iframe select dialog. In a dashboard dev session ' +
+      'this usually means the studio booted before the Media Library dev ' +
+      'server registered — reload once all dev servers are up.',
+  )
+}
+
 // Create media library sources with configuration
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
+  // Default-on: an enabled Media Library automatically uses the federated
+  // view where one is brokered; the internal flag remains as an opt-out.
+  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: true})
+  // Third-party brokered views have their own gate (`federatedAssetSources`),
+  // decoupled from the Media Library's internal rollout flag.
+  const federatedSourcesConfig = federatedAssetSourcesReducer({config, initialValue: undefined})
+  const brokeredSourcesEnabled = federatedSourcesConfig?.enabled === true
 
-  // Only create sources if media library is enabled
+  // The `asset_source` views brokered over the workbench message bus, read
+  // synchronously since sources are resolved once here. `undefined` outside
+  // the workbench; on a cold start in which the workbench has not published
+  // its application list yet, `[]` — either way every brokered source is
+  // simply absent and the Media Library keeps its iframe select dialog, so
+  // the race can never cost the Media Library source itself. Only consult
+  // the bus when a source could use the result — with `federated` defaulting
+  // on, reading it unconditionally would open a message-bus connection in
+  // every workspace, Media Library or not.
+  const viewsFromBus =
+    (federated && enabled) || brokeredSourcesEnabled
+      ? getCurrentFederatedAssetSourceViews()
+      : undefined
+  const brokeredViews = viewsFromBus ?? []
+
+  // The Media Library's own view replaces the select dialog of the built-in
+  // source below; views from other applications become their own sources.
+  const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
+
+  // Outside the workbench (`viewsFromBus === undefined`) the iframe dialog is
+  // the normal path, not a degraded one — stay quiet there.
+  if (federated && enabled && !mediaLibraryView && viewsFromBus !== undefined) {
+    notifyFederatedFallbackOnce(
+      'no Media Library asset_source view in the brokered application list',
+    )
+  }
+  const viewFilter = federatedSourcesConfig?.filter
+  const viewUploads = federatedSourcesConfig?.uploads
+  const federatedSources = brokeredSourcesEnabled
+    ? brokeredViews
+        .filter((view) => !isMediaLibraryView(view))
+        .map((view) => ({
+          view,
+          info: {
+            applicationId: view.applicationId,
+            applicationName: view.applicationName,
+            applicationTitle: view.applicationTitle,
+            name: view.name,
+            title: view.title,
+          },
+        }))
+        .filter(({info}) => (viewFilter ? viewFilter(info) : true))
+        .map(({view, info}) =>
+          createFederatedAssetSource(view, {uploads: viewUploads ? viewUploads(info) : false}),
+        )
+    : []
+
+  // Only create Media Library sources if the media library is enabled
   if (!enabled) {
-    return {fileSource: null, imageSource: null}
+    return {fileSource: null, imageSource: null, federatedSources}
   }
 
-  const fileSource = createSanityMediaLibraryFileSource({
-    libraryId: libraryId || null,
-  })
+  const fileSource = mediaLibraryView
+    ? createFederatedSanityMediaLibraryFileSource({
+        libraryId: libraryId || null,
+        view: mediaLibraryView,
+      })
+    : createSanityMediaLibraryFileSource({
+        libraryId: libraryId || null,
+      })
 
-  const imageSource = createSanityMediaLibraryImageSource({
-    libraryId: libraryId || null,
-  })
+  const imageSource = mediaLibraryView
+    ? createFederatedSanityMediaLibraryImageSource({
+        libraryId: libraryId || null,
+        view: mediaLibraryView,
+      })
+    : createSanityMediaLibraryImageSource({
+        libraryId: libraryId || null,
+      })
 
-  return {fileSource, imageSource}
+  return {fileSource, imageSource, federatedSources}
 }
 
 // Create default asset sources with configuration
@@ -272,8 +382,8 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    requestHandler?: RequestHandler
-    requestErrorChannel?: RequestErrorChannel
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
 ): PreparedConfig {
@@ -335,7 +445,7 @@ export function prepareConfig(
       }
     })
 
-    const resolvedSources = sources.map((source): InternalSource => {
+    const resolvedSources = sources.map((source, sourceIndex): InternalSource => {
       const {projectId, dataset} = source
 
       let schemaTypes
@@ -364,11 +474,16 @@ export function prepareConfig(
 
       if (schemaValidationProblemGroups && schemaErrors?.length) {
         // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
+        throw new SchemaError(schema, {
+          workspaceName: rawWorkspace.name || 'default',
+          sourceName: sourceIndex === 0 ? undefined : source.name || 'default',
+          projectId,
+          dataset,
+        })
       }
 
       const auth = getAuthStore(source, {
-        requestHandler: options?.requestHandler,
+        createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
@@ -414,10 +529,12 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
       hidden: rootSource.hidden,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
         sources: resolvedSources,
       },
@@ -433,12 +550,12 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
-    requestHandler,
+    createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    requestHandler?: RequestHandler
-    requestErrorChannel?: RequestErrorChannel
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
 ): AuthStore {
@@ -446,14 +563,21 @@ function getAuthStore(
     return source.auth
   }
 
-  const _clientFactory = source.unstable_clientFactory || createClient
+  const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({
+  return createLegacyAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
-      return _clientFactory({...config, _requestHandler: requestHandler})
+      let client: SanityClient
+      client = clientFactory({
+        ...config,
+        ...(createStudioRequestHandler
+          ? {requestHandler: createStudioRequestHandler(() => client)}
+          : {}),
+      })
+      return client
     },
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.
@@ -476,6 +600,7 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
@@ -541,6 +666,56 @@ function resolveSource({
   const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
+  let singletons: SingletonDefinition[] = []
+
+  try {
+    singletons = resolveConfigProperty({
+      config,
+      context,
+      initialValue: [],
+      propertyName: 'document.singletons',
+      reducer: singletonsReducer,
+    })
+  } catch (error) {
+    errors.push(error)
+  }
+
+  validateSingletons(singletons, schema, errors)
+
+  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+  const singletonsByDocumentId = new Map(
+    singletons.map((singleton) => [singleton.documentId, singleton]),
+  )
+
+  const getSingletonId = (
+    documentId: string | undefined,
+    schemaTypeName: string | undefined,
+  ): string | undefined => {
+    if (!documentId) {
+      return undefined
+    }
+
+    const definition = singletonsByDocumentId.get(getPublishedId(documentId))
+
+    if (!definition) {
+      return undefined
+    }
+
+    if (schemaTypeName && definition.schemaType !== schemaTypeName) {
+      if (isDev) {
+        console.warn(
+          `Document "${documentId}" matches the document id of singleton "${definition.id}", ` +
+            `but has schema type "${schemaTypeName}" where the singleton expects "${definition.schemaType}". ` +
+            `Singleton behaviour will not be applied.`,
+        )
+      }
+
+      return undefined
+    }
+
+    return definition.id
+  }
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -554,6 +729,7 @@ function resolveSource({
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
+        .filter((schemaType) => !singletonSchemaTypeNames.has(schemaType.name))
         .map((schemaType) => {
           const template: Template = {
             id: schemaType.name,
@@ -564,7 +740,35 @@ function resolveSource({
           }
 
           return template
-        }),
+        })
+        .concat(
+          singletons
+            .map(
+              ({
+                schemaType: schemaTypeName,
+                id,
+                title,
+                initialValue,
+                icon,
+              }): ResolvedTemplate | undefined => {
+                const schemaType = schema.get(schemaTypeName)
+
+                if (!schemaType) {
+                  return undefined
+                }
+
+                return {
+                  id,
+                  schemaType: schemaTypeName,
+                  title: title || schemaType.title || schemaType.name,
+                  icon: icon || schemaType.icon,
+                  value: initialValue ?? schemaType.initialValue ?? {_type: schemaTypeName},
+                  singleton: id,
+                }
+              },
+            )
+            .filter(isNonNullable),
+        ),
     })
     // TODO: validate templates
     // TODO: validate that each one has a unique template ID
@@ -575,6 +779,8 @@ function resolveSource({
       causes: [e],
     })
   }
+
+  validateSingletonTemplates(templates, singletons, errors)
 
   let tools!: Source['tools']
   try {
@@ -602,19 +808,19 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateItem => ({
-        templateId: template.id,
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      }),
-    )
+    .filter((template) => template.singleton === undefined)
+    .map((template): TemplateItem => ({
+      templateId: template.id,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      description: template.description,
+      icon: template.icon,
+      title: template.title,
+    }))
 
   const templateMap = templates.reduce((acc, template) => {
     acc.set(template.id, template)
     return acc
-  }, new Map<string, Template>())
+  }, new Map<string, ResolvedTemplate>())
 
   // TODO: extract this function
   const resolveNewDocumentOptions: Source['document']['resolveNewDocumentOptions'] = (
@@ -644,6 +850,9 @@ function resolveSource({
 
     return (
       templateResponses
+        // `document.newDocumentOptions` reducers may re-add singleton templates
+        // by id, so the filter applied to their initial value is not sufficient.
+        .filter((response) => templateMap.get(response.templateId)?.singleton === undefined)
         // take the template responses and transform them into the formal
         // `InitialValueTemplateItem`
         .map((response, index): InitialValueTemplateItem => {
@@ -670,7 +879,9 @@ function resolveSource({
             type: 'initialValueTemplateItem',
             title,
             i18n: response.i18n || template.i18n,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             subtitle: response.subtitle || defaultSubtitle,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,
             initialDocumentId: response.initialDocumentId,
@@ -707,7 +918,32 @@ function resolveSource({
     })
   }
 
+  const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
+
+  const beta: BetaFeatures = {
+    comments: {
+      v2: commentsV2Enabled,
+    },
+    eventsAPI: {
+      // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
+      documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+      releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+    },
+    variants: {
+      enabled: variantsEnabled,
+      types: variantsTypesReducer({config, initialValue: undefined}),
+    },
+    documentGroupInventory: {
+      // The document group inventory is an inherent part of the variants experience.
+      // It cannot be switched off while variants are switched on.
+      enabled:
+        documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+    },
+    reactActivityMode: {
+      enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
+    },
+  }
 
   // Upload the schema descriptor to Content Lake, but only when the user is
   // authenticated and actually holds the `deployStudio` grant. Checking the
@@ -728,6 +964,11 @@ function resolveSource({
       })
     : Promise.resolve(undefined)
 
+  const releaseMetadataFields = acceptReleaseMetadataFields(
+    resolveReleaseMetadataFields(config),
+    schema,
+  )
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -742,22 +983,31 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    __internal_tasks: internalTasksReducer({
-      config,
-    }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)
+        const resolvedActions = resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {...context, ...partialContext, singleton},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+
+        if (singleton) {
+          return resolvedActions.filter((action) => action.action !== 'duplicate')
+        }
+
+        return resolvedActions
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.schemaType),
+          },
           initialValue: initialDocumentBadges,
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
@@ -774,7 +1024,11 @@ function resolveSource({
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+          },
           initialValue: initialDocumentFieldActions,
           propertyName: 'document.unstable_fieldActions',
           reducer: documentFieldActionsReducer,
@@ -782,7 +1036,12 @@ function resolveSource({
       inspectors: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            beta,
+          },
           initialValue: EMPTY_ARRAY,
           propertyName: 'document.inspectors',
           reducer: documentInspectorsReducer,
@@ -796,19 +1055,28 @@ function resolveSource({
           asyncReducer: resolveProductionUrlReducer,
         }),
       resolveNewDocumentOptions,
+      singletons,
       unstable_languageFilter: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.schemaType),
+          },
           initialValue: initialLanguageFilter,
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
         }),
       /** @todo this is deprecated so it will eventually be removed */
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -817,7 +1085,10 @@ function resolveSource({
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -826,7 +1097,10 @@ function resolveSource({
       askToEdit: {
         enabled: (partialContext) => {
           return documentAskToEditEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -835,13 +1109,21 @@ function resolveSource({
     },
 
     form: {
+      arrays: {
+        collapseItems: collapseArrayItemsReducer({
+          config,
+          initialValue: initialCollapseArrayItems,
+        }),
+      },
       file: {
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibraryAssetSources.fileSource
-            ? [mediaLibraryAssetSources.fileSource, defaultAssetSources.fileSource]
-            : [defaultAssetSources.fileSource],
+          initialValue: [
+            ...(mediaLibraryAssetSources.fileSource ? [mediaLibraryAssetSources.fileSource] : []),
+            defaultAssetSources.fileSource,
+            ...mediaLibraryAssetSources.federatedSources,
+          ],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -851,9 +1133,11 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibraryAssetSources.imageSource
-            ? [mediaLibraryAssetSources.imageSource, defaultAssetSources.imageSource]
-            : [defaultAssetSources.imageSource],
+          initialValue: [
+            ...(mediaLibraryAssetSources.imageSource ? [mediaLibraryAssetSources.imageSource] : []),
+            defaultAssetSources.imageSource,
+            ...mediaLibraryAssetSources.federatedSources,
+          ],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
@@ -908,21 +1192,7 @@ function resolveSource({
       })
     },
 
-    beta: {
-      eventsAPI: {
-        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
-        releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
-      },
-      variants: {
-        enabled: variantsEnabled,
-      },
-      documentGroupInventory: {
-        // The document group inventory is an inherent part of the variants experience.
-        // It cannot be switched off while variants are switched on.
-        enabled:
-          documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
-      },
-    },
+    beta,
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
@@ -933,6 +1203,10 @@ function resolveSource({
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
       __internal: {
         frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+        federatedAssetSource: mediaLibraryFederatedAssetSourceReducer({
+          config,
+          initialValue: true,
+        }),
       },
     },
 
@@ -961,8 +1235,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          metadata: {fields: releaseMetadataFields},
         }
-      : {enabled: true},
+      : {enabled: true, metadata: {fields: releaseMetadataFields}},
   }
 
   return source
@@ -1010,4 +1285,230 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+/**
+ * Validates the resolved singleton definitions, pushing every problem onto the
+ * shared `errors` array.
+ */
+function validateSingletons(
+  singletons: SingletonDefinition[],
+  schema: Schema,
+  errors: unknown[],
+): void {
+  const validations = singletons.map((singleton) => ({
+    singleton,
+    idError: getSingletonIdError(singleton),
+    documentIdError: getSingletonDocumentIdError(singleton),
+    schemaTypeError: getSingletonSchemaTypeError(singleton, schema),
+  }))
+
+  errors.push(
+    ...validations.flatMap(({idError, documentIdError, schemaTypeError}) =>
+      [idError, documentIdError, schemaTypeError].filter((error) => error !== undefined),
+    ),
+  )
+
+  const ids = validations
+    .filter(({idError}) => idError === undefined)
+    .map(({singleton}) => singleton.id)
+
+  const documentIds = validations
+    .filter(({documentIdError}) => documentIdError === undefined)
+    .map(({singleton}) => singleton.documentId)
+
+  const duplicateIds = findDuplicates(ids)
+
+  if (duplicateIds.length > 0) {
+    errors.push(
+      new Error(
+        `Duplicate singleton definition ids found: ${duplicateIds.join(', ')}. ` +
+          `Each singleton \`id\` must be unique.`,
+      ),
+    )
+  }
+
+  const duplicateDocumentIds = findDuplicates(documentIds)
+
+  if (duplicateDocumentIds.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple singleton definitions use the same document id: ${duplicateDocumentIds.join(', ')}. ` +
+          `Each singleton \`documentId\` must be unique.`,
+      ),
+    )
+  }
+
+  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+
+  const typeNameCollisions = [...new Set(ids)].filter(
+    (id) => !singletonSchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
+  )
+
+  if (typeNameCollisions.length !== 0) {
+    errors.push(
+      new Error(
+        `Singleton definition ids collide with document type names: ${typeNameCollisions.join(', ')}. ` +
+          `Those document types appear in the default content list alongside the singletons, ` +
+          `where ids must be unique. Rename the singleton \`id\`.`,
+      ),
+    )
+  }
+}
+
+/**
+ * Returns an error describing why the template conflicts with the singleton
+ * registry, or `undefined` if it does not.
+ */
+function getTemplateSingletonError(
+  {id, singleton}: ResolvedTemplate,
+  definitionIds: ReadonlySet<string>,
+): Error | undefined {
+  if (typeof singleton === 'undefined') {
+    return definitionIds.has(id)
+      ? new Error(
+          `Template "${id}" reuses the id of singleton definition "${id}". ` +
+            `That id is used by the singleton's generated template; use a different template id.`,
+        )
+      : undefined
+  }
+
+  if (!definitionIds.has(singleton)) {
+    return new Error(`Template "${id}" represents nonexistent singleton "${singleton}".`)
+  }
+
+  return undefined
+}
+
+/**
+ * Validates the relationship between resolved templates and singleton
+ * definitions, pushing every problem onto the shared `errors` array.
+ *
+ * - A non-singleton template must not match a singleton definition id; the
+ *   generated singleton template is given that id.
+ * - No more than one template may represent a particular singleton.
+ * - If a template represents a singleton, a singleton matching that id must
+ *   exist.
+ */
+function validateSingletonTemplates(
+  templates: ResolvedTemplate[],
+  singletons: SingletonDefinition[],
+  errors: unknown[],
+): void {
+  const definitionIds = new Set(singletons.map((definition) => definition.id))
+
+  errors.push(
+    ...templates
+      .map((template) => getTemplateSingletonError(template, definitionIds))
+      .filter((error) => error !== undefined),
+  )
+
+  const singletonsWithTemplates = templates.flatMap(({singleton}) =>
+    singleton !== undefined && definitionIds.has(singleton) ? [singleton] : [],
+  )
+
+  const singletonsWithMultipleTemplates = findDuplicates(singletonsWithTemplates)
+
+  if (singletonsWithMultipleTemplates.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple templates represent the same singleton definition id: ${singletonsWithMultipleTemplates.join(', ')}. ` +
+          `A singleton can be represented by only a single template.`,
+      ),
+    )
+  }
+}
+
+function findDuplicates<Type>(values: Iterable<Type>): Type[] {
+  const seen = new Set<Type>()
+  const duplicates = new Set<Type>()
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value)
+      continue
+    }
+
+    seen.add(value)
+  }
+
+  return [...seen].filter((value) => duplicates.has(value))
+}
+
+function getSingletonIdError({id}: SingletonDefinition): Error | undefined {
+  if (typeof id !== 'string' || id.length === 0) {
+    return new Error(
+      `Singleton definitions must have a non-empty string \`id\`, but found ${JSON.stringify(id)}.`,
+    )
+  }
+
+  const result = validateStructureNodeId(id)
+
+  if (!result.isValid) {
+    return new Error(
+      `Singleton definition "${id}" has an invalid \`id\`: ${getStructureNodeIdProblem(result)}.`,
+    )
+  }
+
+  return undefined
+}
+
+function getStructureNodeIdProblem(
+  result: Exclude<StructureNodeIdValidationResult, {isValid: true}>,
+): string {
+  switch (result.reason) {
+    case 'invalidType':
+      return `expected a string, but found ${result.type}`
+    case 'disallowedCharacter':
+      return `it contains "${result.character}", but Structure Tool node ids may only contain [a-zA-Z0-9._-]`
+    case 'reservedPrefix':
+      return `it starts with "${result.prefix}", which Structure Tool reserves for its own panes`
+    default: {
+      const unknownResult: never = result
+      throw new Error(
+        `Unknown structure node id validation result: ${JSON.stringify(unknownResult)}`,
+      )
+    }
+  }
+}
+
+function getSingletonDocumentIdError({id, documentId}: SingletonDefinition): Error | undefined {
+  if (typeof documentId !== 'string' || documentId.length === 0) {
+    return new Error(
+      `Singleton definition "${id}" must have a non-empty string \`documentId\`, but found ${JSON.stringify(documentId)}.`,
+    )
+  }
+
+  const result = validateStructureNodeId(documentId)
+  const hasDisallowedCharacter = !result.isValid && result.reason === 'disallowedCharacter'
+
+  if (!isPublishedId(documentId) || hasDisallowedCharacter) {
+    return new Error(
+      `Singleton definition "${id}" has invalid \`documentId\` "${documentId}". ` +
+        `It must be a document group id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
+    )
+  }
+
+  return undefined
+}
+
+function getSingletonSchemaTypeError(
+  {id, schemaType}: SingletonDefinition,
+  schema: Schema,
+): Error | undefined {
+  const resolvedSchemaType = typeof schemaType === 'string' ? schema.get(schemaType) : undefined
+
+  if (!resolvedSchemaType) {
+    return new Error(
+      `Singleton definition "${id}" references schema type "${schemaType}", which does not exist in the schema.`,
+    )
+  }
+
+  if (resolvedSchemaType.type?.name !== 'document') {
+    return new Error(
+      `Singleton definition "${id}" references schema type "${schemaType}", which is not a document type.`,
+    )
+  }
+
+  return undefined
 }

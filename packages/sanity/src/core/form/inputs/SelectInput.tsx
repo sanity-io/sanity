@@ -1,22 +1,23 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Radio, Select, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useId,
   useMemo,
+  type RefAttributes,
 } from 'react'
+import {Box, Flex} from 'ui5'
 
-import {Button} from '../../../ui-components'
-import {ChangeIndicator} from '../../changeIndicators'
-import {useTranslation} from '../../i18n'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
+import {Button} from '../../../ui-components/button/Button'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {set, unset} from '../patch/patch'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,
@@ -131,7 +132,7 @@ export function SelectInput(props: StringInputProps) {
   )
 }
 
-const RadioSelect = forwardRef(function RadioSelect(
+function RadioSelect(
   props: {
     items: TitledListValue<string | number>[]
     value?: TitledListValue<string | number>
@@ -142,11 +143,9 @@ const RadioSelect = forwardRef(function RadioSelect(
     customValidity?: string
     inputId?: string
     tone?: CardTone
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
+  const {ref, items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
     props
   const {t} = useTranslation()
 
@@ -155,13 +154,22 @@ const RadioSelect = forwardRef(function RadioSelect(
   }, [onChange])
 
   const isHorizontal = direction === 'horizontal'
-  const Layout = isHorizontal ? Inline : Stack
   const showClearButton = !readOnly && value
 
   return (
     <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
-      <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
-        <Layout space={3} role="group" paddingY={1}>
+      <Flex
+        alignItems={isHorizontal ? 'center' : 'flex-end'}
+        gap={3}
+        justifyContent="space-between"
+      >
+        <Flex
+          gap={3}
+          role="group"
+          paddingY={1}
+          flexDirection={isHorizontal ? 'row' : 'column'}
+          flexWrap={isHorizontal ? 'wrap' : undefined}
+        >
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
@@ -176,7 +184,7 @@ const RadioSelect = forwardRef(function RadioSelect(
               value={value}
             />
           ))}
-        </Layout>
+        </Flex>
         {showClearButton && (
           <Button
             icon={ResetIcon}
@@ -188,9 +196,9 @@ const RadioSelect = forwardRef(function RadioSelect(
       </Flex>
     </Card>
   )
-})
+}
 
-const RadioSelectItem = forwardRef(function RadioSelectItem(
+function RadioSelectItem(
   props: {
     customValidity?: string
     inputId?: string
@@ -199,18 +207,16 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     readOnly?: boolean
     value?: TitledListValue<string | number>
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
+  const {ref, customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
 
   const handleChange = useCallback(() => {
     onChange(item)
   }, [item, onChange])
   const checked = value === item
   return (
-    <Flex as="label" align="center">
+    <Flex as="label" alignItems="center">
       <Radio
         ref={ref}
         checked={checked}
@@ -228,4 +234,4 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       </Box>
     </Flex>
   )
-})
+}

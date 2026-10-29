@@ -1,11 +1,11 @@
-import {BoundaryElementProvider, Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {BoundaryElementProvider, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
-import {PopoverDialog} from '../../components'
-import {PresenceOverlay} from '../../presence'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {EditDialogOuterBoundaryProvider} from './EditDialogOuterBoundaryProvider'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -69,11 +69,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
           onDrop={onDrop}
           width={width}
         >
-          <EditDialogOuterBoundaryProvider>
-            <BoundaryElementProvider element={documentScrollElement}>
-              {contents}
-            </BoundaryElementProvider>
-          </EditDialogOuterBoundaryProvider>
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
         </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -91,11 +89,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <EditDialogOuterBoundaryProvider>
-          <BoundaryElementProvider element={documentScrollElement}>
-            {contents}
-          </BoundaryElementProvider>
-        </EditDialogOuterBoundaryProvider>
+        <BoundaryElementProvider element={documentScrollElement}>
+          {contents}
+        </BoundaryElementProvider>
       </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
   )

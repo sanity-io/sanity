@@ -1,15 +1,15 @@
 import {type Image} from '@sanity/types'
-import {Box, Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, Box} from 'ui5'
 
-import {type TFunction, useTranslation} from '../../../../i18n'
-import {
-  ChangeList,
-  DiffCard,
-  DiffTooltip,
-  getAnnotationAtPath,
-  useDocumentChange,
-} from '../../../diff'
-import {FromTo} from '../../../diff/components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type TFunction} from '../../../../i18n/types'
+import {getAnnotationAtPath} from '../../../diff/annotations/helpers'
+import {ChangeList} from '../../../diff/components/ChangeList'
+import {DiffCard} from '../../../diff/components/DiffCard'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromTo} from '../../../diff/components/FromTo'
+import {useDocumentChange} from '../../../diff/hooks/useDocumentChange'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 
@@ -87,7 +87,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   if (!from && !to) {
     return (
       <Card padding={4} radius={2} tone="transparent">
-        <Text muted size={1} align="center">
+        <Text muted size={1} align="center" as="div" trim={true}>
           {t('changes.image.no-asset-set')}
         </Text>
       </Card>

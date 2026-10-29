@@ -1,14 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, combineLatest, type Observable} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
+import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable} from 'rxjs'
+import {distinctUntilChanged, map, share, shareReplay, throttleTime} from 'rxjs/operators'
 
-import {type SourceClientOptions} from '../../../config'
-import {type LocaleSource} from '../../../i18n'
-import {type DraftsModelDocumentAvailability} from '../../../preview'
+import {type SourceClientOptions} from '../../../config/types'
+import {type LocaleSource} from '../../../i18n/types'
+import {type DraftsModelDocumentAvailability} from '../../../preview/types'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {shallowEquals} from '../../../util/shallowEquals'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -23,8 +24,7 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
-/** @internal */
-export const validation = memoize(
+const validationStreams = memoize(
   (
     ctx: {
       client: SanityClient
@@ -44,7 +44,7 @@ export const validation = memoize(
     typeName: string,
     validationTarget: DocumentVariantType,
     validatePublishedReferences: boolean,
-  ): Observable<ValidationStatus> => {
+  ) => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
         const {version, draft, published} = state
@@ -86,14 +86,27 @@ export const validation = memoize(
      */
     const documentRevision$ = document$.pipe(map((document) => document?._rev))
 
-    return combineLatest([
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const status$ = combineLatest([
       documentRevision$,
-      validateDocumentWithReferences(ctx, documentToValidate$, validatePublishedReferences),
+      validateDocumentWithReferences(
+        ctx,
+        documentToValidate$,
+        validatePublishedReferences,
+        scheduling,
+      ),
     ]).pipe(
       map(([revision, validationStatus]) => {
         return {...validationStatus, revision}
       }),
     )
+    // shared: the first subscriber switches to `immediate`, the last one to leave switches back
+    const holdImmediate$ = new Observable<never>(() => {
+      scheduling.next('immediate')
+      return () => scheduling.next('idle')
+    }).pipe(share())
+
+    return {status$, immediate$: merge(holdImmediate$, status$)}
   },
   (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
     // Use the actual document ID being validated in the cache key for explicitness
@@ -103,6 +116,34 @@ export const validation = memoize(
         : validationTarget === 'version'
           ? idPair.versionId
           : idPair.publishedId
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}`
+    // Include the user id so an in-place user switch gets its own cache entry;
+    // the module-level memo cache is never cleared, so without this a new user
+    // would replay the previous user's validation result.
+    const userId = ctx.currentUser?.id ?? ''
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
   },
 )
+
+/**
+ * The document's validation status. Every subscriber shares one validation of the document, which
+ * runs without waiting for idle time while any subscription made with `immediate` scheduling lasts.
+ *
+ * @internal
+ */
+export function validation(
+  ctx: Parameters<typeof validationStreams>[0],
+  idPair: IdPair,
+  typeName: string,
+  validationTarget: DocumentVariantType,
+  validatePublishedReferences: boolean,
+  scheduling?: ValidationScheduling,
+): Observable<ValidationStatus> {
+  const {status$, immediate$} = validationStreams(
+    ctx,
+    idPair,
+    typeName,
+    validationTarget,
+    validatePublishedReferences,
+  )
+  return scheduling === 'immediate' ? immediate$ : status$
+}

@@ -1,9 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 
 interface ReleaseNotFoundBannerProps {
@@ -14,14 +15,12 @@ export function ReleaseNotFoundBanner({onDismiss}: ReleaseNotFoundBannerProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   return (
-    <Box flex="none" padding={1} marginBottom={4}>
+    <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} marginBottom={4}>
       <Card radius={3} paddingX={2} paddingY={2} tone="caution">
-        <Flex align="center" gap={3} paddingX={2}>
-          <Text size={0}>
-            <WarningOutlineIcon />
-          </Text>
-          <Box flex={1} paddingY={2}>
-            <Text size={1} weight="medium">
+        <Flex alignItems="center" gap={3} paddingX={2}>
+          <Icon size={0} style={{margin: '-0.3125rem'}} icon={WarningOutlineIcon} tone="caution" />
+          <Box flexBasis="0%" flexGrow={1} paddingY={2}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="caution">
               {t('banner.release-not-found')}
             </Text>
           </Box>

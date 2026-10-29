@@ -9,6 +9,7 @@ export const mockUseRouterReturn: Mocked<RouterContextValue> = {
   resolvePathFromState: vi.fn(),
   resolveIntentLink: vi.fn(),
   navigateUrl: vi.fn(),
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   navigateStickyParams: vi.fn(),
   navigateIntent: vi.fn(),
   stickyParams: {},

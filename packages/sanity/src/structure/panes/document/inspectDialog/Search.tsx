@@ -1,15 +1,25 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
-import {type ChangeEvent, useCallback} from 'react'
+import {type ChangeEvent, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../i18n'
 
-export function Search(props: {onChange: (q: string) => void; query: string}) {
+interface SearchProps {
+  onChange: (q: string) => void
+  query: string
+}
+
+export function Search(props: SearchProps) {
   const {onChange, query} = props
+  const [value, setValue] = useState(query || '')
 
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const nextQuery = event.currentTarget.value
+      setValue(nextQuery)
+      onChange(nextQuery)
+    },
     [onChange],
   )
   const {t} = useTranslation(structureLocaleNamespace)
@@ -20,7 +30,7 @@ export function Search(props: {onChange: (q: string) => void; query: string}) {
       onChange={handleChange}
       placeholder={t('document-inspector.search.placeholder')}
       radius={2}
-      value={query || ''}
+      value={value}
     />
   )
 }

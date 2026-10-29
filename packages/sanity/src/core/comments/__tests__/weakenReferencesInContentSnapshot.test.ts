@@ -1,7 +1,7 @@
 import {describe, expect, test} from 'vitest'
 
 import {type CommentDocument} from '../types'
-import {weakenReferencesInContentSnapshot} from '../utils'
+import {weakenReferencesInContentSnapshot} from '../utils/weakenReferencesInContentSnapshot'
 
 interface BeforeAndAfter {
   before: CommentDocument['contentSnapshot']

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {isRecord} from 'sanity'
+import {type SingletonDefinition} from 'sanity'
 
 import {DocumentBuilder} from './Document'
 import {
@@ -75,6 +75,10 @@ export class DocumentListItemBuilder extends ListItemBuilder {
     this.spec = spec ? spec : {}
   }
 
+  protected getDefaultSingletonItemId(definition: SingletonDefinition): string {
+    return definition.documentId
+  }
+
   /**
    * Serialize document list item
    * @param options - serialization options. See {@link SerializeOptions}
@@ -106,7 +110,6 @@ export class DocumentListItemBuilder extends ListItemBuilder {
   }
 }
 
-/** @internal */
-export function isDocumentListItem(item: unknown): item is DocumentListItem {
-  return isRecord(item) && typeof item.schemaType !== 'undefined' && typeof item._id === 'string'
-}
+// Re-exported for backwards compatibility; lives in `./util` so that `List` can use it without
+// creating a circular import (this module extends `ListItemBuilder`, which `List` also imports).
+export {isDocumentListItem} from './util/isDocumentListItem'

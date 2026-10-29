@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react'
 
-import {isNonNullable} from '../../util'
+import {isNonNullable} from '../../util/isNonNullable'
 import {type I18nNode} from './useI18nText'
 import {useTranslation} from './useTranslation'
 

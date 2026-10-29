@@ -1,10 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ConfirmScheduledDraftsDialog} from './ConfirmScheduledDraftsDialog'
@@ -56,14 +58,17 @@ export function ConfirmActiveScheduledDraftsBanner({
 
   return (
     <>
-      <Box flex="none" padding={1} marginBottom={4}>
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} marginBottom={4}>
         <Card radius={3} paddingX={2} paddingY={2} tone="caution">
-          <Flex align="center" gap={3} paddingX={2}>
-            <Text size={0}>
-              <WarningOutlineIcon />
-            </Text>
-            <Flex align="center" flex={1} gap={2} paddingY={2}>
-              <Text size={1} weight="medium">
+          <Flex alignItems="center" gap={3} paddingX={2}>
+            <Icon
+              size={0}
+              style={{margin: '-0.3125rem'}}
+              icon={WarningOutlineIcon}
+              tone="caution"
+            />
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
+              <Text size={1} weight="medium" as="div" trim={true} tone="caution">
                 <Translate
                   t={t}
                   i18nKey="banner.confirm-active-scheduled-drafts"
@@ -71,7 +76,7 @@ export function ConfirmActiveScheduledDraftsBanner({
                 />
               </Text>
             </Flex>
-            <Flex flex="none">
+            <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Button text={buttonText} mode="bleed" tone="caution" onClick={handleClick} />
             </Flex>
           </Flex>

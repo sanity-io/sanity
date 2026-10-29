@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {defineField} from '../schema'
+import {defineField} from '../schema/define'
 import {isAssetAspect} from './asserters'
 import {defineAssetAspect} from './defineAssetAspect'
 

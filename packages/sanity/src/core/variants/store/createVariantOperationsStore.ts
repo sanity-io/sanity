@@ -1,13 +1,17 @@
-import {type SanityClient} from '@sanity/client'
+import {type BaseActionOptions, type SingleActionResult, type SanityClient} from '@sanity/client'
 
+import {variantsApiClient} from '../../store/document/document-pair/utils/variantsApiClient'
 import {getVariantId} from '../tool/util'
 import {type EditableSystemVariant} from '../types'
-import {variantsClient, type VariantDefinitionActionResult} from './variantsClient'
 
 export interface VariantOperationsStore {
-  createVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionActionResult>
-  updateVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionActionResult>
-  deleteVariant: (variantId: string) => Promise<VariantDefinitionActionResult>
+  createVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
+  updateVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
+  /**
+   * `opts` are forwarded to the action request, so the permissions store can `dryRun` the
+   * delete to find out whether the current user is allowed to perform it.
+   */
+  deleteVariant: (variantId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
 }
 
 /**
@@ -16,7 +20,7 @@ export interface VariantOperationsStore {
 export function createVariantOperationsStore(options: {
   client: SanityClient
 }): VariantOperationsStore {
-  const client = variantsClient(options.client)
+  const client = variantsApiClient(options.client)
 
   const handleCreateVariant = async (variant: EditableSystemVariant) => {
     const variantId = getVariantId(variant._id)
@@ -63,13 +67,13 @@ export function createVariantOperationsStore(options: {
     return await client.action(action, {tag: 'variants.edit'})
   }
 
-  const handleDeleteVariant = async (variantIdOrDocumentId: string) => {
+  const handleDeleteVariant = async (variantIdOrDocumentId: string, opts?: BaseActionOptions) => {
     const action = {
       actionType: 'sanity.action.variant.definition.delete' as const,
       variantId: getVariantId(variantIdOrDocumentId),
     }
 
-    return await client.action(action, {tag: 'variants.delete'})
+    return await client.action(action, {tag: 'variants.delete', ...opts})
   }
 
   return {

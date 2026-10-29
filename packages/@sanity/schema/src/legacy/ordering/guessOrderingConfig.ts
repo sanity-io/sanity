@@ -18,14 +18,12 @@ export default function guessOrderingConfig(objectTypeDef: any): SortOrdering[] 
     candidates = objectTypeDef.fields.filter(isPrimitive).map((field: any) => field.name)
   }
 
-  return candidates.map(
-    (name): SortOrdering => ({
-      name: name,
-      i18n: {
-        title: {key: `default-orderings.${name}`, ns: 'studio'},
-      },
-      title: capitalize(startCase(name)),
-      by: [{field: name, direction: 'asc'}],
-    }),
-  )
+  return candidates.map((name): SortOrdering => ({
+    name: name,
+    i18n: {
+      title: {key: `default-orderings.${name}`, ns: 'studio'},
+    },
+    title: capitalize(startCase(name)),
+    by: [{field: name, direction: 'asc'}],
+  }))
 }

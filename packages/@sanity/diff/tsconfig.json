@@ -1,7 +1,9 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./src"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+  "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": ".",
+    "customConditions": ["monorepo"]
   }
 }

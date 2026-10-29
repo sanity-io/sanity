@@ -1,45 +1,46 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {rem, Skeleton} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
 import {pathToString} from '../../../../field/paths/helpers'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
-import {useCopyPaste} from '../../../../studio'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {type ArrayOfObjectsItemMember} from '../../../store'
+import {insert, setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
-  CreateAppendedObject,
-  CreatePrependedObject,
-  NavigatedToViaArrayList,
-  RemovedObject,
+  ObjectCreated,
+  ObjectEdited,
+  ObjectRemoved,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
+import {type ObjectInputProps} from '../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../types/itemProps'
 import {
-  type ArrayInputCopyEvent,
-  type ArrayInputInsertEvent,
-  type FormDocumentValue,
-  type ObjectInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {FormNodeSuspense, type FormNodeComponentKey} from '../../common/FormNodeSuspense'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
@@ -53,6 +54,12 @@ export interface MemberItemProps {
   renderBlock?: RenderBlockCallback
   renderInlineBlock?: RenderBlockCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  /**
+   * Item renderer forwarded into the item input. Defaults to `renderItem`.
+   * Grid items render their own card, but nested arrays must keep the resolved
+   * item component instead of inheriting that card.
+   */
+  renderInputItem?: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderPreview: RenderPreviewCallback
@@ -73,8 +80,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderInlineBlock,
     renderInput,
     renderItem,
+    renderInputItem,
     renderPreview,
   } = props
+  const inputRenderItem = renderInputItem ?? renderItem
   const {t} = useTranslation()
 
   const {
@@ -90,6 +99,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
@@ -99,7 +109,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
-    telemetry.log(RemovedObject, {
+    telemetry.log(ObjectRemoved, {
+      location: 'array_list',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
@@ -118,17 +129,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const telemetryInsertSiblingsTelemetry = useCallback(
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
-      if (event.position === 'before') {
-        telemetry.log(CreatePrependedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      } else {
-        telemetry.log(CreateAppendedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      }
+      telemetry.log(ObjectCreated, {
+        location: 'array_list',
+        position: event.position === 'before' ? 'prepended' : 'appended',
+        path: pathToString(member.item.path),
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+      })
     },
     [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
@@ -277,7 +283,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   )
 
   const handleOpen = useCallback(() => {
-    telemetry.log(NavigatedToViaArrayList, {
+    telemetry.log(ObjectEdited, {
+      location: 'array_list',
+      position: 'nested',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
@@ -323,6 +331,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       changed: member.item.changed,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
       hasUpstreamVersion: member.item.hasUpstreamVersion,
+      changedFromBaseVariant: member.item.changedFromBaseVariant,
+      baseVariantValue: member.item.baseVariantValue,
+      hasBaseVariant: member.item.hasBaseVariant,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
       groups: member.item.groups,
@@ -346,7 +357,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       renderField,
       renderInlineBlock,
       renderInput,
-      renderItem,
+      renderItem: inputRenderItem,
       renderPreview,
       schemaType: member.item.schemaType,
       validation: member.item.validation,
@@ -358,6 +369,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [
     elementProps,
     member.item.hasUpstreamVersion,
+    member.item.changedFromBaseVariant,
+    member.item.baseVariantValue,
+    member.item.hasBaseVariant,
     handleChange,
     handleCloseField,
     handleCollapseField,
@@ -388,7 +402,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderField,
     renderInlineBlock,
     renderInput,
-    renderItem,
+    inputRenderItem,
     renderPreview,
   ])
 
@@ -402,50 +416,70 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      <RenderItem
-        key={member.key}
-        index={member.index}
-        level={member.item.level}
-        value={member.item.value}
-        compareValue={member.item.compareValue}
-        __unstable_computeDiff={member.item.__unstable_computeDiff}
-        hasUpstreamVersion={member.item.hasUpstreamVersion}
-        title={member.item.schemaType.title}
-        description={member.item.schemaType.description}
-        collapsible={member.collapsible}
-        collapsed={member.collapsed}
+      <FormNodeSuspense
+        fallback={<ObjectItemBestEffortFallback />}
         schemaType={member.item.schemaType}
-        parentSchemaType={member.parentSchemaType}
-        onInsert={handleInsert}
-        onCopy={handleCopy}
-        onRemove={onRemove}
-        presence={member.item.presence}
-        validation={member.item.validation}
-        open={member.open}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        onExpand={handleExpand}
-        onCollapse={handleCollapse}
-        readOnly={member.item.readOnly}
-        focused={member.item.focused}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        inputId={member.item.id}
         path={member.item.path}
-        changed={member.item.changed}
-        inputProps={inputProps}
-        render={renderItem}
+        components={OBJECT_ITEM_COMPONENTS}
       >
-        <RenderInput
-          {...inputProps}
-          render={(...renderProps) => (
-            <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
-              {renderInput(...renderProps)}
-            </FormNodeDivergenceDetail>
-          )}
-        />
-      </RenderItem>
+        <RenderItem
+          key={member.key}
+          index={member.index}
+          level={member.item.level}
+          value={member.item.value}
+          compareValue={member.item.compareValue}
+          __unstable_computeDiff={member.item.__unstable_computeDiff}
+          hasUpstreamVersion={member.item.hasUpstreamVersion}
+          changedFromBaseVariant={member.item.changedFromBaseVariant}
+          baseVariantValue={member.item.baseVariantValue}
+          hasBaseVariant={member.item.hasBaseVariant}
+          title={member.item.schemaType.title}
+          description={member.item.schemaType.description}
+          collapsible={member.collapsible}
+          collapsed={member.collapsed}
+          schemaType={member.item.schemaType}
+          parentSchemaType={member.parentSchemaType}
+          onInsert={handleInsert}
+          onCopy={handleCopy}
+          onRemove={onRemove}
+          presence={member.item.presence}
+          validation={member.item.validation}
+          open={member.open}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          onExpand={handleExpand}
+          onCollapse={handleCollapse}
+          readOnly={member.item.readOnly}
+          focused={member.item.focused}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          inputId={member.item.id}
+          path={member.item.path}
+          changed={member.item.changed}
+          inputProps={inputProps}
+          render={renderItem}
+        >
+          <RenderInput
+            {...inputProps}
+            render={(...renderProps) => (
+              <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+                {renderInput(...renderProps)}
+              </FormNodeDivergenceDetail>
+            )}
+          />
+        </RenderItem>
+      </FormNodeSuspense>
     </FormCallbacksProvider>
+  )
+}
+
+// The item's input opens in a dialog or popover, which has a boundary of its own
+const OBJECT_ITEM_COMPONENTS: readonly FormNodeComponentKey[] = ['item']
+
+// The height of a default preview row
+function ObjectItemBestEffortFallback() {
+  return (
+    <Skeleton data-testid="custom-item-fallback" radius={1} animated style={{height: rem(59)}} />
   )
 }
 

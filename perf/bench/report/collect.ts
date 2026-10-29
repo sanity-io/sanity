@@ -2,10 +2,14 @@ import {execFileSync} from 'node:child_process'
 import os from 'node:os'
 import process from 'node:process'
 
+import {STYLE_METRICS, type StyleCensus} from '@repo/utils/style-systems'
+
 import {type AbScenarioResult} from '../runner/orchestrator'
 import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
 import {type LoadCondition, type PageLoadSample} from '../runner/session/pageLoad'
+import {type SettleSessionResult} from '../runner/session/settle'
+import {type BenchScenario} from '../scenarios/types'
 import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
 import {median, summarize} from '../stats/quantiles'
@@ -14,6 +18,7 @@ import {
   type MetricReport,
   type ResourceSide,
   type ScenarioReport,
+  type StyleContext,
 } from './types'
 
 function git(args: string[]): string {
@@ -24,29 +29,108 @@ function git(args: string[]): string {
   }
 }
 
+const TRIGGERS = new Set(['cron', 'release', 'backfill', 'dispatch', 'pr'])
+
+/**
+ * Why this run happened, and (for release runs) which tag it measured.
+ *
+ * `BENCH_TRIGGER` is set by the workflow, but it is not trusted blindly: an
+ * unrecognized value falls back to inference rather than being stored, so a typo
+ * in a workflow edit cannot invent a trigger kind that consumers then filter on.
+ * Inference covers every path that does not set it — notably the daily schedule,
+ * which predates this field and must keep producing `cron`.
+ *
+ * `releaseTag` is only kept for `release` runs: a tag on a cron run would claim
+ * that run measured a release, which is exactly the false attribution this
+ * field exists to eliminate.
+ */
+function triggerFields(
+  prNumber: number,
+  mode: 'ab' | 'absolute',
+): {
+  trigger?: BenchRunDocument['trigger']
+  releaseTag?: string
+} {
+  const declared = process.env.BENCH_TRIGGER
+  const trigger: BenchRunDocument['trigger'] =
+    declared && TRIGGERS.has(declared)
+      ? (declared as BenchRunDocument['trigger'])
+      : !Number.isNaN(prNumber)
+        ? 'pr'
+        : process.env.GITHUB_EVENT_NAME === 'schedule'
+          ? 'cron'
+          : // A dispatch measuring a historical commit is a backfill — but only
+            // in absolute mode. An A/B dispatch also sets BENCH_GIT_SHA (to
+            // ab_to), and calling that a backfill would misdescribe it: it
+            // measures two commits against each other rather than repairing a
+            // hole in the series.
+            mode === 'absolute' && process.env.BENCH_GIT_SHA
+            ? 'backfill'
+            : 'dispatch'
+  const releaseTag = process.env.BENCH_RELEASE_TAG
+  return {
+    trigger,
+    ...(trigger === 'release' && releaseTag ? {releaseTag} : {}),
+  }
+}
+
 export function collectRunMetadata(options: {
   mode: 'ab' | 'absolute'
   calibrationMs: number
   cpuThrottleRate: number
   seed: number
   startedAt: string
+  /** Chromium version the sessions run in (`browser.version()`). */
+  browserVersion?: string
 }): Omit<BenchRunDocument, 'scenarios' | 'completedAt' | 'bundle'> {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
   )
+  // Committer date of the measured commit — the time-series x-axis (dashboards
+  // plot it instead of startedAt so backfilled points land on their commit's
+  // date). Backfill shards check out HEAD, not the measured sha, so the
+  // workflow resolves the date where full history exists (prepare-backfill)
+  // and passes it through; everywhere else HEAD is the measured commit and
+  // its committer date is resolvable even in a depth-1 clone.
+  const committedAtRaw =
+    process.env.BENCH_GIT_COMMITTED_AT || git(['show', '-s', '--format=%cI', 'HEAD'])
+  // Omit anything unparseable — the git() helper answers 'unknown' outside a
+  // repo, and a malformed workflow override must not poison the time axis
+  // consumers sort and filter on
+  const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
+  const triggerInfo = triggerFields(prNumber, options.mode)
+
   return {
     _type: 'benchRun',
     schemaVersion: 1,
     mode: options.mode,
+    ...triggerInfo,
     git: {
-      sha: process.env.GITHUB_SHA ?? git(['rev-parse', 'HEAD']),
+      // BENCH_GIT_SHA: the commit the measured dist was actually built from,
+      // when that differs from the checkout — backfill runs build a
+      // historical commit's packages with HEAD's harness (see
+      // cli/commands/prepareBackfill.ts) and must be stored under that
+      // commit, not the workflow's HEAD
+      sha: process.env.BENCH_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']),
+      // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag
+      // name ('v6.11.0'). The commit it measures is a main commit, and the
+      // dashboards group runs into per-branch lines and default to main — a run
+      // filed under a tag name would sit outside the main series it belongs to.
+      // The ref names how the run was dispatched; the branch names where the
+      // measured commit lives, which for a release is always main — and for a
+      // backfill too: it replays a main-history commit, wherever the workflow
+      // carrying the harness was dispatched from (a branch dispatch of a
+      // backfill must not file main's history under that branch).
+      //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
+        (triggerInfo.trigger === 'release' || triggerInfo.trigger === 'backfill' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
+      ...(committedAt ? {committedAt} : {}),
       // The sha the reference side was built at (bench.yml passes the
       // prepare-reference output through) — rendered in the report footer
       ...(process.env.BENCH_MERGE_BASE ? {mergeBaseSha: process.env.BENCH_MERGE_BASE} : {}),
@@ -59,6 +143,17 @@ export function collectRunMetadata(options: {
       cpus: os.cpus().length,
       memGb: Math.round(os.totalmem() / 1024 ** 3),
       nodeVersion: process.version,
+      // The hardware discriminator: GitHub rotates CPU generations under the
+      // same vCPU shape, so cpus/memGb can't explain a host-speed step but
+      // the model string can. Empty on platforms where Node reports none.
+      ...(os.cpus()[0]?.model.trim() ? {cpuModel: os.cpus()[0].model.trim()} : {}),
+      // GitHub runner image identity — pins when the image (toolchain, libs)
+      // rolled, which tends to coincide with host-speed regime changes
+      ...(process.env.ImageOS ? {imageOs: process.env.ImageOS} : {}),
+      ...(process.env.ImageVersion ? {imageVersion: process.env.ImageVersion} : {}),
+      // The measuring instrument: a Playwright bump moves INP/vitals with no
+      // studio change, and this is what makes that visible after the fact
+      ...(options.browserVersion ? {browserVersion: options.browserVersion} : {}),
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
       ...(process.env.GITHUB_RUN_ATTEMPT
@@ -131,38 +226,120 @@ function collectResourceSide(sessions: InteractionSessionResult[]): ResourceSide
   }
 }
 
+/** The censuses a side's sessions took (sessions without one contribute nothing). */
+function censusesOf(sessions: {styles: StyleCensus | null}[]): StyleCensus[] {
+  return sessions.map((session) => session.styles).filter((census) => census !== null)
+}
+
+/**
+ * Style-migration rows (report-only, never gated): one row per
+ * `STYLE_METRICS` entry, one value per session, summarized like every other
+ * row — a median over sessions, so a transient popover adding a few nodes to
+ * one session cannot move the point. A metric that does not apply — the UI v5
+ * rows on a build without v5, a share without a denominator — is left out of
+ * the row set rather than written as zero (see `StyleMetric.read`).
+ *
+ * Both sides where an A/B run has both, without a `comparison`: the numbers
+ * are exact counts of a build, so the bootstrap verdict has nothing to
+ * decide, and the PR comment only lists gated regressions anyway.
+ */
+export function collectStyleMetrics(
+  experiment: StyleCensus[],
+  reference: StyleCensus[] = [],
+): MetricReport[] {
+  const values = (censuses: StyleCensus[], read: (census: StyleCensus) => number | null) =>
+    censuses
+      .map((census) => read(census))
+      .filter((value): value is number => value !== null)
+      .map((value) => [value])
+  return STYLE_METRICS.flatMap((metric): MetricReport[] => {
+    const experimentValues = values(experiment, metric.read)
+    if (experimentValues.length === 0) return []
+    const referenceValues = values(reference, metric.read)
+    return [
+      {
+        label: metric.label,
+        unit: metric.unit,
+        presentAsEfps: false,
+        experiment: {sessions: experimentValues, summary: summarize(experimentValues.flat())},
+        ...(referenceValues.length > 0
+          ? {reference: {sessions: referenceValues, summary: summarize(referenceValues.flat())}}
+          : {}),
+      },
+    ]
+  })
+}
+
+/** The build facts behind a side's style rows; undefined when no session took the census. */
+export function collectStyleContext(censuses: StyleCensus[]): StyleContext | undefined {
+  if (censuses.length === 0) return undefined
+  const versions = [
+    ...new Set(censuses.flatMap((census) => census.styledComponents.versions)),
+  ].sort()
+  const readable = censuses
+    .map((census) => census.stylesheets.totalRules)
+    .filter((total) => total > 0)
+  return {
+    ui5Available: censuses.some((census) => census.ui5Available),
+    ...(versions.length > 0 ? {styledComponentsVersion: versions.join(', ')} : {}),
+    ...(readable.length > 0 ? {readableCssRules: median(readable)} : {}),
+    sessions: censuses.length,
+  }
+}
+
+/** The `styles` block of a scenario report, or nothing when no side has a census. */
+function styleBlock(
+  experiment: StyleCensus[],
+  reference: StyleCensus[] = [],
+): Pick<ScenarioReport, 'styles'> {
+  const experimentContext = collectStyleContext(experiment)
+  if (!experimentContext) return {}
+  const referenceContext = collectStyleContext(reference)
+  return {
+    styles: {
+      experiment: experimentContext,
+      ...(referenceContext ? {reference: referenceContext} : {}),
+    },
+  }
+}
+
 /** Interaction A/B result → scenario report. */
 export function collectAbInteraction(
   result: AbScenarioResult,
   sourceFile?: string,
 ): ScenarioReport {
+  const experimentCensuses = censusesOf(result.experiment.sessions)
+  const referenceCensuses = censusesOf(result.reference.sessions)
   return {
     scenario: result.scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
-    metrics: result.comparisons.map((comparison): MetricReport => {
-      const experimentSessions = fieldSessions(result.experiment.sessions, comparison.label)
-      const referenceSessions = fieldSessions(result.reference.sessions, comparison.label)
-      return {
-        label: comparison.label,
-        unit: 'ms',
-        presentAsEfps: true,
-        experiment: {
-          sessions: experimentSessions,
-          summary: summarize(experimentSessions.flat()),
-        },
-        reference: {
-          sessions: referenceSessions,
-          summary: summarize(referenceSessions.flat()),
-        },
-        comparison: {
-          diff: comparison.interval.diff,
-          lo: comparison.interval.lo,
-          hi: comparison.interval.hi,
-          verdict: comparison.verdict,
-        },
-      }
-    }),
+    metrics: [
+      ...result.comparisons.map((comparison): MetricReport => {
+        const experimentSessions = fieldSessions(result.experiment.sessions, comparison.label)
+        const referenceSessions = fieldSessions(result.reference.sessions, comparison.label)
+        return {
+          label: comparison.label,
+          unit: 'ms',
+          presentAsEfps: true,
+          experiment: {
+            sessions: experimentSessions,
+            summary: summarize(experimentSessions.flat()),
+          },
+          reference: {
+            sessions: referenceSessions,
+            summary: summarize(referenceSessions.flat()),
+          },
+          comparison: {
+            diff: comparison.interval.diff,
+            lo: comparison.interval.lo,
+            hi: comparison.interval.hi,
+            verdict: comparison.verdict,
+          },
+        }
+      }),
+      ...collectStyleMetrics(experimentCensuses, referenceCensuses),
+    ],
     stoppedBy: result.stoppedBy,
     failures: result.failures.map((failure) => ({side: failure.side, reason: failure.reason})),
     interruptions: {
@@ -180,6 +357,7 @@ export function collectAbInteraction(
           },
         }
       : {}),
+    ...styleBlock(experimentCensuses, referenceCensuses),
   }
 }
 
@@ -190,25 +368,30 @@ export function collectAbsoluteInteraction(
   sourceFile?: string,
 ): ScenarioReport {
   const labels = sessions[0]?.fields.map((field) => field.label) ?? []
+  const censuses = censusesOf(sessions)
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
-    metrics: labels.map((label): MetricReport => {
-      const sessionSamples = fieldSessions(sessions, label)
-      return {
-        label,
-        unit: 'ms',
-        presentAsEfps: true,
-        experiment: {sessions: sessionSamples, summary: summarize(sessionSamples.flat())},
-      }
-    }),
+    metrics: [
+      ...labels.map((label): MetricReport => {
+        const sessionSamples = fieldSessions(sessions, label)
+        return {
+          label,
+          unit: 'ms',
+          presentAsEfps: true,
+          experiment: {sessions: sessionSamples, summary: summarize(sessionSamples.flat())},
+        }
+      }),
+      ...collectStyleMetrics(censuses),
+    ],
     failures: [],
     interruptions: {experiment: sumInterruptions(sessions)},
     loafAttribution: topAttribution(sessions),
     ...(collectResourceSide(sessions)
       ? {resources: {experiment: collectResourceSide(sessions)!}}
       : {}),
+    ...styleBlock(censuses),
   }
 }
 
@@ -265,12 +448,37 @@ export function collectInp(
   }
 }
 
-/** pageLoad samples (both sides) → scenario report. */
+/** Exact gzip sum of the chunks a sample fetched; null when none matched. */
+function bootJsBytes(paths: string[], sizes: ReadonlyMap<string, number>): number | null {
+  let total = 0
+  let matched = 0
+  for (const path of paths) {
+    const size = sizes.get(path)
+    if (size !== undefined) {
+      total += size
+      matched += 1
+    }
+  }
+  return matched > 0 ? total : null
+}
+
+/**
+ * pageLoad samples (both sides) → scenario report. `chunkGzipSizes` (dist
+ * path → exact gzip bytes per side, from measureBundleSize) enables the
+ * "boot JS" row: what booting actually downloads, as opposed to the entry
+ * chunk the bundle report counts. Per side because chunk names are
+ * content-hashed: valuing reference-side fetches against the experiment
+ * build's sizes would produce a partial sum that reads as a fake A/B diff.
+ */
 export function collectPageLoad(
   scenario: string,
   samplesBySide: Map<string, PageLoadSample[]>,
   comparisons: Map<LoadCondition, {interval: DiffInterval; verdict: Verdict}>,
   sourceFile?: string,
+  chunkGzipSizes?: {
+    experiment: ReadonlyMap<string, number>
+    reference?: ReadonlyMap<string, number>
+  },
 ): ScenarioReport {
   const experiment = samplesBySide.get('experiment') ?? []
   const reference = samplesBySide.get('reference')
@@ -280,17 +488,17 @@ export function collectPageLoad(
     condition: LoadCondition,
     label: string,
     unit: MetricReport['unit'],
-    value: (sample: PageLoadSample) => number | null,
+    value: (sample: PageLoadSample, side: 'experiment' | 'reference') => number | null,
   ): MetricReport[] => {
-    const values = (samples: PageLoadSample[] | undefined) =>
+    const values = (samples: PageLoadSample[] | undefined, side: 'experiment' | 'reference') =>
       (samples ?? [])
         .filter((sample) => sample.condition === condition)
-        .map(value)
+        .map((sample) => value(sample, side))
         .filter((sampleValue): sampleValue is number => sampleValue !== null)
         .map((sampleValue) => [sampleValue])
-    const experimentValues = values(experiment)
+    const experimentValues = values(experiment, 'experiment')
     if (experimentValues.length === 0) return []
-    const referenceValues = values(reference)
+    const referenceValues = values(reference, 'reference')
     return [
       {
         label: `${condition} · ${label}`,
@@ -306,46 +514,70 @@ export function collectPageLoad(
 
   const metrics = (['boot-cold', 'open-doc-warm'] as LoadCondition[]).flatMap(
     (condition): MetricReport[] => {
-      const experimentValues = experiment
-        .filter((sample) => sample.condition === condition)
-        .map((sample) => [sample.timeToEditableMs])
-      if (experimentValues.length === 0) return []
-      const referenceValues = reference
-        ?.filter((sample) => sample.condition === condition)
-        .map((sample) => [sample.timeToEditableMs])
+      const editableValues = (samples: PageLoadSample[] | undefined) =>
+        (samples ?? []).flatMap((sample) =>
+          sample.condition === condition && sample.timeToEditableMs !== null
+            ? [[sample.timeToEditableMs]]
+            : [],
+        )
+      const experimentValues = editableValues(experiment)
+      const referenceValues = editableValues(reference)
       const comparison = comparisons.get(condition)
+      const milestoneNames = [
+        ...new Set(
+          experiment
+            .filter((sample) => sample.condition === condition)
+            .flatMap((sample) => sample.milestones.map((milestone) => milestone.name)),
+        ),
+      ]
+      if (!experiment.some((sample) => sample.condition === condition)) return []
       return [
-        {
-          label: `${condition} · time to editable`,
-          unit: 'ms',
-          presentAsEfps: false,
-          experiment: {
-            sessions: experimentValues,
-            summary: summarize(experimentValues.flat()),
-          },
-          ...(referenceValues && referenceValues.length > 0
-            ? {
-                reference: {
-                  sessions: referenceValues,
-                  summary: summarize(referenceValues.flat()),
+        ...(experimentValues.length > 0
+          ? [
+              {
+                label: `${condition} · time to editable`,
+                unit: 'ms' as const,
+                presentAsEfps: false,
+                experiment: {
+                  sessions: experimentValues,
+                  summary: summarize(experimentValues.flat()),
                 },
-              }
-            : {}),
-          ...(comparison
-            ? {
-                comparison: {
-                  diff: comparison.interval.diff,
-                  lo: comparison.interval.lo,
-                  hi: comparison.interval.hi,
-                  verdict: comparison.verdict,
-                },
-              }
-            : {}),
-        },
+                ...(referenceValues.length > 0
+                  ? {
+                      reference: {
+                        sessions: referenceValues,
+                        summary: summarize(referenceValues.flat()),
+                      },
+                    }
+                  : {}),
+                ...(comparison
+                  ? {
+                      comparison: {
+                        diff: comparison.interval.diff,
+                        lo: comparison.interval.lo,
+                        hi: comparison.interval.hi,
+                        verdict: comparison.verdict,
+                      },
+                    }
+                  : {}),
+              },
+            ]
+          : []),
+        // Load-step milestones (report-only): navigation start → each
+        // `milestone` the scenario's load steps reached
+        ...milestoneNames.flatMap((name) =>
+          reportOnly(
+            condition,
+            name,
+            'ms',
+            (sample) =>
+              sample.milestones.find((milestone) => milestone.name === name)?.atMs ?? null,
+          ),
+        ),
         // Core Web Vitals (report-only) — captured per sample but previously
         // only logged; surface them so the dashboard tracks load quality, not
-        // just time-to-editable
-        ...reportOnly(condition, 'TTFB', 'ms', (sample) => sample.ttfbMs),
+        // just time-to-editable. No TTFB: against the local mock it's a
+        // constant of the bench setup, not a studio signal.
         ...reportOnly(condition, 'FCP', 'ms', (sample) => sample.fcpMs),
         ...reportOnly(condition, 'LCP', 'ms', (sample) => sample.lcpMs),
         ...reportOnly(condition, 'CLS', 'cls', (sample) => sample.cls),
@@ -365,6 +597,20 @@ export function collectPageLoad(
           (sample) => sample.auth.firstRequestMs,
         ),
         ...reportOnly(condition, 'auth in flight', 'ms', (sample) => sample.auth.inFlightMs),
+        // What booting actually downloads: exact gzip sum of the chunks this
+        // sample fetched before the load ended (editable or last milestone). boot-cold only — the warm page
+        // replays the same set from cache. (The bundle report's entry-chunk
+        // number is only what index.html references.)
+        ...(condition === 'boot-cold' && chunkGzipSizes
+          ? reportOnly(condition, 'boot JS', 'bytes', (sample, side) => {
+              // Each side's fetches valued against its own build's chunk
+              // sizes; a side without a size map gets no value at all rather
+              // than a misleading partial sum
+              const sizes =
+                side === 'reference' ? chunkGzipSizes.reference : chunkGzipSizes.experiment
+              return sizes ? bootJsBytes(sample.jsPaths, sizes) : null
+            })
+          : []),
       ]
     },
   )
@@ -382,13 +628,135 @@ export function collectPageLoad(
     }
   }
 
+  // Which elements shifted, summed across experiment samples — the CLS
+  // number's culprit list, same idea as the script blockers above
+  const byShiftSource = new Map<string, {source: string; totalValue: number}>()
+  for (const sample of experiment) {
+    for (const shift of sample.clsAttribution) {
+      const existing = byShiftSource.get(shift.source) ?? {source: shift.source, totalValue: 0}
+      existing.totalValue += shift.totalValue
+      byShiftSource.set(shift.source, existing)
+    }
+  }
+
+  // The style census does not depend on the load condition (the same page
+  // renders cold or warm), so every sample of a side feeds one row set
+  const experimentCensuses = censusesOf(experiment)
+  const referenceCensuses = censusesOf(reference ?? [])
+
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'pageload',
+    metrics: [...metrics, ...collectStyleMetrics(experimentCensuses, referenceCensuses)],
+    failures: [],
+    interruptions: {experiment: {count: 0, totalMs: 0}},
+    loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
+    clsAttribution: [...byShiftSource.values()]
+      .sort((a, b) => b.totalValue - a.totalValue)
+      .slice(0, 5),
+    ...styleBlock(experimentCensuses, referenceCensuses),
+  }
+}
+
+export function collectSettle(
+  scenario: BenchScenario,
+  sessions: SettleSessionResult[],
+): ScenarioReport {
+  const countMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'count',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+  const msMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'ms',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+
+  const settleTimes = sessions
+    .map((session) => session.settleTimeMs)
+    .filter((value): value is number => value !== null)
+    .map((value) => [value])
+
+  const metrics: MetricReport[] = [
+    // Run-level count (one pseudo-session), because the trend needs it: a
+    // median over per-session 0/1 values hides a single failing session
+    // (median of [0,1,1,1] is 1). This series is 0-flat when healthy, jumps
+    // on a regression, and charts as a constant N for red-by-design
+    // scenarios — their standing-evidence line.
+    countMetric('sessions not settled', [[sessions.filter((session) => !session.settled).length]]),
+    // Same shape for the primary signal's health: sessions where the React
+    // DevTools hook stub never attached (contract drift in react-dom). With
+    // the counter dark, commits read as zero and a green scenario looks
+    // healthier, not worse — this line is what says the detector went blind.
+    countMetric('sessions without commit counter', [
+      [sessions.filter((session) => !session.hookInstalled).length],
+    ]),
+    // 0/1 per session — the per-session record behind the count above.
+    countMetric(
+      'settled sessions',
+      sessions.map((session) => [session.settled ? 1 : 0]),
+    ),
+    countMetric(
+      'ready sessions',
+      sessions.map((session) => [session.ready ? 1 : 0]),
+    ),
+    ...(settleTimes.length > 0 ? [msMetric('time to settle', settleTimes)] : []),
+    countMetric(
+      'react commits after ready',
+      sessions.map((session) => [session.reactCommits]),
+    ),
+    msMetric(
+      'LoAF blocking after ready',
+      sessions.map((session) => [session.loafBlockingMs]),
+    ),
+    ...(() => {
+      const cpuSessions = sessions
+        .map((session) => session.cpuAfterReadyMs)
+        .filter((value): value is number => value !== null)
+        .map((value) => [value])
+      return cpuSessions.length > 0 ? [msMetric('cpu after ready', cpuSessions)] : []
+    })(),
+    // One row per instrumented component, `renders · <name>` — the
+    // per-component attribution the commit total can't give.
+    ...[...new Set(sessions.flatMap((session) => Object.keys(session.renderMarks)))]
+      .sort()
+      .map((name) =>
+        countMetric(
+          `renders · ${name}`,
+          sessions.map((session) => [session.renderMarks[name] ?? 0]),
+        ),
+      ),
+    // The customization workspaces are pages of their own — their style
+    // census covers component kinds the pristine scenarios never render
+    ...collectStyleMetrics(censusesOf(sessions)),
+  ]
+
+  const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
+  for (const session of sessions) {
+    for (const entry of session.loafAttribution) {
+      const key = `${entry.sourceUrl}#${entry.functionName}`
+      const current = byScript.get(key)
+      if (current) current.totalMs += entry.totalMs
+      else byScript.set(key, {...entry})
+    }
+  }
+
+  return {
+    scenario: scenario.name,
+    sourceFile: scenario.sourceFile,
+    kind: 'pageload',
+    // Distinct from the plain pageLoad report so the two don't collide on the
+    // stored _key / shard-merge dedup (see ScenarioReport.mode)
+    mode: 'settle',
+    settleExpectation: {expectedToSettle: scenario.expectedToSettle ?? true},
     metrics,
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
+    ...styleBlock(censusesOf(sessions)),
   }
 }

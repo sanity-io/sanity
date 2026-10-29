@@ -1,18 +1,21 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {isKeySegment} from '@sanity/types'
-import {Card, type CardTone, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import shallowEquals from 'shallow-equals'
+import {Text, VStack} from 'ui5'
 
-import {useTranslation} from '../../../../../i18n'
-import {useItemComponent} from '../../../../form-components-hooks/componentHooks'
-import {
-  type ArrayOfObjectsInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
-} from '../../../../types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {shallowEquals} from '../../../../../util/shallowEquals'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
+import {
+  getFocusedMemberKey,
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useMemoCompare} from './useMemoCompare'
@@ -59,25 +62,24 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
 
+  const parentRef = useRef<HTMLDivElement>(null)
+  // Remount the virtualizer when a hidden ancestor reveals the field, so it measures a laid-out list
+  const {mountKey} = useVisibilityDetection(parentRef)
+
+  const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
+
+  const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
+    members,
+    schemaType,
+    layout: 'list',
+    focusedIndex,
+  })
+
   const memberKeys = useMemoCompare(
-    useMemo(() => members.map((member) => member.key), [members]),
+    useMemo(() => visibleMembers.map((member) => member.key), [visibleMembers]),
     shallowEquals,
   )
-
-  const parentRef = useRef<HTMLDivElement>(null)
-  // Detect visibility changes to remount virtualizer when becoming visible
-  const {isVisible, mountKey} = useVisibilityDetection(parentRef)
-
-  const focusPathKey = useMemo(() => {
-    const segment = focusPath[0]
-    if (isKeySegment(segment)) {
-      return segment._key
-    }
-    if (typeof segment === 'number') {
-      return segment
-    }
-    return undefined
-  }, [focusPath])
 
   const handleItemMoveStart = useCallback((event: DragStartEvent) => {
     const {active} = event
@@ -96,7 +98,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2} ref={parentRef}>
+      <VStack gap={2} ref={parentRef}>
         <UploadTargetCard
           {...elementProps}
           $radius={radius}
@@ -106,17 +108,18 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <VStack data-ui="ArrayInput__content" gap={2}>
             {members.length === 0 ? (
               <Card padding={3} border radius={2} tone={errorTone}>
-                <Text align="center" muted size={1}>
+                <Text align="center" muted size={1} as="div" trim={true} tone={errorTone}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>
-            ) : isVisible ? (
+            ) : (
               <VirtualizedArrayList
                 key={mountKey}
-                members={members}
+                members={visibleMembers}
                 tone={errorTone}
                 memberKeys={memberKeys}
                 activeDragItemIndex={activeDragItemIndex}
@@ -138,8 +141,15 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 paddingY={paddingY}
                 radius={radius}
               />
-            ) : null}
-          </Stack>
+            )}
+            {collapsible && (
+              <ArrayItemsToggle
+                expanded={expanded}
+                onToggle={onToggle}
+                totalCount={members.length}
+              />
+            )}
+          </VStack>
         </UploadTargetCard>
         <ArrayFunctions
           onChange={onChange}
@@ -151,7 +161,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           schemaType={schemaType}
           value={value}
         />
-      </Stack>
+      </VStack>
     </ArrayValidationProvider>
   )
 }

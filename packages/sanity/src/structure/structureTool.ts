@@ -2,22 +2,22 @@ import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
 import {lazy} from 'react'
 import {definePlugin, type DocumentActionComponent} from 'sanity'
 
-import {
-  useDeleteAction,
-  useDiscardChangesAction,
-  useDuplicateAction,
-  useHistoryRestoreAction,
-  usePublishAction,
-  useUnpublishAction,
-} from './documentActions'
-import {useLiveEditBadge} from './documentBadges'
+import {useDeleteAction} from './documentActions/DeleteAction'
+import {useDiscardChangesAction} from './documentActions/DiscardChangesAction'
+import {useDuplicateAction} from './documentActions/DuplicateAction'
+import {useHistoryRestoreAction} from './documentActions/HistoryRestoreAction'
+import {usePublishAction} from './documentActions/PublishAction'
+import {useUnpublishAction} from './documentActions/UnpublishAction'
+import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
+import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
+import {documentGroupInspector} from './panes/document/inspectors/documentGroup'
 import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
-import {type StructureToolOptions} from './types'
+import {type RouterPanes, type StructureToolOptions} from './types'
 
 const documentActions = [
   usePublishAction,
@@ -33,6 +33,8 @@ const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', '
 const documentBadges = [useLiveEditBadge]
 
 const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
+
+const StructureTool = lazy(() => import('./components/structureTool'))
 
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within
@@ -111,15 +113,21 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         // we need to check whether the document actions already exist in the Studio config
         return [...otherActions, ...destructiveActions]
       },
-      badges: (prevBadges) => {
+      badges: (prevBadges, {singleton}) => {
+        const singletonBadge = singleton ? [useSingletonBadge] : []
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document badges already exist in the Studio config
-        return Array.from(new Set([...prevBadges, ...documentBadges]))
+        return Array.from(new Set([...prevBadges, ...documentBadges, ...singletonBadge]))
       },
-      inspectors: (prevInspectors) => {
+      inspectors: (prevInspectors, context) => {
+        const structureInspectors = context.beta?.documentGroupInventory?.enabled
+          ? [...inspectors, documentGroupInspector]
+          : inspectors
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the inspectors already exist in the Studio config
-        return Array.from(new Set([...prevInspectors, ...inspectors]))
+        return Array.from(new Set([...prevInspectors, ...structureInspectors]))
       },
     },
 
@@ -128,13 +136,22 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
-        component: lazy(() => import('./components/structureTool')),
+        component: StructureTool,
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)
           if (intent === 'edit') return canHandleEditIntent(params)
           return false
         },
-        getIntentState,
+        getIntentState: (intent, params, routerState, payload) =>
+          getIntentState(
+            intent,
+            params,
+            // `Tool['getIntentState']` types this as the whole `RouterState`;
+            // the structure tool's own router state is the panes state.
+            routerState as {panes?: RouterPanes} | undefined,
+            payload,
+            options?.keepPanesOnCreate,
+          ),
         // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
         controlsDocumentTitle: true,
         options,

@@ -7,8 +7,17 @@ export const DEFAULT_TOOL_TITLE = 'Presentation'
 
 export const EDIT_INTENT_MODE = 'presentation'
 
-// How long we wait until an iframe is loaded until we consider it to be slow and possibly failed
+// How long a Visual Editing overlays comlink connection attempt may be pending before we surface
+// the connection status overlay on top of the preview
+export const TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS = 5_000 // ms
+
+// How long we allow the Visual Editing overlays comlink connection to stay pending, after the
+// connection status overlay has been surfaced, before we consider it failed
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
+
+// How long we wait for the iframe `load` event before surfacing the connection error UI.
+// Generous because dev servers can spend a long time compiling the preview on first load.
+export const MAX_TIME_TO_IFRAME_LOAD = 15_000 // ms
 
 // The API version to use when using `@sanity/client`
 export const API_VERSION = apiVersion

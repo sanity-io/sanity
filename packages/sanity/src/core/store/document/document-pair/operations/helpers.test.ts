@@ -2,9 +2,14 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../../schema'
-import {type IdPair} from '../../types'
-import {createOperationsAPI, TARGET_NOT_FOUND_OPERATIONS} from './helpers'
+import {createSchema} from '../../../../schema/createSchema'
+import {type DocumentPairTarget, type IdPair} from '../../types'
+import {
+  createOperationsAPI,
+  GUARDED,
+  hasSameDisabledState,
+  TARGET_NOT_FOUND_OPERATIONS,
+} from './helpers'
 import {type OperationArgs, type OperationsAPI} from './types'
 
 const schema = createSchema({
@@ -29,6 +34,7 @@ function doc(id: string): SanityDocument {
 function createArgs(options: {
   idPair: IdPair
   snapshots: OperationArgs['snapshots']
+  target?: DocumentPairTarget
 }): OperationArgs {
   return {
     client,
@@ -37,8 +43,10 @@ function createArgs(options: {
     typeName: 'book',
     idPair: options.idPair,
     snapshots: options.snapshots,
+    target: options.target,
     draft: {} as OperationArgs['draft'],
     published: {} as OperationArgs['published'],
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     serverActionsEnabled: true,
   }
 }
@@ -62,8 +70,52 @@ describe('TARGET_NOT_FOUND_OPERATIONS', () => {
       const operation = TARGET_NOT_FOUND_OPERATIONS[opName]
       const execute = operation.execute as () => void
       expect(operation.disabled).toBe('TARGET_NOT_FOUND')
-      expect(() => execute()).toThrowError(/does not contain this document/)
+      expect(() => execute()).toThrow(/does not contain this document/)
     }
+  })
+})
+
+describe('hasSameDisabledState', () => {
+  it('treats two apis created from different revisions of the same document as equal', () => {
+    const first = createOperationsAPI(
+      createArgs({
+        idPair: PAIR_WITHOUT_VERSION,
+        snapshots: {draft: doc(PAIR_WITHOUT_VERSION.draftId), published: null},
+      }),
+    )
+    const second = createOperationsAPI(
+      createArgs({
+        idPair: PAIR_WITHOUT_VERSION,
+        snapshots: {draft: {...doc(PAIR_WITHOUT_VERSION.draftId), _rev: 'r2'}, published: null},
+      }),
+    )
+
+    expect(first).not.toBe(second)
+    expect(hasSameDisabledState(first, second)).toBe(true)
+  })
+
+  it('detects a changed disabled reason', () => {
+    const withoutDraft = createOperationsAPI(
+      createArgs({idPair: PAIR_WITHOUT_VERSION, snapshots: {draft: null, published: null}}),
+    )
+    const withDraft = createOperationsAPI(
+      createArgs({
+        idPair: PAIR_WITHOUT_VERSION,
+        snapshots: {draft: doc(PAIR_WITHOUT_VERSION.draftId), published: null},
+      }),
+    )
+
+    expect(withoutDraft.publish.disabled).not.toBe(withDraft.publish.disabled)
+    expect(hasSameDisabledState(withoutDraft, withDraft)).toBe(false)
+  })
+
+  it('never equates the guard with a real api', () => {
+    const operations = createOperationsAPI(
+      createArgs({idPair: PAIR_WITHOUT_VERSION, snapshots: {draft: null, published: null}}),
+    )
+
+    expect(hasSameDisabledState(GUARDED, operations)).toBe(false)
+    expect(hasSameDisabledState(GUARDED, GUARDED)).toBe(true)
   })
 })
 
@@ -79,7 +131,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     for (const opName of GUARDED_OPS) {
       const execute = operations[opName].execute as () => void
       expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
-      expect(() => execute(), opName).toThrowError(/does not contain this document/)
+      expect(() => execute(), opName).toThrow(/does not contain this document/)
     }
 
     // Non-mutating / group-level operations stay functional.
@@ -155,5 +207,129 @@ describe('createOperationsAPI — self-derived target guard', () => {
 
     expect(operations.patch.disabled).toBe(false)
     expect(operations.publish.disabled).toBe(false)
+  })
+
+  describe('declared creatable variant target (allowCreate)', () => {
+    const CREATABLE_TARGET: DocumentPairTarget = {
+      kind: 'variant',
+      scopeId: 'rel',
+      variantId: '_.variants.alpha',
+      allowCreate: true,
+    }
+
+    it('keeps patch and commit enabled when the version is missing for an existing document', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      // Typing must create the variant document at the server-advertised id.
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.commit.disabled).toBe(false)
+
+      // The document still doesn't exist: everything that operates on it stays disabled.
+      for (const opName of ['publish', 'unpublish', 'discardChanges', 'restore'] as const) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+    })
+
+    it('guards restore for a variant target whose document does not exist yet', () => {
+      // `execute` re-derives the operation arguments from the live document stream without the
+      // declared target, so the variant discriminator is only available here. The release
+      // `version.create` restore path must not run against an opaque variant scope id.
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      expect(operations.restore.disabled).toBe('TARGET_NOT_FOUND')
+      expect(() => (operations.restore.execute as () => void)()).toThrow(
+        /does not contain this document/,
+      )
+    })
+
+    it('guards a missing variant document when the base pair has no snapshots either', () => {
+      // The new-document carve-out (no draft, published, or version) exists so typing can create
+      // a release version from its deterministic id. A variant document is never created from its
+      // id, so a declared variant target is guarded regardless of the base pair — including
+      // restore, which would otherwise treat the opaque variant scope as a release id.
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: null, version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      for (const opName of ['publish', 'unpublish', 'discardChanges', 'restore'] as const) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+      // The creatable carve-out still lets typing create the variant document.
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.commit.disabled).toBe(false)
+    })
+
+    it('keeps restore enabled for a release version target when the base pair has no snapshots', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: null, version: null},
+          target: {kind: 'version', scopeId: 'rel'},
+        }),
+      )
+
+      // Restoring a deleted document into a release creates the version.
+      expect(operations.restore.disabled).toBe(false)
+    })
+
+    it('keeps restore enabled for a release version target whose version does not exist yet', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: {kind: 'version', scopeId: 'rel'},
+        }),
+      )
+
+      // Restoring a revision into a release legitimately creates the missing version.
+      expect(operations.restore.disabled).toBe(false)
+    })
+
+    it('keeps all mutating operations guarded for a variant target without allowCreate', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: {kind: 'variant', scopeId: 'rel', variantId: '_.variants.alpha'},
+        }),
+      )
+
+      for (const opName of [...GUARDED_OPS, 'restore'] as const) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+    })
+
+    it('does not alter operations once the version document exists', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {
+            draft: null,
+            published: doc(PUBLISHED_ID),
+            version: doc(PAIR_WITH_VERSION.versionId!),
+          },
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.publish.disabled).toBe(false)
+    })
   })
 })

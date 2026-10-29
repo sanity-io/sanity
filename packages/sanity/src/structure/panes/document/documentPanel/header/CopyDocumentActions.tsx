@@ -2,15 +2,28 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ShareIcon} from '@sanity/icons/Share'
 import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, useToast} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {getDraftId, getVersionId, usePerspective, useStudioUrl, useTranslation} from 'sanity'
+import {
+  encodeVariantLinkParam,
+  getDefaultVariant,
+  getDraftId,
+  getDocumentVersionVariantId,
+  getTargetSiblings,
+  usePerspective,
+  useStudioUrl,
+  useTargetDocumentState,
+  useTranslation,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__'
+import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
@@ -22,7 +35,10 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
  */
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
-  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const targetDocumentState = useTargetDocumentState(documentId)
+  const siblings = getTargetSiblings(targetDocumentState)
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
   const {buildIntentUrl} = useStudioUrl()
@@ -35,21 +51,42 @@ export function CopyDocumentActions() {
   const contextAwareDocumentId = useMemo(() => {
     const versionReleaseId = scheduledDraft || selectedReleaseId
     if (versionReleaseId) {
-      return getVersionId(documentId, versionReleaseId)
+      return siblings?.version?._id
     }
-
     if (selectedPerspectiveName === 'published' || schemaType?.liveEdit) {
-      return documentId
+      return siblings?.published?._id
     }
+    if (siblings?.draft) {
+      return siblings.draft._id
+    }
+    // Published shown on the draft perspective: a creatable draft (default pseudo-draft, or a
+    // missing variant whose published sibling advertises the draft id).
+    if (!siblings?.published) {
+      return undefined
+    }
+    const advertisedDraftId = siblings.published._system?.draft?._ref
 
-    return getDraftId(documentId)
-  }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
+    return getDocumentVersionVariantId(siblings.published)
+      ? advertisedDraftId
+      : getDraftId(documentId)
+  }, [
+    documentId,
+    scheduledDraft,
+    schemaType?.liveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+    siblings,
+  ])
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)
 
     const searchParams: [string, string][] =
       selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
+
+    if (selectedVariantName) {
+      searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
+    }
 
     const intentParams = {
       id: documentId,
@@ -74,11 +111,15 @@ export function CopyDocumentActions() {
     resolveIntentLink,
     scheduledDraft,
     selectedReleaseId,
+    selectedVariantName,
     t,
     telemetry,
   ])
 
   const handleCopyId = useCallback(async () => {
+    if (!contextAwareDocumentId) {
+      return
+    }
     telemetry.log(DocumentIDCopied)
     await navigator.clipboard.writeText(contextAwareDocumentId)
     pushToast({
@@ -87,6 +128,10 @@ export function CopyDocumentActions() {
       title: t('panes.document-operation-results.operation-success_copy-id'),
     })
   }, [contextAwareDocumentId, pushToast, t, telemetry])
+
+  if (!contextAwareDocumentId) {
+    return null
+  }
 
   return (
     <MenuButton

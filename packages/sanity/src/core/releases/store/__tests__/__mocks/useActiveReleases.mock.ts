@@ -5,6 +5,7 @@ import {useActiveReleases} from '../../useActiveReleases'
 
 export const useActiveReleasesMockReturn = {
   data: [] as ReleaseDocument[],
+  byId: new Map<string, ReleaseDocument>(),
   error: undefined as Error | undefined,
   loading: false,
   dispatch: vi.fn(),

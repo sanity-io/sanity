@@ -1,15 +1,15 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {type HTMLProps, type ReactNode, useMemo, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, type ButtonProps} from '../../ui-components'
+import {Button, type ButtonProps} from '../../ui-components/button/Button'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
   ['aria-label']: HTMLProps<HTMLButtonElement>['aria-label']
-  'forwardedAs'?: string
-  'disabled'?: boolean | {reason: ReactNode}
-  'mode'?: ButtonProps['mode']
-  'iconRight'?: undefined
+  forwardedAs?: string
+  disabled?: boolean | {reason: ReactNode}
+  mode?: ButtonProps['mode']
+  iconRight?: undefined
 }
 
 const StyledButton = styled(Button)`
@@ -31,18 +31,19 @@ const Dot = styled.div({
 })
 
 /** @hidden @beta */
-export const StatusButton = forwardRef(function StatusButton(
+export function StatusButton(
   props: StatusButtonProps &
-    Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'>,
-  ref: ForwardedRef<HTMLButtonElement>,
+    Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'> &
+    RefAttributes<HTMLButtonElement>,
 ) {
   const {
-    disabled: disabledProp,
-    icon,
+    ref,
+    'disabled': disabledProp,
     'aria-label': label,
     mode = 'bleed',
-    text,
     tone,
+    // `text` and `icon` stay in `restProps` so the ButtonWithText | IconButton
+    // union stays correlated when spread onto the styled component.
     ...restProps
   } = props
 
@@ -57,10 +58,8 @@ export const StatusButton = forwardRef(function StatusButton(
       disabled={disabled}
       mode={mode}
       ref={ref}
-      text={text}
-      icon={icon}
     >
       {tone && <Dot style={dotStyle} />}
     </StyledButton>
   )
-})
+}

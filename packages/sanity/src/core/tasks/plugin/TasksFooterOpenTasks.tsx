@@ -1,11 +1,14 @@
 import {TaskIcon} from '@sanity/icons/Task'
 import {Badge, useMediaIndex} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {use, useCallback, useMemo} from 'react'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {useTasks, useTasksNavigation} from '../context'
+import {Button} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {getTargetDocumentId} from '../components/form/utils'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
+import {useTasks} from '../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../i18n'
 
 const ButtonContainer = styled.div`
@@ -22,7 +25,13 @@ const ButtonContainer = styled.div`
  * Clicking it will open the task sidebar, showing the open tasks related to the document.
  * @internal
  */
-export function TasksFooterOpenTasks() {
+export default function TasksFooterOpenTasks() {
+  // `DocumentStatusBarActions` lazy-loads this module and suspends it under the status bar's
+  // own boundary. A failed feature check (`null`) is already excluded before this mounts; the
+  // check here fails closed too, because the sidebar this button opens reads as unavailable.
+  // Like `useTasks()`, the mode read also tolerates the tasks studio provider not being mounted.
+  const modePromise = use(TasksModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const {data, activeDocument} = useTasks()
   const {handleOpenTasks, setActiveTab} = useTasksNavigation()
   const mediaIndex = useMediaIndex()
@@ -31,7 +40,7 @@ export function TasksFooterOpenTasks() {
       activeDocument?.documentId
         ? data.filter((item) => {
             return (
-              item.target?.document._ref === activeDocument.documentId &&
+              getTargetDocumentId(item.target) === activeDocument.documentId &&
               item.status === 'open' &&
               item.createdByUser
             )
@@ -46,7 +55,7 @@ export function TasksFooterOpenTasks() {
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  if (pendingTasks.length === 0) return null
+  if (mode === null || pendingTasks.length === 0) return null
 
   if (mediaIndex < 3) {
     return (

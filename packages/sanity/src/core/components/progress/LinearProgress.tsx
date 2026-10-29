@@ -9,7 +9,9 @@ const Root = styled(Card)`
   overflow: clip;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Bar = styled(Card)(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color} = theme.sanity
 
   return css`

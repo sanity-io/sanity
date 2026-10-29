@@ -1,20 +1,18 @@
-import {Box, Flex, Text} from '@sanity/ui'
-import {memo, useCallback} from 'react'
+import {memo} from 'react'
+import {Text, Box, Flex} from 'ui5'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
-import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {LATEST} from '../../../util/const'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 interface CopyToDraftsMenuItemProps {
-  documentId: string
   documentType: string
   fromRelease: string
-  onClick: () => void
-  onNavigate: () => void
+  onClick: (options: CopyToDraftsOptions) => Promise<void>
 }
 
 /**
@@ -38,23 +36,9 @@ export const useHasCopyToDraftOption = (documentType: string, fromRelease: strin
 export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
   props: CopyToDraftsMenuItemProps,
 ) {
-  const {documentId, documentType, fromRelease, onClick, onNavigate} = props
+  const {documentType, fromRelease, onClick} = props
   const {t} = useTranslation()
   const shouldShowDraftsOption = useHasCopyToDraftOption(documentType, fromRelease)
-
-  const {handleCopyToDrafts, hasDraftVersion} = useCopyToDrafts({
-    documentId,
-    fromRelease,
-    onNavigate,
-  })
-
-  const handleDraftsClick = useCallback(() => {
-    if (hasDraftVersion) {
-      onClick()
-    } else {
-      void handleCopyToDrafts()
-    }
-  }, [hasDraftVersion, onClick, handleCopyToDrafts])
 
   if (!shouldShowDraftsOption) {
     return null
@@ -63,14 +47,14 @@ export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
   return (
     <MenuItem
       as="a"
-      onClick={handleDraftsClick}
+      onClick={() => void onClick({shouldConfirmDraftDiscard: true})}
       data-testid="copy-to-drafts-menu-item"
       renderMenuItem={() => (
-        <Flex gap={3} align="center">
-          <Box flex="none" paddingX={2}>
+        <Flex gap={3} alignItems="center">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={2}>
             <ReleaseAvatar padding={0} release={LATEST} />
           </Box>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true} style={{color: 'inherit'}}>
             {t('release.chip.draft')}
           </Text>
         </Flex>

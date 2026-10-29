@@ -7,13 +7,14 @@ import {
 import {useMemo, useState} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
 import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
-import {useCurrentUser} from '../../store'
+import {useCurrentUser} from '../../store/user/hooks'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
-import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
+import {type NodeChronologyProps, type ObjectFormNode} from './types/nodes'
+import {type StateTree} from './types/state'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */
@@ -27,6 +28,8 @@ export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstr
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
+  baseVariantValue?: unknown
+  hasBaseVariant?: boolean
   openPath: Path
   focusPath: Path
   perspective: TargetPerspective
@@ -60,6 +63,8 @@ export function useFormState<
   perspective,
   hasUpstreamVersion,
   displayInlineChanges,
+  baseVariantValue,
+  hasBaseVariant = false,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -143,6 +148,8 @@ export function useFormState<
       collapsedPaths: reconciledCollapsedPaths,
       documentValue,
       comparisonValue,
+      baseVariantValue,
+      hasBaseVariant,
       focusPath,
       openPath,
       readOnly,
@@ -163,6 +170,8 @@ export function useFormState<
     reconciledCollapsedPaths,
     documentValue,
     comparisonValue,
+    baseVariantValue,
+    hasBaseVariant,
     focusPath,
     openPath,
     perspective,

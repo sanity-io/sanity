@@ -45,6 +45,7 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
       onClose={onClose}
       width={1}
     >
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
       <EditScheduleForm onChange={onFormChange} value={formData} />
     </Dialog>
   )

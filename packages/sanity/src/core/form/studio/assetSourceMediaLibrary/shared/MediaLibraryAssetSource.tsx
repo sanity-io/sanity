@@ -1,22 +1,22 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {useWorkspace} from '../../../../studio'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
-const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
-  props: AssetSourceComponentProps & {libraryId: string | null},
-  ref: ForwardedRef<HTMLDivElement>,
+function MediaLibraryAssetSourceComponent(
+  props: AssetSourceComponentProps & {libraryId: string | null} & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     accept, // TODO: make the plugin respect this filter?
     action = 'select',
     assetSource,
@@ -78,7 +78,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
             })
           }
           open={action === 'select'}
-          ref={ref}
+          ref={ref ?? null}
           onClose={onClose}
           onSelect={onSelect}
           selection={[]}
@@ -108,9 +108,17 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   )
 }
 
-export const MediaLibraryAssetSource = memo(forwardRef(MediaLibraryAssetSourceComponent))
+export const MediaLibraryAssetSource = memo(MediaLibraryAssetSourceComponent)
 
-const useRootPortalElement = () => {
+/**
+ * A portal element appended directly to `document.body`, so Media Library
+ * dialogs escape the document pane's own `PortalProvider` (which, combined
+ * with the pane's `DialogProvider position="absolute"`, would confine the
+ * dialog to the pane). Shared by the iframe and federated asset sources.
+ *
+ * @internal
+ */
+export const useRootPortalElement = (): HTMLDivElement => {
   const [container] = useState(() => document.createElement('div'))
 
   useEffect(() => {

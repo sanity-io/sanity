@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useTemplatePermissions} from '../../../../store'
+import {useTemplatePermissions} from '../../../../store/grants/templatePermissions'
 import {useSource} from '../../../source'
 import {type NewDocumentOption} from './types'
 
@@ -16,6 +16,7 @@ interface NewDocumentOptionsValue {
 export function useNewDocumentOptions(): NewDocumentOptionsValue {
   const {
     __internal: {staticInitialValueTemplateItems},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   const [permissions, loading] = useTemplatePermissions({

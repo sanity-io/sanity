@@ -5,17 +5,20 @@ import {
   searchStrategies,
   type SearchStrategy,
 } from '@sanity/types'
-import {type ErrorInfo, type ReactNode} from 'react'
+import {type ErrorInfo} from 'react'
 
-import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
-import {type Template, type TemplateItem} from '../templates'
+import {
+  type LocaleConfigContext,
+  type LocaleDefinition,
+  type LocaleResourceBundle,
+} from '../i18n/types'
+import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
-import {
-  type DocumentActionComponent,
-  type DocumentBadgeComponent,
-  type DocumentInspector,
-} from './document'
+import {assertOnlyVariantType} from '../variants/util/variantType'
+import {type DocumentActionComponent} from './document/actions'
+import {type DocumentBadgeComponent} from './document/badges'
+import {type DocumentInspector} from './document/inspector'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
@@ -29,10 +32,14 @@ import {
   type DocumentInspectorContext,
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
+  type FederatedAssetSourcesConfig,
   type NewDocumentOptionsContext,
   type PluginOptions,
   type ResolveProductionUrlContext,
+  type SingletonDefinition,
   type Tool,
+  type UnresolvedSingletonDefinition,
+  type VariantTypesConfig,
 } from './types'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
@@ -111,6 +118,64 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
     `Expected \`operators\` to be be an array or a function, but received ${getPrintableType(operators)}`
   )
 }*/
+
+function isSingletonDefinition(
+  maybeSingletonDefinition: unknown,
+): maybeSingletonDefinition is SingletonDefinition {
+  return (
+    isRecord(maybeSingletonDefinition) &&
+    typeof maybeSingletonDefinition.id === 'string' &&
+    typeof maybeSingletonDefinition.documentId === 'string' &&
+    typeof maybeSingletonDefinition.schemaType === 'string'
+  )
+}
+
+function normalizeSingletonDefinition(
+  definition: UnresolvedSingletonDefinition,
+): SingletonDefinition {
+  if (typeof definition === 'string') {
+    return {
+      id: definition,
+      documentId: definition,
+      schemaType: definition,
+    }
+  }
+
+  if (isSingletonDefinition(definition)) {
+    return definition
+  }
+
+  return {
+    ...definition,
+    id: definition.documentId,
+  }
+}
+
+export const singletonsReducer: ConfigPropertyReducer<SingletonDefinition[], ConfigContext> = (
+  prev,
+  {document},
+  context,
+) => {
+  const singletons = document?.singletons
+
+  if (!singletons) {
+    return prev
+  }
+
+  if (typeof singletons === 'function') {
+    return singletons(prev, context).map(normalizeSingletonDefinition)
+  }
+
+  if (Array.isArray(singletons)) {
+    return [...prev, ...singletons.map(normalizeSingletonDefinition)]
+  }
+
+  throw new Error(
+    `Expected \`document.singletons\` to be an array or a function, but received ${getPrintableType(
+      singletons,
+    )}`,
+  )
+}
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,
@@ -270,6 +335,85 @@ export const directUploadsReducer = (opts: {
   return result
 }
 
+/**
+ * @internal
+ */
+export interface CollapseArrayItemsConfig {
+  enabled: boolean
+  limit: number
+  /**
+   * Grid layouts fit several items per row, so they get a roomier default than lists. There is no
+   * separate option for it: a configured `limit` replaces both, so one number means one thing.
+   */
+  gridLimit: number
+}
+
+/**
+ * @internal
+ */
+export const initialCollapseArrayItems: CollapseArrayItemsConfig = {
+  enabled: true,
+  limit: 4,
+  gridLimit: 8,
+}
+
+/**
+ * @internal
+ */
+export const collapseArrayItemsReducer = (opts: {
+  config: PluginOptions
+  initialValue: CollapseArrayItemsConfig
+}): CollapseArrayItemsConfig => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const collapseItems = innerConfig.form?.arrays?.collapseItems
+
+    if (typeof collapseItems === 'undefined') return acc
+
+    if (!isRecord(collapseItems)) {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems\` to be an object, but received ${getPrintableType(
+          collapseItems,
+        )}`,
+      )
+    }
+
+    const {enabled, limit} = collapseItems
+
+    if (typeof enabled !== 'undefined' && typeof enabled !== 'boolean') {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems.enabled\` to be a boolean, but received ${getPrintableType(
+          enabled,
+        )}`,
+      )
+    }
+
+    if (typeof limit !== 'undefined') {
+      if (typeof limit !== 'number') {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a number, but received ${getPrintableType(
+            limit,
+          )}`,
+        )
+      }
+
+      if (!Number.isInteger(limit) || limit < 1) {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a positive integer, but received ${limit}`,
+        )
+      }
+    }
+
+    return {
+      enabled: enabled ?? acc.enabled,
+      limit: limit ?? acc.limit,
+      gridLimit: limit ?? acc.gridLimit,
+    }
+  }, initialValue)
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
@@ -342,6 +486,7 @@ export const documentCommentsEnabledReducer = (opts: {
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
     const resolver =
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
@@ -404,31 +549,6 @@ export const onUncaughtErrorResolver = (opts: {
       )}`,
     )
   })
-}
-
-export const internalTasksReducer = (opts: {
-  config: PluginOptions
-}): {footerAction: ReactNode} | undefined => {
-  const {config} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc: {footerAction: ReactNode} | undefined, {config: innerConfig}) => {
-      const resolver = innerConfig.__internal_tasks
-
-      if (!resolver) return acc
-      if (typeof resolver === 'object' && resolver.footerAction) return resolver
-
-      throw new Error(
-        `Expected \`__internal__tasks\` to be an object with footerAction, but received ${getPrintableType(
-          resolver,
-        )}`,
-      )
-    },
-    undefined,
-  )
-
-  return result
 }
 
 export const eventsAPIReducer = (opts: {
@@ -494,6 +614,103 @@ export const variantsEnabledReducer = (opts: {
   return result
 }
 
+const VARIANT_TYPE_KEY_PATTERN = /^[a-z][a-z0-9_-]{0,63}$/
+
+function isVariantConditions(value: unknown): boolean {
+  return Array.isArray(value) || typeof value === 'function'
+}
+
+function assertVariantTypeEntry(key: string, value: unknown): void {
+  if (!VARIANT_TYPE_KEY_PATTERN.test(key) || key.includes(':')) {
+    throw new Error(
+      `Expected \`beta.variants.types\` keys to match ${VARIANT_TYPE_KEY_PATTERN}, but received ${JSON.stringify(key)}`,
+    )
+  }
+
+  // Single variant only accepts the `variant` type. Delete this function to allow multi variants.
+  assertOnlyVariantType(key)
+
+  if (!isRecord(value)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}\` to be an object, but received ${getPrintableType(value)}`,
+    )
+  }
+
+  if (typeof value.conditions !== 'undefined' && !isVariantConditions(value.conditions)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}.conditions\` to be an array or a function, but received ${getPrintableType(
+        value.conditions,
+      )}`,
+    )
+  }
+}
+
+export const variantsTypesReducer = (opts: {
+  config: PluginOptions
+  initialValue: VariantTypesConfig | undefined
+}): VariantTypesConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<VariantTypesConfig | undefined>((acc, {config: innerConfig}) => {
+    const variants: unknown = innerConfig.beta?.variants
+
+    if (typeof variants === 'undefined') return acc
+    if (!isRecord(variants)) {
+      throw new Error(
+        `Expected \`beta.variants\` to be an object, but received ${getPrintableType(variants)}`,
+      )
+    }
+
+    const types = variants.types
+
+    if (typeof types === 'undefined') return acc
+    if (typeof types === 'function') return types as VariantTypesConfig
+
+    if (!isRecord(types)) {
+      throw new Error(
+        `Expected \`beta.variants.types\` to be an object or a function, but received ${getPrintableType(
+          types,
+        )}`,
+      )
+    }
+
+    for (const [key, value] of Object.entries(types)) {
+      assertVariantTypeEntry(key, value)
+    }
+
+    return types as VariantTypesConfig
+  }, initialValue)
+}
+
+export const commentsV2EnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((value: boolean, {config: innerConfig}) => {
+    const comments: unknown = innerConfig.beta?.comments
+
+    if (typeof comments === 'undefined') return value
+    if (!isRecord(comments)) {
+      throw new Error(
+        `Expected \`beta.comments\` to be an object, but received ${getPrintableType(comments)}`,
+      )
+    }
+
+    const v2 = comments.v2
+
+    if (typeof v2 === 'undefined') return value
+    if (typeof v2 === 'boolean') return v2
+
+    throw new Error(
+      `Expected \`beta.comments.v2\` to be a boolean, but received ${getPrintableType(v2)}`,
+    )
+  }, initialValue)
+}
+
 export const documentGroupInventoryEnabledReducer = ({
   config,
   initialValue,
@@ -530,6 +747,48 @@ export const documentGroupInventoryEnabledReducer = ({
 
     throw new Error(
       `Expected \`beta.documentGroupInventory.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
+export const reactActivityModeEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+
+    if (typeof reactActivityMode === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(reactActivityMode)) {
+      throw new Error(
+        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+          reactActivityMode,
+        )}`,
+      )
+    }
+
+    const enabled = reactActivityMode.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )
@@ -603,6 +862,73 @@ export const mediaLibraryFrontendHostReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const mediaLibraryFederatedAssetSourceReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.__internal?.federatedAssetSource
+
+    if (resolver === undefined) return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.__internal.federatedAssetSource\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+}
+
+export const federatedAssetSourcesReducer = (opts: {
+  config: PluginOptions
+  initialValue: FederatedAssetSourcesConfig | undefined
+}): FederatedAssetSourcesConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const value = innerConfig.federatedAssetSources
+    if (value === undefined) return acc
+
+    // Raw JavaScript configs can assign anything here; a non-object must fail
+    // loudly instead of silently spreading to an empty object (or throwing an
+    // unhelpful property-access error on null).
+    if (value === null || typeof value !== 'object') {
+      throw new Error(
+        `Expected \`federatedAssetSources\` to be an object, but received ${getPrintableType(
+          value,
+        )}`,
+      )
+    }
+    if (value.enabled !== undefined && typeof value.enabled !== 'boolean') {
+      throw new Error(
+        `Expected \`federatedAssetSources.enabled\` to be a boolean, but received ${getPrintableType(
+          value.enabled,
+        )}`,
+      )
+    }
+    if (value.filter !== undefined && typeof value.filter !== 'function') {
+      throw new Error(
+        `Expected \`federatedAssetSources.filter\` to be a function, but received ${getPrintableType(
+          value.filter,
+        )}`,
+      )
+    }
+    if (value.uploads !== undefined && typeof value.uploads !== 'function') {
+      throw new Error(
+        `Expected \`federatedAssetSources.uploads\` to be a function, but received ${getPrintableType(
+          value.uploads,
+        )}`,
+      )
+    }
+    return {...acc, ...value}
+  }, initialValue)
 }
 
 export const scheduledDraftsEnabledReducer = (opts: {

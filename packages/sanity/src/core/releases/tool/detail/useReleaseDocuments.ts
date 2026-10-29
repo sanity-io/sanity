@@ -3,11 +3,11 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {distinctUntilChanged, filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
@@ -29,6 +29,7 @@ const getReleaseDocumentsObservable = ({
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
   i18n: LocaleSource
@@ -94,6 +95,7 @@ export function useReleaseDocuments(releaseId: string): {
   error: null | Error
 } {
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()

@@ -1,0 +1,116 @@
+# sanity-storybook
+
+Storybook for visual regression testing of the Sanity Studio monorepo, snapshotted by
+[Chromatic](https://www.chromatic.com) on every PR and deployed to Vercel.
+
+Its primary purpose is guarding the two styling migrations — styled-components →
+Panda CSS, and `@sanity/ui` → `ui5` — with automated visual diffs. See the
+[`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md) for
+the full workflow, including how to add coverage.
+
+## Commands
+
+```bash
+# from the repo root
+pnpm dev:storybook       # storybook dev server at http://localhost:6006
+pnpm build:storybook     # static build via turbo (output: dev/storybook/storybook-static)
+
+# from dev/storybook
+pnpm test                # run every story as a vitest browser-mode test (@storybook/addon-vitest)
+pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_TOKEN in the env)
+```
+
+## How the stories work
+
+- **Stories are package-owned and co-located.** Storybook discovers `*.stories.tsx` files in
+  workspace package `src` trees; `dev/storybook` owns only the Storybook, Chromatic, and
+  addon-vitest infrastructure. Keep a story in the same `__tests__` directory as the component or
+  harness it covers and use package-local imports instead of reaching across workspace boundaries.
+- **Browser tests are not re-exported as stories.** The vitest browser-mode suite
+  (`*.browser.test.tsx`) is its own Chromatic snapshot source: `@chromatic-com/vitest` archives
+  every test's end state in place (see the `vitest-visual` job in the Chromatic workflow). Each
+  browser test keeps its harness component inline, and every `*Story.tsx` in the repo is a
+  Storybook harness owned by a `*.stories.tsx`. Stories only cover states no browser test
+  renders.
+- **Playwright stays in `e2e/`.** The e2e suite has its own Chromatic project
+  (`e2e/studio-visual-test.ts`, uploaded from `e2e.yml` through `chromaui/action`). This
+  package's `playwright` dependency is only the browser runner `@storybook/addon-vitest` uses to
+  render stories; it hosts no specs, fixtures, or `@chromatic-com/playwright` wiring.
+- **Authored migration sentinels:** component-local stories cover states the tests don't capture —
+  `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
+  prioritized) and Panda-migrated components. Harness stories reuse the same
+  `TestWrapper` + `TestForm` mock studio as the browser tests (deterministic, no network) through
+  a story-only `*Story.tsx` harness.
+- **Every story is browsable.** Stories are written to be read — they form a living document of
+  how the components are used — so nothing is hidden from the sidebar or docs with `tags`. The
+  `!dev` / `!autodocs` / `vrt-only` tags that used to hide the vitest-derived stories went away
+  with those stories. See the
+  [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md) for
+  the full convention.
+
+The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
+`packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace
+packages to TypeScript source, plus `sanityPandaCss()` from
+[`@repo/pandacss`](../../packages/@repo/pandacss/README.md) (`@pandacss/vite` pointed at the
+`sanity` package's Panda project, whose generated stylesheet `@repo/pandacss/panda.css` the
+[preview](.storybook/preview.tsx) imports, and `removeCascadeLayers()` from
+`@sanity/pandacss-tsdown-plugin/vite`) and the React Compiler transform, so stories render exactly
+like the studio and the browser tests.
+
+## Chromatic
+
+The [Chromatic workflow](../../.github/workflows/chromatic.yml) publishes this Storybook to the
+"sanity studio" Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`),
+using TurboSnap so only stories affected by the change are snapshotted. The check is non-gating
+during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines. The same
+workflow's `vitest-visual` job uploads the browser-test archives to the "sanity studio vitest"
+project (secret: `CHROMATIC_PROJECT_TOKEN_VITEST`), so this Storybook holds only stories written
+for people: browser tests are snapshotted in place and no longer appear here as tag-filtered
+stories.
+
+## Vercel deployment
+
+The Storybook deploys to the `sanity-sandbox` Vercel team as project `studio-storybook`
+(production: `https://studio-storybook.sanity.dev`, plus automatic preview deploys per PR via the
+Git integration). One-time project setup, run by a maintainer from the **repo root** (`vercel` is
+a root devDependency):
+
+```bash
+# 1. Authenticate (once)
+pnpm vercel login
+
+# 2. Create the project + set the Root Directory + first preview deploy (interactive):
+#    - Set up and deploy? yes
+#    - Scope: sanity-sandbox
+#    - Project name: studio-storybook
+#    - "Code directory?" -> ./dev/storybook
+#    - Vercel misdetects the framework as Vite; that doesn't matter, because
+#      vercel.json pins buildCommand/outputDirectory and overrides it.
+#    - Connect the detected Git repository when prompted (origin).
+#    - The monorepo exceeds Vercel's 15k-file upload limit, hence --archive=tgz.
+pnpm vercel --scope sanity-sandbox --archive=tgz
+
+# 3. Verify a production deploy
+pnpm vercel --prod --scope sanity-sandbox --archive=tgz
+
+# 4. Point the production domain at the project
+pnpm vercel domains add studio-storybook.sanity.dev studio-storybook --scope sanity-sandbox
+```
+
+Notes:
+
+- The first-deploy prompt is what persists the Root Directory (`dev/storybook`) on the project,
+  and connecting the Git repository during setup enables automatic PR previews + production
+  deploys on `main` (no separate `vercel git connect` needed if done during setup).
+- [vercel.json](vercel.json) pins the build: `cd ../.. && pnpm exec turbo run build
+  --filter=sanity-storybook` with output `storybook-static`, so upstream workspace packages are
+  built first and the project's detected framework preset is irrelevant. Git-integration builds
+  clone the monorepo and install the pnpm workspace from the root (so `workspace:*` and
+  `catalog:` protocols resolve) — the same behavior as the `test-studio-preview-iframe` project.
+- Until this package lands on `main`, production deploys triggered by pushes to `main` fail with
+  a missing-root-directory error — expected noise that stops once the PR merges.
+- `.vercel/` link metadata is gitignored, same as the other dev apps.
+- Optional (dashboard-only setting): set the project's Ignored Build Step to
+  `npx turbo-ignore sanity-storybook` so commits that can't affect the Storybook skip deploys.
+- Chromatic also permalinks every published Storybook build, so the Vercel deploy is for the
+  stable URL + PR previews.

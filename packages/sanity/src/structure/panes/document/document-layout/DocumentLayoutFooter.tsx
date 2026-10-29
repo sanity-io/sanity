@@ -3,9 +3,9 @@ import {type Dispatch, type SetStateAction, useMemo} from 'react'
 import {useZIndex} from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {PaneFooter} from '../../../components'
+import {PaneFooter} from '../../../components/pane/PaneFooter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
-import {DocumentStatusBar} from '../statusBar'
+import {DocumentStatusBar} from '../statusBar/DocumentStatusBar'
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).

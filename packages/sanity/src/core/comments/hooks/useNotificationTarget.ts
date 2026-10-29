@@ -2,11 +2,16 @@ import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useSchema} from '../../hooks'
-import {getPreviewStateObservable} from '../../preview'
-import {useDocumentPreviewStore} from '../../store'
-import {useWorkspace} from '../../studio'
+import {useSchema} from '../../hooks/useSchema'
+import {
+  getPreviewStateObservable,
+  type PreviewState,
+} from '../../preview/utils/getPreviewStateObservable'
+import {useDocumentPreviewStore} from '../../store/datastores'
+import {useWorkspace} from '../../studio/workspace'
 import {type CommentContext} from '../types'
+
+const EMPTY_PREVIEW_STATE: PreviewState = {original: null, snapshot: null}
 
 interface NotificationTargetHookOptions {
   documentId: string
@@ -39,13 +44,11 @@ export function useNotificationTarget(
   const documentPreviewStore = useDocumentPreviewStore()
 
   const previewStateObservable = useMemo(() => {
-    if (!documentId || !schemaType) return of(null)
+    if (!documentId || !schemaType) return of(EMPTY_PREVIEW_STATE)
     const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
   }, [documentId, documentPreviewStore, schemaType, documentVersionId])
-  const previewState = useObservable(previewStateObservable)
-
-  const {snapshot, original} = previewState || {}
+  const {snapshot, original} = useObservable(previewStateObservable, EMPTY_PREVIEW_STATE)
   const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(

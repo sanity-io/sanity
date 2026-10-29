@@ -1,7 +1,8 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Box, Flex, rem, Text, type Theme} from '@sanity/ui'
+import {rem, Text, type Theme} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {focusRingStyle} from './styles'
 
@@ -18,9 +19,12 @@ const Root = styled.legend`
   display: table;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme: Theme}) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing, radius} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {base} = theme.sanity.color
 
   return css`
@@ -32,7 +36,6 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
     font: inherit;
     outline: none;
     border-radius: ${rem(radius[2])};
-    position: relative;
 
     &:not([hidden]) {
       display: flex;
@@ -46,12 +49,16 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
       box-shadow: none;
     }
 
-    /* Added to increase the hit area of the collapsible fieldset */
+    /*
+     * Stretches the hit area over the closest positioned ancestor (the fieldset header row), so
+     * the whole row toggles. Interactive siblings in that row need "position: relative" to stay
+     * above it.
+     */
     &::after {
       content: '';
       position: absolute;
       top: -10px;
-      right: -10px;
+      right: 0;
       bottom: -10px;
       left: -10px;
     }

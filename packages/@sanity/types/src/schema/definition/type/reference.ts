@@ -2,7 +2,7 @@ import {
   type Reference,
   type ReferenceBaseOptions,
   type ReferenceFilterOptions,
-} from '../../../reference'
+} from '../../../reference/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {type SchemaTypeDefinition, type TypeReference} from '../schemaDefinition'

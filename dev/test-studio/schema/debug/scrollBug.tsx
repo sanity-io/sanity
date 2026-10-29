@@ -5,8 +5,8 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PackageIcon} from '@sanity/icons/Package'
 import {RocketIcon} from '@sanity/icons/Rocket'
 import {TrendUpwardIcon} from '@sanity/icons/TrendUpward'
-import {Stack, Text} from '@sanity/ui'
 import {defineArrayMember, defineField, defineType, type PreviewProps} from 'sanity'
+import {Text, Flex} from 'ui5'
 
 export const articleImage = defineType({
   type: 'image',
@@ -142,14 +142,16 @@ export const todo = defineType({
   components: {
     preview: (props: any) => {
       return (
-        <Stack space={2} padding={2}>
-          <Text weight="semibold">Article TODOs</Text>
+        <Flex gap={2} padding={2} flexDirection="column">
+          <Text weight="semibold" as="div" trim={true}>
+            Article TODOs
+          </Text>
           <ul>
             {props?.items?.map((t: string) => (
               <li key={t}>{t}</li>
             ))}
           </ul>
-        </Stack>
+        </Flex>
       )
     },
   },
@@ -213,8 +215,10 @@ export const timeline = defineType({
   components: {
     preview: (props: PreviewProps & {events?: any[]}) => {
       return (
-        <Stack space={2} padding={2}>
-          <Text weight="semibold">Timeline</Text>
+        <Flex gap={2} padding={2} flexDirection="column">
+          <Text weight="semibold" as="div" trim={true}>
+            Timeline
+          </Text>
           <ul>
             {props?.events?.map((event: {title: string; periodDescription: string}) => (
               <li key={event?.title}>
@@ -222,7 +226,7 @@ export const timeline = defineType({
               </li>
             ))}
           </ul>
-        </Stack>
+        </Flex>
       )
     },
   },

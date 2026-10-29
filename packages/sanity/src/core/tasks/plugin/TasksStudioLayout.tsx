@@ -1,41 +1,19 @@
-import {type LayoutProps} from '../../config'
-import {AddonDatasetProvider} from '../../studio'
-import {
-  TasksEnabledProvider,
-  TasksNavigationProvider,
-  TasksProvider,
-  TasksUpsellProvider,
-  useTasksEnabled,
-} from '../context'
-
-const TasksStudioLayoutInner = (props: LayoutProps) => {
-  const {enabled, mode} = useTasksEnabled()
-
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
-  const children = (
-    <TasksProvider>
-      <TasksNavigationProvider>{props.renderDefault(props)}</TasksNavigationProvider>
-    </TasksProvider>
-  )
-
-  if (mode === 'upsell') {
-    return (
-      <AddonDatasetProvider>
-        <TasksUpsellProvider>{children}</TasksUpsellProvider>
-      </AddonDatasetProvider>
-    )
-  }
-
-  return <AddonDatasetProvider>{children}</AddonDatasetProvider>
-}
+import {type LayoutProps} from '../../config/studio/types'
+import {AddonDatasetProvider} from '../../studio/addonDataset/AddonDatasetProvider'
+import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
+import {TasksProvider} from '../context/tasks/TasksProvider'
+import {TasksUpsellProvider} from '../context/upsell/TasksUpsellProvider'
 
 export function TasksStudioLayout(props: LayoutProps) {
+  // Same tree in both modes, so the layout never waits for the mode; the upsell provider is only
+  // consulted by UI that already knows it is in upsell mode.
   return (
-    <TasksEnabledProvider>
-      <TasksStudioLayoutInner {...props} />
-    </TasksEnabledProvider>
+    <AddonDatasetProvider>
+      <TasksUpsellProvider>
+        <TasksProvider>
+          <TasksNavigationProvider>{props.renderDefault(props)}</TasksNavigationProvider>
+        </TasksProvider>
+      </TasksUpsellProvider>
+    </AddonDatasetProvider>
   )
 }

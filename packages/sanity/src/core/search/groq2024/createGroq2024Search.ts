@@ -103,6 +103,7 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
       .fetch<string[]>(resolveQuery.query, resolveQuery.params, {
         tag: mergedOptions.tag,
         perspective: mergedOptions.perspective,
+        variant: mergedOptions.variant,
       })
       .pipe(
         // Reference resolution is an enhancement: if phase one fails, fall back

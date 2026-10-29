@@ -4,24 +4,26 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentStatus,
-  DocumentStatusIndicator,
+  DocumentVersionsStatus,
+  DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getDefaultVariant,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  getPublishedId,
   SanityDefaultPreview,
-  useDocumentVersionInfo,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
-import {TooltipDelayGroupProvider} from '../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -31,6 +33,12 @@ export interface PaneItemPreviewProps {
   schemaType: SchemaType
   sortOrder?: Pick<SortOrdering, 'by'>
   value: SanityDocument | {_id: string; _type: string}
+}
+
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
 }
 
 /**
@@ -43,9 +51,11 @@ export interface PaneItemPreviewProps {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
-  const versionsInfo = useDocumentVersionInfo(value._id)
+  const publishedId = getPublishedId(value._id)
+  const {versions} = useDocumentVersions({documentId: publishedId})
 
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {
@@ -63,41 +73,35 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       value._id,
       perspectiveStack,
       viewOptions,
+      selectedVariantName,
     )
-  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
+  }, [
+    props.documentPreviewStore,
+    schemaType,
+    value._id,
+    perspectiveStack,
+    viewOptions,
+    selectedVariantName,
+  ])
 
   const {
     snapshot,
     original,
     isLoading: previewIsLoading,
-  } = useObservable(previewStateObservable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  } = useObservable(previewStateObservable, INITIAL_PREVIEW_STATE)
 
   const isLoading = previewIsLoading
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator
-          draft={versionsInfo.draft}
-          published={versionsInfo.published}
-          versions={versionsInfo.versions}
-        />
+        <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview

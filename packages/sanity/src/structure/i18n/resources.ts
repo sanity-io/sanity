@@ -6,6 +6,7 @@ import {defineLocalesResources} from 'sanity'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label for the "Copy document ID" menu item */
   'action.copy-document-id.label': 'Copy document ID',
@@ -70,6 +71,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
+  /** Tooltip when action is disabled because the version is published as part of its release */
+  'action.publish.disabled.not-publishable': 'This version is published as part of its release',
   /** Tooltip when action is disabled because the selected release or variant does not contain this document */
   'action.publish.disabled.target-not-found':
     'The selected release or variant does not contain this document',
@@ -114,6 +117,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Restore to this revision',
 
+  /** Tooltip when action is disabled because the version is already marked for unpublishing */
+  'action.unpublish.disabled.already-unpublished': 'This document is already set to be unpublished',
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
   /** Tooltip when action is disabled because the operation is not ready   */
@@ -159,6 +164,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
   /** The label for the "compare draft" action */
   'banners.obsolete-draft.actions.compare-draft.text': 'Compare draft',
+  /** Tooltip when compare draft is disabled because the published document does not exist */
+  'banners.obsolete-draft.actions.compare-draft.tooltip':
+    "The published document doesn't exist, so this draft can't be compared.",
   /** The label for the "discard draft" action */
   'banners.obsolete-draft.actions.discard-draft.text': 'Discard draft',
   /** The label for the "publish draft" action */
@@ -185,6 +193,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
+  /** Action that switches from the published perspective to drafts */
+  'banners.published.see-draft.action': 'View draft',
+  /** Banner shown for non-live-edit documents with a published sibling in the published perspective */
+  'banners.published.see-draft.text': 'This is a published document. Switch to drafts to edit it.',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the published view */
   'banners.published-release.description':
     "You are viewing a read-only document that was published as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
@@ -224,6 +236,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
@@ -248,14 +261,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.unpublished-release-banner.text-with-published':
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
-  'banners.variant.action.add-to-variant': 'Add to variant',
+  'banners.variant.action.add-to-variant': 'Create variant',
+  /** The text for the banner that appears when the selected variant matches no variant definition */
+  'banners.variant.definition-not-found':
+    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
   /** The text for the banner that appears when a document is not in the selected variant */
-  'banners.variant.not-in-variant': 'Not in the <VariantBadge>{{title}}</VariantBadge> variant.',
+  'banners.variant.not-in-variant':
+    'No <PerspectiveTitle>{{perspectiveTitle}}</PerspectiveTitle> variant document exists for <VariantBadge>{{variantTitle}}</VariantBadge>.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',
@@ -337,6 +354,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The previous document parameter is invalid.',
   /** The error message shown when releases failed to load */
   'compare-version.error.loadReleases.title': 'Failed to load releases',
+  /** The error message shown when document versions or variants failed to load */
+  'compare-version.error.loadVersions.title': 'Failed to load versions',
   /** The text for the tooltip when the "Compare versions" action for a document is disabled */
   'compare-versions.menu-item.disabled-reason':
     'There are no other versions of this document to compare.',
@@ -379,14 +398,28 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
   /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete all versions anyway',
+  /** The text in the "Delete anyway" button when the document only has a single version */
+  'confirm-delete-dialog.confirm-anyway-button.text_delete_one': 'Delete anyway',
+  /** The text in the "Delete anyway" button when the document has multiple versions */
+  'confirm-delete-dialog.confirm-anyway-button.text_delete_other': 'Delete all versions anyway',
   /** The text in the "Unpublish anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_unpublish': 'Unpublish anyway',
   /** The text in the "Delete now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_delete': 'Delete all versions',
+  /** The text in the "Delete now" button when the document only has a single version */
+  'confirm-delete-dialog.confirm-button.text_delete_one': 'Delete document',
+  /** The text in the "Delete now" button when the document has multiple versions */
+  'confirm-delete-dialog.confirm-button.text_delete_other': 'Delete all versions',
   /** The text in the "Unpublish now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_unpublish': 'Unpublish now',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_delete':
+    'Are you sure you want to delete all the versions of this document?',
+  /** The confirmation text when the document only has a single version */
+  'confirm-delete-dialog.confirmation.text_delete_one':
+    'Are you sure you want to delete this document?',
+  /** The confirmation text when the document has multiple versions */
+  'confirm-delete-dialog.confirmation.text_delete_other':
     'Are you sure you want to delete all the versions of this document?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
@@ -458,6 +491,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-inspector.dialog.title': 'Inspecting <DocumentTitle/>',
   /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
   'document-inspector.dialog.title-no-value': 'No value',
+  /** Accessibility label for the close button shown when an inspector panel failed to render */
+  'document-inspector.error.close-button.aria-label': 'Close panel',
+  /** Text explaining that the inspector panel failed to render */
+  'document-inspector.error.description': 'An error occurred while rendering this panel.',
+  /** Label for the button that attempts to render the inspector panel again */
+  'document-inspector.error.retry-button.text': 'Retry',
+  /** The title shown in the inspector panel header when the panel failed to render */
+  'document-inspector.error.title': 'Something went wrong',
   /** Title shown for menu item that opens the "Inspect" dialog */
   'document-inspector.menu-item.title': 'Inspect',
   /** the placeholder text for the search input on the inspect dialog */
@@ -466,6 +507,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-inspector.view-mode.parsed': 'Parsed',
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
+
+  /** Tooltip on target badges when the document does not exist in the selected perspective */
+  'document-target-badges.not-in-target.tooltip':
+    "Document doesn't exist in the selected perspective yet.",
 
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',
@@ -498,6 +543,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document.favorites.add-to-favorites': 'Add to favorites',
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
+
+  /** Details about a singleton document */
+  'document.singleton.details': 'This is a singleton document with id "{{documentGroupId}}"',
+  /** The label describing singleton documents */
+  'document.singleton.label': 'Singleton',
 
   /** The description for the events inspector when we can't load the document so we default to compare with published */
   'events.compare-with-published.description':
@@ -682,10 +732,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
+  /** The text when an unpublish operation succeeded for a document in a release */
+  'panes.document-operation-results.operation-success_unpublishVersion':
+    'Version will be unpublished when the release is published',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
+  /** The loading message shown while the document targeted by the selected variant is resolving */
+  'panes.document-pane.variant-target.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */
   'panes.document-pane.document-not-found.text':
     'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',

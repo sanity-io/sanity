@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs/operators'
 
-import {useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
 
 interface ReferringDocumentsState<Doc> {
   isLoading: boolean
@@ -52,12 +52,10 @@ export function useReferringDocuments<DocumentType extends SanityDocument>(
         {tag: 'use-referring-documents'},
       )
       .pipe(
-        map(
-          (docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
-            referringDocuments: docs,
-            isLoading: false,
-          }),
-        ),
+        map((docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
+          referringDocuments: docs,
+          isLoading: false,
+        })),
         startWith(INITIAL_STATE),
       )
   }, [documentStore, id, projection])

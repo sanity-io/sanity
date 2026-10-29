@@ -1,5 +1,5 @@
-import {type PortableTextBlock} from '../portableText'
-import {type User} from '../user'
+import {type PortableTextBlock} from '../portableText/types'
+import {type User} from '../user/types'
 
 /**
  * @internal

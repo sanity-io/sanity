@@ -11,8 +11,8 @@ import {
   useState,
 } from 'react'
 
-import {Tooltip} from '../../../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {Tooltip} from '../../../../../../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -77,6 +77,7 @@ export function ParsedDateTextInput({
    * Conditionally create placeholder text
    */
   const formattedPlaceholder = useMemo(() => {
+    // oxlint-disable-next-line react/purity -- the example placeholder shows the current date
     const date = placeholderDate || new Date()
     return format(date, dateFormat)
   }, [dateFormat, placeholderDate])
@@ -144,12 +145,13 @@ export function ParsedDateTextInput({
   useEffect(() => {
     const updatedDate = value && new Date(value)
     if (updatedDate) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       processInputString({
         dateString: format(updatedDate, dateFormat),
         triggerOnChange: false,
       })
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (

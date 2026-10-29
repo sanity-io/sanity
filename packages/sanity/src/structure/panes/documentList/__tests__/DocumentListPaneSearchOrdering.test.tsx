@@ -4,27 +4,13 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
-import {type PaneMenuItem} from '../../types'
+import {type PaneMenuItem} from '../../../types'
 import {
   DocumentListPaneSearchOrdering,
   getSearchOrderingId,
   RELEVANCE_ORDERING_ID,
 } from '../DocumentListPaneSearchOrdering'
-
-const ORDERINGS: PaneMenuItem[] = [
-  {
-    id: 'updated-desc',
-    title: 'Last edited',
-    action: 'setSortOrder',
-    params: {by: [{field: '_updatedAt', direction: 'desc'}]},
-  },
-  {
-    id: 'title-asc',
-    title: 'Title',
-    action: 'setSortOrder',
-    params: {by: [{field: 'title', direction: 'asc'}]},
-  },
-]
+import {ORDERINGS} from './DocumentListPaneSearchOrdering.fixture'
 
 async function renderControl(props: {
   value?: string

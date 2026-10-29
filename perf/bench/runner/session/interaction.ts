@@ -1,12 +1,18 @@
-import process from 'node:process'
-
+import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
-import {median} from '../../stats/quantiles'
+import {
+  type BenchScenario,
+  type InteractionTarget,
+  scenarioDocument,
+  scenarioFixture,
+} from '../../scenarios/types'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
+import {SessionError} from './errors'
+import {awaitReadiness, gotoScenario} from './navigation'
+import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
 export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -100,27 +106,12 @@ export interface InteractionSessionResult {
   requests: SessionRequests
   cpu: SessionCpu | null
   memory: SessionMemory | null
-}
-
-export type SessionFailureReason =
-  | 'readiness-timeout'
-  | 'probe-timeout'
-  | 'page-error'
-  | 'console-error'
-  | 'hermeticity-violation'
-  | 'sample-count-mismatch'
-  | 'readback-mismatch'
-  | 'unexpected-endpoint'
-
-export class SessionError extends Error {
-  constructor(
-    public reason: SessionFailureReason,
-    message: string,
-    public diagnostics: string[] = [],
-  ) {
-    super(`[${reason}] ${message}`)
-    this.name = 'SessionError'
-  }
+  /**
+   * Style-system census of the open document (report-only): UI v5 vs v4 nodes
+   * and the styled-components footprint — see @repo/utils/style-systems. Null
+   * when no probe was supplied or it failed.
+   */
+  styles: StyleCensus | null
 }
 
 /**
@@ -184,7 +175,7 @@ export function interactionMaxDurations(entries: BenchEntries): number[] {
  * duration per interaction, and account for unobservably fast keystrokes at
  * the floor (see OBSERVABILITY_FLOOR_MS).
  */
-function toLatencies(
+export function toLatencies(
   entries: BenchEntries,
   sentKeystrokes: number,
 ): {samples: number[]; belowFloorCount: number} {
@@ -202,7 +193,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
@@ -289,7 +280,10 @@ const isFormReadOnly = () =>
  * keystrokes while it lasts (see ReadOnlyInterruptions). Pause rather than
  * type into the void — the wait is not keystroke latency.
  */
-async function waitUntilEditable(page: Page, interruptions: ReadOnlyInterruptions): Promise<void> {
+export async function waitUntilEditable(
+  page: Page,
+  interruptions: ReadOnlyInterruptions,
+): Promise<void> {
   if (!(await page.evaluate(isFormReadOnly))) return
   const waitStart = Date.now()
   await page.waitForFunction(
@@ -368,6 +362,8 @@ export async function runInteractionSession(options: {
   running: RunningSide
   scenario: BenchScenario
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<SessionConfig>
 }): Promise<InteractionSessionResult> {
   const {browser, running, scenario, instrumentation} = options
@@ -386,13 +382,14 @@ export async function runInteractionSession(options: {
       burstKeystrokes: scenario.keystrokes.burst,
     }),
   }
-  const draftId = `drafts.${scenario.documentId}`
+  const {documentId, documentType} = scenarioDocument(scenario)
+  const draftId = `drafts.${documentId}`
 
   // Fresh state, in-process — no HTTP round-trips to our own mock
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   // Pre-typing field text, needed by the Portable Text readback (typed
   // characters are validated as a delta over the seeded content)
@@ -402,7 +399,7 @@ export async function runInteractionSession(options: {
     if (target.kind === 'pte') {
       baselineTexts.set(
         target.fieldPath,
-        target.readbackText?.(seededDocument ?? {_id: draftId, _type: scenario.documentType}) ??
+        target.readbackText?.(seededDocument ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(seededDocument, target.fieldPath) ?? ''),
       )
     }
@@ -416,21 +413,13 @@ export async function runInteractionSession(options: {
   try {
     await page.addInitScript(instrumentation)
 
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
+    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
 
     // Readiness: the form claims to be editable…
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-      .catch(() => {
-        throw new SessionError('readiness-timeout', 'form-view never became editable', [
-          ...session.consoleErrors,
-          ...session.pageErrors,
-        ])
-      })
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     // …and a probe keystroke actually lands (the editability oracle). The
     // time-to-editable measure is emitted from inside the page on the input event, so
@@ -600,7 +589,7 @@ export async function runInteractionSession(options: {
       for (const target of scenario.interactions) {
         const typed = typedPerField.get(target.fieldPath) ?? ''
         const text =
-          target.readbackText?.(document ?? {_id: draftId, _type: scenario.documentType}) ??
+          target.readbackText?.(document ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(document, target.fieldPath) ?? '')
         if (target.kind === 'pte') {
           const missing = countMissingCharacters(
@@ -637,6 +626,15 @@ export async function runInteractionSession(options: {
           }
         : null
     const memory = await readMemorySnapshot(session.cdp)
+
+    // Style census (report-only): which styling systems built this page.
+    // Taken LAST, after the workload and the resource counters: the probe
+    // waits for the DOM to go quiet before it counts, and doing that before
+    // the keystrokes would let the lazy panes finish loading ahead of the
+    // warmup — a harness-induced improvement in keystroke latency that would
+    // put a step in the series unrelated to any studio change. By now the
+    // page has been open for a minute, so the wait is only its quiet window.
+    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
 
     // Session-level invariants
     if (session.violations.length > 0) {
@@ -677,153 +675,8 @@ export async function runInteractionSession(options: {
       requests,
       cpu,
       memory,
+      styles,
     }
-  } finally {
-    await context.close()
-  }
-}
-
-export interface SoakSample {
-  minute: number
-  heapMb: number
-  domNodes: number
-  listeners: number
-  /** Median keystroke latency over the past interval (null before typing). */
-  latencyP50Ms: number | null
-  /** Main-thread task time spent during the past interval (null at minute 0). */
-  cpuTaskMs: number | null
-  /** Open listener connections on the mock — socket leaks across reconnects. */
-  connections: number
-  /** Requests the mock served during the past interval (minute 0 = boot). */
-  requests: number
-}
-
-/**
- * Soak check: one long session typing continuously (bounded content —
- * each cycle types a burst then select-all-deletes), sampling every minute.
- * The workload is constant and self-erasing, so every series should be
- * flat: a rising heap/listener/DOM slope is a retention regression (a
- * leak), a rising latency/CPU slope is degradation under sustained use,
- * and a rising connection or request rate is a resubscribe loop. Runs in
- * the daily cron, not on PRs.
- */
-export async function runSoakSession(options: {
-  browser: Browser
-  running: RunningSide
-  scenario: BenchScenario
-  instrumentation: string
-  minutes: number
-  config?: Partial<SessionConfig>
-  log?: (message: string) => void
-}): Promise<{minutes: number; samples: SoakSample[]; interruptions: ReadOnlyInterruptions}> {
-  const {browser, running, scenario, instrumentation, minutes} = options
-  const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
-  const log = options.log ?? (() => {})
-
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
-
-  const session = await createSessionContext(browser, running.side, running.studioUrl, {
-    cpuThrottleRate: config.cpuThrottleRate,
-  })
-  const {context, page} = session
-
-  try {
-    await page.addInitScript(instrumentation)
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-
-    const target = scenario.interactions[0]
-    await focusField(page, target, config.readinessTimeoutMs)
-    // Flush boot + focus-click interaction entries so the first interval's
-    // latency accounting starts clean
-    await drainEntries(page)
-
-    const samples: SoakSample[] = []
-    // Per-interval accumulators, reset at every sample
-    let intervalLatencies: number[] = []
-    let lastCpu = await readCpuMetrics(session.cdp)
-    let lastRequestCount = running.mock.ledger.snapshot().entries.length
-
-    const takeSample = async (minute: number) => {
-      const memory = await readMemorySnapshot(session.cdp)
-      if (!memory) return
-      const cpu = await readCpuMetrics(session.cdp)
-      const cpuTaskMs =
-        cpu && lastCpu ? Math.round((cpu.taskDuration - lastCpu.taskDuration) * 1000) : null
-      lastCpu = cpu
-      const requestCount = running.mock.ledger.snapshot().entries.length
-      const requests = requestCount - lastRequestCount
-      lastRequestCount = requestCount
-      const latencyP50Ms = intervalLatencies.length > 0 ? median(intervalLatencies) : null
-      intervalLatencies = []
-      const connections = running.mock.hub.connectionCount
-      samples.push({
-        minute,
-        ...memory,
-        latencyP50Ms,
-        cpuTaskMs,
-        connections,
-        requests,
-      })
-      log(
-        `  minute ${minute}: heap ${memory.heapMb.toFixed(1)} MB, ${memory.domNodes} nodes, ` +
-          `${memory.listeners} listeners, p50 ${latencyP50Ms === null ? '—' : `${latencyP50Ms.toFixed(0)}ms`}, ` +
-          `cpu ${cpuTaskMs === null ? '—' : `${cpuTaskMs}ms`}, ${connections} connection(s), ${requests} request(s)`,
-      )
-    }
-
-    await takeSample(0)
-    const deadline = Date.now() + minutes * 60_000
-    let nextSampleAt = Date.now() + 60_000
-    const interruptions: ReadOnlyInterruptions = {count: 0, totalMs: 0}
-    let offset = 0
-
-    while (Date.now() < deadline) {
-      // Bounded workload: type a burst, then clear it
-      await typeKeystrokes(page, 40, config.burstCadenceMs, offset, interruptions)
-      offset += 40
-      const entries = await drainEntries(page)
-      intervalLatencies.push(...toLatencies(entries, 40).samples)
-      await page.keyboard.press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a')
-      await page.keyboard.press('Backspace')
-      // The clear is interaction traffic too — drain and discard so it never
-      // pollutes the next interval's latency accounting
-      await drainEntries(page)
-      await page.waitForTimeout(300)
-
-      if (Date.now() >= nextSampleAt) {
-        await takeSample(Math.round((Date.now() - (deadline - minutes * 60_000)) / 60_000))
-        nextSampleAt += 60_000
-      }
-    }
-    // Final sample, unless the loop's last iteration already took it
-    if (samples.at(-1)?.minute !== minutes) {
-      await takeSample(minutes)
-    }
-
-    if (session.violations.length > 0) {
-      throw new SessionError(
-        'hermeticity-violation',
-        session.violations.join(', '),
-        HERMETICITY_HINT,
-      )
-    }
-    if (session.pageErrors.length > 0) {
-      throw new SessionError('page-error', session.pageErrors.join('\n'))
-    }
-    if (session.consoleErrors.length > 0) {
-      throw new SessionError('console-error', session.consoleErrors.join('\n'), session.httpErrors)
-    }
-
-    return {minutes, samples, interruptions}
   } finally {
     await context.close()
   }

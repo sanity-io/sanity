@@ -1,13 +1,16 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
+import {Text, Box, Flex} from 'ui5'
 
-import {Button, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
 import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
@@ -47,8 +50,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
 
   if (release.isLoading) {
     return (
-      <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
-        <Flex align="center" gap={2}>
+      <Box {...cellProps} paddingLeft={3} flexBasis="0%" flexGrow={1} paddingY={1} paddingRight={2}>
+        <Flex alignItems="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
           <TitleSkeleton />
         </Flex>
@@ -69,16 +72,16 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
+    <Box {...cellProps} paddingLeft={3} flexBasis="0%" flexGrow={1} paddingY={1} paddingRight={2}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <Translate t={t} i18nKey="deleted-release" values={{title: releaseTitle}} />
           </Text>
         }
       >
-        <Flex align="center" gap={3}>
+        <Flex alignItems="center" gap={3}>
           <Button
             tooltipProps={{
               disabled: isArchived || release.state === 'published',
@@ -101,19 +104,19 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             aria-live="assertive"
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
-            <Flex align="center" gap={2}>
-              <Box flex="none">
-                <ReleaseAvatar release={release} />
+            <Flex alignItems="center" gap={2}>
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                <ReleaseAvatar release={release} size="small" fontSize={2} />
               </Box>
-              <Stack flex={1} space={2}>
-                <Flex align="center" gap={2} style={{minWidth: 0}}>
+              <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
+                <Flex alignItems="center" gap={2}>
                   <ReleaseTitle
                     title={release.metadata.title}
                     fallback={tCore('release.placeholder-untitled-release')}
                     textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
                   />
                 </Flex>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
         </Flex>

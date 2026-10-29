@@ -1,10 +1,11 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack, Flex, Icon} from 'ui5'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
-import {fileTarget} from '../../form/inputs/files/common/fileTarget'
+import {fileTarget} from '../../form/inputs/files/common/fileTarget/fileTarget'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 
 const FileTargetCard = fileTarget(Card)
@@ -54,13 +55,13 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (imageFile) {
     return (
-      <Stack space={3}>
-        <Text size={1} weight="medium">
+      <VStack gap={3}>
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('feedback.attachment.label')}
         </Text>
         <Card padding={3} radius={2} border>
-          <Flex align="center" justify="space-between">
-            <Text size={1} muted>
+          <Flex alignItems="center" justifyContent="space-between">
+            <Text size={1} muted as="div" trim={true}>
               {imageFile.name}
             </Text>
             <Button
@@ -71,13 +72,13 @@ export function ImageAttachment(props: ImageAttachmentProps) {
             />
           </Flex>
         </Card>
-      </Stack>
+      </VStack>
     )
   }
 
   return (
-    <Stack space={3}>
-      <Text size={1} weight="medium">
+    <VStack gap={3}>
+      <Text size={1} weight="medium" as="div" trim={true}>
         {t('feedback.attachment.label')}
       </Text>
       <FileTargetCard
@@ -89,12 +90,10 @@ export function ImageAttachment(props: ImageAttachmentProps) {
         onFilesOver={onFilesOver}
         onFilesOut={onFilesOut}
       >
-        <Flex align="center" justify="space-between">
-          <Flex align="center" gap={2}>
-            <Text size={1} muted>
-              <BinaryDocumentIcon />
-            </Text>
-            <Text size={1} muted>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Flex alignItems="center" gap={2}>
+            <Icon icon={BinaryDocumentIcon} size={1} muted />
+            <Text size={1} muted as="div" trim={true}>
               {t('feedback.attachment.drop-zone')}
             </Text>
           </Flex>
@@ -107,10 +106,10 @@ export function ImageAttachment(props: ImageAttachmentProps) {
         </Flex>
       </FileTargetCard>
       {error && (
-        <Text size={1} style={{color: 'var(--card-badge-critical-fg-color)'}}>
+        <Text size={1} style={{color: 'var(--card-badge-critical-fg-color)'}} as="div" trim={true}>
           {error}
         </Text>
       )}
-    </Stack>
+    </VStack>
   )
 }

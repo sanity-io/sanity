@@ -16,7 +16,7 @@
     // that's incredibly problematic and can be time-consuming to clean up. This default value acts as a failsafe against that
     "outDir": "./node_modules/.sanity-monorepo/dts",
 
-    // Don't emit anything by default, emit is done by `@sanity/pkg-utils` during build
+    // Don't emit anything by default, emit is done by `tsdown` during build
     "noEmit": true,
 
     // Settings

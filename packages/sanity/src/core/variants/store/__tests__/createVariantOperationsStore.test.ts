@@ -9,6 +9,15 @@ const VARIANT_ID = 'Ab12cd34'
 const DOCUMENT_ID = `${VARIANT_DOCUMENTS_PATH}.${VARIANT_ID}`
 const ACTION_RESULT = {transactionId: 'txn-1'}
 
+function mockClient() {
+  const client = {
+    action: vi.fn().mockResolvedValue(ACTION_RESULT),
+    withConfig: vi.fn(() => client),
+  }
+
+  return client
+}
+
 function createEditableVariant(): EditableSystemVariant {
   return {
     _id: DOCUMENT_ID as `_.variants.${string}`,
@@ -25,10 +34,9 @@ function createEditableVariant(): EditableSystemVariant {
 describe('createVariantOperationsStore', () => {
   it('creates a variant definition with the create action', async () => {
     const variant = createEditableVariant()
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.createVariant(variant)).resolves.toEqual(ACTION_RESULT)
@@ -46,10 +54,9 @@ describe('createVariantOperationsStore', () => {
 
   it('updates a variant definition with the edit action', async () => {
     const variant = createEditableVariant()
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.updateVariant(variant)).resolves.toEqual(ACTION_RESULT)
@@ -78,10 +85,10 @@ describe('createVariantOperationsStore', () => {
       conditions: variant.conditions,
       priority: variant.priority,
     }
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
 
+    const client = mockClient()
+
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.updateVariant(variantWithoutMetadata)).resolves.toEqual(ACTION_RESULT)
@@ -103,10 +110,9 @@ describe('createVariantOperationsStore', () => {
   })
 
   it('deletes a variant definition with the delete action', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.deleteVariant(DOCUMENT_ID)).resolves.toEqual(ACTION_RESULT)
@@ -117,6 +123,23 @@ describe('createVariantOperationsStore', () => {
         variantId: VARIANT_ID,
       },
       {tag: 'variants.delete'},
+    )
+  })
+
+  it('forwards action options to the delete action so it can be dry-run', async () => {
+    const client = mockClient()
+
+    // @ts-expect-error -- pre-existing, fix later
+    const store = createVariantOperationsStore({client: client as SanityClient})
+
+    await expect(store.deleteVariant(DOCUMENT_ID, {dryRun: true})).resolves.toEqual(ACTION_RESULT)
+
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.delete',
+        variantId: VARIANT_ID,
+      },
+      {tag: 'variants.delete', dryRun: true},
     )
   })
 })

@@ -55,9 +55,11 @@ const expiresAt = new Date(Date.now() + 1000 * 60 * 60)
 const mockActors = ({
   allowOption = undefined,
   previewUrlOption = undefined,
+  variant = undefined,
 }: {
   allowOption?: PreviewUrlAllowOption
   previewUrlOption?: PreviewUrlOption
+  variant?: string
 } = {}) => ({
   'create preview secret': fromPromise(() => Promise.resolve({secret: 'abc123', expiresAt})),
   'read shared preview secret': fromPromise<string | null>(() => Promise.resolve('dfg456')),
@@ -70,6 +72,7 @@ const mockActors = ({
     studioBasePath,
     previewUrlOption,
     perspective: 'drafts',
+    variant,
   }),
   'resolve preview mode': defineResolvePreviewModeActor({
     client,
@@ -80,6 +83,7 @@ const mockActors = ({
     studioBasePath,
     previewUrlOption,
     perspective: 'drafts',
+    variant,
   }),
   'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(() =>
     of({granted: true, reason: 'Matching grant'}),
@@ -219,6 +223,7 @@ describe('Preview URL machine', () => {
           const url = new URL('https://example.com')
           url.searchParams.set('sanity-preview-perspective', studioPreviewPerspective)
           return url.toString()
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         }) as DeprecatedPreviewUrlResolver,
         'https://example.com/?sanity-preview-perspective=drafts',
       ],
@@ -235,6 +240,7 @@ describe('Preview URL machine', () => {
               studioBasePath,
               previewUrlOption: previewUrlOption,
               perspective: 'drafts',
+              variant: undefined,
             }),
           },
         }),
@@ -244,6 +250,36 @@ describe('Preview URL machine', () => {
       const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
       expect(snapshot.context.initialUrl).toBeInstanceOf(URL)
       expect(snapshot.context.initialUrl!.toString()).toBe(expected)
+    })
+
+    test('passes the selected variant to legacy preview url resolvers', async () => {
+      const actor = createActor(
+        previewUrlMachine.provide({
+          actors: {
+            ...mockActors(),
+            'resolve initial url': defineResolveInitialUrlActor({
+              client,
+              studioBasePath,
+              previewUrlOption: (async ({studioPreviewVariant}) => {
+                const url = new URL('https://example.com')
+                if (studioPreviewVariant) {
+                  url.searchParams.set('sanity-preview-variant', studioPreviewVariant)
+                }
+                return url.toString()
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+              }) as DeprecatedPreviewUrlResolver,
+              perspective: 'drafts',
+              variant: 'Ab12cd34',
+            }),
+          },
+        }),
+        {input: {previewSearchParam: null}},
+      ).start()
+
+      const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
+      expect(snapshot.context.initialUrl!.toString()).toBe(
+        'https://example.com/?sanity-preview-variant=Ab12cd34',
+      )
     })
   })
 
@@ -680,7 +716,9 @@ describe('Preview URL machine', () => {
               previewUrlOption: {
                 initial: 'http://localhost:3000',
                 draftMode: {
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   enable: '/api/draft-mode/enable',
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   shareAccess: false,
                 },
               },
@@ -810,6 +848,38 @@ describe('Preview URL machine', () => {
           secret: expect.any(String),
           expiresAt: expect.any(Date),
         })
+      })
+
+      test('sets the selected variant on the preview mode enable url', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: mockActors({
+              previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              variant: 'Ab12cd34',
+            }),
+          }),
+          {
+            input: {previewSearchParam: null},
+          },
+        ).start()
+        const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewUrl?.searchParams.get('sanity-preview-variant')).toBe('Ab12cd34')
+        expect(context.previewUrl?.searchParams.get('sanity-preview-perspective')).toBe('drafts')
+      })
+
+      test('omits the variant param on the preview mode enable url when no variant is selected', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: mockActors({
+              previewUrlOption: {previewMode: {enable: '/api/preview'}},
+            }),
+          }),
+          {
+            input: {previewSearchParam: null},
+          },
+        ).start()
+        const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewUrl?.searchParams.has('sanity-preview-variant')).toBe(false)
       })
 
       test('handles secret expiry', async () => {
@@ -1048,6 +1118,43 @@ describe('Preview URL machine', () => {
       })
       snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
       expect(snapshot.context.previewUrl?.origin).toBe('http://localhost:5173')
+    })
+
+    test('clears preview mode and its secret when switching to an origin without preview mode', async () => {
+      const actor = createActor(
+        previewUrlMachine.provide({
+          actors: mockActors({
+            allowOption: ['http://localhost:*'],
+            previewUrlOption: {
+              initial: 'http://localhost:3000',
+              previewMode: ({targetOrigin}) =>
+                targetOrigin === 'http://localhost:3000'
+                  ? {enable: '/api/draft-mode/enable', shareAccess: false}
+                  : false,
+            },
+          }),
+        }),
+        {input: {previewSearchParam: null}},
+      ).start()
+
+      let snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.context.previewMode).toEqual({
+        enable: '/api/draft-mode/enable',
+        shareAccess: false,
+      })
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('abc123')
+
+      /**
+       * The share menu reads `shareAccess` from here, so the previous origin's value must not linger
+       */
+      actor.send({
+        type: 'set preview search param',
+        previewSearchParam: 'http://localhost:3333/blog',
+      })
+      snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.value).toBe('success')
+      expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3333/blog')
+      expect(snapshot.context).toMatchObject({previewMode: null, previewUrlSecret: null})
     })
   })
 })

@@ -8,6 +8,7 @@ import groupBy from 'lodash-es/groupBy.js'
 
 import {compileSortExpression, type CompiledSortEntry} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
+import {isFieldPathExcludedFromIndex} from '../common/isFieldPathExcludedFromIndex'
 import {prefixLast} from '../common/token'
 import {toOrderClause} from '../common/toOrderClause'
 import {
@@ -68,10 +69,12 @@ export function createSearchQuery(
   searchParams: string | SearchTerms,
   {
     perspective,
+    variant,
     sort,
     isCrossDataset,
     tag,
     maxDepth,
+    partialIndexFieldPaths,
     cursor,
     limit,
     params,
@@ -89,6 +92,18 @@ export function createSearchQuery(
         isCrossDataset: isCrossDataset,
         processPaths: (paths) => paths.filter(({weight}) => weight !== 1),
       }),
+    )
+    // `deriveSearchWeightsFromType2024` caches its result per schema type, so the index settings
+    // must be applied to its output rather than through `processPaths`.
+    .map((spec) =>
+      partialIndexFieldPaths
+        ? {
+            ...spec,
+            paths: spec.paths.filter(
+              ({path}) => !isFieldPathExcludedFromIndex(path, partialIndexFieldPaths),
+            ),
+          }
+        : spec,
     )
     .filter(({paths}) => paths.length !== 0)
 
@@ -181,6 +196,7 @@ export function createSearchQuery(
     options: {
       tag: tag,
       perspective,
+      variant,
     },
     params: finalParams,
     sortOrder,

@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * TODO: remove this context when alternate document-specific context are
@@ -15,7 +15,4 @@ import {createContext} from 'sanity/_createContext'
 /**
  * @internal
  */
-export const IsLastPaneContext = createContext<boolean>(
-  'sanity/_singletons/context/is-last-pane',
-  false,
-)
+export const IsLastPaneContext = createContext<boolean>(false)

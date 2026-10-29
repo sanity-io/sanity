@@ -9,7 +9,7 @@ import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
 import {observeImageAssetStub} from '../../../../../../../test/fixtures/assetSourceMocks'
-import {renderImageInput} from '../../../../../../../test/form'
+import {renderImageInput} from '../../../../../../../test/form/renderImageInput'
 import {getDataTestIdPrefix} from '../../common/AssetSourceBrowser'
 import {BaseImageInput} from '../ImageInput'
 
@@ -50,7 +50,7 @@ describe('ImageInput with empty state', () => {
     const browseButton = screen.getByTestId(imageBrowseTestId('test-source'))
     const flexContainer = browseButton.closest('[data-ui="Flex"]')
     expect(flexContainer).toBeInTheDocument()
-    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+    expect(flexContainer).toHaveClass('sui-justify-content-flex-end')
   })
 
   it('shows invalid image warning when asset ref is not a valid image source', async () => {

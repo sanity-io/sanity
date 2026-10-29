@@ -1,5 +1,6 @@
 const CONDITION_KEY_REGEX = /^[a-z][a-z0-9_-]{0,63}$/
 const CONDITION_SEPARATOR = ':'
+const CONDITION_VALUE_FORBIDDEN = ','
 const RESERVED_KEY_PREFIXES = ['_', '$'] as const
 
 export type ConditionKeyValidationError = 'invalid' | 'reserved'
@@ -34,7 +35,7 @@ export function getConditionValueValidationError(
     return 'empty'
   }
 
-  if (value.includes(CONDITION_SEPARATOR)) {
+  if (value.includes(CONDITION_VALUE_FORBIDDEN)) {
     return 'invalid'
   }
 

@@ -33,6 +33,7 @@ export function PresentationDocumentHeader(props: {
   const context = useContext(PresentationDocumentContext)
 
   const contextOptions = context?.options || []
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const resolvers = contextOptions.map((o) => o.resolve?.locations || o.locate)
   const hasResolvers = resolvers.some(Boolean)
 

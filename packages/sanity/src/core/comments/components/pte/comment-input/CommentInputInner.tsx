@@ -1,16 +1,20 @@
-import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {type AvatarSize, Card} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
+import {Box, Flex, VStack} from 'ui5'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {useUser} from '../../../../store'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {CommentsAvatar} from '../../avatars'
-import {MentionIcon, SendIcon} from '../../icons'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
+import {MentionIcon} from '../../icons/MentionIcon'
+import {SendIcon} from '../../icons/SendIcon'
+import {type CommentInputRenderBlock} from './CommentInput'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
 
@@ -103,12 +107,14 @@ interface CommentInputInnerProps {
   avatarSize?: AvatarSize
   currentUser: CurrentUser
   focusLock?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
-  renderBlock: RenderBlockFunction
+  renderBlock: CommentInputRenderBlock
   withAvatar?: boolean
 }
 
@@ -155,7 +161,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   )
 
   return (
-    <Flex align="flex-start" gap={2}>
+    <Flex alignItems="flex-start" gap={2}>
       {avatar}
 
       <RootCard
@@ -166,13 +172,8 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         sizing="border"
         tone={readOnly ? 'transparent' : 'default'}
       >
-        <Stack>
-          <EditableWrap
-            data-ui="CommentInputEditableWrap"
-            paddingX={1}
-            paddingY={2}
-            sizing="border"
-          >
+        <VStack>
+          <EditableWrap data-ui="CommentInputEditableWrap" paddingX={1} paddingY={2}>
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
@@ -184,7 +185,13 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             />
           </EditableWrap>
 
-          <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
+          <Flex
+            alignItems="center"
+            data-ui="CommentInputActions"
+            gap={1}
+            justifyContent="flex-end"
+            padding={1}
+          >
             <TooltipDelayGroupProvider>
               {!mentionOptions.disabled && (
                 <Button
@@ -216,7 +223,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
             </TooltipDelayGroupProvider>
           </Flex>
-        </Stack>
+        </VStack>
       </RootCard>
     </Flex>
   )

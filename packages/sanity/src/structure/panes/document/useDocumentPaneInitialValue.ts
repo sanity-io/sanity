@@ -1,7 +1,8 @@
 import {useMemo} from 'react'
 import {useInitialValue, useTemplates, useUnique} from 'sanity'
 
-import {type PaneRouterContextValue, usePaneRouter} from '../../components'
+import {type PaneRouterContextValue} from '../../components/paneRouter/types'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {type DocumentPaneNode} from '../../types'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 
@@ -18,6 +19,7 @@ export const useDocumentPaneInitialValue = ({
 }) => {
   const templates = useTemplates()
   const paneRouter = usePaneRouter()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const panePayload = useUnique(paneRouter.payload)
 
   const {templateName, templateParams} = useMemo(
@@ -40,6 +42,7 @@ export const useDocumentPaneInitialValue = ({
     version: params.version,
   })
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const initialValue = useUnique(initialValueRaw)
   return initialValue
 }

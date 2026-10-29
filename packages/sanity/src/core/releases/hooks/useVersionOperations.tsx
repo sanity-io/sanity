@@ -7,9 +7,34 @@ import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 
+export interface CreateVersionOptions {
+  /**
+   * Whether to navigate to the created version's perspective after creation.
+   * Defaults to `true`. Callers that handle navigation themselves (e.g. to
+   * also update the variant sticky param) should pass `false`.
+   */
+  navigate?: boolean
+}
+
 export interface VersionOperationsValue {
-  createVersion: (releaseId: ReleaseId, documentId: string) => Promise<void>
+  createVersion: (
+    releaseId: ReleaseId,
+    documentId: string,
+    options?: CreateVersionOptions,
+  ) => Promise<void>
+  /**
+   * @deprecated use `useDocumentOperation(publishedId, type, releaseId).discardChanges` instead
+   * which routes release versions through the same operation pipeline as draft and published edits.
+   *
+   * Kept for backwards compatibility
+   */
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
+  /**
+   * @deprecated use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead
+   * which routes release versions through the same operation pipeline as draft and published edits.
+   *
+   * Kept for backwards compatibility
+   */
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
   revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
@@ -22,10 +47,17 @@ export function useVersionOperations(): VersionOperationsValue {
 
   const setPerspective = useSetPerspective()
 
-  const handleCreateVersion = async (releaseId: ReleaseId, documentId: string) => {
+  const handleCreateVersion = async (
+    releaseId: ReleaseId,
+    documentId: string,
+    options?: CreateVersionOptions,
+  ) => {
+    const {navigate = true} = options ?? {}
     const origin = getDocumentVariantType(documentId)
     await createVersion(releaseId, documentId)
-    setPerspective(releaseId)
+    if (navigate) {
+      setPerspective(releaseId)
+    }
     telemetry.log(AddedVersion, {
       documentOrigin: origin,
     })
@@ -41,7 +73,9 @@ export function useVersionOperations(): VersionOperationsValue {
 
   return {
     createVersion: handleCreateVersion,
+    // oxlint-disable-next-line no-deprecated
     discardVersion: handleDiscardVersion,
+    // oxlint-disable-next-line no-deprecated
     unpublishVersion: handleUnpublishVersion,
     revertUnpublishVersion: handleRevertUnpublishVersion,
   }

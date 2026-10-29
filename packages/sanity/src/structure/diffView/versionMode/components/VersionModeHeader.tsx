@@ -3,19 +3,17 @@ import {LockIcon} from '@sanity/icons/Lock'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
-  Box,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
   type ButtonProps,
   type ButtonTone,
-  Flex,
+} from '@sanity/ui'
+import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
   MenuItem,
-  Stack,
-  Text,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'
@@ -43,26 +41,15 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {styled} from 'styled-components'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
 import {findRelease} from '../../utils/findRelease'
-
-const VersionModeHeaderLayout = styled.header`
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr min-content 1fr;
-  border-block-end: 1px solid var(--card-border-color);
-`
-
-const VersionModeHeaderLayoutSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
+import {DocumentGroupPickerMenu} from './DocumentGroupPickerMenu'
+import {versionModeHeaderLayout, versionModeHeaderLayoutSection} from './VersionModeHeader.css'
 
 /**
  * The header component that is rendered when diff view is being used to compare versions of a
@@ -81,6 +68,8 @@ export const VersionModeHeader: ComponentType<
   const {documents} = useDiffViewState()
   const activeReleases = useActiveReleases()
   const releasesIds = documentVersions.flatMap((id) => getVersionFromId(id) ?? [])
+  const {beta} = useWorkspace()
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   const releases = useMemo(() => {
     return activeReleases.data.filter((release) => {
@@ -114,42 +103,56 @@ export const VersionModeHeader: ComponentType<
   }
 
   return (
-    <VersionModeHeaderLayout>
-      <VersionModeHeaderLayoutSection>
+    <header className={versionModeHeaderLayout}>
+      <div className={versionModeHeaderLayoutSection}>
         <Box padding={4}>
-          <Text as="h1" size={1} muted>
+          <Text as="h1" size={1} muted trim={true}>
             {t('compare-versions.title')}
           </Text>
         </Box>
-        {typeof documents?.previous !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectPreviousRelease}
-            role="previous"
-            documentId={documentId}
-            state={state}
-            document={documents.previous}
-          />
-        )}
-      </VersionModeHeaderLayoutSection>
-      <Flex align="center" paddingX={3}>
-        <Text size={1}>
-          <TransferIcon />
-        </Text>
+        {typeof documents?.previous !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="previous"
+              document={documents.previous}
+              onSelectDocument={onSelectPreviousRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectPreviousRelease}
+              role="previous"
+              documentId={documentId}
+              state={state}
+              document={documents.previous}
+            />
+          ))}
+      </div>
+      <Flex alignItems="center" paddingX={3}>
+        <Icon size={1} icon={TransferIcon} style={{margin: '-0.375rem'}} />
       </Flex>
-      <VersionModeHeaderLayoutSection>
-        {typeof documents?.next !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectNextRelease}
-            role="next"
-            documentId={documentId}
-            state={state}
-            document={documents.next}
-          />
-        )}
+      <div className={versionModeHeaderLayoutSection}>
+        {typeof documents?.next !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="next"
+              document={documents.next}
+              onSelectDocument={onSelectNextRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectNextRelease}
+              role="next"
+              documentId={documentId}
+              state={state}
+              document={documents.next}
+            />
+          ))}
         <Box
           padding={3}
           style={{
@@ -158,8 +161,8 @@ export const VersionModeHeader: ComponentType<
         >
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
         </Box>
-      </VersionModeHeaderLayoutSection>
-    </VersionModeHeaderLayout>
+      </div>
+    </header>
   )
 }
 
@@ -176,6 +179,11 @@ interface VersionMenuProps {
   }
 }
 
+/**
+ *
+ * @deprecated Use `DocumentGroupPickerMenu` instead.
+ * Remove once `beta.documentGroupInventory.enabled` is not optional.
+ */
 const VersionMenu: ComponentType<VersionMenuProps> = ({
   releases = [],
   releasesState,
@@ -184,6 +192,8 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
   documentId,
   document,
 }) => {
+  // No `getTargetScopeId(useTargetDocumentState())` here: this menu inspects the draft/published pair of the
+  // specific document selected for the diff pane, independent of the selected perspective.
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
@@ -300,7 +310,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <Flex gap={1}>
           <ReleaseAvatar padding={2} release={releasePerspective} />
           <Box paddingY={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {tStructure(['compare-versions.status', type].join('.'))}
             </Text>
           </Box>
@@ -313,29 +323,34 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
+          paddingY={2}
+          paddingRight={2}
+          gap={2}
+          flexDirection="column"
+        >
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
             textProps={{size: 1, weight: 'medium'}}
           />
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {tCore(`release.type.${release.metadata.releaseType}`)}
             </Text>
           )}
           {release.metadata.releaseType === 'scheduled' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {formatPublishDate(release)}
             </Text>
           )}
-        </Stack>
-        <Flex flex="none">
+        </Flex>
+        <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
-              <Text size={1}>
-                <LockIcon />
-              </Text>
+              <Icon size={1} icon={LockIcon} style={{margin: '-0.375rem'}} />
             </Box>
           )}
         </Flex>

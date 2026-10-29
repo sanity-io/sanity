@@ -3,21 +3,25 @@ import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
 import {UndoIcon} from '@sanity/icons/Undo'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
-import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
+import {Portal} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
+import {Box, Flex, VStack} from 'ui5'
 
-import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
-import {type Source} from '../../../../../../../../../config'
+import {Button} from '../../../../../../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../../../../../../ui-components/menuItem/MenuItem'
+import {type Source} from '../../../../../../../../../config/types'
 import {getAssetSourceDisplayName} from '../../../../../../../../../form/inputs/files/common/assetSourceUtils'
 import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
-import {useClient} from '../../../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useClient} from '../../../../../../../../../hooks/useClient'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {containerBox} from './Asset.css'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -27,10 +31,6 @@ const ASSET_TYPE: Record<AssetType, string> = {
   file: 'sanity.fileAsset',
   image: 'sanity.imageAsset',
 }
-
-const ContainerBox = styled(Box)`
-  width: min(calc(100vw - 40px), 320px);
-`
 
 export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({
@@ -46,6 +46,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
       state: {fullscreen},
     } = useSearchState()
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {file, image} = useSource().form
     const {t} = useTranslation()
 
@@ -115,8 +116,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 
     return (
-      <ContainerBox>
-        <Stack space={3}>
+      <Box className={containerBox}>
+        <VStack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>
@@ -198,8 +199,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
               />
             )}
           </Flex>
-        </Stack>
-      </ContainerBox>
+        </VStack>
+      </Box>
     )
   }
 }

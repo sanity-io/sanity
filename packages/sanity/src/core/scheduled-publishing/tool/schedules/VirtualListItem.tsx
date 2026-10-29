@@ -1,6 +1,7 @@
-import {Box, Card, Flex, Label} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {type VirtualItem, type Virtualizer} from '@tanstack/react-virtual'
 import {type CSSProperties, useEffect, useMemo, useState} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {ScheduleItem} from '../../components/scheduleItem'
@@ -80,7 +81,7 @@ function DelayedScheduleItem({schedule}: {schedule: Schedule}) {
 
 function MonthHeading({content}: {content: string}) {
   return (
-    <Flex align="flex-end" paddingBottom={2} paddingTop={4}>
+    <Flex alignItems="flex-end" paddingBottom={2} paddingTop={4}>
       <Label muted size={1}>
         {content}
       </Label>

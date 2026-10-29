@@ -1,24 +1,15 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
-import {styled} from 'styled-components'
+import {Text, Flex, VStack} from 'ui5'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DiffComponent} from '../../types'
 import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromToArrow} from './FromToArrow'
-
-/**
- * Horizontal scroll only. Avoid `overflow-x: auto` on `pre`: CSS pairs it with
- * `overflow-y: auto`, which spuriously shows a vertical scrollbar in flex layouts.
- */
-const CodeWrapper = styled.div`
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-`
+import {codeWrapper} from './JsonFieldDiff.css'
 
 const cardStyles: CSSProperties = {
   flex: 1,
@@ -41,32 +32,32 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
 
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
     <DiffCard as="del" diff={diff} style={cardStyles}>
-      <CodeWrapper>
+      <div className={codeWrapper}>
         <Code language="json" size={1}>
           {jsonify(diff.fromValue)}
         </Code>
-      </CodeWrapper>
+      </div>
     </DiffCard>
   )
 
   const to = diff.toValue !== undefined && diff.toValue !== null && (
     <DiffCard as="ins" diff={diff} style={cardStyles}>
-      <CodeWrapper>
+      <div className={codeWrapper}>
         <Code language="json" size={1}>
           {jsonify(diff.toValue)}
         </Code>
-      </CodeWrapper>
+      </div>
     </DiffCard>
   )
 
   const content =
     from && to ? (
       <DiffTooltip description={changeVerb} diff={diff}>
-        <Stack space={3}>
+        <VStack gap={3}>
           {from}
           <FromToArrow direction="down" align="center" />
           {to}
-        </Stack>
+        </VStack>
       </DiffTooltip>
     ) : from ? (
       <DiffTooltip description={changeVerb} diff={diff}>
@@ -79,11 +70,13 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
     ) : null
 
   return (
-    <Stack space={4} paddingY={1}>
+    <Flex gap={4} paddingY={1} flexDirection="column" flexShrink={0}>
       <Card border padding={3} radius={2} tone="caution">
-        <Text size={1}>{t('changes.unknown-schema-field.description')}</Text>
+        <Text size={1} as="div" trim={true} tone="caution">
+          {t('changes.unknown-schema-field.description')}
+        </Text>
       </Card>
       {content}
-    </Stack>
+    </Flex>
   )
 }

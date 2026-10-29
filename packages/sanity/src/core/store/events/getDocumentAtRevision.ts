@@ -8,6 +8,16 @@ import {type EventsStoreRevision} from './types'
 const documentRevisionCache: Record<string, Observable<EventsStoreRevision>> = Object.create(null)
 
 /**
+ * Clears the module-level revision cache. Exposed for tests.
+ * @internal
+ */
+export function clearDocumentRevisionCache(): void {
+  for (const key of Object.keys(documentRevisionCache)) {
+    delete documentRevisionCache[key]
+  }
+}
+
+/**
  * - When fetching by `revisionId`, `revisionId` will always be present in the result.
  * - When fetching by `time`, `revisionId` will only be present after fetching.
  */
@@ -33,6 +43,22 @@ type Context = {client: SanityClient; documentId: string} & (
     }
 )
 
+/**
+ * Fetches a document snapshot from the history API, either at a specific `revisionId` or at a
+ * point in `time`. Emits `{loading: true}` first, then the result.
+ *
+ * Main cases covered:
+ * - `revisionId === HISTORY_CLEARED_EVENT_ID` short-circuits to `{document: null, loading: false}`
+ *   without a request (that id is synthetic and has no revision behind it).
+ * - The revision may be missing (history retention): the API returns no documents and `document`
+ *   is `undefined`; callers like `getDocumentChanges` translate that into
+ *   `MissingSinceDocumentError`.
+ * - Errors are logged and emitted as `{document: null, loading: false}` — never thrown.
+ *
+ * Results are cached module-level per `projectId:dataset:documentId@<revisionId|time>` observable
+ * (`shareReplay(1)`), so concurrent and repeated subscribers share one request.
+ * Known quirks:  error results are cached forever, and the cache never evicts (tracked as known issues).
+ */
 export function getDocumentAtRevision<InputContext extends Context>({
   client,
   documentId,
@@ -42,8 +68,8 @@ export function getDocumentAtRevision<InputContext extends Context>({
   if (revisionId === HISTORY_CLEARED_EVENT_ID) {
     return of({document: null, loading: false, revisionId: revisionId})
   }
-  const cacheKey = `${documentId}@${revisionId ? ['revisionId', revisionId].join('.') : ['time', time].join('.')}`
-  const dataset = client.config().dataset
+  const {projectId, dataset} = client.config()
+  const cacheKey = `${projectId}:${dataset}:${documentId}@${revisionId ? ['revisionId', revisionId].join('.') : ['time', time].join('.')}`
   if (!documentRevisionCache[cacheKey]) {
     const searchParams = new URLSearchParams(
       typeof revisionId === 'string' ? {revision: revisionId} : {time},

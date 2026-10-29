@@ -3,22 +3,22 @@ import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity
 import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {pathToString} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockAnnotationProps} from '../../../types/blockProps'
 import {
-  type BlockAnnotationProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
@@ -43,6 +43,7 @@ interface AnnotationProps {
   referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -80,7 +81,9 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     setElementRef,
     value,
   } = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const markDefPath: Path = useMemo(
@@ -98,6 +101,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     if (memberItem) {
       // Take focus away from the editor so it doesn't accidentally propagate a new focusPath
       // for the text node that the annotation is attached to.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.blur(editor)
       // Open the annotation item (markDef object)
       onItemOpen(memberItem.node.path)
@@ -107,13 +111,17 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   const onClose = useCallback(() => {
     onItemClose()
     if (isEmptyItem(value)) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.removeAnnotation(editor, schemaType)
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, onItemClose, schemaType, value])
 
   const onRemove = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.removeAnnotation(editor, schemaType)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, schemaType])
 
@@ -158,6 +166,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
       children: input,
       focused,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       markers,
       onClose,
       onOpen,
@@ -249,6 +258,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
     __unstable_referenceBoundary: referenceBoundary,
     __unstable_referenceElement: referenceElement,
     children,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers,
     onOpen,
     onRemove,

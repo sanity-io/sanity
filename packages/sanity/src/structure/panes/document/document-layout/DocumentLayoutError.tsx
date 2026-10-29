@@ -1,6 +1,9 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {isDev, Translate, useTranslation} from 'sanity'
+import {Text, VStack} from 'ui5'
 
+import {structureLocaleNamespace} from '../../../i18n'
 import {ErrorPane} from '../../error'
 
 interface DocumentLayoutErrorProps {
@@ -13,7 +16,7 @@ interface DocumentLayoutErrorProps {
 
 export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
   const {documentType, value, currentMinWidth, paneKey, minWidth} = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <ErrorPane
@@ -30,9 +33,9 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack space={4}>
+      <VStack gap={4}>
         {documentType && (
-          <Text as="p">
+          <Text as="p" trim={true}>
             <Translate
               t={t}
               i18nKey="panes.document-pane.document-unknown-type.text"
@@ -42,13 +45,17 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
         )}
 
         {!documentType && (
-          <Text as="p">{t('panes.document-pane.document-unknown-type.without-schema.text')}</Text>
+          <Text as="p" trim={true}>
+            {t('panes.document-pane.document-unknown-type.without-schema.text')}
+          </Text>
         )}
 
         {isDev && value && (
           /* oxlint-disable i18next/no-literal-string */
           <>
-            <Text as="p">Here is the JSON representation of the document:</Text>
+            <Text as="p" trim={true}>
+              Here is the JSON representation of the document:
+            </Text>
 
             <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
               <Code language="json" size={[1, 1, 2]}>
@@ -58,7 +65,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
           </>
           /* oxlint-enable i18next/no-literal-string */
         )}
-      </Stack>
+      </VStack>
     </ErrorPane>
   )
 }

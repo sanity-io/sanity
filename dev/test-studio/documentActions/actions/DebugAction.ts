@@ -2,6 +2,7 @@ import {BugIcon} from '@sanity/icons/Bug'
 import {useId, useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const useDebugAction: DocumentActionComponent = ({onComplete}) => {
   // If the id changes it means that react unmounted and mounted a new instance of the component, it should stay the same.
   // `onComplete` is considered harmful as it explicitly triggers remounts by updating a `key` prop in the render loop of `<HookCollectionState />``

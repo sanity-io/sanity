@@ -4,9 +4,11 @@ import keyBy from 'lodash-es/keyBy.js'
 import {combineLatest, EMPTY, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {type DocumentAvailability, getPreviewPaths, prepareForPreview} from '../../../../../preview'
 import {createPathObserver} from '../../../../../preview/createPathObserver'
-import {isRecord} from '../../../../../util'
+import {type DocumentAvailability} from '../../../../../preview/types'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
+import {isRecord} from '../../../../../util/isRecord'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'gdr'
@@ -157,7 +159,7 @@ function fetchDocumentAvailability(
   id: string,
 ): Observable<DocumentAvailability | null> {
   const requestOptions = {
-    uri: client.getDataUrl('doc', id),
+    url: client.getDataUrl('doc', id),
     json: true,
     excludeContent: 'true',
     tag: `${REQUEST_TAG_BASE}.availability`,

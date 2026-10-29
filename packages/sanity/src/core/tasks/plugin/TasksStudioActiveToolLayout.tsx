@@ -1,15 +1,18 @@
-import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
+import {Card, Layer, Spinner, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
+import {Suspense} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
-import {type ActiveToolLayoutProps} from '../../config'
-import {TasksStudioSidebar} from '../components'
-import {useTasksEnabled, useTasksNavigation} from '../context'
+import {type ActiveToolLayoutProps} from '../../config/studio/types'
+import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 
 const FULLSCREEN_MEDIA_INDEX = 1
 const POSITION_ABSOLUTE_MEDIA_INDEX = 3
 
 const RootFlex = styled(Flex)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
 
   return css`
@@ -21,6 +24,7 @@ const RootFlex = styled(Flex)(({theme}) => {
   `
 })
 const SidebarMotionLayer = styled(Layer)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
 
   return css`
@@ -51,7 +55,18 @@ const SidebarMotionLayer = styled(Layer)(({theme}) => {
   `
 })
 
-function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
+/** The sidebar's loading treatment, shown while the feature check it reads is still pending */
+function TasksSidebarFallback() {
+  return (
+    <Card display="flex" flex={1} height="fill" data-testid="tasks-sidebar-loading">
+      <Flex alignItems="center" justifyContent="center" flexBasis="0%" flexGrow={1}>
+        <Spinner />
+      </Flex>
+    </Card>
+  )
+}
+
+export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
   const mediaIndex = useMediaIndex()
   const {
     state: {isOpen},
@@ -60,27 +75,23 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   // Lock the scroll when the sidebar is open in fullscreen mode
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
-    <RootFlex sizing="border" height="fill">
-      <Box flex={1} height="fill" overflow={scrollLock ? 'hidden' : 'auto'}>
+    <RootFlex height="100%">
+      <Box flexBasis="0%" flexGrow={1} height="100%" overflow={scrollLock ? 'hidden' : 'auto'}>
         {props.renderDefault(props)}
       </Box>
 
       <AnimatePresence initial={false}>
         {isOpen && (
           <SidebarMotionLayer zOffset={100} height="fill">
-            <TasksStudioSidebar />
+            {/* The sidebar reads the tasks mode, which suspends until the feature check has
+                answered; this boundary keeps that wait inside the sidebar, which can be open
+                before the check settles (a `?sidebar=tasks` link, the navbar button). */}
+            <Suspense fallback={<TasksSidebarFallback />}>
+              <TasksStudioSidebar />
+            </Suspense>
           </SidebarMotionLayer>
         )}
       </AnimatePresence>
     </RootFlex>
   )
-}
-
-export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
-  const {enabled} = useTasksEnabled()
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
-  return <TasksStudioActiveToolLayoutInner {...props} />
 }

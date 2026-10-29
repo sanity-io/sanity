@@ -4,7 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {ArrayValidationProvider, useArrayValidation} from './ArrayValidationContext'
 
-vi.mock('../../../../i18n', () => ({
+vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

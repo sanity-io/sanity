@@ -12,7 +12,7 @@ import isPlainObject from 'lodash-es/isPlainObject.js'
 import pick from 'lodash-es/pick.js'
 import uniqBy from 'lodash-es/uniqBy.js'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {type PreviewableType} from '../types'
 import {keysOf} from './keysOf'

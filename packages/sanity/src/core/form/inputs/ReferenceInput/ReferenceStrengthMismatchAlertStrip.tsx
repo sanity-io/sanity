@@ -1,7 +1,8 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**
@@ -27,8 +28,8 @@ export function ReferenceStrengthMismatchAlertStrip({
       status="warning"
       data-testid="alert-reference-strength-mismatch"
     >
-      <Stack space={3}>
-        <Text as="p" muted size={1}>
+      <VStack gap={3}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           <Translate
             t={t}
             i18nKey={
@@ -39,7 +40,7 @@ export function ReferenceStrengthMismatchAlertStrip({
           />
         </Text>
 
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           {t(
             shouldBe === 'weak'
               ? 'inputs.reference.strength-mismatch.is-strong-consquences'
@@ -57,7 +58,7 @@ export function ReferenceStrengthMismatchAlertStrip({
           )}
           tone="caution"
         />
-      </Stack>
+      </VStack>
     </AlertStrip>
   )
 }

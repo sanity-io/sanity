@@ -1,85 +1,80 @@
-import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
-import {styled} from 'styled-components'
+import {Flex, type GapProps} from 'ui5'
 
-import {type MenuButtonProps} from '../../../ui-components'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
-import {ObserveElement} from '../collapseMenu/ObserveElement'
-import {ContextMenuButton} from '../contextMenuButton'
+import {type ObservedIntersection, ObserveElement} from '../collapseMenu/ObserveElement'
+import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
+import {hiddenRow, menuButtonPlaceholder, optionObserveElement} from './CollapseTabList.css'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
 }
 
-const OptionObserveElement = styled(ObserveElement)`
-  list-style: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-  opacity: 0;
-  visibility: hidden;
-`
-
-const HiddenRow = styled(Flex)`
-  opacity: 0;
-  height: 0.1px;
-  overflow: hidden;
-`
-
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
   }
-  onMenuClose?: () => void
-  collapsed?: boolean
-  disableRestoreFocusOnClose?: boolean
+  style?: CSSProperties
 }
 
 /**
  * Similar to `<CollapseMenu />` but instead of collapsing the inner items by removing the text
  * it shows the items that fit, and the rest are rendered in a menu.
  * @internal */
-export const CollapseTabList = forwardRef(function CollapseTabList(
-  props: CollapseTabListProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {
-    children: childrenProp,
-    gap,
-    menuButtonProps,
-    disableRestoreFocusOnClose,
-    onMenuClose,
-    collapsed,
-    ...rest
-  } = props
+export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
+  const {ref, children: childrenProp, gap, menuButtonProps, style, ...rest} = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
-  const [hiddenElements, setHiddenElements] = useState<React.JSX.Element[]>([])
-  const [showChildren, setShowChildren] = useState(false)
+  // Whether the measured clone of each child key currently fits in the hidden row,
+  // or undefined for keys not measured yet. Entries for keys that have left
+  // `children` linger here, so everything rendered must be derived through the
+  // current `children` array.
+  const [intersections, setIntersections] = useState<Record<string, boolean | undefined>>({})
 
   const children = useMemo(
     () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
   )
 
+  // Nothing is shown until a measurement arrives for the current children, to
+  // avoid flashing children that may not fit. The clones below report their
+  // first measurement from a layout effect, so this is true before the first
+  // paint. Derived from the current children rather than the map as a whole,
+  // which retains entries for departed keys.
+  const hasMeasured = children.some(
+    (child) => child.key !== null && intersections[child.key] !== undefined,
+  )
+
   /**
-   * Keeps track of the children that will be shown in place and not in the menu.
+   * Partition of the current children: those measured as not fitting belong in
+   * the overflow menu, the rest render inline. `hiddenChildren` is the single
+   * source for the menu button and its options, so the menu button can never
+   * render without menu items.
    */
-  const displayChildren = useMemo(() => {
-    if (collapsed) return null // If collapsed, we don't want to show any children
-    if (!showChildren) return null // If we haven't run the intersection observer yet, we don't want to show any children
-    return children.filter((c) => !hiddenElements.some((h) => h.key === c.key))
-  }, [children, collapsed, hiddenElements, showChildren])
+  const {displayChildren, hiddenChildren} = useMemo(() => {
+    const display: React.JSX.Element[] = []
+    const hidden: React.JSX.Element[] = []
+    for (const child of children) {
+      if (child.key !== null && intersections[child.key] === false) {
+        hidden.push(child)
+      } else {
+        display.push(child)
+      }
+    }
+    return {displayChildren: display, hiddenChildren: hidden}
+  }, [children, intersections])
 
   const intersectionOptions = useMemo(
     () => ({
@@ -95,62 +90,89 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     [menuButtonProps],
   )
 
-  const menuOptionsArray = useMemo(
-    () =>
-      collapsed
-        ? children
-        : children.filter(({key}) => hiddenElements.find((o: React.JSX.Element) => o.key === key)),
-    [children, hiddenElements, collapsed],
-  )
-
   const handleIntersection = useCallback(
-    (e: IntersectionObserverEntry, child: React.JSX.Element) => {
-      const isHidden = hiddenElements.some((el) => el.key === child.key)
-
-      if (!showChildren) setShowChildren(true)
-      const isIntersecting = e.isIntersecting
-      if (!isHidden && !isIntersecting) setHiddenElements((prev) => [...prev, child])
-      if (isHidden && isIntersecting)
-        setHiddenElements((prev) => prev.filter((el) => el.key !== child.key))
+    (entry: ObservedIntersection, child: React.JSX.Element) => {
+      const {key} = child
+      if (key === null) return
+      setIntersections((prev) =>
+        prev[key] === entry.isIntersecting ? prev : {...prev, [key]: entry.isIntersecting},
+      )
     },
-    [hiddenElements, showChildren, setShowChildren, setHiddenElements],
+    [],
   )
 
   return (
-    <Flex direction="column" ref={ref} sizing="border" style={{position: 'relative'}} {...rest}>
-      <Flex justify="center" gap={gap} flex={1}>
-        {displayChildren}
-        {(hiddenElements.length > 0 || collapsed) && (
+    <Flex
+      flexDirection="column"
+      ref={ref}
+      {...rest}
+      style={{
+        position: 'relative',
+        ...style,
+      }}
+    >
+      <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
+        {hasMeasured ? displayChildren : null}
+        {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
-            disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
             menuButtonProps={menuButtonProps}
-            menuOptions={menuOptionsArray}
-            onMenuClose={onMenuClose}
+            menuOptions={hiddenChildren}
           />
-        )}
-      </Flex>
-
-      {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
-        {cloneElement(menuButton, {
-          'disabled': true,
-          'aria-hidden': true,
-        })}
-        {children?.map((child) => (
-          <OptionObserveElement
-            key={`${child.key}_observer`}
-            options={intersectionOptions}
-            onIntersectionChange={(e) => handleIntersection(e[0], child)}
+        ) : (
+          // The hidden row below prepends a menu button clone before the child
+          // clones, so children only measure as fitting when the container is at
+          // least a menu button wider than the children themselves. Reserving
+          // that footprint here keeps a content-sized container (the navbar's
+          // wide-regime `auto` grid track) wide enough on its own, and makes the
+          // swap with the real menu button layout-stable.
+          <div
+            className={menuButtonPlaceholder}
+            aria-hidden="true"
+            data-testid="collapse-tab-list-placeholder"
           >
-            {cloneElement(child, {
+            {cloneElement(menuButton, {
               'disabled': true,
               'aria-hidden': true,
               'tabIndex': -1,
             })}
-          </OptionObserveElement>
-        ))}
-      </HiddenRow>
+          </div>
+        )}
+      </Flex>
+
+      {/* Element that always render all the children to keep track of their position and if the available space to render them */}
+      <Flex
+        className={hiddenRow}
+        justifyContent="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
+        {cloneElement(menuButton, {
+          'disabled': true,
+          'aria-hidden': true,
+        })}
+        {/* The clones measure against this row, known after the first commit. Mounting them
+            then, rather than with a viewport root they would re-measure against a commit later,
+            keeps it to one measurement; both commits happen before the first paint. */}
+        {rootEl &&
+          children.map((child) => (
+            <ObserveElement
+              className={optionObserveElement}
+              key={`${child.key}_observer`}
+              options={intersectionOptions}
+              // Entries are delivered oldest first, so the last one is current
+              onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
+            >
+              {cloneElement(child, {
+                'disabled': true,
+                'aria-hidden': true,
+                'tabIndex': -1,
+              })}
+            </ObserveElement>
+          ))}
+      </Flex>
     </Flex>
   )
-})
+}

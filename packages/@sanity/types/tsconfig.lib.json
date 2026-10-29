@@ -6,6 +6,7 @@
     "outDir": "./lib",
     "paths": {
       "@sanity/types": ["./src/index.ts"]
-    }
+    },
+    "noCheck": true
   }
 }

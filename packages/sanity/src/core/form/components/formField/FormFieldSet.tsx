@@ -5,31 +5,32 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type ReactNode,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {VStack, Flex, Box} from 'ui5'
 
-import {TextWithTone} from '../../../components'
-import {type DocumentFieldActionNode} from '../../../config'
-import {useTranslation} from '../../../i18n'
-import {type FormNodePresence} from '../../../presence'
-import {useFieldActions} from '../../field'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type FormNodePresence} from '../../../presence/types'
+import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {type FieldCommentsProps} from '../../types'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {type FieldCommentsProps} from '../../types/fieldProps'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
+import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -48,6 +49,7 @@ export interface FormFieldSetProps {
    */
   __unstable_presence?: FormNodePresence[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode
@@ -75,13 +77,17 @@ export interface FormFieldSetProps {
 
   path: Path
   readOnly?: boolean
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
+const Root = styled(VStack).attrs({forwardedAs: 'fieldset'})`
   border: none;
 
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
@@ -98,10 +104,13 @@ const Content = styled(Box)<{
    */
   $borderLeft: boolean
   $focused?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }>((props) => {
   const {$borderLeft, $focused, theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {base} = theme.sanity.color
 
   return css`
@@ -111,16 +120,20 @@ const Content = styled(Box)<{
       border-color 0.2s ease-in-out,
       box-shadow 0.2s ease-in-out;
 
-    ${$borderLeft &&
-    $focused &&
-    `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`}
+    ${
+      $borderLeft &&
+      $focused &&
+      `border-left: 1px solid var(--card-focus-ring-color);
+    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
+    }
 
-    ${$borderLeft &&
-    !$focused &&
-    `
+    ${
+      $borderLeft &&
+      !$focused &&
+      `
       box-shadow: inset 0 0 0 transparent;
-    `}
+    `
+    }
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
@@ -132,18 +145,33 @@ const Content = styled(Box)<{
   `
 })
 
+/* Anchors the collapsible legend's hit area (see FormFieldSetLegend) to the whole row */
+const HeaderRow = styled(Flex)`
+  position: relative;
+`
+
+/* Keeps interactive header items above the legend's hit area */
+const HeaderRowItem = styled(Box)`
+  position: relative;
+`
+
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
-export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+export function FormFieldSet(
+  props: FormFieldSetProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
+    RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref: forwardedRef,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    changedFromBaseVariant = false,
     children,
     collapsed,
     collapsible,
@@ -193,21 +221,29 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid columns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid
+        gridTemplateColumns={columns ? getGridTemplateColumns(columns) : undefined}
+        columnGap={4}
+        rowGap={5}
+      >
         {getChildren(children)}
       </ColumnarGrid>
     )
   }, [children, collapsed, columns])
 
   return (
-    <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+    <FormRow
+      gutterStartCell={
+        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+      }
+    >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}
           {...restProps}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          space={2}
+          gap={2}
         >
           <FormFieldBaseHeader
             __internal_comments={comments}
@@ -218,8 +254,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack space={3}>
-                <Flex align="center">
+              <VStack gap={3}>
+                <HeaderRow alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -235,21 +271,21 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                       </Badge>
                     </Box>
                   )}
-                  {isArraySchemaType(schemaType) && (
-                    <Box marginLeft={2}>
+                  {isArraySchemaType(schemaType) && Array.isArray(path) && (
+                    <HeaderRowItem marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
-                    </Box>
+                    </HeaderRowItem>
                   )}
                   {hasValidationMarkers && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormFieldValidationStatus
                         fontSize={1}
                         placement="top"
                         validation={validation}
                       />
-                    </Box>
+                    </HeaderRowItem>
                   )}
-                </Flex>
+                </HeaderRow>
 
                 {deprecated && (
                   <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
@@ -262,7 +298,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                     {description}
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             }
           />
           <Content
@@ -280,4 +316,4 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       </FormNodeDivergenceDetail>
     </FormRow>
   )
-})
+}

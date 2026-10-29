@@ -1,20 +1,21 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../hooks'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useSource} from '../../studio/source'
 import {
   SingleDocReleaseEnabledProvider,
   useSingleDocReleaseEnabled,
 } from './SingleDocReleaseEnabledProvider'
 
-vi.mock('../../hooks')
+vi.mock('../../hooks/useFeatureEnabled')
 
 vi.mock('../../studio/source', () => ({
   useSource: vi.fn().mockReturnValue({}),
 }))
 
 const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useSourceMock = useSource as ReturnType<typeof vi.fn>
 
 const featureFlagName = 'singleDocRelease'

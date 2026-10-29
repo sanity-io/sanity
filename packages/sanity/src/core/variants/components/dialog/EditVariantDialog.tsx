@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useVariantOperations} from '../../store/useVariantOperations'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
@@ -46,6 +46,7 @@ export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Elem
       initialValue={initialValue}
       onCancel={onCancel}
       onSubmit={handleSubmit}
+      lockType
       renderCancelButton
     />
   )

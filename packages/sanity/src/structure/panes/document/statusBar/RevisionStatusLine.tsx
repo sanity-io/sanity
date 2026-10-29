@@ -1,10 +1,10 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
-import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {useContext} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {useDocumentPane} from '../useDocumentPane'
 
@@ -45,14 +45,12 @@ export function RevisionStatusLine(): React.JSX.Element {
 
   return (
     <>
-      <Flex flex={1} gap={3} padding={2}>
-        <Box flex="none">
-          <Text size={1}>
-            <RestoreIcon />
-          </Text>
+      <Flex flexBasis="0%" flexGrow={1} gap={3} padding={2}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+          <Icon muted size={1} icon={RestoreIcon} style={{margin: '-0.375rem'}} />
         </Box>
-        <Box flex={1}>
-          <StatusText size={1} textOverflow="ellipsis">
+        <Box flexBasis="0%" flexGrow={1}>
+          <StatusText size={1} truncate={1} forwardedAs="div" trim={true}>
             {revisionNotFound ? (
               <Translate t={t} i18nKey="document-status.revision-not-found" />
             ) : (

@@ -11,12 +11,12 @@ import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
-import {type Source} from '../../../../config'
+import {type Source} from '../../../../config/types'
 import {type FIXME} from '../../../../FIXME'
-import {useSource} from '../../../../studio'
+import {useSource} from '../../../../studio/source'
 import {useFormValue} from '../../../contexts/FormValue'
-import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput'
-import {type ObjectInputProps} from '../../../types'
+import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput/GlobalDocumentReferenceInput'
+import {type ObjectInputProps} from '../../../types/inputProps'
 import {getReferenceClient} from './datastores/getReferenceClient'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {search} from './datastores/search'
@@ -78,6 +78,7 @@ export function StudioGlobalDocumentReferenceInput(
   props: StudioGlobalDocumentReferenceInputProps,
 ): React.JSX.Element {
   const {path, schemaType} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const client = source.getClient({
     apiVersion: '2025-02-19',
@@ -109,6 +110,7 @@ export function StudioGlobalDocumentReferenceInput(
           if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           return throwError(err)
         }),
       ),

@@ -17,14 +17,14 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../utils/memoKey'
 import {consistencyStatus} from './consistencyStatus'
 import {getOperationStoreKey} from './getOperationStoreKey'
 import {operationArgs} from './operationArgs'
-import {type OperationArgs, type OperationsAPI} from './operations'
 import {commit} from './operations/commit'
 import {del} from './operations/delete'
 import {discardChanges} from './operations/discardChanges'
@@ -32,6 +32,7 @@ import {duplicate} from './operations/duplicate'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
+import {type OperationArgs, type OperationsAPI} from './operations/types'
 import {unpublish} from './operations/unpublish'
 import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
@@ -152,40 +153,51 @@ export const operationEvents = memoize(
     extraOptions?: DocumentStoreExtraOptions
   }) => {
     const storeKey = getOperationStoreKey(ctx.client)
+
+    const runOperation = (args: ExecuteArgs): Observable<IntermediarySuccess | IntermediaryError> =>
+      operationArgs(ctx, args.idPair, args.typeName).pipe(
+        take(1),
+        switchMap((operationArguments) => {
+          const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
+          if (requiresConsistency) {
+            operationArguments.published.commit()
+            operationArguments.draft.commit()
+            operationArguments.version?.commit()
+          }
+          const isConsistent$ = consistencyStatus(
+            ctx.client,
+            args.idPair,
+            args.typeName,
+            ctx.extraOptions,
+          ).pipe(filter(Boolean))
+          const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
+          return ready$.pipe(
+            switchMap(() => execute(args.operationName, operationArguments, args.extraArgs)),
+          )
+        }),
+        map((): IntermediarySuccess => ({type: 'success', args})),
+        catchError((err): Observable<IntermediaryError> => of({type: 'error', args, error: err})),
+      )
+
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       filter((op) => op.storeKey === storeKey || !op.storeKey),
       groupBy((op) => op.idPair.publishedId),
-      mergeMap((groups$) =>
-        groups$.pipe(
-          // although it might look like a bug, dropping pending async operations here is actually a feature
-          // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
-          // should be cancelled
-          switchMap((args) =>
-            operationArgs(ctx, args.idPair, args.typeName).pipe(
-              take(1),
-              switchMap((operationArguments) => {
-                const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
-                if (requiresConsistency) {
-                  operationArguments.published.commit()
-                  operationArguments.draft.commit()
-                  operationArguments.version?.commit()
-                }
-                const isConsistent$ = consistencyStatus(
-                  ctx.client,
-                  args.idPair,
-                  args.typeName,
-                  ctx.extraOptions,
-                ).pipe(filter(Boolean))
-                const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
-                return ready$.pipe(
-                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs)),
-                )
-              }),
-              map((): IntermediarySuccess => ({type: 'success', args})),
-              catchError(
-                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
-              ),
-            ),
+      mergeMap((group$) =>
+        merge(
+          // A commit only sends local changes to the server, so it runs on its own and never
+          // cancels a pending operation. Otherwise the autocommit that follows a patch can cancel
+          // a publish that is waiting for an earlier commit, and the publish is never sent. The
+          // publish already commits pending changes itself before it waits.
+          group$.pipe(
+            filter((args) => args.operationName === 'commit'),
+            mergeMap(runOperation),
+          ),
+          group$.pipe(
+            filter((args) => args.operationName !== 'commit'),
+            // although it might look like a bug, dropping pending async operations here is actually a feature
+            // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
+            // should be cancelled
+            switchMap(runOperation),
           ),
         ),
       ),
@@ -205,11 +217,13 @@ export const operationEvents = memoize(
       }),
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
   },
-  (ctx) => {
-    const config = ctx.client.config()
-    // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
-  },
+  (ctx) =>
+    // Per credential (token+dataset+projectId): this captures `ctx.client` and
+    // drives commits/mutations through it, so a cross-tab re-login (new token)
+    // must get a fresh entry rather than replaying the stale-token client. See
+    // getClientCredentialSegments.
+    createMemoKey(getClientCredentialSegments(ctx.client)),
 )

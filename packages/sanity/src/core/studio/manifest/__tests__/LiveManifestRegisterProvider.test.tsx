@@ -3,7 +3,7 @@ import {StrictMode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useLiveUserApplication} from '../../liveUserApplication/useLiveUserApplication'
-import {useWorkspaces} from '../../workspaces'
+import {useWorkspaces} from '../../workspaces/useWorkspaces'
 import {LiveManifestRegisterProvider} from '../LiveManifestRegisterProvider'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
 
@@ -15,9 +15,7 @@ vi.mock('@sanity/ui', () => ({
 vi.mock('../../liveUserApplication/useLiveUserApplication', () => ({
   useLiveUserApplication: vi.fn(),
 }))
-vi.mock('../../workspaces', () => ({
-  useWorkspaces: vi.fn(),
-}))
+vi.mock('../../workspaces/useWorkspaces', () => ({useWorkspaces: vi.fn()}))
 vi.mock('../registerLiveStudioManifest', () => ({
   registerStudioManifest: vi.fn().mockResolvedValue(undefined),
 }))

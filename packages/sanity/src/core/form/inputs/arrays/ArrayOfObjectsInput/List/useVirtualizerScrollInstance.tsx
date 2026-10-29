@@ -1,4 +1,4 @@
-import {type MutableRefObject, useContext} from 'react'
+import {type RefObject, useContext} from 'react'
 import {VirtualizerScrollInstanceContext} from 'sanity/_singletons'
 
 /**
@@ -12,7 +12,7 @@ export interface VirtualizerScrollInstance {
   /**
    * The container that wraps the array items
    */
-  containerElement: MutableRefObject<HTMLElement | null>
+  containerElement: RefObject<HTMLElement | null>
 }
 
 /**

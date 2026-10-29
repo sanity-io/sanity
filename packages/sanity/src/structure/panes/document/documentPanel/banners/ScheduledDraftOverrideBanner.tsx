@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Text} from '@sanity/ui'
 import {getPublishedId, Translate, useScheduledDraftDocument, useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -38,7 +38,7 @@ export function ScheduledDraftOverrideBanner({
       tone="caution"
       icon={WarningOutlineIcon}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <Translate t={t} i18nKey="banners.scheduled-draft-override-banner.text" />
         </Text>
       }

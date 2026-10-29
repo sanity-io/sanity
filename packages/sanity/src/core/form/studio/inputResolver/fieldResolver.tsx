@@ -7,16 +7,19 @@ import {
 } from '@sanity/types'
 import {type ComponentType, useMemo, useState} from 'react'
 
-import {ChangeIndicator} from '../../../changeIndicators'
-import {type DocumentFieldActionNode} from '../../../config'
-import {FormField, FormFieldSet, FormRow} from '../../components'
-import {FormDivergenceIndicator} from '../../components/FormDivergenceIndicator'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {FormField} from '../../components/formField/FormField'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {FormFieldGutter} from '../../components/FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
+import {FormRow} from '../../components/layout/FormRow'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
-import {FieldActionsProvider, FieldActionsResolver} from '../../field'
+import {FieldActionsProvider} from '../../field/actions/FieldActionsProvider'
+import {FieldActionsResolver} from '../../field/actions/FieldActionsResolver'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
-import {type FieldMember} from '../../store'
-import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
+import {type FieldMember} from '../../store/types/members'
+import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types/fieldProps'
 import {getTypeChain} from './helpers'
 
 const EMPTY_ARRAY: never[] = []
@@ -32,7 +35,14 @@ function BooleanField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter
+            path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
+          />
+        }
+      >
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
@@ -49,7 +59,9 @@ function BooleanField(field: FieldProps) {
           path={field.path}
         >
           <FieldActionsProvider
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_slot={field.__internal_slot}
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_comments={field.__internal_comments}
             actions={fieldActionsNodes}
             focused={focused}
@@ -77,7 +89,14 @@ function DateTimeField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter
+            path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
+          />
+        }
+      >
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
@@ -89,7 +108,9 @@ function DateTimeField(field: FieldProps) {
           />
         )}
         <FieldActionsProvider
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
           actions={fieldActionsNodes}
           focused={focused}
@@ -121,7 +142,9 @@ function PrimitiveField(field: FieldProps) {
       )}
 
       <FieldActionsProvider
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_slot={field.__internal_slot}
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments={field.__internal_comments}
         actions={fieldActionsNodes}
         focused={focused}
@@ -129,7 +152,9 @@ function PrimitiveField(field: FieldProps) {
       >
         <div data-testid={`field-${field.inputId}`}>
           <FormField
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_slot={field.__internal_slot}
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_comments={field.__internal_comments}
             __unstable_headerActions={fieldActionsNodes}
             __unstable_presence={field.presence}
@@ -140,6 +165,7 @@ function PrimitiveField(field: FieldProps) {
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
             path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
             readOnly={field.inputProps.readOnly}
           >
             <ChangeIndicator
@@ -188,14 +214,18 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
       )}
 
       <FieldActionsProvider
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_slot={field.__internal_slot}
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments={field.__internal_comments}
         actions={fieldActionsNodes}
         focused={focused}
         path={field.path}
       >
         <FormFieldSet
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={field.presence}
@@ -212,6 +242,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
+          changedFromBaseVariant={field.changedFromBaseVariant}
           readOnly={field.inputProps.readOnly}
         >
           {field.children}
@@ -249,7 +280,9 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
       <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
         <FormFieldSet
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={presence}
@@ -264,6 +297,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
+          changedFromBaseVariant={field.changedFromBaseVariant}
           schemaType={field.schemaType}
           readOnly={field.inputProps.readOnly}
         >

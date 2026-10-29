@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 
 import {checkCors, type CorsCheckCache} from '../workspaces/corsCheck'
-import {classifyConfigError, isNetworkError, isTimeoutError} from './classify'
+import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './classify'
 
 /**
  * A diagnosed request failure — the reason a request the studio can't recover
@@ -68,8 +68,9 @@ export function createRequestFailureProbe(
     }
 
     // Opaque network/CORS failure — probe `/check/cors` to learn why. Skip
-    // timeouts (the probe itself would just time out).
-    if (!isNetworkError(err) || isTimeoutError(err)) {
+    // timeouts (the probe itself would just time out), including leftover
+    // get-it v8 / Node timeout codes that `isTimeoutError` no longer matches.
+    if (!isNetworkError(err) || isRequestTimeoutError(err)) {
       return {type: 'unknown'}
     }
 
@@ -84,4 +85,27 @@ export function createRequestFailureProbe(
     }
     return {type: 'cors', allowed: cors.allowed, withCredentials: cors.withCredentials}
   }
+}
+
+/**
+ * Lets the auth store's `/users/me` probe diagnose and report the failures the
+ * studio request handler would normally catch — but can't here, because the
+ * probe runs on a client with that handler stripped (see `getCurrentUser`).
+ *
+ * - `diagnose` — the shared classifier. The client is passed per call rather
+ *   than bound up front, because the auth store builds its own clients
+ *   internally (so there's no single client to bind the probe to).
+ * - `onRequestFailure` — reports a non-`unknown` result to the studio so it
+ *   can take over the screen (CORS / missing project or dataset). Must be
+ *   idempotent: the probe runs inside a retryable thunk, so a recurring
+ *   failure can report the same result more than once.
+ *
+ * @internal
+ */
+export interface RequestFailureDiagnostics {
+  diagnose: (err: unknown, client: SanityClient) => ReturnType<RequestFailureProbe>
+  onRequestFailure: (
+    result: Exclude<RequestFailureResult, {type: 'unknown'}>,
+    client: SanityClient,
+  ) => void
 }

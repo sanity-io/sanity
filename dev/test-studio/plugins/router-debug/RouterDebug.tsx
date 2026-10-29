@@ -1,7 +1,9 @@
 import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
-import {Button, Card, Code, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
+import {Text, Flex, VStack} from 'ui5'
 
 export function RouterDebug() {
   const {navigate} = useRouter()
@@ -13,12 +15,13 @@ export function RouterDebug() {
     },
   })
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const client = useClient()
 
   return (
     <Card sizing="border" padding={5}>
       <Flex>
-        <Stack space={4}>
+        <VStack gap={4}>
           <Button onClick={() => createPreviewSecret(client, 'test-studio', location.href)}>
             Create Secret
           </Button>
@@ -70,8 +73,10 @@ export function RouterDebug() {
 
           <Card shadow={1} padding={3} radius={2}>
             <RouteScope scope="some-plugin">
-              <Stack space={3}>
-                <Text weight="semibold">A (scoped) plugin</Text>
+              <VStack gap={3}>
+                <Text weight="semibold" as="div" trim={true}>
+                  A (scoped) plugin
+                </Text>
 
                 <StateLink
                   state={{
@@ -82,13 +87,13 @@ export function RouterDebug() {
                   Click to navigate to a plugin param
                 </StateLink>
                 <InspectRouterState />
-              </Stack>
+              </VStack>
             </RouteScope>
           </Card>
           <Card shadow={1} padding={3} radius={2}>
             <InspectRouterState />
           </Card>
-        </Stack>
+        </VStack>
       </Flex>
     </Card>
   )
@@ -97,11 +102,13 @@ export function RouterDebug() {
 function InspectRouterState() {
   const {state} = useRouter()
   return (
-    <Stack space={3}>
-      <Text weight="semibold">Decoded router state</Text>
+    <VStack gap={3}>
+      <Text weight="semibold" as="div" trim={true}>
+        Decoded router state
+      </Text>
       <Code language="json" size={1}>
         {JSON.stringify(state, null, 2)}
       </Code>
-    </Stack>
+    </VStack>
   )
 }

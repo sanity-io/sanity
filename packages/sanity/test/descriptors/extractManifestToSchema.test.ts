@@ -494,6 +494,7 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
           icon: () => 'remove-icon',
           groups: [{name: 'groups-are-removed'}],
           __experimental_omnisearch_visibility: true,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __experimental_search: [
             {
               path: 'title',

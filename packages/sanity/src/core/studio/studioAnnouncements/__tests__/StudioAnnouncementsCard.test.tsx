@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
@@ -109,8 +109,10 @@ describe('StudioAnnouncementsCard', () => {
       {wrapper},
     )
 
-    expect(screen.queryByText("What's new")).toBeNull()
-    expect(screen.queryByText(announcementCardProps.title)).toBeNull()
+    // The card renders in a popover, which doesn't render its content until it opens (or the
+    // reference element shows intent to open it).
+    expect(screen.queryByText("What's new")).not.toBeInTheDocument()
+    expect(screen.queryByText(announcementCardProps.title)).not.toBeInTheDocument()
   })
   test('calls onCardClick when the card is clicked', async () => {
     const onCardClickMock = vi.fn()

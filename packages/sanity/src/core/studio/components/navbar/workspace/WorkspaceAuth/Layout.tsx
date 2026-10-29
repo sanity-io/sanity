@@ -1,7 +1,9 @@
 import {SanityLogo} from '@sanity/logos'
-import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
+import {Card, Heading, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import {Text, Box, Flex, VStack, Icon, Link} from 'ui5'
+
+import {footerLink} from './Layout.css'
 
 const LINKS = [
   {
@@ -26,12 +28,6 @@ const LINKS = [
   },
 ]
 
-const StyledText = styled(Text)`
-  a {
-    color: inherit;
-  }
-`
-
 interface LayoutProps {
   header?: ReactNode
   children: ReactNode
@@ -43,9 +39,9 @@ export function Layout(props: LayoutProps) {
   const prefersDark = usePrefersDark()
 
   return (
-    <Stack space={6}>
+    <VStack gap={6}>
       <Card border radius={3} overflow="auto">
-        <Stack>
+        <VStack>
           {typeof header === 'object' && <Box>{header}</Box>}
           {typeof header === 'string' && (
             <Box paddingY={4}>
@@ -62,25 +58,29 @@ export function Layout(props: LayoutProps) {
           </Box>
 
           {footer && <Box>{footer}</Box>}
-        </Stack>
+        </VStack>
       </Card>
 
-      <Flex direction="column" gap={4} justify="center" align="center" paddingBottom={4}>
-        <Text size={3}>
-          <SanityLogo dark={prefersDark} />
-        </Text>
+      <Flex
+        flexDirection="column"
+        gap={4}
+        justifyContent="center"
+        alignItems="center"
+        paddingBottom={4}
+      >
+        <Icon size={3} icon={<SanityLogo dark={prefersDark} />} style={{margin: '-0.5rem'}} />
 
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           {LINKS.map((link, index) => (
             <Fragment key={link.title}>
-              <StyledText muted size={1}>
-                <a href={link.url} target="_blank" rel="noopener noreferrer">
+              <Text muted size={1} as="div" trim={true}>
+                <Link className={footerLink} href={link.url} openInNewTab underlined={false}>
                   {link.title}
-                </a>
-              </StyledText>
+                </Link>
+              </Text>
 
               {index < LINKS.length - 1 && (
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   •
                 </Text>
               )}
@@ -88,6 +88,6 @@ export function Layout(props: LayoutProps) {
           ))}
         </Flex>
       </Flex>
-    </Stack>
+    </VStack>
   )
 }

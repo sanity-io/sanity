@@ -3,12 +3,13 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Spinner, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
+import {Flex, Box} from 'ui5'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -69,15 +70,15 @@ export function LocationsBanner(props: {
     <Card padding={1} radius={2} border tone={tone}>
       <div style={{margin: -1}}>
         {!locations && (
-          <Flex align="flex-start" gap={3} padding={3}>
+          <Flex alignItems="flex-start" gap={3} padding={3}>
             {tone && ToneIcon && (
-              <Box flex="none">
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <Text size={1}>
                   <ToneIcon />
                 </Text>
               </Box>
             )}
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Text size={1} weight="medium">
                 {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                 {title}
@@ -95,7 +96,7 @@ export function LocationsBanner(props: {
               tone="inherit"
             >
               <Flex gap={3}>
-                <Box flex="none">
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                   {isResolving ? (
                     <Spinner size={1} />
                   ) : (
@@ -113,7 +114,7 @@ export function LocationsBanner(props: {
                     </Text>
                   )}
                 </Box>
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <Text size={1} weight="medium">
                     {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                     {title}
@@ -121,7 +122,7 @@ export function LocationsBanner(props: {
                 </Box>
               </Flex>
             </Card>
-            <Stack hidden={!expanded} marginTop={1} space={1}>
+            <Flex hidden={!expanded} marginTop={1} gap={1} flexDirection="column">
               {locations.map((l) => {
                 let active = false
                 if (
@@ -142,7 +143,7 @@ export function LocationsBanner(props: {
                   />
                 )
               })}
-            </Stack>
+            </Flex>
           </>
         )}
       </div>
@@ -169,10 +170,10 @@ function LocationItem(props: {
     params: {
       id: documentId,
       type: documentType,
-      mode: 'presentation',
-      presentation: toolName,
       ...presentation?.structureParams,
       ...paneParams,
+      mode: 'presentation',
+      presentation: toolName,
       preview: node.href,
     },
   })
@@ -195,12 +196,12 @@ function LocationItem(props: {
       tone="inherit"
     >
       <Flex gap={3}>
-        <Box flex="none">
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
           <Text size={1}>
             <Icon />
           </Text>
         </Box>
-        <Stack flex={1} space={2}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
           <Text size={1} weight="medium">
             {node.title}
           </Text>
@@ -209,7 +210,7 @@ function LocationItem(props: {
               {node.href}
             </Text>
           )}
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )

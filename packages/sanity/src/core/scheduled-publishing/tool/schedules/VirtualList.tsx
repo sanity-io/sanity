@@ -1,7 +1,7 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
-import {Box, Flex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
@@ -33,6 +33,7 @@ const VirtualList = () => {
   // Reset virtual list scroll position on state changes
   useEffect(() => {
     containerRef?.current?.scrollTo(0, 0)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [scheduleState, sortBy, containerRef])
 
   return (
@@ -50,7 +51,7 @@ const VirtualList = () => {
       </Box>
       {/* Clear completed schedules */}
       {scheduleState === 'succeeded' && (
-        <Flex justify="center" marginTop={6}>
+        <Flex justifyContent="center" marginTop={6}>
           <Button
             icon={CheckmarkCircleIcon}
             mode="ghost"
@@ -65,7 +66,6 @@ const VirtualList = () => {
 
 export default VirtualList
 
-// oxlint-disable-next-line react/react-compiler
 function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleSort) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -93,6 +93,7 @@ function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleS
     return items
   }, [activeSchedules, sortBy])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     count: listSourceItems.length,
     getScrollElement: () => containerRef.current,

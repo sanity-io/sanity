@@ -1,8 +1,9 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {EnhancedObjectDialog} from '../../../../components/EnhancedObjectDialog'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -31,6 +32,7 @@ export function ObjectEditModal(props: {
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const schemaTypeTitle = schemaType.i18nTitleKey
@@ -59,7 +61,7 @@ export function ObjectEditModal(props: {
         referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
         title={<>{modalTitle}</>}
-        width={modalWidth}
+        width={modalWidth ?? 1}
         data-testid="popover-edit-dialog"
       >
         {props.children}

@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
 import {type TimelineState, type TimelineStore} from './useTimelineStore'
@@ -6,6 +7,7 @@ import {type TimelineState, type TimelineStore} from './useTimelineStore'
  * Custom hook which wraps around `useSyncExternalStore`.
  * Accepts a selector function which can be used to opt-in to specific timelineStore updates.
  *
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @internal
  */
 export function useTimelineSelector<ReturnValue>(

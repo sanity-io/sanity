@@ -2,12 +2,13 @@ import {Schema} from '@sanity/schema'
 import {type CurrentUser, defineField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {buildCommentBreadcrumbs} from '../utils'
+import {buildCommentBreadcrumbs} from '../utils/buildCommentBreadcrumbs'
 
 const CURRENT_USER: CurrentUser = {
   email: '',
   id: '',
   name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
   profileImage: '',
@@ -167,6 +168,34 @@ const schema = Schema.compile({
 })
 
 describe('comments: buildCommentBreadcrumbs', () => {
+  // A stored comment with a field path the path parser rejects (an empty
+  // string, malformed brackets) must not take the whole document pane down:
+  // the thread items are built during the comments provider's render, and a
+  // throw there unmounts every comment on the document — including the UI
+  // that could delete the offending one. No breadcrumbs means "on the
+  // document", and the thread stays listed and deletable.
+  test('an empty field path yields no breadcrumbs instead of throwing', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {},
+      fieldPath: '',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([])
+  })
+
+  test('an unparseable field path yields no breadcrumbs instead of throwing', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {},
+      fieldPath: '[[',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([])
+  })
+
   test('should use the title in the schema field if it exists', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,

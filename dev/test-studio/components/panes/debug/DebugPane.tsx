@@ -2,48 +2,28 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
-function usePaneChildLinkComponent(props: {
-  id: string
-  params?: Record<string, string>
-}): React.ComponentType {
-  const {id, params} = props
-  const {ChildLink} = usePaneRouter()
-
-  return useMemo(() => {
-    return function Link(linkProps: any) {
-      return <ChildLink {...linkProps} childId={id} childParameters={params || {}} />
-    }
-  }, [ChildLink, id, params])
-}
-
-function usePaneParameterizedLinkComponent(props: {
-  params?: Record<string, string>
-  payload?: unknown
-}): React.ComponentType {
-  const {params, payload} = props
-  const {ParameterizedLink} = usePaneRouter()
-
-  return useMemo(() => {
-    return function Link(linkProps: any) {
-      return <ParameterizedLink {...linkProps} params={params} payload={payload} />
-    }
-  }, [ParameterizedLink, params, payload])
-}
+const CHILD_LINK_PARAMETERS: Record<string, string> = {}
+const PARAMETERIZED_LINK_PARAMS: Record<string, string> = {param1: 'test'}
+const PARAMETERIZED_LINK_PAYLOAD = {key: 'foo'}
 
 export const DebugPane: UserComponent = function DebugPane(props) {
   const {childItemId, id, isActive, isSelected, itemId, options, paneKey, urlParams} = props
-  const {groupIndex, hasGroupSiblings, index, params, payload, siblingIndex} = usePaneRouter()
-
-  const ChildLink = usePaneChildLinkComponent({id: 'test'})
-
-  const ParameterizedLink = usePaneParameterizedLinkComponent({
-    params: {param1: 'test'},
-    payload: {key: 'foo'},
-  })
+  const {
+    ChildLink,
+    ParameterizedLink,
+    groupIndex,
+    hasGroupSiblings,
+    index,
+    params,
+    payload,
+    siblingIndex,
+  } = usePaneRouter()
 
   // this is used to see whether or not the component re-renders.
   //
@@ -53,22 +33,24 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   const [randomId] = useState(() => Math.floor(Math.random() * 10000000).toString(16))
 
   return (
-    <Box height="fill">
+    <Box height="100%">
       <Box padding={4} paddingTop={0}>
-        <Stack space={3}>
-          <Text muted size={1} textOverflow="ellipsis">
+        <VStack gap={3}>
+          <Text muted size={1} truncate={1} as="div" trim={true}>
             Random ID: <code>{randomId}</code>
           </Text>
-          <Text textOverflow="ellipsis" size={1} muted>
+          <Text truncate={1} size={1} muted as="div" trim={true}>
             Assigned on pane component mount
           </Text>
-        </Stack>
+        </VStack>
       </Box>
 
       <Card borderBottom padding={2}>
-        <Stack space={1}>
+        <VStack gap={1}>
           <Card
             as={ChildLink}
+            childId="test"
+            childParameters={CHILD_LINK_PARAMETERS}
             data-as="a"
             padding={3}
             pressed={!isActive && childItemId === 'test'}
@@ -76,50 +58,44 @@ export const DebugPane: UserComponent = function DebugPane(props) {
             selected={isActive && childItemId === 'test'}
           >
             <Flex>
-              <Box>
-                <Text size={1}>
-                  <LinkIcon />
-                </Text>
-              </Box>
-              <Box flex={1} marginLeft={3}>
-                <Text size={1} textOverflow="ellipsis">
+              <Flex>
+                <Icon size={1} icon={LinkIcon} style={{margin: '-0.375rem'}} />
+              </Flex>
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                <Text size={1} truncate={1} as="div" trim={true}>
                   ChildLink
                 </Text>
               </Box>
-              <Box>
-                <Text size={1}>
-                  <ChevronRightIcon />
-                </Text>
-              </Box>
+              <Flex>
+                <Icon size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
+              </Flex>
             </Flex>
           </Card>
 
           <Card
             as={ParameterizedLink}
+            params={PARAMETERIZED_LINK_PARAMS}
+            payload={PARAMETERIZED_LINK_PAYLOAD}
             data-as="a"
             padding={3}
             pressed={params?.param1 === 'test'}
             radius={2}
           >
             <Flex>
-              <Box>
-                <Text size={1}>
-                  <ControlsIcon />
-                </Text>
-              </Box>
-              <Box flex={1} marginLeft={3}>
-                <Text size={1} textOverflow="ellipsis">
+              <Flex>
+                <Icon size={1} icon={ControlsIcon} style={{margin: '-0.375rem'}} />
+              </Flex>
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                <Text size={1} truncate={1} as="div" trim={true}>
                   ParameterizedLink
                 </Text>
               </Box>
-              <Box>
-                <Text size={1}>
-                  <ChevronDownIcon />
-                </Text>
-              </Box>
+              <Flex>
+                <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
+              </Flex>
             </Flex>
           </Card>
-        </Stack>
+        </VStack>
       </Card>
 
       <Card padding={4}>

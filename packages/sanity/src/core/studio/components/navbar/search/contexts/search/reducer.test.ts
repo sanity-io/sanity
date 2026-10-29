@@ -17,6 +17,7 @@ const mockUser: CurrentUser = {
   id: 'mock-user',
   name: 'mock user',
   email: 'mockUser@example.com',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
 }

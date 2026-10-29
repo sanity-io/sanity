@@ -1,0 +1,8 @@
+/*
+ * The stylesheet `@pandacss/vite` fills with the CSS of the `sanity` package's `.css.ts` modules in
+ * the apps that build the package from source (see `sanityPandaCss()` in `@repo/pandacss/vite`):
+ * Panda treats the CSS file that declares its layers as the generated CSS root, and
+ * `removeCascadeLayers()` takes the layers out again, so the rules cascade unlayered like the
+ * published `bundle.css`.
+ */
+@layer reset, base, tokens, recipes, utilities;

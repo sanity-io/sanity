@@ -19,6 +19,7 @@ export function EnhancedObjectDialogProvider(
   props: EnhancedObjectDialogProviderProps,
 ): React.JSX.Element {
   const {children, legacyEditing} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {beta} = useSource()
 
   const value = useMemo((): EnhancedObjectDialogContextValue => {
@@ -29,8 +30,10 @@ export function EnhancedObjectDialogProvider(
   }, [legacyEditing])
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogContext.Provider value={value}>
       {children}
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
     </EnhancedObjectDialogContext.Provider>
   )
 }

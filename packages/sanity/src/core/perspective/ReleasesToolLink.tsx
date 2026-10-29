@@ -6,8 +6,8 @@ import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../i18n'
-import {ReleaseAvatarIcon} from '../releases'
+import {useTranslation} from '../i18n/hooks/useTranslation'
+import {ReleaseAvatarIcon} from '../releases/components/ReleaseAvatar'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
@@ -32,7 +32,7 @@ const OversizedButton = styled(ToolLink)`
 export function ReleasesToolLink(): React.JSX.Element {
   const {t} = useTranslation()
   const {errorCount$} = useReleasesStore()
-  const errorCount = useObservable(errorCount$)
+  const errorCount = useObservable(errorCount$, 0)
   const hasError = errorCount !== 0
   const {selectedPerspective} = usePerspective()
   const activeToolName = useRouterState(
@@ -48,7 +48,8 @@ export function ReleasesToolLink(): React.JSX.Element {
         as={OversizedButton}
         name={SCHEDULES_TOOL_NAME}
         data-as="a"
-        icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+        fontSize={2}
+        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} fontSize={2} />}
         mode="bleed"
         padding={2}
         radius="full"

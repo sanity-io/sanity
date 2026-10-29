@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import DataLoader from 'dataloader'
 import QuickLRU from 'quick-lru'
 
+import {createMediaLibraryClient} from '../../util/createMediaLibraryClient'
 import {makeMediaLibraryRef, type MediaLibraryRef} from './refs'
 
 type AccessPolicyResult = 'public' | 'private' | undefined
@@ -58,32 +59,6 @@ async function fetchAccessPoliciesBatch(params: {
 
     return assetIds.map(() => undefined)
   }
-}
-
-/**
- * Creates a Media Library-specific client with an explicitly configured API
- * host that includes the project ID in the subdomain. This is to satisfy CORS
- * requirements when performing CDN access policy checks, as browser requests
- * will fail against the global host because it does not include CORS headers.
- */
-function createMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
-  const {apiHost: base, projectId: subdomain} = client.config()
-
-  if (!subdomain) {
-    throw new Error('Cannot create Media Library client: missing projectId in client config')
-  }
-
-  const baseUrl = new URL(base)
-  baseUrl.hostname = `${subdomain}.${baseUrl.hostname}`
-  const apiHost = baseUrl.toString()
-
-  return client.withConfig({
-    apiHost,
-    resource: {
-      id: libraryId,
-      type: 'media-library',
-    },
-  })
 }
 
 /**

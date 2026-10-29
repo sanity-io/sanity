@@ -4,14 +4,13 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
-  Flex,
+  TabPanel,
+} from '@sanity/ui'
+import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   MenuItem,
-  Stack,
-  TabPanel,
-  Text,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import {addHours} from 'date-fns/addHours'
 import {startOfHour} from 'date-fns/startOfHour'
 import {
@@ -20,54 +19,89 @@ import {
   useCallback,
   useEffect,
   useId,
+  useRef,
   useState,
 } from 'react'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
-import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useWorkspace} from '../../../studio/workspace'
+import {hasStoredReleaseData, useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {asReleaseMetadata, toReleaseMetadataRecord} from '../../metadata/mergeReleaseMetadata'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseType} from '../../store/types'
 import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
+import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
+
+const NO_METADATA_FIELDS: readonly [] = []
 
 /** @internal */
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
+  onValidityChange?: (valid: boolean) => void
   value: EditableReleaseDocument
 }): React.JSX.Element {
-  const {onChange, value} = props
+  const {onChange, onValidityChange, value} = props
   const {releaseType = DEFAULT_RELEASE_TYPE, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const configuredFields = useWorkspace().releases?.metadata?.fields ?? NO_METADATA_FIELDS
+  const metadataFields = metadataFieldsEnabled ? configuredFields : NO_METADATA_FIELDS
 
   const id = value._id
+  // Recovery is a mount action. A parent that passes a new onChange each render
+  // must not restore again after seeding writes the same draft back to storage.
+  const didRestore = useRef(false)
 
   useEffect(() => {
+    if (metadataFieldsEnabled) return
+    // The form is not mounted. Create must not stay disabled waiting for it.
+    onValidityChange?.(true)
+  }, [metadataFieldsEnabled, onValidityChange])
+
+  useEffect(() => {
+    if (didRestore.current) return
+    didRestore.current = true
     const storedData = getStoredReleaseData()
-    if (storedData) {
-      const updatedValue = {
-        metadata: {
-          title: storedData.title,
-          description: storedData.description,
-          releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
-          intendedPublishAt: storedData.intendedPublishAt,
-        },
-      }
-      onChange({_id: id, ...updatedValue})
-    }
-  }, [getStoredReleaseData, id, onChange])
+    if (!storedData || !hasStoredReleaseData(storedData)) return
+    onChange({
+      _id: id,
+      metadata: asReleaseMetadata({
+        title: storedData.title,
+        description: storedData.description,
+        releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
+        intendedPublishAt: storedData.intendedPublishAt,
+        ...(metadataFieldsEnabled ? storedData.fields : {}),
+      }),
+    })
+  }, [getStoredReleaseData, id, metadataFieldsEnabled, onChange])
 
   const handleOnChangeAndStorage = useCallback(
     (updatedValue: EditableReleaseDocument) => {
       onChange(updatedValue)
+      const record = toReleaseMetadataRecord(updatedValue.metadata)
+      const fields = Object.fromEntries(
+        metadataFields.flatMap((field) => {
+          const fieldValue = record[field.name]
+          return fieldValue === undefined ? [] : [[field.name, fieldValue]]
+        }),
+      )
       saveReleaseDataToStorage({
-        ...updatedValue.metadata,
+        title: updatedValue.metadata.title,
+        description: updatedValue.metadata.description,
+        releaseType: updatedValue.metadata.releaseType,
+        intendedPublishAt: updatedValue.metadata.intendedPublishAt,
+        fields,
       })
     },
-    [onChange, saveReleaseDataToStorage],
+    [metadataFields, onChange, saveReleaseDataToStorage],
   )
 
   const handleBundlePublishAtCalendarChange = useCallback(
@@ -118,55 +152,67 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
+  const handleMetadataChange = useCallback(
+    (metadata: EditableReleaseDocument['metadata']) => {
+      handleOnChangeAndStorage({
+        ...value,
+        metadata,
+      })
+    },
+    [handleOnChangeAndStorage, value],
+  )
+
   const menuButtonId = useId()
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
 
   return (
-    <Stack space={5}>
-      <Stack space={4}>
-        <Flex gap={2} align="center">
-          <Text as="label" htmlFor={menuButtonId}>
+    <VStack gap={5}>
+      <VStack gap={4}>
+        <Flex gap={2} alignItems="center">
+          <Text as="label" htmlFor={menuButtonId} trim={true}>
             {t('release.dialog.tooltip.title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Tooltip
               content={
-                <Stack space={3} style={{maxWidth: 320 - 16}}>
-                  <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
-                  <Text muted size={1}>
+                <VStack gap={3} style={{maxWidth: 320 - 16}}>
+                  <Text size={1} as="div" trim={true}>
+                    {t('release.dialog.tooltip.description')}
+                  </Text>
+                  <Text muted size={1} as="div" trim={true}>
                     {t('release.dialog.tooltip.note')}
                   </Text>
-                </Stack>
+                </VStack>
               }
               delay={0}
               placement="right-start"
               portal
             >
-              <InfoOutlineIcon />
+              <Icon muted size={1} icon={InfoOutlineIcon} />
             </Tooltip>
           </Text>
         </Flex>
-        <Stack space={3}>
+        <VStack gap={3}>
           <MenuButton
             id={menuButtonId}
             ref={setMenuButton}
             button={
               <Button mode="ghost">
-                <Flex justify="space-between" align="center">
+                <Flex justifyContent="space-between" alignItems="center">
                   <ReleaseTypeOption
                     text={t(`release.type.${releaseType}`)}
                     releaseType={releaseType}
                   />
-                  <Text size={1}>
-                    <ChevronDownIcon />
-                  </Text>
+                  <Icon size={1} icon={ChevronDownIcon} />
                 </Flex>
               </Button>
             }
             popover={{
               placement: 'bottom',
               matchReferenceWidth: true,
-              boundaryElement: menuButton,
+              // Match pre-v4 `boundaryElement` (applied to both floating and reference).
+              floatingBoundary: menuButton,
+              referenceBoundary: menuButton,
             }}
             menu={
               <Menu>
@@ -196,10 +242,17 @@ export function ReleaseForm(props: {
               </TabPanel>
             )}
           </Flex>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
-    </Stack>
+      {metadataFieldsEnabled ? (
+        <ReleaseMetadataForm
+          metadata={value.metadata}
+          onChange={handleMetadataChange}
+          onValidityChange={onValidityChange}
+        />
+      ) : null}
+    </VStack>
   )
 }
 
@@ -207,8 +260,10 @@ const ReleaseTypeOption: ComponentType<{
   text: string
   releaseType: ReleaseType
 }> = ({releaseType, text}) => (
-  <Flex gap={3} align="center">
+  <Flex gap={3} alignItems="center">
     <ReleaseAvatar padding={1} releaseType={releaseType} />
-    <Text>{text}</Text>
+    <Text as="div" trim={true}>
+      {text}
+    </Text>
   </Flex>
 )

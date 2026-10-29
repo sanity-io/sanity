@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {type ButtonMode, Card, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
 import {
@@ -15,13 +15,14 @@ import {
   useState,
 } from 'react'
 import {useRouter} from 'sanity/router'
+import {Box, Flex} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
@@ -59,7 +60,7 @@ import {
   getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
-import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
+import {DateFilterButton, RELEASE_CALENDAR_FILTER_DAY} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
@@ -271,21 +272,24 @@ export function ReleasesOverview() {
     navigateRef.current = router.navigate
   })
 
-  // Sync filter/group state to URL, preserving the current cardinality view
+  // replace avoids a duplicate history entry alongside the user's navigation, which would swallow back clicks.
   useEffect(() => {
-    navigateRef.current({
-      _searchParams: buildReleasesSearchParams(
-        releaseFilterDate,
-        releaseGroupMode,
-        isScheduledDraftsEnabled ? cardinalityView : 'releases',
-      ),
-    })
+    navigateRef.current(
+      {
+        _searchParams: buildReleasesSearchParams(
+          releaseFilterDate,
+          releaseGroupMode,
+          isScheduledDraftsEnabled ? cardinalityView : 'releases',
+        ),
+      },
+      {replace: true},
+    )
   }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setHasMounted(true)
   }, [])
 
@@ -465,7 +469,7 @@ export function ReleasesOverview() {
     () => (
       <CalendarFilter
         disabled={loading || releases.length === 0}
-        renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
+        renderCalendarDay={RELEASE_CALENDAR_FILTER_DAY[cardinalityView]}
         selectedDate={releaseFilterDate}
         onSelect={handleSelectFilterDate}
         timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
@@ -476,7 +480,7 @@ export function ReleasesOverview() {
 
   const renderCalendarFilter = useMemo(
     () => (
-      <Flex flex="none">
+      <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Card borderRight flex="none" disabled>
           {calendarFilterContent}
         </Card>
@@ -534,13 +538,13 @@ export function ReleasesOverview() {
   }
 
   return (
-    <Flex direction="row" flex={1} style={{height: '100%'}}>
-      <Flex flex={1}>
+    <Flex flexDirection="row" flexBasis="0%" flexGrow={1} style={{height: '100%'}}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showCalendar && renderCalendarFilter}
 
-        <Flex direction="column" flex={1} style={{position: 'relative'}}>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="center" flex={1} gap={3} wrap="wrap">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3} flexWrap="wrap">
               <Inline>
                 {!showCalendar && (
                   <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
@@ -556,7 +560,7 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex flex={1} gap={1} style={narrowFilterStyle}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -564,7 +568,13 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
+              <Flex
+                flexBasis="auto"
+                flexGrow={0}
+                flexShrink={0}
+                gap={2}
+                style={narrowTimezoneStyle}
+              >
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"

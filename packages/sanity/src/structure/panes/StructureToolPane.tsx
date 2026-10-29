@@ -1,10 +1,10 @@
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {lazy, memo, Suspense} from 'react'
 
-import {PaneRouterProvider} from '../components/paneRouter'
+import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
-import {UnknownPane} from './unknown'
+import {UnknownPane} from './unknown/UnknownPaneType'
 
 interface StructureToolPaneProps {
   active: boolean
@@ -23,12 +23,21 @@ interface StructureToolPaneProps {
   onSetMaximizedPane?: () => void
 }
 
-// TODO: audit this creates separate chunks
+// Audited in the production build of dev/test-studio: `list` (3.2 KB gzip) and `component`
+// (1.5 KB gzip) are real chunks. `document` and `documentList` resolve to 0.1 KB re-export shims,
+// because `sanity/structure` exports `DocumentPane` and `DocumentListPane` and the entry imports
+// their chunks statically anyway, so those two lazies only add a request and a `LoadingPane` flash
+// on the first mount of each pane type. Kept lazy for now; dropping them is a separate change.
+const UserComponentPane = lazy(() => import('./userComponent'))
+const DocumentPane = lazy(() => import('./document/pane'))
+const DocumentListPane = lazy(() => import('./documentList/pane'))
+const ListPane = lazy(() => import('./list'))
+
 const paneMap = {
-  component: lazy(() => import('./userComponent')),
-  document: lazy(() => import('./document/pane')),
-  documentList: lazy(() => import('./documentList/pane')),
-  list: lazy(() => import('./list')),
+  component: UserComponentPane,
+  document: DocumentPane,
+  documentList: DocumentListPane,
+  list: ListPane,
 }
 
 /**

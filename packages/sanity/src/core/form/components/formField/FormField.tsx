@@ -1,12 +1,12 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
+import {Box, VStack} from 'ui5'
 
-import {type DocumentFieldActionNode} from '../../../config'
-import {type FormNodePresence} from '../../../presence'
-import {useFieldActions} from '../../field'
-import {type FieldCommentsProps} from '../../types'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {type FormNodePresence} from '../../../presence/types'
+import {useFieldActions} from '../../field/actions/useFieldActions'
+import {type FieldCommentsProps} from '../../types/fieldProps'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
@@ -27,6 +27,7 @@ export interface FormFieldProps {
    */
   __unstable_presence?: FormNodePresence[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode
@@ -47,6 +48,10 @@ export interface FormFieldProps {
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
   path: Path
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 /** @internal */
@@ -56,9 +61,12 @@ export const FormField = memo(function FormField(
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_slot: slot = null,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
     children,
+    changedFromBaseVariant = false,
     description,
     inputId,
     level,
@@ -73,13 +81,17 @@ export const FormField = memo(function FormField(
 
   return (
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
-        <Stack
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+        }
+      >
+        <VStack
           {...restProps}
           data-level={level}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          space={2}
+          gap={2}
         >
           {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
@@ -105,8 +117,8 @@ export const FormField = memo(function FormField(
               }
             />
           )}
-          <div>{children}</div>
-        </Stack>
+          <Box>{children}</Box>
+        </VStack>
       </FormRow>
     </FormNodeDivergenceDetail>
   )

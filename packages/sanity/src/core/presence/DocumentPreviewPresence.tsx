@@ -3,13 +3,14 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '../../ui-components'
-import {UserAvatar} from '../components'
+import {Tooltip, type TooltipProps} from '../../ui-components/tooltip/Tooltip'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import {getReleaseIdFromReleaseDocumentId, useActiveReleases} from '../releases'
-import {releasesLocaleNamespace} from '../releases/i18n'
-import {type DocumentPresence} from '../store'
-import {getVersionFromId, isNonNullable} from '../util'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type DocumentPresence} from '../store/presence/types'
+import {getVersionFromId} from '../util/draftUtils'
+import {isNonNullable} from '../util/isNonNullable'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
@@ -31,7 +32,9 @@ const AvatarStackBox = styled.div((props) => {
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
-  const {t} = useTranslation(releasesLocaleNamespace)
+  // Previews render in every studio, with or without the releases plugin, so these strings live
+  // in the always registered `studio` namespace
+  const {t} = useTranslation()
 
   const {data: releases} = useActiveReleases()
 
@@ -49,15 +52,18 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     if (uniquePresence.length === 1) {
       const firstPresence = uniquePresence[0]
       const documentId = firstPresence?.documentId
-      const release = documentId
-        ? releases.find(
-            (r) => getReleaseIdFromReleaseDocumentId(r._id) === getVersionFromId(documentId),
-          )
-        : undefined
+      const versionId = documentId ? getVersionFromId(documentId) : undefined
+      const displayName = firstPresence.user.displayName
+
+      if (!versionId) {
+        return t('presence.tooltip.one-without-release', {displayName})
+      }
+
+      const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === versionId)
       const releaseTitle = release?.metadata?.title
       return t('presence.tooltip.one', {
-        displayName: firstPresence.user.displayName,
-        releaseTitle: releaseTitle || t('release-placeholder.title'),
+        displayName,
+        releaseTitle: releaseTitle || t('presence.tooltip.untitled-release'),
       })
     }
 

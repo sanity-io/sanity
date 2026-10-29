@@ -1,44 +1,43 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
-import {Card, Stack, Text} from '@sanity/ui'
-import {forwardRef} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {Card} from '@sanity/ui'
+import {type ReactNode} from 'react'
+import {InlineCode, Translate, useTranslation} from 'sanity'
+import {Icon, Text, VStack} from 'ui5'
 
-export const TranslateExample = forwardRef(function TranslateExample() {
+export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack space={4}>
-        <Text>{t('use-translation.with-html')}</Text>
-        <Text>
+      <VStack gap={4}>
+        <Text as="div" trim={true}>
+          {t('use-translation.with-html')}
+        </Text>
+        <Text as="div" trim={true}>
           {t('use-translation.interpolation-example', {
             spaces: 'spaces',
             doesNot: 'does not have spaces',
           })}
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           {t('translate.with-formatter', {
             countries: ['Norway', 'Denmark', 'Sweden'],
           })}
         </Text>
-        <Text>
-          <Translate t={t} i18nKey="use-translation.with-html" />
+        <Text as="div" trim={true}>
+          <Translate t={t} i18nKey="use-translation.with-html" components={{code: InlineCode}} />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="translate.example"
-            components={{
-              Icon: () => <InfoFilledIcon />,
-              Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
-              Bold: ({children}) => <b>{children}</b>,
-            }}
+            components={{Icon: InfoFilledIconComponent, Red, Bold}}
             values={{
               keyword: 'something',
               duration: '30',
             }}
           />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="translate.with-xml-in-value"
@@ -48,7 +47,7 @@ export const TranslateExample = forwardRef(function TranslateExample() {
           />
         </Text>
 
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="use-translation.interpolation-example"
@@ -59,27 +58,40 @@ export const TranslateExample = forwardRef(function TranslateExample() {
           />
         </Text>
 
-        <Text weight="bold">Broken translations (should fall back gracefully, not crash):</Text>
+        <Text weight="bold" as="div" trim={true}>
+          Broken translations (should fall back gracefully, not crash):
+        </Text>
 
-        <Text>
+        <Text as="div" trim={true}>
           Missing self-closing:{' '}
           <Translate t={t} i18nKey="translate.missing-self-closing" components={{}} />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           Missing wrapping: <Translate t={t} i18nKey="translate.missing-wrapping" components={{}} />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           Mismatched component (issue #12617):{' '}
           <Translate
             t={t}
             i18nKey="translate.mismatched-component"
-            components={{
-              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
-            }}
+            components={{VersionBadge}}
             values={{title: 'My Release'}}
           />
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
-})
+}
+
+function VersionBadge({children}: {children?: ReactNode}) {
+  return <span style={{fontWeight: 'bold'}}>{children}</span>
+}
+function Red({children}: {children?: ReactNode}) {
+  return <span style={{color: 'red'}}>{children}</span>
+}
+function Bold({children}: {children?: ReactNode}) {
+  return <b>{children}</b>
+}
+function InfoFilledIconComponent() {
+  return <Icon muted icon={InfoFilledIcon} style={{margin: '-0.4375rem'}} />
+}

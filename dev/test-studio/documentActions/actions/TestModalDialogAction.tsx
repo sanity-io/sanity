@@ -1,7 +1,9 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Grid, Text, useToast} from '@sanity/ui'
+import {Button} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
+import {Text, Grid} from 'ui5'
 
 export const useTestModalDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -23,12 +25,12 @@ export const useTestModalDialogAction: DocumentActionComponent = () => {
       ({
         type: 'dialog',
         content: (
-          <Text>
+          <Text as="div" trim={true}>
             This is the <code>dialog</code> modal
           </Text>
         ),
         footer: (
-          <Grid columns={1} gap={2}>
+          <Grid gridTemplateColumns="repeat(1, minmax(0, 1fr))" gap={2}>
             <Button onClick={handleClose} text="Close" />
           </Grid>
         ),

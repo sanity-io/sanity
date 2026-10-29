@@ -9,7 +9,7 @@ import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from 
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,
@@ -21,6 +21,7 @@ import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
+import {createObserveDocumentCount} from './observeDocumentCount'
 import {createObserveFields} from './observeFields'
 import {createObserveVersionDocumentIds} from './observeVersionDocumentIds'
 import {
@@ -44,6 +45,11 @@ export type ObserveForPreviewFn = (
   options?: {
     viewOptions?: PrepareViewOptions
     perspective?: StackablePerspective[]
+    /**
+     * The selected editing variant as a bare variant id. When set, preview values are resolved as
+     * seen through that variant, on top of the given perspective.
+     */
+    variant?: string
     apiConfig?: ApiConfig
   },
 ) => Observable<PreparedSnapshot>
@@ -63,11 +69,13 @@ export interface DocumentPreviewStore {
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) => Observable<string | undefined>
   observeDocumentSystemFromId: (
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) => Observable<DocumentSystem | undefined>
 
   /**
@@ -139,6 +147,19 @@ export interface DocumentPreviewStore {
   unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
 
   /**
+   * Observes the number of documents of a given schema type under a given perspective. Pass
+   * `variant` to count as seen through that editing variant, on top of the given perspective.
+   *
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocumentCount: (
+    type: string,
+    perspective: StackablePerspective[],
+    options?: {tag?: string; variant?: string},
+  ) => Observable<number>
+
+  /**
    * Observe a complete document with the given ID
    *
    * @hidden
@@ -190,8 +211,15 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      ['_type'],
+      apiConfig,
+      perspective,
+      variant,
+    ).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )
@@ -200,6 +228,7 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
     // TODO: This shouldn't be undefined once the documents are migrated.
   ): Observable<DocumentSystem | undefined> {
     return observePaths(
@@ -207,6 +236,7 @@ export function createDocumentPreviewStore({
       [DOCUMENT_SYSTEM_FIELD],
       apiConfig,
       perspective,
+      variant,
     ).pipe(
       map((res) =>
         isRecord(res) && isRecord(res[DOCUMENT_SYSTEM_FIELD])
@@ -220,6 +250,11 @@ export function createDocumentPreviewStore({
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
   const observeVersionDocumentIds = createObserveVersionDocumentIds({
+    client: versionedClient,
+    invalidationChannel,
+  })
+
+  const observeDocumentCount = createObserveDocumentCount({
     client: versionedClient,
     invalidationChannel,
   })
@@ -249,6 +284,7 @@ export function createDocumentPreviewStore({
     observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
     unstable_observeVersionDocumentIds: observeVersionDocumentIds,
+    unstable_observeDocumentCount: observeDocumentCount,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),

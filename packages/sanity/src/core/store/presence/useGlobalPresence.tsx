@@ -1,19 +1,25 @@
-import {startTransition, useEffect, useReducer} from 'react'
+import {dequal} from 'dequal/lite'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
+import {distinctUntilChanged, map} from 'rxjs'
 
 import {usePresenceStore} from '../datastores'
 import {type GlobalPresence} from './types'
 
-const initial: GlobalPresence[] = []
-const fallback = of(initial)
+type GlobalPresenceEntry = Pick<GlobalPresence, 'user' | 'locations'>
+
+const initial: GlobalPresenceEntry[] = []
 
 /** @internal */
-export function useGlobalPresence(): GlobalPresence[] {
-  const [mounted, mount] = useReducer(() => true, false)
-  // Using `startTransition` here ensures that rapid re-renders that affect the deps used by `usePresenceStore` delay the transition to `mounted=true`, thus avoiding creating websocket connections that will be closed immediately.
-  useEffect(() => startTransition(mount), [])
-
+export function useGlobalPresence(): GlobalPresenceEntry[] {
   const presenceStore = usePresenceStore()
-  return useObservable(mounted ? presenceStore.globalPresence$ : fallback, initial)
+  const presence$ = useMemo(
+    () =>
+      presenceStore.globalPresence$.pipe(
+        map((presence) => presence.map(({user, locations}) => ({user, locations}))),
+        distinctUntilChanged<GlobalPresenceEntry[]>(dequal),
+      ),
+    [presenceStore],
+  )
+  return useObservable(presence$, initial)
 }

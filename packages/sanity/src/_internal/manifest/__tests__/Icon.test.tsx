@@ -6,6 +6,7 @@ import {SchemaIcon, type SchemaIconProps} from '../Icon'
 
 const render = (props?: Partial<SchemaIconProps>) =>
   renderRTL(<SchemaIcon title="Studio" {...props} />, {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     wrapper: ({children}) => <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>,
   })
 

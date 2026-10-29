@@ -3,7 +3,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type FormPatch, type PatchEvent, set, type StringFieldProps, unset} from '../../../../form'
+import {set, unset} from '../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../form/patch/types'
+import {type StringFieldProps} from '../../../../form/types/fieldProps'
 
 const Root = styled.div((props) => {
   const theme = getTheme_v2(props.theme)
@@ -68,6 +71,7 @@ export function Title(props: {
     if (!ref.current) return
     ref.current.style.height = 'auto'
     ref.current.style.height = `${ref.current.scrollHeight}px`
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const handleChange = useCallback(
@@ -97,5 +101,6 @@ export function TitleField(props: StringFieldProps) {
   const {value, inputProps} = props
   const {onChange, schemaType} = inputProps
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <Title value={value} onChange={onChange} placeholder={schemaType.placeholder} />
 }

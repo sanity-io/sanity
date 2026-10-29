@@ -1,12 +1,14 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
-import {MenuButton, MenuItem} from '../../../../../../ui-components'
-import {ContextMenuButton} from '../../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../../i18n'
-import {PatchEvent, unset} from '../../../../patch'
-import {type ArrayItemError} from '../../../../store'
+import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {unset} from '../../../../patch/patch'
+import {PatchEvent} from '../../../../patch/PatchEvent'
+import {type ArrayItemError} from '../../../../store/types/memberErrors'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {CellLayout} from '../../layouts/CellLayout'
 import {IncompatibleItemType} from './IncompatibleItemType'
@@ -48,7 +50,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; re
       }
     >
       {member.error.type === 'INVALID_ITEM_TYPE' ? (
-        <IncompatibleItemType value={member.error.value} vertical />
+        <IncompatibleItemType value={member.error.value} vertical tone="caution" />
       ) : (
         <div>{t('inputs.array.error.unexpected-error', {error: member.error.type})}</div>
       )}

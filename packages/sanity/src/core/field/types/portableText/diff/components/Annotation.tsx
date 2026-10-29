@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -14,14 +14,17 @@ import {
 } from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Text, Flex, Icon} from 'ui5'
 
-import {Popover} from '../../../../../../ui-components'
-import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
-import {useTranslation} from '../../../../../i18n'
-import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useDiffAnnotationColor} from '../../../../diff/annotations/hooks'
+import {ChangeList} from '../../../../diff/components/ChangeList'
+import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
+import {InlineBox, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {
   diff?: ObjectDiff
@@ -139,7 +142,7 @@ function AnnnotationWithDiff({
 
   useEffect(() => {
     if (!open && isEditing) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setOpen(true)
       onSetFocus(myPath)
     }
@@ -170,7 +173,7 @@ function AnnnotationWithDiff({
       <PopoverContainer padding={3}>
         <div>
           {emptyObject && (
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               {t('changes.portable-text.empty-object-annotation', {
                 annotationType: schemaType.title || schemaType.name,
               })}
@@ -198,10 +201,8 @@ function AnnnotationWithDiff({
           >
             <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>
-              <Flex align="center" paddingX={1}>
-                <InlineText size={0}>
-                  <ChevronDownIcon />
-                </InlineText>
+              <Flex alignItems="center" paddingX={1}>
+                <Icon icon={ChevronDownIcon} size={0} style={{color: 'inherit'}} />
               </Flex>
             </InlineBox>
           </DiffTooltip>

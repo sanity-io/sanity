@@ -1,16 +1,20 @@
-import {Card, type CardTone, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {Text, VStack} from 'ui5'
 
-import {useTranslation} from '../../../../../i18n'
-import {ArrayOfObjectsItem} from '../../../../members'
-import {
-  type ArrayOfObjectsInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
-} from '../../../../types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
+import {
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
@@ -22,6 +26,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const {
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,
+    focusPath,
     members,
     onChange,
     onItemPrepend,
@@ -42,6 +47,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   } = props
   const {t} = useTranslation()
 
+  // Resolves locally so the grid card is not the renderItem nested inputs inherit.
+  // Passing it down accumulates callback wrapping through ancestor components (#4780, #15484).
+  const ItemComponent = useItemComponent()
+  const renderInputItem = useCallback(
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    [ItemComponent],
+  )
+
   const hasErrors = validation?.some((v) => v.level === 'error')
   const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
@@ -52,11 +65,20 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     return <GridItem {...itemProps} />
   }, [])
 
-  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
+
+  const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
+    members,
+    schemaType,
+    layout: 'grid',
+    focusedIndex,
+  })
+
+  const memberKeys = useMemo(() => visibleMembers.map((member) => member.key), [visibleMembers])
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2}>
+      <VStack gap={2}>
         <UploadTargetCard
           {...elementProps}
           isReadOnly={readOnly}
@@ -65,10 +87,11 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <VStack data-ui="ArrayInput__content" gap={2}>
             {members?.length === 0 && (
               <Card padding={3} border radius={2} tone={errorTone}>
-                <Text align="center" muted size={1}>
+                <Text align="center" muted size={1} as="div" trim={true} tone={errorTone}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>
@@ -76,7 +99,11 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             {members?.length > 0 && (
               <Card border radius={1} tone={errorTone}>
                 <List
-                  columns={[2, 3, 4]}
+                  gridTemplateColumns={[
+                    'repeat(2, minmax(0, 1fr))',
+                    'repeat(3, minmax(0, 1fr))',
+                    'repeat(4, minmax(0, 1fr))',
+                  ]}
                   gap={3}
                   padding={1}
                   margin={1}
@@ -84,8 +111,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   onItemMove={onItemMove}
                   sortable={sortable}
                 >
-                  {members.map((member) => (
-                    <Item key={member.key} sortable={sortable} id={member.key} flex={1}>
+                  {visibleMembers.map((member) => (
+                    <Item
+                      key={member.key}
+                      sortable={sortable}
+                      id={member.key}
+                      flexBasis="0%"
+                      flexGrow={1}
+                    >
                       {member.kind === 'item' && (
                         <ArrayOfObjectsItem
                           member={member}
@@ -93,6 +126,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                           renderBlock={renderBlock}
                           renderInlineBlock={renderInlineBlock}
                           renderItem={renderItem}
+                          renderInputItem={renderInputItem}
                           renderField={renderField}
                           renderInput={renderInput}
                           renderPreview={renderPreview}
@@ -106,7 +140,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 </List>
               </Card>
             )}
-          </Stack>
+            {collapsible && (
+              <ArrayItemsToggle
+                expanded={expanded}
+                onToggle={onToggle}
+                totalCount={members.length}
+              />
+            )}
+          </VStack>
         </UploadTargetCard>
 
         <ArrayFunctions
@@ -119,7 +160,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           schemaType={schemaType}
           value={value}
         />
-      </Stack>
+      </VStack>
     </ArrayValidationProvider>
   )
 }

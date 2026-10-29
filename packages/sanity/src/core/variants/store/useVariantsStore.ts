@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
-import {useClient} from '../../hooks'
-import {useResourceCache} from '../../store'
-import {useWorkspace} from '../../studio'
+import {useClient} from '../../hooks/useClient'
+import {useResourceCache} from '../../store/ResourceCacheProvider'
+import {useWorkspace} from '../../studio/workspace'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from './constants'
 import {createVariantsStore, type VariantStore} from './createVariantsStore'
 

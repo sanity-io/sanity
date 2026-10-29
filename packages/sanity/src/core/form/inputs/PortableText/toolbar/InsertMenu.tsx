@@ -2,13 +2,15 @@ import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import upperFirst from 'lodash-es/upperFirst.js'
 import {memo, useCallback, useMemo} from 'react'
 
-import {type PopoverProps} from '../../../../../ui-components'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {CollapseMenu} from '../../../../components/collapseMenu/CollapseMenu'
+import {CollapseMenuButton} from '../../../../components/collapseMenu/CollapseMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useFocusBlock} from './hooks'
 import {type BlockItem} from './types'
+import {useApplicableSchema} from './useApplicableSchema'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -23,14 +25,17 @@ interface InsertMenuProps {
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, isFullscreen, collapsed} = props
+  const applicable = useApplicableSchema()
   const {t} = useTranslation()
   const focusBlock = useFocusBlock()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
 
   const isVoidFocus = focusBlock && focusBlock._type !== schemaTypes.block.name
 
   const handleMenuClose = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor])
 
@@ -50,7 +55,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
             {typeName: title},
           )}
           mode="bleed"
-          disabled={disabled || (isVoidFocus && item.inline) || Boolean(item.type.deprecated)}
+          disabled={
+            disabled ||
+            (isVoidFocus && item.inline) ||
+            Boolean(item.type.deprecated) ||
+            !applicable[item.inline ? 'inlineObjects' : 'blockObjects'].has(item.type.name)
+          }
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
           onClick={item.handle}
@@ -71,7 +81,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [disabled, isVoidFocus, items, t, tooltipPlacement])
+  }, [applicable, disabled, isVoidFocus, items, t, tooltipPlacement])
 
   const menuButtonProps = useMemo(
     () => ({

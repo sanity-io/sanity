@@ -477,6 +477,7 @@ function isFieldRequired(validation?: SchemaValidationValue): boolean {
     }
 
     if (typeof rule === 'object' && rule !== null && '_required' in rule) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (rule._required === 'required') {
         return true
       }
@@ -519,8 +520,10 @@ function hasAssetRequired(validation?: SchemaValidationValue): boolean {
       typeof rule === 'object' &&
       rule !== null &&
       '_rules' in rule &&
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       Array.isArray(rule._rules)
     ) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (rule._rules.some((r) => r.flag === 'assetRequired')) {
         return true
       }
@@ -728,7 +731,7 @@ function sortByDependencies(compiledSchema: SchemaDef): {
             if (hoistRepetitions && !validSchemaNames.has(field.type.name)) {
               const fieldPath = path.concat([field.name])
               if (!repeated.has(field) && objectMap.has(field)) {
-                // The field is not in the repeated set, but it's the second time we see it – time to add it
+                // The field is not in the repeated set, but it's the second time we see it – time to add it
                 const name = pickRepeatedName(fieldPath)
 
                 // If we couldn't pick a name, we skip hoisting for this field

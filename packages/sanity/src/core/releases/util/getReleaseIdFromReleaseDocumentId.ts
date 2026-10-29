@@ -4,6 +4,16 @@ import {RELEASE_DOCUMENTS_PATH} from '../store/constants'
 const PATH_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
 
 /**
+ * Whether the given id addresses a release document (`_.releases.<releaseId>`) rather than
+ * being a release id or a system bundle name.
+ *
+ * @internal
+ */
+export function isReleaseDocumentId(id: string): boolean {
+  return id.startsWith(PATH_ID_PREFIX)
+}
+
+/**
  * @internal
  * @param releaseDocumentId - the document id of the release
  */

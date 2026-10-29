@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
-          path: ".vitest-reports/*"
+          path: ".vitest/blob/*"
           include-hidden-files: true
           retention-days: 1
 
@@ -112,7 +112,7 @@ jobs:
       - name: "Download coverage artifacts"
         uses: actions/download-artifact@v8
         with:
-          path: .vitest-reports
+          path: .vitest/blob
           pattern: blob-report-${{ github.run_id }}-*
           merge-multiple: true
 
@@ -124,4 +124,4 @@ jobs:
 
       - name: Report coverage
         if: steps.merge_reports.outcome == 'success'
-        uses: davelosert/vitest-coverage-report-action@3c054a2d2e2ca45446417ad5d6d5eb33092af8f1 # v2.12.1
+        uses: davelosert/vitest-coverage-report-action@c4bbc33a89b7ace0e63d35f1f7d4bcee31155a73 # v2.13.0

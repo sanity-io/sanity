@@ -1,13 +1,14 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
+import {Text, VStack} from 'ui5'
 
-import {Dialog} from '../../../../../ui-components'
-import {StatusButton} from '../../../../components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {StatusButton} from '../../../../components/StatusButton'
 import {getCollectedConfigWarnings} from '../../../../config/configWarnings'
-import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 
@@ -66,19 +67,19 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4}>
-            <Stack space={3}>
-              <Text as="h2" size={1} weight="medium">
+          <VStack gap={4}>
+            <VStack gap={3}>
+              <Text as="h2" size={1} weight="medium" trim={true}>
                 Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Configuration checks are only performed during development and will not be visible
                 in production builds
               </Text>
-            </Stack>
+            </VStack>
 
             {configWarnings.length > 0 && (
-              <Stack space={3}>
+              <VStack gap={3}>
                 {configWarnings.map((warning, index) => (
                   <Card
                     key={`${warning.type}-${warning.projectId}-${index}`}
@@ -87,23 +88,29 @@ export function ConfigIssuesButton() {
                     shadow={1}
                     tone="caution"
                   >
-                    <Stack space={2}>
-                      <Text size={1} weight="medium">
+                    <VStack gap={2}>
+                      <Text size={1} weight="medium" tone="caution" as="div" trim={true}>
                         Divergent auth config
                       </Text>
-                      <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
+                      <Text
+                        size={1}
+                        tone="caution"
+                        style={{whiteSpace: 'pre-wrap'}}
+                        as="div"
+                        trim={true}
+                      >
                         {warning.message}
                       </Text>
-                    </Stack>
+                    </VStack>
                   </Card>
                 ))}
-              </Stack>
+              </VStack>
             )}
 
             {groupsWithWarnings.length > 0 && (
               <SchemaProblemGroups problemGroups={groupsWithWarnings} />
             )}
-          </Stack>
+          </VStack>
         </Dialog>
       )}
     </>

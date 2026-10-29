@@ -161,6 +161,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
  * @hidden
  */
 export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
 
   if (source.announcements?.enabled) {

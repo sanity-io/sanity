@@ -1,6 +1,6 @@
 import {TextInput} from '@sanity/ui'
 
-import {type StringInputProps} from '../types'
+import {type StringInputProps} from '../types/inputProps'
 
 /**
  *
@@ -23,6 +23,7 @@ export function TelephoneInput(props: TelephoneInputProps) {
       inputMode="tel"
       customValidity={validationError}
       value={value || ''}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       placeholder={schemaType.placeholder}
       {...elementProps}
     />

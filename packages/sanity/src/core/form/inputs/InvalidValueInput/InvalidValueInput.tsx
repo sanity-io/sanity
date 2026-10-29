@@ -1,13 +1,17 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import isPlainObject from 'lodash-es/isPlainObject.js'
-import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
+import {useCallback, useImperativeHandle, useMemo, type RefAttributes} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, set, unset} from '../../patch'
+import {set, unset} from '../../patch/patch'
+import {PatchEvent} from '../../patch/PatchEvent'
 import {converters as CONVERTERS, type ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 
@@ -38,133 +42,129 @@ interface InvalidValueProps {
   onChange: (event: PatchEvent) => void
 }
 
-export const InvalidValueInput = forwardRef(
-  (props: InvalidValueProps, ref: Ref<{focus: () => void}>) => {
-    const {value, actualType, validTypes, onChange} = props
+export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focus: () => void}>) {
+  const {ref, value, actualType, validTypes, onChange} = props
 
-    useImperativeHandle(ref, () => ({
-      // @todo
-      focus: () => undefined,
-    }))
+  useImperativeHandle(ref, () => ({
+    // @todo
+    focus: () => undefined,
+  }))
 
-    const handleClearClick = useCallback(() => {
-      onChange(PatchEvent.from(unset()))
-    }, [onChange])
+  const handleClearClick = useCallback(() => {
+    onChange(PatchEvent.from(unset()))
+  }, [onChange])
 
-    const handleConvertTo = useCallback(
-      (converted: any) => {
-        onChange(PatchEvent.from(set(converted)))
-      },
-      [onChange],
-    )
+  const handleConvertTo = useCallback(
+    (converted: any) => {
+      onChange(PatchEvent.from(set(converted)))
+    },
+    [onChange],
+  )
 
-    const converters = useMemo(
-      () => getConverters(value, actualType, validTypes),
-      [value, actualType, validTypes],
-    )
+  const converters = useMemo(
+    () => getConverters(value, actualType, validTypes),
+    [value, actualType, validTypes],
+  )
 
-    const {t} = useTranslation()
+  const {t} = useTranslation()
 
-    if (isPlainObject(value) && !('_type' in (value as object))) {
-      return (
-        <UntypedValueInput
-          value={value as Record<string, unknown>}
-          validTypes={validTypes}
-          onChange={onChange}
-        />
-      )
-    }
-
-    const suffix = (
-      <Stack padding={2}>
-        <Button
-          onClick={handleClearClick}
-          tone="critical"
-          text={t('inputs.invalid-value.reset-button.text')}
-        />
-      </Stack>
-    )
-
+  if (isPlainObject(value) && !('_type' in (value as object))) {
     return (
-      <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
-        <Text as="p" muted size={1}>
-          {t('inputs.invalid-value.description')}
-        </Text>
-
-        <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
-          <Stack space={3}>
-            {validTypes.length === 1 && (
-              <Text as="p" muted size={1}>
-                <Translate
-                  t={t}
-                  i18nKey="inputs.invalid-value.details.description"
-                  values={{
-                    validType: validTypes[0],
-                  }}
-                />
-              </Text>
-            )}
-
-            {validTypes.length === 1 && (
-              <Text as="p" muted size={1}>
-                {t('inputs.invalid-value.details.possible-reason')}
-              </Text>
-            )}
-
-            {validTypes.length !== 1 && (
-              <Text as="p" muted size={1}>
-                {t('inputs.invalid-value.details.multi-type-description')}
-              </Text>
-            )}
-
-            {validTypes.length !== 1 && (
-              <Stack as="ul" space={2}>
-                {validTypes.map((validType) => (
-                  <Text key={validType} as="li">
-                    <code>{validType}</code>
-                  </Text>
-                ))}
-              </Stack>
-            )}
-
-            <Stack marginTop={2} space={2}>
-              <Text size={1} weight="medium">
-                <Translate
-                  t={t}
-                  i18nKey="inputs.invalid-value.current-type"
-                  values={{
-                    actualType: actualType,
-                  }}
-                />
-              </Text>
-
-              <Card border padding={2} radius={2} tone="inherit">
-                <Code language="json" size={1}>
-                  {JSON.stringify(value, null, 2)}
-                </Code>
-              </Card>
-            </Stack>
-
-            {converters.length > 0 && (
-              <Stack space={1}>
-                {converters.map((converter) => (
-                  <ConvertButton
-                    key={`${converter.from}-${converter.to}`}
-                    converter={converter}
-                    onConvert={handleConvertTo}
-                    value={value}
-                  />
-                ))}
-              </Stack>
-            )}
-          </Stack>
-        </Details>
-      </Alert>
+      <UntypedValueInput
+        value={value as Record<string, unknown>}
+        validTypes={validTypes}
+        onChange={onChange}
+      />
     )
-  },
-)
+  }
 
-InvalidValueInput.displayName = 'ForwardRef(InvalidValueInput)'
+  const suffix = (
+    <Flex padding={2} flexDirection="column">
+      <Button
+        onClick={handleClearClick}
+        tone="critical"
+        text={t('inputs.invalid-value.reset-button.text')}
+      />
+    </Flex>
+  )
+
+  return (
+    <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
+      <Text as="p" muted size={1} trim={true} tone="critical">
+        {t('inputs.invalid-value.description')}
+      </Text>
+
+      <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
+        <VStack gap={3}>
+          {validTypes.length === 1 && (
+            <Text as="p" muted size={1} trim={true} tone="critical">
+              <Translate
+                t={t}
+                i18nKey="inputs.invalid-value.details.description"
+                values={{
+                  validType: validTypes[0],
+                }}
+              />
+            </Text>
+          )}
+
+          {validTypes.length === 1 && (
+            <Text as="p" muted size={1} trim={true} tone="critical">
+              {t('inputs.invalid-value.details.possible-reason')}
+            </Text>
+          )}
+
+          {validTypes.length !== 1 && (
+            <Text as="p" muted size={1} trim={true} tone="critical">
+              {t('inputs.invalid-value.details.multi-type-description')}
+            </Text>
+          )}
+
+          {validTypes.length !== 1 && (
+            <VStack as="ul" gap={2}>
+              {validTypes.map((validType) => (
+                <Text key={validType} as="li" trim={true} tone="critical">
+                  <code>{validType}</code>
+                </Text>
+              ))}
+            </VStack>
+          )}
+
+          <Flex marginTop={2} gap={2} flexDirection="column">
+            <Text size={1} weight="medium" as="div" trim={true} tone="critical">
+              <Translate
+                t={t}
+                i18nKey="inputs.invalid-value.current-type"
+                values={{
+                  actualType: actualType,
+                }}
+              />
+            </Text>
+
+            <Card border padding={2} radius={2} tone="inherit">
+              <Code language="json" size={1}>
+                {JSON.stringify(value, null, 2)}
+              </Code>
+            </Card>
+          </Flex>
+
+          {converters.length > 0 && (
+            <VStack gap={1}>
+              {converters.map((converter) => (
+                <ConvertButton
+                  key={`${converter.from}-${converter.to}`}
+                  converter={converter}
+                  onConvert={handleConvertTo}
+                  value={value}
+                />
+              ))}
+            </VStack>
+          )}
+        </VStack>
+      </Details>
+    </Alert>
+  )
+}
 
 function ConvertButton({
   converter,

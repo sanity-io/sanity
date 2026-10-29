@@ -2,7 +2,7 @@ import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
 import pick from 'lodash-es/pick.js'
 import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   BehaviorSubject,
   combineLatest,
@@ -18,8 +18,8 @@ import {
   switchScan,
 } from 'rxjs'
 
-import {type DiffComponent, type DiffComponentOptions} from '../field'
-import {type FormState} from '../form/store'
+import {type DiffComponent, type DiffComponentOptions} from '../field/types'
+import {type FormState} from '../form/store/useFormState'
 import {useWorkspace} from '../studio/workspace'
 import {type CollatedDocumentDivergencesState} from './collateDocumentDivergences'
 import {type Divergence, type DivergenceAtPath} from './readDocumentDivergences'
@@ -238,7 +238,11 @@ export function useDivergenceNavigator({
     })
   }, [dispatch])
 
-  const state = useObservable(readState, {
+  // Kept synchronous: `previousDivergence` / `nextDivergence` are the targets
+  // the prev/next buttons pass to `focusDivergence`, so a deferred snapshot
+  // could re-focus a stale neighbor instead of advancing during rapid
+  // navigation.
+  const state = useSyncObservable(readState, {
     focusedDivergence: undefined,
     previousDivergence: undefined,
     nextDivergence: undefined,

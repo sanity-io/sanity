@@ -86,7 +86,7 @@ describe('resolveConfigProperty', () => {
       },
     ])
 
-    expect(reducer).toBeCalledTimes(4)
+    expect(reducer).toHaveBeenCalledTimes(4)
     expect(reducer.mock.calls[0][2]).toBe(context)
   })
 
@@ -152,7 +152,7 @@ describe('resolveConfigProperty', () => {
       },
     ])
 
-    expect(asyncReducer).toBeCalledTimes(3)
+    expect(asyncReducer).toHaveBeenCalledTimes(3)
     expect(asyncReducer.mock.calls[0][2]).toBe(context)
   })
 

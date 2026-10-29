@@ -1,10 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Menu} from '@sanity/ui'
+import {Button} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {MenuButton} from '../../../ui-components'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
@@ -28,10 +29,16 @@ export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
+  trigger,
 }: {
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * Overrides the chevron-only trigger. The perspective bar passes a full
+   * labelled button so the whole pill is one touch target.
+   */
+  trigger?: React.ReactElement
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
@@ -56,13 +63,15 @@ export function GlobalPerspectiveMenu({
     <>
       <MenuButton
         button={
-          <OversizedButton
-            data-testid="global-perspective-menu-button"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            padding={2}
-            radius="full"
-          />
+          trigger ?? (
+            <OversizedButton
+              data-testid="global-perspective-menu-button"
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              padding={2}
+              radius="full"
+            />
+          )
         }
         id="releases-menu"
         onClose={resetRangeVisibility}

@@ -1,4 +1,4 @@
-import {type ComponentType, type ForwardedRef, forwardRef, useContext, useMemo} from 'react'
+import {type ComponentType, useContext, useMemo, type RefAttributes} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
 
@@ -7,13 +7,13 @@ import {type BackLinkProps} from './types'
 /**
  * @internal
  */
-export const BackLink = forwardRef(function BackLink(
-  props: BackLinkProps,
-  ref: ForwardedRef<HTMLAnchorElement>,
-) {
+function BackLinkComponent(props: BackLinkProps & RefAttributes<HTMLAnchorElement>) {
+  const {ref, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
   const panes = useMemo(() => routerPanesState.slice(0, groupIndex), [groupIndex, routerPanesState])
   const state = useMemo(() => ({panes}), [panes])
 
-  return <StateLink {...props} ref={ref} state={state} />
-}) as ComponentType<BackLinkProps>
+  return <StateLink {...rest} ref={ref} state={state} />
+}
+
+export const BackLink = BackLinkComponent as ComponentType<BackLinkProps>

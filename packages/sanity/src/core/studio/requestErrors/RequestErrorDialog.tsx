@@ -1,38 +1,58 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {startTransition, useCallback, useEffect, useState} from 'react'
+import {Card} from '@sanity/ui'
+import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
+import {Text, VStack, Flex, Box, Icon, Link} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
 
 /**
  * Things a user can check themselves when the studio can't reach the
  * Sanity API. Ordered most-likely-first.
  */
-const NETWORK_TROUBLESHOOTING = [
-  'Check that your device is online.',
-  'Disable VPNs, ad blockers, or browser extensions that may block requests.',
-  'Check status.sanity.io for ongoing incidents.',
+const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
+  {key: 'online', content: 'Check that your device is online.'},
+  {
+    key: 'blockers',
+    content: 'Disable VPNs, ad blockers, or browser extensions that may block requests.',
+  },
+  {
+    key: 'status',
+    content: (
+      <>
+        Check{' '}
+        <Link
+          href="https://status.sanity.io"
+          style={{color: 'var(--card-link-fg-color)'}}
+          openInNewTab
+          underlined={false}
+        >
+          status.sanity.io
+        </Link>{' '}
+        for ongoing incidents.
+      </>
+    ),
+  },
 ]
 
 function NetworkTroubleshooting() {
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack space={3}>
-        <Text size={1} weight="medium">
+      <VStack gap={3}>
+        <Text size={1} weight="medium" as="div" trim={true}>
           Troubleshooting
         </Text>
-        <Stack as="ul" space={2} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <VStack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
-            <Box as="li" key={tip}>
-              <Text size={1} muted>
-                {tip}
+            <Box as="li" key={tip.key}>
+              <Text size={1} muted as="div" trim={true}>
+                {tip.content}
               </Text>
             </Box>
           ))}
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
@@ -134,31 +154,33 @@ export function RequestErrorDialog(props: {
             }
       }
     >
-      <Stack space={4}>
-        <Text>{message}</Text>
+      <VStack gap={4}>
+        <Text as="div" trim={true}>
+          {message}
+        </Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
-          <Text size={1}>
-            <a
+          <Text size={1} as="div" trim={true}>
+            <Link
               href="https://status.sanity.io"
-              rel="noopener noreferrer"
               style={{color: 'var(--card-link-fg-color)'}}
-              target="_blank"
+              openInNewTab
+              underlined={false}
             >
-              <Flex as="span" align="center" gap={2}>
+              <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
-                <LaunchIcon />
+                <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
               </Flex>
-            </a>
+            </Link>
           </Text>
         ) : null}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
 
 function RateLimitedDialog(props: {
-  claim: {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
+  claim: Extract<RequestErrorClaim, {type: 'rateLimited'}>
   onRetry: () => void
 }) {
   const {claim, onRetry} = props
@@ -174,6 +196,7 @@ function RateLimitedDialog(props: {
     // disabled state. Intentional sync to the external claim, not a cascade —
     // deferred via startTransition so React can schedule the re-render lazily.
     startTransition(() => setRetrying(false))
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [claim])
   const handleRetry = useCallback(() => {
     setRetrying(true)
@@ -194,9 +217,11 @@ function RateLimitedDialog(props: {
           },
         }}
       >
-        <Stack space={4}>
-          <Text>Too many requests at once. Reload the Studio to try again.</Text>
-        </Stack>
+        <VStack gap={4}>
+          <Text as="div" trim={true}>
+            Too many requests at once. Reload the Studio to try again.
+          </Text>
+        </VStack>
       </Dialog>
     )
   }
@@ -223,9 +248,11 @@ function RateLimitedDialog(props: {
         },
       }}
     >
-      <Stack space={4}>
-        <Text>Too many requests at once. You can try again shortly.</Text>
-      </Stack>
+      <VStack gap={4}>
+        <Text as="div" trim={true}>
+          Too many requests at once. You can try again shortly.
+        </Text>
+      </VStack>
     </Dialog>
   )
 }

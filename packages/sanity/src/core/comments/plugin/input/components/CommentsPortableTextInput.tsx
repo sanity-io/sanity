@@ -5,16 +5,18 @@ import {
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
 } from '@portabletext/editor'
-import {isPortableTextTextBlock} from '@sanity/types'
-import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
+import {isPortableTextTextBlock, type Path} from '@sanity/types'
+import {BoundaryElementProvider, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
+import {dequal as isEqual} from 'dequal/lite'
 import debounce from 'lodash-es/debounce.js'
-import isEqual from 'lodash-es/isEqual.js'
 import {AnimatePresence} from 'motion/react'
 import {
   memo,
+  type PropsWithChildren,
   startTransition,
+  use,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -22,37 +24,33 @@ import {
   useRef,
   useState,
 } from 'react'
+import {VStack} from 'ui5'
 
-import {
-  type EditorChange,
-  type PortableTextInputProps,
-  useFieldActions,
-  useFormValue,
-} from '../../../../form'
-import {useCurrentUser} from '../../../../store'
+import {useFormValue} from '../../../../form/contexts/FormValue'
+import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
+import {type EditorChange, type PortableTextInputProps} from '../../../../form/types/inputProps'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
-import {CommentInlineHighlightSpan} from '../../../components'
+import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
-import {
-  useComments,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
-} from '../../../hooks'
+import {useComments} from '../../../hooks/useComments'
+import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../../hooks/useCommentsMode'
+import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {
   type CommentDocument,
   type CommentMessage,
   type CommentsTextSelectionItem,
-  type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
+import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
+import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 import {
-  buildCommentRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   getCommentFieldPath,
-} from '../../../utils'
+} from '../../../utils/inline-comments/buildTextSelectionFromFragment'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -62,7 +60,7 @@ const EMPTY_ARRAY: [] = []
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
   const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
@@ -81,13 +79,16 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     return props.renderDefault(props)
   }
 
-  return <CommentsPortableTextInputInner {...props} mode={mode} />
+  return <CommentsPortableTextInputInner {...props} />
 }
 
 const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
-  props: PortableTextInputProps & {mode: CommentsUIMode},
+  props: PortableTextInputProps,
 ) {
-  const {mode} = props
+  const {onItemClose, onItemOpen} = props
+  // Settled in place by the plugin's provider long before a form renders, so this reads
+  // synchronously; a form that does get here first waits under the document pane's boundary
+  const mode = use(useCommentsMode())
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -99,6 +100,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const {handleOpenDialog} = useCommentsUpsell()
   const [mousePressed, setMousePressed] = useState<boolean>(false)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editorRef = useRef<PortableTextEditor | null>(null)
 
   // Read through a ref because `useFormValue([])` changes identity on every
@@ -135,6 +137,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const getFragment = useCallback(() => {
     if (!editorRef.current) return EMPTY_ARRAY
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return PortableTextEditor.getFragment(editorRef.current)
   }, [])
 
@@ -156,6 +159,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
+    if (mode === null) {
+      // The feature check failed: the inspector explains that comments are unavailable
+      onCommentsOpen?.()
+      return
+    }
     // When trying to add a comment in "upsell" mode, we want to
     // display the upsell dialog instead of the comment input popover.
     if (mode === 'upsell') {
@@ -165,7 +173,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     const currentFragment = getFragment() || null
     setFragment(currentFragment)
     setNextCommentSelection(currentSelection)
-  }, [currentSelection, getFragment, handleOpenDialog, mode])
+  }, [currentSelection, getFragment, handleOpenDialog, mode, onCommentsOpen])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -273,8 +281,36 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const blurred = useRef<boolean>(false)
 
+  // Tracks whether an object edit modal inside the editor (e.g. the annotation
+  // edit popover) is opening or open. The editor still reports the text as
+  // selected while such a modal is opening, and without this guard the
+  // floating "Add comment" button would show (or linger) on top of it.
+  const objectEditModalOpenRef = useRef<boolean>(false)
+
+  const handleItemOpen = useCallback(
+    (itemPath: Path) => {
+      objectEditModalOpenRef.current = true
+      resetStates()
+      onItemOpen(itemPath)
+    },
+    [onItemOpen, resetStates],
+  )
+
+  const handleItemClose = useCallback(() => {
+    objectEditModalOpenRef.current = false
+    onItemClose()
+  }, [onItemClose])
+
   const handleSelectionChange = useCallback(
     (selection: EditorSelection | null) => {
+      // While an object edit modal is opening or open, the selection the
+      // editor reports isn't one the user just made — don't offer the
+      // floating "Add comment" button for it.
+      if (objectEditModalOpenRef.current) {
+        setCanSubmit(false)
+        return
+      }
+
       const isRangeSelected = selection?.anchor.offset !== selection?.focus.offset
 
       const selectedFragment = getFragment()
@@ -309,6 +345,13 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const debounceSelectionChange = useDebounceSelectionChange(handleSelectionChange)
 
   const handleMouseDown = useCallback(() => {
+    // A mouse press inside the editor means the selection that follows is
+    // made by the user, not restored by a re-focus, so the `blurred` guard
+    // in `handleSelectionChange` must not swallow it.
+    blurred.current = false
+    // It also means any open object edit modal is on its way out (it closes on
+    // outside clicks), so stop suppressing the floating "Add comment" button.
+    objectEditModalOpenRef.current = false
     startTransition(() => setMousePressed(true))
   }, [])
 
@@ -358,6 +401,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // The below code will update the comment object to reflect the new selection
       if (!editorRef.current) return
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
@@ -423,6 +467,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
       if (!editorRef.current) return EMPTY_ARRAY
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       return buildCommentRangeDecorations({
@@ -462,6 +507,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     [debounceSelectionChange, updateCommentRange],
   )
 
+  // The editor invokes a range decoration's `component` as a plain render
+  // callback (`rangeDecoration.component({children})`), so this is not a
+  // component type and a stable identity is enough. The state setter it
+  // captures never changes.
+  const renderAuthoringDecoration = useCallback(
+    ({children}: PropsWithChildren) => (
+      <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
+        {children}
+      </CommentInlineHighlightSpan>
+    ),
+    [],
+  )
+
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
   // selected text.
@@ -469,14 +527,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (!nextCommentSelection) return null
 
     return {
-      component: ({children}) => (
-        <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
-          {children}
-        </CommentInlineHighlightSpan>
-      ),
+      component: renderAuthoringDecoration,
       selection: nextCommentSelection,
     }
-  }, [nextCommentSelection])
+  }, [nextCommentSelection, renderAuthoringDecoration])
 
   // All the range decorations
   const rangeDecorations: RangeDecoration[] = [
@@ -497,12 +551,14 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         return addedCommentsDecorations.some((d) => {
           if (!editorRef.current) return false
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testA = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             currentSelection,
             d.selection,
           )
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testB = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             d.selection,
@@ -616,15 +672,17 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         </AnimatePresence>
       </BoundaryElementProvider>
 
-      <Stack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
+      <VStack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
         <RenderDefaultCommentsPortableTextInputInner
           {...props}
           onEditorChange={onEditorChange}
+          onItemClose={handleItemClose}
+          onItemOpen={handleItemOpen}
           editorRef={editorRef}
           rangeDecorations={rangeDecorations}
           onFullScreenChange={setIsFullScreen}
         />
-      </Stack>
+      </VStack>
     </>
   )
 })

@@ -10,17 +10,19 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {validateItem} from '@sanity/validation/_internal'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Flex, Box} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {useFormValue} from '../../../../form'
-import {useClient} from '../../../../hooks'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useClient} from '../../../../hooks/useClient'
 import {useSchema} from '../../../../hooks/useSchema'
-import {useTranslation} from '../../../../i18n'
-import {useWorkspace} from '../../../../studio'
-import {validateItem} from '../../../../validation/validateDocument'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../../studio/workspace'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
+import {useFormValue} from '../../../contexts/FormValue'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
@@ -49,6 +51,7 @@ export interface SelectAssetsDialogProps {
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryIds = useMediaLibraryIds()
 
@@ -210,8 +213,8 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex gap={3} justify="flex-end">
-            <Flex gap={2} justify="flex-end" align="center">
+          <Flex gap={3} justifyContent="flex-end">
+            <Flex gap={2} justifyContent="flex-end" alignItems="center">
               {validation.length > 0 && (
                 <FormFieldValidationStatus fontSize={2} placement="top" validation={validation} />
               )}

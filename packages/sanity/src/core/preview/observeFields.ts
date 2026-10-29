@@ -32,6 +32,7 @@ import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {getPublishedId, idMatchesPerspective, isVersionId} from '../util/draftUtils'
+import {variantApiVersion} from '../variants/util/variantApiVersion'
 import {INCLUDE_FIELDS} from './constants'
 import {
   type ApiConfig,
@@ -93,6 +94,18 @@ export function chunkCombinedSelections(
   return chunks
 }
 
+/**
+ * Cache key for the combination of perspective stack and variant a fetch is scoped to. Preview
+ * values differ per combination, so caches must never be shared across them.
+ */
+function getPerspectiveCacheKey(
+  perspective: StackablePerspective[] | undefined,
+  variant: string | undefined,
+): string {
+  const perspectiveKey = perspective?.join('-') || 'raw'
+  return variant ? `${perspectiveKey}-variant:${variant}` : perspectiveKey
+}
+
 type CachedFieldObserver = {
   id: Id
   fields: FieldName[]
@@ -130,7 +143,11 @@ export function createObserveFields(options: {
 }) {
   const {client: currentDatasetClient, invalidationChannel} = options
 
-  function fetchAllDocumentPathsWith(client: SanityClient, perspective?: StackablePerspective[]) {
+  function fetchAllDocumentPathsWith(
+    client: SanityClient,
+    perspective?: StackablePerspective[],
+    variant?: string,
+  ) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
       // If any document is a version document we need to use the release API version
@@ -140,7 +157,10 @@ export function createObserveFields(options: {
 
       const apiClient = versionedClient(
         client,
-        useReleaseVersion ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion : undefined,
+        variantApiVersion(
+          variant,
+          useReleaseVersion ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion : undefined,
+        ),
       )
 
       // Chunk the selections to avoid massive queries that timeout
@@ -149,7 +169,7 @@ export function createObserveFields(options: {
       // Helper to fetch a single chunk
       const fetchChunk = (chunk: CombinedSelection[]) =>
         apiClient.observable
-          .fetch(toQuery(chunk), {}, {tag: 'preview.document-paths', perspective})
+          .fetch(toQuery(chunk), {}, {tag: 'preview.document-paths', perspective, variant})
           .pipe(
             retry({
               delay: (_: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
@@ -184,14 +204,20 @@ export function createObserveFields(options: {
     }
   }
   const batchFetchersCache = new Map()
-  function getBatchFetchersForPerspective(perspective?: StackablePerspective[]) {
-    const key = perspective?.join('-') || 'raw'
+  function getBatchFetchersForPerspective(perspective?: StackablePerspective[], variant?: string) {
+    const key = getPerspectiveCacheKey(perspective, variant)
     if (batchFetchersCache.has(key)) {
       return batchFetchersCache.get(key)
     }
     const batchFetchers = {
-      fast: debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient, perspective), 100),
-      slow: debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient, perspective), 1000),
+      fast: debounceCollect(
+        fetchAllDocumentPathsWith(currentDatasetClient, perspective, variant),
+        100,
+      ),
+      slow: debounceCollect(
+        fetchAllDocumentPathsWith(currentDatasetClient, perspective, variant),
+        1000,
+      ),
     }
     batchFetchersCache.set(key, batchFetchers)
     return batchFetchers
@@ -201,9 +227,10 @@ export function createObserveFields(options: {
     documentId: Id,
     fields: FieldName[],
     perspective?: StackablePerspective[],
+    variant?: string,
   ) {
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
-      getBatchFetchersForPerspective(perspective)
+      getBatchFetchersForPerspective(perspective, variant)
 
     const hasPerspective = perspective && perspective.length > 0
     /**
@@ -227,10 +254,13 @@ export function createObserveFields(options: {
           // version is relevant to the current perspective stack (e.g. drafts,
           // a specific release). This avoids refetching for unrelated documents
           // or versions outside the active perspective.
-          return (
-            getPublishedId(event.documentId) === getPublishedId(documentId) &&
-            idMatchesPerspective(perspective, event.documentId)
-          )
+          if (getPublishedId(event.documentId) !== getPublishedId(documentId)) {
+            return false
+          }
+          // Variant documents are `versions.<opaqueScopeId>.<groupId>`, and scope ids never appear
+          // in the perspective stack, so the stack check can't recognise them. Under a variant
+          // selection, any mutation within the document group is treated as relevant.
+          return Boolean(variant) || idMatchesPerspective(perspective, event.documentId)
         }
         // if not using perspective, refetch previews for the document that was actually changed
         return event.documentId === documentId
@@ -291,6 +321,7 @@ export function createObserveFields(options: {
     fields: FieldName[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): CachedFieldObserver {
     // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
     let latest: T | undefined | null
@@ -298,7 +329,7 @@ export function createObserveFields(options: {
       defer(() => (latest === undefined ? EMPTY : of(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields, perspective)) as Observable<T>,
+        : currentDatasetListenFields(id, fields, perspective, variant)) as Observable<T>,
     ).pipe(
       tap((v: T | null) => (latest = v)),
       shareReplay({refCount: true, bufferSize: 1}),
@@ -312,10 +343,11 @@ export function createObserveFields(options: {
     fields: FieldName[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) {
     const cacheKey = apiConfig
       ? `${apiConfig.projectId}:${apiConfig.dataset}:${id}`
-      : `$current$-${id}-${perspective?.join('-') || 'raw'}`
+      : `$current$-${id}-${getPerspectiveCacheKey(perspective, variant)}`
 
     if (!(cacheKey in CACHE)) {
       CACHE[cacheKey] = []
@@ -328,7 +360,7 @@ export function createObserveFields(options: {
     )
 
     if (missingFields.length > 0) {
-      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig, perspective))
+      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig, perspective, variant))
     }
 
     const cachedFieldObservers = existingObservers

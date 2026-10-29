@@ -45,7 +45,10 @@ export interface IdPair {
  * - `version` — a plain version (release, agent or anonymous bundle): the pair checks out
  *   `versions.<scopeId>.<groupId>`. Passing a bare `string` is shorthand for this kind.
  * - `variant` — a resolved variant-scoped version: the pair checks out
- *   `versions.<scopeId>.<groupId>` via the variant's scope id.
+ *   `versions.<scopeId>.<groupId>` via the variant's scope id. `allowCreate` declares that the
+ *   variant document may not exist yet at a server-advertised id (`_system.draft` on the
+ *   variant-of-published sibling) and that typing is allowed to create it — the store keeps
+ *   `patch`/`commit` enabled where it would otherwise disable them with `TARGET_NOT_FOUND`.
  * - `target-missing` — a variant is selected but the document has no variant-scoped version for
  *   the current bundle (or the variant selection is invalid). Operations are disabled with
  *   `TARGET_NOT_FOUND` and throw if executed.
@@ -56,7 +59,7 @@ export interface IdPair {
  */
 export type DocumentPairTarget =
   | {kind: 'version'; scopeId: string}
-  | {kind: 'variant'; scopeId: string; variantId: string}
+  | {kind: 'variant'; scopeId: string; variantId: string; allowCreate?: boolean}
   | {kind: 'target-missing'; variantId?: string}
   | {kind: 'unresolved'}
 

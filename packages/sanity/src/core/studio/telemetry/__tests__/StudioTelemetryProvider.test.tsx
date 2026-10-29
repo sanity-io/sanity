@@ -1,6 +1,8 @@
-import type * as SanityTelemetry from '@sanity/telemetry'
 /* oxlint-disable import/first */
 // Regular imports first
+import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
+import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
+import type * as SanityTelemetry from '@sanity/telemetry'
 import {render} from '@testing-library/react'
 import {StrictMode, type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -21,9 +23,9 @@ vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../workspace')
-vi.mock('../../workspaces')
+vi.mock('../../workspaces/useWorkspaces')
 vi.mock('../../../store/project/useProjectOrganizationId')
 vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
@@ -43,12 +45,12 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
-import {useWorkspaces} from '../../workspaces'
+import {useWorkspaces} from '../../workspaces/useWorkspaces'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
 /* oxlint-enable import/first */
 
@@ -126,6 +128,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Setup default mocks
     vi.mocked(createSessionId).mockReturnValue('test-session-id' as SessionId)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
     vi.mocked(useWorkspaces).mockReturnValue(mockWorkspaces as never)
@@ -173,9 +176,8 @@ describe('StudioTelemetryProvider', () => {
     // Verify client.request was called with enriched batch
     expect(mockClient.request).toHaveBeenCalledWith(
       expect.objectContaining({
-        uri: '/intake/batch',
+        url: '/intake/batch',
         method: 'POST',
-        json: true,
         body: expect.objectContaining({
           projectId: 'test-project',
           batch: expect.arrayContaining([
@@ -185,6 +187,8 @@ describe('StudioTelemetryProvider', () => {
               context: expect.objectContaining({
                 // Static context
                 studioVersion: '3.0.0-test',
+                portableTextEditorVersion: portableTextEditorManifest.version,
+                appSdkVersion: appSdkManifest.version,
                 environment: 'development',
                 // Dynamic context
                 orgId: 'org-123',

@@ -7,7 +7,7 @@ import {
   type RootFormStateOptions,
   createPrepareFormState,
 } from '../../formState'
-import {type BaseFormNode} from '../../types'
+import {type BaseFormNode} from '../../types/nodes'
 import {getExpandOperations} from '../getExpandOperations'
 
 const schemaDefinition = {
@@ -148,6 +148,8 @@ const defaultOptions: Omit<
   readOnly: undefined,
   perspective: 'published',
   hasUpstreamVersion: true,
+  baseVariantValue: undefined,
+  hasBaseVariant: false,
 }
 
 const it = baseIt.extend<{
@@ -309,4 +311,32 @@ it('switches to group the array object node belongs to, and nested group the obj
         },
       ]
     `)
+})
+
+it('does not throw when an array item segment is not keyed', ({prepareFormState, schema}) => {
+  const documentValue = {objectArray: [{_key: 'x.y', stringAlpha: 'alpha'}]}
+
+  const formState = prepareFormState({
+    ...defaultOptions,
+    schemaType: schema.get('nestedGroupInArrayObjectNode') as ObjectSchemaType,
+    documentValue,
+    comparisonValue: documentValue,
+  }) as BaseFormNode
+
+  const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+  // what a key containing a period used to be parsed as
+  expect(getExpandOperations(formState, ['objectArray', '_key=="x', 'y"'])).toEqual([
+    {type: 'expandPath', path: ['objectArray']},
+    {type: 'expandPath', path: ['objectArray', '_key=="x']},
+    {type: 'expandPath', path: ['objectArray', '_key=="x', 'y"']},
+    {type: 'setSelectedGroup', path: [], groupName: 'all-fields'},
+  ])
+  expect(consoleError).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Expected path segment to be an object with a _key property',
+      cause: '_key=="x',
+    }),
+  )
+  consoleError.mockRestore()
 })

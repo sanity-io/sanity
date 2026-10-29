@@ -1,7 +1,7 @@
-import {Box, Flex, Stack} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {VStack, Flex, Box} from 'ui5'
 
-export const StackWrapper = styled(Stack)`
+export const StackWrapper = styled(VStack)`
   max-width: 200px;
 `
 
@@ -16,10 +16,12 @@ export const Root = styled(Box)<{$visible?: boolean}>(({$visible}) => {
     pointer-events: none;
     transition: opacity 0.2s;
 
-    ${$visible &&
-    css`
-      opacity: 1;
-      pointer-events: auto;
-    `}
+    ${
+      $visible &&
+      css`
+        opacity: 1;
+        pointer-events: auto;
+      `
+    }
   `
 })

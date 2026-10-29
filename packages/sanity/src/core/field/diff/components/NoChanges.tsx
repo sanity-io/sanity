@@ -1,18 +1,18 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text, Flex} from 'ui5'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 /** @internal */
 export function NoChanges() {
   const {t} = useTranslation()
   return (
-    <Stack space={3} paddingTop={2}>
-      <Text size={1} weight="medium" as="h3">
+    <Flex gap={3} paddingTop={2} flexDirection="column" flexShrink={0}>
+      <Text size={1} weight="medium" as="h3" trim={true}>
         {t('changes.no-changes-title')}
       </Text>
-      <Text as="p" size={1} muted>
+      <Text as="p" size={1} muted trim={true}>
         {t('changes.no-changes-description')}
       </Text>
-    </Stack>
+    </Flex>
   )
 }

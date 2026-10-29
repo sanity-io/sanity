@@ -1,26 +1,28 @@
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
-import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
+import {Button, Card, Label} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
+import {Box, VStack} from 'ui5'
 
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {
     return (
-      <Stack space={2}>
+      <VStack gap={2}>
         <DocumentDebugger />
         {props.renderDefault(props)}
-      </Stack>
+      </VStack>
     )
   }
   return (
-    <Stack space={2}>
+    <VStack gap={2}>
       {props.renderDefault(props)}
       <InputDebugger {...props} />
-    </Stack>
+    </VStack>
   )
 }
 
@@ -51,12 +53,12 @@ function DocumentDebugger() {
         background: 'white',
       }}
     >
-      <Stack space={2}>
+      <VStack gap={2}>
         <Label size={0}>current focus path</Label>
         <Box overflow="auto" padding={1}>
           <Code size={0}>{studioPath.toString(focusPath) || 'undefined'}</Code>
         </Box>
-      </Stack>
+      </VStack>
     </HoverCard>
   )
 }
@@ -118,10 +120,10 @@ function InputDebugger(props: InputProps) {
 
   return (
     <Card padding={2} tone="default" border>
-      <Stack space={4}>
+      <VStack gap={4}>
         <Label size={0}>edit links that updates focus path</Label>
         <Box overflow="auto" padding={1}>
-          <Stack space={2}>
+          <VStack gap={2}>
             {stegaEditLinks?.map(({href}: any) => {
               const [, relativePath] = href.split('/intent/edit/')
               const [pathname] = relativePath.split('?')
@@ -133,6 +135,7 @@ function InputDebugger(props: InputProps) {
                   as="a"
                   href={href}
                   tone="primary"
+                  // @ts-expect-error -- pre-existing, fix later
                   size={0}
                   fontSize={0}
                   padding={2}
@@ -148,9 +151,9 @@ function InputDebugger(props: InputProps) {
                 </Button>
               )
             })}
-          </Stack>
+          </VStack>
         </Box>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

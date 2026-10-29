@@ -1,17 +1,11 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex, Box, type MarginProps} from 'ui5'
 
-interface DetailsProps {
+interface DetailsProps extends MarginProps {
   children?: ReactNode
-  margin?: number | number[]
-  marginX?: number | number[]
-  marginY?: number | number[]
-  marginTop?: number | number[]
-  marginRight?: number | number[]
-  marginBottom?: number | number[]
-  marginLeft?: number | number[]
   open?: boolean
   icon?: ReactNode
   title?: ReactNode
@@ -31,8 +25,8 @@ const HeaderButton = styled.button`
   outline: none;
 `
 
-const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
-  transform: ${(props) => (props.open ? 'rotate(90deg)' : '')};
+const ToggleArrow = styled(ToggleArrowRightIcon)<{$open: boolean}>`
+  transform: ${(props) => (props.$open ? 'rotate(90deg)' : 'none')};
 `
 
 const Header = styled(Flex)`
@@ -57,21 +51,21 @@ export function Details(props: DetailsProps) {
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (
     <Box {...restProps}>
       <HeaderButton type="button" onClick={handleToggle}>
         <Header>
-          <Flex align="center">
+          <Flex alignItems="center">
             <IconBox data-open={open ? '' : undefined}>
               <Text size={1}>
-                <ToggleArrow open={open} />
+                <ToggleArrow $open={open} />
               </Text>
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
-            <Box flex={1} marginLeft={1}>
+            <Box flexBasis="0%" flexGrow={1} marginLeft={1}>
               <Text textOverflow="ellipsis" size={1} weight="medium">
                 {title}
               </Text>

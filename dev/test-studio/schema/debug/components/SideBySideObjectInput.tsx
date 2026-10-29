@@ -1,5 +1,6 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 /**
  * Simple custom item component for array of objects
@@ -18,26 +19,42 @@ export function SideBySideObjectItem(props: ItemProps) {
 
   return (
     <Card padding={3} radius={2} shadow={1} tone="primary">
-      <Stack space={3}>
+      <VStack gap={3}>
         {/* Preview of the item */}
         <Flex gap={3}>
-          <Stack space={2} flex={1}>
-            <Text size={0} weight="semibold">
+          <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
+            <Text
+              size={0}
+              weight="semibold"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               Name
             </Text>
-            <Text size={1}>{nameChild || 'No name'}</Text>
-          </Stack>
-          <Stack space={2} flex={1}>
-            <Text size={0} weight="semibold">
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+              {nameChild || 'No name'}
+            </Text>
+          </Flex>
+          <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
+            <Text
+              size={0}
+              weight="semibold"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               Internationalized
             </Text>
-            <Text size={1}>{internationalizedArrayStringChild?.[0]?.value || 'No value'}</Text>
-          </Stack>
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+              {internationalizedArrayStringChild?.[0]?.value || 'No value'}
+            </Text>
+          </Flex>
         </Flex>
 
         {/* Render the editing form (children) which will use the custom input component */}
         {children}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -71,11 +88,11 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
   )
 
   return (
-    <Stack space={3}>
+    <VStack gap={3}>
       {/* Render the two target fields side by side */}
       {nameChildMember && internationalizedMember && (
         <Flex gap={3}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[nameChildMember]}
               renderAnnotation={renderAnnotation}
@@ -87,7 +104,7 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
               renderPreview={renderPreview}
             />
           </Box>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[internationalizedMember]}
               renderAnnotation={renderAnnotation}
@@ -115,6 +132,6 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
           renderPreview={renderPreview}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

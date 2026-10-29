@@ -1,6 +1,6 @@
-import {type WorkspaceAuthStates} from '../components/navbar/workspace/hooks'
-import {type WorkspacesContextValue} from '../workspaces'
+import {type WorkspaceAuthStates} from '../components/navbar/workspace/hooks/useWorkspaceAuthStates'
 import {evaluateWorkspaceHidden} from '../workspaces/useVisibleWorkspaces'
+import {type WorkspacesContextValue} from '../workspaces/WorkspacesContext'
 import {type NormalizedWorkspace} from './types'
 
 /** @internal */
@@ -19,15 +19,40 @@ export type MatchWorkspaceResult =
   | {type: 'loading'}
 
 /**
+ * Walks workspaces in config order and returns a redirect to the first one
+ * visible to the current user, skipping any with `hidden: true` or with a
+ * `hidden()` callback that returns `true`. Returns `loading` when a
+ * function-hidden workspace is reached whose auth state has not yet resolved,
+ * and `undefined` when every workspace is hidden.
+ */
+function redirectToFirstVisibleWorkspace(
+  workspaces: NormalizedWorkspace[],
+  workspaceAuthStates: WorkspaceAuthStates,
+): {type: 'redirect'; pathname: string} | {type: 'loading'} | undefined {
+  for (const {workspace, basePath} of workspaces) {
+    const {hidden} = workspace
+    if (hidden === true) continue
+    if (typeof hidden === 'function') {
+      const authState = workspaceAuthStates[workspace.name]
+      if (authState === undefined) return {type: 'loading'}
+      if (evaluateWorkspaceHidden(workspace, authState)) continue
+    }
+    return {type: 'redirect', pathname: basePath}
+  }
+  return undefined
+}
+
+/**
  * Resolves a pathname against the configured workspaces. Returns a match for a
  * known workspace path, a redirect to the first visible workspace when the
  * pathname is the common base path, or not-found otherwise.
  *
- * The default redirect walks workspaces in config order, skipping any with
- * `hidden: true` or with a `hidden()` callback that returns `true`. It returns
- * `loading` only when a function-hidden workspace is reached whose auth state
- * has not yet resolved. If every workspace is hidden, it falls back to the
- * first configured workspace.
+ * A pathname that points at a workspace hidden for the current user also
+ * redirects to the first visible workspace — the auth flow can return the
+ * browser to a URL that was resolved before the user was known (e.g. a hosted
+ * studio's `redirectTo`), and that URL may name a workspace the user cannot
+ * see. When every workspace is hidden, the hidden match is returned as-is so
+ * the caller can render its not-found screen.
  *
  * @internal
  */
@@ -44,23 +69,34 @@ export function matchWorkspace({
     // e.g. if the `workspace.basePath` is `/base/foobar` and the current
     // pathname is `/base/foo`, then that should not be a match
     if (basePathRegex.test(pathname) || basePath === '/') {
-      return {type: 'match', workspace}
+      if (
+        typeof workspace.hidden === 'function' &&
+        workspaceAuthStates[workspace.name] === undefined
+      ) {
+        return {type: 'loading'}
+      }
+      if (!evaluateWorkspaceHidden(workspace, workspaceAuthStates[workspace.name])) {
+        return {type: 'match', workspace}
+      }
+      // The pathname points at a workspace hidden for the current user;
+      // redirect to the first visible one instead of dead-ending.
+      return (
+        redirectToFirstVisibleWorkspace(workspaces, workspaceAuthStates) ?? {
+          type: 'match',
+          workspace,
+        }
+      )
     }
   }
 
   if (pathname === '/' || basePathRegex.test(pathname)) {
-    for (const {workspace, basePath} of workspaces) {
-      const {hidden} = workspace
-      if (hidden === true) continue
-      if (typeof hidden === 'function') {
-        const authState = workspaceAuthStates[workspace.name]
-        if (authState === undefined) return {type: 'loading'}
-        if (evaluateWorkspaceHidden(workspace, authState)) continue
+    return (
+      redirectToFirstVisibleWorkspace(workspaces, workspaceAuthStates) ?? {
+        // Every workspace is hidden; fall back to the first configured one.
+        type: 'redirect',
+        pathname: workspaces[0].basePath,
       }
-      return {type: 'redirect', pathname: basePath}
-    }
-    // Every workspace is hidden; fall back to the first configured one.
-    return {type: 'redirect', pathname: workspaces[0].basePath}
+    )
   }
 
   // if the pathname was not a subset of the common base path, then the route

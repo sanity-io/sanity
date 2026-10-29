@@ -1,19 +1,20 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 
+import {createWorkspaceFromConfig} from '../../src/core/config/resolveConfig'
 import {
-  createWorkspaceFromConfig,
   type SchemaPluginOptions,
   type SingleWorkspace,
   type Source,
   type Workspace,
-} from '../../src/core/config'
+} from '../../src/core/config/types'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 
 const defaultMockUser: CurrentUser = {
   id: 'doug',
   name: 'Doug',
   email: 'doug@sanity.io',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: 'admin',
   roles: [{name: 'administrator', title: 'Administrator'}],
 }

@@ -1,9 +1,20 @@
-import {type Path} from '../paths'
-import {type ValidationError} from '../validation'
+import {type Path} from '../paths/types'
+import {type ValidationError} from '../validation/types'
 
 /** @public */
 export interface ValidationMarker {
   level: 'error' | 'warning' | 'info'
+
+  /**
+   * A machine-readable identifier for the validation failure.
+   *
+   * Built-in validators use stable codes exported by `@sanity/validation`.
+   * Custom validators may provide their own code.
+   */
+  code?: string
+
+  /** Structured information about the validation failure. */
+  details?: Record<string, unknown>
 
   /**
    * The validation message for this marker. E.g. "Must be greater than 0"

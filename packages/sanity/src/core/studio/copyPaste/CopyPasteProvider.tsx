@@ -1,9 +1,8 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import flatten from 'lodash-es/flatten.js'
-import isEqual from 'lodash-es/isEqual.js'
 import last from 'lodash-es/last.js'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
@@ -20,7 +19,7 @@ import {useCurrentUser} from '../../store/user/hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId} from '../../util/draftUtils'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
-import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
+import {getResolvableTypeName, resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {transferValue, type TransferValueOptions} from './transferValue'
 import {
   type CopyOptions,
@@ -56,7 +55,13 @@ export const CopyPasteProvider: React.FC<{
       }
 
       setDocumentMetaState((prevMeta) => {
-        if (isEqual(prevMeta, processedMeta)) {
+        if (
+          prevMeta &&
+          prevMeta.documentId === processedMeta.documentId &&
+          prevMeta.documentType === processedMeta.documentType &&
+          prevMeta.schemaType === processedMeta.schemaType &&
+          prevMeta.onChange === processedMeta.onChange
+        ) {
           return prevMeta // No update if the new meta is the same as the current
         }
         return processedMeta
@@ -119,7 +124,7 @@ export const CopyPasteProvider: React.FC<{
         documentId,
         documentType,
         isDocument,
-        schemaTypeName: schemaTypeAtPath.name,
+        schemaTypeName: getResolvableTypeName(schema, schemaTypeAtPath),
         valuePath: normalizedPath,
         value: shouldWrapInArray ? [valueAtPath] : valueAtPath,
         patchType,
@@ -152,7 +157,7 @@ export const CopyPasteProvider: React.FC<{
         }
       }
     },
-    [documentMeta, telemetry, toast, t],
+    [documentMeta, schema, telemetry, toast, t],
   )
 
   const onPaste = useCallback(
@@ -211,11 +216,13 @@ export const CopyPasteProvider: React.FC<{
       const updateItems: {patches: FormPatch[]; targetSchemaTypeTitle: string}[] = []
       const copiedJsonTypes: string[] = []
 
-      const sourceSchemaType = resolveSchemaTypeForPath(
-        sourceDocumentSchemaType,
-        clipboardItem.valuePath,
-        value,
-      )
+      // The name recorded at copy time is guaranteed to resolve to the copied type (or,
+      // for inline types, its nearest registered parent type) — see getResolvableTypeName.
+      // Note that the source path recorded on the clipboard cannot be resolved here
+      // instead: paths with key segments require the source document value, and the
+      // source `_key`s don't exist in the target document when pasting across documents
+      // (https://github.com/sanity-io/sanity/issues/13983)
+      const sourceSchemaType = schema.get(clipboardItem.schemaTypeName)
 
       if (!sourceSchemaType) {
         toast.push({

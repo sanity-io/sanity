@@ -2,10 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   catchError,
   combineLatest,
+  defer,
   finalize,
   map,
   type Observable,
@@ -17,17 +18,18 @@ import {
   timer,
 } from 'rxjs'
 
+import {randomKey} from '../../form/utils/randomKey'
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {useDocumentPreviewStore} from '../../store'
-import {isDraftId} from '../../util'
-import {getPublishedId} from '../../util/draftUtils'
+import {useDocumentPreviewStore} from '../../store/datastores'
+import {isDraftId, getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
-import {useActiveReleases} from '../store/useActiveReleases'
+import {useReleasesStore} from '../store/useReleasesStore'
+import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 export interface DocumentPerspectiveProps {
@@ -50,6 +52,8 @@ const INITIAL_VALUE: DocumentPerspectiveState = {
 
 // Create a singleton cache for observables
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
+// releases flow via combineLatest, never in the cache key, to avoid cache thrash on every release edit
+export const withSystemCache = new Map<string, Observable<DocumentPerspectiveState>>()
 const swr = createSWR<string[]>({maxSize: 100})
 
 // How long to keep the pipeline alive after the last subscriber unsubscribes.
@@ -73,7 +77,11 @@ const TEARDOWN_GRACE_PERIOD = 1_000
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const observable = useDocumentVersionsObservable(props)
-  return useObservable(observable, INITIAL_VALUE)
+  // Kept synchronous: `useTargetDocumentState` / `useDocumentForm` derive the
+  // pair-checkout scope and the form's ready gate from this state, so a
+  // deferred snapshot could bind the form to the wrong version scope after
+  // navigation or a version change.
+  return useSyncObservable(observable, INITIAL_VALUE)
 }
 
 /**
@@ -91,33 +99,31 @@ export function useDocumentVersionsObservable(
   const dataset = useDataset()
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {data: releases} = useActiveReleases()
+  const {state$: releasesState$} = useReleasesStore()
 
-  const observable: Observable<DocumentPerspectiveState> = useMemo(() => {
-    return getOrCreateDocumentVersionsObservable({
-      documentPreviewStore,
-      publishedId,
-      projectId,
-      dataset,
-    }).pipe(
-      map((result) => {
-        return {
-          ...result,
-          versions: result.versions.map((version) => {
-            return {
-              ...version,
-              [DOCUMENT_SYSTEM_FIELD]: version._system?.group
-                ? version._system
-                : {
-                    ...version._system,
-                    ...temporarilyBuildDocumentSystem(version._id, releases),
-                  },
-            }
-          }),
-        }
+  const releases$ = useMemo(
+    () =>
+      releasesState$.pipe(
+        map((state) =>
+          Array.from(state.releases.values()).filter(
+            (release) => !ARCHIVED_RELEASE_STATES.includes(release.state),
+          ),
+        ),
+      ),
+    [releasesState$],
+  )
+
+  const observable: Observable<DocumentPerspectiveState> = useMemo(
+    () =>
+      getOrCreateDocumentVersionsWithSystemObservable({
+        documentPreviewStore,
+        publishedId,
+        projectId,
+        dataset,
+        releases$,
       }),
-    )
-  }, [dataset, documentPreviewStore, projectId, publishedId, releases])
+    [dataset, documentPreviewStore, projectId, publishedId, releases$],
+  )
 
   return observable
 }
@@ -129,10 +135,7 @@ export function useDocumentVersionsObservable(
  *
  * Variants will include the _system field.
  */
-const temporarilyBuildDocumentSystem = (
-  id: string,
-  releases: ReleaseDocument[],
-): DocumentSystem => {
+const buildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentSystem => {
   const versionId = getVersionFromId(id)
   if (versionId) {
     const releaseDocument = releases.find(
@@ -155,7 +158,93 @@ const temporarilyBuildDocumentSystem = (
   }
 }
 
+/**
+ * Canonicalizes the variant reference to `_system.variants`: documents that have not been
+ * migrated yet carry the legacy single `_system.variant` reference, which is folded into the
+ * array so every stub consumer can read `variants[0]`.
+ */
+const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
+  // oxlint-disable-next-line typescript/no-deprecated - we need to destructure the variant fallback field.
+  const {variant, ...rest} = system
+  // Document has the new shape, remove legacy field and return the rest.
+  if (system.variants?.[0]) return rest
+
+  // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
+  if (variant) {
+    return {...rest, variants: [{_ref: variant._ref, _key: randomKey()}]}
+  }
+
+  // Document has no variant reference, return the rest.
+  return rest
+}
+
+const resolveVersionSystem = (
+  version: VersionInfoDocumentStub,
+  releases: ReleaseDocument[],
+): DocumentSystem => {
+  if (version._system?.group) return normalizeVariants(version._system)
+
+  return normalizeVariants({
+    ...version._system,
+    ...buildDocumentSystem(version._id, releases),
+  })
+}
+
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
+
+function getOrCreateCachedObservable<T>(
+  cache: Map<string, Observable<T>>,
+  cacheKey: string,
+  createObservable: () => Observable<T>,
+): Observable<T> {
+  // Deferred so a render that never subscribes, such as one inside a hidden `<Activity>`, leaves no entry behind.
+  return defer(() => {
+    const cached = cache.get(cacheKey)
+    if (cached) return cached
+
+    const observable = createObservable().pipe(
+      finalize(() => cache.delete(cacheKey)),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+      }),
+    )
+
+    cache.set(cacheKey, observable)
+    return observable
+  })
+}
+
+export function getOrCreateDocumentVersionsWithSystemObservable(options: {
+  documentPreviewStore: DocumentPreviewStore
+  publishedId: string
+  projectId: string
+  dataset: string
+  releases$: Observable<ReleaseDocument[]>
+}): Observable<DocumentPerspectiveState> {
+  const {documentPreviewStore, projectId, dataset, publishedId, releases$} = options
+  const cacheKey = `${projectId}-${dataset}-${publishedId}`
+
+  return getOrCreateCachedObservable(withSystemCache, cacheKey, () =>
+    combineLatest([
+      getOrCreateDocumentVersionsObservable({
+        documentPreviewStore,
+        publishedId,
+        projectId,
+        dataset,
+      }),
+      releases$,
+    ]).pipe(
+      map(([result, releases]) => ({
+        ...result,
+        versions: result.versions.map((version) => ({
+          ...version,
+          [DOCUMENT_SYSTEM_FIELD]: resolveVersionSystem(version, releases),
+        })),
+      })),
+    ),
+  )
+}
 
 /**
  * Retrieves an observable that emits document IDs matching the document versions that exist for a specific id
@@ -179,69 +268,69 @@ export function getOrCreateDocumentVersionsObservable(options: {
   const {documentPreviewStore, projectId, dataset, publishedId} = options
   const cacheKey = `${projectId}-${dataset}-${publishedId}`
 
-  const cachedObservable = observableCache.get(cacheKey)
-  if (cachedObservable) {
-    return cachedObservable
-  }
+  return getOrCreateCachedObservable(observableCache, cacheKey, () =>
+    documentPreviewStore.unstable_observeVersionDocumentIds(publishedId).pipe(
+      swr(cacheKey),
+      map(({value}) => value),
+      switchMap((documentIds, index): Observable<DocumentPerspectiveState> => {
+        if (documentIds.length === 0) {
+          return of({data: [], versions: [], error: null, loading: false})
+        }
 
-  const newObservable = documentPreviewStore.unstable_observeVersionDocumentIds(publishedId).pipe(
-    swr(cacheKey),
-    map(({value}) => value),
-    switchMap((documentIds): Observable<DocumentPerspectiveState> => {
-      if (documentIds.length === 0) {
-        return of({data: [], versions: [], error: null, loading: false})
-      }
-
-      const loadingState: DocumentPerspectiveState = {
-        data: documentIds,
-        versions: [],
-        error: null,
-        loading: true,
-      }
-
-      return combineLatest(
-        documentIds.map((id) =>
-          documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
-            map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
-            map(
-              (versionInfo) =>
-                ({
-                  _id: id,
-                  _rev: versionInfo?._rev ?? '',
-                  _createdAt: versionInfo?._createdAt ?? '',
-                  _updatedAt: versionInfo?._updatedAt ?? '',
-                  [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,
-                }) satisfies VersionInfoDocumentStub,
+        const versions$ = combineLatest(
+          documentIds.map((id) =>
+            documentPreviewStore.observePaths({_id: id}, DOCUMENT_STUB_PATHS).pipe(
+              map((versionInfo) => (isRecord(versionInfo) ? versionInfo : undefined)),
+              map(
+                (versionInfo) =>
+                  ({
+                    _id: id,
+                    _rev: versionInfo?._rev ?? '',
+                    _type: versionInfo?._type ?? '',
+                    _createdAt: versionInfo?._createdAt ?? '',
+                    _updatedAt: versionInfo?._updatedAt ?? '',
+                    [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,
+                  }) satisfies VersionInfoDocumentStub,
+              ),
             ),
           ),
-        ),
-      ).pipe(
-        map((versions) => ({
-          data: documentIds,
-          versions,
-          error: null,
-          loading: false,
-        })),
-        startWith(loadingState),
-      )
-    }),
-    catchError((error) => {
-      return of({
-        error,
-        data: [] as string[],
-        versions: [] as VersionInfoDocumentStub[],
-        loading: false,
-      })
-    }),
-    finalize(() => {
-      observableCache.delete(cacheKey)
-    }),
-    share({
-      connector: () => new ReplaySubject(1),
-      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
-    }),
-  )
+        ).pipe(
+          map((versions) => ({
+            data: documentIds,
+            versions,
+            error: null,
+            loading: false,
+          })),
+        )
 
-  observableCache.set(cacheKey, newObservable)
-  return newObservable
+        // Only the pipeline's very first id-set emission is a cold start that must block
+        // with `loading: true` (it gates `useDocumentForm`'s `ready` state). Later id-set
+        // changes happen while the user is editing — e.g. the draft id appearing on the
+        // first keystroke in a new document, or publish swapping draft for published — and
+        // re-emitting `loading: true` then would flip the whole form read-only mid-typing,
+        // silently dropping keystrokes and DOM focus. Keep replaying the last loaded state
+        // until the fresh stubs arrive instead.
+        if (index > 0) {
+          return versions$
+        }
+
+        const loadingState: DocumentPerspectiveState = {
+          data: documentIds,
+          versions: [],
+          error: null,
+          loading: true,
+        }
+
+        return versions$.pipe(startWith(loadingState))
+      }),
+      catchError((error) => {
+        return of({
+          error,
+          data: [] as string[],
+          versions: [] as VersionInfoDocumentStub[],
+          loading: false,
+        })
+      }),
+    ),
+  )
 }

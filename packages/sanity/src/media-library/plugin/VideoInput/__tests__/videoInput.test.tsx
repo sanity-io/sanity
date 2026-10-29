@@ -10,7 +10,7 @@ import {
   createMockAssetSourceWithMediaLibraryUploader,
   observeVideoAssetStub,
 } from '../../../../../test/fixtures/assetSourceMocks'
-import {renderVideoInput} from '../../../../../test/form'
+import {renderVideoInput} from '../../../../../test/form/renderVideoInput'
 import {getDataTestIdPrefix} from '../../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {StudioVideoInput} from '../StudioVideoInput'
 import {BaseVideoInput} from '../VideoInput'
@@ -35,7 +35,7 @@ vi.mock('../useVideoPlaybackInfo', () => ({
 
 // Mock VideoPlayer to avoid loading @mux/mux-player-react and media-chrome (slow startup)
 vi.mock('../VideoPlayer', () => ({
-  VideoPlayer: () => null,
+  default: () => null,
 }))
 
 describe('VideoInput - local tests', () => {
@@ -81,7 +81,7 @@ describe('VideoInput - local tests', () => {
     const browseButton = screen.getByTestId(videoBrowseTestId)
     const flexContainer = browseButton.closest('[data-ui="Flex"]')
     expect(flexContainer).toBeInTheDocument()
-    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+    expect(flexContainer).toHaveClass('sui-justify-content-flex-end')
   })
 
   it('StudioVideoInput hides upload when disableNew is true', async () => {
@@ -102,6 +102,7 @@ describe('VideoInput - local tests', () => {
           directUploads: _directUploads,
           observeAsset: _observeAsset,
           resolveUploader: _resolveUploader,
+          // @ts-expect-error -- pre-existing, fix later
           t: _t,
           ...studioProps
         } = inputProps

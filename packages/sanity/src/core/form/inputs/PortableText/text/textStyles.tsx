@@ -1,6 +1,7 @@
-import {Heading, Text} from '@sanity/ui'
-import {type ComponentType, type HTMLProps} from 'react'
+import {Heading} from '@sanity/ui'
+import {type ComponentProps, type ComponentType, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
@@ -16,7 +17,12 @@ export const TextContainer = styled.div`
  * Portable Text Input built in style
  */
 export const Normal = ({children, ...rest}: TextStyleProps) => (
-  <Text data-testid="text-style--normal" {...rest}>
+  <Text
+    data-testid="text-style--normal"
+    {...(rest as ComponentProps<typeof Text>)}
+    as="div"
+    trim={true}
+  >
     <TextContainer>{children}</TextContainer>
   </Text>
 )
@@ -79,7 +85,7 @@ const BlockQuoteRoot = styled.blockquote`
   position: relative;
   display: block;
   margin: 0;
-  padding-left: ${({theme}) => theme.sanity.space[3]}px;
+  padding-left: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 
   &::before {
     content: '';
@@ -97,7 +103,9 @@ const BlockQuoteRoot = styled.blockquote`
  */
 export const BlockQuote = ({children, ...rest}: TextStyleProps) => (
   <BlockQuoteRoot data-testid="text-style--blockquote" {...(rest as BlockQuoteStyleProps)}>
-    <Text as="p">{children}</Text>
+    <Text as="p" trim={true}>
+      {children}
+    </Text>
   </BlockQuoteRoot>
 )
 

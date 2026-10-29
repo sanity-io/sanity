@@ -55,6 +55,7 @@ export function DocumentActionsProvider(props: {children: React.ReactNode}) {
     <GetHookCollectionState<DocumentActionProps, ResolvedAction>
       args={{
         ...actionProps,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onComplete: () => onCompleteRef.current?.(),
       }}
       hooks={actions || EMPTY_ARRAY}

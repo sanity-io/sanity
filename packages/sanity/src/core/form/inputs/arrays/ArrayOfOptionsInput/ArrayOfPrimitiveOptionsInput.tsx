@@ -1,12 +1,13 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo} from 'react'
+import {Text, Grid, Flex, Box} from 'ui5'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesInputProps} from '../../../types'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {set, unset} from '../../../patch/patch'
+import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {
@@ -77,7 +78,11 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
-      <Grid gap={2} columns={isGrid ? Math.min(options.length, 4) : 1} {...elementProps}>
+      <Grid
+        gap={2}
+        gridTemplateColumns={`repeat(${isGrid ? Math.min(options.length, 4) : 1}, minmax(0, 1fr))`}
+        {...elementProps}
+      >
         {options.map((option, index) => {
           const optionType = getMemberTypeOfItem(schemaType, option)
           const checked = value.includes(option.value)
@@ -86,7 +91,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
           return (
             // oxlint-disable-next-line no-array-index-key
-            <Flex key={index} align="center" as="label">
+            <Flex key={index} alignItems="center" as="label">
               <Checkbox
                 disabled={disabled}
                 checked={checked}
@@ -96,7 +101,9 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               />
 
               <Box padding={2}>
-                <Text>{option.title}</Text>
+                <Text as="div" trim={true}>
+                  {option.title}
+                </Text>
               </Box>
 
               {!optionType && (

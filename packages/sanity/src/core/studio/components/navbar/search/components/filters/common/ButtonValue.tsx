@@ -1,8 +1,8 @@
 import {type Reference} from '@sanity/types'
 import {isValid} from 'date-fns/isValid'
 
-import {useSchema} from '../../../../../../../hooks'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
 import {
   type OperatorDateEqualValue,

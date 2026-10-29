@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Flex} from 'ui5'
 
-import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {RelativeTime} from '../../../components/RelativeTime'
+import {AvatarSkeleton, UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'
 import {StatusItem} from '../components/StatusItem'
@@ -42,7 +43,7 @@ export function ReleaseStatusItems({
 
   if (!footerEvents.length) {
     return (
-      <Flex flex={1} gap={1}>
+      <Flex flexBasis="0%" flexGrow={1} gap={1}>
         <StatusItem
           avatar={<AvatarSkeleton $size={0} />}
           text={
@@ -56,7 +57,7 @@ export function ReleaseStatusItems({
     )
   }
   return (
-    <Flex flex={1} gap={1}>
+    <Flex flexBasis="0%" flexGrow={1} gap={1}>
       {footerEvents.map((event) => (
         <StatusItem
           key={event.id}

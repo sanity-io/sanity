@@ -3,33 +3,40 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo} from 'react'
+import {use, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
-import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
-import {ContextMenuButton, LoadingBlock} from '../../../../components'
-import {
-  type FormPatch,
-  type ObjectInputProps,
-  type PatchEvent,
-  set,
-  TransformPatches,
-} from '../../../../form'
-import {useTranslation} from '../../../../i18n'
-import {useCurrentUser} from '../../../../store'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {set} from '../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../form/patch/types'
+import {type ObjectInputProps} from '../../../../form/types/inputProps'
+import {TransformPatches} from '../../../../form/utils/TransformPatches'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {TaskDuplicated, TaskRemoved} from '../../../__telemetry__/tasks.telemetry'
-import {useTasksEnabled, useTasksNavigation} from '../../../context'
-import {useActivityLog, useRemoveTask} from '../../../hooks'
+import {useTasksMode} from '../../../context/enabled/useTasksMode'
+import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
+import {useActivityLog} from '../../../hooks/useActivityLog'
+import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
-import {TasksActivityLog} from '../../activity'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
-import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '../fields'
+import {AssigneeEditFormField} from '../fields/assignee/AssigneeEditFormField'
+import {DateEditFormField} from '../fields/DateEditFormField'
+import {StatusSelector} from '../fields/StatusSelector'
+import {Title} from '../fields/TitleField'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
+import {TasksCommentsActivity} from './TasksCommentsActivity'
 
 const FirstRow = styled(Flex)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -41,7 +48,7 @@ const FirstRow = styled(Flex)((props) => {
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const telemetry = useTelemetry()
 
   const onTaskRemoved = useCallback(() => {
@@ -125,15 +132,15 @@ function FormEditInner(props: ObjectInputProps) {
 
   return (
     <>
-      <Flex align="flex-start" gap={3}>
-        <Stack flex={1}>
+      <Flex alignItems="flex-start" gap={3}>
+        <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
           <Title
             onChange={handleChangeAndSubscribe}
             value={props.value?.title}
             path={['title']}
             placeholder={t('form.input.title.placeholder')}
           />
-        </Stack>
+        </Flex>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
 
@@ -141,9 +148,9 @@ function FormEditInner(props: ObjectInputProps) {
         <FirstRow
           paddingBottom={3}
           paddingTop={4}
-          align="flex-start"
-          justify="flex-start"
-          wrap="wrap"
+          alignItems="flex-start"
+          justifyContent="flex-start"
+          flexWrap="wrap"
         >
           <TooltipDelayGroupProvider>
             <StatusSelector
@@ -168,21 +175,11 @@ function FormEditInner(props: ObjectInputProps) {
 
       {props.renderDefault(props)}
       <CurrentWorkspaceProvider>
-        <CommentsProvider
-          documentId={value._id}
-          documentType="tasks.task"
-          sortOrder="asc"
-          type="task"
-        >
-          <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
-            <TasksActivityLog
-              value={value}
-              onChange={props.onChange}
-              path={['subscribers']}
-              activityData={activityData}
-            />
-          </Card>
-        </CommentsProvider>
+        <TasksCommentsActivity
+          value={value}
+          onChange={props.onChange}
+          activityData={activityData}
+        />
       </CurrentWorkspaceProvider>
     </>
   )

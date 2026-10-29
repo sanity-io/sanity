@@ -1,21 +1,23 @@
 import {type Path} from '@sanity/types'
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import {type Placement} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
   type Ref,
   type RefObject,
   useCallback,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, Box} from 'ui5'
 
-import {useFormBuilder} from '../..'
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
+import {useFormBuilder} from '../../useFormBuilder'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -33,17 +35,16 @@ const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 /**
  * @internal
  */
-export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
+export function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     path: Path
     referenceElement: HTMLDivElement | null
     searchString?: string
     portalRef?: RefObject<HTMLDivElement | null>
-  },
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
   const {focusPath} = useFormBuilder()
-  const {searchString, loading, portalRef, referenceElement, path, ...restProps} = props
+  const {ref, searchString, loading, portalRef, referenceElement, path, ...restProps} = props
 
   /**
    * Path here is the path of the reference input, not including the _ref segment, that is why we use the
@@ -89,8 +90,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
               content
             ) : (
               <Box padding={4}>
-                <Flex align="center" height="fill" justify="center">
-                  <StyledText align="center" muted>
+                <Flex alignItems="center" height="100%" justifyContent="center">
+                  <StyledText align="center" muted forwardedAs="div" trim={true}>
                     <Translate
                       t={t}
                       i18nKey="inputs.reference.no-results-for-query"
@@ -120,4 +121,4 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       autoFocus={autoFocus}
     />
   )
-})
+}

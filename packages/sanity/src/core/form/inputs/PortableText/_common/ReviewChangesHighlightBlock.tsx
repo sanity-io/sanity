@@ -4,7 +4,9 @@ import {css, styled} from 'styled-components'
 export const ReviewChangesHighlightBlock = styled.div<{
   $fullScreen: boolean
 }>(({theme, $fullScreen}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {radius, space, color} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const bg = rgba(color.spot.yellow, 0.2)
 
   return css`

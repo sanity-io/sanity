@@ -17,6 +17,7 @@ import {
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {type UpsellDataResult} from '../../../../studio/upsell/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -217,8 +218,8 @@ const TestComponent = () => {
 }
 
 async function mountAndFlush(...args: Parameters<typeof render>) {
-  const view = render(...args)
-  await act(() => Promise.resolve())
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the upsell panels read their settled promise with `use()`; a sync act stops flushing at that read and React warns that the act was not awaited
+  const view = await act(async () => render(...args))
   return view
 }
 
@@ -235,7 +236,7 @@ describe('ReleasesOverview', () => {
       onReleaseLimitReached: vi.fn(),
       upsellDialogOpen: false,
       handleOpenDialog: vi.fn(),
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         dialogSecondaryClicked: vi.fn(),
         dialogPrimaryClicked: vi.fn(),
@@ -252,7 +253,7 @@ describe('ReleasesOverview', () => {
     })
 
     mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         panelViewed: vi.fn(),
         panelDismissed: vi.fn(),
@@ -379,6 +380,7 @@ describe('ReleasesOverview', () => {
         data: releases,
         error: undefined,
         loading: false,
+        map: new Map(releases.map((release) => [release._id, release])),
       })
       mockUseArchivedReleases.mockReturnValue({
         ...useArchivedReleasesMockReturn,
@@ -573,7 +575,7 @@ describe('ReleasesOverview', () => {
         const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
           'day-tile-today',
         )
-        expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
+        expect(todayTile.firstElementChild!.firstElementChild).toHaveStyle({fontWeight: '700'})
       })
 
       describe('selecting a release date', () => {
@@ -696,7 +698,9 @@ describe('ReleasesOverview', () => {
       })
 
       it('hides the timezone text and shows only the icon', () => {
-        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
+        // Narrow viewports move the label into a tooltip, and tooltip content stays mounted
+        // (hidden) while the tooltip is closed.
+        expect(screen.getByText('SCT (Sanity/Oslo)')).not.toBeVisible()
       })
     })
 
@@ -1214,6 +1218,12 @@ describe('ReleasesOverview', () => {
       _rev: '1',
       id: 'test-upsell',
     }
+    const mockUpsellDataValue: UpsellDataResult = {upsellData: mockUpsellData, hasError: false}
+    // Already settled, so `use()` reads it without suspending
+    const mockUpsellDataPromise = Object.assign(Promise.resolve(mockUpsellDataValue), {
+      status: 'fulfilled' as const,
+      value: mockUpsellDataValue,
+    })
 
     const setupEmptyState = () => {
       mockUseActiveReleases.mockReturnValue({
@@ -1233,7 +1243,7 @@ describe('ReleasesOverview', () => {
         onReleaseLimitReached: vi.fn(),
         upsellDialogOpen: false,
         handleOpenDialog: vi.fn(),
-        upsellData: mockUpsellData,
+        upsellDataPromise: mockUpsellDataPromise,
         telemetryLogs: {
           dialogSecondaryClicked: vi.fn(),
           dialogPrimaryClicked: vi.fn(),
@@ -1329,7 +1339,7 @@ describe('ReleasesOverview', () => {
             mode: 'upsell',
           })
           mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-            upsellData: mockUpsellData,
+            upsellDataPromise: mockUpsellDataPromise,
             telemetryLogs: {
               panelViewed: vi.fn(),
               panelDismissed: vi.fn(),
@@ -1419,9 +1429,12 @@ describe('ReleasesOverview', () => {
       const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({
-          _searchParams: expect.arrayContaining([['view', 'drafts']]),
-        })
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {
+            _searchParams: expect.arrayContaining([['view', 'drafts']]),
+          },
+          {replace: true},
+        )
       })
 
       unmount()
@@ -1443,6 +1456,30 @@ describe('ReleasesOverview', () => {
       for (const call of mockNavigate.mock.calls) {
         const searchParams: [string, string][] = call[0]?._searchParams || []
         expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
+    })
+
+    it('uses replace when syncing filter/group state to URL to avoid duplicate history entries', async () => {
+      mockNavigate.mockClear()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        expect(call[1]).toEqual({replace: true})
       }
     })
   })

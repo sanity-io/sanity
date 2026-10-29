@@ -34,6 +34,7 @@ export function getWaitMessages(path: string[]): Observable<WaitMessage> {
   return merge(
     ...thresholds.map((threshold) =>
       src.pipe(
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         mapTo(
           'messageKey' in threshold
             ? {messageKey: threshold.messageKey}

@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
+import {Card, TabList, TabPanel} from '@sanity/ui'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -12,24 +12,20 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
+import {Text, Flex, Box, Icon} from 'ui5'
 
-import {Button, Tab, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'
+import {fadeInFlex} from './ChangesTabs.css'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
 import {HistorySelector} from './HistorySelector'
 
-const FadeInFlex = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-  &[data-ready] {
-    opacity: 1;
-  }
-`
 const TABS = ['history', 'review'] as const
 const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
   // @ts-expect-error TS doesn't understand the type guard
@@ -37,6 +33,7 @@ const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
 
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -57,16 +54,17 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     })
 
   return (
-    <FadeInFlex
-      direction="column"
+    <Flex
+      className={fadeInFlex}
+      flexDirection="column"
       padding={0}
-      height="fill"
+      height="100%"
       data-ready={isReady ? '' : undefined}
       ref={setParentRef}
     >
       <Card paddingBottom={1}>
-        <Flex align="center" padding={3} gap={2}>
-          <TabList space={1} flex={1}>
+        <Flex alignItems="center" padding={3} gap={2}>
+          <TabList gap={1} flex={1}>
             <Tab
               aria-controls="history-panel"
               id="history-tab"
@@ -83,7 +81,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             />
           </TabList>
           <Button
-            aria-label={t('changes.action.close-label')}
+            aria-label={tCore('changes.action.close-label')}
             icon={CloseIcon}
             mode="bleed"
             onClick={props.onClose}
@@ -92,24 +90,22 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         </Flex>
       </Card>
       <Card padding={2} marginBottom={3} marginX={3} tone="neutral" border radius={3}>
-        <Flex gap={2} align="flex-start">
+        <Flex gap={2} alignItems="flex-start">
           <Tooltip
             portal
             placement="bottom-end"
             boundaryElement={parentRef}
             content={
-              <Box flex={1} padding={1}>
-                <Text size={1}>
+              <Box flexBasis="0%" flexGrow={1} padding={1}>
+                <Text size={1} as="div" trim={true}>
                   <Translate t={t} i18nKey="changes.banner.tooltip" />
                 </Text>
               </Box>
             }
           >
-            <Text size={0} muted>
-              <InfoOutlineIcon fontSize={1} />
-            </Text>
+            <Icon size={0} muted icon={InfoOutlineIcon} style={{margin: '-0.3125rem'}} />
           </Tooltip>
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             <Translate
               t={t}
               values={{
@@ -127,6 +123,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         hidden={paneRouterTab !== 'history'}
         id="history-panel"
       >
+        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
           <EventsSelector showList={paneRouterTab === 'history'} />
         ) : (
@@ -140,6 +137,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         id="review-panel"
         height="fill"
       >
+        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
           <>
             {paneRouterTab === 'review' ? (
@@ -150,7 +148,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
           <ChangesInspector showChanges={paneRouterTab === 'review'} />
         )}
       </TabPanel>
-    </FadeInFlex>
+    </Flex>
   )
 }
 

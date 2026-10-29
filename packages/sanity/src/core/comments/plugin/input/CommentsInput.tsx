@@ -1,7 +1,7 @@
 import {isArrayOfBlocksSchemaType} from '@sanity/types'
 
-import {type InputProps, type PortableTextInputProps} from '../../../form'
-import {CommentsPortableTextInput} from './components'
+import {type InputProps, type PortableTextInputProps} from '../../../form/types/inputProps'
+import {CommentsPortableTextInput} from './components/CommentsPortableTextInput'
 
 function isPortableTextInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
@@ -9,7 +9,7 @@ function isPortableTextInputProps(
   return isArrayOfBlocksSchemaType(inputProps.schemaType)
 }
 
-export function CommentsInput(props: InputProps) {
+export default function CommentsInput(props: InputProps) {
   if (isPortableTextInputProps(props)) {
     return <CommentsPortableTextInput {...props} />
   }

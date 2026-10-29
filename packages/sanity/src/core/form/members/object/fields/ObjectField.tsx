@@ -3,22 +3,24 @@ import {isShallowEmptyObject} from '@sanity/util/content'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type FieldMember, type ObjectFormNode} from '../../../store'
+import {setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ObjectFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {type ObjectFieldProps} from '../../../types/fieldProps'
+import {type ArrayOfObjectsInputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {
-  type ArrayOfObjectsInputProps,
-  type ObjectFieldProps,
-  type ObjectInputProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
@@ -213,6 +215,9 @@ export const ObjectField = function ObjectField(props: {
       changed: member.field.changed,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
+      changedFromBaseVariant: member.field.changedFromBaseVariant,
+      baseVariantValue: member.field.baseVariantValue,
+      hasBaseVariant: member.field.hasBaseVariant,
       id: member.field.id,
       onFieldGroupSelect: handleSelectFieldGroup,
       onFieldOpen: handleOpenField,
@@ -249,6 +254,9 @@ export const ObjectField = function ObjectField(props: {
     member.field.changed,
     member.field.__unstable_computeDiff,
     member.field.hasUpstreamVersion,
+    member.field.changedFromBaseVariant,
+    member.field.baseVariantValue,
+    member.field.hasBaseVariant,
     member.field.id,
     member.field.path,
     member.field.focusPath,
@@ -299,6 +307,7 @@ export const ObjectField = function ObjectField(props: {
         onExpand={handleExpand}
         open={member.open}
         changed={member.field.changed}
+        changedFromBaseVariant={member.field.changedFromBaseVariant}
         onOpen={handleOpen}
         onClose={handleClose}
         schemaType={member.field.schemaType}

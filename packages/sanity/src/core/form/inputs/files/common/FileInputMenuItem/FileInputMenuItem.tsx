@@ -1,6 +1,6 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
+import {type HTMLProps, useCallback, type RefAttributes} from 'react'
 
-import {MenuItem, type MenuItemProps} from '../../../../../../ui-components'
+import {MenuItem, type MenuItemProps} from '../../../../../../ui-components/menuItem/MenuItem'
 import {openFilePicker} from '../openFilePicker'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
@@ -13,13 +13,23 @@ export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> 
   disabled?: boolean
 }
 
-export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
+export function FileInputMenuItem(
   props: FileInputMenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'> &
+    RefAttributes<HTMLDivElement>,
 ) {
-  const {icon, accept, capture, multiple, onSelect, onFilePickerCancel, text, disabled, ...rest} =
-    props
+  const {
+    ref: forwardedRef,
+    icon,
+    accept,
+    capture,
+    multiple,
+    onSelect,
+    onFilePickerCancel,
+    text,
+    disabled,
+    ...rest
+  } = props
 
   const handleClick = useCallback(() => {
     if (disabled || !onSelect) return
@@ -42,4 +52,4 @@ export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
       onClick={handleClick}
     />
   )
-})
+}

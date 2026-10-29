@@ -424,7 +424,48 @@ describe('createPathObserver', () => {
       expect(values.length).toBeGreaterThanOrEqual(1)
       const last = values[values.length - 1]
       expect(last).toMatchObject({author: {name: 'Alice'}})
-      expect(observeFields).toHaveBeenCalledWith('author1', ['name'], undefined, undefined)
+      expect(observeFields).toHaveBeenCalledWith(
+        'author1',
+        ['name'],
+        undefined,
+        undefined,
+        undefined,
+      )
+
+      unsubscribe()
+    })
+
+    it('should keep resolving referenced documents within the given variant', () => {
+      const observeFields = vi.fn((id: string): Observable<Record<string, unknown> | null> => {
+        if (id === 'book1') {
+          return of({
+            _id: 'book1',
+            _rev: 'rev1',
+            _type: 'book',
+            author: {_ref: 'author1', _type: 'reference'},
+          })
+        }
+        return of({_id: 'author1', _rev: 'rev1', _type: 'author', name: 'Alice'})
+      })
+
+      const observePaths = createPathObserver({observeFields})
+      const {unsubscribe} = collectEmissions(
+        observePaths(
+          {_type: 'reference', _ref: 'book1'},
+          [['author', 'name']],
+          undefined,
+          ['drafts'],
+          'alpha-audience',
+        ),
+      )
+
+      expect(observeFields).toHaveBeenCalledWith(
+        'author1',
+        ['name'],
+        undefined,
+        ['drafts'],
+        'alpha-audience',
+      )
 
       unsubscribe()
     })

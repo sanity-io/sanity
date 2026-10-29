@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Text, useLayer} from '@sanity/ui'
+import {useLayer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
+import {pathToString} from '@sanity/validation/_internal'
 import {
   type ComponentProps,
   type HTMLProps,
@@ -11,13 +12,13 @@ import {
   useMemo,
   useState,
 } from 'react'
-import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
+import {Text} from 'ui5'
 
-import {EMPTY_ARRAY} from '../util'
-import {pathToString} from '../validation/util/pathToString'
+import {EMPTY_ARRAY} from '../util/empty'
 import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
+import {isEqualTrackedChange} from './isEqualTrackedChange'
 import {useChangeIndicatorsReporter} from './tracker'
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
@@ -76,11 +77,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     }),
     [element, hasFocus, hasHover, isChanged, layer.zIndex, path],
   )
-  useChangeIndicatorsReporter(
-    reporterId,
-    reporterGetSnapshot,
-    deepCompare, // note: deepCompare should be ok here since we're not comparing deep values
-  )
+  useChangeIndicatorsReporter(reporterId, reporterGetSnapshot, isEqualTrackedChange)
 
   return (
     <div {...restProps} ref={setElement} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
@@ -92,7 +89,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         isInteractive={isInteractive}
       >
         {DEBUG && (
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {pathToString(path)}
           </Text>
         )}

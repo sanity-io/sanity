@@ -8,9 +8,11 @@ import {
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
+import {type GapProps, type PaddingProps} from 'ui5'
 
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
@@ -43,7 +45,6 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
  * Virtualized array list component. This component must be conditionally rendered
  * to avoid virtualizer initialization issues when inside hidden containers.
  */
-// oxlint-disable-next-line react/react-compiler
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
 ) {
@@ -71,6 +72,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     tone,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
@@ -191,9 +193,13 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   // custom components can have different dimensions and the library recalculate the size of the element
   const estimateSize = useCallback(() => 53, [])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
+    // Item offsets and the total size must include the gap the list renders between items, so the
+    // list's geometry doesn't change with which items happen to be rendered
+    gap: space[listGridGap],
     getScrollElement: useCallback(() => resolvedScrollElement, [resolvedScrollElement]),
     observeElementOffset,
     rangeExtractor,
@@ -218,20 +224,20 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
       tone={tone}
       radius={radius}
       style={{
-        // This is not memoized since it changes on scroll so it will change anyways making memo useless
-        // Account for grid gap
         boxSizing: 'border-box',
-        height: `${
-          virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
-        }px`,
+        height: `${virtualizer.getTotalSize() + space[paddingY] * 2}px`,
         width: '100%',
         position: 'relative',
+        // The virtualizer positions the rows itself. If the browser picks a row as its scroll
+        // anchor, mounting and unmounting rows makes it adjust the scroll position, which changes
+        // the rendered range again, and the two can keep correcting each other indefinitely.
+        overflowAnchor: 'none',
       }}
     >
       <List
         axis="y"
-        gap={listGridGap}
-        paddingY={paddingY}
+        gap={listGridGap as GapProps['gap']}
+        paddingY={paddingY as PaddingProps['paddingY']}
         items={memberKeys}
         onItemMove={onItemMove}
         onItemMoveStart={onItemMoveStart}

@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
+import {INITIAL_RELEASES_STATE} from './createReleaseStore'
 import {type ReleasesReducerAction} from './reducer'
 import {useReleasesStore} from './useReleasesStore'
 
@@ -15,6 +16,7 @@ interface ReleasesState {
   error?: Error
   loading: boolean
   dispatch: (event: ReleasesReducerAction) => void
+  byId: Map<string, ReleaseDocument>
 }
 
 /**
@@ -23,7 +25,12 @@ interface ReleasesState {
  */
 export function useActiveReleases(): ReleasesState {
   const {state$, dispatch} = useReleasesStore()
-  const state = useObservable(state$)!
+  // Kept synchronous: PerspectiveProvider derives `selectedReleaseId` from
+  // this list while `selectedPerspectiveName` stays live, so a deferred
+  // snapshot could tear the release identity (e.g. reference create-in-place
+  // writing `_weak` or opening the wrong version). Executable proof:
+  // perspective/__tests__/deferralSafety.test.tsx.
+  const state = useSyncObservable(state$, INITIAL_RELEASES_STATE)
   const releasesAsArray = useMemo(
     () =>
       sortReleases(
@@ -34,13 +41,19 @@ export function useActiveReleases(): ReleasesState {
     [state.releases],
   )
 
+  const byId = useMemo(
+    () => new Map(releasesAsArray.map((release) => [release._id, release])),
+    [releasesAsArray],
+  )
+
   return useMemo(
     () => ({
       data: releasesAsArray,
       dispatch,
       error: state.error,
+      byId,
       loading: ['loading', 'initialising'].includes(state.state),
     }),
-    [releasesAsArray, state.error, state.state, dispatch],
+    [releasesAsArray, state.error, state.state, dispatch, byId],
   )
 }

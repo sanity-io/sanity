@@ -1,9 +1,10 @@
 import {type SanityDocument} from '@sanity/client'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useId} from 'react'
+import {Text, VStack, Box} from 'ui5'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -61,10 +62,10 @@ export const UnlinkFromCanvasDialog = ({
         },
       }}
     >
-      <Stack space={3}>
-        <Stack space={3}>
+      <VStack gap={3}>
+        <VStack gap={3}>
           <Box paddingBottom={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="dialog.unlink-from-canvas.unlinking"
@@ -73,11 +74,11 @@ export const UnlinkFromCanvasDialog = ({
             </Text>
           </Box>
           <Box>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t('dialog.unlink-from-canvas.description')}
             </Text>
           </Box>
-        </Stack>
+        </VStack>
         <AnimatePresence>
           {status === 'error' && (
             <motion.div
@@ -86,14 +87,14 @@ export const UnlinkFromCanvasDialog = ({
               animate={{opacity: 1, scale: 1}}
             >
               <Card tone="critical" padding={2} radius={3}>
-                <Text size={1} weight="medium">
+                <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                   {error || t('dialog.unlink-from-canvas.error')}
                 </Text>
               </Card>
             </motion.div>
           )}
         </AnimatePresence>
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }

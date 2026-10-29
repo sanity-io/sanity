@@ -1,11 +1,13 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Card, Flex} from '@sanity/ui'
-import {type MouseEvent, useCallback} from 'react'
-import {styled} from 'styled-components'
+import {Card} from '@sanity/ui'
+import {clsx} from 'clsx'
+import {type MouseEvent, useCallback, useDeferredValue} from 'react'
+import {Flex} from 'ui5'
 
-import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
-import {useTranslation} from '../../../../../../i18n'
-import {type WeightedHit} from '../../../../../../search'
+import {CommandList} from '../../../../../../components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../../components/commandList/types'
+import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
+import {type WeightedHit} from '../../../../../../search/common/types'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
@@ -13,24 +15,20 @@ import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
+import {loadingFirstPage, searchResultsInnerFlex} from './SearchResults.css'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
-
-const SearchResultsInnerFlex = styled(Flex)<{$loadingFirstPage: boolean}>`
-  opacity: ${({$loadingFirstPage}) => ($loadingFirstPage ? 0.5 : 1)};
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-  transition: 300ms opacity;
-  width: 100%;
-`
 
 interface SearchResultsProps {
   disableIntentLink?: boolean
   inputElement: HTMLInputElement | null
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 export function SearchResults({
@@ -38,6 +36,7 @@ export function SearchResults({
   inputElement,
   onItemSelect,
   previewPerspective,
+  previewVariant,
 }: SearchResultsProps) {
   const {
     dispatch,
@@ -48,8 +47,13 @@ export function SearchResults({
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
 
-  const hasSearchResults = !!result.hits.length
-  const hasNoSearchResults = !result.hits.length && result.loaded
+  // deferral only pays off because CommandList is memo()'d, so the urgent render skips the heavy row subtree
+  const deferredHits = useDeferredValue(result.hits)
+  const isPending = deferredHits !== result.hits
+
+  // requiring result.hits too hides the stale list the instant an empty result settles
+  const hasSearchResults = deferredHits.length > 0 && result.hits.length > 0
+  const hasNoSearchResults = result.hits.length === 0 && result.loaded
   const hasError = result.error
 
   /**
@@ -83,13 +87,21 @@ export function SearchResults({
             onClick={handleSearchResultClick}
             onItemSelect={onItemSelect}
             previewPerspective={previewPerspective}
+            previewVariant={previewVariant}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, disableIntentLink, handleSearchResultClick, onItemSelect, previewPerspective],
+    [
+      debug,
+      disableIntentLink,
+      handleSearchResultClick,
+      onItemSelect,
+      previewPerspective,
+      previewVariant,
+    ],
   )
 
   return (
@@ -98,15 +110,19 @@ export function SearchResults({
         borderTop={fullscreen || !!(hasError || hasSearchResults || hasNoSearchResults)}
         flex={1}
       >
-        <Flex direction="column" height="fill">
+        <Flex flexDirection="column" height="100%">
           {/* Sort menu */}
           {hasSearchResults && <SortMenu />}
 
           {/* Results */}
-          <SearchResultsInnerFlex
-            $loadingFirstPage={result.loading && cursor === null}
-            aria-busy={result.loading}
-            flex={1}
+          <Flex
+            aria-busy={result.loading || isPending}
+            className={clsx(
+              searchResultsInnerFlex,
+              result.loading && cursor === null && loadingFirstPage,
+            )}
+            flexBasis="0%"
+            flexGrow={1}
           >
             {hasError ? (
               <SearchError />
@@ -115,13 +131,13 @@ export function SearchResults({
                 {hasSearchResults && (
                   <CommandList
                     activeItemDataAttr="data-hovered"
-                    ariaLabel={t('search.search-results-label')}
+                    ariaLabel={t('search.search-results-aria-label')}
                     data-testid="search-results"
                     fixedHeight
                     initialIndex={lastActiveIndex}
                     inputElement={inputElement}
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
-                    items={result.hits}
+                    items={deferredHits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
                     onEndReached={handleEndReached}
                     paddingX={2}
@@ -133,7 +149,7 @@ export function SearchResults({
                 {hasNoSearchResults && <NoResults />}
               </>
             )}
-          </SearchResultsInnerFlex>
+          </Flex>
         </Flex>
       </Card>
     </Flex>

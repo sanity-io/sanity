@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {createContext, useContext} from 'react'
 import {
   definePlugin,
@@ -7,16 +7,18 @@ import {
   type NavbarProps,
   type ToolMenuProps,
 } from 'sanity'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',
   studio: {
     components: {
       layout: (props) => (
-        <Box height="fill" data-testid="test-layout-plugin">
+        <Box height="100%" data-testid="test-layout-plugin">
           {props.renderDefault(props)}
         </Box>
       ),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       logo: (props) => <Box data-testid="test-logo-plugin">{props.renderDefault(props)}</Box>,
       navbar: (props) => <Box data-testid="test-navbar-plugin">{props.renderDefault(props)}</Box>,
       toolMenu: (props) => (
@@ -35,7 +37,7 @@ export function CustomLayout(props: LayoutProps) {
 
   return (
     <TitleContext.Provider value="Context value">
-      <Box height="fill" data-testid="test-layout-config">
+      <Box height="100%" data-testid="test-layout-config">
         {renderDefault(props)}
       </Box>
     </TitleContext.Provider>
@@ -52,10 +54,16 @@ export function CustomLogo(props: LogoProps) {
 // Navbar
 export function CustomNavbar(props: NavbarProps) {
   return (
-    <Stack data-testid="test-navbar-config">
+    <VStack data-testid="test-navbar-config">
       <Card padding={4} tone="primary" data-testid="test-navbar-banner-config">
-        <Flex align="center" gap={4}>
-          <Text weight="semibold" size={1}>
+        <Flex alignItems="center" gap={4}>
+          <Text
+            weight="semibold"
+            size={1}
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             This banner is rendered with <code>{`components.navbar`}</code> in{' '}
             <code>{`defineConfig`}</code>
           </Text>
@@ -63,7 +71,7 @@ export function CustomNavbar(props: NavbarProps) {
       </Card>
 
       {props.renderDefault(props)}
-    </Stack>
+    </VStack>
   )
 }
 

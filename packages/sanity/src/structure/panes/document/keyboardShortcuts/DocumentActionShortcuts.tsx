@@ -1,10 +1,18 @@
 import {isHotkey} from 'is-hotkey-esm'
-import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState} from 'react'
+import {
+  type ElementType,
+  type HTMLProps,
+  memo,
+  type Ref,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
-import {RenderActionCollectionState} from '../../../components'
-import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
-import {ActionStateDialog} from '../statusBar'
+import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
+import {ActionStateDialog} from '../statusBar/ActionStateDialog'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -19,7 +27,7 @@ export interface KeyboardShortcutResponderProps {
   states: DocumentActionDescription[]
 }
 
-const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
+export const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   props: KeyboardShortcutResponderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
 ) {
   const {
@@ -36,6 +44,19 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   } = props
 
   const activeAction = states[activeIndex]
+  const activeDialog = activeAction?.dialog
+  const hadDialogRef = useRef(false)
+
+  useEffect(() => {
+    if (activeDialog) {
+      hadDialogRef.current = true
+      return
+    }
+    if (activeIndex !== -1 && hadDialogRef.current) {
+      hadDialogRef.current = false
+      onActionStart(-1)
+    }
+  }, [activeDialog, activeIndex, onActionStart])
 
   const handleKeyDown = useCallback(
     (event: any) => {
@@ -92,7 +113,6 @@ export const DocumentActionShortcuts = memo(
   (props: DocumentActionShortcutsProps & Omit<HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
     const [activeIndex, setActiveIndex] = useState(-1)
-    const isEditingVariantDocument = useIsEditingVariantDocument()
 
     const onActionStart = useCallback((idx: number) => {
       setActiveIndex(idx)
@@ -107,9 +127,7 @@ export const DocumentActionShortcuts = memo(
             actionsBoxElement={actionsBoxElement}
             as={as}
             onActionStart={onActionStart}
-            // Temporary: hide actions when editing a variant document until actions are supported on variant documents
-            // See PR https://github.com/sanity-io/sanity/pull/13156
-            states={isEditingVariantDocument ? [] : states}
+            states={states}
           >
             {children}
           </KeyboardShortcutResponder>
@@ -118,5 +136,3 @@ export const DocumentActionShortcuts = memo(
     )
   },
 )
-
-DocumentActionShortcuts.displayName = 'Memo(DocumentActionShortcuts)'

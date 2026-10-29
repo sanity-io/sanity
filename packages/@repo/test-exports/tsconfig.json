@@ -11,9 +11,11 @@
     "rootDir": ".",
     "emitDeclarationOnly": false,
     "noEmit": true,
-    "module": "Preserve",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "allowJs": true,
     "checkJs": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "types": ["node"]
   }
 }

@@ -4,45 +4,42 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {Suspense, useCallback, useMemo, useRef} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
-import {type FormNodePresence} from '../../presence'
-import {PreviewLoader} from '../../preview'
-import {EMPTY_ARRAY} from '../../util'
+import {type FormNodePresence} from '../../presence/types'
+import {PreviewLoader} from '../../preview/components/PreviewLoader'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
-import {
-  useAnnotationComponent,
-  useBlockComponent,
-  useFieldComponent,
-  useInlineBlockComponent,
-  useInputComponent,
-  useItemComponent,
-  usePreviewComponent,
-} from '../form-components-hooks'
+import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
+import {useBlockComponent} from '../form-components-hooks/useBlockComponent'
+import {useFieldComponent} from '../form-components-hooks/useFieldComponent'
+import {useInlineBlockComponent} from '../form-components-hooks/useInlineBlockComponent'
+import {useInputComponent} from '../form-components-hooks/useInputComponent'
+import {useItemComponent} from '../form-components-hooks/useItemComponent'
+import {usePreviewComponent} from '../form-components-hooks/usePreviewComponent'
 import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
-import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
-import {type StateTree} from '../store'
+import {type PatchChannel} from '../patch/PatchChannel'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type FormPatch} from '../patch/types'
 import {prepareDiffProps} from '../store/formState'
 import {type ObjectFormNode} from '../store/types/nodes'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type FormDocumentValue,
-  type InputProps,
-  type ItemProps,
-  type ObjectInputProps,
-  type RenderPreviewCallbackProps,
-} from '../types'
+import {type StateTree} from '../store/types/state'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type FormDocumentValue} from '../types/formDocumentValue'
+import {type InputProps, type ObjectInputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
+import {type RenderPreviewCallbackProps} from '../types/renderCallback'
 import {pathToAnchorIdent} from '../utils/pathToAnchorIdent'
 import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {EnhancedObjectDialogProvider} from './tree-editing'
+import {EnhancedObjectDialogProvider} from './tree-editing/context/enabled/EnhancedObjectDialogProvider'
 
 /**
  * @alpha
@@ -56,7 +53,17 @@ export interface FormBuilderProps extends Omit<
   | '_allMembers'
   | '__unstable_computeDiff'
   | 'displayInlineChanges'
+  | 'changedFromBaseVariant'
+  | 'hasBaseVariant'
 > {
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
+  /**
+   * Whether the document has a base variant.
+   */
+  hasBaseVariant?: boolean
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -121,6 +128,9 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
     compareValue,
+    changedFromBaseVariant = false,
+    hasBaseVariant = false,
+    baseVariantValue,
   } = props
 
   const handleCollapseField = useCallback(
@@ -214,6 +224,8 @@ export function FormBuilder(props: FormBuilderProps) {
     const diffProps = prepareDiffProps({
       comparisonValue: compareValue,
       hasUpstreamVersion,
+      baseVariantValue,
+      hasBaseVariant,
       value,
       schemaType,
       perspective,
@@ -263,6 +275,9 @@ export function FormBuilder(props: FormBuilderProps) {
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
       hasUpstreamVersion: diffProps.hasUpstreamVersion,
+      changedFromBaseVariant,
+      baseVariantValue: diffProps.baseVariantValue,
+      hasBaseVariant: diffProps.hasBaseVariant,
     }
   }, [
     compareValue,
@@ -280,6 +295,9 @@ export function FormBuilder(props: FormBuilderProps) {
     handleOpenField,
     handleSelectFieldGroup,
     hasUpstreamVersion,
+    changedFromBaseVariant,
+    baseVariantValue,
+    hasBaseVariant,
     id,
     members,
     onPathFocus,
@@ -305,6 +323,7 @@ export function FormBuilder(props: FormBuilderProps) {
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}
       collapsedPaths={collapsedPaths}
+      documentId={value?._id}
       focusPath={focusPath}
       focused={focused}
       groups={groups}
@@ -326,13 +345,19 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
               <DialogStackProvider>
+                {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                 <EnhancedObjectDialogProvider>
-                  <RootInput
-                    rootInputProps={rootInputProps}
-                    onPathOpen={onPathOpen}
-                    openPath={openPath}
-                    renderInput={renderInput}
-                  />
+                  {/* Each field member and array item has a `FormNodeSuspense` of its own. This one
+                      catches the root input: suspending the pane instead would hide it after it
+                      committed, detach the refs it keeps in state, and remount the form in a loop. */}
+                  <Suspense fallback={<LoadingBlock showText />}>
+                    <RootInput
+                      rootInputProps={rootInputProps}
+                      onPathOpen={onPathOpen}
+                      openPath={openPath}
+                      renderInput={renderInput}
+                    />
+                  </Suspense>
                 </EnhancedObjectDialogProvider>
               </DialogStackProvider>
             </FullscreenPTEProvider>

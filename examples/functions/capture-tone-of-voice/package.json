@@ -3,8 +3,8 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.23.2",
-    "@sanity/functions": "^1.4.0"
+    "@sanity/client": "^8.11.0",
+    "@sanity/functions": "^1.10.1"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",

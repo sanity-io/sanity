@@ -9,11 +9,9 @@ import {type Subscription} from 'rxjs'
 import {
   createRequestProxy,
   createSSEProxy,
-  type ProxyHeaders,
   type ProxyRequest,
   type ProxyResponse,
   type ProxyTarget,
-  type SSEEvent,
   writeResponseHead,
 } from './proxy'
 
@@ -73,6 +71,17 @@ export interface DebugProxyConfig {
    * to HTTP/1.1 over TLS. Useful for testing legacy-HTTP detection.
    */
   forceHttp1?: boolean | undefined
+  /**
+   * Extra HTTP/2 session options, used only when the server speaks h2 (with
+   * {@link DebugProxyConfig.tls} and without
+   * {@link DebugProxyConfig.forceHttp1}). For example, raise
+   * `streamResetBurst` / `streamResetRate` (Node defaults: 1000, then 33 per
+   * second) for a client that cancels streams faster than that on purpose.
+   * Node closes the whole session when the limit is exceeded.
+   */
+  http2Options?:
+    | Pick<http2.ServerSessionOptions, 'streamResetBurst' | 'streamResetRate'>
+    | undefined
   /**
    * Ordered list of routes. The first route whose `match` returns true wins.
    * If none match, {@link DebugProxyConfig.defaultHandler} is used.
@@ -252,7 +261,10 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
   const server = config.tls
     ? config.forceHttp1
       ? https.createServer(config.tls, listener)
-      : http2.createSecureServer({...config.tls, allowHTTP1: true}, listener)
+      : http2.createSecureServer(
+          {...config.http2Options, ...config.tls, allowHTTP1: true},
+          listener,
+        )
     : http.createServer(listener)
 
   // Track raw TCP sockets so close() can tear down live connections (SSE
@@ -360,5 +372,3 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
 
   return api
 }
-
-export type {ProxyHeaders, ProxyRequest, ProxyResponse, ProxyTarget, SSEEvent}

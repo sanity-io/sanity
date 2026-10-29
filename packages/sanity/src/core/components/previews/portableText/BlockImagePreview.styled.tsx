@@ -1,9 +1,10 @@
-import {Box, Card, Flex, rem} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {PREVIEW_SIZES} from '../constants'
 
-export const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+export const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   height: ${rem(PREVIEW_SIZES.block.media.height)};
   white-space: nowrap;
   position: relative;
@@ -25,5 +26,5 @@ export const MediaCard = styled(Card)<{$ratio: number}>`
 `
 
 export const RootBox = styled(Box).attrs({overflow: 'hidden'})`
-  border-radius: ${({theme}) => theme.sanity.radius[1]}px;
+  border-radius: ${({theme}) => theme.sanity.radius[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `

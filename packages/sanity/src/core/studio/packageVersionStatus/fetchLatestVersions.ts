@@ -1,6 +1,7 @@
 import {type SemVer} from 'semver'
 
 import {isStaging} from '../../environment/isStaging'
+import {type DeprecatedVersions, parseDeprecatedVersions} from './utils'
 
 // e2e tests also check for this URL pattern -- please update if it changes!
 const MODULES_URL_VERSION = 'v1'
@@ -37,6 +38,13 @@ function getModuleUrl({
   return `${MODULES_URL}/${packageName}/${tag}/^${minVersion.version}/t${timestamp}`
 }
 
+export interface AutoUpdatingVersionInfo {
+  /** The version the module CDN will serve for this app's import map URL on reload */
+  packageVersion: string
+  /** Deprecated versions of this package, when included in the response */
+  deprecated?: DeprecatedVersions
+}
+
 /**
  * Resolves the version the module CDN will serve for the studio's import map URL on reload
  * (the `packageVersion` of the app's module metadata)
@@ -45,7 +53,7 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
   packageName: string
   minVersion: SemVer
   appId: string
-}) => {
+}): Promise<AutoUpdatingVersionInfo | undefined> => {
   const {packageName, minVersion, appId} = options
 
   try {
@@ -61,7 +69,10 @@ export const fetchLatestAutoUpdatingVersion = async (options: {
     // `return await` (not bare `return`) so a JSON parse rejection is
     // caught by this try/catch instead of escaping to the caller.
     const data = await res.json()
-    return data.packageVersion as string
+    return {
+      packageVersion: data.packageVersion as string,
+      deprecated: parseDeprecatedVersions(data.deprecated),
+    }
   } catch (err) {
     console.error(
       new Error(`Failed to fetch version for package "${packageName}" (using appId=${appId})`, {
@@ -77,13 +88,15 @@ export interface LatestVersionInfo {
   latest?: string
   /** The version the module CDN will serve for this URL (resolved within the version range) */
   packageVersion: string
+  /** Deprecated versions of this package, when included in the response */
+  deprecated?: DeprecatedVersions
 }
 
 export const fetchLatestAvailableVersionForPackage = async (options: {
   packageName: string
   minVersion: SemVer
   tag?: string
-}) => {
+}): Promise<LatestVersionInfo | undefined> => {
   const {packageName, minVersion, tag = 'latest'} = options
   try {
     // On every request it should be a new timestamp, so we can actually get a new version notification
@@ -101,6 +114,7 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
     return {
       latest: data.latest as string,
       packageVersion: data.packageVersion as string,
+      deprecated: parseDeprecatedVersions(data.deprecated),
     }
   } catch (err) {
     console.error(

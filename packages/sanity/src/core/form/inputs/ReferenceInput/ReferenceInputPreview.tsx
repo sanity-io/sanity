@@ -2,26 +2,30 @@ import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box, Flex, VStack} from 'ui5'
 
-import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {withFocusRing} from '../../components/withFocusRing/withFocusRing'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {set, unset} from '../../patch'
+import {set, unset} from '../../patch/patch'
+import {EditReferenceLink} from './EditReferenceLink'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
@@ -60,12 +64,10 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const handleClear = useCallback(() => onChange(unset()), [onChange])
   const value: Reference | undefined = props.value as any
 
-  const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
-    useReferenceInput({
-      path,
-      schemaType,
-      value,
-    })
+  const {getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} = useReferenceInput({
+    path,
+    schemaType,
+  })
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && elementRef.current) {
@@ -152,30 +154,10 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
     </>
   )
 
-  const OpenLink = useMemo(
-    () =>
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...restProps}
-            intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={_ref}
-          />
-        )
-      }),
-    [refType?.name, value?._ref],
-  )
-
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box flex="none">
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
           <MenuButton
             button={<ContextMenuButton />}
             id={`${inputId}-menuButton`}
@@ -200,7 +182,11 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
                 {!readOnly && value?._ref && <MenuDivider />}
                 {value?._ref && (
                   <MenuItem
-                    as={OpenLink}
+                    as={IntentLink}
+                    intent="edit"
+                    params={{id: value?._ref, type: refType?.name}}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     data-as="a"
                     text={t('inputs.reference.action.open-in-new-tab')}
                     icon={OpenInNewTabIcon}
@@ -212,7 +198,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
           />
         </Box>
       ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
+    [handleClear, handleReplace, inputId, readOnly, t, value?._ref, refType?.name],
   )
 
   const handleFocus = useCallback(
@@ -237,8 +223,8 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
-      <Stack space={1}>
-        <Flex gap={1} align="center" style={{lineHeight: 0}}>
+      <VStack gap={1}>
+        <Flex gap={1} alignItems="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard
               __unstable_focusRing
@@ -247,6 +233,8 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
               data-selected={selected ? true : undefined}
               documentId={value?._ref}
               documentType={refType?.name}
+              parentRefPath={path}
+              template={value?._strengthenOnPublish?.template}
               flex={1}
               pressed={pressed}
               radius={2}
@@ -260,13 +248,20 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
                 referenceInfo={loadableReferenceInfo}
                 renderPreview={renderPreview}
                 type={schemaType}
+                tone={
+                  !readOnly && tone === 'critical'
+                    ? 'critical'
+                    : !readOnly && tone === 'caution'
+                      ? 'caution'
+                      : undefined
+                }
               />
             </ReferenceLinkCard>
             <Box>{menu}</Box>
           </TooltipDelayGroupProvider>
         </Flex>
         {footer}
-      </Stack>
+      </VStack>
     </WithFocusRingCard>
   )
 }

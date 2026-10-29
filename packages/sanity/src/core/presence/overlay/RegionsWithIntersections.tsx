@@ -1,12 +1,11 @@
 import {
-  type ForwardedRef,
-  forwardRef,
   type ReactNode,
   useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {
@@ -24,6 +23,7 @@ import {
 import {createIntersectionObserver} from './intersectionObserver'
 import {
   BottomRegionWrapper,
+  ContentWrapper,
   MiddleRegionWrapper,
   OverlayWrapper,
   RootWrapper,
@@ -43,11 +43,11 @@ interface RegionsWithIntersectionsProps {
 const toPx = (num: number) => `${num}px`
 const negate = (num: number) => 0 - num
 
-export const RegionsWithIntersections = forwardRef(function RegionsWithIntersections(
-  props: RegionsWithIntersectionsProps,
-  ref: ForwardedRef<HTMLDivElement>,
+export function RegionsWithIntersections(
+  props: RegionsWithIntersectionsProps & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     regions,
     render,
     children,
@@ -166,9 +166,9 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        margins={margins}
+        $margins={margins}
       />
-      <div>{children}</div>
+      <ContentWrapper>{children}</ContentWrapper>
       <OverlayWrapper ref={overlayRef}>
         {overlayWidth && render(regionsWithIntersectionDetails, overlayWidth)}
       </OverlayWrapper>
@@ -193,4 +193,4 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
       <BottomRegionWrapper $debug={DEBUG} id="::bottom" io={io} onIntersection={onIntersection} />
     </RootWrapper>
   )
-})
+}

@@ -53,6 +53,7 @@ const RUN: BenchRunDocument = {
       },
       soak: {
         minutes: 2,
+        settleMinute: 1,
         samples: [
           {
             minute: 0,
@@ -111,7 +112,7 @@ function assertKeyedArrayItems(value: unknown, path: string): void {
 }
 
 describe('toStorableRun', () => {
-  it('produces no directly nested arrays (matches the metrics-studio schema)', () => {
+  it('produces no directly nested arrays (matches the Studio Radar schema)', () => {
     assertNoNestedArrays(toStorableRun(RUN), 'run')
   })
 
@@ -140,9 +141,103 @@ describe('toStorableRun', () => {
     ])
   })
 
+  it('stores the soak settle minute', () => {
+    expect(toStorableRun(RUN).scenarios[0].soak?.settleMinute).toBe(1)
+  })
+
   it('leaves the input document untouched', () => {
     const before = JSON.parse(JSON.stringify(RUN))
     toStorableRun(RUN)
     expect(RUN).toEqual(before)
+  })
+
+  it('adds a weak gitCommit reference for a full sha', () => {
+    const sha = 'a'.repeat(40)
+    const stored = toStorableRun({...RUN, git: {...RUN.git, sha}})
+    expect(stored.git.commit).toEqual({
+      _type: 'reference',
+      _ref: `git-commit-${sha}`,
+      _weak: true,
+    })
+    expect(stored.git.sha).toBe(sha)
+  })
+
+  it('omits the commit reference when the sha is not a full sha', () => {
+    // RUN's sha is 16 chars; collect.ts also emits 'unknown' outside a repo
+    expect(toStorableRun(RUN).git).not.toHaveProperty('commit')
+    expect(toStorableRun({...RUN, git: {...RUN.git, sha: 'unknown'}}).git).not.toHaveProperty(
+      'commit',
+    )
+  })
+
+  it('passes the style rows and the styles block through as declarable objects', () => {
+    const scenario: BenchRunDocument['scenarios'][number] = {
+      scenario: 'singleString',
+      kind: 'interaction',
+      metrics: [
+        {
+          label: 'UI v5 share',
+          unit: 'percent',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [[34.8], [34.8]],
+            summary: {n: 2, median: 34.8, p75: 34.8, p90: 34.8, p99: 34.8, min: 34.8, max: 34.8},
+          },
+        },
+      ],
+      failures: [],
+      interruptions: {experiment: {count: 0, totalMs: 0}},
+      loafAttribution: [],
+      styles: {
+        experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 2},
+        reference: {ui5Available: false, sessions: 2},
+      },
+    }
+    const stored = toStorableRun({...RUN, scenarios: [scenario]})
+    expect(stored.scenarios[0].styles).toEqual(scenario.styles)
+    expect(stored.scenarios[0].metrics[0]).toMatchObject({
+      _key: 'metric-0',
+      label: 'UI v5 share',
+      unit: 'percent',
+    })
+    assertNoNestedArrays(stored, 'run')
+    assertKeyedArrayItems(stored, 'run')
+  })
+
+  it('keys a settle report distinctly from a pageload report of the same scenario', () => {
+    const settleScenario: BenchRunDocument['scenarios'][number] = {
+      scenario: 'singleString',
+      kind: 'pageload',
+      mode: 'settle',
+      settleExpectation: {expectedToSettle: true},
+      metrics: [
+        {
+          label: 'settled sessions',
+          unit: 'count',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [[1], [1]],
+            summary: {n: 2, median: 1, p75: 1, p90: 1, p99: 1, min: 1, max: 1},
+          },
+        },
+      ],
+      failures: [],
+      interruptions: {experiment: {count: 0, totalMs: 0}},
+      loafAttribution: [],
+    }
+    const pageloadScenario: BenchRunDocument['scenarios'][number] = {
+      ...settleScenario,
+      mode: undefined,
+      settleExpectation: undefined,
+    }
+    const stored = toStorableRun({...RUN, scenarios: [settleScenario, pageloadScenario]})
+    expect(stored.scenarios.map((scenario) => scenario._key)).toEqual([
+      'settle-singleString',
+      'pageload-singleString',
+    ])
+    // The expectation object passes through untouched (no arrays inside).
+    expect(stored.scenarios[0].settleExpectation).toEqual({expectedToSettle: true})
+    assertNoNestedArrays(stored, 'run')
+    assertKeyedArrayItems(stored, 'run')
   })
 })

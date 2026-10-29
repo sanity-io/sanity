@@ -10,14 +10,14 @@ import {type ComponentType} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {VideoThumbnail} from '../../../../media-library/plugin/preview/VideoThumbnail'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../../components/previews'
+import {type PreviewMediaDimensions, type PreviewProps} from '../../../components/previews/types'
 import {useImageUrl} from '../../../form/inputs/files/ImageInput/useImageUrl'
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {_previewComponents} from '../_previewComponents'
 import {SanityDefaultPreview} from '../SanityDefaultPreview'
 
 vi.mock('@sanity/asset-utils')
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
 vi.mock('../../../../media-library/plugin/preview/VideoThumbnail', () => ({
@@ -46,6 +46,7 @@ beforeEach(() => {
   capturedMedia = undefined
   capturedMediaDimensions = undefined
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   vi.mocked(useClient).mockReturnValue({} as ReturnType<typeof useClient>)
   vi.mocked(createImageUrlBuilder).mockReturnValue({} as ReturnType<typeof createImageUrlBuilder>)
   vi.mocked(useImageUrl).mockReturnValue({
@@ -77,6 +78,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
     const sanityUrl = 'https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg'
 
     vi.mocked(isSanityImageUrl).mockReturnValue(true)
+    // @ts-expect-error -- pre-existing, fix later
     vi.mocked(parseImageAssetUrl).mockReturnValue({
       assetId: 'image-abc123-1920x1080-jpg',
       projectId: 'project',
@@ -86,6 +88,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
       height: 1080,
     })
 
+    // @ts-expect-error -- pre-existing, fix later
     vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
       capturedMedia = props.media
       if (typeof capturedMedia === 'function') {

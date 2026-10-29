@@ -1,9 +1,10 @@
-import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {type AvatarSize, AvatarStack, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
@@ -11,6 +12,8 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../../releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../../releases/store/types'
+import {useAllReleases} from '../../../releases/store/useAllReleases'
+import {getReleaseDocumentIdFromReleaseId} from '../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
   type DocumentGroupEvent,
@@ -46,7 +49,6 @@ const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
     background-color: ${theme.color.avatar[color].bg};
     box-shadow: 0 0 0 1px var(--card-bg-color);
 
@@ -56,6 +58,10 @@ const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
     right: -3px;
     bottom: -3px;
     border-radius: 50%;
+
+    & svg {
+      --icon-color: ${theme.color.avatar[color].fg};
+    }
   `
 })
 
@@ -85,15 +91,15 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex key={userId} align="center" gap={2} padding={1}>
+    <Flex key={userId} alignItems="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <NameSkeleton animated />
           </Text>
         ) : (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {user.displayName}
           </Text>
         )}
@@ -104,16 +110,50 @@ const UserLine = ({userId}: {userId: string}) => {
 const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
   const {t} = useTranslation('studio')
   return (
-    <Stack paddingBottom={1}>
+    <Flex paddingBottom={1} flexDirection="column" flexShrink={0}>
       <Box padding={1} paddingBottom={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('timeline.changes.title')}
         </Text>
       </Box>
       {collaborators.map((userId) => (
         <UserLine key={userId} userId={userId} />
       ))}
-    </Stack>
+    </Flex>
+  )
+}
+
+/**
+ * Resolves and renders the release badge behind a release publish. Kept as a separate component
+ * so only publish-event rows subscribe to the releases store — a releases-store emission should
+ * not re-render every timeline row. When the release is missing from the store (e.g. it was
+ * deleted) a stub `{_id}` keeps the badge rendered; draft publishes (no `releaseId`) show the
+ * draft badge.
+ */
+function PublishEventReleaseBadge({releaseId}: {releaseId: string | undefined}) {
+  const {t} = useTranslation('studio')
+  const {map: releasesMap} = useAllReleases()
+  const releaseDocumentId = releaseId ? getReleaseDocumentIdFromReleaseId(releaseId) : undefined
+  const release = releaseDocumentId
+    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
+    : undefined
+
+  if (!release) {
+    return <VersionInlineBadge $tone="caution">{t('changes.versions.draft')}</VersionInlineBadge>
+  }
+  return (
+    <ReleaseTitle
+      title={release.metadata?.title}
+      fallback={t('release.placeholder-untitled-release')}
+    >
+      {({displayTitle}) => (
+        <VersionInlineBadge
+          $tone={isReleaseDocument(release) ? getReleaseTone(release) : 'default'}
+        >
+          {displayTitle}
+        </VersionInlineBadge>
+      )}
+    </ReleaseTitle>
   )
 }
 
@@ -147,52 +187,42 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   return (
     <>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         <div style={{position: 'relative'}}>
           <UserAvatarStack maxLength={3} userIds={userIds.filter(Boolean)} size={2} />
-          <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-            <Text size={0}>{IconComponent && <IconComponent />}</Text>
+          <IconBox
+            alignItems="center"
+            justifyContent="center"
+            $color={TIMELINE_ITEM_EVENT_TONE[type]}
+          >
+            {IconComponent && <Icon icon={IconComponent} size={0} />}
           </IconBox>
         </div>
-        <Stack space={2}>
-          <Text size={1} weight="medium">
+        <VStack gap={2}>
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
-                {event.release ? (
-                  <ReleaseTitle
-                    title={event.release.metadata?.title}
-                    fallback={t('release.placeholder-untitled-release')}
-                  >
-                    {({displayTitle}) => (
-                      <VersionInlineBadge
-                        $tone={
-                          isReleaseDocument(event.release!)
-                            ? getReleaseTone(event.release)
-                            : 'default'
-                        }
-                      >
-                        {displayTitle}
-                      </VersionInlineBadge>
-                    )}
-                  </ReleaseTitle>
-                ) : (
-                  <VersionInlineBadge $tone="caution">
-                    {t('changes.versions.draft')}
-                  </VersionInlineBadge>
-                )}
+                <PublishEventReleaseBadge releaseId={event.releaseId} />
               </>
             )}
           </Text>
 
-          <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
+          <Text
+            as="time"
+            size={1}
+            muted
+            dateTime={timestamp}
+            title={formattedTimestamp}
+            trim={true}
+          >
             {updatedTimeAgo}
           </Text>
-        </Stack>
+        </VStack>
 
         {contributors.length > 0 && showChangesBy == 'tooltip' && (
-          <Flex flex={1} justify="flex-end" align="center">
+          <Flex flexBasis="0%" flexGrow={1} justifyContent="flex-end" alignItems="center">
             <Tooltip placement="top" content={<ChangesBy collaborators={contributors} />} portal>
               <Box paddingLeft={2} paddingY={2}>
                 <UserAvatarStack

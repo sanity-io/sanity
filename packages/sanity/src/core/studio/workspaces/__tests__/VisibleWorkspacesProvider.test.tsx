@@ -5,7 +5,7 @@ import {WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
-import {type AuthState} from '../../../store/authStore/types'
+import {type AuthState} from '../../../store/auth/types'
 import {useVisibleWorkspaces} from '../useVisibleWorkspaces'
 import {VisibleWorkspacesProvider} from '../VisibleWorkspacesProvider'
 
@@ -16,6 +16,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'u1',
       name: 'User',
       email: 'u@example.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: '',
       roles: [],
       profileImage: '',
@@ -133,6 +134,7 @@ describe('VisibleWorkspacesProvider', () => {
             id: 'editor',
             name: 'Editor',
             email: 'editor@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: 'editor',
             roles: [{name: 'editor', title: 'Editor'}],
             profileImage: '',

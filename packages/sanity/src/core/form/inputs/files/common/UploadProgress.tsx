@@ -1,10 +1,12 @@
 import {type UploadState} from '@sanity/types'
-import {Card, Flex, Inline, Text} from '@sanity/ui'
+import {Card, Inline} from '@sanity/ui'
 import {useEffect} from 'react'
+import {Text, Flex} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {LinearProgress} from '../../../../components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {LinearProgress} from '../../../../components/progress/LinearProgress'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {STALE_UPLOAD_MS} from '../constants'
 import {CardWrapper, CodeWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
 
@@ -14,6 +16,10 @@ type Props = {
   onStale?: () => void
 }
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
+
+function FileName({filename}: {children?: React.ReactNode; filename?: string}) {
+  return <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>
+}
 
 export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
@@ -29,22 +35,25 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
     <CardWrapper tone="primary" border>
       <FlexWrapper
         padding={4}
-        align="center"
-        justify="space-between"
-        height="fill"
-        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        height="100%"
+        flexDirection="row"
         gap={2}
       >
         <LeftSection>
-          <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
-            <Text size={1}>
-              <Inline space={2}>
+          <Flex
+            justifyContent="center"
+            gap={[3, 3, 2, 2]}
+            flexDirection={['column', 'column', 'row']}
+          >
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+              <Inline gap={2}>
                 <Translate
                   t={t}
                   i18nKey="input.files.common.upload-progress"
-                  components={{
-                    FileName: () => <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>,
-                  }}
+                  components={{FileName}}
+                  componentProps={{filename}}
                 />
               </Inline>
             </Text>

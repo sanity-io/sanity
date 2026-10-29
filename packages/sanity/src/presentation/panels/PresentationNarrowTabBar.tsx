@@ -1,8 +1,9 @@
-import {Card, Flex, TabList} from '@sanity/ui'
+import {Card, TabList} from '@sanity/ui'
 import {type FunctionComponent, useMemo} from 'react'
 import {useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 
-import {Tab} from '../../ui-components'
+import {Tab} from '../../ui-components/tab/Tab'
 import {presentationLocaleNamespace} from '../i18n'
 import {getPresentationPanelHtmlId, type PresentationLayoutTab} from './presentationLayoutTab'
 
@@ -36,8 +37,8 @@ export const PresentationNarrowTabBar: FunctionComponent<PresentationNarrowTabBa
     return (
       <Card borderBottom paddingX={2} paddingY={1}>
         {/* Center the tab group within the bar rather than letting it sit against the left edge. */}
-        <Flex justify="center">
-          <TabList space={1}>
+        <Flex justifyContent="center">
+          <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
                 key={tab.id}

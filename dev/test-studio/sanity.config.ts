@@ -7,15 +7,22 @@ import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
+import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {
+  defineConfig,
+  defineField,
+  definePlugin,
+  type AuthProvider,
+  type WorkspaceOptions,
+} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
-import {imageAssetSource} from './assetSources'
+import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
   Annotation,
   Block,
@@ -40,19 +47,25 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
-import {formBuilderReproTool} from './plugins/form-builder-repro'
+import {documentFormOnly} from './plugins/document-form-only/plugin'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
+import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
-import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
+import {languageFilter} from './plugins/language-filter/plugin'
+import {presenceDebug} from './plugins/presence-debug/plugin'
+import {routerDebugTool} from './plugins/router-debug/plugin'
+import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
+import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {singletons} from './structure/resolveSingletons'
+import {structure} from './structure/resolveStructure'
+import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -76,6 +89,22 @@ function getDebugProxyApiHost(): string | undefined {
 }
 
 const debugProxyApiHost = getDebugProxyApiHost()
+
+// Sanity Sandbox org SAML SSO (`ppsg7ml5`). `/auth/providers` reports `sso.saml: true`
+// but does not include the login URL, so Studio will not offer SSO unless we add it.
+// Same configuration ID as `dev/auth-test-studio`.
+const sanitySandboxSsoProvider: AuthProvider = {
+  name: 'saml',
+  title: 'SSO',
+  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/91cadf2a',
+}
+
+const sanitySandboxAuth = {
+  providers: (prev: AuthProvider[]) =>
+    prev.some((provider) => provider.name === sanitySandboxSsoProvider.name)
+      ? prev
+      : [...prev, sanitySandboxSsoProvider],
+}
 
 const envConfig = {
   // use this for production workspaces
@@ -135,6 +164,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         return defaultActions
       },
       newDocumentOptions,
+      singletons,
       comments: {
         enabled: true,
       },
@@ -149,11 +179,18 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       debugSecrets(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: '/preview/index.html',
+        previewUrl: {
+          origin:
+            process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
+            (process.env.NODE_ENV === 'development'
+              ? 'http://localhost:3334'
+              : 'https://test-studio-preview-iframe.sanity.dev'),
+          preview: '/',
+        },
         resolve: {
           mainDocuments: defineDocuments([
             {
-              route: '/preview/index.html',
+              route: '/',
               filter: `_type == "simpleBlock" && isMain`,
             },
           ]),
@@ -166,7 +203,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
                   locations: [
                     {
                       title: doc.title,
-                      href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
+                      href: `/?${new URLSearchParams({title: doc.title})}`,
                     },
                   ],
                 }
@@ -233,10 +270,15 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
+        beta: {redesign: {enabled: true}},
       }),
+      themerTool(),
       routerDebugTool(),
+      // Opt-in (Vercel test-studio). Must stay this exact member expression.
+      ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
+      presenceDebug(),
       media(),
       wave(),
       autoCloseBrackets(),
@@ -268,6 +310,7 @@ const defaultWorkspace = defineConfig({
   dataset: 'test',
   ...envConfig.production,
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  auth: sanitySandboxAuth,
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
@@ -287,14 +330,14 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
+      if (ctx.schemaType === 'restrictedVersionActionsTest') {
+        return prev.filter(({action}) => action === 'publish')
+      }
       if (ctx.schemaType === 'book' && ctx.releaseId) {
         return [useTestVersionAction, ...prev]
       }
       if (ctx.schemaType === 'author' && ctx.releaseId) {
         return [...prev, useTestVersionAction]
-      }
-      if (ctx.schemaType === 'playlist') {
-        return prev.filter(({action}) => action === 'delete')
       }
 
       return prev
@@ -307,9 +350,70 @@ const defaultWorkspace = defineConfig({
       }
       return prev
     },
+    metadata: {
+      fields: [
+        defineField({
+          name: 'legalReview',
+          title: 'Legal review',
+          type: 'string',
+          initialValue: 'notReviewed',
+          options: {
+            list: [
+              {title: 'Not reviewed', value: 'notReviewed'},
+              {title: 'Reviewed', value: 'reviewed'},
+            ],
+          },
+        }),
+        defineField({
+          name: 'signOff',
+          title: 'Sign-off',
+          type: 'object',
+          fields: [
+            defineField({name: 'reviewer', title: 'Reviewer', type: 'string'}),
+            defineField({name: 'approved', title: 'Approved', type: 'boolean'}),
+          ],
+        }),
+      ],
+    },
   },
   beta: {
     variants: {
+      enabled: true,
+      types: {
+        variant: {
+          conditions: async () => {
+            // Mimics an api call to get the conditions
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            return [
+              {
+                name: 'audience',
+                title: 'Audience',
+                description: 'The group of visitors this content targets.',
+                values: [
+                  {
+                    value: 'loyal',
+                    title: 'Loyal customers',
+                    description: 'Repeat purchasers and members.',
+                  },
+                  {
+                    value: 'new',
+                    title: 'New visitors',
+                    description: 'First-time visitors to the site.',
+                  },
+                ],
+              },
+              {
+                name: 'locale',
+                title: 'Locale',
+                description: 'The visitor language and region.',
+                values: ['en-US', 'nb-NO', 'de-DE'],
+              },
+            ]
+          },
+        },
+      },
+    },
+    reactActivityMode: {
       enabled: true,
     },
   },
@@ -324,7 +428,46 @@ export default defineConfig([
     basePath: '/default-hidden',
     hidden: true,
   },
-  defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    releases: {
+      ...defaultWorkspace.releases,
+      metadata: {
+        ...defaultWorkspace.releases?.metadata,
+        fields: [
+          ...(defaultWorkspace.releases?.metadata?.fields ?? []),
+          defineField({
+            name: 'reviewNote',
+            title: 'Review note',
+            type: 'string',
+            validation: (rule) => rule.required().min(3),
+          }),
+        ],
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
+    title: 'Test Studio (variants disabled)',
+    name: 'test-studio-variants-disabled',
+    basePath: '/test-studio-variants-disabled',
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'comments-v2',
+    title: 'Comments v2',
+    subtitle: 'Default workspace with the comments v2 beta enabled',
+    basePath: '/comments-v2',
+    beta: {
+      ...defaultWorkspace.beta,
+      comments: {v2: true},
+    },
+  },
   {
     ...defaultWorkspace,
     projectId: 'nonexistent',
@@ -371,7 +514,6 @@ export default defineConfig([
     ...defaultWorkspace,
     name: 'no-releases',
     title: 'No releases',
-    dataset: 'no-releases',
     basePath: '/no-releases',
     document: {
       drafts: {enabled: true},
@@ -380,11 +522,28 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
+    name: 'no-releases-no-variants',
+    title: 'No releases and no variants',
+    basePath: '/no-releases-no-variants',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
     name: 'secondary',
     title: 'Secondary test project',
     projectId: 'q5caobza',
     dataset: 'production',
     basePath: '/secondary',
+    // Different project/org than Sanity Sandbox — keep the default providers.
+    auth: undefined,
   },
   {
     ...defaultWorkspace,
@@ -407,6 +566,7 @@ export default defineConfig([
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/partial-indexing',
+    auth: sanitySandboxAuth,
     ...envConfig.production,
     search: {
       unstable_partialIndexing: {
@@ -432,6 +592,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground',
+    auth: sanitySandboxAuth,
     beta: {
       eventsAPI: {
         releases: true,
@@ -456,6 +617,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -469,6 +631,7 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -577,6 +740,7 @@ export default defineConfig([
       formComponentsPlugin(),
     ],
     basePath: '/custom-components',
+    auth: sanitySandboxAuth,
     onUncaughtError: (error, errorInfo) => {
       console.log(error)
       console.log(errorInfo)
@@ -612,6 +776,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
     basePath: '/ai-assist',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -624,6 +789,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/stega',
+    auth: sanitySandboxAuth,
     form: {
       components: {
         input: StegaDebugger,
@@ -674,7 +840,7 @@ export default defineConfig([
           unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
         },
       }),
-      visionTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,
@@ -701,10 +867,21 @@ export default defineConfig([
           previewMode: {enable: '/api/draft-mode/enable'},
         },
       }),
-      visionTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,
     },
+  },
+  {
+    name: 'document-form-only',
+    title: 'Document form only',
+    subtitle: 'A single document form: no navbar, no structure tool, no document form toolbar',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/document-form-only',
+    plugins: [documentFormOnly()],
   },
 ]) as WorkspaceOptions[]

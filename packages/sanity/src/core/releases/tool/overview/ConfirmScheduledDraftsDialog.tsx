@@ -1,11 +1,12 @@
 import {type ReleaseDocument, type ScheduleReleaseAction} from '@sanity/client'
-import {Stack, Text, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isPast} from 'date-fns/isPast'
 import {useCallback, useMemo, useState} from 'react'
+import {Text, VStack} from 'ui5'
 
-import {Dialog} from '../../../../ui-components'
-import {useClient} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../hooks/useClient'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
@@ -93,16 +94,16 @@ export function ConfirmScheduledDraftsDialog({
         },
       }}
     >
-      <Stack space={3}>
-        <Text size={1} muted>
+      <VStack gap={3}>
+        <Text size={1} muted as="div" trim={true}>
           {t('confirm-active-scheduled-drafts-dialog.description')}
         </Text>
         {hasPastDates && (
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('confirm-active-scheduled-drafts-dialog.past-dates-warning')}
           </Text>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }

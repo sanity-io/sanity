@@ -15,6 +15,7 @@ export function AnimatedTextWidth({children, text}: {children: ReactNode; text: 
     if (!textRef.current) return
     const newWidth = textRef.current.offsetWidth
     setContainerWidth(newWidth)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [text])
 
   const onAnimationStart = useCallback(() => {

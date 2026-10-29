@@ -1,7 +1,7 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**
@@ -25,8 +25,8 @@ export function ReferenceMetadataLoadErrorAlertStrip({
       status="warning"
       data-testid="alert-reference-info-failed"
     >
-      <Stack space={3}>
-        <Text as="p" muted size={1}>
+      <VStack gap={3}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           {errorMessage}
         </Text>
         <Button
@@ -36,7 +36,7 @@ export function ReferenceMetadataLoadErrorAlertStrip({
           text={t('inputs.reference.metadata-error.retry-button-label')}
           tone="primary"
         />
-      </Stack>
+      </VStack>
     </AlertStrip>
   )
 }

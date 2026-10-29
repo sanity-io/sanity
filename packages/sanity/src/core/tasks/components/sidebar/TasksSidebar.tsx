@@ -1,40 +1,34 @@
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {Card, Spinner, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
+import {use, useCallback, useMemo} from 'react'
+import {Flex} from 'ui5'
 
-import {useCurrentUser} from '../../../store'
-import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
-import {TasksFormBuilder} from '../form'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
+import {useTasks} from '../../context/tasks/useTasks'
+import {tasksLocaleNamespace} from '../../i18n'
+import {TasksFormBuilder} from '../form/tasksFormBuilder/TasksFormBuilder'
+import {getTargetDocumentId} from '../form/utils'
 import {TasksList} from '../list/TasksList'
-import {TasksUpsellPanel} from '../upsell'
+import {TasksUpsellPanel} from '../upsell/TasksUpsellPanel'
 import {TasksListTabs} from './TasksListTabs'
+import {contentFlex, headerStack, rootCard} from './TasksSidebar.css'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
 const MotionCard = motion.create(Card)
-const RootCard = styled(MotionCard)`
-  flex: 1;
-  flex-direction: column;
-`
-
-const HeaderStack = styled(Stack)`
-  border-bottom: 1px solid var(--card-border-color);
-`
-
-const ContentFlex = styled(Flex)`
-  overflow-y: scroll;
-  overflow-x: hidden;
-`
 
 /**
  * @internal
  */
-function TasksStudioSidebarInner() {
-  const {mode} = useTasksEnabled()
+export function TasksStudioSidebar() {
+  const mode = use(useTasksMode())
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
   const currentUser = useCurrentUser()
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
 
@@ -47,19 +41,31 @@ function TasksStudioSidebarInner() {
       return currentUser?.id && item.subscribers?.includes(currentUser.id)
     }
     if (activeTabId === 'document') {
-      return activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
+      return (
+        activeDocument?.documentId && getTargetDocumentId(item.target) === activeDocument.documentId
+      )
     }
     return false
   })
 
   const content = useMemo(() => {
+    if (mode === null) {
+      // The feature check failed, so whether the plan has tasks is unknown: fail closed, like a
+      // failed check disables comments and scheduled publishing
+      return (
+        <Text muted size={1}>
+          {t('panel.unavailable.text')}
+        </Text>
+      )
+    }
+
     if (viewMode !== 'list') {
       return <TasksFormBuilder key={selectedTask} />
     }
 
     if (isLoading) {
       return (
-        <Flex align="center" justify="center">
+        <Flex alignItems="center" justifyContent="center">
           <Spinner />
         </Flex>
       )
@@ -71,10 +77,11 @@ function TasksStudioSidebarInner() {
         <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
       </>
     )
-  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
+  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode, t])
 
   return (
-    <RootCard
+    <MotionCard
+      className={rootCard}
       display="flex"
       height="fill"
       flex={1}
@@ -82,37 +89,25 @@ function TasksStudioSidebarInner() {
       initial={{opacity: 0}}
       animate={{opacity: 1, transition: {duration: 0.2}}}
     >
-      <HeaderStack space={3} padding={3} sizing="border">
+      <Flex className={headerStack} gap={3} padding={3} flexDirection="column">
         <TasksSidebarHeader items={filteredList} />
-        {viewMode === 'list' && !isLoading && (
+        {mode !== null && viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />
         )}
-      </HeaderStack>
+      </Flex>
 
-      <ContentFlex
-        direction="column"
-        flex={1}
+      <Flex
+        className={contentFlex}
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
         overflow="auto"
         padding={3}
         paddingTop={4}
         paddingX={4}
-        sizing="border"
       >
         {content}
-      </ContentFlex>
-    </RootCard>
+      </Flex>
+    </MotionCard>
   )
-}
-
-/**
- * @internal
- */
-export function TasksStudioSidebar() {
-  const {enabled} = useTasksEnabled()
-
-  if (!enabled) {
-    return null
-  }
-
-  return <TasksStudioSidebarInner />
 }

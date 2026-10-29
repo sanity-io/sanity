@@ -3,11 +3,13 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {
   ChevronWrapper,
@@ -28,6 +30,24 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentId: string
   documentType: string
   documentVersions: string[]
+}
+
+function DocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return documentTitle
+}
+
+function StrongDocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return <strong>{documentTitle}</strong>
 }
 
 /**
@@ -76,19 +96,21 @@ export function ConfirmDeleteDialogBody({
   )
   const confirmationMessage = useCallback(
     () => (
-      <Stack space={4}>
-        <Text as="p" size={1}>
+      <VStack gap={4}>
+        <Text as="p" size={1} trim={true}>
           <Translate
             t={t}
             i18nKey="confirm-delete-dialog.confirmation.text"
             context={action}
-            components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
+            values={{count: documentVersions.length}}
+            components={{DocumentTitle: StrongDocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
         {action === 'delete' && (
           <VersionsPreviewList documentType={documentType} documentVersions={documentVersions} />
         )}
-      </Stack>
+      </VStack>
     ),
     [t, action, documentTitle, documentType, documentVersions],
   )
@@ -113,20 +135,26 @@ export function ConfirmDeleteDialogBody({
   })
 
   return (
-    <Flex direction="column" gap={4}>
+    <Flex flexDirection="column" gap={4}>
       {confirmationMessage()}
       <div>
         <Card borderTop padding={1} />
         <Card padding={3} radius={2} tone="caution" flex="none">
           <Flex>
-            <Text aria-hidden="true" size={1}>
-              <WarningOutlineIcon />
-            </Text>
-            <Box flex={1} marginLeft={3}>
-              <Text size={1}>
+            <Icon
+              aria-hidden="true"
+              size={1}
+              muted
+              icon={WarningOutlineIcon}
+              tone="caution"
+              style={{margin: '-0.375rem'}}
+            />
+            <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 <Translate
                   i18nKey="confirm-delete-dialog.referring-document-count.text"
-                  components={{DocumentTitle: () => documentTitle}}
+                  components={{DocumentTitle}}
+                  componentProps={{documentTitle}}
                   t={t}
                   values={{count: totalCount}}
                 />
@@ -136,20 +164,21 @@ export function ConfirmDeleteDialogBody({
         </Card>
       </div>
 
-      <Box flex="none">
-        <Text size={1}>
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>
       <Card radius={2} shadow={1} flex="auto" padding={1}>
-        <Flex direction="column">
+        <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" space={2} data-testid="internal-references">
+            <VStack as="ul" gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -161,7 +190,7 @@ export function ConfirmDeleteDialogBody({
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </Stack>
+            </VStack>
           )}
 
           {crossDatasetReferences.totalCount > 0 && (
@@ -183,12 +212,10 @@ export function ConfirmDeleteDialogBody({
                   shadow={1}
                   paddingY={1}
                 >
-                  <Flex align="center" gap={3} paddingX={3} paddingY={1}>
-                    <Text size={1}>
-                      <DocumentsIcon />
-                    </Text>
-                    <Stack space={2}>
-                      <Text textOverflow="ellipsis" size={1}>
+                  <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
+                    <Icon size={1} muted icon={DocumentsIcon} style={{margin: '-0.375rem'}} />
+                    <VStack gap={2}>
+                      <Text truncate={1} size={1} as="div" trim={true}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
                           count: normalizedDatasetNames.length,
                           documentCount: t('confirm-delete-dialog.cdr-summary.document-count', {
@@ -196,14 +223,19 @@ export function ConfirmDeleteDialogBody({
                           }),
                         })}
                       </Text>
-                      <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
+                      <Text
+                        title={datasetSubtitle}
+                        truncate={1}
+                        size={1}
+                        muted
+                        as="div"
+                        trim={true}
+                      >
                         {datasetSubtitle}
                       </Text>
-                    </Stack>
+                    </VStack>
                     <ChevronWrapper>
-                      <Text muted size={1}>
-                        <ChevronDownIcon />
-                      </Text>
+                      <Icon muted size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
                     </ChevronWrapper>
                   </Flex>
                 </Card>
@@ -214,17 +246,24 @@ export function ConfirmDeleteDialogBody({
                   <thead>
                     <tr>
                       <th>
-                        <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
+                        <Text
+                          muted
+                          size={1}
+                          style={{minWidth: '5rem'}}
+                          weight="medium"
+                          as="div"
+                          trim={true}
+                        >
                           {t('confirm-delete-dialog.cdr-table.project-id.label')}
                         </Text>
                       </th>
                       <th>
-                        <Text muted size={1} weight="medium">
+                        <Text muted size={1} weight="medium" as="div" trim={true}>
                           {t('confirm-delete-dialog.cdr-table.dataset.label')}
                         </Text>
                       </th>
                       <th>
-                        <Text muted size={1} weight="medium">
+                        <Text muted size={1} weight="medium" as="div" trim={true}>
                           {t('confirm-delete-dialog.cdr-table.document-id.label')}
                         </Text>
                       </th>
@@ -238,14 +277,18 @@ export function ConfirmDeleteDialogBody({
                       .map(({projectId, datasetName, documentId: referenceId}, index) => (
                         <tr key={`${documentId}-${index}`}>
                           <td>
-                            <Text size={1}>{projectId}</Text>
+                            <Text size={1} as="div" trim={true}>
+                              {projectId}
+                            </Text>
                           </td>
                           <td>
-                            <Text size={1}>{datasetName || 'unavailable'}</Text>
+                            <Text size={1} as="div" trim={true}>
+                              {datasetName || 'unavailable'}
+                            </Text>
                           </td>
                           <td>
-                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
-                              <Text textOverflow="ellipsis" size={1}>
+                            <DocumentIdFlex alignItems="center" gap={2} justifyContent="flex-end">
+                              <Text truncate={1} size={1} as="div" trim={true}>
                                 {referenceId || 'unavailable'}
                               </Text>
                               {referenceId && (
@@ -282,13 +325,14 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
-      <Box flex="none">
-        <Text size={1}>
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>

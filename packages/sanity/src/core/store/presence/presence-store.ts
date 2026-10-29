@@ -1,8 +1,8 @@
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
+import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
 import groupBy from 'lodash-es/groupBy.js'
-import isEqual from 'lodash-es/isEqual.js'
 import omit from 'lodash-es/omit.js'
 import uniq from 'lodash-es/uniq.js'
 import {nanoid} from 'nanoid'
@@ -16,6 +16,7 @@ import {
   merge,
   NEVER,
   type Observable,
+  ReplaySubject,
   timer,
 } from 'rxjs'
 import {
@@ -34,9 +35,9 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
-import {documentIdEquals} from '../../util'
+import {documentIdEquals} from '../../util/draftUtils'
 import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
-import {debugParams$} from '../debugParams'
+import {debugParams$} from '../debugParams/debugParams'
 import {type UserStore} from '../user/userStore'
 import {createBifurTransport} from './message-transports/bifurTransport'
 import {
@@ -85,6 +86,23 @@ export interface PresenceStore {
    * @internal
    */
   debugPresenceParam$: Observable<string[]>
+
+  /**
+   * Debug helpers for exercising presence from a single browser. Fake sessions go through the
+   * same code path as real ones (user lookup, document presence, form routing, overlay).
+   * @internal
+   */
+  debug: PresenceDebugApi
+}
+
+/** @internal */
+export interface PresenceDebugApi {
+  /** The locations this session currently reports as its own, including any editor selection */
+  ownLocation$: Observable<PresenceLocation[]>
+  /** Shows `userId` as present at `locations`; calling it again for the same user moves them */
+  fakePresence: (userId: string, locations: PresenceLocation[]) => void
+  /** Removes the fake presence of `userId`, or of every faked user when omitted */
+  removeFakePresence: (userId?: string) => void
 }
 
 const KEY = 'presence_session_id'
@@ -160,12 +178,14 @@ export function createPresenceStore(context: {
     map(([, locations]) => locations),
     auditTime(200),
     switchMap((locations) => reportLocations(locations)),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     mergeMapTo(EMPTY),
     share(),
   )
 
   // This represents my rollcall request to other clients
   // Note: We are requesting a rollcall whenever we (re)connect
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const myRollCall$ = defer(() => requestRollCall()).pipe(mergeMapTo(EMPTY))
 
   const connectionChange$ = connectionStatusStore.connectionStatus$.pipe(
@@ -194,10 +214,42 @@ export function createPresenceStore(context: {
         'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )
     }),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     switchMapTo(mock$),
   )
 
   const debugIntrospect$ = debugPresenceParam$.pipe(map((args) => args.includes('show_own')))
+
+  // Fake sessions placed explicitly through the debug API (e.g. the test studio's field action).
+  // Replayed so that sessions faked before anyone subscribed to presence are not lost.
+  const debugEvents$ = new ReplaySubject<StateEvent | DisconnectEvent>()
+  const fakedUserIds = new Set<string>()
+  const fakeSessionId = (userId: string) => `fake-${userId}`
+  const debug: PresenceDebugApi = {
+    ownLocation$: currentLocation$.asObservable(),
+    fakePresence: (userId, locations) => {
+      fakedUserIds.add(userId)
+      debugEvents$.next({
+        type: 'state',
+        userId,
+        sessionId: fakeSessionId(userId),
+        timestamp: new Date().toISOString(),
+        locations,
+      })
+    },
+    removeFakePresence: (userId) => {
+      const userIds = userId === undefined ? Array.from(fakedUserIds) : [userId]
+      for (const id of userIds) {
+        fakedUserIds.delete(id)
+        debugEvents$.next({
+          type: 'disconnect',
+          userId: id,
+          sessionId: fakeSessionId(id),
+          timestamp: new Date().toISOString(),
+        })
+      }
+    },
+  }
 
   const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
     filter(
@@ -215,7 +267,11 @@ export function createPresenceStore(context: {
     }
   }
 
-  const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, useMock$).pipe(
+  const states$: Observable<{[sessionId: string]: Session}> = merge(
+    syncEvent$,
+    useMock$,
+    debugEvents$,
+  ).pipe(
     scan(
       (keyed, event: StateEvent | DisconnectEvent): {[sessionId: string]: Session} =>
         event.type === 'disconnect'
@@ -341,5 +397,12 @@ export function createPresenceStore(context: {
     )
   }
 
-  return {setLocation, reportLocations, debugPresenceParam$, globalPresence$, documentPresence}
+  return {
+    setLocation,
+    reportLocations,
+    debugPresenceParam$,
+    globalPresence$,
+    documentPresence,
+    debug,
+  }
 }

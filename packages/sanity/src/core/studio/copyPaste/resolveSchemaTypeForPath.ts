@@ -6,6 +6,7 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type Schema,
   type SchemaType,
 } from '@sanity/types'
 import {fromString, toString} from '@sanity/util/paths'
@@ -35,6 +36,21 @@ function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField 
   }
 
   return undefined
+}
+
+/**
+ * Returns the name of the nearest type in the parent type chain that resolves back to
+ * that same type through `schema.get()` — or the core type at the root of the chain.
+ * Inline types carry names that are either not registered or, worse, can collide with an
+ * unrelated top-level type of the same name, so their name cannot be recorded on the
+ * clipboard and looked up again at paste time.
+ */
+export function getResolvableTypeName(schema: Schema, schemaType: SchemaType): string {
+  let current: SchemaType = schemaType
+  while (current.type && schema.get(current.name) !== current) {
+    current = current.type
+  }
+  return current.name
 }
 
 export function resolveSchemaTypeForPath(

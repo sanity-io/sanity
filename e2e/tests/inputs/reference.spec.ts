@@ -1,7 +1,7 @@
 import {type Locator, type Page, expect} from '@playwright/test'
 
-import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
+import {withDefaultClient} from '../../helpers/sanityClient'
 import {test} from '../../studio-test'
 
 /**
@@ -49,6 +49,38 @@ async function searchAndSelectReference(
   await expect(option).toBeVisible({timeout: 10_000})
   await option.scrollIntoViewIfNeeded()
   await option.click({force: true})
+}
+
+/**
+ * Click publish in the given document pane (0-based index) and wait for the
+ * publish to complete.
+ *
+ * Completion is asserted on the publish button settling into its disabled
+ * state with the plain "Publish" accessible name — the published,
+ * no-pending-changes state, derived from document state. While the document is
+ * still syncing or validating the button carries a different accessible name
+ * ("Syncing document…" / "Validating document…"), so this cannot match early.
+ *
+ * The pane-footer status text is deliberately not used as the completion
+ * signal: it renders the latest entry of the events API feed, which on a
+ * loaded backend can lag far behind the publish itself — CI traces show the
+ * footer still on "Draft created … ago" 15+ seconds after the publish landed
+ * (the button already showed "Published x seconds ago" at that point).
+ */
+async function publishPaneDocument(page: Page, paneIndex: number) {
+  const pane = page.getByTestId('document-pane').nth(paneIndex)
+  const publishButton = pane.getByTestId('action-publish')
+
+  // Only click once the button is actionable: a click that lands while the
+  // document is still syncing/validating is queued behind validation, which
+  // can take tens of seconds on a slow backend — give this wait the same
+  // budget as the completion gate below.
+  await expect(publishButton).toBeEnabled({timeout: 60_000})
+  await publishButton.click()
+
+  await expect(
+    pane.getByRole('button', {name: 'Publish', exact: true, disabled: true}),
+  ).toBeVisible({timeout: 60_000})
 }
 
 withDefaultClient((context) => {
@@ -155,7 +187,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -196,7 +230,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -237,7 +273,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')
@@ -273,7 +311,6 @@ withDefaultClient((context) => {
 
     test.slow()
     const originalTitle = 'Initial Doc'
-    const documentStatus = page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/content/input-debug;simpleReferences')
     await expect(page.getByTestId('string-input')).toBeVisible()
@@ -288,22 +325,21 @@ withDefaultClient((context) => {
       .click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
       'Reference test',
     )
-    await page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expectPublishedStatus(documentStatus.nth(1))
+    await publishPaneDocument(page, 1) // publish reference
 
     /** --- IN ORIGINAL DOC --- */
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
-    await page.getByTestId('action-publish').first().click() // publish reference
-
-    await expectPublishedStatus(documentStatus.first())
+    await publishPaneDocument(page, 0) // publish original document
 
     // open the context menu
     const documentPane = page.getByTestId('document-pane')

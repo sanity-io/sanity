@@ -1,4 +1,4 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, useElementSize} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
@@ -16,8 +16,11 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 
-import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {Pane} from '../../../components/pane/Pane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -28,9 +31,9 @@ import {
 } from '../constants'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
-import {DocumentPanel} from '../documentPanel'
-import {DocumentPanelHeader} from '../documentPanel/header'
-import {DocumentActionShortcuts} from '../keyboardShortcuts'
+import {DocumentPanel} from '../documentPanel/DocumentPanel'
+import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
+import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
@@ -102,10 +105,10 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
-  const footerRect = useElementRect(footerElement)
-  const headerRect = useElementRect(headerElement)
-  const footerHeight = footerRect?.height
-  const headerHeight = headerRect?.height
+  const footerSize = useElementSize(footerElement)
+  const headerSize = useElementSize(headerElement)
+  const footerHeight = footerSize?.border.height
+  const headerHeight = headerSize?.border.height
   const currentMinWidth =
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
@@ -218,7 +221,12 @@ export function DocumentLayout() {
           >
             <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-              <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+              <Flex
+                flexDirection="column"
+                flexBasis="0%"
+                flexGrow={1}
+                height={layoutCollapsed ? undefined : '100%'}
+              >
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}

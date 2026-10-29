@@ -1,9 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
-import {type ComponentType, useCallback} from 'react'
+import {type ComponentType, type ReactNode, useCallback} from 'react'
 import {
-  getVersionInlineBadge,
+  getReleaseTone,
   isPerspectiveWriteable,
   isReleaseDocument,
   type PerspectiveNotWriteableReason,
@@ -14,7 +14,9 @@ import {
   Translate,
   useTranslation,
   useWorkspace,
+  VersionInlineBadge,
 } from 'sanity'
+import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -23,6 +25,23 @@ interface Props {
   schemaType: ObjectSchemaType
   selectedPerspective: TargetPerspective
   reason: PerspectiveNotWriteableReason
+}
+
+function ReleaseInactiveVersionBadge({
+  children,
+  fallbackTitle,
+  releaseDoc,
+}: {
+  children?: ReactNode
+  fallbackTitle?: string
+  releaseDoc?: ReleaseDocument
+}) {
+  if (!releaseDoc) return null
+  return (
+    <ReleaseTitle title={releaseDoc.metadata.title} fallback={fallbackTitle ?? ''}>
+      {() => <VersionInlineBadge $tone={getReleaseTone(releaseDoc)}>{children}</VersionInlineBadge>}
+    </ReleaseTitle>
+  )
 }
 
 /**
@@ -66,9 +85,10 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
     <Banner
       tone="caution"
       icon={WarningOutlineIcon}
+      data-testid="choose-new-document-destination-banner"
       content={
-        <Flex align="center" gap={2}>
-          <Text size={1}>
+        <Flex alignItems="center" gap={2}>
+          <Text size={1} as="div" trim={true} tone="caution">
             {reason === 'PUBLISHED_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&
@@ -80,18 +100,10 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
                 values={{
                   title: releaseTitle,
                 }}
-                components={{
-                  VersionBadge: ({children}) => {
-                    const BadgeWithTone = getVersionInlineBadge(releaseDoc)
-                    return (
-                      <ReleaseTitle
-                        title={releaseDoc.metadata.title}
-                        fallback={tCore('release.placeholder-untitled-release')}
-                      >
-                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
-                      </ReleaseTitle>
-                    )
-                  },
+                components={{VersionBadge: ReleaseInactiveVersionBadge}}
+                componentProps={{
+                  fallbackTitle: tCore('release.placeholder-untitled-release'),
+                  releaseDoc,
                 }}
               />
             )}

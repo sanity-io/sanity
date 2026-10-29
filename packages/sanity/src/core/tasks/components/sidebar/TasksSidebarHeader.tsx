@@ -2,17 +2,16 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
-  Flex,
-  Text,
 } from '@sanity/ui'
-import {useCallback} from 'react'
+import {use, useCallback} from 'react'
+import {Text, Flex, Box} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useTasksEnabled, useTasksNavigation} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
@@ -27,7 +26,7 @@ interface TasksSidebarHeaderProps {
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {items: allItems} = props
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const {state, setViewMode, handleCloseTasks} = useTasksNavigation()
   const {viewMode, activeTabId} = state
 
@@ -42,22 +41,30 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
-    <Flex justify="space-between" align="center" gap={1}>
-      <Flex align="center" flex={1}>
+    <Flex justifyContent="space-between" alignItems="center" gap={1}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
         {viewMode === 'list' ? (
           <Box padding={2}>
-            <Text size={2} weight="semibold">
+            <Text size={2} weight="semibold" as="div" trim={true}>
               {t('panel.title')}
             </Text>
           </Box>
         ) : (
           <>
-            <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
-              <Text size={1}>{t('panel.title')}</Text>
+            <UIButton mode="bleed" gap={2} padding={2} onClick={handleGoBack}>
+              <Text size={1} as="div" trim={true}>
+                {t('panel.title')}
+              </Text>
             </UIButton>
             <ChevronRightIcon />
             <Box paddingX={2}>
-              <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
+              <Text
+                size={1}
+                weight="semibold"
+                style={{textTransform: 'capitalize'}}
+                as="div"
+                trim={true}
+              >
                 {viewMode === 'create' || viewMode === 'draft'
                   ? t('panel.create.title')
                   : activeTabId}
@@ -75,7 +82,8 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             onClick={handleTaskCreate}
             mode="bleed"
             text={t('buttons.new.text')}
-            disabled={mode === 'upsell'}
+            // Disabled in upsell mode and when the feature check failed (`null`)
+            disabled={mode !== 'default'}
             tooltipProps={
               mode === 'upsell'
                 ? {

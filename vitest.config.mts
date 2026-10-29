@@ -25,10 +25,12 @@ export default defineConfig({
       '**/.github/workflows/test.yml',
     ],
     projects: [
+      'packages/@sanity/access-ui',
       'packages/@sanity/mutator',
       'packages/@sanity/schema',
       'packages/@sanity/types',
       'packages/@sanity/util',
+      'packages/@sanity/validation',
       'packages/@sanity/vision',
       'packages/sanity',
       // NOTE: the browser-mode project (packages/sanity/vitest.browser.config.mts)
@@ -41,18 +43,28 @@ export default defineConfig({
       // The mock-contract tests are the drift detector for the bench mock —
       // they must run on every PR, not only label-gated bench runs
       'perf/bench',
+      'engine-confidence',
       // The dashboard's drift/ack math — pure modules, plain node environment
-      'dev/metrics-studio',
+      'dev/radar',
+      // The style widget's corner math — likewise pure, likewise plain node
+      'dev/test-studio',
       'packages/@repo/debug-proxy',
+      'packages/@repo/oxlint-plugin-i18n',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
+      // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);
+      // Playwright specs stay out.
+      'e2e',
     ],
     coverage: {
       provider: 'v8',
       reporter: ['html', 'json', 'json-summary'],
-      include: ['packages/**/src/**'],
+      // Since Vitest 5 these globs match paths relative to the root(s) of the projects being
+      // run: the repo root for a full run, the project's own root with `--project=<name>`
+      // (e.g. `pnpm vitest run --project=sanity --coverage`), where files are `src/...`.
+      include: ['packages/**/src/**', 'src/**'],
       exclude: [
         // exclude telemetry definitions
         '**/__telemetry__/**',

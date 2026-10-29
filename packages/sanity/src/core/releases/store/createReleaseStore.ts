@@ -20,8 +20,8 @@ import {
 } from 'rxjs'
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview'
-import {listenQuery} from '../../store'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {listenQuery} from '../../store/document/listenQuery'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -63,7 +63,11 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
 const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-const INITIAL_STATE: ReleasesReducerState = {
+/**
+ * What `state$` emits first for a cold store; also the value the hooks render until it emits.
+ * @internal
+ */
+export const INITIAL_RELEASES_STATE: ReleasesReducerState = {
   releases: new Map(),
   state: 'initialising' as const,
 }
@@ -141,8 +145,8 @@ export function createReleaseStore(context: {
 
   const state$ = concat(merge(listFetch$, dispatch$)).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
-    scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
-    startWith(INITIAL_STATE),
+    scan((state, action) => releasesReducer(state, action), INITIAL_RELEASES_STATE),
+    startWith(INITIAL_RELEASES_STATE),
     shareReplay(1),
   )
 

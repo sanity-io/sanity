@@ -1,16 +1,9 @@
-import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {
-  type FormEvent,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {focusFirstDescendant, Spinner} from '@sanity/ui'
+import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
+  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
@@ -18,6 +11,7 @@ import {
   type FormDocumentValue,
   FormRow,
   fromMutationPatches,
+  getTargetScopeId,
   type PatchMsg,
   PresenceOverlay,
   useConditionalToast,
@@ -26,11 +20,13 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {Text, Flex, Box} from 'ui5'
+import {useEffectEvent} from 'use-effect-event'
 
-import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
+import {useDocumentTitleField} from '../useDocumentTitleField'
 import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
@@ -38,10 +34,11 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
-export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {
-  const {hidden, margins} = props
+export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) {
+  const {ref, hidden, margins} = props
 
   const {
     collapsedFieldSets,
@@ -68,11 +65,16 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     hasUpstreamVersion,
     focusPath,
     syncState,
+    targetDocumentState,
   } = useDocumentPane()
-  const {selectedReleaseId, selectedPerspective} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
+  // The scope of the document targeted by the selected perspective (undefined while the target is
+  // resolving or when the draft/published pair applies).
+  const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
+  const titleField = useDocumentTitleField()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -137,7 +139,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType, selectedReleaseId)
+      .documentEvents(documentId, documentType, scopeId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -154,7 +156,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
+  }, [documentId, documentStore, documentType, patchChannel, scopeId])
 
   const hasRev = Boolean(value?._rev)
   const handleInitialValue = useEffectEvent(() => {
@@ -173,6 +175,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
       handleInitialValue()
     }
     // React to changes in hasRev only
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
@@ -185,14 +188,38 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
-      focusFirstDescendant(formRef)
+    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+      return undefined
+    }
+    if (focusFirstDescendant(formRef)) {
+      return undefined
+    }
+    // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
+    // form component loads. Retry when they land, unless focus has moved anywhere since the form
+    // committed: whatever held focus before that (the list item that opened the document) is not
+    // a choice the user made while waiting, but any focus after it is.
+    const {ownerDocument} = formRef
+    let focusMoved = false
+    const handleFocusIn = () => {
+      focusMoved = true
+    }
+    ownerDocument.addEventListener('focusin', handleFocusIn, true)
+    const observer = new MutationObserver(() => {
+      if (focusMoved || focusFirstDescendant(formRef)) {
+        observer.disconnect()
+        ownerDocument.removeEventListener('focusin', handleFocusIn, true)
+      }
+    })
+    observer.observe(formRef, {childList: true, subtree: true})
+    return () => {
+      observer.disconnect()
+      ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 
   useEffect(() => {
     if (focusPath.length !== 0) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setHasFocusedAnyPath(true)
     }
   }, [focusPath])
@@ -224,10 +251,15 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
-              <Flex align="center" direction="column" height="fill" justify="center">
+              <Flex
+                alignItems="center"
+                flexDirection="column"
+                height="100%"
+                justifyContent="center"
+              >
                 <Spinner muted />
                 <Box marginTop={3}>
-                  <Text align="center" muted size={1}>
+                  <Text align="center" muted size={1} as="div" trim={true}>
                     {t('document-view.form-view.loading')}
                   </Text>
                 </Box>
@@ -235,7 +267,9 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
             </Delay>
           ) : formState === null || hidden ? (
             <Box padding={2}>
-              <Text>{t('document-view.form-view.form-hidden')}</Text>
+              <Text as="div" trim={true}>
+                {t('document-view.form-view.form-hidden')}
+              </Text>
             </Box>
           ) : (
             <>
@@ -244,6 +278,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
                   documentId={documentId}
                   schemaType={formState.schemaType}
                   title={title}
+                  onTitleClick={titleField.editable && !isReadOnly ? titleField.focus : undefined}
                 />
               </FormRow>
               <FormBuilder
@@ -269,6 +304,9 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
                 openPath={openPath}
                 perspective={selectedPerspective}
                 hasUpstreamVersion={hasUpstreamVersion}
+                changedFromBaseVariant={formState.changedFromBaseVariant}
+                baseVariantValue={formState.baseVariantValue}
+                hasBaseVariant={formState.hasBaseVariant}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}
@@ -285,7 +323,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
       </PresenceOverlay>
     </FormContainer>
   )
-})
+}
 
 function prepareMutationEvent(event: DocumentMutationEvent): PatchMsg {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)

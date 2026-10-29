@@ -53,7 +53,7 @@ describe('Conditional property resolver', () => {
       {wrapper: TestWrapper},
     )
 
-    expect(callbackFn).toBeCalled()
+    expect(callbackFn).toHaveBeenCalled()
 
     expect(callbackFn.mock.calls).toMatchSnapshot()
   })

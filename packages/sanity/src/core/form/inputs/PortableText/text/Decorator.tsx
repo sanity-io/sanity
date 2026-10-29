@@ -1,13 +1,19 @@
-import {type BlockDecoratorRenderProps} from '@portabletext/editor'
+import {type DecoratorRenderProps, useEditor} from '@portabletext/editor'
+import {getSanitySubSchema} from '@portabletext/sanity-bridge'
+import {type Path} from '@sanity/types'
 import {type Theme} from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type BlockDecoratorProps} from '../../../types'
+import {type BlockDecoratorProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {warnOnce} from '../warnOnce'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Root = styled.span(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
 
   return css`
@@ -19,40 +25,65 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-export function Decorator(props: BlockDecoratorRenderProps) {
-  const {value, focused, selected, children, schemaType} = props
+type DecoratorProps = DecoratorRenderProps & {portableTextPath: Path}
+
+export function Decorator(props: DecoratorProps) {
+  const {decorator, focused, selected, children, path, portableTextPath} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.value)
-  if (!sanitySchemaType) {
-    // This should never happen
-    throw new Error(`Could not find Sanity schema type for decorator: ${schemaType.value}`)
-  }
-  const tag = TEXT_DECORATOR_TAGS[value]
-  const CustomComponent = sanitySchemaType.component
+  const editor = useEditor()
+  // Resolve against the position's sub-schema, not the merged root: a
+  // decorator declared only inside a container (or missing from it) must
+  // resolve the way the annotation render callback already does.
+  const sanitySchemaType = getSanitySubSchema(
+    schemaTypes.portableText,
+    editor.getSnapshot().context.value,
+    path,
+  ).decorators.find((type) => type.value === decorator)
+  const tag = TEXT_DECORATOR_TAGS[decorator]
+  const CustomComponent = sanitySchemaType?.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={value}>
+        <Root as={tag} data-mark={decorator}>
           {defaultComponentProps.children}
         </Root>
       )
     },
-    [tag, value],
+    [tag, decorator],
   )
   return useMemo(() => {
+    if (!sanitySchemaType) {
+      // The value predates a schema change (for example a decorator that was
+      // removed). Render the children without the mark styling instead of
+      // crashing.
+      warnOnce(
+        `Could not find schema type for decorator: ${decorator} at ${pathToString(portableTextPath.concat(path))}`,
+      )
+      return <>{children}</>
+    }
     const componentProps = {
       focused,
       renderDefault: DefaultComponent,
       schemaType: sanitySchemaType,
       selected,
       title: sanitySchemaType.title,
-      value,
+      value: decorator,
     }
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])
+  }, [
+    CustomComponent,
+    DefaultComponent,
+    children,
+    focused,
+    path,
+    portableTextPath,
+    sanitySchemaType,
+    selected,
+    decorator,
+  ])
 }

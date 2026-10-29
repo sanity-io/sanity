@@ -1,7 +1,7 @@
 import {TextInput} from '@sanity/ui'
 import {useEffect, useImperativeHandle, useRef} from 'react'
 
-import {type NumberInputProps} from '../../types'
+import {type NumberInputProps} from '../../types/inputProps'
 import {getValidationRule} from '../../utils/getValidationRule'
 
 function getScrollableParent(node: EventTarget) {
@@ -89,6 +89,7 @@ export function NumberInput(props: NumberInputProps) {
       step="any"
       inputMode={inputMode}
       customValidity={validationError}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       placeholder={schemaType.placeholder}
       pattern={onlyPositiveNumber ? '[d]*' : undefined}
       max={Number.MAX_SAFE_INTEGER}

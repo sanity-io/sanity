@@ -1,5 +1,6 @@
-import {Box, Card} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {lazy, type ReactNode, type RefObject, Suspense} from 'react'
+import {Box} from 'ui5'
 
 import {MenuActionsWrapper} from '../../../core/form/inputs/files/common/MenuActionsWrapper.styled'
 import {OptionsMenuPopover} from '../../../core/form/inputs/files/common/OptionsMenuPopover'
@@ -7,9 +8,7 @@ import {RatioBox} from './styles'
 import {type VideoPlaybackTokens} from './types'
 import {VideoSkeleton} from './VideoSkeleton'
 
-const VideoPlayer = lazy(() =>
-  import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),
-)
+const VideoPlayer = lazy(() => import('./VideoPlayer'))
 
 type Props = {
   customDomain: string

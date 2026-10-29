@@ -1,8 +1,16 @@
 import {type DefaultDocumentNodeResolver} from 'sanity/structure'
 
 import {JSONPreviewDocumentView} from '../components/documentViews/jsonPreview'
+import {VariantVersionsView} from '../components/documentViews/VariantVersionsView'
 
 export const defaultDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}) => {
+  if (schemaType === 'book') {
+    return S.document().views([
+      S.view.form(),
+      S.view.component(VariantVersionsView).id('variant-versions').title('Variants'),
+    ])
+  }
+
   if (schemaType === 'author') {
     return S.document().views([
       S.view.form(),

@@ -1,7 +1,6 @@
-import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card, type CardProps} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type ReactNode,
   useCallback,
@@ -10,10 +9,12 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneDivider} from './PaneDivider'
@@ -42,13 +43,14 @@ const Root = styled(Card)`
  * @hidden
  * @internal
  */
-export const Pane = forwardRef(function Pane(
+export function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'> &
+    RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref: forwardedRef,
     children,
     currentMinWidth: currentMinWidthProp,
     currentMaxWidth: currentMaxWidthProp,
@@ -226,7 +228,7 @@ export const Pane = forwardRef(function Pane(
 
               <BoundaryElementProvider element={rootElement}>
                 {!hidden && (
-                  <Flex direction="column" height="fill">
+                  <Flex flexDirection="column" height="100%">
                     {children}
                   </Flex>
                 )}
@@ -239,4 +241,4 @@ export const Pane = forwardRef(function Pane(
       {divider}
     </>
   )
-})
+}

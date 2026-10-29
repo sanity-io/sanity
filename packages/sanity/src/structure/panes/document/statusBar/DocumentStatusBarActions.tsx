@@ -1,40 +1,39 @@
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventory,
-  DocumentGroupInventoryAction,
-  type DocumentGroupInventoryProps,
-  Hotkeys,
-  isSanityDefinedAction,
-  useClient,
-  useDocumentStore,
-  usePausedScheduledDraft,
-  usePerspective,
-  useSetVariant,
-  useSource,
-} from 'sanity'
+import {LayerProvider} from '@sanity/ui'
+import {lazy, memo, Suspense, use, useEffect, useMemo, useState} from 'react'
+import {Hotkeys, isSanityDefinedAction, usePausedScheduledDraft, usePerspective} from 'sanity'
+import {TasksModePromiseContext} from 'sanity/_singletons'
+import {Text, Flex, VStack} from 'ui5'
 
-import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
-import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'
-import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
-import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
-import {DocTitle} from '../../../components/DocTitle'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
-import {useHistoryRestoreAction} from '../../../documentActions'
-import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
-import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
-import {usePerspectiveNavigator} from '../../../hooks/usePerspectiveNavigator'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {
+  RenderActionCollectionState,
+  type ResolvedAction,
+} from '../../../components/RenderActionCollectionState'
+import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 
-const documentGroupInventoryComponents: DocumentGroupInventoryProps['components'] = {
-  DocTitle,
-  ReferencePreviewLink,
-  VersionsPreviewList,
+// The open-tasks footer button needs the tasks store and navigation internals, which stay
+// private to `src/core/tasks` rather than becoming an entry point other plugins could reach.
+// Loading the module here, instead of through the plugin's `__internal_tasks` config, keeps
+// that access inside the package while still deferring the chunk until tasks are known to be on.
+const loadTasksFooterOpenTasks = () =>
+  // oxlint-disable-next-line boundaries/dependencies -- deliberately bypasses the `sanity` entry: exporting this component would make it an entry point other plugins could reach, which is what the direct import avoids. A proper API for footer actions is the long-term alternative.
+  import('../../../../core/tasks/plugin/TasksFooterOpenTasks')
+
+const TasksFooterOpenTasks = lazy(loadTasksFooterOpenTasks)
+
+function MaybeTasksFooter() {
+  const tasksModePromise = use(TasksModePromiseContext)
+  // `TasksStudioProvider` only provides the promise when the tasks plugin is part of the workspace.
+  if (tasksModePromise === null) return null
+  const tasksMode = use(tasksModePromise)
+  if (tasksMode === null) return null
+  return <TasksFooterOpenTasks />
 }
 
 interface DocumentStatusBarActionsInnerProps {
@@ -46,34 +45,37 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
-  const {__internal_tasks, beta} = useSource()
-  const {displayed, editState, isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive} =
-    useDocumentPane()
-  const {params} = usePaneRouter()
-  const {documentId, documentType} = useDocumentPane()
-  const showingRevision = Boolean(params?.rev)
+  const tasksModePromise = use(TasksModePromiseContext)
 
-  const perspectiveList = useDocumentPerspectiveList()
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const documentStore = useDocumentStore()
-  const referringDocuments$ = useMemo(
-    () => referringDocuments({documentId, versionedClient: client, documentStore}),
-    [documentId, client, documentStore],
-  )
+  // `MaybeTasksFooter` suspends on this promise before it can render the lazy footer, so the
+  // chunk would not start until the feature check settled. The status bar itself commits either
+  // way, and this effect starts the import alongside that check.
+  useEffect(() => {
+    if (tasksModePromise === null) return
+    void loadTasksFooterOpenTasks()
+  }, [tasksModePromise])
+
+  const {editState} = useDocumentPane()
+  const {params} = usePaneRouter()
+
+  const showingRevision = Boolean(params?.rev)
 
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {isPaused} = usePausedScheduledDraft()
-  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex style={{maxWidth: 300}} align="center" gap={3}>
-        {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
+      <Flex style={{maxWidth: 300}} alignItems="center" gap={3}>
+        {firstActionState.title && (
+          <Text size={1} as="div" trim={true}>
+            {firstActionState.title}
+          </Text>
+        )}
         {firstActionState.shortcut && (
           <Hotkeys
             data-testid="document-status-bar-hotkeys"
@@ -106,29 +108,14 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
   return (
-    <Flex align="center" gap={3}>
-      {__internal_tasks && __internal_tasks.footerAction}
-      {hasDocumentGroupInventory && typeof displayed?._id !== 'undefined' && (
-        <DocumentGroupInventoryAction
-          documentId={displayed._id}
-          portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
-          isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
-          setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
-        >
-          <DocumentGroupInventory
-            documentId={displayed._id}
-            documentType={documentType}
-            portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
-            perspectiveList={perspectiveList}
-            referringDocuments$={referringDocuments$}
-            components={documentGroupInventoryComponents}
-          />
-        </DocumentGroupInventoryAction>
-      )}
+    <Flex alignItems="center" gap={3}>
+      <Suspense>
+        <MaybeTasksFooter />
+      </Suspense>
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
-            <Stack>
+            <VStack>
               <Button
                 data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
@@ -138,7 +125,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
-            </Stack>
+            </VStack>
           </Tooltip>
         </LayerProvider>
       )}
@@ -163,24 +150,18 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   const {connectionState, documentId} = useDocumentPane()
 
-  const isEditingVariantDocument = useIsEditingVariantDocument()
-
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
   const states = props.states.filter((state) =>
     state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
 
-  if (states.length === 0) return null
-
   return (
     <DocumentStatusBarActionsInner
       // Use document ID as key to make sure that the actions state is reset when the document changes
       key={documentId}
       disabled={connectionState !== 'connected'}
-      // Temporary: hide actions when editing a variant document until actions are supported on variant documents
-      // See PR https://github.com/sanity-io/sanity/pull/13156
-      states={isEditingVariantDocument ? [] : states}
+      states={states}
     />
   )
 }

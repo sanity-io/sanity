@@ -1,6 +1,6 @@
 import {useLayoutEffect, useRef, useState} from 'react'
 
-import {LoadingBlock} from '../../../../../components/loadingBlock'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {ImageLoader} from './ImageLoader'
 import {ResizeSVG} from './Resize'
 import {ToolSVG} from './ToolSVG'

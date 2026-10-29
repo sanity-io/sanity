@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 
 type HTTPMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH'
@@ -31,7 +32,7 @@ export interface MockClientLog {
 export function createMockSanityClient(
   data: {
     requests?: Record<string, any>
-    requestCallback?: (request: {uri: string; method: HTTPMethod}) =>
+    requestCallback?: (request: {url: string; method: HTTPMethod}) =>
       | {
           statusCode: number
           data: any
@@ -113,17 +114,17 @@ export function createMockSanityClient(
 
     config: () => mockConfig,
 
-    getUrl: (uri: string) => {
-      return BASE_URL + uri
+    getUrl: (url: string) => {
+      return BASE_URL + url
     },
 
     withConfig: () => mockClient,
 
-    request: (opts: {uri: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
+    request: (opts: {url: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
       $log.request.push(opts)
 
       const requestCallbackValue =
-        data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
+        data.requestCallback && data.requestCallback({url: opts.url, method: opts.method})
 
       if (requestCallbackValue) {
         return requestCallbackValue.statusCode >= 400
@@ -131,15 +132,15 @@ export function createMockSanityClient(
           : Promise.resolve(requestCallbackValue)
       }
 
-      if (opts.uri.startsWith(requestUriPrefix)) {
-        const path = opts.uri.slice(requestUriPrefix.length)
+      if (opts.url.startsWith(requestUriPrefix)) {
+        const path = opts.url.slice(requestUriPrefix.length)
 
         if (requests[path]) {
           return Promise.resolve(requests[path])
         }
       }
 
-      return Promise.resolve(requests[opts.uri] || requests['*'] || null)
+      return Promise.resolve(requests[opts.url] || requests['*'] || null)
     },
 
     listen: (query: string, params?: any) => {
@@ -177,7 +178,7 @@ export function createMockSanityClient(
       },
 
       request: (opts: {
-        uri: string
+        url: string
         tag?: string
         withCredentials?: boolean
         method: HTTPMethod
@@ -186,7 +187,7 @@ export function createMockSanityClient(
 
         $log.observable.request.push(opts)
         const requestCallbackValue =
-          data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
+          data.requestCallback && data.requestCallback({url: opts.url, method: opts.method})
 
         if (requestCallbackValue) {
           return requestCallbackValue.statusCode >= 400
@@ -194,15 +195,15 @@ export function createMockSanityClient(
             : of(requestCallbackValue.data)
         }
 
-        if (opts.uri?.startsWith(requestUriPrefix)) {
-          const path = opts.uri.slice(requestUriPrefix.length)
+        if (opts.url?.startsWith(requestUriPrefix)) {
+          const path = opts.url.slice(requestUriPrefix.length)
 
           if (requests[path]) {
             return of(requests[path])
           }
         }
 
-        return of(requests[opts.uri] || requests['*'] || null)
+        return of(requests[opts.url] || requests['*'] || null)
       },
 
       assets: {
@@ -294,4 +295,15 @@ export function createMockSanityClient(
 
     return tx
   }
+}
+
+/**
+ * {@link createMockSanityClient} typed as the `SanityClient` the studio's seams take (auth
+ * stores, providers, `useClient` mocks). Same object, same coverage; tests that need the
+ * request log keep the untyped factory.
+ */
+export function createMockSanityClientAsClient(
+  ...args: Parameters<typeof createMockSanityClient>
+): SanityClient {
+  return createMockSanityClient(...args) as unknown as SanityClient
 }

@@ -3,12 +3,12 @@ import {type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
-import {type OperationArgs} from './operations'
+import {type OperationArgs} from './operations/types'
 import {snapshotPair} from './snapshotPair'
 
 export const operationArgs = memoize(
@@ -29,33 +29,34 @@ export const operationArgs = memoize(
           versions.published.snapshots$,
           ...(typeof versions.version === 'undefined' ? [] : [versions.version.snapshots$]),
         ]).pipe(
-          map(
-            ([draft, published, version]): OperationArgs => ({
-              ...ctx,
-              idPair,
-              typeName,
-              serverActionsEnabled: true,
-              snapshots: {
-                published,
-                draft,
-                ...(version
-                  ? {
-                      version,
-                    }
-                  : {}),
-              },
-              ...(versions.version
+          map(([draft, published, version]): OperationArgs => ({
+            ...ctx,
+            idPair,
+            typeName,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            serverActionsEnabled: true,
+            snapshots: {
+              published,
+              draft,
+              ...(version
                 ? {
-                    version: versions.version,
+                    version,
                   }
                 : {}),
-              draft: versions.draft,
-              published: versions.published,
-            }),
-          ),
+            },
+            ...(versions.version
+              ? {
+                  version: versions.version,
+                }
+              : {}),
+            draft: versions.draft,
+            published: versions.published,
+          })),
         ),
       ),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   },

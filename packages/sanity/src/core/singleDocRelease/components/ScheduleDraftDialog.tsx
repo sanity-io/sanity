@@ -1,52 +1,30 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {useCallback, useMemo, useState} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../hooks/useTimeZone'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
-
-type ScheduleDraftDialogVariant = 'schedule' | 'edit-schedule'
-
-interface ScheduleDraftDialogConfig {
-  headerI18nKey: string
-  descriptionI18nKey: string
-  confirmButtonTextI18nKey: string
-}
-
-const SCHEDULE_DRAFT_DIALOG_CONFIG: Record<ScheduleDraftDialogVariant, ScheduleDraftDialogConfig> =
-  {
-    'schedule': {
-      headerI18nKey: 'schedule-publish-dialog.header',
-      descriptionI18nKey: 'schedule-publish-dialog.description',
-      confirmButtonTextI18nKey: 'schedule-publish-dialog.confirm',
-    },
-    'edit-schedule': {
-      headerI18nKey: 'release.dialog.edit-schedule.header',
-      descriptionI18nKey: 'release.dialog.edit-schedule.body',
-      confirmButtonTextI18nKey: 'release.dialog.edit-schedule.confirm',
-    },
-  }
 
 interface ScheduleDraftDialogProps {
   onClose: () => void
   onSchedule: (publishAt: Date) => void
-  variant: ScheduleDraftDialogVariant
   loading?: boolean
   initialDate?: Date | string
 }
 
 export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.Element {
-  const {onClose, onSchedule, variant, loading = false, initialDate} = props
+  const {onClose, onSchedule, loading = false, initialDate} = props
   const {t} = useTranslation()
 
   const [publishAt, setPublishAt] = useState<Date | undefined>(
@@ -58,9 +36,6 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
   const timeZoneAdjustedPublishAt = publishAt ? utcToCurrentZoneDate(publishAt) : undefined
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
-
-  // Get dialog configuration based on variant
-  const dialogConfig = SCHEDULE_DRAFT_DIALOG_CONFIG[variant]
 
   const isScheduledDateInPast = useCallback(() => {
     if (!publishAt) return true
@@ -97,13 +72,13 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
   return (
     <Dialog
       id="schedule-draft-dialog"
-      header={t(dialogConfig.headerI18nKey)}
+      header={t('schedule-publish-dialog.header')}
       onClose={loading ? undefined : onClose}
       width={0}
       padding={false}
       footer={{
         confirmButton: {
-          text: t(dialogConfig.confirmButtonTextI18nKey),
+          text: t('schedule-publish-dialog.confirm'),
           tone: 'primary',
           onClick: handleConfirmSchedule,
           loading: loading,
@@ -114,14 +89,14 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4} paddingTop={1}>
-        <Text size={1} muted>
-          {t(dialogConfig.descriptionI18nKey)}
+      <Flex gap={4} paddingX={4} paddingBottom={4} paddingTop={1} flexDirection="column">
+        <Text size={1} muted as="div" trim={true}>
+          {t('schedule-publish-dialog.description')}
         </Text>
 
         <label>
-          <Stack space={3}>
-            <Text size={1} weight="semibold">
+          <VStack gap={3}>
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {t('release.schedule-dialog.select-publish-date-label')}
             </Text>
             <DateTimeInput
@@ -139,15 +114,17 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
               showTimeZone
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
-          </Stack>
+          </VStack>
         </label>
 
         {_isScheduledDateInPast && (
           <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('release.schedule-dialog.publish-date-in-past-warning')}
+            </Text>
           </Card>
         )}
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

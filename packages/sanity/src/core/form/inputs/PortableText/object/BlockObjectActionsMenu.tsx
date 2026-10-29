@@ -4,22 +4,16 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
-import {
-  forwardRef,
-  type MouseEvent,
-  type PropsWithChildren,
-  type Ref,
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-} from 'react'
+import {useGlobalKeyDown} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {type MouseEvent, type PropsWithChildren, useCallback, useEffect, useId, useRef} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Flex, Box} from 'ui5'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
   focused: boolean
@@ -43,16 +37,6 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-
-  const referenceLink = useMemo(
-    () =>
-      isReference(value)
-        ? forwardRef(function ReferenceLink(linkProps, ref: Ref<HTMLAnchorElement> | undefined) {
-            return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
-          })
-        : undefined,
-    [value],
-  )
 
   useEffect(() => {
     if (isOpen) {
@@ -81,7 +65,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   )
 
   const handleDelete = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
       event.stopPropagation()
       onRemove()
@@ -91,7 +75,9 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
 
   return (
     <Flex>
-      <Box flex={1}>{children}</Box>
+      <Box flexBasis="0%" flexGrow={1}>
+        {children}
+      </Box>
       <Box>
         <MenuButton
           button={
@@ -109,11 +95,13 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           menu={
             <Menu>
               <>
-                {'_ref' in value && !!value._ref && (
+                {isReference(value) && !!value._ref && (
                   <MenuItem
-                    as={referenceLink}
+                    as={IntentLink}
                     data-as="a"
                     icon={LinkIcon}
+                    intent="edit"
+                    params={{id: value._ref}}
                     text={t('inputs.portable-text.block.open-reference')}
                   />
                 )}

@@ -1,15 +1,30 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Text, Flex, VStack, Icon, Link, Box} from 'ui5'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 
 type Props = {
   value?: CrossDatasetReferenceValue
   onClearValue?: () => void
+}
+
+function DocumentationLink({children}: {children?: React.ReactNode}) {
+  return (
+    <Link
+      href="https://www.sanity.io/docs/cross-dataset-references"
+      openInNewTab
+      underlined={false}
+      style={{color: 'var(--card-link-color)'}}
+    >
+      {children}
+    </Link>
+  )
 }
 
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
@@ -20,17 +35,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
     <Translate
       t={t}
       i18nKey="inputs.reference.cross-dataset.feature-disabled-description"
-      components={{
-        DocumentationLink: ({children}) => (
-          <a
-            href="https://www.sanity.io/docs/cross-dataset-references"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {children}
-          </a>
-        ),
-      }}
+      components={{DocumentationLink}}
     />
   )
 
@@ -44,30 +49,37 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
     >
       <Flex gap={4} marginBottom={hasRef ? 4 : undefined}>
         <Box>
-          <Text size={1}>
-            <WarningOutlineIcon />
-          </Text>
+          <Icon
+            size={1}
+            muted
+            icon={WarningOutlineIcon}
+            tone="caution"
+            style={{
+              margin: '-0.3125rem',
+              marginLeft: '-0.375rem',
+            }}
+          />
         </Box>
-        <Stack space={3}>
-          <Text as="h2" size={1} weight="medium">
+        <VStack gap={3}>
+          <Text as="h2" size={1} weight="medium" trim={true} tone="caution">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
-            <Stack space={3}>
-              <Text as="p" size={1}>
+            <VStack gap={3}>
+              <Text as="p" size={1} trim={true} tone="caution">
                 {description}
               </Text>
-              <Text as="p" size={1}>
+              <Text as="p" size={1} trim={true} tone="caution">
                 {t('inputs.reference.cross-dataset.feature-disabled-actions')}
               </Text>
-            </Stack>
+            </VStack>
           )}
           {!hasRef && (
-            <Text as="p" size={1}>
+            <Text as="p" size={1} trim={true} tone="caution">
               {description}
             </Text>
           )}
-        </Stack>
+        </VStack>
       </Flex>
       {onClearValue && hasRef && (
         <Button

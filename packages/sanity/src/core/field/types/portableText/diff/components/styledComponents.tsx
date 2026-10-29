@@ -1,5 +1,5 @@
-import {Box, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const InlineBox = styled(Box)`
   &:not([hidden]) {
@@ -12,19 +12,13 @@ export const InlineBox = styled(Box)`
   }
 `
 
-export const InlineText = styled(Text)`
-  &:not([hidden]) {
-    display: inline;
-    color: inherit;
-  }
-`
-
 export const PreviewContainer = styled(Box)`
   &:not([hidden]) {
     display: inline-flex;
     align-items: center;
 
-    ${InlineBox} [data-ui="Text"] {
+    ${InlineBox} [data-ui='Text'],
+    ${InlineBox} [data-ui="Icon"] {
       opacity: 0.5;
     }
   }

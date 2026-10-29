@@ -11,7 +11,9 @@ const Root = styled.svg`
   transform: rotate(-90deg);
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const BgCircle = styled.circle(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color} = theme.sanity
 
   return css`
@@ -21,7 +23,9 @@ const BgCircle = styled.circle(({theme}: {theme: Theme}) => {
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const ProgressCircle = styled.circle(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color} = theme.sanity
 
   return css`

@@ -1,9 +1,10 @@
-import {Box, Card, Portal} from '@sanity/ui'
+import {type StackablePerspective} from '@sanity/client'
+import {Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {supportsTouch} from '../../../../util'
+import {supportsTouch} from '../../../../util/supportsTouch'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'
@@ -11,38 +12,30 @@ import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
 import {useSearchState} from './contexts/search/useSearchState'
+import {innerCard, searchDialogBox} from './SearchDialog.css'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
 interface SearchDialogProps {
   onClose: () => void
   onOpen: () => void
   open: boolean
+  previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
-
-const InnerCard = styled(Card)`
-  flex-direction: column;
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: all;
-  position: relative;
-`
-
-const SearchDialogBox = styled(Box)`
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-`
 
 /**
  * @internal
  */
-export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
+export function SearchDialog({
+  onClose,
+  onOpen,
+  open,
+  previewPerspective,
+  previewVariant,
+}: SearchDialogProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const scheme = useColorSchemeValue()
 
@@ -57,8 +50,14 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       {open && (
         <Portal>
           <FocusLock autoFocus={!supportsTouch} returnFocus>
-            <SearchDialogBox>
-              <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
+            <Box className={searchDialogBox}>
+              <Card
+                className={innerCard}
+                display="flex"
+                height="fill"
+                scheme={scheme}
+                tone="default"
+              >
                 <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">
@@ -66,12 +65,16 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                   </Card>
                 )}
                 {hasValidTerms ? (
-                  <SearchResults inputElement={inputElement} />
+                  <SearchResults
+                    inputElement={inputElement}
+                    previewPerspective={previewPerspective}
+                    previewVariant={previewVariant}
+                  />
                 ) : (
                   <RecentSearches inputElement={inputElement} />
                 )}
-              </InnerCard>
-            </SearchDialogBox>
+              </Card>
+            </Box>
           </FocusLock>
         </Portal>
       )}

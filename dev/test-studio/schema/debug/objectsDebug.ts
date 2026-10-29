@@ -1071,6 +1071,7 @@ export const objectsDebug = defineType({
       name: 'crossDatasetReferenceSpecies',
       title: 'Species',
       type: 'crossDatasetReference',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       projectId: 'ppsg7ml5', // important when target project differs
       dataset: 'no-releases', // actual dataset name, not workspace name
       to: [
@@ -1092,6 +1093,7 @@ export const objectsDebug = defineType({
         defineArrayMember({
           name: 'player',
           type: 'crossDatasetReference',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           projectId: 'ppsg7ml5', // important when target project differs
           dataset: 'no-releases', // actual dataset name, not workspace name
           to: [

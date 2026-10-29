@@ -11,8 +11,10 @@ vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
 }))
 
-vi.mock('../../../../../components/requestPermissionDialog', () => ({
+vi.mock('../../../../../components/requestPermissionDialog/RequestPermissionDialog', () => ({
   RequestPermissionDialog: vi.fn(() => null),
+}))
+vi.mock('../../../../../components/requestPermissionDialog/useRoleRequestsStatus', () => ({
   useRoleRequestsStatus: vi.fn(() => ({
     data: 'none',
     loading: false,

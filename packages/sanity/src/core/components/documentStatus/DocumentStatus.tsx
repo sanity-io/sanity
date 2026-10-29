@@ -1,17 +1,15 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Text, Flex} from 'ui5'
 
-import {useRelativeTime} from '../../hooks'
-import {useTranslation} from '../../i18n'
+import {useRelativeTime} from '../../hooks/useRelativeTime'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  ReleaseAvatar,
-  useActiveReleases,
-  type VersionInfoDocumentStub,
-} from '../../releases'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {
@@ -29,7 +27,7 @@ interface DocumentStatusProps {
  *
  * Example: `**Published Oct 16 2023** Edited 8m ago`
  *
- * @internal
+ * @deprecated use DocumentVersionsStatus instead
  */
 export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
   const {data: releases} = useActiveReleases()
@@ -44,10 +42,10 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
 
   return (
     <Flex
-      align={singleLine ? 'center' : 'flex-start'}
-      direction={singleLine ? 'row' : 'column'}
+      alignItems={singleLine ? 'center' : 'flex-start'}
+      flexDirection={singleLine ? 'row' : 'column'}
       gap={3}
-      wrap="nowrap"
+      flexWrap="nowrap"
     >
       {published && (
         <VersionStatus
@@ -117,9 +115,9 @@ const VersionStatus = ({
   })
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex alignItems="center" gap={2}>
       <ReleaseAvatar release={release} padding={0} />
-      <Text size={1}>
+      <Text size={1} as="div" trim={true}>
         {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}

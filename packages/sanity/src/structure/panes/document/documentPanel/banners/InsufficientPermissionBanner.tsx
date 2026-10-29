@@ -1,20 +1,22 @@
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation, useWorkspace} from 'sanity'
+import {Text} from 'ui5'
 
-import {
-  RequestPermissionDialog,
-  useRoleRequestsStatus,
-} from '../../../../components/requestPermissionDialog'
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
+import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
+import {useRoleRequestsStatus} from '../../../../components/requestPermissionDialog/useRoleRequestsStatus'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 interface InsufficientPermissionBannerProps {
   requiredPermission: 'update' | 'create'
+}
+
+function Roles({roleList}: {children?: React.ReactNode; roleList?: React.ReactNode}) {
+  return roleList
 }
 
 export function InsufficientPermissionBanner({
@@ -65,11 +67,12 @@ export function InsufficientPermissionBanner({
     <>
       <Banner
         content={
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="banners.permission-check-banner.missing-permission"
-              components={{Roles: () => <>{roles}</>}}
+              components={{Roles}}
+              componentProps={{roleList: roles}}
               values={{count: roles.length, roles: roleTitles}}
               context={requiredPermission}
             />

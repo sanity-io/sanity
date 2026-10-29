@@ -1,7 +1,8 @@
 import {type ReactNode, useMemo} from 'react'
-import {FeedbackContext, type FeedbackContextValue} from 'sanity/_singletons'
+import {FeedbackContext} from 'sanity/_singletons'
 
 import {useStudioFeedbackTags} from '../../feedback/hooks/useStudioFeedbackTags'
+import {type FeedbackContextValue} from '../../feedback/types'
 import {useTelemetryConsent} from '../telemetry/useTelemetryConsent'
 
 /** @internal */

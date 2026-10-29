@@ -1,8 +1,11 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Text, Box, Flex} from 'ui5'
 
-import {DiffTooltip, FromToArrow, useDiffAnnotationColor, useDocumentChange} from '../../../diff'
+import {useDiffAnnotationColor} from '../../../diff/annotations/hooks'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromToArrow} from '../../../diff/components/FromToArrow'
+import {useDocumentChange} from '../../../diff/hooks/useDocumentChange'
 import {type BooleanDiff, type DiffComponent} from '../../../types'
-import {Checkbox, Switch} from '../preview'
+import {Checkbox, Switch} from '../preview/BooleanPreview'
 
 export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
@@ -13,9 +16,9 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const showToValue = toValue !== undefined && toValue !== null
 
   return (
-    <Flex align="center">
+    <Flex alignItems="center">
       <DiffTooltip diff={diff}>
-        <Flex align="center">
+        <Flex alignItems="center">
           {showFromValue && <Preview checked={fromValue} color={userColor} />}
 
           {showToValue && (
@@ -33,7 +36,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
 
       {showToValue && title && (
         <Box marginLeft={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {title}
           </Text>
         </Box>

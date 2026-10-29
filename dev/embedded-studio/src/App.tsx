@@ -1,6 +1,7 @@
-import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {Button, Card, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {Studio, StudioLayout, StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
+import {Flex} from 'ui5'
 
 import config from '../sanity.config'
 
@@ -9,6 +10,7 @@ export function App() {
   const [variant, setVariant] = useState<'layout' | 'studio'>('layout')
 
   const initialScheme = prefersDark ? 'dark' : 'light'
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const [scheme, setScheme] = useState<StudioThemeColorSchemeKey>(initialScheme)
 
   const _scheme = useMemo(
@@ -16,6 +18,7 @@ export function App() {
     [initialScheme, scheme],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const handleSchemeChange = useCallback((nextScheme: StudioThemeColorSchemeKey) => {
     setScheme(nextScheme)
   }, [])
@@ -29,8 +32,9 @@ export function App() {
   }, [])
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={_scheme} theme={studioTheme}>
-      <Flex direction="column" height="fill" overflow="hidden">
+      <Flex flexDirection="column" height="100%" overflow="hidden">
         <Card>
           <Flex gap={1} padding={2}>
             <Button
@@ -54,7 +58,7 @@ export function App() {
           </Flex>
         </Card>
 
-        <Flex direction="column" flex={1}>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
           {variant === 'layout' && (
             <StudioProvider config={config} onSchemeChange={handleSchemeChange}>
               <StudioLayout />

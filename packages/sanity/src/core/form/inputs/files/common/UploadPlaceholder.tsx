@@ -1,13 +1,14 @@
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {Flex, useElementSize} from '@sanity/ui'
+import {useElementSize} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
-import {useSource} from '../../../../../core/studio'
-import {Button} from '../../../../../ui-components'
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   createDatasetFileAssetSource,
@@ -55,6 +56,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const collapsed = rect?.border && rect.border.width < 440
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const disableNew = schemaType.options?.disableNew === true
 
@@ -159,7 +161,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
 
   if (disableNew) {
     return browse ? (
-      <Flex align="center" justify="flex-end" ref={setRootElement}>
+      <Flex alignItems="center" justifyContent="flex-end" ref={setRootElement}>
         {browse}
       </Flex>
     ) : null
@@ -167,14 +169,14 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
 
   return assetSourcesWithUpload.length === 0 ? null : (
     <Flex
-      align={collapsed ? undefined : 'center'}
-      direction={collapsed ? 'column' : 'row'}
+      alignItems={collapsed ? undefined : 'center'}
+      flexDirection={collapsed ? 'column' : 'row'}
       gap={4}
-      justify="space-between"
+      justifyContent="space-between"
       paddingY={collapsed ? 1 : undefined}
       ref={setRootElement}
     >
-      <Flex flex={1}>
+      <Flex flexBasis="0%" flexGrow={1}>
         <PlaceholderText
           directUploads={directUploads}
           hoveringFiles={hoveringFiles}
@@ -183,7 +185,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
         />
       </Flex>
 
-      <Flex align="center" gap={1} justify="center" wrap="wrap">
+      <Flex alignItems="center" gap={1} justifyContent="center" flexWrap="wrap">
         {uploadButton}
         {browse}
       </Flex>

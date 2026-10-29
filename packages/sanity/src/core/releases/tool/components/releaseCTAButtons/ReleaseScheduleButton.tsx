@@ -2,17 +2,22 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Text, Flex, VStack, Icon, Box} from 'ui5'
 
-import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
+import {type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
@@ -20,13 +25,14 @@ import {TimeZoneButton} from '../../../../components/timeZone/timeZoneButton/Tim
 import TimeZoneButtonElementQuery from '../../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
@@ -87,6 +93,7 @@ export const ReleaseScheduleButton = ({
     return () => {
       isMounted.current = false
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {
@@ -96,39 +103,36 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
-    // this means that it will linely need to change the releaseType to scheduled
-    if (isMenuItem) {
-      const newRelease = {
-        ...release,
-        metadata: {
-          ...release.metadata,
-          releaseType: 'scheduled' as const,
-
-          intendedPublishAt: publishAt.toISOString(),
-        },
-      }
-
-      if (!isEqual(newRelease, release)) {
-        void updateRelease(newRelease)
-      }
-    }
-
     if (isScheduledDateInPast()) {
       // rerender dialog to recalculate isScheduledDateInPast
       setRerenderDialog((cur) => cur + 1)
       return
     }
 
+    // Keep intendedPublishAt in step with the scheduled date, otherwise a later
+    // unschedule reverts to a previously planned date (getPublishDateFromRelease falls back to it).
+    const newRelease = {
+      ...release,
+      metadata: {
+        ...release.metadata,
+        releaseType: 'scheduled' as const,
+        intendedPublishAt: publishAt.toISOString(),
+      },
+    }
+
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
     const run = async () => {
       setStatus('scheduling')
+      if (!isEqual(newRelease, release)) {
+        await updateRelease(newRelease)
+      }
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
       toast.push({
         closable: true,
         status: 'info',
         title: (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="toast.schedule.success"
@@ -146,7 +150,7 @@ export const ReleaseScheduleButton = ({
       toast.push({
         status: 'error',
         title: (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="toast.schedule.error"
@@ -164,7 +168,6 @@ export const ReleaseScheduleButton = ({
     setStatus('idle')
   }, [
     publishAt,
-    isMenuItem,
     isScheduledDateInPast,
     release,
     updateRelease,
@@ -236,16 +239,18 @@ export const ReleaseScheduleButton = ({
           },
         }}
       >
-        <Stack space={3}>
+        <VStack gap={3}>
           {_isScheduledDateInPast && (
             <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
-              <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+              <Text size={1} as="div" trim={true} tone="critical">
+                {tCore('release.schedule-dialog.publish-date-in-past-warning')}
+              </Text>
             </Card>
           )}
-          <Stack space={3}>
-            <Flex align="center" justify="space-between" gap={2}>
+          <VStack gap={3}>
+            <Flex alignItems="center" justifyContent="space-between" gap={2}>
               <label>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {tCore('release.schedule-dialog.select-publish-date-label')}
                 </Text>
               </label>
@@ -282,8 +287,8 @@ export const ReleaseScheduleButton = ({
               isPastDisabled
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
-          </Stack>
-          <Text muted size={1}>
+          </VStack>
+          <Text muted size={1} as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="schedule-dialog.confirm-description"
@@ -293,7 +298,7 @@ export const ReleaseScheduleButton = ({
               }}
             />
           </Text>
-        </Stack>
+        </VStack>
       </Dialog>
     )
   }, [
@@ -357,9 +362,20 @@ export const ReleaseScheduleButton = ({
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {
     return (
-      <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
+      <Text muted size={1} as="div" trim={true}>
+        <Flex alignItems="center" gap={3} padding={1}>
+          <Flex style={{marginInline: '-0.375rem'}}>
+            <Icon
+              size={1}
+              icon={
+                <ToneIcon
+                  icon={ErrorOutlineIcon}
+                  tone={isValidatingDocuments ? 'default' : 'critical'}
+                />
+              }
+            />
+          </Flex>
+
           {tooltipText}
         </Flex>
       </Text>

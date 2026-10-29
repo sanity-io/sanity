@@ -1,7 +1,10 @@
 import {describe, expect, test} from 'vitest'
 
 import {type CommentDocument} from '../../types'
-import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
+import {
+  buildRangeDecorationSelectionsFromComments,
+  COMMENT_INDICATORS,
+} from '../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 
 describe.skip('comments: buildRangeDecorationSelectionsFromComments', () => {
   test('does not expand the range if characters are added immediately after the range ends', () => {

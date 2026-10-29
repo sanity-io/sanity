@@ -1,0 +1,32 @@
+{
+  "name": "engine-confidence",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Engine Confidence Score producer: Stryker mutation run, known-bug catalogue, score document",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "catalogue": "node --conditions=monorepo --import tsx scripts/runCatalogue.ts",
+    "pin": "node --conditions=monorepo --import tsx scripts/pin.ts",
+    "score": "node --conditions=monorepo --import tsx scripts/computeScore.ts",
+    "store": "node --conditions=monorepo --import tsx scripts/store.ts",
+    "stryker": "node --conditions=monorepo --import tsx scripts/runStryker.ts",
+    "unit": "vitest run"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@stryker-mutator/api": "10.0.0",
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/instrumenter": "10.0.0",
+    "@stryker-mutator/vitest-runner": "10.0.0",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

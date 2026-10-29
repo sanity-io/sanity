@@ -1,8 +1,9 @@
-import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
+import {DialogProvider, ThemeColorProvider} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
+import {Text} from 'ui5'
 
-import {Dialog} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../../i18n'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
@@ -64,7 +65,9 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             },
           }}
         >
-          <Text size={1}>{t('discard.text')}</Text>
+          <Text size={1} as="div" trim={true}>
+            {t('discard.text')}
+          </Text>
         </Dialog>
       </DialogProvider>
     </ThemeColorProvider>

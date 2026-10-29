@@ -1,6 +1,6 @@
 {
   "name": "auto-updating-studio",
-  "version": "6.5.0",
+  "version": "6.9.2",
   "private": true,
   "keywords": [
     "sanity"
@@ -17,6 +17,7 @@
   "dependencies": {
     "@sanity/vision": "workspace:*",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }

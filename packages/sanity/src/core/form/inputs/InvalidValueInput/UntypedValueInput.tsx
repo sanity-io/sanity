@@ -1,13 +1,17 @@
-import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
+import {Text, Grid, VStack} from 'ui5'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
-import {useSchema} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, setIfMissing, unset} from '../../patch'
+import {setIfMissing, unset} from '../../patch/patch'
+import {PatchEvent} from '../../patch/PatchEvent'
 
 interface UntypedValueInputProps {
   validTypes: string[]
@@ -92,51 +96,58 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
       }
     >
       <Details open={isDev} title={t('inputs.untyped-value.details.title')}>
-        <Stack space={3}>
-          <Text as="p" muted size={1}>
+        <VStack gap={3}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <Translate t={t} i18nKey="inputs.untyped-value.description" />
           </Text>
 
           {isSingleValidType && !isHoistedType && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate t={t} i18nKey="inputs.untyped-value.details.description" />
             </Text>
           )}
 
           {!isSingleValidType && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               {t('inputs.untyped-value.details.multi-type-description')}
             </Text>
           )}
 
           {!isSingleValidType && (
-            <Stack as="ul" space={2}>
+            <VStack as="ul" gap={2}>
               {validTypes.map((validType) => (
-                <Text key={validType} as="li" muted size={1}>
+                <Text key={validType} as="li" muted size={1} trim={true} tone="caution">
                   <code>{validType}</code>
                 </Text>
               ))}
-            </Stack>
+            </VStack>
           )}
 
-          <Stack space={2}>
-            <Text as="h4" weight="medium" size={1}>
+          <VStack gap={2}>
+            <Text as="h4" weight="medium" size={1} trim={true} tone="caution">
               {t('inputs.untyped-value.details.json-dump-prefix')}
             </Text>
 
             <Card border overflow="auto" padding={2} radius={2} tone="inherit">
               <Code language="json">{JSON.stringify(value, null, 2)}</Code>
             </Card>
-          </Stack>
+          </VStack>
 
-          <Grid columns={[1, 2, 2]} gap={1}>
+          <Grid
+            gridTemplateColumns={[
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+            ]}
+            gap={1}
+          >
             {isSingleValidType && (
               <SetMissingTypeButton onChange={onChange} targetType={validTypes[0]} value={value} />
             )}
 
             <UnsetItemButton onChange={onChange} validTypes={validTypes} value={value} />
           </Grid>
-        </Stack>
+        </VStack>
       </Details>
     </Alert>
   )

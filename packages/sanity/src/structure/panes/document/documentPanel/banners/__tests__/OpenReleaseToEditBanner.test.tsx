@@ -29,6 +29,7 @@ vi.mock('sanity', async () => {
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockuseUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
 
+// @ts-expect-error -- pre-existing, fix later
 const release1: ReleaseDocument = {
   _rev: 'activeRev',
   _id: '_.releases.rActive',
@@ -44,6 +45,7 @@ const release1: ReleaseDocument = {
   },
 }
 
+// @ts-expect-error -- pre-existing, fix later
 const release2: ReleaseDocument = {
   _rev: 'activeRev',
   _id: '_.releases.rActive2',
@@ -68,6 +70,7 @@ describe('OpenReleaseToEditbanner', () => {
   it('does not show when is draft', async () => {
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -85,6 +88,7 @@ describe('OpenReleaseToEditbanner', () => {
   it('does not show when is published', async () => {
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -103,6 +107,7 @@ describe('OpenReleaseToEditbanner', () => {
 
     mockUseActiveReleases.mockReturnValue({
       data: [release1],
+      byId: new Map([[release1._id, release1]]),
       dispatch: vi.fn(),
       loading: false,
     })

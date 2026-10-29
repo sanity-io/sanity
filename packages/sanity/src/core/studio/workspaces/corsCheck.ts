@@ -4,17 +4,27 @@ import type QuickLRU from 'quick-lru'
 import {type CorsProbeOutcome} from './WorkspacesProvider'
 
 /**
+ * How long a passing or inconclusive `/check/cors` answer is reused before
+ * the next failed request probes again.
+ */
+const REUSE_PASSING_OR_INCONCLUSIVE_MS = 10_000
+
+/**
  * Cache of in-flight / recently-settled `/check/cors` probes, keyed by
- * `projectId@apiHost`. Exists only to dedupe the burst of concurrent
- * probes a CORS outage triggers — see {@link checkCors}.
+ * `projectId@apiHost`. Dedupes the burst of concurrent probes a CORS outage
+ * triggers, and limits how often a run of failed requests probes again —
+ * see {@link checkCors}.
  *
  * @internal
  */
 export type CorsCheckCache = QuickLRU<string, Promise<CorsProbeOutcome | null>>
 
+const CORS_PROBE_TAG = 'sanity.studio.cors-probe'
+
 /**
  * Probe `/check/cors` for the current origin, deduping concurrent probes
- * through `cache`. Returns:
+ * through `cache`. A passing or inconclusive answer is reused for 10 seconds,
+ * and a failing one for the cache's max age. Returns:
  *  - a `CorsCheckResult` — the allow/credentials verdict
  *  - `'project-not-found'` — a `404 / SIO-404-PNF` body, i.e. the project
  *    doesn't exist (the CORS endpoint still answers with CORS headers, so
@@ -30,6 +40,7 @@ export function checkCors(
   options: {force?: boolean} = {},
 ): Promise<CorsProbeOutcome | null> {
   const config = client.config()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId, apiHost, url: baseUrl} = config
   if (!projectId || !baseUrl) return Promise.resolve(null)
 
@@ -45,7 +56,8 @@ export function checkCors(
   // the request out of the CORS-safe set and force a preflight OPTIONS
   // — but for this probe we want a simple request that bounces straight
   // off the server's CORS policy without extra round trips.
-  const probeUrl = `${baseUrl.replace(/\/+$/, '')}/check/cors`
+  const searchParams = new URLSearchParams({tag: CORS_PROBE_TAG})
+  const probeUrl = `${baseUrl.replace(/\/+$/, '')}/check/cors?${searchParams}`
   const check = fetch(probeUrl, {method: 'GET', credentials: 'omit'})
     .then(async (response): Promise<CorsProbeOutcome | null> => {
       const body = (await response.json().catch(() => null)) as {
@@ -67,27 +79,27 @@ export function checkCors(
     })
     .catch((): CorsProbeOutcome | null => null)
     .then((result) => {
-      // The cache exists only to dedupe the burst of concurrent probes a
-      // CORS outage triggers (every failing request probes at once). Once a
-      // probe settles, evict it so it can't mask a *later* state change:
-      //  - `null` (inconclusive) — a transient probe failure shouldn't
-      //    poison subsequent legitimate requests.
-      //  - a positive verdict (`allowed && withCredentials`) — CORS can be
-      //    changed in Manage while the studio is open, so a fresh network
-      //    failure must re-probe rather than trust a stale "all good" and
-      //    skip the CORS screen.
-      // Negative verdicts (misconfig) are left to drive the CORS screen and
-      // its own forced re-checks.
+      // Every request that fails with a network error asks for a probe, and
+      // some callers retry without limit (preview fetches), so a tab whose
+      // requests keep failing for a reason other than CORS would otherwise
+      // probe several times a second. Each probe is an API request.
+      //  - `null` (inconclusive) and a positive verdict (`allowed &&
+      //    withCredentials`) are reused for
+      //    `REUSE_PASSING_OR_INCONCLUSIVE_MS` only: a probe failure may be
+      //    transient, and CORS can be changed in Manage while the studio is
+      //    open, so a later failure must re-probe soon.
+      //  - Negative verdicts (misconfig) and `'project-not-found'` keep the
+      //    cache's max age: they drive the CORS / config screens and their
+      //    own forced re-checks.
       const isPositive =
         result !== null &&
         result !== 'project-not-found' &&
         result.allowed &&
         result.withCredentials
-      // Only evict our own entry: a concurrent `force` recheck may have
-      // already replaced it with a newer in-flight probe, and evicting that
-      // would resurrect the dedupe-burst this cache exists to prevent.
+      // Only touch our own entry: a concurrent `force` recheck may have
+      // already replaced it with a newer in-flight probe.
       if ((result === null || isPositive) && cache.get(cacheKey) === check) {
-        cache.delete(cacheKey)
+        cache.set(cacheKey, check, {maxAge: REUSE_PASSING_OR_INCONCLUSIVE_MS})
       }
       return result
     })

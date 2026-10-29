@@ -12,7 +12,9 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext, type View} from './types'
+import {getSingletonDefinition} from './util/getSingletonDefinition'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {serializableMarker} from './util/isSerializable'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {validateId} from './util/validateId'
 import {form} from './views'
@@ -90,6 +92,8 @@ export interface PartialDocumentNode {
  *
  * @public */
 export class DocumentBuilder implements Serializable<DocumentNode> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   /** Component builder option object See {@link PartialDocumentNode} */
   protected spec: PartialDocumentNode
 
@@ -229,6 +233,42 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    */
   getInitialValueTemplate(): Partial<DocumentOptions>['template'] {
     return this.spec.options?.template
+  }
+
+  /**
+   * Configure the document builder to render a singleton.
+   *
+   * Sugar for `.schemaType(<schemaType>).documentId(<documentId>)`, where
+   * both values are read from the singleton definition registered under the
+   * provided singleton definition id in the `document.singletons`
+   * configuration. A `SerializeError` is thrown immediately if no such
+   * definition exists.
+   *
+   * The singleton's generated initial value template (the template tagged
+   * with the singleton definition id) is also selected if it exists, so the
+   * singleton's initial value applies deterministically even when the type
+   * has multiple templates.
+   *
+   * Subsequent `.documentId(...)`, `.schemaType(...)`, or
+   * `.initialValueTemplate(...)` calls override these defaults, preserving
+   * the immutable-builder ergonomics of the rest of `DocumentBuilder`.
+   *
+   * @param singletonId - the singleton definition id
+   * @returns document builder configured for the singleton
+   */
+  singleton(singletonId: string): DocumentBuilder {
+    const definition = getSingletonDefinition(this._context, singletonId)
+    const builder = this.schemaType(definition.schemaType).documentId(definition.documentId)
+
+    const template = this._context.templates.find(
+      (candidate) => candidate.singleton === definition.id,
+    )
+
+    if (typeof template !== 'undefined') {
+      return builder.initialValueTemplate(template.id)
+    }
+
+    return builder
   }
 
   /** Get Document's initial value Template parameters

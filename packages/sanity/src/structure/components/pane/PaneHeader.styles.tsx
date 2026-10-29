@@ -1,5 +1,6 @@
-import {Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
+import {Card, Layer, TextSkeleton, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Text, Flex} from 'ui5'
 
 interface RootProps {
   $border?: boolean
@@ -32,7 +33,9 @@ export const Layout = styled(Flex)`
   }
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fg, bg} = theme.sanity.color.card.enabled
 
   // Disable color updates on hover

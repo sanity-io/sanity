@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {lastValueFrom, of, throwError} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
-import {createSchema} from '../../schema'
+import {createSchema} from '../../schema/createSchema'
 import {getSearchableTypes} from '../common/getSearchableTypes'
 import {createGroq2024Search} from './createGroq2024Search'
 

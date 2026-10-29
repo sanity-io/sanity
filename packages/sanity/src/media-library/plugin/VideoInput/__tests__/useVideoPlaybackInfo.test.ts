@@ -14,7 +14,7 @@ describe('getVideoPlaybackInfoRequest', () => {
         thumbnail: {width: 301, height: 201, fit: 'smartcrop'},
       }),
     ).toEqual({
-      uri: '/media-libraries/library-id/video/video-instance-id/playback-info',
+      url: '/media-libraries/library-id/video/video-instance-id/playback-info',
       tag: 'media-library.video-playback-info',
       query: {
         thumbnailWidth: '301',
@@ -34,7 +34,7 @@ describe('getVideoPlaybackInfoRequest', () => {
         },
       }),
     ).toEqual({
-      uri: '/media-libraries/library-id/video/video-instance-id/playback-info',
+      url: '/media-libraries/library-id/video/video-instance-id/playback-info',
       tag: 'media-library.video-playback-info',
     })
   })

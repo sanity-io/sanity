@@ -82,10 +82,12 @@ test.describe('Custom Release Actions', () => {
     // Open the menu and wait for the built-in archive item to confirm it opened.
     // On the overview page, subscription updates can re-render the table and
     // swallow the click, so retrying with portal diagnostics helps debug failures.
+    // Menus keep their items mounted while closed, so on the overview page every release
+    // contributes an archive item; only the open menu's item is visible.
     await retryingClickUntilVisible(
       page,
       menuButton,
-      page.getByTestId('archive-release-menu-item'),
+      page.getByTestId('archive-release-menu-item').filter({visible: true}),
       {maxRetries: 5},
     )
 

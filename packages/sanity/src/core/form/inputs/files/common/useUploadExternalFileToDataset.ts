@@ -1,11 +1,13 @@
 import {type SanityClient} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {useCallback, useRef} from 'react'
 
-import {useTranslation} from '../../../../i18n'
-import {type FormPatch, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 
 export interface UseUploadExternalFileToDatasetOptions {

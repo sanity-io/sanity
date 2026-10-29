@@ -1,6 +1,9 @@
 import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
 
-import {type NumberInputProps, type PrimitiveInputElementProps} from '../../src/core'
+import {
+  type NumberInputProps,
+  type PrimitiveInputElementProps,
+} from '../../src/core/form/types/inputProps'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 
@@ -23,6 +26,7 @@ export async function renderNumberInput(options: {
   ): NumberInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
+    // @ts-expect-error -- pre-existing, fix later
     return {
       ...restProps,
       changed: false,

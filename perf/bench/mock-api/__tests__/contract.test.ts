@@ -39,6 +39,7 @@ describe('mock Content Lake contract (real @sanity/client)', () => {
       projectId: 'benchexp',
       dataset: 'bench',
       apiHost: `http://127.0.0.1:${PORT}`,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       useProjectHostname: false,
       useCdn: false,
       apiVersion: '2025-02-19',

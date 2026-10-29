@@ -36,14 +36,15 @@ export const mapChangedValue: ApplySourceDocumentsUpdateFunction = (
 /**
  * @internal
  */
-export type QueryCacheKey = `${string}:${string}:${string}`
+export type QueryCacheKey = `${string}:${string}:${string}:${string}`
 /**
  * @internal
  */
 export function getQueryCacheKey(
   perspective: ClientPerspective,
+  variant: string | undefined,
   query: string,
   params: QueryParams,
 ): QueryCacheKey {
-  return `${perspective}:${query}:${JSON.stringify(params)}`
+  return `${perspective}:${variant ?? ''}:${query}:${JSON.stringify(params)}`
 }

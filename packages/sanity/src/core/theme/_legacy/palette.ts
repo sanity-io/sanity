@@ -53,6 +53,7 @@ export interface LegacyPalette {
   }
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function buildLegacyPalette(cssCustomProperties: LegacyThemeProps): LegacyPalette {
   return {
     black: _toHex(cssCustomProperties['--black']),

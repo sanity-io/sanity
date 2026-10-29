@@ -1,10 +1,10 @@
 import {tz as tzHelper, TZDate} from '@date-fns/tz'
 import {type ClientError} from '@sanity/client'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {format as dateFnsFormat} from 'date-fns/format'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
 import {useKeyValueStore} from '../store/datastores'
@@ -194,6 +194,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         localStorage.removeItem(legacyKey)
       }
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [scope.type, keyValueStore, keyStoreId, currentLocale, relativeDate])
 
   const allTimeZones: NormalizedTimeZone[] = useMemo(() => {
@@ -212,7 +213,10 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     [keyValueStore, keyStoreId],
   )
 
-  const storedTimeZone = useObservable(keyValueTimeZone$, null)
+  // Kept synchronous: `getStoredTimeZone` migrates legacy values by writing
+  // back to the key-value store, so a deferred snapshot could trigger stale or
+  // redundant writes after the store has already advanced.
+  const storedTimeZone = useSyncObservable(keyValueTimeZone$, null)
 
   const getStoredTimeZone = useCallback((): NormalizedTimeZone | undefined => {
     if (!storedTimeZone) return undefined
@@ -261,7 +265,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler -- @todo fix later
+    // oxlint-disable-next-line react/no-deriving-state-in-effects, react/set-state-in-effect -- @todo fix later
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 

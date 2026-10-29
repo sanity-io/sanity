@@ -3,16 +3,14 @@ import castArray from 'lodash-es/castArray.js'
 
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
+import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
 import {
-  type ArrayOfObjectsFormNode,
   type ArrayOfObjectsItemMember,
-  type BaseFormNode,
   type FieldMember,
   type FieldSetMember,
-  type ObjectFormNode,
   type ObjectMember,
-} from '../types'
-import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
+} from '../types/members'
+import {type ArrayOfObjectsFormNode, type BaseFormNode, type ObjectFormNode} from '../types/nodes'
 
 /** @internal */
 export interface ExpandPathOperation {
@@ -152,7 +150,11 @@ function getArrayFieldsetAndFieldGroupOperations(
   // start at the root and make sure all groups/paths are expanded/activated along the way
   const [segment, ...rest] = path
   if (!isKeySegment(segment)) {
-    throw new Error('Expected path segment to be an object with a _key property')
+    // the path can come from the URL, so it may not point at an array item
+    console.error(
+      new Error('Expected path segment to be an object with a _key property', {cause: segment}),
+    )
+    return []
   }
 
   const foundMember = state.members.find(

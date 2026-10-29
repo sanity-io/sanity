@@ -1,9 +1,10 @@
-import {Box, Flex, rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {PREVIEW_SIZES} from '../constants'
 
-export const RootFlex = styled(Flex).attrs({align: 'center'})`
+export const RootFlex = styled(Flex).attrs({alignItems: 'center'})`
   height: ${rem(PREVIEW_SIZES.detail.media.height)};
 `
 
@@ -32,6 +33,7 @@ export const DescriptionSkeleton = styled(TextSkeleton).attrs({animated: true, r
 `
 
 export const DescriptionText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fonts} = theme.sanity
   const textSize1 = fonts.text.sizes[1]
   const maxLines = 2

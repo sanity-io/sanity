@@ -1,12 +1,11 @@
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -42,11 +41,11 @@ export interface CommonDateTimeInputProps {
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
 
-export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
-  props: CommonDateTimeInputProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
+export function CommonDateTimeInput(
+  props: CommonDateTimeInputProps & RefAttributes<HTMLInputElement>,
 ) {
   const {
+    ref: forwardedRef,
     id,
     deserialize,
     formatInputValue,
@@ -69,8 +68,9 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   const {t} = useTranslation()
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const handleDatePickerInputChange = useCallback(
@@ -147,4 +147,4 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       customValidity={parseError || validationError}
     />
   )
-})
+}

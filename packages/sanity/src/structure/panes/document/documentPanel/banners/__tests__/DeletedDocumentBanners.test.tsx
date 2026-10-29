@@ -46,6 +46,7 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -74,6 +75,7 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseActiveReleases.mockReturnValue({
       data: [mockReleaseDocument],
+      byId: new Map([[mockReleaseDocument._id, mockReleaseDocument]]),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -93,6 +95,7 @@ describe('DeletedDocumentBanners', () => {
     const bundleBanner = screen.queryByTestId('deleted-release-banner')
     expect(fallbackBanner).toBeNull()
     expect(bundleBanner).toBeInTheDocument()
+    expect(bundleBanner).toHaveTextContent("The 'Untitled release' release has been archived.")
   })
 
   it('shows the fallback document deleted banner when document was not in a release', async () => {
@@ -104,6 +107,7 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseActiveReleases.mockReturnValue({
       data: [mockBundleDocument],
+      byId: new Map([[mockBundleDocument._id, mockBundleDocument]]),
       dispatch: vi.fn(),
       loading: false,
     })

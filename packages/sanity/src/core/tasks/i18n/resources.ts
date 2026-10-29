@@ -1,11 +1,12 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the task tool, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The label for the create task action */
   'actions.create.text': 'Create new task',
@@ -119,6 +120,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.input.target.search.placeholder': 'Select target document',
   /** The placeholder text for the title input */
   'form.input.title.placeholder': 'Task title',
+  /** The status error message presented when creating a task did not complete in time */
+  'form.status.error.creation-failed': 'Failed to create task, please try again',
   /** The status error message presented when the user does not supply a title */
   'form.status.error.title-required': 'Title is required',
   /** The status message upon successful creation of a task */
@@ -155,6 +158,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.navigation.tooltip': 'Open tasks',
   /** Title of the Tasks panel   */
   'panel.title': 'Tasks',
+  /** Shown in the panel when the tasks feature check failed, so tasks cannot be used right now */
+  'panel.unavailable.text': 'Tasks are unavailable right now. Try again later.',
 
   /** Label for the Assigned Tab */
   'tab.assigned.label': 'Assigned',

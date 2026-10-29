@@ -1,5 +1,6 @@
-import {Code, Flex, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {RatioBox} from '../ImageInput/ImagePreview.styled'
 
@@ -14,7 +15,7 @@ export const FlexWrapper = styled(Flex)`
   overflow: clip;
 `
 
-export const LeftSection = styled(Stack)`
+export const LeftSection = styled(VStack)`
   position: relative;
   width: 60%;
 `
@@ -29,5 +30,7 @@ export const CodeWrapper = styled(Code)`
     text-overflow: ellipsis;
     position: relative;
     max-width: 200px;
+    color: var(--card-code-fg-color);
+    background: var(--card-code-bg-color);
   }
 `

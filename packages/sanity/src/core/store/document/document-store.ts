@@ -1,23 +1,24 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
-import {type SourceClientOptions} from '../../config'
-import {type LocaleSource} from '../../i18n'
-import {type DocumentPreviewStore} from '../../preview'
+import {type SourceClientOptions} from '../../config/types'
+import {type LocaleSource} from '../../i18n/types'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type Template} from '../../templates'
+import {type Template} from '../../templates/types'
 import {
-  getDocumentVariantType,
-  getIdPair,
   getPublishedId,
   getVersionFromId,
   isDraftId,
   isVersionId,
-} from '../../util'
+  getIdPair,
+} from '../../util/draftUtils'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type ValidationStatus} from '../../validation'
-import {type HistoryStore} from '../history'
+import {type HistoryStore} from '../history/createHistoryStore'
 import {
   checkoutPair,
   type CommitError,
@@ -34,11 +35,12 @@ import {
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
-import {type OperationsAPI} from './document-pair/operations'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
-import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
+import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
+import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -125,6 +127,16 @@ export interface DocumentStore {
       // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
       // as the document we're validating
       validatePublishedReferences: boolean,
+      options?: {
+        /**
+         * `immediate` validates without waiting for idle callbacks while a user waits on the
+         * result, and speeds up a run already in flight rather than starting it over.
+         * Scheduling is shared per document: it stays `immediate` until the last immediate
+         * subscription unsubscribes, and idle subscribers on the same stream get those results
+         * too.
+         */
+        scheduling?: ValidationScheduling
+      },
     ) => Observable<ValidationStatus>
   }
 }
@@ -251,6 +263,7 @@ export function createDocumentStore({
           ctx,
           getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
           type,
+          target,
         )
       },
       editState(publishedId, type, version) {
@@ -289,11 +302,18 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requirePublishedReferences) {
+      validation(validationTargetId, type, requirePublishedReferences, options) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        return validation(
+          ctx,
+          idPair,
+          type,
+          validationTarget,
+          requirePublishedReferences,
+          options?.scheduling,
+        )
       },
     },
   }

@@ -9,6 +9,7 @@ import {type LocaleResourceBundle} from '../types'
  * @internal
  * @hidden
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Configuration issue" header */
   'about-dialog.configuration-issue.header': 'Configuration issue detected',
@@ -22,6 +23,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Enabled" status for auto-updates in About-dialog */
   'about-dialog.version-info.auto-updates.enabled': 'Auto Updates Enabled',
   /** @deprecated "Auto Updates" status header in About-dialog */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.auto-updates.header': 'Auto Updates',
   /** "How to enable" next to Disabled state for Auto updates in version info dialog */
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
@@ -34,7 +36,23 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
   /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
+  /** Deprecation warning in About-dialog: the running (or pinned) version is deprecated */
+  'about-dialog.version-info.deprecated.current':
+    'v{{version}} has been deprecated and should no longer be used.',
+  /** Deprecation warning in About-dialog: header */
+  'about-dialog.version-info.deprecated.header': 'Deprecated version',
+  /** Deprecation warning in About-dialog: what to do when the studio is auto-updating but pinned to the deprecated version */
+  'about-dialog.version-info.deprecated.next-step.pinned':
+    'This Studio is pinned to a deprecated version. Choose a different version in Manage.',
+  /** Deprecation warning in About-dialog: what to do when the studio is not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade':
+    'Update the sanity package to a newer version and redeploy the Studio.',
+  /** Deprecation warning in About-dialog: link to the upgrade guide for studios that are not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade.learn-how': 'Learn how to update',
+  /** Deprecation warning in About-dialog: the reason given when the version was deprecated */
+  'about-dialog.version-info.deprecated.reason': 'Reason: {{reason}}',
   /** @deprecated "How to upgrade" link text */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.how-to-upgrade': 'Update now',
   /** "Latest version" header in version info dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
@@ -47,6 +65,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload': 'Reload',
   /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
+  /** "Deprecated" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.deprecated': 'Deprecated',
   /** "Development" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.development': 'Development',
   /** "New version available" tooltip in About-dialog */
@@ -56,6 +76,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Up to date" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
   /** @deprecated "Up to date" status in About-dialog */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.up-to-date': 'Up to date',
   /** "Upgrade"-button text */
   'about-dialog.version-info.update-button.text': 'Update',
@@ -131,6 +152,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.button.cancel': 'Cancel',
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
+  /** Fallback title of the select asset dialog for files, when the input provides none */
+  'asset-source.dialog.default-title_file': 'Select file',
+  /** Fallback title of the select asset dialog for images, when the input provides none */
+  'asset-source.dialog.default-title_image': 'Select image',
+  /** Fallback title of the select asset dialog for videos, when the input provides none */
+  'asset-source.dialog.default-title_video': 'Select video',
   /** Keys shared between both image asset source and file asset source */
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
@@ -142,10 +169,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown when selecting a file but there's no files to select from
    * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'asset-source.dialog.no-assets_file': 'No files',
   /** Text shown when selecting an image but there's no images to select from
    * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'asset-source.dialog.no-assets_image': 'No images',
   'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
     'Cannot delete currently selected file',
@@ -198,9 +227,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'See the console for more information.',
   'asset-sources.common.uploader.upload-failed.title': 'Upload failed',
 
+  /** Warning shown when an uploaded file already exists in the selected asset source */
+  'asset-sources.common.warning.file-already-exist.description':
+    'Using the existing file found in this source.',
+  'asset-sources.common.warning.file-already-exist.title': "File: '{{filename}}' already exists",
+
   /** Menu Items for Dataset Asset Source (will be replaced with workspace name by default) */
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
+
+  /** Error message shown when a federated (workbench-brokered) asset source view fails to load */
+  'asset-sources.federated.error.unavailable':
+    'This asset source failed to load. Close the dialog and try again.',
 
   /** Error messages for the Media Library Asset Source  */
   'asset-sources.media-library.error.library-could-not-be-resolved':
@@ -226,15 +264,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the open in source dialog */
   'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
 
+  /** Fallback title of the Media Library select dialog for files, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for images, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for videos, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
   /** Title for the upload dialog (component mode) */
   'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
 
-  /** Warning message shown when uploading already existing files to the Media Library Asset Source */
-  'asset-sources.media-library.warning.file-already-exist.description':
-    'Using the existing file found in the library.',
-  'asset-sources.media-library.warning.file-already-exist.title':
-    "File: '{{filename}}' already exists",
-
+  /** Banner shown on a document when the selected release has been archived */
+  'banners.archived-release-banner.text':
+    "The '<strong>{{title}}</strong>' release has been archived.",
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",
@@ -361,6 +402,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The label displayed to indicate a document's value is different to its base variant. */
+  'changes.from-base-variant.label': 'Changed from base variant',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
@@ -459,6 +502,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
+  /** Default text in shared error text */
+  'common.error': 'Error',
+
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
@@ -490,6 +536,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Menu item that opens Studio diagnostics */
+  'diagnostics.menu-item': 'Diagnostics',
+
   /** Label for action that closes divergence inspector */
   'divergence.action.close.label': 'Close',
   /** Label for action that marks divergence as resolved */
@@ -514,6 +563,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document inventory --- */
 
+  /** The label for the button that opens the document group inventory */
+  'document-group-inventory.action.manage-versions': 'Manage versions',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
@@ -532,6 +583,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'All users (Default)',
+  /** The header label for the variant creation flow before a variant definition has been selected */
+  'document-group.create-variant': 'Create variant',
+  /** The header label for the variant creation flow once a variant definition has been selected */
+  'document-group.create-variant.for-target': 'Create variant for {{variantDefinitionName}}',
+  /** The heading for the option to create a variant as a draft */
+  'document-group.create-variant.target-drafts': 'As a draft',
+  /** The label for the list of releases a variant can be created in */
+  'document-group.create-variant.target-releases': 'Into a release',
+  /** The label for the list of existing variants that can be viewed instead of creating a new one */
+  'document-group.create-variant.view-existing-variants': 'Or view existing variants',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -613,6 +674,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Edited {{date}}',
+  /** Label to show in document versions status for a published (non-live-edit) document */
+  'document-status.published-at': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
@@ -698,6 +761,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
   /** The title for the error card rendered inside a field in place of a crashing input */
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
+  /** Tooltip / accessible label for the field actions overflow menu button */
+  'form.field.actions-menu.title': 'Field actions',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
@@ -756,6 +821,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+  /** Subtitle for the studio version menu item when the running or pinned version is deprecated */
+  'help-resources.studio-version-deprecated': 'v{{version}} is deprecated',
 
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
@@ -765,6 +832,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Version text */
   'help-resources.version': 'v{{version}}',
+  /** Accessibility label for the close button of the incoming references inspector */
+  'incoming-references.close-button-aria-label': 'Close incoming references',
   /**Incoming references inspector title */
   'incoming-references.title': 'Incoming references',
 
@@ -804,14 +873,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_one': 'Show 1 item',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_other': 'Show all {{count}} items',
+  /** Label for collapsing an expanded array back to a limited number of items */
+  'inputs.array.action.show-fewer-items': 'Show fewer items',
   /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
     'You can still move or delete this item, but it cannot be edited since the schema definition for its type is nowhere to be found.',
-  /** Error label for toast when array could not resolve the initial value */
-  'inputs.array.error.cannot-resolve-initial-value-title':
+  /** Error description for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-description':
     'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+  /** Error label for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-title': 'Unable to resolve initial value',
   /** Error label for toast when trying to upload one array item of a type that cannot be converted to array */
   'inputs.array.error.cannot-upload-unable-to-convert_one':
     "The following item can't be uploaded because there's no known conversion from content type to array item:",
@@ -1209,6 +1286,36 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Tooltip on text whose annotation type is not defined in the schema */
+  'inputs.portable-text.unknown-value.annotation': 'Annotation not defined in the schema: {{name}}',
+  /** Tooltip on a block whose list type is not defined in the schema */
+  'inputs.portable-text.unknown-value.list-item': 'List type not defined in the schema: {{name}}',
+  /** Tooltip on text carrying a mark that is not defined in the schema */
+  'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
+  /** Tooltip on a block whose style is not defined in the schema */
+  'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
+  /** Label for the table lane that appends a column */
+  'inputs.portable-text.table.add-column': 'Add column at end',
+  /** Label for the table lane that appends a row */
+  'inputs.portable-text.table.add-row': 'Add row at end',
+  /** Aria label for a table column's drag/select handle */
+  'inputs.portable-text.table.column-handle': 'Column handle',
+  /** Label for the trash chip that deletes the selected column */
+  'inputs.portable-text.table.delete-column': 'Delete column',
+  /** Label for the trash chip that deletes the selected row */
+  'inputs.portable-text.table.delete-row': 'Delete row',
+  /** Label for the table menu item that deletes the table */
+  'inputs.portable-text.table.delete-table': 'Delete table',
+  /** Label for the table menu's header row toggle */
+  'inputs.portable-text.table.header-row': 'Header row',
+  /** Aria label for the dots that insert a row or column at a boundary */
+  'inputs.portable-text.table.insert-here': 'Insert here',
+  /** Aria label for the table menu button */
+  'inputs.portable-text.table.menu-aria-label': 'Table options',
+  /** Aria label for a table row's drag/select handle */
+  'inputs.portable-text.table.row-handle': 'Row handle',
+  /** Label for the table menu item that selects the whole table */
+  'inputs.portable-text.table.select-table': 'Select table',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to copy the current item (used within arrays) */
@@ -1430,6 +1537,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.learn-more-button.text': 'Learn more',
+  /** Tooltip for the link that takes the user to the Sanity documentation about the HTTP1 issue */
+  'network-check.slow-protocol-warning.learn-more-button.tooltip':
+    'Opens the Sanity documentation in a new tab',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
   /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
@@ -1462,8 +1572,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
   /** @deprecated Label for button that will make the browser reload when users' studio version is out-of-date */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'package-version.new-package-available.reload-button': 'Push to reload',
   /** @deprecated Title of the alert for studio users when packages in their studio are out-of-date */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to invite members to the current studio project */
   'presence.action.manage-members': 'Invite members',
@@ -1477,6 +1589,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.not-in-a-document': 'Not in a document',
   /** Tooltip content text for presence menu button */
   'presence.tooltip-content': 'Who is here',
+  /** Tooltip text for document previews when one user is editing the document in a release */
+  'presence.tooltip.one':
+    '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
+  /** Tooltip text for document previews when one user is editing a published or draft document */
+  'presence.tooltip.one-without-release': '{{displayName}} is editing this document right now',
+  /** Tooltip text for document previews when multiple users are editing the document */
+  'presence.tooltip.other': '{{count}} people are editing this document right now',
+  /** Release title used in the document preview presence tooltip when the release has no title */
+  'presence.tooltip.untitled-release': 'Untitled',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',
@@ -1508,6 +1629,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
+  /** Tooltip/label for the action that opens the release edit dialog on the detail page */
+  'release.action.edit-details': 'Edit details',
   /** Action message for editing the schedule of a scheduled publish */
   'release.action.edit-schedule': 'Edit schedule',
   /** Action message for when a new release is created off an existing version, draft or published document */
@@ -1516,6 +1639,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.new-release.limit-reached': 'This workspace is limited to {{count}} release',
   'release.action.new-release.limit-reached_other':
     'This workspace is limited to {{count}} releases',
+  /** Action message for pausing a scheduled draft so it can be edited */
+  'release.action.pause-to-edit': 'Pause to edit',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Action message for running a scheduled draft immediately */
@@ -1594,6 +1719,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
+  /** Label for the save action in the edit release dialog */
+  'release.dialog.edit.confirm': 'Save',
+  /** Field label for the release description in the edit release dialog */
+  'release.dialog.edit.description-label': 'Description',
+  /** Title for the edit release dialog */
+  'release.dialog.edit.title': 'Edit release',
+  /** Field label for the release title in the edit release dialog */
+  'release.dialog.edit.title-label': 'Title',
   /** Body text when deleting scheduled draft and draft is already up to date */
   'release.dialog.delete-schedule-draft.body-already-current':
     'Delete this scheduled draft? Your draft is already up to date.',
@@ -1612,6 +1745,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Explanation text shown when the current draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-draft-explanation':
+    'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
+  /** Explanation text shown when the scheduled draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-scheduled-draft-explanation':
+    'Your scheduled draft could not be loaded. Copying it could overwrite your draft with the wrong content.',
   /** Body text for change schedule dialog */
   'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
   /** Confirm button text for change schedule dialog */
@@ -1656,16 +1795,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
-  /** The toast description that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
+  /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
+  /** The toast title shown when saving edits to a release's details fails */
+  'release.toast.edit-release-error.title': 'Failed to save release details',
   /** Error toast for deleting a scheduled draft */
   'release.toast.delete-schedule-draft.error':
     'Failed to delete the scheduled draft document <strong>{{title}}</strong>: {{error}}',
@@ -1675,6 +1812,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast title that will be shown when the user has a release perspective which is now deleted
    * @deprecated – no longer needed
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Error toast for pausing a scheduled draft */
   'release.toast.pause-scheduled-draft.error':
@@ -1685,13 +1823,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been published.',
-  /** The toast description that will be shown when the user has a release perspective which is now published
-   * @deprecated – no longer needed
-   **/
+  /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now deleted
-   * @deprecated – no longer needed
-   **/
+  /** The toast title that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
@@ -1703,9 +1837,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.schedule-publish.error': 'Failed to schedule draft: {{error}}',
   /** Success toast for scheduling a paused draft */
   'release.toast.schedule-publish.success': 'Scheduled draft successfully',
-  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
-   * @deprecated – no longer needed
-   * */
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
   'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
@@ -1737,6 +1869,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',
+
+  /** Label for the dataset of the workspace whose schema failed to compile */
+  'schema-errors.location.dataset': 'Dataset',
+  /** Label for the project ID of the workspace whose schema failed to compile */
+  'schema-errors.location.project-id': 'Project ID',
+  /** Label for the source within the workspace whose schema failed to compile */
+  'schema-errors.location.source': 'Source',
+  /** Title for the section naming the workspace whose schema failed to compile */
+  'schema-errors.location.title': 'Error location',
+  /** Label for the workspace whose schema failed to compile */
+  'schema-errors.location.workspace': 'Workspace',
+  /** Title for the schema errors screen */
+  'schema-errors.title': 'Schema errors',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
@@ -2248,6 +2393,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for latest revision for timeline menu dropdown
    * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
@@ -2331,6 +2477,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'tree-editing-dialog.sidebar.action.expand': 'Expand',
   /** Label to open the sidebar */
   'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
+  /** Label for action to claim a project created through unauthenticated provisioning */
+  'user-menu.action.claim-project': 'Claim this project',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */

@@ -5,9 +5,6 @@ import {parseISO} from 'date-fns/parseISO'
 
 import formatMomentLike from './datetime-formatter/formatter'
 import {momentToDateFnsFormat} from './datetime-formatter/momentToDateFnsFormat'
-import sanitizeLocale from './datetime-formatter/sanitizeLocale'
-
-export {sanitizeLocale}
 
 export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 export const DEFAULT_TIME_FORMAT = 'HH:mm'

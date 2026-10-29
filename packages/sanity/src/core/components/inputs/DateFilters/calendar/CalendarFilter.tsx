@@ -1,21 +1,20 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Flex, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {setHours} from 'date-fns/setHours'
 import {setMinutes} from 'date-fns/setMinutes'
 import {
   type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -50,11 +49,9 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const CalendarFilter = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref: forwardedRef,
     focusedDate: providedFocusedDate,
     onFocusedDateChange: handleOnFocusedDateChange,
     onSelect,
@@ -63,7 +60,7 @@ export const CalendarFilter = forwardRef(function Calendar(
     timeZoneScope,
     ...restProps
   } = props
-  const [_focusedDate, _setFocusedDate] = useState<Date>(new Date())
+  const [_focusedDate, _setFocusedDate] = useState<Date>(() => new Date())
   const {t: tCore} = useTranslation()
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
 
@@ -156,6 +153,7 @@ export const CalendarFilter = forwardRef(function Calendar(
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   // Select AND focus current date when 'today' is pressed
@@ -173,7 +171,7 @@ export const CalendarFilter = forwardRef(function Calendar(
     <Box data-ui="Calendar" {...restProps} ref={ref}>
       {/* Month + Year header */}
       <Flex
-        align="center"
+        alignItems="center"
         paddingLeft={4}
         style={{
           borderBottom: '1px solid var(--card-border-color)',
@@ -182,8 +180,8 @@ export const CalendarFilter = forwardRef(function Calendar(
           top: 0,
         }}
       >
-        <Flex align="center" flex={1} justify="space-between">
-          <Text weight="medium" size={1}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
+          <Text weight="medium" size={1} as="div" trim={true}>
             {DEFAULT_MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
           </Text>
           <Flex paddingRight={3} gap={2}>
@@ -232,7 +230,7 @@ export const CalendarFilter = forwardRef(function Calendar(
       </Box>
 
       {/* Today button */}
-      <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
+      <Box flexBasis="0%" flexGrow={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <Button
           disabled={restProps.disabled}
           mode="bleed"
@@ -244,4 +242,4 @@ export const CalendarFilter = forwardRef(function Calendar(
       </Box>
     </Box>
   )
-})
+}

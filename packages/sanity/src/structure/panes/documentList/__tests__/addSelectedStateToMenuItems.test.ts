@@ -170,13 +170,22 @@ describe('appendRestoreDefaultItems', () => {
     restoreLayoutDisabledReason: 'Already using the default view',
   }
 
+  // Restore items are only attached to groups that already have items.
+  const baseMenuItems: PaneMenuItem[] = [
+    {id: 'sort', title: 'Sort', group: 'sorting', action: 'setSortOrder'},
+    {id: 'layout', title: 'Layout', group: 'layout', action: 'setLayout'},
+  ]
+
+  const restoreItemsOf = (items: PaneMenuItem[]) =>
+    items.filter(
+      (item) => item.action === 'restoreDefaultSortOrder' || item.action === 'restoreDefaultLayout',
+    )
+
   test('appends a restore-default item to the sorting and layout groups', () => {
-    const existing: PaneMenuItem[] = [{id: 'existing', title: 'Existing', group: 'sorting'}]
+    const result = appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions})
 
-    const result = appendRestoreDefaultItems({menuItems: existing, ...restoreOptions})
-
-    expect(result).toHaveLength(3)
-    expect(result[0]).toBe(existing[0])
+    expect(result).toHaveLength(4)
+    expect(result[0]).toBe(baseMenuItems[0])
 
     const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
     const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
@@ -186,31 +195,42 @@ describe('appendRestoreDefaultItems', () => {
   })
 
   test('hides the selection indicator on both restore items', () => {
-    const result = appendRestoreDefaultItems(restoreOptions)
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
 
+    expect(result).toHaveLength(2)
     expect(result.every((item) => item.params?.hideSelectionIndicator === true)).toBe(true)
   })
 
   test('restore items have no id so they do not trigger toggle-state tracking', () => {
-    const result = appendRestoreDefaultItems(restoreOptions)
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
 
     expect(result.every((item) => item.id === undefined)).toBe(true)
   })
 
   test('restore items carry no icon', () => {
-    const result = appendRestoreDefaultItems(restoreOptions)
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
 
     expect(result.every((item) => item.icon === undefined)).toBe(true)
   })
 
-  test('handles an undefined menu item list', () => {
+  test('appends nothing when there are no groups to attach to', () => {
     const result = appendRestoreDefaultItems(restoreOptions)
 
-    expect(result).toHaveLength(2)
+    expect(result).toHaveLength(0)
   })
 
   test('disables only the sort restore item when sort is already default', () => {
-    const result = appendRestoreDefaultItems({...restoreOptions, isSortDefault: true})
+    const result = appendRestoreDefaultItems({
+      menuItems: baseMenuItems,
+      ...restoreOptions,
+      isSortDefault: true,
+    })
 
     const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
     const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
@@ -220,7 +240,11 @@ describe('appendRestoreDefaultItems', () => {
   })
 
   test('disables only the layout restore item when layout is already default', () => {
-    const result = appendRestoreDefaultItems({...restoreOptions, isLayoutDefault: true})
+    const result = appendRestoreDefaultItems({
+      menuItems: baseMenuItems,
+      ...restoreOptions,
+      isLayoutDefault: true,
+    })
 
     const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
     const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
@@ -230,7 +254,9 @@ describe('appendRestoreDefaultItems', () => {
   })
 
   test('leaves both restore items enabled when neither setting is default', () => {
-    const result = appendRestoreDefaultItems(restoreOptions)
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
 
     expect(result.every((item) => item.disabled === undefined)).toBe(true)
   })
