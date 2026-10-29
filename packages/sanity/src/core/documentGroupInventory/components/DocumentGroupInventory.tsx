@@ -60,7 +60,6 @@ import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
-import {DocumentGroupFilter} from './DocumentGroupFilter'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
@@ -355,7 +354,7 @@ export function DocumentGroupInventory(
   useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
-  const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
+
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
@@ -383,12 +382,7 @@ export function DocumentGroupInventory(
         )}
         {!isVariantCreationActive && (
           <>
-            <Header>
-              <DocumentGroupFilter
-                readOnly={isLocked}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
-              />
-            </Header>
+            <Header></Header>
             <Body>
               {schema && (
                 <Select
