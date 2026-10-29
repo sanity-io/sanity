@@ -2,6 +2,8 @@ import {css, styled} from 'styled-components'
 
 export const Body = styled.div(() => {
   return css`
+    flex: 1 1 auto;
+    min-block-size: 0;
     overflow-x: clip;
     overflow-y: auto;
     overscroll-behavior: contain;

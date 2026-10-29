@@ -1,4 +1,3 @@
-import {TrashIcon} from '@sanity/icons/Trash'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -20,7 +19,6 @@ import {
 } from 'rxjs'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
-import {Button} from '../../../ui-components/button/Button'
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
 import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
@@ -60,7 +58,6 @@ import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
-import {Footer} from './Footer'
 import {InventoryHeader} from './InventoryHeader'
 import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
@@ -352,8 +349,6 @@ export function DocumentGroupInventory(
 
   useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
-  const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
-
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
@@ -365,10 +360,6 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
-  const canRequestDeletion = useSelector(deletionRef, (machine) =>
-    machine.can({type: 'delete.request'}),
-  )
-
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
@@ -377,7 +368,13 @@ export function DocumentGroupInventory(
         )}
         {!isVariantCreationActive && (
           <>
-            <InventoryHeader variantCreationRef={variantCreationRef} />
+            {!readOnly && (
+              <InventoryHeader
+                selectionRef={selectionRef}
+                deletionRef={deletionRef}
+                variantCreationRef={variantCreationRef}
+              />
+            )}
             <Body>
               {schema && (
                 <Select
@@ -391,18 +388,6 @@ export function DocumentGroupInventory(
                 />
               )}
             </Body>
-            {!readOnly && (
-              <Footer>
-                {canRequestDeletion && (
-                  <Button
-                    text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-                    onClick={() => deletionRef.send({type: 'delete.request'})}
-                    tone="critical"
-                    icon={TrashIcon}
-                  />
-                )}
-              </Footer>
-            )}
           </>
         )}
       </Container>

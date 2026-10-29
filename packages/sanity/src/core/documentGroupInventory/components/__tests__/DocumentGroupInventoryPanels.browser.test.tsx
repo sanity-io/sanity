@@ -368,18 +368,23 @@ describe('ConfirmDeleteDialog', () => {
   })
 })
 
+function InventoryHeaderHarness(refs: ReturnType<typeof startHarness>) {
+  return (
+    <PanelFrame>
+      <InventoryHeader {...refs} />
+    </PanelFrame>
+  )
+}
+
 describe('InventoryHeader', () => {
   it('starts variant creation from the header', async () => {
     // Starting creation empties the header, so archive it before the click.
     configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
-    const {variantCreationRef} = startHarness()
+    const refs = startHarness()
+    const {variantCreationRef} = refs
 
-    void render(
-      <PanelFrame>
-        <InventoryHeader variantCreationRef={variantCreationRef} />
-      </PanelFrame>,
-    )
+    void render(<InventoryHeaderHarness {...refs} />)
 
     const $createVariant = page.getByRole('button', {name: 'Create version'})
     await expect.element($createVariant).toBeVisible()
@@ -389,5 +394,27 @@ describe('InventoryHeader', () => {
     await userEvent.click($createVariant)
     expect(variantCreationRef.getSnapshot().matches('active')).toBe(true)
     await expect.element($createVariant).not.toBeInTheDocument()
+  })
+
+  it('offers deletion from the header once a version is selected', async () => {
+    configure({disableAutoSnapshot: true})
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+    const {selectionRef, deletionRef} = refs
+
+    void render(<InventoryHeaderHarness {...refs} />)
+
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: /^Delete/})).not.toBeInTheDocument()
+
+    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+
+    const $delete = page.getByRole('button', {name: 'Delete (1)'})
+    await expect.element($delete).toBeVisible()
+    await settleChromaticEndState()
+    await takeSnapshot('one-selected')
+
+    await userEvent.click($delete)
+    expect(deletionRef.getSnapshot().matches('active')).toBe(true)
   })
 })
