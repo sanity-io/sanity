@@ -86,7 +86,18 @@ export function VideoThumbnailContent({state}: {state: VideoPlaybackInfoLoadable
 }
 
 export function VideoThumbnail({value, dimensions}: VideoThumbnailProps) {
-  const params = useMemo(() => getVideoThumbnailParams(value, dimensions), [dimensions, value])
+  // Rebuild from asset ref + size primitives so preview prepare() object churn
+  // does not recreate params and refetch playback-info.
+  const assetRef = value.asset._ref
+  const {width, height, dpr} = dimensions
+  const params = useMemo(
+    () =>
+      getVideoThumbnailParams(
+        {_type: 'sanity.video', asset: {_type: 'globalDocumentReference', _ref: assetRef}},
+        {width, height, dpr},
+      ),
+    [assetRef, width, height, dpr],
+  )
   const playbackInfo = useVideoPlaybackInfo(params)
 
   return <VideoThumbnailContent state={playbackInfo} />
