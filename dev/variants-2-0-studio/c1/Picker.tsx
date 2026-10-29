@@ -15,6 +15,7 @@ import {
 // Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {useBaseNames} from '../c15/baseName'
 import {DimensionIcon} from './dimensionIcons'
 import {type DimensionSpec, matches, type Chosen, valueTitle} from './model'
 import {MenuPopover} from './primitives'
@@ -52,10 +53,8 @@ export const SAVE_AS_COMPOSITE_REASON =
 
 const ITEM = '[data-ui="MenuItem"]'
 
-/** The value with no variant: what the navbar button says when it is chosen (Faheem, 22 Oct: the button names the value, not the dimension). */
-export const DEFAULT_TITLE = 'All users'
-/** The row with no variant: the base document, worded as the T3 versions popover words it. Only the menu row says "(Default)". */
-export const DEFAULT_LABEL = `${DEFAULT_TITLE} (Default)`
+// The value with no variant (the navbar button) and the menu row for the base document are C15's pill and menu names (useBaseNames):
+// "All users" and "All users (Default)" as today (option A).
 
 /**
  * The panel's keyboard model. The rows are `tabindex=-1` items of real Menus, so Tab would leave
@@ -128,6 +127,7 @@ export function PickerContent(props: {
   const {dimensions, chosen, onPick, idOf} = props
   const form = panelForm(dimensions.length)
   const [query, setQuery] = useState('')
+  const baseLabel = useBaseNames().menu
   const [active, setActive] = useState(
     props.start ?? dimensions.find((d) => !chosen[d.name])?.name ?? dimensions[0]?.name,
   )
@@ -233,13 +233,13 @@ export function PickerContent(props: {
       padding={0}
       style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
     >
-      {withDefault && matches(DEFAULT_LABEL, query) ? (
+      {withDefault && matches(baseLabel, query) ? (
         <MenuItem
           data-testid={`picker-default-${d.name}`}
           onClick={() => onPick(d.name, null)}
           pressed={!chosen[d.name]}
           selected={!chosen[d.name]}
-          text={DEFAULT_LABEL}
+          text={baseLabel}
         />
       ) : null}
       {values(d).map(({key, title, reason}) => (

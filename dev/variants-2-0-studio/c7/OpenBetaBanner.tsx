@@ -21,6 +21,7 @@ import {useDocumentPane} from 'sanity/structure'
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
+import {useBaseNames} from '../c15/baseName'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
 import {useBannerCase} from './useBannerCase'
 
@@ -108,6 +109,7 @@ function ReleaseChip({release, title}: {release: ReleaseDocument | undefined; ti
 export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {setChosen} = usePerspectiveState()
   const setVariant = useSetVariant()
+  const baseBack = useBaseNames().pill
   const pane = useDocumentPane()
   // Drafts exist unless the document type is live edit or the workspace has the draft model off (the pills' rule for the Draft pill).
   const hasDrafts = useWorkspace().document.drafts.enabled && !pane.schemaType?.liveEdit
@@ -133,7 +135,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           inventoryOpen
             ? undefined
             : {
-                text: 'Back to All users',
+                text: `Back to ${baseBack}`,
                 mode: 'default',
                 onClick: () => {
                   setVariant({variantId: undefined as never})

@@ -7,6 +7,7 @@ import {VARIANT_DETAIL_HEADER} from '../c11/component'
 import {VERSION_SORTING} from '../c12/component'
 import {ADD_VARIANT_ENTRY_POINTS} from '../c13/component'
 import {MANAGE_VERSIONS_PLACEMENT} from '../c14/component'
+import {BASE_DOCUMENT_NAME} from '../c15/component'
 import {defineDesignOptions, getComponent} from '../design-options/config'
 import {
   type ComponentDef,
@@ -483,6 +484,7 @@ COMPONENTS.push(
   VERSION_SORTING,
   ADD_VARIANT_ENTRY_POINTS,
   MANAGE_VERSIONS_PLACEMENT,
+  BASE_DOCUMENT_NAME,
 )
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -650,7 +652,7 @@ defineDesignOptions({
     },
     {
       label: 'GA candidates',
-      ids: ['c5', 'c6', 'c8', 'c10', 'c11', 'c12', 'c13', 'c14'],
+      ids: ['c5', 'c6', 'c8', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15'],
       collapsed: true,
     },
     {

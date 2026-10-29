@@ -4,12 +4,13 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {type AudienceVersion} from './types'
-import {VersionsIcon} from './VersionsIcon'
+import {useBaseNames} from '../c15/baseName'
 import {PopoverAsList} from './PopoverAsList'
 import {type PopoverContent, TimedBody} from './PopoverContents'
 import {MorePill, type PillMode, PillModeContext, StatePill} from './StatePill'
+import {type AudienceVersion} from './types'
 import {moreText, versionLines} from './versionLines'
+import {VersionsIcon} from './VersionsIcon'
 
 /** Audiences the popover lists before the footer. A first guess, so it is a prop. */
 export const POPOVER_AUDIENCES = 5
@@ -74,8 +75,9 @@ export function VersionsPopover(props: {
     ? {look: 'label'}
     : {look: props.option === 'b' ? 'chip' : 'label', onPick: props.onPick}
   const linePadding = compact ? '4px 8px' : '9px 12px'
-  // The base document is the first line, as "All users (Default)", then each audience.
-  const {lines, more} = versionLines(versions, {max: maxAudiences})
+  // The base document is the first line, named as C15 names it in menus, then each audience.
+  const baseLabel = useBaseNames().menu
+  const {lines, more} = versionLines(versions, {max: maxAudiences, baseLabel})
   if (pattern === 'pl1') {
     return (
       <PopoverAsList

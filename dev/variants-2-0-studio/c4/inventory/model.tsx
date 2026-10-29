@@ -24,6 +24,7 @@ import {sortReleases} from '../../../../packages/sanity/src/core/releases/hooks/
 import {formatRelativeLocale} from '../../../../packages/sanity/src/core/util/formatRelativeLocale'
 import {VARIANT_DOCUMENTS_PATH} from '../../../../packages/sanity/src/core/variants/store/constants'
 import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
+import {baseNames} from '../../c15/baseName'
 import {
   baseWorld,
   defaultVisitor,
@@ -451,7 +452,7 @@ function priorityOf(world: InventoryWorld, entry: InventoryEntry): number {
 }
 
 function titleOf(world: InventoryWorld, entry: InventoryEntry): string {
-  return variantFor(world, entry)?.metadata?.title ?? 'Base · all visitors'
+  return variantFor(world, entry)?.metadata?.title ?? baseNames().inventory
 }
 
 /** Hours since the edit, from the row's relative time ("1h ago", "2d ago", "2w ago", "1mo ago"). */
@@ -858,7 +859,7 @@ function servedFact(options: {
     : undefined
   const exactTitle = exact?.id
     ? (variantsById(world).get(exact.id)?.metadata?.title ?? exact.id)
-    : 'Base · all visitors'
+    : baseNames().inventory
   // The bar's values, in dimension order, name a variant no definition carries, joined as a
   // sentence (Andrej, 2026-10-21: "No variant for Danish and New visitors.").
   const titles = worldDimensions(world).flatMap((dimension) => {

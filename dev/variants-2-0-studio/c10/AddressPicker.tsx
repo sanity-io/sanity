@@ -29,6 +29,7 @@ import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {DimensionIcon} from '../c1/dimensionIcons'
 import {useVariantDefinitions} from '../c1/world'
+import {useBaseNames} from '../c15/baseName'
 import {useOption} from '../options/store'
 
 // C10 option B: one address picker across Studio (Figma C1T4EUScc9PMf5tqNo09Qs, section 656:16383, 1b: F1 658:5341, F2 658:5664).
@@ -38,7 +39,6 @@ import {useOption} from '../options/store'
 // mounts nothing, so it is stock Studio. The rows and pills follow the inventory's Create version (C4 E): ghost round pills with a search
 // field in every menu with more than three options.
 
-const BASE_LABEL = 'Base · all visitors'
 const SEARCH_FROM = 4
 const FLYOUT_WIDTH = 420
 
@@ -304,6 +304,7 @@ interface Dest {
 
 function AddressFlyout({opened, onClose}: {opened: Opened; onClose: () => void}) {
   const schema = useSchema()
+  const baseLabel = useBaseNames().inventory
   const templates = useTemplates()
   const router = useRouter()
   const {selectedReleaseId, selectedVariant} = usePerspective()
@@ -515,17 +516,17 @@ function AddressFlyout({opened, onClose}: {opened: Opened; onClose: () => void})
               onOpenChange={onMenu}
               searchLabel="Search variants"
               testId="address-variant"
-              text={variant ? variantTitle(variant) : BASE_LABEL}
+              text={variant ? variantTitle(variant) : baseLabel}
             >
               {(query) => (
                 <>
-                  {matches(query, BASE_LABEL) ? (
+                  {matches(query, baseLabel) ? (
                     <MenuItem
                       data-testid="address-variant-base"
                       icon={VariantDiamond}
                       onClick={() => setVariantId(undefined)}
                       selected={!variant}
-                      text={BASE_LABEL}
+                      text={baseLabel}
                     />
                   ) : null}
                   {variants

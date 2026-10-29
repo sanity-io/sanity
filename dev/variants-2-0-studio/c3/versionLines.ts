@@ -11,13 +11,13 @@ const edited = (line: VersionLine) =>
   Math.min(...line.states.map((s) => s.updatedMinutesAgo ?? Infinity))
 
 /**
- * The popover's lines: the base document first as "All users (Default)", then the audiences sorted
+ * The popover's lines: the base document first (`baseLabel`, "All users (Default)" today, C15), then the audiences sorted
  * by their most recent edit, newest first. Only the first `max` are returned. `more` counts the
  * versions on the lines that did not fit.
  */
 export function versionLines(
   versions: readonly AudienceVersion[],
-  options: {max: number},
+  options: {max: number; baseLabel?: string},
 ): {lines: VersionLine[]; more: number} {
   const base = versions.filter((v) => v.audience === null)
   const sorted = [...audienceLines(versions)].sort((a, b) => {
@@ -25,7 +25,9 @@ export function versionLines(
     return x === y ? 0 : x < y ? -1 : 1
   })
   const ordered: VersionLine[] = [
-    ...(base.length ? [{audience: 'All users (Default)', states: [...base]}] : []),
+    ...(base.length
+      ? [{audience: options.baseLabel ?? 'All users (Default)', states: [...base]}]
+      : []),
     ...sorted,
   ]
   return {

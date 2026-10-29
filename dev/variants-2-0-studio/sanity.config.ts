@@ -7,6 +7,7 @@ import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {AddVariantAction} from './c4/AddVariantAction'
 import {inventoryInspector} from './c4/InventoryInspector'
 import {asVariantNewDocumentOptions, asVariantTemplates} from './c13/NewDocumentAsVariant'
+import {baseNameBundles} from './c15/baseName'
 import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
 import {fieldLevel, localization} from './localization/plugin'
 import {structure} from './localization/structure'
@@ -27,6 +28,8 @@ const previewPath = previewOrigin.endsWith(':3334') ? '/variants-preview.html?ro
 
 const variants2Options = definePlugin({
   name: 'variants-2-0-options',
+  // C15: core's base-document strings, as the chosen option names it (read at load).
+  i18n: {bundles: baseNameBundles},
   // SPIKE: SANITY_STUDIO_GRID=1 adds the separate "Presentation grid" tool (not part of the designs).
   tools: [
     inventoryTool,

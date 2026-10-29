@@ -1,14 +1,14 @@
+import {type ReleaseType} from '@sanity/client'
+import {Card, Text, type BadgeTone} from '@sanity/ui'
+import {createContext, useContext} from 'react'
+
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/StatePill.tsx).
 // Only the imports differ from the original (they point at this monorepo and ./types).
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {ReleaseAvatarIcon} from '../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
 import {LATEST, PUBLISHED} from '../../../packages/sanity/src/core/releases/util/const'
-
-import {type ReleaseType} from '@sanity/client'
-import {Card, Text, type BadgeTone} from '@sanity/ui'
-import {createContext, useContext} from 'react'
-
+import {useBaseNames} from '../c15/baseName'
 import {type State} from './types'
 
 /**
@@ -71,6 +71,7 @@ export function StatePill({
 }) {
   const {label, tone, glyph} = PILLS[state]
   const {look, onPick} = useContext(PillModeContext)
+  const basePill = useBaseNames().pill
   const icon = <ReleaseAvatarIcon {...(glyph as {release: 'drafts'})} />
   if (look === 'label') {
     // A flat label: the glyph and the word in the tone's text colour, on no fill and with no border.
@@ -104,7 +105,7 @@ export function StatePill({
   if (onPick) {
     return (
       <Chip
-        aria-label={`${audience ?? 'All users'}: ${text ?? label}. Open in the version inventory`}
+        aria-label={`${audience ?? basePill}: ${text ?? label}. Open in the version inventory`}
         data-state={state}
         data-testid={`pill-${state}`}
         icon={icon}
@@ -142,6 +143,7 @@ export function MorePill({
   audience?: string | null
 }) {
   const {look, onPick} = useContext(PillModeContext)
+  const basePill = useBaseNames().pill
   if (look === 'label') {
     return (
       <span
@@ -169,7 +171,7 @@ export function MorePill({
   if (onPick) {
     return (
       <Chip
-        aria-label={`${audience ?? 'All users'}: ${hidden.length} more, ${hidden.join(', ')}. Open in the version inventory`}
+        aria-label={`${audience ?? basePill}: ${hidden.length} more, ${hidden.join(', ')}. Open in the version inventory`}
         data-testid="pill-more"
         mode="bleed"
         onClick={() => onPick({audience: audience ?? null, state: 'more'})}

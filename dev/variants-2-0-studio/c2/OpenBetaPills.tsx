@@ -28,11 +28,11 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
-import {DEFAULT_LABEL} from '../c1/Picker'
 import {rankSearch, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {sortVersions} from '../c12/sortVersions'
+import {useBaseNames} from '../c15/baseName'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion, dateLabel, inOpenBeta} from '../data/versions'
 import {useOption, useOptionState} from '../options/store'
@@ -323,6 +323,8 @@ export function OpenBetaPills({
   const {stage} = useOptionState()
   // C12: B sorts the two menus' rows by one rule (c12/sortVersions.ts); A keeps today's order.
   const sorted = useOption('c12') === 'b'
+  const names = useBaseNames()
+  const baseLabel = names.menu
   const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const setVariant = useSetVariant()
   const address = usePerspectiveState()
@@ -418,7 +420,7 @@ export function OpenBetaPills({
   const baseVersions = versions.filter((v) => v.audience === null)
   const baseItem = {
     key: 'variant-base',
-    text: DEFAULT_LABEL,
+    text: baseLabel,
     icon: <DimensionIcon name={address.dimensions[0]?.name ?? ''} />,
     onClick: () => goTo(current),
     trailing: SHOW_VERSION_COUNT ? <VersionCount versions={baseVersions} /> : undefined,
@@ -533,9 +535,7 @@ export function OpenBetaPills({
         <DropdownPill
           icon={<RhombusIcon />}
           clear={
-            viewedTitle
-              ? {label: `Back to ${DEFAULT_LABEL}`, onClick: () => goTo(current)}
-              : undefined
+            viewedTitle ? {label: `Back to ${names.back}`, onClick: () => goTo(current)} : undefined
           }
           items={variantRows}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.

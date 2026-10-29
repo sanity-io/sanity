@@ -9,10 +9,11 @@ import {CreateVariantDialog} from '../../../packages/sanity/src/core/variants/co
 import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {useBaseNames} from '../c15/baseName'
 import {AddressChip} from './AddressRow'
 import {DimensionIcon, VariantDiamond} from './dimensionIcons'
 import {valueTitle} from './model'
-import {DEFAULT_TITLE, Picker} from './Picker'
+import {Picker} from './Picker'
 import {usePerspectiveState} from './state'
 import {reloadVariantDefinitions, useVariantDefinitions} from './world'
 
@@ -41,6 +42,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
   const definitions = useVariantDefinitions()
   const setVariant = useSetVariant()
   const [open, setOpen] = useState(false)
+  const basePill = useBaseNames().pill
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
   const [creating, setCreating] = useState(false)
   // The Releases menu's two footer rows, for variants: the tool, and the tool's own create dialog.
@@ -84,7 +86,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
         // Resting: the same outlined capsule as the applied control and the stock state pill, with nothing in it but the label.
         <Card border={!inSection} radius="full" style={{height, overflow: 'hidden'}}>
           <Button
-            aria-label={`${dimension.title}: ${DEFAULT_TITLE}`}
+            aria-label={`${dimension.title}: ${basePill}`}
             data-testid="variants-button"
             icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
             iconRight={ChevronDownIcon}
@@ -99,7 +101,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
             }}
             // The value, as the state control says "Drafts" and not "Perspective"; the dimension titles the menu. No tooltip, as on the
             // state control (Faheem, 22 Oct): the label says what is chosen, and the accessible name carries the dimension.
-            text={DEFAULT_TITLE}
+            text={basePill}
             tooltipProps={null}
           />
         </Card>

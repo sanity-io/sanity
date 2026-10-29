@@ -28,6 +28,7 @@ import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Too
 import {DimensionIcon} from '../../c1/dimensionIcons'
 import {rankSearch, SEARCH_FROM} from '../../c1/search'
 import {bannerOffersCreate, useBannerDecision} from '../../c7/useBannerCase'
+import {useBaseNames} from '../../c15/baseName'
 import {useCreateVariantVersion} from '../../data/useCreateVariantVersion'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
@@ -193,7 +194,6 @@ function collapseGroups(frame: HTMLElement | null) {
   }
   return {counts, closed}
 }
-const BASE_LABEL = 'Base · all visitors'
 /** A definition's hint when it already has a version where Add to points: what exists, not an action (choosing it only selects it). */
 const alreadyIn = (d: Dest) => `In ${destTitle(d)} already`
 
@@ -505,6 +505,7 @@ export function CreateVersion(props: {
   const {frame, world, variants, draftsEnabled, onCreate, onOpen, onReceived} = props
   // The one create implementation, shared with the T6 banner.
   const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
+  const baseLabel = useBaseNames().inventory
   // While the banner case is not known yet, the toolbar shows neither its Create version nor its count (no wrong state on screen).
   const decision = useBannerDecision(props.documentId)
   const bannerCreates = bannerOffersCreate(decision.banner)
@@ -659,7 +660,7 @@ export function CreateVersion(props: {
         : (world.releases.find((r) => r.name === group)?.metadata?.title ?? group)
   const entryLabel = (entry: InventoryEntry) =>
     `${variantTitle(entry.variantId)} · ${bundleTitle(entry.group)}`
-  const variantLabel = (id: string | undefined) => (id ? variantTitle(id) : BASE_LABEL)
+  const variantLabel = (id: string | undefined) => (id ? variantTitle(id) : baseLabel)
   const existingOf = (draft: Draft) =>
     world.entries.find((e) => e.group === destGroup(draft.dest) && e.variantId === draft.variantId)
 
@@ -773,11 +774,11 @@ export function CreateVersion(props: {
         searchable={variants.length + 1 >= SEARCH_FROM}
         searchLabel="Find a variant definition"
         testId="add-pill-variant"
-        text={variantPick?.title ?? BASE_LABEL}
+        text={variantPick?.title ?? baseLabel}
       >
         {(q) => (
           <>
-            {matches(q, BASE_LABEL) ? (
+            {matches(q, baseLabel) ? (
               <Item
                 had={hasIn(undefined)}
                 icon={<VariantDiamond />}
@@ -785,7 +786,7 @@ export function CreateVersion(props: {
                 sub={hasIn(undefined) ? alreadyIn(draft.dest) : undefined}
                 onClick={() => choose(undefined)}
                 selected={!draft.variantId}
-                text={BASE_LABEL}
+                text={baseLabel}
               />
             ) : null}
             {rankSearch(variants, q, (v) => ({
