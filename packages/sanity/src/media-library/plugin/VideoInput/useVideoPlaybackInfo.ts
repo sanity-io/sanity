@@ -20,6 +20,9 @@ import {type VideoPlaybackInfo} from './types'
 
 const POLLING_DELAY = 2_000
 const POLLING_MAX_DURATION = 120_000
+/** Max /playback-info retries after the asset is already ready but still 404s. */
+const PLAYBACK_INFO_NOT_FOUND_MAX_RETRIES = 5
+const PLAYBACK_INFO_RETRY_DELAY = 2_000
 
 class AssetProcessingError extends Error {
   constructor(message: string) {
@@ -187,6 +190,7 @@ export function useVideoPlaybackInfo(
               }) as const,
           ),
           retryOperator({
+            count: PLAYBACK_INFO_NOT_FOUND_MAX_RETRIES,
             delay: (error) => {
               if (!isPlaybackNotFoundError(error)) {
                 throw error
@@ -194,7 +198,11 @@ export function useVideoPlaybackInfo(
 
               const assetInstanceId = parseAssetInstanceId(assetRef._ref)
 
-              return pollForReadyState(client, mediaLibraryId, assetInstanceId)
+              // Wait until the asset is ready, then pause before retrying so a
+              // ready-but-still-404ing asset cannot spin without delay.
+              return pollForReadyState(client, mediaLibraryId, assetInstanceId).pipe(
+                mergeMap(() => timer(PLAYBACK_INFO_RETRY_DELAY)),
+              )
             },
           }),
           catchError((err: Error) => {
