@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider, Text} from '@sanity/ui'
@@ -26,6 +27,7 @@ import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {Container} from '../Container'
 import {SelectBundle} from '../CreateVariant/SelectBundle'
 import {SelectVariantDefinition} from '../CreateVariant/SelectVariantDefinition'
+import {InventoryHeader} from '../InventoryHeader'
 
 const PUBLISHED_ID = 'panels-document'
 const DOCUMENT_TYPE = 'author'
@@ -363,5 +365,29 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($dialog.getByRole('button', {name: 'Delete (1)'})).toBeEnabled()
 
     await settleChromaticEndState()
+  })
+})
+
+describe('InventoryHeader', () => {
+  it('starts variant creation from the header', async () => {
+    // Starting creation empties the header, so archive it before the click.
+    configure({disableAutoSnapshot: true})
+    const {settleChromaticEndState} = testHelpers()
+    const {variantCreationRef} = startHarness()
+
+    void render(
+      <PanelFrame>
+        <InventoryHeader variantCreationRef={variantCreationRef} />
+      </PanelFrame>,
+    )
+
+    const $createVariant = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($createVariant).toBeVisible()
+    await settleChromaticEndState()
+    await takeSnapshot('nothing-selected')
+
+    await userEvent.click($createVariant)
+    expect(variantCreationRef.getSnapshot().matches('active')).toBe(true)
+    await expect.element($createVariant).not.toBeInTheDocument()
   })
 })

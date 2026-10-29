@@ -45,7 +45,6 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
-import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
@@ -62,7 +61,7 @@ import {CreateVariant} from './CreateVariant/CreateVariant'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
-import {Header} from './Header'
+import {InventoryHeader} from './InventoryHeader'
 import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
@@ -370,10 +369,6 @@ export function DocumentGroupInventory(
     machine.can({type: 'delete.request'}),
   )
 
-  const canCreateVariant = useSelector(variantCreationRef, (machine) =>
-    machine.can({type: 'createVariant.request'}),
-  )
-
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
@@ -382,7 +377,7 @@ export function DocumentGroupInventory(
         )}
         {!isVariantCreationActive && (
           <>
-            <Header></Header>
+            <InventoryHeader variantCreationRef={variantCreationRef} />
             <Body>
               {schema && (
                 <Select
@@ -398,14 +393,6 @@ export function DocumentGroupInventory(
             </Body>
             {!readOnly && (
               <Footer>
-                {canCreateVariant && (
-                  <Button
-                    text={t('document-group.create-variant')}
-                    tone="suggest"
-                    icon={CreateVariantIcon}
-                    onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
-                  />
-                )}
                 {canRequestDeletion && (
                   <Button
                     text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
