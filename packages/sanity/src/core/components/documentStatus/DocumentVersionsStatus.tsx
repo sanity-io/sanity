@@ -26,6 +26,10 @@ const SHOWN_GLYPHS = 4
 /** The popover's width: 400px as the v1 design draws it, up to 440px when a line needs it. */
 const MIN_WIDTH = 400
 const MAX_WIDTH = 440
+/** Every line's padding, the last line's too: 8px top, right and bottom, 12px before the name (open beta design, Figma 751:161463). */
+const LINE_PADDING = '8px 8px 8px 12px'
+/** An audience line's height: Figma's 17px glyph box plus the 8px above and below; the glyphs here are trimmed to their cap height. */
+const LINE_MIN_HEIGHT = 33
 
 type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
 
@@ -118,12 +122,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           <Flex
             align="center"
             data-testid="audience-line"
-            gap={3}
+            gap={2}
             key={group.variantId ?? 'default'}
             style={{
               boxShadow: index ? 'inset 0 1px 0 var(--card-hairline-soft-color)' : undefined,
-              padding: '9px 12px',
-              minHeight: 43,
+              padding: LINE_PADDING,
+              minHeight: LINE_MIN_HEIGHT,
             }}
           >
             {/* The audience's name takes the room left; it ends in an ellipsis before anything else gives way (down to 96px). */}
@@ -134,7 +138,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
                 </Text>
               ) : null}
             </Box>
-            <Flex align="center" data-testid="audience-line-glyphs" flex="none" gap={1}>
+            <Flex align="center" data-testid="audience-line-glyphs" flex="none">
               {items.slice(0, SHOWN_GLYPHS).map((item) => (
                 <Glyph item={item} key={item.version._id} />
               ))}
@@ -147,7 +151,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
         )
       })}
       {more > 0 ? (
-        <Card borderTop data-testid="document-versions-status-more" style={{padding: '9px 12px'}}>
+        <Card borderTop data-testid="document-versions-status-more" style={{padding: LINE_PADDING}}>
           <Text muted size={1}>
             {t('document-group.status.more', {count: more})}
           </Text>
