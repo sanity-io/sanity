@@ -8,7 +8,7 @@ const ASSET_FILE_TYPE_QUERY = `*[_id == $id][0]{mimeType, extension}`
 
 const EXTENSION_ALIASES: Record<string, string> = {jpeg: 'jpg', tif: 'tiff'}
 
-type AssetFileType = {mimeType?: string; extension?: string}
+type AssetFileType = {mimeType?: string | null; extension?: string | null}
 
 export type AcceptedAssetType = 'image' | 'file'
 
@@ -20,16 +20,19 @@ function normalizeExtension(extension: string): string {
   return EXTENSION_ALIASES[lowerCased] ?? lowerCased
 }
 
-function matchesAcceptToken(
-  {mimeType = '', extension = ''}: AssetFileType,
-  token: string,
-): boolean {
+function matchesAcceptToken(fileType: AssetFileType, token: string): boolean {
+  const mimeType = fileType.mimeType ?? ''
+  const extension = fileType.extension ?? ''
   if (token === '*' || token === '*/*') return true
   if (token.startsWith('.')) {
     return normalizeExtension(token.slice(1)) === normalizeExtension(extension)
   }
   if (token.endsWith('/*')) return mimeType.toLowerCase().startsWith(token.slice(0, -1))
   return mimeType.toLowerCase() === token
+}
+
+function isUnknownFileType(fileType: AssetFileType): boolean {
+  return [fileType.mimeType, fileType.extension].every((value) => (value ?? '') === '')
 }
 
 /**
@@ -83,7 +86,9 @@ export function createAssetAcceptValidator(
     if (assetId === undefined) return true
 
     const fileType = await fetchAssetFileType(assetId, context)
-    if (fileType === null || assetMatchesAccept(fileType, accept)) return true
+    if (fileType === null || isUnknownFileType(fileType) || assetMatchesAccept(fileType, accept)) {
+      return true
+    }
 
     return {
       code: validationMarkerCodes.assetNotAccepted,
