@@ -1,5 +1,5 @@
-import {TrashIcon} from '@sanity/icons/Trash'
 import {useSelector} from '@xstate/react'
+import {Button as Ui5Button} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -37,11 +37,12 @@ export function InventoryHeader({
   return (
     <Header>
       {canRequestDeletion && (
-        <Button
+        <Ui5Button
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
+          level="tertiary"
+          tone="critical"
           text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
           onClick={() => deletionRef.send({type: 'delete.request'})}
-          tone="critical"
-          icon={TrashIcon}
         />
       )}
       {canCreateVariant && (
