@@ -528,7 +528,7 @@ describe('asset `accept` inference', () => {
     ],
   })
 
-  const assetFileTypes: Record<string, {mimeType: string; extension: string}> = {
+  const assetFileTypes: Record<string, {mimeType: string | null; extension: string | null}> = {
     'image-jpeg1-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-jpeg2-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-jpeg3-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
@@ -536,6 +536,9 @@ describe('asset `accept` inference', () => {
     'image-png1-10x10-png': {mimeType: 'image/png', extension: 'png'},
     'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf'},
     'file-zip1-zip': {mimeType: 'application/zip', extension: 'zip'},
+    'image-nomime1-10x10-png': {mimeType: null, extension: 'png'},
+    'image-notype1-10x10-png': {mimeType: null, extension: null},
+    'file-noext1-pdf': {mimeType: 'application/zip', extension: null},
   }
 
   function assetValue(ref: string) {
@@ -617,6 +620,34 @@ describe('asset `accept` inference', () => {
         message: 'File type "application/zip" is not accepted',
       },
     ])
+  })
+
+  test('warns on the extension when the asset has no MIME type', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-nomime1-10x10-png')})).resolves.toEqual(
+      [
+        {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.assetNotAccepted,
+          details: {accept: 'image/png', mimeType: null, extension: 'png'},
+          item: {message: 'Image type "png" is not accepted'},
+          level: 'warning',
+          message: 'Image type "png" is not accepted',
+          path: ['pngOnly'],
+        },
+      ],
+    )
+  })
+
+  test('passes when neither the MIME type nor the extension is known', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-notype1-10x10-png')})).resolves.toEqual(
+      [],
+    )
+  })
+
+  test('warns when the asset has no extension and its MIME type does not match', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toMatchObject(
+      [{code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['pdfOrWord']}],
+    )
   })
 
   test('passes when the asset document cannot be found', async () => {
@@ -835,6 +866,9 @@ describe('assetMatchesAccept', () => {
     [{mimeType: 'image/tiff', extension: 'tif'}, '.tiff', true],
     [{mimeType: 'video/mp4', extension: 'mp4'}, '*/*', true],
     [{mimeType: 'image/png', extension: 'png'}, ' , ', true],
+    [{mimeType: null, extension: 'png'}, 'image/png', false],
+    [{mimeType: 'application/pdf', extension: null}, '.pdf', false],
+    [{mimeType: null, extension: 'png'}, '.png', true],
     [{mimeType: 'image/png', extension: 'png'}, 'image/jpeg, .webp', false],
     [{mimeType: 'application/pdf', extension: 'pdf'}, 'image/*', false],
   ])('%o against %s is %s', (fileType, accept, expected) => {
