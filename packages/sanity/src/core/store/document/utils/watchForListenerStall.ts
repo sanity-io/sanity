@@ -29,6 +29,12 @@ export interface ListenerStallDetails {
 }
 
 /** @internal */
+export interface CommitAcknowledgement {
+  transactionId: string
+  submittedAt: number
+}
+
+/** @internal */
 export class ListenerStalledError extends Error {
   details: ListenerStallDetails
   constructor(details: ListenerStallDetails) {
@@ -41,11 +47,12 @@ export class ListenerStalledError extends Error {
 type Signal =
   | {kind: 'server'; event: ListenerEvent; at: number}
   | {kind: 'delivered'; event: ListenerEvent; at: number}
-  | {kind: 'acknowledged'; transactionId: string; at: number}
+  | {kind: 'acknowledged'; transactionId: string; submittedAt: number; at: number}
 
 interface StallState {
   connected: boolean
-  unconfirmed: Array<{transactionId: string; since: number}>
+  syncedAt?: number
+  unconfirmed: Array<{transactionId: string; submittedAt: number; since: number}>
   delivered: Map<string, number>
   receivedFromServer: Map<string, number>
   multiDocumentTransactions: Map<string, {total: number; seen: number}>
@@ -92,8 +99,7 @@ function reduceServerEvent(state: StallState, event: ListenerEvent, at: number):
       return {...heard, connected: false}
     case 'welcome':
     case 'reset':
-      // A fresh snapshot is fetched, so every earlier save is accounted for
-      return {...INITIAL_STATE, connected: true, lastListenerEventAt: at}
+      return {...INITIAL_STATE, lastListenerEventAt: at}
     case 'welcomeback':
       // The server replays what we missed; time spent offline doesn't count
       return {
@@ -114,6 +120,15 @@ function reduceSignal(state: StallState, signal: Signal): StallState {
       return reduceServerEvent(state, signal.event, signal.at)
     case 'delivered': {
       const {event} = signal
+      if (event.type === 'snapshot') {
+        // The snapshot accounts for every save submitted before it arrived
+        return {
+          ...state,
+          connected: true,
+          syncedAt: signal.at,
+          unconfirmed: state.unconfirmed.filter((entry) => entry.submittedAt >= signal.at),
+        }
+      }
       if (event.type === 'mutation') {
         return {
           ...state,
@@ -125,16 +140,20 @@ function reduceSignal(state: StallState, signal: Signal): StallState {
       }
       return state
     }
-    case 'acknowledged':
+    case 'acknowledged': {
       // The listener can deliver a transaction before its HTTP response arrives
-      if (state.delivered.has(signal.transactionId)) return state
+      const alreadyDelivered = state.delivered.has(signal.transactionId)
+      const coveredBySnapshot = signal.submittedAt < (state.syncedAt ?? Number.NEGATIVE_INFINITY)
+      if (alreadyDelivered || coveredBySnapshot) return state
       return {
         ...state,
         unconfirmed: state.unconfirmed.concat({
           transactionId: signal.transactionId,
+          submittedAt: signal.submittedAt,
           since: signal.at,
         }),
       }
+    }
   }
 }
 
@@ -158,7 +177,7 @@ function describeStall(state: StallState, now: number): ListenerStallDetails {
  */
 export function watchForListenerStall(options: {
   serverEvents$: Observable<ListenerEvent>
-  commitAcknowledged$: Observable<string>
+  commitAcknowledged$: Observable<CommitAcknowledgement>
   timeout?: number
 }): OperatorFunction<ListenerEvent, ListenerEvent> {
   const {serverEvents$, commitAcknowledged$, timeout = DEFAULT_STALL_TIMEOUT_MS} = options
@@ -172,7 +191,12 @@ export function watchForListenerStall(options: {
         serverEvents$.pipe(map((event): Signal => ({kind: 'server', event, at: Date.now()}))),
         delivered$.pipe(map((event): Signal => ({kind: 'delivered', event, at: Date.now()}))),
         commitAcknowledged$.pipe(
-          map((transactionId): Signal => ({kind: 'acknowledged', transactionId, at: Date.now()})),
+          map(({transactionId, submittedAt}): Signal => ({
+            kind: 'acknowledged',
+            transactionId,
+            submittedAt,
+            at: Date.now(),
+          })),
         ),
       ).pipe(
         scan(reduceSignal, INITIAL_STATE),

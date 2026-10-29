@@ -55,6 +55,7 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
+import {type CommitAcknowledgement} from '../utils/watchForListenerStall'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 import {variantsApiClient} from './utils/variantsApiClient'
@@ -407,7 +408,7 @@ export function checkoutPair(
     tag,
   } = options
 
-  const commitAcknowledged$ = new Subject<string>()
+  const commitAcknowledged$ = new Subject<CommitAcknowledgement>()
   const listenerEvents$ = getPairListener(client, idPair, {
     commitAcknowledged$,
     onSyncErrorRecovery,
@@ -482,7 +483,12 @@ export function checkoutPair(
         attemptResult.type === 'success',
     ),
     map((attemptResult) => attemptResult.result),
-    tap((result) => commitAcknowledged$.next(result.transactionId)),
+    tap((result) =>
+      commitAcknowledged$.next({
+        transactionId: result.transactionId,
+        submittedAt: result._perfTimings?.apiRequestSentAt ?? Date.now(),
+      }),
+    ),
     share(),
   )
 
