@@ -1,14 +1,18 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {fireEvent, render, screen} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {useClient} from '../../../../core/hooks/useClient'
 import {type VideoPlaybackInfoLoadable} from '../../VideoInput/useVideoPlaybackInfo'
 import {
   getVideoThumbnailParams,
+  VideoThumbnail,
   VideoThumbnailContent,
   type VideoThumbnailProps,
 } from '../VideoThumbnail'
+
+vi.mock('../../../../core/hooks/useClient')
 
 const theme = buildTheme()
 const dimensions: VideoThumbnailProps['dimensions'] = {width: 100.1, height: 50.1, dpr: 2}
@@ -18,6 +22,16 @@ const value: VideoThumbnailProps['value'] = {
     _type: 'globalDocumentReference',
     _ref: 'media-library:library-id:video-instance-id',
   },
+}
+
+const playbackInfo = {
+  id: 'playback-id',
+  thumbnail: {url: 'https://image.example/thumbnail.jpg?width=201'},
+  animated: {url: ''},
+  storyboard: {url: ''},
+  stream: {url: ''},
+  duration: 1,
+  aspectRatio: 2,
 }
 
 function renderContent(state: VideoPlaybackInfoLoadable) {
@@ -123,5 +137,45 @@ describe('VideoThumbnailContent', () => {
     fireEvent.error(screen.getByTestId('video-thumbnail-image'))
 
     expect(screen.getByTestId('video-thumbnail-fallback')).toBeInTheDocument()
+  })
+})
+
+describe('VideoThumbnail', () => {
+  let request: ReturnType<typeof vi.fn>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    request = vi.fn().mockResolvedValue(playbackInfo)
+    const mock = {request, observable: {request: vi.fn()}}
+    // oxlint-disable-next-line typescript/no-deprecated -- test mock of useClient return type
+    vi.mocked(useClient).mockReturnValue(mock as unknown as ReturnType<typeof useClient>)
+  })
+
+  it('loads a thumbnail through useVideoPlaybackInfo with a mocked client', async () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <VideoThumbnail value={value} dimensions={dimensions} />
+      </ThemeProvider>,
+    )
+
+    expect(screen.getByTestId('video-thumbnail-loading')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('video-thumbnail-image')).toHaveAttribute(
+        'src',
+        'https://image.example/thumbnail.jpg?width=201',
+      )
+    })
+
+    expect(request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: '/media-libraries/library-id/video/video-instance-id/playback-info',
+        query: {
+          thumbnailWidth: '201',
+          thumbnailHeight: '101',
+          thumbnailFit: 'smartcrop',
+        },
+      }),
+    )
   })
 })
