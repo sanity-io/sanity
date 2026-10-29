@@ -1,6 +1,6 @@
 import {render, waitFor} from '@testing-library/react'
 import {Component, type ReactNode} from 'react'
-import {firstValueFrom, of, throwError} from 'rxjs'
+import {firstValueFrom, NEVER, Observable, of, Subject, throwError} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {createRequestErrorChannel, type DocumentStore} from 'sanity'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
@@ -10,19 +10,27 @@ import {PaneResolutionError} from '../../../../structureResolvers/PaneResolution
 import * as USE_STRUCTURE_TOOL from '../../../../useStructureTool'
 import {IntentResolver} from '../IntentResolver'
 
-const {mockNavigate, mockRouterState, mockResolveTypeForDocument, mockResolveIntent} = vi.hoisted(
-  () => ({
-    mockNavigate: vi.fn(),
-    mockRouterState: {current: {} as Record<string, unknown>},
-    mockResolveTypeForDocument: vi.fn(),
-    mockResolveIntent: vi.fn(),
-  }),
-)
+const {
+  mockNavigate,
+  mockRouterState,
+  mockResolveTypeForDocument,
+  mockResolveIntent,
+  mockEditState,
+} = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockRouterState: {current: {} as Record<string, unknown>},
+  mockResolveTypeForDocument: vi.fn(),
+  mockResolveIntent: vi.fn(),
+  mockEditState: vi.fn(),
+}))
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useDocumentStore: () =>
-    ({resolveTypeForDocument: mockResolveTypeForDocument}) as unknown as DocumentStore,
+    ({
+      resolveTypeForDocument: mockResolveTypeForDocument,
+      pair: {editState: mockEditState},
+    }) as unknown as DocumentStore,
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -70,6 +78,7 @@ describe('IntentResolver', () => {
     mockResolveIntent.mockImplementation(({documentType}) =>
       firstValueFrom(documentType).then(() => []),
     )
+    mockEditState.mockReturnValue(NEVER)
   })
 
   function renderResolver(channel = createRequestErrorChannel()) {
@@ -130,6 +139,31 @@ describe('IntentResolver', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(mockResolveTypeForDocument).toHaveBeenCalledTimes(1)
     expect(mockNavigate).not.toHaveBeenCalled()
+  })
+
+  it('starts loading the document while the intent resolves', async () => {
+    mockResolveTypeForDocument.mockReturnValue(of('author'))
+    const resolvedPanes = new Subject<[]>()
+    mockResolveIntent.mockReturnValue(firstValueFrom(resolvedPanes))
+    let documentSubscriptions = 0
+    mockEditState.mockReturnValue(
+      new Observable(() => {
+        documentSubscriptions++
+        return () => {
+          documentSubscriptions--
+        }
+      }),
+    )
+
+    const {unmount} = renderResolver()
+
+    await waitFor(() => expect(documentSubscriptions).toBe(1))
+    expect(mockEditState).toHaveBeenCalledWith('doc-id', 'author')
+
+    resolvedPanes.next([])
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalled())
+    unmount()
+    expect(documentSubscriptions).toBe(0)
   })
 
   it('re-throws caller-domain errors into the error boundary', async () => {
