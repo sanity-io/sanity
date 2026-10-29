@@ -9,6 +9,7 @@ import {type ComponentType, type CSSProperties, type SVGProps} from 'react'
 // explorations/variants-2-0, commit 2700f4cf07, lib/explorations/variants-2-0/perspective/dimensionIcons.tsx).
 // Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
+import {RhombusOutlinedIcon} from '../../../packages/sanity/src/core/components/temporary-icons/RhombusOutlined'
 
 /**
  * The variant diamond at the size of the other dimension icons: the bare RhombusIcon draws the diamond in the middle third of a
@@ -36,6 +37,16 @@ const ICONS: Record<string, ComponentType<{style?: CSSProperties}>> = {
 
 /** The variant purple (the suggest tone's icon colour, as Studio's own variant menus carry it). */
 const PURPLE = {'--card-icon-color': 'var(--card-badge-suggest-icon-color)'} as CSSProperties
+
+/**
+ * The empty diamond: a variant that is defined but has no version of this document yet (27 Oct call, Pedro and Andrej; Studio Patterns
+ * PerspectiveMenu.Variant). The same size and purple as the filled one, so the two read as one family. From the Handoff Studio (61622dfef4).
+ */
+export function VariantDiamondOutline(props: {style?: CSSProperties}) {
+  return (
+    <RhombusOutlinedIcon viewBox="3.5 3.5 18 18" {...props} style={{...PURPLE, ...props.style}} />
+  )
+}
 
 /**
  * A dimension's icon. It is purple, except on a selected row, where it takes the row's own
