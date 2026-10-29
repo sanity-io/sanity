@@ -2,7 +2,6 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
@@ -14,29 +13,11 @@ import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {useGetDefaultPerspective} from '../useGetDefaultPerspective'
 import {useSetPerspective} from '../useSetPerspective'
 import {GlobalPerspectiveButton} from './GlobalPerspectiveButton'
+import {globalPerspectiveMenu} from './GlobalPerspectiveMenu.css'
 import {globalPerspectiveMenuItemIcon} from './GlobalPerspectiveMenuItem.css'
 import {ReleasesList} from './ReleasesList'
 import {useGlobalPerspectiveLabel} from './useGlobalPerspectiveLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
-
-const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 320px;
-
-  /* Keep the filter pinned and scroll the release list once the menu is full. */
-  && {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  && > [data-ui='Stack'] {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    overflow: hidden;
-  }
-`
 
 export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
@@ -58,7 +39,7 @@ export function GlobalPerspectiveMenu({
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
-  const styledMenuRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -108,15 +89,13 @@ export function GlobalPerspectiveMenu({
         id="releases-menu"
         onClose={handleMenuClose}
         menu={
-          <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
-            <Flex
-              flexDirection="column"
-              flexShrink={0}
-              paddingX={3}
-              paddingTop={3}
-              paddingBottom={2}
-              borderBottom
-            >
+          <Menu
+            className={globalPerspectiveMenu}
+            data-testid="release-menu"
+            ref={menuRef}
+            padding={0}
+          >
+            <Flex flexDirection="column" flexShrink={0} padding={2} borderBottom>
               <TextInput
                 data-testid="global-perspective-filter"
                 fontSize={1}
@@ -139,7 +118,7 @@ export function GlobalPerspectiveMenu({
                 menuItemProps={menuItemProps}
               />
             </Flex>
-          </StyledMenu>
+          </Menu>
         }
         popover={{
           __unstable_margins: [0, 0, 32, 0],

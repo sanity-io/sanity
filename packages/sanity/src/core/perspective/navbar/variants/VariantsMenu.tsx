@@ -5,7 +5,6 @@ import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -23,32 +22,9 @@ import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
+import {variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
-const StyledMenu = styled(Menu)`
-  min-width: 240px;
-  max-width: 320px;
-
-  /* The menu's own rule is overflow: auto, which scrolls the whole popover.
-     Cap this column to the popover height and let the list section scroll. */
-  && {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    max-height: 100%;
-    overflow: hidden;
-  }
-
-  && > [data-ui='Stack'] {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    gap: 0;
-    overflow: hidden;
-  }
-`
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
   return <RhombusIconLarge className={suggestIconColor} {...props} />
 }
@@ -180,7 +156,8 @@ export function VariantsMenu({
         id={`variants-nav-menu-${typeKey}`}
         onClose={handleMenuClose}
         menu={
-          <StyledMenu
+          <Menu
+            className={variantsMenu}
             data-testid={
               typeKey === DEFAULT_VARIANT_TYPE_KEY
                 ? 'variants-nav-menu'
@@ -259,7 +236,7 @@ export function VariantsMenu({
                 text={t('navbar.variant.menu.new-audience')}
               />
             </Flex>
-          </StyledMenu>
+          </Menu>
         }
         popover={{
           __unstable_margins: [0, 0, 32, 0],
