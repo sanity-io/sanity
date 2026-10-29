@@ -25,7 +25,7 @@ export function ReleasesMenu({
   areReleasesEnabled = true,
   menuItemProps,
 }: {
-  /** Stretches the trigger to its parent's width; the menu then opens from its start edge. */
+  /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean

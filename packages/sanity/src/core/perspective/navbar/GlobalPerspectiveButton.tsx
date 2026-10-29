@@ -37,7 +37,11 @@ type GlobalPerspectiveButtonProps = {
    * selection and the remove control stays hidden.
    */
   handleClearPerspective?: () => void
-  /** Stretches the chip to its parent's width, with the caret at the far edge. */
+  /**
+   * Stretches the chip to its parent's width, with the caret at the far edge. The label then
+   * truncates with an ellipsis instead of animating its width, which would hold it at its full
+   * measured width and clip it.
+   */
   fullWidth?: boolean
 } & Omit<UIButtonProps, 'children' | 'icon' | 'iconRight' | 'mode' | 'text' | 'width'>
 
@@ -98,7 +102,7 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
           padding={2}
           ref={ref}
           radius={0}
-          text={<AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
+          text={fullWidth ? text : <AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
         />
       </Tooltip>
 
