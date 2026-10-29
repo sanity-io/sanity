@@ -14,12 +14,18 @@ export const WithIntersection = (props: WithIntersectionProps & HTMLProps<HTMLDi
   const element = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const el = element.current
-    if (!el) return undefined
-    const subscription = io
-      .observe(el)
-      .pipe(tap((entry) => onIntersection(id, entry)))
-      .subscribe()
-    return () => subscription.unsubscribe()
+    let subscription: {unsubscribe: () => void} | undefined
+
+    if (el) {
+      subscription = io
+        .observe(el)
+        .pipe(tap((entry) => onIntersection(id, entry)))
+        .subscribe()
+    }
+
+    return () => {
+      subscription?.unsubscribe()
+    }
   }, [io, id, onIntersection])
   return <div {...rest} ref={element} />
 }
