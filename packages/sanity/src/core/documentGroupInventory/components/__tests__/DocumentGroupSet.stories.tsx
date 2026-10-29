@@ -82,7 +82,7 @@ const meta = {
     ),
   ],
   args: {
-    name: 'All users (Default)',
+    name: 'Default',
     children: null,
     selectedIds: new Set(),
     checked: false,
