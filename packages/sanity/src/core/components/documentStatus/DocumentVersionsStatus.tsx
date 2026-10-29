@@ -62,8 +62,8 @@ const byGlyphOrder = (left: DocumentVersionStatusItem, right: DocumentVersionSta
 /**
  * PROPOSED (the v1 versions popover, Variants open beta): what a document's status icons show on hover. One line per audience: the base
  * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Faheem, 22 Oct: each line is the
- * audience's name, a glyph per version (published, draft, then its releases by date; four at most, then "+N"), and ONE muted phrase for
- * the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago". Release names are not shown (the inventory has them).
+ * audience's name, ONE muted phrase for the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago", then a glyph per
+ * version at the right edge (published, draft, then its releases by date; four at most, then "+N"; open beta design, Figma 751:161463). Release names are not shown (the inventory has them).
  * After five lines a muted last line counts the versions not shown. Information only: nothing in it is clickable.
  *
  * @internal
@@ -138,6 +138,8 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
                 </Text>
               ) : null}
             </Box>
+            <LatestActivity item={latest} />
+            {/* The glyphs close the line, at its right edge. */}
             <Flex align="center" data-testid="audience-line-glyphs" flex="none">
               {items.slice(0, SHOWN_GLYPHS).map((item) => (
                 <Glyph item={item} key={item.version._id} />
@@ -146,7 +148,6 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
                 <Text data-testid="state-more" muted size={1}>{`+${hidden}`}</Text>
               ) : null}
             </Flex>
-            <LatestActivity item={latest} />
           </Flex>
         )
       })}
