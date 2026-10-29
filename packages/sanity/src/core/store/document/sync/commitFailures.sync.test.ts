@@ -72,11 +72,15 @@ describe('commit failures', () => {
     expect(world.clients.A.localDocument(DRAFT_ID)?.title).toBe('seed')
   })
 
-  // The edit typed while the rejected save was in flight stays on screen, is never sent, and the document never becomes consistent again.
-  test.fails('CMT-REJECT-409-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
+  test('CMT-REJECT-409-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
     world = await runSyncTest(rejectedCommit(409, true))
+
     expectHealthy(world)
     expectConverged(world)
+    expectRevisionsAgree(world)
+    expect(world.lake.rejectedCommits.map((rejected) => rejected.statusCode)).toEqual([409])
+    expect(world.lake.transactions).toHaveLength(1)
+    expect(world.lake.get(DRAFT_ID)?.title).toBe('two')
   })
 
   test('CMT-RETRY-500-TYPING: a transient failure is retried and every edit lands', async () => {

@@ -249,18 +249,10 @@ export class BufferedDocument {
 
       cancel: (error: Error) => {
         this.commits.forEach((comm) => comm.reject(error))
-
-        // Throw away waiting commits
         this.commits = []
 
-        // Reset back to last known state from content lake and cause a rebase that will
-        // reset the view in the form
+        // The buffer holds edits made after this commit was sent, so they are rebased onto HEAD and kept
         this.reset(this.document.HEAD)
-
-        // Clear the buffer of recent mutations
-        this.buffer = new SquashingBuffer(this.LOCAL)
-
-        // Stop the committer loop
         this.committerRunning = false
       },
     }
