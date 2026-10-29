@@ -44,6 +44,9 @@
       "createSafeJsonParser": [
         "./lib/createSafeJsonParser.d.ts"
       ],
+      "image": [
+        "./lib/image.d.ts"
+      ],
       "legacyDateFormat": [
         "./lib/legacyDateFormat.d.ts"
       ],
@@ -77,6 +80,10 @@
       "monorepo": "./src/_exports/fs.ts",
       "default": "./lib/fs.js"
     },
+    "./image": {
+      "monorepo": "./src/_exports/image.ts",
+      "default": "./lib/image.js"
+    },
     "./legacyDateFormat": {
       "monorepo": "./src/_exports/legacyDateFormat.ts",
       "default": "./lib/legacyDateFormat.js"
@@ -95,6 +102,7 @@
       "./content": "./lib/content.js",
       "./createSafeJsonParser": "./lib/createSafeJsonParser.js",
       "./fs": "./lib/fs.js",
+      "./image": "./lib/image.js",
       "./legacyDateFormat": "./lib/legacyDateFormat.js",
       "./paths": "./lib/paths.js",
       "./package.json": "./package.json"
