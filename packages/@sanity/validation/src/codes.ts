@@ -6,6 +6,7 @@ export const validationMarkerCodes = {
   arrayExactLength: 'array.exact-length',
   arrayMaximumLength: 'array.maximum-length',
   arrayMinimumLength: 'array.minimum-length',
+  assetNotAccepted: 'asset.not-accepted',
   assetRequired: 'asset.required',
   custom: 'custom',
   dateInvalidFormat: 'date.invalid-format',
