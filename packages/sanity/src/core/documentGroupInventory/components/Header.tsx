@@ -10,5 +10,13 @@ export const Header = styled.div(({theme}) => {
     padding-inline: ${space[4]}px;
     padding-block-start: ${space[4]}px;
     padding-block-end: calc(${space[5]}px * 0.5);
+
+    &,
+    .atom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: ${space[2]}px;
+    }
   `
 })

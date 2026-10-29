@@ -41,25 +41,29 @@ export function InventoryHeader({
 
   return (
     <Header>
-      {selectedCount !== 0 && (
-        <Text size={1}>{t('document-group.selected-count', {count: selectedCount})}</Text>
-      )}
-      {canRequestDeletion && (
-        <Ui5Button
-          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
-          level="tertiary"
-          tone="critical"
-          text={t('document-group.delete.confirm-button.text')}
-          onClick={() => deletionRef.send({type: 'delete.request'})}
-        />
-      )}
-      {components && <components.CompareVersionsAction />}
-      {canCreateVariant && (
-        <Button
-          text={t('document-group.create-variant')}
-          onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
-        />
-      )}
+      <div className="atom">
+        {selectedCount !== 0 && (
+          <Text size={1}>{t('document-group.selected-count', {count: selectedCount})}</Text>
+        )}
+        {canRequestDeletion && (
+          <Ui5Button
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
+            level="tertiary"
+            tone="critical"
+            text={t('document-group.delete.confirm-button.text')}
+            onClick={() => deletionRef.send({type: 'delete.request'})}
+          />
+        )}
+      </div>
+      <div className="atom">
+        {components && <components.CompareVersionsAction />}
+        {canCreateVariant && (
+          <Button
+            text={t('document-group.create-variant')}
+            onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
+          />
+        )}
+      </div>
     </Header>
   )
 }
