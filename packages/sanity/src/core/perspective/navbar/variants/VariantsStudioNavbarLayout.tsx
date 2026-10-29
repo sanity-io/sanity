@@ -1,10 +1,16 @@
 import {Skeleton} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {lazy, Suspense, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Box} from 'ui5'
 
 import {parseVariantStickyParam} from '../../../variants/util/variantSelection'
-import {navbarFallback, navbarFallbackSkeleton} from './VariantsStudioNavbarLayout.css'
+import {
+  navbarFallback,
+  navbarFallbackFullWidth,
+  navbarFallbackSkeleton,
+  navbarFallbackSkeletonFullWidth,
+} from './VariantsStudioNavbarLayout.css'
 
 const VariantsStudioNavbar = lazy(() => import('./VariantsStudioNavbar'))
 
@@ -13,10 +19,18 @@ const VariantsStudioNavbar = lazy(() => import('./VariantsStudioNavbar'))
  * filters replace it without moving the layout below.
  * @internal
  */
-export function VariantsStudioNavbarFallback() {
+export function VariantsStudioNavbarFallback(props: {fullWidth?: boolean}) {
+  const {fullWidth} = props
   return (
-    <Box border className={navbarFallback} radius="full">
-      <Skeleton animated className={navbarFallbackSkeleton} />
+    <Box
+      border
+      className={clsx(navbarFallback, fullWidth && navbarFallbackFullWidth)}
+      radius="full"
+    >
+      <Skeleton
+        animated
+        className={clsx(navbarFallbackSkeleton, fullWidth && navbarFallbackSkeletonFullWidth)}
+      />
     </Box>
   )
 }
@@ -27,7 +41,11 @@ export function VariantsStudioNavbarFallback() {
  * here, so the bar itself paints with the navbar.
  * @internal
  */
-export function VariantsStudioNavbarLayout() {
+export function VariantsStudioNavbarLayout(props: {
+  /** Stretches each filter to its parent's width. */
+  fullWidth?: boolean
+}) {
+  const {fullWidth} = props
   const router = useRouter()
   const variantSelections = useMemo(
     () =>
@@ -37,8 +55,8 @@ export function VariantsStudioNavbarLayout() {
     [router.stickyParams.variant],
   )
   return (
-    <Suspense fallback={<VariantsStudioNavbarFallback />}>
-      <VariantsStudioNavbar variantSelections={variantSelections} />
+    <Suspense fallback={<VariantsStudioNavbarFallback fullWidth={fullWidth} />}>
+      <VariantsStudioNavbar fullWidth={fullWidth} variantSelections={variantSelections} />
     </Suspense>
   )
 }

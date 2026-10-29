@@ -9,11 +9,14 @@ import {css} from '#styled-system/css'
  * The inner `Stack` sets `display: grid` with `&&:not([hidden])` (0,3,0) and
  * `grid-gap` from its gap. Three classes on this menu plus `[data-ui="Stack"]`
  * beat both, so the stack stays a gapless column.
+ *
+ * Both widths are capped to the viewport less 12px on each side, so the menu fits a phone. They
+ * sit in the same three-class block because `Box` resets `min-width: 0` with one class.
  */
 export const globalPerspectiveMenu = css({
-  'minWidth': '280px',
-  'maxWidth': '360px',
   '&&&': {
+    minWidth: 'min(280px, calc(100vw - 24px))',
+    maxWidth: 'min(360px, calc(100vw - 24px))',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',

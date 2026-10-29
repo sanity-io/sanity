@@ -12,6 +12,7 @@ import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {type NavbarAction} from '../../../../config/studio/types'
 import {type Tool} from '../../../../config/types'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {GlobalPerspectiveNav} from '../../../../perspective/navbar/GlobalPerspectiveNav'
 import {useColorSchemeSetValue} from '../../../colorScheme'
 import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../../workspace'
@@ -81,11 +82,20 @@ interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
   onClose: () => void
+  /** Renders the global perspective pickers, which the navbar leaves out on narrow screens. */
+  showPerspectives?: boolean
   tools: Tool[]
 }
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
-  const {__internal_actions: actions, activeToolName, isOpen, onClose, tools} = props
+  const {
+    __internal_actions: actions,
+    activeToolName,
+    isOpen,
+    onClose,
+    showPerspectives,
+    tools,
+  } = props
 
   const setScheme = useColorSchemeSetValue()
   const {currentUser} = useWorkspace()
@@ -198,6 +208,14 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   )}
                 </Flex>
               </Card>
+
+              {showPerspectives && (
+                <Card borderBottom flex="none" padding={3}>
+                  <Flex flexDirection="column" gap={2}>
+                    <GlobalPerspectiveNav fullWidth />
+                  </Flex>
+                </Card>
+              )}
 
               <Flex
                 flexDirection="column"

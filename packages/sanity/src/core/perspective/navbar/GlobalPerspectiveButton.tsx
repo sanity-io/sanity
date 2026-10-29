@@ -2,6 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 // oxlint-disable-next-line no-restricted-imports -- the label is an animated node; the studio Button types `text` as a string
 import {Button as UIButton, Card, type ButtonProps as UIButtonProps} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type MouseEvent, useCallback} from 'react'
 import {Text, Box} from 'ui5'
 
@@ -11,9 +12,11 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {AnimatedTextWidth} from './AnimatedTextWidth'
 import {
   perspectiveButtonCard,
+  perspectiveButtonCardFullWidth,
   perspectiveButtonClear,
   perspectiveButtonDivider,
   perspectiveButtonTrigger,
+  perspectiveButtonTriggerFullWidth,
 } from './GlobalPerspectiveButton.css'
 
 /** Same cap as `ReleaseTitle`, so a long release name wraps in the tooltip. */
@@ -34,7 +37,9 @@ type GlobalPerspectiveButtonProps = {
    * selection and the remove control stays hidden.
    */
   handleClearPerspective?: () => void
-} & Omit<UIButtonProps, 'children' | 'icon' | 'iconRight' | 'mode' | 'text'>
+  /** Stretches the chip to its parent's width, with the caret at the far edge. */
+  fullWidth?: boolean
+} & Omit<UIButtonProps, 'children' | 'icon' | 'iconRight' | 'mode' | 'text' | 'width'>
 
 /**
  * Shared chip for the global perspective pickers (releases and variants).
@@ -44,7 +49,7 @@ type GlobalPerspectiveButtonProps = {
  * @internal
  */
 export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
-  const {text, fullText, icon, handleClearPerspective, ref, ...buttonProps} = props
+  const {text, fullText, fullWidth, icon, handleClearPerspective, ref, ...buttonProps} = props
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const showFullText = fullText !== undefined && fullText !== text
@@ -61,26 +66,10 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
     [handleClearPerspective],
   )
 
-  const trigger = (
-    <UIButton
-      {...buttonProps}
-      aria-label={showFullText ? fullText : buttonProps['aria-label']}
-      className={perspectiveButtonTrigger}
-      gap={2}
-      icon={icon}
-      iconRight={ChevronDownIcon}
-      mode="bleed"
-      padding={2}
-      ref={ref}
-      radius={0}
-      text={<AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
-    />
-  )
-
   return (
     <Card
       border
-      className={perspectiveButtonCard}
+      className={clsx(perspectiveButtonCard, fullWidth && perspectiveButtonCardFullWidth)}
       data-ui="GlobalPerspectiveButton"
       display="flex"
       flex="none"
@@ -100,10 +89,11 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
         <UIButton
           {...buttonProps}
           aria-label={showFullText ? fullText : buttonProps['aria-label']}
-          className={perspectiveButtonTrigger}
+          className={clsx(perspectiveButtonTrigger, fullWidth && perspectiveButtonTriggerFullWidth)}
           gap={2}
           icon={icon}
           iconRight={ChevronDownIcon}
+          justify={fullWidth ? 'flex-start' : undefined}
           mode="bleed"
           padding={2}
           ref={ref}

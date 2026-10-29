@@ -24,6 +24,13 @@ export const perspectiveButtonCard = css({
   },
 })
 
+/** `fullWidth`: the chip fills its parent instead of fitting the trigger. */
+export const perspectiveButtonCardFullWidth = css({
+  '&&': {
+    width: '100%',
+  },
+})
+
 /** Hairline between the trigger and the clear control. */
 export const perspectiveButtonDivider = css({
   width: '1px',
@@ -67,5 +74,19 @@ export const perspectiveButtonTrigger = css({
   '&:only-child': {
     borderTopRightRadius: pillRadius,
     borderBottomRightRadius: pillRadius,
+  },
+})
+
+/**
+ * `fullWidth`: the trigger takes the width the clear control leaves, the label stays beside the
+ * icon and the caret (the last item of the button's content row) moves to the far edge.
+ */
+export const perspectiveButtonTriggerFullWidth = css({
+  '&&': {
+    flex: '1',
+    minWidth: 0,
+  },
+  '& [data-ui="Flex"] > :last-child': {
+    marginInlineStart: 'auto',
   },
 })
