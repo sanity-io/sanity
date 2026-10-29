@@ -86,22 +86,32 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
       flex="none"
       radius="full"
     >
-      {showFullText ? (
-        <Tooltip
-          content={
-            <Box style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
-              <Text size={1} as="div" trim={true}>
-                {fullText}
-              </Text>
-            </Box>
-          }
-          portal
-        >
-          {trigger}
-        </Tooltip>
-      ) : (
-        trigger
-      )}
+      <Tooltip
+        content={
+          <Box style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
+            <Text size={1} as="div" trim={true}>
+              {fullText}
+            </Text>
+          </Box>
+        }
+        portal
+        disabled={!showFullText}
+      >
+        <UIButton
+          {...buttonProps}
+          aria-label={showFullText ? fullText : buttonProps['aria-label']}
+          className={perspectiveButtonTrigger}
+          gap={2}
+          icon={icon}
+          iconRight={ChevronDownIcon}
+          mode="bleed"
+          padding={2}
+          ref={ref}
+          radius={0}
+          text={<AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
+        />
+      </Tooltip>
+
       {handleClearPerspective ? (
         <>
           <div aria-hidden className={perspectiveButtonDivider} />
