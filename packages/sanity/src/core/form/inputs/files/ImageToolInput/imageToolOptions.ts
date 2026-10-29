@@ -8,7 +8,7 @@ export function isHotspotEnabled(options: ImageOptions | undefined): boolean {
 }
 
 /** Whether the field constrains its crop, which makes the crop tool available without a hotspot. */
-export function hasCropConstraints(options: ImageOptions | undefined): boolean {
+function hasCropConstraints(options: ImageOptions | undefined): boolean {
   return options?.aspectRatio !== undefined || options?.minDimensions !== undefined
 }
 
