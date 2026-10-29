@@ -1,6 +1,7 @@
 export {
   clampRatio,
   describeAspectRatio,
+  dimensionsMatchConstraint,
   formatAspectRatio,
   FREE_ASPECT_RATIO_RANGE,
   nearestRatio,
