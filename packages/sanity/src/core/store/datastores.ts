@@ -40,6 +40,7 @@ import {
   type MutationPerformanceEvent,
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
+import {getListenerStalledToastParams} from './document/utils/listenerStalledToast'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {type ListenerStallDetails} from './document/utils/watchForListenerStall'
 import {createGrantsStore} from './grants/grantsStore'
@@ -200,11 +201,12 @@ export function useDocumentStore(): DocumentStore {
     (details: ListenerStallDetails) => {
       try {
         telemetry.log(DocumentListenerStalled, details)
+        toast.push(getListenerStalledToastParams(t))
       } catch {
         // runs inside getPairListener's catchError; throwing here would replace the restart with an error
       }
     },
-    [telemetry],
+    [telemetry, toast, t],
   )
 
   const handleReportLatency = useCallback(
