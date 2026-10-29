@@ -93,6 +93,20 @@ describe('describeChange', () => {
       change: 'perspective-change',
     },
     {
+      label: 'perspective switch that also changes a pane param',
+      previousURL: structureUrl('book', 'book-a'),
+      nextURL: `${structureUrl('book', 'book-a,rev=r1')}?perspective=rSummer`,
+      nextRoute: 'structure:document',
+      change: 'perspective-change',
+    },
+    {
+      label: 'document open that also switches perspective',
+      previousURL: structureUrl('book'),
+      nextURL: `${structureUrl('book', 'book-a')}?perspective=rSummer`,
+      nextRoute: 'structure:document',
+      change: 'document-open',
+    },
+    {
       label: 'tool switch',
       previousURL: structureUrl('book'),
       nextURL: `${ORIGIN}/test/vision`,

@@ -74,11 +74,13 @@ function describeStructureChange(
   previous: StudioLocation,
   next: StudioLocation,
   nextRoute: string,
+  perspectiveChanged: boolean,
 ): SoftNavigationChange {
   const previousPanes = toStructurePanes(previous.toolSegments[0])
   const nextPanes = toStructurePanes(next.toolSegments[0])
 
   if (previousPanes.paneIds.join('|') === nextPanes.paneIds.join('|')) {
+    if (perspectiveChanged) return 'perspective-change'
     const keys = changedKeys(previousPanes.params, nextPanes.params)
     if (keys.includes('inspect')) return 'inspector-toggle'
     if (keys.some((key) => VIEW_PARAMS.has(key))) return 'view-change'
@@ -103,14 +105,13 @@ export function describeChange(input: DescribeChangeInput): SoftNavigationChange
   const isIntentLink = next.tool === 'intent' || next.toolSegments[0] === 'intent'
   if (input.nextRoute.startsWith('intent:') || isIntentLink) return 'document-open'
   if (previous.tool !== next.tool) return 'tool-switch'
-  if (previous.search.get('perspective') !== next.search.get('perspective')) {
-    return 'perspective-change'
-  }
+  const perspectiveChanged = previous.search.get('perspective') !== next.search.get('perspective')
   if (previous.toolSegments.join('/') === next.toolSegments.join('/')) {
+    if (perspectiveChanged) return 'perspective-change'
     return previous.search.toString() === next.search.toString() ? 'other' : 'filter-change'
   }
   if (input.nextRoute.startsWith('structure:')) {
-    return describeStructureChange(previous, next, input.nextRoute)
+    return describeStructureChange(previous, next, input.nextRoute, perspectiveChanged)
   }
-  return 'other'
+  return perspectiveChanged ? 'perspective-change' : 'other'
 }
