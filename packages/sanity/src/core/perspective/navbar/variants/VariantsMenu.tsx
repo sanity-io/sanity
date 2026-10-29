@@ -22,6 +22,7 @@ import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
+import {useStableMenuWidth} from '../useStableMenuWidth'
 import {variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
@@ -84,6 +85,7 @@ export function VariantsMenu({
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -121,8 +123,9 @@ export function VariantsMenu({
   }, [])
 
   const handleMenuClose = useCallback(() => {
+    resetMenuWidth()
     setFilterQuery('')
-  }, [])
+  }, [resetMenuWidth])
 
   const isDefaultSelected = !selectedVariant
 
@@ -155,6 +158,7 @@ export function VariantsMenu({
         button={trigger}
         id={`variants-nav-menu-${typeKey}`}
         onClose={handleMenuClose}
+        onOpen={lockMenuWidth}
         menu={
           <Menu
             className={variantsMenu}
@@ -164,6 +168,8 @@ export function VariantsMenu({
                 : `variants-nav-menu-${typeKey}`
             }
             padding={0}
+            ref={menuRef}
+            style={menuStyle}
           >
             <Flex
               flexDirection="column"

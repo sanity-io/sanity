@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ChangeEvent, useCallback, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -13,6 +13,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
 import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
 import {useReleasesLabel} from './useReleasesLabel'
@@ -38,7 +39,7 @@ export function ReleasesMenu({
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
-  const menuRef = useRef<HTMLDivElement>(null)
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -64,8 +65,9 @@ export function ReleasesMenu({
 
   const handleMenuClose = useCallback(() => {
     resetRangeVisibility()
+    resetMenuWidth()
     setFilterQuery('')
-  }, [resetRangeVisibility])
+  }, [resetMenuWidth, resetRangeVisibility])
 
   return (
     <>
@@ -87,12 +89,14 @@ export function ReleasesMenu({
         }
         id="releases-menu"
         onClose={handleMenuClose}
+        onOpen={lockMenuWidth}
         menu={
           <Menu
             className={globalPerspectiveMenu}
             data-testid="release-menu"
             ref={menuRef}
             padding={0}
+            style={menuStyle}
           >
             <Flex flexDirection="column" flexShrink={0} padding={2} borderBottom>
               <TextInput
