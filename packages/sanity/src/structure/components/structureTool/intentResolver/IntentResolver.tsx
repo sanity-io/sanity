@@ -1,5 +1,6 @@
 import {memo, useCallback, useEffect, useState} from 'react'
-import {isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
+import {catchError, EMPTY, shareReplay, type Subscription, switchMap} from 'rxjs'
+import {getPublishedId, isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {resolveIntent} from '../../../structureResolvers/resolveIntent'
@@ -40,6 +41,7 @@ export const IntentResolver = memo(function IntentResolver() {
       const {intent, params, payload} = maybeIntent
 
       let cancelled = false
+      let documentPreload: Subscription | undefined
       async function effect() {
         // The request-error dialog's "Try again" can re-run this thunk after
         // the effect has been cleaned up (intent changed or unmounted) —
@@ -51,11 +53,23 @@ export const IntentResolver = memo(function IntentResolver() {
           typeof params.id === 'string' ? params.id : undefined,
           typeof params.type === 'string' ? params.type : undefined,
         )
+        const documentType = type.pipe(shareReplay({bufferSize: 1, refCount: true}))
+
+        // the document pane shares this load once it opens, so it doesn't start from scratch
+        documentPreload?.unsubscribe()
+        documentPreload = documentType
+          .pipe(
+            switchMap((resolvedType) =>
+              documentStore.pair.editState(getPublishedId(id), resolvedType),
+            ),
+            catchError(() => EMPTY),
+          )
+          .subscribe()
 
         const panes = await resolveIntent({
           intent,
           params: {...params, id},
-          documentType: type,
+          documentType,
           payload,
           rootPaneNode,
           structureContext,
@@ -72,6 +86,7 @@ export const IntentResolver = memo(function IntentResolver() {
 
       return () => {
         cancelled = true
+        documentPreload?.unsubscribe()
       }
     }
   }, [documentStore, errorHandler, maybeIntent, navigate, rootPaneNode, structureContext])
