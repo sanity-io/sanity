@@ -46,9 +46,8 @@ const result = run(
   },
 )
 
-// Implementations load lazily: CI jobs that only prepare or report must not
-// resolve the runner's workspace imports (e.g. @sanity/mutator), which are
-// not built in those jobs — and `bench help` stays instant
+// Implementations load lazily: CI jobs that only prepare or report never load
+// the runner, and `bench help` stays instant
 switch (result.action) {
   case 'run':
     await (await import('./commands/runImpl')).runBench(result)
