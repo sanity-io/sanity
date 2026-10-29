@@ -1,5 +1,5 @@
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
-import {Observable} from 'rxjs'
+import {Observable, Subject} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 // oxfmt-ignore
 import {SerializeError} from '../../structureBuilder/SerializeError'
@@ -487,5 +487,34 @@ describe('resolveIntent', () => {
       vi.restoreAllMocks()
       vi.useRealTimers()
     }
+  })
+
+  it('resolves panes while the document type is still loading', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+    const booksChild = vi.fn(() => S.documentTypeList('book'))
+    const documentType = new Subject<string>()
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([S.listItem().title('Books').child(booksChild)]) as unknown as UnresolvedPaneNode
+
+    const result = resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123'},
+      documentType,
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    await vi.waitFor(() => expect(booksChild).toHaveBeenCalled())
+    documentType.next('book')
+
+    expect(await result).toEqual([
+      [{id: 'books'}],
+      [{id: 'book123', params: {}, payload: undefined}],
+    ])
   })
 })

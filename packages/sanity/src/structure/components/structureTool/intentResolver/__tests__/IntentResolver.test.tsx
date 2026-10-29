@@ -67,7 +67,9 @@ describe('IntentResolver', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockRouterState.current = {intent: 'edit', params: {id: 'doc-id'}}
-    mockResolveIntent.mockResolvedValue([])
+    mockResolveIntent.mockImplementation(({documentType}) =>
+      firstValueFrom(documentType).then(() => []),
+    )
   })
 
   function renderResolver(channel = createRequestErrorChannel()) {
