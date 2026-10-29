@@ -523,4 +523,126 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
   })
+
+  describe('listener stall detection', () => {
+    let commitAcknowledged$: Subject<string>
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      commitAcknowledged$ = new Subject<string>()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function subscribe() {
+      const onListenerStall = vi.fn()
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {commitAcknowledged$, onListenerStall}).subscribe(
+        (event) => events.push(event),
+      )
+      return {onListenerStall, events, sub}
+    }
+
+    async function connect() {
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(0)
+    }
+
+    const ownSave = createMutationEvent({
+      documentId: DRAFT_ID,
+      transactionId: 'own-save',
+      previousRev: 'draft-rev',
+      resultRev: 'own-save',
+    })
+
+    test('restarts the listener when a confirmed save is not echoed within 30 seconds', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      commitAcknowledged$.next('own-save')
+      await vi.advanceTimersByTimeAsync(29_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(onListenerStall).toHaveBeenCalledExactlyOnceWith({
+        echoReceivedFromServer: false,
+        waitingOnMultiDocumentTransaction: false,
+        unconfirmedCommits: 1,
+        msSinceLastListenerEvent: 30_000,
+      })
+      expect(client.observable.listen).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+
+    test('does nothing when the save is echoed', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      commitAcknowledged$.next('own-save')
+      listener$.next(ownSave)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('does nothing when the echo arrives before the save is confirmed', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      listener$.next(ownSave)
+      commitAcknowledged$.next('own-save')
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('reports an echo held back by an incomplete multi-document transaction', async () => {
+      const {onListenerStall, events, sub} = subscribe()
+      await connect()
+
+      listener$.next(
+        createMultiTxMutationEvent(DRAFT_ID, {
+          transactionId: 'multi-tx',
+          transactionTotalEvents: 2,
+          transactionCurrentEvent: 1,
+          previousRev: 'draft-rev',
+          resultRev: 'multi-tx',
+        }),
+      )
+      commitAcknowledged$.next('own-save')
+      listener$.next({...ownSave, previousRev: 'multi-tx'})
+      await vi.advanceTimersByTimeAsync(30_000)
+
+      expect(events.filter((event) => event.type === 'mutation')).toHaveLength(0)
+      expect(onListenerStall).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({
+          echoReceivedFromServer: true,
+          waitingOnMultiDocumentTransaction: true,
+        }),
+      )
+      sub.unsubscribe()
+    })
+
+    test('does not count time spent disconnected', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      commitAcknowledged$.next('own-save')
+      listener$.next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(29_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(onListenerStall).toHaveBeenCalledOnce()
+      sub.unsubscribe()
+    })
+  })
 })

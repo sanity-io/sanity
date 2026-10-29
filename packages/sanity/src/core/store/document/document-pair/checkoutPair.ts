@@ -7,7 +7,7 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {combineLatest, defer, EMPTY, from, merge, type Observable, of, timer} from 'rxjs'
+import {combineLatest, defer, EMPTY, from, merge, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -399,6 +399,7 @@ export function checkoutPair(
   const {
     onReportLatency,
     onSyncErrorRecovery,
+    onListenerStall,
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
@@ -406,8 +407,11 @@ export function checkoutPair(
     tag,
   } = options
 
+  const commitAcknowledged$ = new Subject<string>()
   const listenerEvents$ = getPairListener(client, idPair, {
+    commitAcknowledged$,
     onSyncErrorRecovery,
+    onListenerStall,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())
@@ -478,6 +482,7 @@ export function checkoutPair(
         attemptResult.type === 'success',
     ),
     map((attemptResult) => attemptResult.result),
+    tap((result) => commitAcknowledged$.next(result.transactionId)),
     share(),
   )
 
