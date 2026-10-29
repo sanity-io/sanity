@@ -1323,7 +1323,17 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   apiHost?: string
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
+  /**
+   * The compiled schema. Resolved and memoized on first access.
+   *
+   * @remarks Object spread, enumeration, and serialization access this enumerable getter.
+   */
   schema: Schema
+  /**
+   * The locale source. Initialized and memoized on first access.
+   *
+   * @remarks Object spread, enumeration, and serialization access this enumerable getter.
+   */
   i18n: LocaleSource
   /**
    * @internal
@@ -1338,6 +1348,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       auth: AuthStore
       schema: Schema
       i18n: LocaleSource
+      /** The source's i18next instance. Initialized and memoized on first access. */
+      i18next: i18n
       source: Observable<Source>
     }>
   }

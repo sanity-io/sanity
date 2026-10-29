@@ -4,7 +4,11 @@ import {type ReactNode, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {errorReporter} from '../error/errorReporter'
-import {LocaleProvider} from '../i18n/components/LocaleProvider'
+import {
+  ActiveWorkspaceLocaleProvider,
+  FallbackLocaleProvider,
+  LocaleProvider,
+} from '../i18n/components/LocaleProvider'
 import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
@@ -121,31 +125,35 @@ export function StudioProvider({
                 LoadingComponent={LoadingBlock}
                 primaryProjectId={primaryProjectId}
               >
-                <VisibleWorkspacesProvider>
-                  <ActiveWorkspaceMatcher
-                    unstable_history={history}
-                    NotFoundComponent={NotFoundScreen}
-                    LoadingComponent={LoadingBlock}
-                  >
-                    <StudioThemeProvider>
-                      <UserColorManagerProvider>
-                        <ConfigErrorGate>
-                          {noAuthBoundary ? (
-                            _children
-                          ) : (
-                            <AuthBoundary
-                              LoadingComponent={LoadingBlock}
-                              AuthenticateComponent={AuthenticateScreen}
-                              NotAuthenticatedComponent={NotAuthenticatedScreen}
-                            >
-                              {_children}
-                            </AuthBoundary>
-                          )}
-                        </ConfigErrorGate>
-                      </UserColorManagerProvider>
-                    </StudioThemeProvider>
-                  </ActiveWorkspaceMatcher>
-                </VisibleWorkspacesProvider>
+                <FallbackLocaleProvider>
+                  <VisibleWorkspacesProvider>
+                    <ActiveWorkspaceMatcher
+                      unstable_history={history}
+                      NotFoundComponent={NotFoundScreen}
+                      LoadingComponent={LoadingBlock}
+                    >
+                      <ActiveWorkspaceLocaleProvider>
+                        <StudioThemeProvider>
+                          <UserColorManagerProvider>
+                            <ConfigErrorGate>
+                              {noAuthBoundary ? (
+                                _children
+                              ) : (
+                                <AuthBoundary
+                                  LoadingComponent={LoadingBlock}
+                                  AuthenticateComponent={AuthenticateScreen}
+                                  NotAuthenticatedComponent={NotAuthenticatedScreen}
+                                >
+                                  {_children}
+                                </AuthBoundary>
+                              )}
+                            </ConfigErrorGate>
+                          </UserColorManagerProvider>
+                        </StudioThemeProvider>
+                      </ActiveWorkspaceLocaleProvider>
+                    </ActiveWorkspaceMatcher>
+                  </VisibleWorkspacesProvider>
+                </FallbackLocaleProvider>
               </WorkspacesProvider>
             </StudioRootErrorHandler>
           </StudioErrorBoundary>

@@ -38,7 +38,7 @@ export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
 export function isStaticResourceBundle(
   bundle: LocaleResourceBundle | StaticLocaleResourceBundle | ImplicitLocaleResourceBundle,
 ): bundle is StaticLocaleResourceBundle {
-  return !('then' in bundle.resources && typeof bundle.resources.then === 'function')
+  return typeof bundle.resources !== 'function'
 }
 
 /**
