@@ -2,14 +2,16 @@ import {PortalProvider, useTheme} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
-import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
+import {_isCustomDocumentTypeDefinition, useSchema, useTranslation} from 'sanity'
 import {ResolvedPanesProvider} from 'sanity/_singletons'
 import {useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
 import {LoadingPane} from '../../panes/loading/LoadingPane'
 import {StructureToolPane} from '../../panes/StructureToolPane'
+import {isResolvingPaneId} from '../../structureResolvers/resolvingPane'
 import {useResolvedPanes} from '../../structureResolvers/useResolvedPanes'
 import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
@@ -50,6 +52,7 @@ export const StructureTool = memo(function StructureTool({
   const isResolvingIntent = useRouterState(
     useCallback((state) => typeof state.intent === 'string', []),
   )
+  const {t} = useTranslation(structureLocaleNamespace)
   const {
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     sanity: {media},
@@ -178,7 +181,8 @@ export const StructureTool = memo(function StructureTool({
   // loading placeholders) so navigation churn cannot drop the maximize state.
   useEffect(() => {
     const transition = getMaximizedPaneTransition({
-      isResolvingIntent,
+      isResolvingIntent:
+        isResolvingIntent || paneDataItems.some((pane) => isResolvingPaneId(pane.itemId)),
       paneDataItems,
       maximizedPane,
       previousSelectedIndex: previousSelectedIndexRef.current,
@@ -205,11 +209,12 @@ export const StructureTool = memo(function StructureTool({
           onCollapse={handleRootCollapse}
           onExpand={handleRootExpand}
         >
-          {paneItemsToShow.map((paneData) => {
+          {paneItemsToShow.flatMap((paneData, itemIndex) => {
             const {
               active,
               childItemId,
               groupIndex,
+              handoffKey,
               itemId,
               key: paneKey,
               pane,
@@ -221,8 +226,23 @@ export const StructureTool = memo(function StructureTool({
               selected,
               maximized,
             } = paneData
-            return (
-              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+            const previousPane = paneItemsToShow[itemIndex - 1]?.pane
+            // kept in this array so the document keeps its place among its siblings
+            const structureResolvingPane =
+              isResolvingPaneId(itemId) &&
+              siblingIndex === 0 &&
+              previousPane &&
+              previousPane !== LOADING_PANE ? (
+                <LoadingPane
+                  key="structure-resolving"
+                  message={t('panes.resolving.finding-document-message')}
+                  paneKey="structure-resolving"
+                />
+              ) : null
+            const paneElement = (
+              <Fragment
+                key={handoffKey ?? `${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}
+              >
                 {pane === LOADING_PANE ? (
                   <LoadingPane paneKey={paneKey} path={path} selected={selected} />
                 ) : (
@@ -246,6 +266,7 @@ export const StructureTool = memo(function StructureTool({
                 )}
               </Fragment>
             )
+            return structureResolvingPane ? [structureResolvingPane, paneElement] : [paneElement]
           })}
           {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
           {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}

@@ -1,11 +1,12 @@
-import {filter, firstValueFrom, of} from 'rxjs'
+import {BehaviorSubject, filter, firstValueFrom, of, ReplaySubject} from 'rxjs'
 import {type SchemaPluginOptions} from 'sanity'
-import {describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {type ItemChild} from '../../structureBuilder/ChildResolver'
 import {createStructureBuilder} from '../../structureBuilder/createStructureBuilder'
 import {type RouterPanes, type UnresolvedPaneNode} from '../../types'
-import {createResolvedPaneNodeStream} from '../createResolvedPaneNodeStream'
+import {createResolvedPaneNodeStream, type ResolvedPaneMeta} from '../createResolvedPaneNodeStream'
 
 const mockSchema: SchemaPluginOptions = {
   name: 'mockSchema',
@@ -125,5 +126,220 @@ describe('createResolvedPaneNodeStream', () => {
     expect(resolvedPanes).toHaveLength(3)
     expect(resolvedPanes[2].paneNode?.id).toBe('page-node')
     expect(resolvedPanes[2].paneNode?.type).toBe('list')
+  })
+})
+
+/**
+ * A structure where the root and the `pages` list only resolve when the test
+ * releases them, like a structure whose lists wait for a fetch.
+ */
+async function getSlowStructure() {
+  const source = await getMockSource({config: {schema: mockSchema}})
+  // @ts-expect-error -- matches the cast in `resolveIntent.test.ts`
+  const S = createStructureBuilder({source})
+
+  const pagesList = new ReplaySubject<ItemChild>(1)
+  const rootList = new ReplaySubject<UnresolvedPaneNode>(1)
+  const root = S.list()
+    .id('content')
+    .title('Content')
+    .items([
+      S.listItem()
+        .id('pages')
+        .title('Pages')
+        .child(() => pagesList.asObservable()),
+    ]) as unknown as UnresolvedPaneNode
+
+  return {
+    rootPaneNode: rootList.asObservable(),
+    structureContext: S.context,
+    releaseRoot: () => rootList.next(root),
+    releasePages: () =>
+      pagesList.next(S.documentTypeList('page').id('pages-list').apiVersion('2024-01-01')),
+  }
+}
+
+async function settle() {
+  await vi.advanceTimersByTimeAsync(0)
+}
+
+function summarize(metas: ResolvedPaneMeta[]) {
+  return metas.map((meta) =>
+    meta.type === 'loading'
+      ? `loading:${meta.routerPaneSibling.id}`
+      : `${meta.paneNode.type}:${meta.routerPaneSibling.id}${meta.handoffKey ? `#${meta.handoffKey}` : ''}`,
+  )
+}
+
+describe('createResolvedPaneNodeStream with a resolving pane', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('keeps the document in every emission while the resolved path loads its ancestors', async () => {
+    const {rootPaneNode, structureContext, releaseRoot, releasePages} = await getSlowStructure()
+    const routerPanes = new BehaviorSubject<RouterPanes>([
+      [{id: '__resolve__page123', params: {type: 'page'}}],
+    ])
+    const emissions: ResolvedPaneMeta[][] = []
+
+    const subscription = createResolvedPaneNodeStream({
+      routerPanesStream: routerPanes,
+      rootPaneNode,
+      structureContext,
+    }).subscribe((metas) => emissions.push(metas))
+    await settle()
+
+    // the document renders before the root resolves
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'loading:root',
+      'document:__resolve__page123#handoff-page123-0',
+    ])
+    const documentPane = emissions.at(-1)![1]
+    expect(
+      documentPane.type === 'resolvedMeta' &&
+        documentPane.paneNode.type === 'document' &&
+        documentPane.paneNode.options,
+    ).toEqual({
+      id: 'page123',
+      type: 'page',
+    })
+
+    releaseRoot()
+    await settle()
+
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'list:root',
+      'document:__resolve__page123#handoff-page123-0',
+    ])
+    const optimisticDocument = emissions.at(-1)![1].paneNode
+    const swapIndex = emissions.length
+
+    routerPanes.next([[{id: 'pages'}], [{id: 'page123'}]])
+    await settle()
+
+    expect(emissions.slice(swapIndex).map(summarize)).toEqual([
+      ['list:root', 'loading:pages', 'document:page123#handoff-page123-0'],
+    ])
+    // the open document pane node is reused until the real one resolves
+    expect(emissions.at(-1)![2].paneNode).toBe(optimisticDocument)
+
+    releasePages()
+    await settle()
+
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'list:root',
+      'documentList:pages',
+      'document:page123#handoff-page123-0',
+    ])
+    expect(emissions.at(-1)![2].paneNode).not.toBe(optimisticDocument)
+    expect(emissions.at(-1)![2].path).toEqual(['root', 'pages', 'page123'])
+    for (const emission of emissions.slice(swapIndex)) {
+      expect(emission.some((meta) => meta.handoffKey === 'handoff-page123-0')).toBe(true)
+    }
+
+    subscription.unsubscribe()
+  })
+
+  it('keeps the document in its own group while a list that shares its id loads', async () => {
+    const {rootPaneNode, structureContext, releaseRoot, releasePages} = await getSlowStructure()
+    releaseRoot()
+    const routerPanes = new BehaviorSubject<RouterPanes>([
+      [{id: '__resolve__pages', params: {type: 'page'}}],
+    ])
+    const emissions: ResolvedPaneMeta[][] = []
+
+    const subscription = createResolvedPaneNodeStream({
+      routerPanesStream: routerPanes,
+      rootPaneNode,
+      structureContext,
+    }).subscribe((metas) => emissions.push(metas))
+    await settle()
+    const swapIndex = emissions.length
+
+    routerPanes.next([[{id: 'pages'}], [{id: 'pages'}]])
+    await settle()
+    releasePages()
+    await settle()
+
+    const afterSwap = emissions.slice(swapIndex).map(summarize)
+    expect(afterSwap[0]).toEqual(['list:root', 'loading:pages', 'document:pages#handoff-pages-0'])
+    for (const emission of afterSwap) {
+      expect(emission[2]).toBe('document:pages#handoff-pages-0')
+    }
+    expect(afterSwap.at(-1)).toEqual([
+      'list:root',
+      'documentList:pages',
+      'document:pages#handoff-pages-0',
+    ])
+
+    subscription.unsubscribe()
+  })
+
+  it('stops tagging the document once the user navigates away from it', async () => {
+    const {rootPaneNode, structureContext, releaseRoot, releasePages} = await getSlowStructure()
+    releaseRoot()
+    releasePages()
+    const routerPanes = new BehaviorSubject<RouterPanes>([
+      [{id: '__resolve__page123', params: {type: 'page'}}],
+    ])
+    const emissions: ResolvedPaneMeta[][] = []
+
+    const subscription = createResolvedPaneNodeStream({
+      routerPanesStream: routerPanes,
+      rootPaneNode,
+      structureContext,
+    }).subscribe((metas) => emissions.push(metas))
+    await settle()
+    routerPanes.next([[{id: 'pages'}], [{id: 'page123'}]])
+    await settle()
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'list:root',
+      'documentList:pages',
+      'document:page123#handoff-page123-0',
+    ])
+
+    routerPanes.next([[{id: 'pages'}]])
+    await settle()
+    expect(summarize(emissions.at(-1)!)).toEqual(['list:root', 'documentList:pages'])
+
+    routerPanes.next([[{id: 'pages'}], [{id: 'page123'}]])
+    await settle()
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'list:root',
+      'documentList:pages',
+      'document:page123',
+    ])
+
+    subscription.unsubscribe()
+  })
+
+  it('tags every split sibling of the resolving document', async () => {
+    const {rootPaneNode, structureContext, releaseRoot} = await getSlowStructure()
+    releaseRoot()
+    const emissions: ResolvedPaneMeta[][] = []
+
+    const subscription = createResolvedPaneNodeStream({
+      routerPanesStream: of([
+        [
+          {id: '__resolve__page123', params: {type: 'page', view: 'editor'}},
+          {id: '__resolve__page123', params: {type: 'page', view: 'preview'}},
+        ],
+      ]),
+      rootPaneNode,
+      structureContext,
+    }).subscribe((metas) => emissions.push(metas))
+    await settle()
+    subscription.unsubscribe()
+
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'list:root',
+      'document:__resolve__page123#handoff-page123-0',
+      'document:__resolve__page123#handoff-page123-1',
+    ])
   })
 })

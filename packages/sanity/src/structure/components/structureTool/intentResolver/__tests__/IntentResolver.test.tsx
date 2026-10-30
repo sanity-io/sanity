@@ -1,28 +1,36 @@
-import {render, waitFor} from '@testing-library/react'
-import {Component, type ReactNode} from 'react'
-import {firstValueFrom, NEVER, Observable, of, throwError} from 'rxjs'
+import {act, render, waitFor} from '@testing-library/react'
+import {Component, type ReactNode, useMemo, useSyncExternalStore} from 'react'
+import {firstValueFrom, from, NEVER, Observable, of, throwError} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {createRequestErrorChannel, type DocumentStore} from 'sanity'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {PaneResolutionError} from '../../../../structureResolvers/PaneResolutionError'
 import * as USE_STRUCTURE_TOOL from '../../../../useStructureTool'
 import {IntentResolver} from '../IntentResolver'
 
-const {
-  mockNavigate,
-  mockRouterState,
-  mockResolveTypeForDocument,
-  mockResolveIntent,
-  mockEditState,
-} = vi.hoisted(() => ({
-  mockNavigate: vi.fn(),
-  mockRouterState: {current: {} as Record<string, unknown>},
-  mockResolveTypeForDocument: vi.fn(),
-  mockResolveIntent: vi.fn(),
-  mockEditState: vi.fn(),
-}))
+const {mockNavigate, mockRouter, mockResolveTypeForDocument, mockResolveIntent, mockEditState} =
+  vi.hoisted(() => {
+    const listeners = new Set<() => void>()
+    return {
+      mockNavigate: vi.fn(),
+      mockRouter: {
+        state: {} as Record<string, unknown>,
+        setState(state: Record<string, unknown>) {
+          this.state = state
+          listeners.forEach((listener) => listener())
+        },
+        subscribe(listener: () => void) {
+          listeners.add(listener)
+          return () => listeners.delete(listener)
+        },
+      },
+      mockResolveTypeForDocument: vi.fn(),
+      mockResolveIntent: vi.fn(),
+      mockEditState: vi.fn(),
+    }
+  })
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -33,25 +41,44 @@ vi.mock('sanity', async (importOriginal) => ({
     }) as unknown as DocumentStore,
 }))
 
+function useMockRouterState() {
+  return useSyncExternalStore(
+    (listener) => mockRouter.subscribe(listener),
+    () => mockRouter.state,
+  )
+}
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  useRouter: () => ({navigate: mockNavigate}),
-  useRouterState: (selector: (state: Record<string, unknown>) => unknown) =>
-    selector(mockRouterState.current),
+  useRouter: () => {
+    const state = useMockRouterState()
+    return {navigate: mockNavigate, state}
+  },
+  useRouterState: (selector: (state: Record<string, unknown>) => unknown) => {
+    const state = useMockRouterState()
+    return useMemo(() => selector(state), [selector, state])
+  },
 }))
+
+function deferred<T>() {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>((res) => {
+    resolve = res
+  })
+  return {promise, resolve}
+}
 
 vi.mock('../../../../structureResolvers/resolveIntent', async (importOriginal) => ({
   ...(await importOriginal()),
   resolveIntent: mockResolveIntent,
 }))
 
-vi.spyOn(USE_STRUCTURE_TOOL, 'useStructureTool').mockImplementation(
-  () =>
-    ({
-      rootPaneNode: {},
-      structureContext: {},
-    }) as unknown as ReturnType<typeof USE_STRUCTURE_TOOL.useStructureTool>,
-)
+const mockStructureTool = {
+  rootPaneNode: {},
+  structureContext: {},
+} as unknown as ReturnType<typeof USE_STRUCTURE_TOOL.useStructureTool>
+
+vi.spyOn(USE_STRUCTURE_TOOL, 'useStructureTool').mockImplementation(() => mockStructureTool)
 
 class Boundary extends Component<{children: ReactNode}, {error: unknown}> {
   state: {error: unknown} = {error: null}
@@ -74,9 +101,10 @@ function timeoutError() {
 describe('IntentResolver', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockRouterState.current = {intent: 'edit', params: {id: 'doc-id'}}
+    mockRouter.state = {intent: 'edit', params: {id: 'doc-id'}}
+    mockNavigate.mockImplementation((state: Record<string, unknown>) => mockRouter.setState(state))
     mockResolveIntent.mockImplementation(({documentType}) =>
-      firstValueFrom(documentType).then(() => []),
+      documentType ? firstValueFrom(documentType).then(() => []) : Promise.resolve([]),
     )
     mockEditState.mockReturnValue(NEVER)
   })
@@ -164,7 +192,7 @@ describe('IntentResolver', () => {
   })
 
   it('re-throws caller-domain errors into the error boundary', async () => {
-    mockRouterState.current = {intent: 'edit', params: {}}
+    mockRouter.state = {intent: 'edit', params: {}}
 
     const {channel, boundary} = renderResolver()
 
@@ -172,5 +200,187 @@ describe('IntentResolver', () => {
       expect(boundary.current?.state.error).toBeInstanceOf(PaneResolutionError)
     })
     expect(await firstValueFrom(channel.claim$)).toBeUndefined()
+  })
+
+  describe('opening the document while the intent resolves', () => {
+    const resolvedPanes = [[{id: 'books'}], [{id: 'doc-id', params: {}}]]
+
+    beforeEach(() => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id', type: 'book'}}
+      mockResolveTypeForDocument.mockReturnValue(of('book'))
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('navigates straight to a resolution that settles within the grace period', async () => {
+      mockResolveIntent.mockResolvedValue(resolvedPanes)
+
+      renderResolver()
+
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalled())
+      expect(mockNavigate.mock.calls).toEqual([[{panes: resolvedPanes}, {replace: true}]])
+    })
+
+    it('opens the document in a resolving pane, then moves it to the resolved path', async () => {
+      const resolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValue(resolution.promise)
+
+      renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
+
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {panes: [[{id: '__resolve__doc-id', params: {type: 'book'}, payload: undefined}]]},
+          {replace: true},
+        ),
+      )
+
+      // the user picks another view while the structure is still resolving
+      act(() => {
+        mockRouter.setState({
+          panes: [[{id: '__resolve__doc-id', params: {type: 'book', view: 'preview'}}]],
+        })
+      })
+
+      await act(async () => resolution.resolve(resolvedPanes))
+
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalledTimes(2))
+      expect(mockNavigate).toHaveBeenLastCalledWith(
+        {panes: [[{id: 'books'}], [{id: 'doc-id', params: {view: 'preview'}, payload: undefined}]]},
+        {replace: true},
+      )
+      // the resolving pane reuses the resolution the intent started
+      expect(mockResolveIntent).toHaveBeenCalledTimes(1)
+    })
+
+    it('opens the resolving pane once the type of a link without one is known', async () => {
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id'}}
+      const documentType = deferred<string>()
+      mockResolveTypeForDocument.mockReturnValue(from(documentType.promise))
+      const resolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockImplementation(({documentType: type$}) =>
+        firstValueFrom(type$).then(() => resolution.promise),
+      )
+
+      renderResolver()
+
+      await act(() => vi.advanceTimersByTimeAsync(300))
+      expect(mockNavigate).not.toHaveBeenCalled()
+
+      await act(async () => documentType.resolve('book'))
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {panes: [[{id: '__resolve__doc-id', params: {type: 'book'}, payload: undefined}]]},
+          {replace: true},
+        ),
+      )
+
+      await act(async () => resolution.resolve(resolvedPanes))
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalledTimes(2))
+      expect(mockNavigate).toHaveBeenLastCalledWith(
+        {panes: [[{id: 'books'}], [{id: 'doc-id', params: undefined, payload: undefined}]]},
+        {replace: true},
+      )
+      expect(mockResolveTypeForDocument).toHaveBeenCalledTimes(1)
+      expect(mockResolveIntent).toHaveBeenCalledTimes(1)
+    })
+
+    it('drops the resolution when the user navigates away from the resolving pane', async () => {
+      const resolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValue(resolution.promise)
+
+      renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
+
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalledTimes(1))
+      act(() => {
+        mockRouter.setState({panes: [[{id: 'authors'}]]})
+      })
+      await act(async () => resolution.resolve(resolvedPanes))
+      await act(() => vi.advanceTimersByTimeAsync(0))
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1)
+      expect(mockResolveIntent).toHaveBeenCalledTimes(1)
+    })
+
+    it('waits for the structure when a link without a type points to a missing document', async () => {
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id'}}
+      mockResolveTypeForDocument.mockReturnValue(of(null))
+      const resolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValue(resolution.promise)
+
+      renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
+      expect(mockNavigate).not.toHaveBeenCalled()
+
+      await act(async () => resolution.resolve(resolvedPanes))
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith({panes: resolvedPanes}, {replace: true}),
+      )
+    })
+
+    it('does not reuse a resolution started for other params of the same document', async () => {
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id', type: 'book', comment: 'c1'}}
+      const firstResolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValueOnce(firstResolution.promise)
+      mockResolveIntent.mockResolvedValue(resolvedPanes)
+
+      renderResolver()
+      await waitFor(() => expect(mockResolveIntent).toHaveBeenCalledTimes(1))
+      act(() => mockRouter.setState({panes: [[{id: 'authors'}]]}))
+      await act(async () => firstResolution.resolve(resolvedPanes))
+      act(() =>
+        mockRouter.setState({intent: 'edit', params: {id: 'doc-id', type: 'book', comment: 'c2'}}),
+      )
+
+      await waitFor(() => expect(mockResolveIntent).toHaveBeenCalledTimes(2))
+      expect(mockResolveIntent).toHaveBeenLastCalledWith(
+        expect.objectContaining({params: {id: 'doc-id', type: 'book', comment: 'c2'}}),
+      )
+    })
+
+    it('falls back to the standalone editor when the structure fails to resolve', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      mockRouter.state = {
+        panes: [[{id: '__resolve__doc-id', params: {type: 'book', view: 'preview'}}]],
+      }
+      mockResolveIntent.mockRejectedValue(new PaneResolutionError({message: 'Broken list'}))
+
+      const {boundary} = renderResolver()
+
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {
+            panes: [
+              [{id: '__edit__doc-id', params: {type: 'book', view: 'preview'}, payload: undefined}],
+            ],
+          },
+          {replace: true},
+        ),
+      )
+      expect(boundary.current?.state.error).toBeNull()
+      expect(warn).toHaveBeenCalled()
+      warn.mockRestore()
+    })
+
+    it('resolves a resolving pane that was opened directly, for example on reload', async () => {
+      mockRouter.state = {panes: [[{id: '__resolve__doc-id', params: {type: 'book'}}]]}
+      mockResolveIntent.mockResolvedValue(resolvedPanes)
+
+      renderResolver()
+
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {panes: [[{id: 'books'}], [{id: 'doc-id', params: undefined, payload: undefined}]]},
+          {replace: true},
+        ),
+      )
+      expect(mockResolveIntent).toHaveBeenCalledWith(
+        expect.objectContaining({intent: 'edit', params: {id: 'doc-id', type: 'book'}}),
+      )
+    })
   })
 })
