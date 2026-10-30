@@ -21,6 +21,8 @@ import {MemberFieldError} from '../../../members/object/MemberFieldError'
 import {MemberFieldSet} from '../../../members/object/MemberFieldset'
 import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {setIfMissing, unset} from '../../../patch/patch'
+import {type PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 import {type InputProps} from '../../../types/inputProps'
@@ -39,6 +41,7 @@ import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps} from './types'
 import {useAccessPolicy} from './useAccessPolicy'
+import {getDefaultCropPatches, getSetAssetRef, withDefaultCrop} from './utils/defaultCrop'
 
 export {BaseImageInputProps}
 
@@ -78,6 +81,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
+  const aspectRatio = schemaType.options?.aspectRatio
+  const handleAssetChange = useCallback(
+    (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(withDefaultCrop(patch, aspectRatio)),
+    [aspectRatio, onChange],
+  )
+
   const {
     action: assetSourceAction,
     selectedAssetSource,
@@ -98,7 +107,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectFilesToUpload,
   } = useAssetSource<ImageAsset>({
     client,
-    onChange,
+    onChange: handleAssetChange,
     schemaType,
     onAssetLimitError: () => handleAssetLimitUpsellDialog('field_action'),
     onAllComplete: () => setMenuOpen(false),
@@ -150,9 +159,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       cancelUpload()
       setIsUploading(true)
       onChange(setIfMissing({_type: schemaType.name}))
+      let uploadedAssetRef: string | undefined
       uploadSubscription.current = uploader.upload(client, file, schemaType, options).subscribe({
         next: (uploadEvent) => {
           if (uploadEvent.patches) {
+            uploadedAssetRef =
+              uploadEvent.patches.map(getSetAssetRef).find(Boolean) ?? uploadedAssetRef
             onChange(uploadEvent.patches)
           }
         },
@@ -166,12 +178,28 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           clearUploadStatus()
         },
         complete: () => {
-          onChange([unset(['hotspot']), unset(['crop']), unset(['media'])])
+          onChange([
+            unset(['hotspot']),
+            unset(['crop']),
+            unset(['media']),
+            // Last, so the crop unset above does not clear it
+            ...getDefaultCropPatches(uploadedAssetRef, aspectRatio),
+          ])
           setIsUploading(false)
         },
       })
     },
-    [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, setIsUploading, t],
+    [
+      aspectRatio,
+      cancelUpload,
+      clearUploadStatus,
+      client,
+      onChange,
+      push,
+      schemaType,
+      setIsUploading,
+      t,
+    ],
   )
 
   const handleClearField = useCallback(() => {
@@ -213,14 +241,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     (assetsFromSource: AssetFromSource[]) => {
       handleSelectAssetFromSourceShared({
         assetsFromSource,
-        onChange,
+        onChange: handleAssetChange,
         type: schemaType,
         resolveUploader,
         uploadWith,
       })
       handleAssetSourceResetOnComplete()
     },
-    [handleAssetSourceResetOnComplete, onChange, resolveUploader, schemaType, uploadWith],
+    [handleAssetChange, handleAssetSourceResetOnComplete, resolveUploader, schemaType, uploadWith],
   )
 
   const handleCancelUpload = useCallback(() => {

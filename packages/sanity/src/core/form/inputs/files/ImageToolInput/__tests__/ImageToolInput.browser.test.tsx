@@ -120,6 +120,18 @@ function CropOnlyImageToolInputHarness() {
   )
 }
 
+function WideImageToolInputHarness({options}: {options: ImageValueOptions}) {
+  return (
+    <TestWrapper schemaTypes={createImageSchema(options)}>
+      <TestForm document={CROP_ONLY_DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
+function getCropSize() {
+  return page.getByTestId('image-tool-crop-size')
+}
+
 describe('image tool input', () => {
   test('renders the hotspot and crop tool', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -160,6 +172,7 @@ describe('image tool input', () => {
     )
     expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
 
+    await expect.element(getCropSize()).toHaveTextContent('2000 × 1000 px')
     ;(cropRect.element() as SVGRectElement).focus()
     const modifier = getModifierKey()
     await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
@@ -171,6 +184,63 @@ describe('image tool input', () => {
     expect(state.image.crop.top).toBeCloseTo(0)
     expect(state.image.crop.bottom).toBeCloseTo(0)
     expect(state.image.hotspot).toBeUndefined()
+    await expect.element(getCropSize()).toHaveTextContent('1000 × 1000 px')
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'default')
+    await settleChromaticEndState()
+  })
+
+  test('shows no crop size without a size or ratio option', async () => {
+    void render(<ImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    expect(document.querySelector('[data-testid="image-tool-crop-size"]')).toBeNull()
+  })
+
+  test('flags a crop below the recommended size', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{hotspot: true, recommendedDimensions: {width: 2400, height: 1200}}}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'caution')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent('2000 × 1000 pxCropped image should be at least 2400 × 1200 px')
+    await settleChromaticEndState()
+  })
+
+  test('flags a crop below the minimum size over the recommended size', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{
+          hotspot: true,
+          minDimensions: {width: 2400, height: 600},
+          recommendedDimensions: {width: 2400, height: 1200},
+        }}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent('2000 × 1000 pxCropped image must be at least 2400 × 600 px')
+    await settleChromaticEndState()
+  })
+
+  test('previews the ratios the field allows', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<WideImageToolInputHarness options={{hotspot: true, aspectRatio: [1, 16 / 9]}} />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByRole('heading', {name: '1:1', exact: true})).toBeVisible()
+    await expect.element(page.getByRole('heading', {name: '16:9', exact: true})).toBeVisible()
+    expect(page.getByText('Panorama').query()).toBeNull()
     await settleChromaticEndState()
   })
 })
