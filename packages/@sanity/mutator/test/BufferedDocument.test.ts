@@ -551,3 +551,32 @@ test('an echo of our own transaction that matches the optimistic result does not
   expect(rebases).toHaveLength(0)
   expect(document.LOCAL?.title).toBe('Edited')
 })
+
+test('server-added fields from an echo that arrives while a later commit is in flight apply once that commit echoes', () => {
+  const {document, rebases, commit} = createDraftFromPublished()
+  const commits: CommitHandlerMessage[] = []
+  document.commitHandler = (message) => commits.push(message)
+
+  document.add(new Mutation({mutations: [{patch: {id: 'drafts.a', set: {body: 'Typed'}}}]}))
+  void document.commit()
+  document.arrive(echoOf(commit, {...PUBLISHED, _system: {base: {id: 'a', rev: 'r1'}}}))
+  expect(rebases).toHaveLength(0)
+
+  const [secondCommit] = commits
+  document.arrive(
+    new Mutation({
+      transactionId: secondCommit.mutation.transactionId,
+      previousRev: commit.mutation.transactionId,
+      resultRev: secondCommit.mutation.transactionId,
+      timestamp: '2026-01-01T00:00:01.000Z',
+      mutations: [{patch: {id: 'drafts.a', set: {body: 'Typed'}}}],
+    }),
+  )
+
+  expect(rebases).toHaveLength(1)
+  expect(document.LOCAL).toMatchObject({
+    title: 'Edited',
+    body: 'Typed',
+    _system: {base: {id: 'a', rev: 'r1'}},
+  })
+})
