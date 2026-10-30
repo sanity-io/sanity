@@ -60,6 +60,7 @@ export interface FakeFidelity {
   matched: number
   mismatched: number
   errors: number
+  nothingToReplay: number
   submissions: number
 }
 
@@ -259,16 +260,18 @@ function fidelityOf(pairs: ReportPair[]): FakeFidelity {
   const verdicts = pairs.flatMap((pair) =>
     pairErrors(pair).length > 0 ? [] : (pair.verdicts.samples ?? []),
   )
-  const count = (verdict: SampleVerdict['verdict']) =>
-    verdicts.filter((sample) => sample.verdict === verdict).length
-  const matched = count('confirmed')
-  const mismatched = count('fake-mismatch')
+  const count = (verdict: SampleVerdict['verdict'], replayedSome: boolean) =>
+    verdicts.filter((sample) => sample.verdict === verdict && sample.replayed > 0 === replayedSome)
+      .length
+  const matched = count('confirmed', true)
+  const mismatched = count('fake-mismatch', true) + count('fake-mismatch', false)
   return {
     samples: verdicts.length,
     replayed: matched + mismatched,
     matched,
     mismatched,
-    errors: count('error'),
+    errors: count('error', true) + count('error', false),
+    nothingToReplay: count('confirmed', false),
     submissions: verdicts.reduce((total, sample) => total + sample.replayed, 0),
   }
 }
@@ -496,7 +499,7 @@ function plural(count: number, noun: string, pluralNoun = `${noun}s`): string {
 
 export function fidelityLine(fidelity: FakeFidelity): string {
   if (fidelity.samples === 0) return 'Fake fidelity: no passing samples were replayed.'
-  return `Fake fidelity: ${fidelity.matched} of ${plural(fidelity.replayed, 'replayed sample')} matched the real Content Lake (${plural(fidelity.mismatched, 'mismatch', 'mismatches')}, ${plural(fidelity.errors, 'error')}, ${plural(fidelity.submissions, 'submission')} replayed).`
+  return `Fake fidelity: ${fidelity.matched} of ${plural(fidelity.replayed, 'replayed sample')} matched the real Content Lake (${plural(fidelity.mismatched, 'mismatch', 'mismatches')}, ${plural(fidelity.errors, 'error')}, ${fidelity.nothingToReplay} with nothing to replay, ${plural(fidelity.submissions, 'submission')} replayed).`
 }
 
 export function summaryMarkdown(summary: FileSummary): string {

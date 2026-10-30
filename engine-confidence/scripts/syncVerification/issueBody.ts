@@ -87,9 +87,13 @@ export function engineIssueTitle(fields: SignatureFields): string {
   const fate = fields.fate === undefined ? '' : ` ${FATE_PHRASES[fields.fate] ?? fields.fate}`
   const status = [fields.statusCode, fields.errorType].filter((part) => part !== undefined)
   const statusText = status.length === 0 ? '' : ` (${status.join(' ')})`
-  const check = fields.check === undefined ? '' : `: ${fields.check}`
   const operation = fields.operation === undefined ? '' : ` in ${fields.operation}`
-  return `${rule}${fate}${statusText}${operation}${check}`
+  const thrownBy = fields.thrownBy === undefined ? '' : ` thrown by ${fields.thrownBy}`
+  const where = [fields.check, fields.detail === undefined ? undefined : `(${fields.detail})`]
+    .filter((part) => part !== undefined)
+    .join(' ')
+  const whereText = where === '' ? '' : `: ${where}`
+  return `${rule}${fate}${statusText}${operation}${thrownBy}${whereText}`
 }
 
 export function fakeIssueTitle(fakeSignature: string): string {
