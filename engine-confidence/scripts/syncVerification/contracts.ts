@@ -3,10 +3,12 @@ export type Seam = 'pair' | 'operations'
 export interface SignatureFields {
   rule: string
   check?: string
+  detail?: string
   fate?: string
   statusCode?: number
   errorType?: string
   operation?: string
+  thrownBy?: string
 }
 
 export interface GeneratorFailure {

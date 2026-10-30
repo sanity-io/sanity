@@ -255,8 +255,9 @@ jobs:
       fail-fast: false
       # The operations seam's memoize caches grow about 0.5 MB per sequence,
       # so its budget is split across processes. `sample` is passing sequences
-      # kept per seed for the fake fidelity check: 38 in all, which keeps
-      # sync-verify to a few minutes of staging traffic (see the README).
+      # kept per seed for the fake fidelity check: 38 in all, about 300
+      # requests, which keeps sync-verify to a few minutes of staging traffic
+      # (see the README).
       matrix:
         include:
           - {seam: pair, shard: 0, first-seed: 0, last-seed: 9, runs: 2500, sample: 2}

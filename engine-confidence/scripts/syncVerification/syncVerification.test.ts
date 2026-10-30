@@ -531,11 +531,12 @@ describe('passing samples', () => {
     const summary = await fileFailures(
       [
         pair([], [], 'pair', {
-          samples: [sample(1), sample(2), sample(3)],
+          samples: [sample(1), sample(2), sample(3), sample(4)],
           verdicts: [
             sampleVerdict(1),
             sampleVerdict(2),
             sampleVerdict(3, {verdict: 'error', summary: 'Request timed out', replayed: 0}),
+            sampleVerdict(4, {replayed: 0}),
           ],
         }),
       ],
@@ -553,15 +554,16 @@ describe('passing samples', () => {
       },
     ])
     expect(summary.fidelity).toEqual({
-      samples: 3,
+      samples: 4,
       replayed: 2,
       matched: 2,
       mismatched: 0,
       errors: 1,
+      nothingToReplay: 1,
       submissions: 6,
     })
     expect(summaryMarkdown(summary)).toContain(
-      'Fake fidelity: 2 of 2 replayed samples matched the real Content Lake (0 mismatches, 1 error, 6 submissions replayed).',
+      'Fake fidelity: 2 of 2 replayed samples matched the real Content Lake (0 mismatches, 1 error, 1 with nothing to replay, 6 submissions replayed).',
     )
   })
 
@@ -623,6 +625,17 @@ describe('issue titles', () => {
       'a client ends up unhealthy: consistent',
     )
     expect(engineIssueTitle({rule: 'step', check: 'commit'})).toBe('a step throws: commit')
+    expect(engineIssueTitle({rule: 'settle', check: 'consistent', detail: 'nothing-sent'})).toBe(
+      'the document never settles: consistent (nothing-sent)',
+    )
+    expect(
+      engineIssueTitle({
+        rule: 'settle',
+        check: 'stream-errors',
+        errorType: 'Error',
+        thrownBy: 'DiffMatchPatch.apply',
+      }),
+    ).toBe('the document never settles (Error) thrown by DiffMatchPatch.apply: stream-errors')
   })
 })
 
