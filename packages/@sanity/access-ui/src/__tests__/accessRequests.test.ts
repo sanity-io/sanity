@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {
   fetchAccessRequestStatus,
@@ -12,6 +12,12 @@ describe('listMyAccessRequests', () => {
   it('returns an empty array when the API responds with null', async () => {
     const client = createClientStub({list: () => Promise.resolve(null)})
     await expect(listMyAccessRequests(client)).resolves.toEqual([])
+  })
+
+  it('keeps the legacy API version', async () => {
+    const client = createClientStub()
+    await listMyAccessRequests(client)
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
   })
 })
 
@@ -39,6 +45,12 @@ describe('submitAccessRequest', () => {
         body: expect.objectContaining({note: 'hi', type: 'access'}),
       }),
     )
+  })
+
+  it('keeps the legacy API version', async () => {
+    const client = createClientStub()
+    await submit(client)
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
   })
 
   const errorCases: {
@@ -126,6 +138,7 @@ describe('fetchAccessRequestStatus', () => {
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({url: '/access/project/project-a/requests/state'}),
     )
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2026-10-24'})
   })
 
   it('returns the saml-required verdict with its SSO login URL', async () => {
@@ -161,15 +174,20 @@ describe('fetchAccessRequestStatus', () => {
   it.each([
     {given: 'the endpoint is missing', error: createApiError(404, {})},
     {given: 'the request fails', error: new Error('network down')},
-  ])('fails open when $given, leaving the submit-time gate as the backstop', async ({error}) => {
+  ])('fails closed when $given', async ({error}) => {
     const client = createClientStub({status: () => Promise.reject(error)})
 
-    await expect(fetchStatus(client)).resolves.toEqual({state: 'eligible'})
+    await expect(fetchStatus(client)).resolves.toEqual({state: 'temporarily-unavailable'})
   })
 
-  it('treats a null body as eligible', async () => {
+  it.each([
+    {given: 'a null body', value: null},
+    {given: 'an unknown state', value: {state: 'future-state'}},
+    {given: 'a malformed redirect URL', value: {state: 'saml-required', redirectUrl: 42}},
+  ])('fails closed for $given', async ({value}) => {
     const client = createClientStub({status: () => Promise.resolve(null)})
 
-    await expect(fetchStatus(client)).resolves.toEqual({state: 'eligible'})
+    vi.mocked(client.request).mockResolvedValueOnce(value)
+    await expect(fetchStatus(client)).resolves.toEqual({state: 'temporarily-unavailable'})
   })
 })
