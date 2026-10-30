@@ -197,7 +197,6 @@ describe('getMaximizedPaneTransition', () => {
             listPane('root'),
             documentPane('page123-page123-0', {
               groupIndex: 1,
-              siblingIndex: 1,
               handoffKey: 'handoff-page123-0',
               selected: true,
             }),

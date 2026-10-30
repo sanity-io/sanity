@@ -300,7 +300,7 @@ describe('IntentResolver', () => {
         mockRouter.setState({panes: [[{id: 'authors'}]]})
       })
       await act(async () => resolution.resolve(resolvedPanes))
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await act(() => vi.advanceTimersByTimeAsync(0))
 
       expect(mockNavigate).toHaveBeenCalledTimes(1)
       expect(mockResolveIntent).toHaveBeenCalledTimes(1)

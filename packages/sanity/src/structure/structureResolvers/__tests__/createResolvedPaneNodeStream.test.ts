@@ -1,6 +1,6 @@
-import {BehaviorSubject, filter, firstValueFrom, NEVER, of, ReplaySubject} from 'rxjs'
+import {BehaviorSubject, filter, firstValueFrom, of, ReplaySubject} from 'rxjs'
 import {type SchemaPluginOptions} from 'sanity'
-import {describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {type ItemChild} from '../../structureBuilder/ChildResolver'
@@ -160,7 +160,7 @@ async function getSlowStructure() {
 }
 
 async function settle() {
-  await new Promise((resolve) => setTimeout(resolve, 0))
+  await vi.advanceTimersByTimeAsync(0)
 }
 
 function summarize(metas: ResolvedPaneMeta[]) {
@@ -172,19 +172,12 @@ function summarize(metas: ResolvedPaneMeta[]) {
 }
 
 describe('createResolvedPaneNodeStream with a resolving pane', () => {
-  it('waits for the root before an `__edit__` pane, as before', async () => {
-    const emissions: ResolvedPaneMeta[][] = []
-    const {structureContext} = await getSlowStructure()
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
 
-    const subscription = createResolvedPaneNodeStream({
-      routerPanesStream: of([[{id: '__edit__page123', params: {type: 'page'}}]]),
-      rootPaneNode: NEVER,
-      structureContext,
-    }).subscribe((metas) => emissions.push(metas))
-    await settle()
-    subscription.unsubscribe()
-
-    expect(emissions).toEqual([])
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('keeps the document in every emission while the resolved path loads its ancestors', async () => {

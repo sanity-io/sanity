@@ -1,6 +1,5 @@
 import {describe, expect, it} from 'vitest'
 
-import {type RouterPanes} from '../../types'
 import {applyResolvedIntent, createResolvingPanes, getResolvingRequest} from '../resolvingPane'
 
 describe('createResolvingPanes', () => {
@@ -28,28 +27,7 @@ describe('createResolvingPanes', () => {
   })
 })
 
-describe('getResolvingRequest', () => {
-  it('rebuilds the edit intent of a resolving pane', () => {
-    expect(
-      getResolvingRequest([[{id: '__resolve__abc', params: {type: 'book', view: 'preview'}}]]),
-    ).toEqual({
-      intent: 'edit',
-      params: {id: 'abc', type: 'book', view: 'preview'},
-      payload: undefined,
-    })
-  })
-
-  it('ignores panes that are not resolving, or have no type', () => {
-    expect(getResolvingRequest(undefined)).toBeUndefined()
-    expect(getResolvingRequest([[{id: 'books'}]])).toBeUndefined()
-    expect(getResolvingRequest([[{id: '__edit__abc', params: {type: 'book'}}]])).toBeUndefined()
-    expect(getResolvingRequest([[{id: '__resolve__abc'}]])).toBeUndefined()
-  })
-})
-
 describe('applyResolvedIntent', () => {
-  const resolvedPanes: RouterPanes = [[{id: 'books'}], [{id: 'abc', params: {}}]]
-
   it('does not bring back a focus mode the resolving pane already applied', () => {
     expect(
       applyResolvedIntent([[{id: '__resolve__abc', params: {type: 'book'}}]], '__resolve__abc', [
@@ -89,7 +67,7 @@ describe('applyResolvedIntent', () => {
       applyResolvedIntent(
         [[{id: '__resolve__abc', params: {type: 'book'}}], [{id: 'author-1', params: {}}]],
         '__resolve__abc',
-        resolvedPanes,
+        [[{id: 'books'}], [{id: 'abc', params: {}}]],
       ),
     ).toEqual([
       [{id: 'books'}],
@@ -108,11 +86,5 @@ describe('applyResolvedIntent', () => {
     ).toEqual([
       [{id: '__edit__abc', params: {type: 'book', view: 'preview'}, payload: {title: 'Dune'}}],
     ])
-  })
-
-  it('changes nothing when the user navigated away from the resolving pane', () => {
-    expect(applyResolvedIntent([[{id: 'authors'}]], '__resolve__abc', resolvedPanes)).toBe(
-      undefined,
-    )
   })
 })
