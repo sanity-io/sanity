@@ -341,3 +341,44 @@ test('pending local patch on an array index removed by a remote patch rebases cl
     .didRebase()
     .assertLOCAL('items', [{title: 'one'}])
 })
+
+test('local edits made while a commit is in flight survive the commit being cancelled', () => {
+  new BufferedDocumentTester({
+    _id: 'a',
+    _type: 't',
+    _rev: '1',
+    title: 'Hello',
+  })
+    .stage('when committing a local edit')
+    .localPatch({
+      id: 'a',
+      set: {title: 'Good bye'},
+    })
+    .commit()
+    .hasPendingCommit()
+    .stage('when applying a local edit while the commit is in flight')
+    .localPatch({
+      id: 'a',
+      set: {body: 'My friend'},
+    })
+    .hasLocalEdits()
+    .stage('when the commit is cancelled')
+    .commitCancelled()
+    .didRebase()
+    .hasNoPendingCommit()
+    .hasLocalEdits()
+    .assertHEAD('title', 'Hello')
+    .assertLOCAL('title', 'Hello')
+    .assertLOCAL('body', 'My friend')
+    .stage('when committing the remaining local edits')
+    .commit()
+    .hasPendingCommit()
+    .hasNoLocalEdits()
+    .assertEDGE('title', 'Hello')
+    .assertEDGE('body', 'My friend')
+    .stage('when commit succeeds')
+    .commitSucceeds()
+    .assertALL('title', 'Hello')
+    .assertALL('body', 'My friend')
+    .isConsistent()
+})
