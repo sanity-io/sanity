@@ -797,4 +797,72 @@ describe('Validation test', () => {
       expect(collapseErrors(value)).toHaveLength(1)
     })
   })
+
+  describe('image crop options', () => {
+    const imageProblems = (options: Record<string, unknown>) =>
+      validateSchema([{type: 'image', name: 'myImage', options}]).get('myImage')._problems
+
+    const messages = (options: Record<string, unknown>, severity: 'error' | 'warning') =>
+      imageProblems(options)
+        .filter((problem: any) => problem.severity === severity)
+        .map((problem: any) => problem.message)
+
+    test.each([[16 / 9], [{min: 4 / 3, max: 16 / 9}], [{min: 1, max: 1}], [[1, 4 / 3, 16 / 9]]])(
+      'accepts aspectRatio %o',
+      (aspectRatio) => {
+        expect(imageProblems({aspectRatio})).toHaveLength(0)
+      },
+    )
+
+    test.each([
+      [0],
+      [-1],
+      [Number.POSITIVE_INFINITY],
+      [Number.NaN],
+      ['16/9'],
+      [{min: 16 / 9, max: 4 / 3}],
+      [{min: 0, max: 1}],
+      [{min: 1}],
+      [[]],
+      [[1, 0]],
+      [[1, Number.POSITIVE_INFINITY]],
+    ])('rejects aspectRatio %o', (aspectRatio) => {
+      expect(messages({aspectRatio}, 'error')).toEqual([
+        expect.stringContaining('Invalid image `options.aspectRatio`'),
+      ])
+    })
+
+    test.each([['minDimensions'], ['recommendedDimensions']])(
+      'accepts and rejects %s',
+      (option) => {
+        expect(imageProblems({[option]: {width: 800, height: 450}})).toHaveLength(0)
+        expect(messages({[option]: {width: 0, height: 450}}, 'error')).toEqual([
+          expect.stringContaining(`Invalid image \`options.${option}\``),
+        ])
+        expect(messages({[option]: {width: 800}}, 'error')).toHaveLength(1)
+        expect(messages({[option]: {width: '800', height: 450}}, 'error')).toHaveLength(1)
+      },
+    )
+
+    test.each([[{width: 600, height: 900}], [{width: 1600, height: 400}]])(
+      'warns when recommendedDimensions %o is smaller than minDimensions',
+      (recommended) => {
+        expect(
+          messages(
+            {minDimensions: {width: 800, height: 450}, recommendedDimensions: recommended},
+            'warning',
+          ),
+        ).toEqual([expect.stringContaining('`options.recommendedDimensions` should be at least')])
+      },
+    )
+
+    test('accepts recommendedDimensions at least as large as minDimensions', () => {
+      expect(
+        imageProblems({
+          minDimensions: {width: 800, height: 450},
+          recommendedDimensions: {width: 800, height: 450},
+        }),
+      ).toHaveLength(0)
+    })
+  })
 })

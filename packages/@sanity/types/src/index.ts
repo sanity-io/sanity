@@ -264,6 +264,9 @@ export {type GlobalDocumentReferenceDefinition} from './schema/definition/type/g
 export {
   type HotspotOptions,
   type HotspotPreview,
+  type ImageAspectRatio,
+  type ImageAspectRatioRange,
+  type ImageCropDimensions,
   type ImageDefinition,
   type ImageMetadataType,
   type ImageOptions,
