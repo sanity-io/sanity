@@ -12,7 +12,17 @@ import {
   pixelRectToCrop,
 } from '../cropDimensions'
 
-const REF = 'image-a1b2c3d4e5f6-1200x800-jpg'
+const ASSET_HASH = 'a75b03fdd5b5fa36947bf2b776a542e0c940f682'
+const REF = `image-${ASSET_HASH}-1200x800-jpg`
+const SVG_REF = `image-${ASSET_HASH}-1200x800-svg`
+const ZERO_SIZE_REF = `image-${ASSET_HASH}-0x0-png`
+const MALFORMED_REFS = [
+  '',
+  'image',
+  `image-${ASSET_HASH}-svg`,
+  `image-${ASSET_HASH}-jpg`,
+  'image-a1-1200x800-jpg',
+]
 
 // A centered crop of REF, 50% wide and 80% tall: 600 × 640 px.
 const CROP: ImageCrop = {_type: 'sanity.imageCrop', top: 0.1, bottom: 0.1, left: 0.25, right: 0.25}
@@ -22,19 +32,16 @@ function imageValue(ref: string, crop?: ImageCrop) {
 }
 
 describe('isSvgImageRef', () => {
-  it('matches the dimensionless image-<hash>-svg form', () => {
-    expect(isSvgImageRef('image-a1b2c3d4e5f6-svg')).toBe(true)
+  it('matches an image-<hash>-<w>x<h>-svg reference', () => {
+    expect(isSvgImageRef(SVG_REF)).toBe(true)
   })
 
-  it('matches the dimensioned image-<hash>-<w>x<h>-svg form', () => {
-    expect(isSvgImageRef('image-a1b2c3d4e5f6-1200x800-svg')).toBe(true)
-  })
-
-  it('rejects raster, non-image and malformed references', () => {
+  it('rejects raster, non-image, missing and malformed references', () => {
     expect(isSvgImageRef(REF)).toBe(false)
-    expect(isSvgImageRef('file-a1b2c3d4e5f6-svg')).toBe(false)
-    expect(isSvgImageRef('image-a1b2c3d4e5f6-1200x800-png')).toBe(false)
-    expect(isSvgImageRef('')).toBe(false)
+    expect(isSvgImageRef(`file-${ASSET_HASH}-svg`)).toBe(false)
+    expect(isSvgImageRef(`image-${ASSET_HASH}-1200x800-png`)).toBe(false)
+    expect(isSvgImageRef(undefined)).toBe(false)
+    expect(MALFORMED_REFS.map(isSvgImageRef)).toEqual(MALFORMED_REFS.map(() => false))
   })
 })
 
@@ -43,25 +50,33 @@ describe('getImageRefDimensions', () => {
     expect(getImageRefDimensions(REF)).toEqual({width: 1200, height: 800})
   })
 
-  it('returns undefined for SVGs, references without dimensions and missing references', () => {
-    expect(getImageRefDimensions('image-a1b2c3d4e5f6-svg')).toBeUndefined()
-    expect(getImageRefDimensions('image-a1b2c3d4e5f6-1200x800-svg')).toBeUndefined()
-    expect(getImageRefDimensions('file-a1b2c3d4e5f6-pdf')).toBeUndefined()
+  it('returns undefined for SVGs, file references and missing references', () => {
+    expect(getImageRefDimensions(SVG_REF)).toBeUndefined()
+    expect(getImageRefDimensions(`file-${ASSET_HASH}-pdf`)).toBeUndefined()
     expect(getImageRefDimensions(undefined)).toBeUndefined()
+  })
+
+  it('returns undefined for malformed references', () => {
+    expect(MALFORMED_REFS.map(getImageRefDimensions)).toEqual(MALFORMED_REFS.map(() => undefined))
+  })
+
+  it('returns undefined for a zero-size reference instead of 0 × 0', () => {
+    expect(getImageRefDimensions(ZERO_SIZE_REF)).toBeUndefined()
+    expect(getImageRefDimensions(`image-${ASSET_HASH}-1200x0-png`)).toBeUndefined()
   })
 })
 
 describe('isCroppableImageRef', () => {
   it('accepts references with encoded dimensions', () => {
     expect(isCroppableImageRef(REF)).toBe(true)
-    expect(isCroppableImageRef('image-abc-1200x800-webp')).toBe(true)
+    expect(isCroppableImageRef(`image-${ASSET_HASH}-1200x800-webp`)).toBe(true)
   })
 
-  it('rejects references without dimensions, SVGs and missing references', () => {
-    expect(isCroppableImageRef('image-a1b2c3d4e5f6-svg')).toBe(false)
-    expect(isCroppableImageRef('image-a1b2c3d4e5f6-1200x800-svg')).toBe(false)
+  it('rejects SVGs, zero-size, missing and malformed references', () => {
+    expect(isCroppableImageRef(SVG_REF)).toBe(false)
+    expect(isCroppableImageRef(ZERO_SIZE_REF)).toBe(false)
     expect(isCroppableImageRef(undefined)).toBe(false)
-    expect(isCroppableImageRef('')).toBe(false)
+    expect(MALFORMED_REFS.map(isCroppableImageRef)).toEqual(MALFORMED_REFS.map(() => false))
   })
 })
 
@@ -111,8 +126,10 @@ describe('getCroppedImageDimensions', () => {
   })
 
   it('returns undefined for SVGs', () => {
-    expect(getCroppedImageDimensions(imageValue('image-a1b2c3d4e5f6-svg'))).toBeUndefined()
-    expect(getCroppedImageDimensions(imageValue('image-a1b2c3d4e5f6-1200x800-svg'))).toBeUndefined()
+    expect(getCroppedImageDimensions(imageValue(`image-${ASSET_HASH}-svg`))).toBeUndefined()
+    expect(
+      getCroppedImageDimensions(imageValue(`image-${ASSET_HASH}-1200x800-svg`)),
+    ).toBeUndefined()
   })
 
   it('returns the source size when there is no crop', () => {
