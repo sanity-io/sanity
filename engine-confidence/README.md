@@ -29,6 +29,7 @@ Run from the repo root as `pnpm engine-confidence <command>`. Every command writ
 | `store <file> [--dry-run]`                                                                                                                                   | Writes the document to Radar. `--dry-run` prints the id and the document and needs no token.                                |
 | `pin`                                                                                                                                                        | Recomputes the config hash and bumps `config.version` when it changed.                                                      |
 | `sync-verify <report.json> --out <verdicts.json> [--dry-run] [--dataset-mode <create\|existing>] [--dataset <name>] [--project-id <id>] [--api-host <host>]` | Replays a sync generator report against a real Content Lake and writes one verdict per failure. See below.                  |
+| `sync-file <report> <verdicts> [<report> <verdicts>...] [--dry-run] [--summary-dir <dir>]`                                                                   | Files new sync generator failures in Linear (see Sync verification).                                                        |
 | `unit`                                                                                                                                                       | Runs this package's unit tests.                                                                                             |
 
 Exit codes: `score` returns 8 when the exclusion register has a problem. `stryker` returns 3 for a dirty package, 5 when a guard fails (a surviving mutant that ran no test, or fewer dry run tests than `dryRunFloor`) and 6 for a config hash mismatch. `catalogue` returns 2 for a patch that does not apply, 3 for a dirty tree, 4 for a suite that is red on the clean tree, 6 for a hash mismatch and 7 for a witness that passes with its patch applied.
@@ -118,3 +119,23 @@ Retire an entry with `retiredOn` and `retiredReason` in its sidecar when the cod
 ### Rejected candidate
 
 Another candidate, `pair-teardown-drops-uncommitted-edits`, removed the 5 s grace period before a document pair is torn down. It is probably inert: `editState` has its own 1 s grace that keeps the pair alive past the autocommit. No harness caught it and no witness could be written, so it is not in the catalogue.
+
+## Sync verification
+
+Three more jobs in the weekly workflow look for new sync engine bugs. They are independent of the score: a failure in them never blocks `score` or `store`.
+
+- `sync-generate` runs the sync generator (`packages/sanity/src/core/store/document/sync/generated.sync.test.ts`) in collect mode on new seeds each ISO week (`<year><week>NN`), on both seams. The operations seam is split across three processes because its memoize caches grow with every sequence. Each shard uploads a generator report. It holds no secrets.
+- `sync-verify` replays each failure against a fresh staging dataset with `SANITY_E2E_WRITE_TOKEN` and writes a verdict per failure: `confirmed`, `fake-mismatch`, `assumed` (not verifiable, such as listener faults) or `error`.
+- `sync-file` runs `sync-file` with `LINEAR_API_KEY` and `SYNC_VERIFICATION_CLAUDE_API_KEY`. For each failure it searches the SAPP team for an issue with the exact line `sync-gen-signature: <signature>`, and skips the failure when one exists. Otherwise it files an issue in the Mutation engine coverage project with the "Sync verification bug" label. A `fake-mismatch` becomes an issue about the fake Content Lake, deduped on its own `sync-gen-fake-signature:` line. An `error` verdict files nothing.
+
+`sync-verify` and `sync-file` run on `main` only, for the schedule or a manual dispatch, and each holds only its own secrets. Scheduled runs file for real. A manual dispatch is a dry run unless `sync_dry_run` is turned off: it still looks up duplicates, and prints every issue it would file in the job summary.
+
+Dedupe matches whole lines only. An issue can carry several signature lines, and a signature that is a prefix of another never matches it. To mark a hand-filed issue as covering a signature, add the line to its `Failure signature` block.
+
+The script owns the title, the repro (the shrunk `SyncTestDefinition`, how to run it and the commit), the real Content Lake result and the signature line. Claude writes only what happens, the user impact and the likely cause, labelled a hypothesis. The script checks its own sections are byte-identical after the AI step, and files nothing for that failure when they are not. `SYNC_VERIFICATION_CLAUDE_MODEL` overrides the model.
+
+Run it locally with the generator report and the verdicts file of each seam. Without the keys, a dry run skips the dedupe lookup and prints a placeholder for the AI sections:
+
+```bash
+pnpm engine-confidence sync-file reports/sync-verification/report-pair-0.json reports/sync-verification/verdicts-pair-0.json --dry-run
+```

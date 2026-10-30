@@ -19,6 +19,12 @@ permissions: {}
 # Stryker results are incremental: each run reuses the previous successful
 # run's results, and every fourth ISO week (or when dispatched with `full`)
 # runs from scratch so a stale verdict cannot persist.
+#
+# The sync verification jobs run alongside the score and never block it: the
+# sync generator runs new seeds every ISO week, sync-verify replays each
+# failure against a fresh staging dataset, and sync-file files new
+# signatures in Linear. A manual dispatch files nothing unless `sync_dry_run`
+# is turned off.
 on:
   schedule:
     # Thursday 03:00 UTC
@@ -32,6 +38,11 @@ on:
         default: false
       store:
         description: "Write the result to the Radar dataset"
+        required: false
+        type: boolean
+        default: true
+      sync_dry_run:
+        description: "Print the sync verification issues instead of filing them in Linear"
         required: false
         type: boolean
         default: true
@@ -53,6 +64,7 @@ jobs:
       started-at: ${{ steps.plan.outputs.started-at }}
       previous-run-id: ${{ steps.plan.outputs.previous-run-id }}
       full: ${{ steps.plan.outputs.full }}
+      sync-seed-base: ${{ steps.plan.outputs.sync-seed-base }}
     steps:
       - id: plan
         env:
@@ -68,10 +80,13 @@ jobs:
           if [ "$INPUT_FULL" = "true" ] || [ -z "$PREVIOUS_RUN_ID" ] || [ $((WEEK % 4)) -eq 0 ]; then
             FULL=true
           fi
+          # New sync generator seeds every ISO week, e.g. 202644NN for 2026-W44
+          SYNC_SEED_BASE=$(( $(date -u +%G) * 10000 + WEEK * 100 ))
           {
             echo "started-at=$STARTED_AT"
             echo "previous-run-id=$PREVIOUS_RUN_ID"
             echo "full=$FULL"
+            echo "sync-seed-base=$SYNC_SEED_BASE"
           } >> "$GITHUB_OUTPUT"
 
   stryker:
@@ -226,11 +241,182 @@ jobs:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm engine-confidence store reports/engine-confidence-run.json
 
+  sync-generate:
+    name: Sync generator (${{ matrix.seam }} ${{ matrix.shard }})
+    needs: [plan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      # The operations seam's memoize caches grow about 0.5 MB per sequence,
+      # so its budget is split across processes
+      matrix:
+        include:
+          - {seam: pair, shard: 0, first-seed: 0, last-seed: 9, runs: 2500}
+          - {seam: operations, shard: 0, first-seed: 10, last-seed: 11, runs: 1500}
+          - {seam: operations, shard: 1, first-seed: 12, last-seed: 13, runs: 1500}
+          - {seam: operations, shard: 2, first-seed: 14, last-seed: 15, runs: 1500}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - name: Build packages
+        run: pnpm build --output-logs=errors-only
+
+      - name: Run the sync generator
+        env:
+          SEED_BASE: ${{ needs.plan.outputs.sync-seed-base }}
+          FIRST_SEED: ${{ matrix.first-seed }}
+          LAST_SEED: ${{ matrix.last-seed }}
+          SYNC_GEN_COLLECT: "1"
+          SYNC_GEN_SEAM: ${{ matrix.seam }}
+          SYNC_GEN_RUNS: ${{ matrix.runs }}
+          SYNC_GEN_MAX_STEPS: "8"
+          SYNC_GEN_COMMIT: ${{ github.sha }}
+          SYNC_GEN_REPORT: ${{ github.workspace }}/engine-confidence/reports/sync-verification/report-${{ matrix.seam }}-${{ matrix.shard }}.json
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: |
+          mkdir -p "$(dirname "$SYNC_GEN_REPORT")"
+          export SYNC_GEN_SEEDS="$((SEED_BASE + FIRST_SEED))-$((SEED_BASE + LAST_SEED))"
+          echo "Seeds $SYNC_GEN_SEEDS"
+          # The test fails when it collects a failure, so the report decides the step
+          pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/generated.sync.test.ts || true
+          test -s "$SYNC_GEN_REPORT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-confidence-sync-report-${{ matrix.seam }}-${{ matrix.shard }}
+          path: engine-confidence/reports/sync-verification/report-${{ matrix.seam }}-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 90
+
+  sync-verify:
+    needs: [sync-generate]
+    # Holds the staging write token: main only, never pull_request. Verifies
+    # whichever shards produced a report.
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/main' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: engine-confidence-sync-report-*
+          merge-multiple: true
+          path: engine-confidence/reports/sync-verification
+
+      - name: Replay the failures against a real Content Lake
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
+        run: |
+          shopt -s nullglob
+          REPORTS=("$PWD"/engine-confidence/reports/sync-verification/report-*.json)
+          if [ ${#REPORTS[@]} -eq 0 ]; then
+            echo "No generator reports to verify"
+            exit 1
+          fi
+          # One at a time to stay under the staging rate limits. A failed dataset
+          # delete still writes the verdicts, so keep going and fail at the end.
+          STATUS=0
+          for REPORT in "${REPORTS[@]}"; do
+            pnpm engine-confidence sync-verify "$REPORT" --out "${REPORT%/*}/verdicts-${REPORT##*/report-}" || STATUS=1
+          done
+          exit $STATUS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: engine-confidence-sync-verdicts
+          path: engine-confidence/reports/sync-verification/verdicts-*.json
+          if-no-files-found: error
+          retention-days: 90
+
+  sync-file:
+    needs: [sync-verify]
+    # Holds the Linear and Claude keys: main only, never pull_request. Runs
+    # after a failed sync-verify too: a leaked dataset still leaves verdicts.
+    if: >-
+      !cancelled() &&
+      (needs.sync-verify.result == 'success' || needs.sync-verify.result == 'failure') &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: engine-confidence-sync-*
+          merge-multiple: true
+          path: engine-confidence/reports/sync-verification
+
+      - name: File new failures in Linear
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SYNC_DRY_RUN: ${{ inputs.sync_dry_run }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          SYNC_VERIFICATION_CLAUDE_API_KEY: ${{ secrets.SYNC_VERIFICATION_CLAUDE_API_KEY }}
+        run: |
+          ARGS=()
+          for REPORT in "$PWD"/engine-confidence/reports/sync-verification/report-*.json; do
+            ARGS+=("$REPORT" "${REPORT%/*}/verdicts-${REPORT##*/report-}")
+          done
+          # Scheduled runs file for real; a dispatch files only with sync_dry_run off
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$INPUT_SYNC_DRY_RUN" != "false" ]; then
+            ARGS+=(--dry-run)
+          fi
+          set +e
+          pnpm engine-confidence sync-file "${ARGS[@]}"
+          STATUS=$?
+          set -e
+          if [ -f engine-confidence/reports/sync-verification/sync-file-summary.md ]; then
+            cat engine-confidence/reports/sync-verification/sync-file-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit $STATUS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: engine-confidence-sync-file-summary
+          path: engine-confidence/reports/sync-verification/sync-file-summary.*
+          retention-days: 90
+
   # Nobody watches this workflow's runs, so alert the CI channel instead (same
   # pattern as sync-git-metrics.yml). `cancelled` included because job
   # timeouts conclude as cancelled, not failure.
   alert-failure:
-    needs: [plan, stryker, catalogue, score, store]
+    needs: [plan, stryker, catalogue, score, store, sync-generate, sync-verify, sync-file]
     if: >-
       always() && github.event_name == 'schedule' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
