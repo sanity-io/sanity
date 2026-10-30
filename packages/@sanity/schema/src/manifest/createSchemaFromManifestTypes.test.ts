@@ -27,7 +27,11 @@ describe('createSchemaFromManifestTypes', () => {
       expect(types.map((type: {name: string}) => type.name)).toEqual(['article'])
 
       const schema = createSchemaFromManifestTypes({name: 'reconstructed', types})
-      expect(schema.getLocalTypeNames()).toEqual(['article'])
+      expect(schema.getLocalTypeNames()).toEqual([
+        'article',
+        'system.release',
+        'sanity.releaseMetadata',
+      ])
       expect(schema.get('article').fields[0].type.to[0].name).toBe(assetType)
       expect(schema.get(assetType).type.name).toBe('document')
     },
