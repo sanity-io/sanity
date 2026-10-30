@@ -101,3 +101,18 @@ export const PerformanceINPMeasuredV2 = defineEvent<INPMetricWithAttribution>({
   description: 'Interaction to Next Paint with attribution (web-vitals)',
   maxSampleRate: 30_000, // Sample at most every 30 seconds
 })
+
+// =============================================================================
+// SOFT NAVIGATIONS (Chromium soft-navigation entries via web-vitals)
+// =============================================================================
+
+/** @internal */
+export type SoftNavigationChange =
+  | 'document-open'
+  | 'pane-open'
+  | 'view-change'
+  | 'inspector-toggle'
+  | 'perspective-change'
+  | 'tool-switch'
+  | 'filter-change'
+  | 'other'
