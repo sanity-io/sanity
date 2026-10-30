@@ -1,7 +1,7 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {Suspense} from 'react'
-import {Observable, Subject} from 'rxjs'
+import {Suspense, use} from 'react'
+import {Observable, of, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -48,6 +48,8 @@ const upsellData: UpsellData = {
 let response$: Subject<UpsellDataResult>
 let upsellData$: Observable<UpsellDataResult>
 let subscriptions: number
+// What the test provider's own upsell providers (limits, releases) get: settled, never counted
+const otherUpsellData$ = of<UpsellDataResult>({upsellData: null, hasError: false})
 
 beforeEach(() => {
   response$ = new Subject<UpsellDataResult>()
@@ -58,11 +60,22 @@ beforeEach(() => {
     subscriptions++
     return response$.subscribe(subscriber)
   })
-  useUpsellDataMock.mockReturnValue({upsellData$, telemetryLogs})
+  useUpsellDataMock.mockImplementation(({dataUri}) => ({
+    upsellData$: dataUri === '/journey/test' ? upsellData$ : otherUpsellData$,
+    telemetryLogs,
+  }))
 })
 
-function Harness() {
-  const contextValue = useUpsellContext({dataUri: '/journey/test', feature: 'test'})
+type Mode = 'default' | 'upsell' | null
+
+/** A leaf that reads the content the way the upsell panels do */
+function Content({contextValue}: {contextValue: ReturnType<typeof useUpsellContext>}) {
+  const {upsellData} = use(contextValue.upsellDataPromise)
+  return <div data-testid="content">{upsellData ? upsellData.id : 'none'}</div>
+}
+
+function Harness({mode}: {mode?: Promise<Mode>}) {
+  const contextValue = useUpsellContext({dataUri: '/journey/test', feature: 'test', mode})
   return (
     <>
       <button type="button" onClick={() => contextValue.handleOpenDialog('navbar')}>
@@ -72,13 +85,21 @@ function Harness() {
       <Suspense fallback={<div data-testid="dialog-pending" />}>
         <UpsellContextDialog contextValue={contextValue} />
       </Suspense>
+      {mode && (
+        <Suspense fallback={<div data-testid="content-pending" />}>
+          <Content contextValue={contextValue} />
+        </Suspense>
+      )}
     </>
   )
 }
 
-async function renderHarness() {
+async function renderHarness(mode?: Promise<Mode>) {
   const TestProvider = await createTestProvider()
-  render(<Harness />, {wrapper: TestProvider})
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the content leaf suspends on the promise; React only resumes it inside an awaited act
+  await act(async () => {
+    render(<Harness mode={mode} />, {wrapper: TestProvider})
+  })
 }
 
 function answer(result: UpsellDataResult) {
@@ -160,5 +181,43 @@ describe('useUpsellContext', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByTestId('open-state')).toHaveTextContent('false')
     expect(telemetryLogs.dialogDismissed).toHaveBeenCalledTimes(1)
+  })
+
+  describe('with the feature mode', () => {
+    it('requests the content only once the mode has settled as upsell', async () => {
+      let settleMode!: (mode: Mode) => void
+      const mode = new Promise<Mode>((resolve) => {
+        settleMode = resolve
+      })
+      await renderHarness(mode)
+
+      // Mounted in every mode, the provider does not know the plan yet: nothing is requested
+      expect(subscriptions).toBe(0)
+      expect(screen.getByTestId('content-pending')).toBeInTheDocument()
+
+      await act(async () => {
+        settleMode('upsell')
+      })
+
+      expect(subscriptions).toBe(1)
+      await answer({upsellData, hasError: false})
+
+      expect(await screen.findByTestId('content')).toHaveTextContent('journey-test')
+    })
+
+    it('never requests the content on a plan that has the feature', async () => {
+      await renderHarness(Promise.resolve<Mode>('default'))
+
+      // The leaf reads the settled "no content" answer; the request was never made
+      expect(await screen.findByTestId('content')).toHaveTextContent('none')
+      expect(subscriptions).toBe(0)
+    })
+
+    it('never requests the content when the feature check failed', async () => {
+      await renderHarness(Promise.resolve<Mode>(null))
+
+      expect(await screen.findByTestId('content')).toHaveTextContent('none')
+      expect(subscriptions).toBe(0)
+    })
   })
 })

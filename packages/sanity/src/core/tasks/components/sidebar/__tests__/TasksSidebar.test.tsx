@@ -49,7 +49,7 @@ describe('TasksStudioSidebar', () => {
 
     expect(await screen.findByRole('tab', {name: 'Assigned'})).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'New task'})).toBeEnabled()
-    expect(screen.queryByText('Tasks are unavailable right now. Try again later.')).toBeNull()
+    expect(screen.queryByText('Tasks could not be loaded. Please try again.')).toBeNull()
   })
 
   it('reads as unavailable when the feature check failed, but can still be closed', async () => {
@@ -58,7 +58,7 @@ describe('TasksStudioSidebar', () => {
     await renderSidebar(null)
 
     expect(
-      await screen.findByText('Tasks are unavailable right now. Try again later.'),
+      await screen.findByText('Tasks could not be loaded. Please try again.'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('tab')).toBeNull()
     const newButton = screen.getByRole('button', {name: 'New task'})
