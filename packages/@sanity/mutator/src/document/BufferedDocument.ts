@@ -176,6 +176,8 @@ export class BufferedDocument {
     return new Promise((resolve, reject) => {
       // Anything to commit?
       if (!this.buffer.hasChanges()) {
+        // `add` reported inconsistent, and with nothing to send no commit will clear it
+        this.handleDocConsistencyChanged(this.document.isConsistent())
         resolve()
         return
       }
