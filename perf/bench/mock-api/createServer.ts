@@ -15,7 +15,7 @@ import {DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
 import {ListenHub} from './sse'
 import {DocumentStore} from './store'
-import {type BenchDocument} from './types'
+import {type BenchDocument, type CommitResult, type MutationPayload} from './types'
 
 export interface MockApiConfig {
   port: number
@@ -41,6 +41,11 @@ export interface MockApiServer {
   setRequireToken: (requireToken: boolean) => void
   /** The bifur presence socket: parked unless a session switches it live (see presence.ts). */
   presence: PresenceHub
+  /**
+   * Commit a transaction the page under test did not submit, as another
+   * editor would: a new rev, broadcast to every listener that is not stalled.
+   */
+  commitAsPeer: (mutations: MutationPayload[]) => CommitResult
 }
 
 /** Strip the `/vX.Y` API-version prefix @sanity/client puts on every path. */
@@ -349,6 +354,11 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     setRequireToken: (next) => {
       requireToken = next
       hasSession = false
+    },
+    commitAsPeer: (mutations) => {
+      const result = store.commit(mutations)
+      hub.broadcast(result.events)
+      return result
     },
   }
 }
