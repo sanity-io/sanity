@@ -23,6 +23,7 @@ export {
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
+export {isHotspotEnabled, isImageToolEnabled} from '../legacy/types/image/imageTool'
 export {
   createSchemaFromManifestTypes,
   type CreateSchemaFromManifestTypesOptions,

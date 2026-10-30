@@ -1,10 +1,16 @@
-import {DEFAULT_CROP, DEFAULT_HOTSPOT, MIN_CROP_SIZE} from './constants'
+import {cropToPixelRect, pixelRectToCrop} from '@sanity/util/image'
+
+import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+import {getMinimumCropSize, HANDLE_DIRECTIONS, resizeCropRect} from './cropResize'
 import {
   type Coordinate,
   type Crop,
   type CropAndHotspot,
+  type CropConstraints,
+  type CropResizeModifiers,
   type Hotspot,
   type Rect,
+  type Size,
   type ToolHandleType,
   type ToolInteractionTarget,
 } from './types'
@@ -311,109 +317,52 @@ interface CropHandleResizeParams {
   pointerPos: {x: number; y: number}
   innerRect: Rect
   activeHandle: ToolHandleType
+  sourceSize: Size
+  constraints?: CropConstraints
+  modifiers?: CropResizeModifiers
+}
+
+const NO_MODIFIERS: CropResizeModifiers = {lockRatio: false, fromCenter: false}
+
+function getDraggedEdge(start: number, length: number, direction: number): number {
+  if (direction === 0) return start + length / 2
+  return direction > 0 ? start + length : start
 }
 
 export const handleCropHandleResize = (params: CropHandleResizeParams): CropAndHotspot => {
-  const {initialCrop, initialHotspot, initialCursor, pointerPos, innerRect, activeHandle} = params
+  const {
+    initialCrop,
+    initialHotspot,
+    initialCursor,
+    pointerPos,
+    innerRect,
+    activeHandle,
+    sourceSize,
+    constraints,
+    modifiers = NO_MODIFIERS,
+  } = params
 
-  // Extract handle position (remove 'crop-' prefix)
-  const handlePosition = activeHandle.startsWith('crop-') ? activeHandle.slice(5) : ''
-
+  const direction = HANDLE_DIRECTIONS[activeHandle]
   const delta = calculateDelta(initialCursor, pointerPos, innerRect)
+  const rect = cropToPixelRect(initialCrop, sourceSize)
 
-  // Start with initial crop values
-  let {left, right, top, bottom} = initialCrop
-
-  // Determine boundaries to prevent crop from going outside the image
-  const minLeft = 0
-  const minTop = 0
-
-  // Update crop based on which handle is being dragged
-  switch (handlePosition) {
-    case 'left':
-      left = Math.min(
-        Math.max(initialCrop.left + delta.x, minLeft),
-        1 - initialCrop.right - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'right':
-      right = Math.min(
-        Math.max(initialCrop.right - delta.x, minLeft),
-        1 - initialCrop.left - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'top':
-      top = Math.min(
-        Math.max(initialCrop.top + delta.y, minTop),
-        1 - initialCrop.bottom - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'bottom':
-      bottom = Math.min(
-        Math.max(initialCrop.bottom - delta.y, minTop),
-        1 - initialCrop.top - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'topLeft':
-      left = Math.min(
-        Math.max(initialCrop.left + delta.x, minLeft),
-        1 - initialCrop.right - MIN_CROP_SIZE,
-      )
-      top = Math.min(
-        Math.max(initialCrop.top + delta.y, minTop),
-        1 - initialCrop.bottom - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'topRight':
-      right = Math.min(
-        Math.max(initialCrop.right - delta.x, minLeft),
-        1 - initialCrop.left - MIN_CROP_SIZE,
-      )
-      top = Math.min(
-        Math.max(initialCrop.top + delta.y, minTop),
-        1 - initialCrop.bottom - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'bottomLeft':
-      left = Math.min(
-        Math.max(initialCrop.left + delta.x, minLeft),
-        1 - initialCrop.right - MIN_CROP_SIZE,
-      )
-      bottom = Math.min(
-        Math.max(initialCrop.bottom - delta.y, minTop),
-        1 - initialCrop.top - MIN_CROP_SIZE,
-      )
-      break
-
-    case 'bottomRight':
-      right = Math.min(
-        Math.max(initialCrop.right - delta.x, minLeft),
-        1 - initialCrop.left - MIN_CROP_SIZE,
-      )
-      bottom = Math.min(
-        Math.max(initialCrop.bottom - delta.y, minTop),
-        1 - initialCrop.top - MIN_CROP_SIZE,
-      )
-      break
-
-    default:
-      // No action for unrecognized handles
-      break
+  // The dragged edge follows the pointer's movement, so grabbing a handle off-centre does not jump.
+  const pointer = {
+    x: getDraggedEdge(rect.x, rect.width, direction.dx) + delta.x * sourceSize.width,
+    y: getDraggedEdge(rect.y, rect.height, direction.dy) + delta.y * sourceSize.height,
   }
 
-  // Create new crop and constrain hotspot to it
-  const newCrop = {left, right, top, bottom}
-  const newHotspot = constrainHotspotToCrop(initialHotspot, newCrop)
+  const resized = resizeCropRect(rect, direction, pointer, sourceSize, {
+    aspectRatio: constraints?.aspectRatio,
+    minimum: getMinimumCropSize(sourceSize, constraints?.minDimensions),
+    ...modifiers,
+  })
+  const {top, right, bottom, left} = pixelRectToCrop(resized, sourceSize)
+  const newCrop = {top, right, bottom, left}
 
   return {
     crop: newCrop,
-    hotspot: newHotspot,
+    hotspot: constrainHotspotToCrop(initialHotspot, newCrop),
   }
 }
 
