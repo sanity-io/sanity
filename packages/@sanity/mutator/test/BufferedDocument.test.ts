@@ -1,5 +1,6 @@
 import {expect, test} from 'vitest'
 
+import {BufferedDocument, Mutation} from '../src/document'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
@@ -381,4 +382,40 @@ test('local edits made while a commit is in flight survive the commit being canc
     .assertALL('title', 'Hello')
     .assertALL('body', 'My friend')
     .isConsistent()
+})
+
+function createObservedDocument() {
+  const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const consistencyEvents: boolean[] = []
+  doc.onConsistencyChanged = (isConsistent) => consistencyEvents.push(isConsistent)
+  return {doc, consistencyEvents}
+}
+
+function setTitle(title: string) {
+  return new Mutation({mutations: [{patch: {id: 'a', set: {title}}}]})
+}
+
+test('committing a local edit with no net change reports the document consistent again', async () => {
+  const {doc, consistencyEvents} = createObservedDocument()
+  doc.commitHandler = () => {
+    throw new Error('Nothing should be sent for an edit with no net change')
+  }
+
+  doc.add(setTitle('Hello'))
+  expect(consistencyEvents).toEqual([false])
+
+  await doc.commit()
+  expect(consistencyEvents).toEqual([false, true])
+})
+
+test('committing nothing while a commit is in flight keeps the document inconsistent', async () => {
+  const {doc, consistencyEvents} = createObservedDocument()
+  doc.commitHandler = () => {}
+
+  doc.add(setTitle('Good bye'))
+  void doc.commit()
+  doc.add(setTitle('Good bye'))
+  await doc.commit()
+
+  expect([...new Set(consistencyEvents)]).toEqual([false])
 })

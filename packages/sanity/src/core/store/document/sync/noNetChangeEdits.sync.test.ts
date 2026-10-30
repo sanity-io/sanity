@@ -23,7 +23,7 @@ afterEach(() => {
 })
 
 describe('edits with no net change', () => {
-  test.fails('NOOP-SET-TO-CURRENT-VALUE (SAPP-4793): setting a field to the value it already has leaves the client in sync', async () => {
+  test('NOOP-SET-TO-CURRENT-VALUE (SAPP-4793): setting a field to the value it already has leaves the client in sync', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'NOOP-SET-TO-CURRENT-VALUE',
       title: 'Someone else sets the title to "one", then A sets it to "one" and commits',
