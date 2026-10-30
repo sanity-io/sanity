@@ -1,7 +1,8 @@
 import {BookIcon} from '@sanity/icons/Book'
-import {Card, Grid, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {BlockImagePreview} from '../../portableText/BlockImagePreview'
@@ -76,7 +77,14 @@ function LayoutCard(props: {layout: GeneralPreviewLayoutKey; children: ReactNode
 
 function LayoutLabel(props: {children: ReactNode}) {
   return (
-    <Text muted size={0} style={{textTransform: 'uppercase'}} weight="semibold">
+    <Text
+      muted
+      size={0}
+      style={{textTransform: 'uppercase'}}
+      weight="semibold"
+      as="div"
+      trim={true}
+    >
       {props.children}
     </Text>
   )
@@ -222,7 +230,7 @@ export const PortableText: Story = {
         <Stack gap={3}>
           <LayoutLabel>inline</LayoutLabel>
           <Card border padding={3} radius={2}>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               A sentence with an <InlinePreview media={<BookIcon />} title="inline reference" />{' '}
               rendered mid-flow.
             </Text>

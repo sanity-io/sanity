@@ -1,15 +1,15 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {TextWithTone, useTranslation} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Box, Flex, Icon, VStack} from 'ui5'
 
 export function TimelineError({versionError}: {versionError?: boolean}) {
   const {t} = useTranslation('studio')
 
   return (
     <Flex alignItems="flex-start" gap={3} padding={4}>
-      <TextWithTone tone="critical">
-        <ErrorOutlineIcon />
-      </TextWithTone>
+      <Box flexShrink={0}>
+        <Icon icon={ErrorOutlineIcon} style={{margin: '-0.4375rem'}} />
+      </Box>
       <VStack gap={4}>
         <TextWithTone size={1} tone="critical" weight="medium">
           {versionError

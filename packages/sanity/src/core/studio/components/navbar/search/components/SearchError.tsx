@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, Icon} from 'ui5'
 
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -18,10 +18,8 @@ export function SearchError() {
       marginY={2}
       padding={4}
     >
-      <Box marginBottom={1}>
-        <TextWithTone tone="critical">
-          <WarningOutlineIcon />
-        </TextWithTone>
+      <Box marginBottom={1} flexShrink={0}>
+        <Icon icon={WarningOutlineIcon} style={{margin: '-0.4375rem'}} />
       </Box>
       <TextWithTone size={2} tone="critical" weight="medium">
         {t('search.error.unspecified-error-title')}

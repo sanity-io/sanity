@@ -37,7 +37,7 @@ export function InlinePreview(props: InlinePreviewProps) {
         </MediaSpan>
       )}
 
-      <TextSpan data-testid="inline-preview-title" size={1}>
+      <TextSpan data-testid="inline-preview-title" size={1} trim={true} truncate={1}>
         {renderPreviewNode(title, 'inline', fallbackTitle)}
       </TextSpan>
     </RootSpan>

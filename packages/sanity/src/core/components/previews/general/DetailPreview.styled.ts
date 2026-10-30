@@ -1,6 +1,6 @@
-import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, TextSkeleton} from '@sanity/ui'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {PREVIEW_SIZES} from '../constants'
 
@@ -40,16 +40,7 @@ export const DescriptionText = styled(Text)(({theme}) => {
   const maxHeight = textSize1.lineHeight * maxLines
 
   return css`
-    & > span {
-      max-height: ${rem(maxHeight)};
-
-      /* Multi-line text overflow */
-      display: -webkit-box;
-      overflow: hidden;
-      overflow: clip;
-      text-overflow: ellipsis;
-      -webkit-line-clamp: ${maxLines};
-      -webkit-box-orient: vertical;
-    }
+    color: var(--card-muted-fg-color);
+    max-height: ${rem(maxHeight)};
   `
 })

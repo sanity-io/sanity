@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -102,20 +101,27 @@ export function DetailPreview(props: DetailPreviewProps) {
 
         <Flex alignItems="center" data-testid="detail-preview__header" flexBasis="0%" flexGrow={1}>
           <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-            <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
+            <Text
+              truncate={1}
+              size={1}
+              style={{color: 'inherit'}}
+              weight="medium"
+              as="div"
+              trim={true}
+            >
               {title && renderPreviewNode(title, 'detail')}
               {!title && <>{t('preview.default.title-fallback')}</>}
             </Text>
 
             {subtitle && (
-              <Text muted size={1} textOverflow="ellipsis">
+              <Text muted size={1} truncate={1} as="div" trim={true}>
                 {renderPreviewNode(subtitle, 'detail')}
               </Text>
             )}
 
             {description && (
               <Box marginTop={1}>
-                <DescriptionText muted size={1}>
+                <DescriptionText muted size={1} forwardedAs="div" trim={true} truncate={2}>
                   {renderPreviewNode(description, 'detail')}
                 </DescriptionText>
               </Box>
