@@ -1,6 +1,6 @@
-import {Badge, Card, type CardTone, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Grid, VStack} from 'ui5'
+import {Text, Grid, VStack} from 'ui5'
 
 const TONES: CardTone[] = [
   'default',
@@ -33,8 +33,10 @@ export const AllTones: Story = {
       {TONES.map((tone) => (
         <Card key={tone} border padding={4} radius={2} tone={tone}>
           <VStack gap={3}>
-            <Text weight="medium">tone="{tone}"</Text>
-            <Text muted size={1}>
+            <Text weight="medium" as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+              tone="{tone}"
+            </Text>
+            <Text muted size={1} as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
               Nested text inherits the card tone via CSS custom properties.
             </Text>
             <Badge>Badge</Badge>

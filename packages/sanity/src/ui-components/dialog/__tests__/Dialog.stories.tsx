@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, waitFor, within} from 'storybook/test'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {Dialog} from '../Dialog'
@@ -33,7 +32,7 @@ export const Default: Story = {
     width: 1,
     onClose: () => null,
     children: (
-      <Text size={1}>
+      <Text size={1} as="div" trim={true}>
         Are you sure you want to unpublish this document? It will no longer be available to the
         public.
       </Text>
@@ -49,12 +48,14 @@ export const Default: Story = {
 const overflowingBody = (
   <VStack gap={3}>
     {Array.from({length: 40}, (_, index) => (
-      <Text key={index} size={1}>
+      <Text key={index} size={1} as="div" trim={true}>
         Paragraph {index + 1}. Scroll to the end to check that body padding is still below this
         text.
       </Text>
     ))}
-    <Text size={1}>End of dialog content.</Text>
+    <Text size={1} as="div" trim={true}>
+      End of dialog content.
+    </Text>
   </VStack>
 )
 
