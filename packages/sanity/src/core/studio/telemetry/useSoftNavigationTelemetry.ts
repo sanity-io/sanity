@@ -1,7 +1,7 @@
 import {type TelemetryLogger} from '@sanity/telemetry'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect} from 'react'
-import {onCLS, onFCP, onINP, onLCP} from 'web-vitals'
+import {onCLS, onFCP, onINP, onLCP} from 'web-vitals/attribution'
 
 import {PerformanceSoftNavigationMeasured} from '../__telemetry__/performance.telemetry'
 import {useWorkspace} from '../workspace'

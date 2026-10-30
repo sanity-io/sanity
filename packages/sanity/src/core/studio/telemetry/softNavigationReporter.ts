@@ -1,4 +1,4 @@
-import {type Metric} from 'web-vitals'
+import {type Metric} from 'web-vitals/attribution'
 
 import {
   type PerformanceSoftNavigationMeasuredData,

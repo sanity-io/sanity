@@ -2,9 +2,14 @@ import {createBatchedStore, createSessionId, type TelemetryEvent} from '@sanity/
 import {renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
-import {type FCPMetric} from 'web-vitals'
+import {type FCPMetricWithAttribution} from 'web-vitals/attribution'
 
-vi.mock('web-vitals', () => ({onCLS: vi.fn(), onFCP: vi.fn(), onINP: vi.fn(), onLCP: vi.fn()}))
+vi.mock('web-vitals/attribution', () => ({
+  onCLS: vi.fn(),
+  onFCP: vi.fn(),
+  onINP: vi.fn(),
+  onLCP: vi.fn(),
+}))
 
 class SoftNavigationPerformanceObserver {
   static supportedEntryTypes = ['soft-navigation']
@@ -17,7 +22,7 @@ async function loadHook({debugTelemetry, roll}: {debugTelemetry: boolean; roll: 
   vi.resetModules()
   import.meta.env.SANITY_STUDIO_DEBUG_TELEMETRY = debugTelemetry ? 'true' : ''
   vi.spyOn(Math, 'random').mockReturnValue(roll)
-  const webVitals = await import('web-vitals')
+  const webVitals = await import('web-vitals/attribution')
   const {useSoftNavigationTelemetry} = await import('../useSoftNavigationTelemetry')
   const {TelemetryProvider} = await import('@sanity/telemetry/react')
   const {createTestProvider} = await import('../../../../../test/testUtils/TestProvider')
@@ -48,7 +53,7 @@ function createCollectingStore() {
   return {sent, store}
 }
 
-function fcp(navigationId: number, navigationURL: string): FCPMetric {
+function fcp(navigationId: number, navigationURL: string): FCPMetricWithAttribution {
   return {
     name: 'FCP',
     value: 120,
@@ -59,6 +64,7 @@ function fcp(navigationId: number, navigationURL: string): FCPMetric {
     navigationType: 'soft-navigation',
     navigationId,
     navigationURL,
+    attribution: {timeToFirstByte: 0, firstByteToFCP: 120, loadState: 'complete'},
   }
 }
 
