@@ -93,7 +93,6 @@ function VariantMenuItem(props: {
   )
 }
 
-const TEMPORARY_VARIANTS_OVERVIEW_INTENT_PARAMS = {source: 'menu'}
 /**
  * @internal
  */
@@ -152,7 +151,6 @@ export function VariantsMenu({
 
   const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
     intent: VARIANTS_INTENT,
-    params: TEMPORARY_VARIANTS_OVERVIEW_INTENT_PARAMS,
   })
 
   const handleNewAudience = useCallback(() => {
