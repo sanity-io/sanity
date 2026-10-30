@@ -262,7 +262,7 @@
     "@repo/tsdown.config": "workspace:*",
     "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@sanity/schema-descriptor-utils": "catalog:",
-    "@sanity/visual-editing-csm": "^3.0.18",
+    "@sanity/visual-editing-csm": "^3.0.19",
     "@storybook/react-vite": "^10.6.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
