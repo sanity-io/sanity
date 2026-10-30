@@ -4,6 +4,12 @@ import {css} from '#styled-system/css'
 const pillRadius = '9999px'
 
 /**
+ * The height of the pill.
+ * This is hardcoded to match the rest of the items in the navbar in height. It has 31px which then makes it into a 33px tall component when the border is applied.
+ */
+const pillHeight = '31px'
+
+/**
  * Centers the trigger and the clear control in the pill, and clips their
  * hover fill to it. The clip also cuts off a square focus ring at the
  * corners, so each control rounds the corners that meet the pill.
@@ -21,7 +27,7 @@ export const perspectiveButtonCard = css({
 /** Hairline between the trigger and the clear control. */
 export const perspectiveButtonDivider = css({
   width: '1px',
-  height: '31px',
+  height: pillHeight,
   alignSelf: 'stretch',
   backgroundColor: 'var(--card-border-color)',
 })
@@ -33,7 +39,7 @@ export const perspectiveButtonDivider = css({
  */
 export const perspectiveButtonClear = css({
   '&&': {
-    height: '31px',
+    height: pillHeight,
     padding: '0 2px',
     borderTopRightRadius: pillRadius,
     borderBottomRightRadius: pillRadius,
@@ -52,7 +58,7 @@ export const perspectiveButtonClear = css({
  */
 export const perspectiveButtonTrigger = css({
   '&&': {
-    height: '31px',
+    height: pillHeight,
     paddingLeft: '6px',
     paddingRight: '4px',
     borderTopLeftRadius: pillRadius,
