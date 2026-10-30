@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
+import {createMockVariant} from '../../../../variants/__fixtures__/createMockVariant'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
 import {VARIANTS_INTENT} from '../../../../variants/plugin'
@@ -78,6 +79,50 @@ describe('VariantsMenu', () => {
       'data-selected',
     )
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
+  })
+
+  describe('when variants of several types exist', () => {
+    const defaultTypedVariant: SystemVariant = {
+      ...createMockVariant('default-typed'),
+      metadata: {title: 'Default typed', description: [], type: DEFAULT_VARIANT_TYPE_KEY},
+    }
+    const experimentVariant: SystemVariant = {
+      ...createMockVariant('experiment-b'),
+      metadata: {title: 'Experiment B', description: [], type: 'experimentation'},
+    }
+
+    beforeEach(() => {
+      variantsMock.data = [variantAlphaAudience, defaultTypedVariant, experimentVariant]
+      variantsMock.byId = new Map(variantsMock.data.map((variant) => [variant._id, variant]))
+    })
+
+    it('lists only default type variants in the default menu, including untyped ones', async () => {
+      await renderMenu()
+
+      expect(
+        screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId(`variant-${getVariantId(defaultTypedVariant._id)}`),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId(`variant-${getVariantId(experimentVariant._id)}`),
+      ).not.toBeInTheDocument()
+    })
+
+    it('lists only the variants of its type in a menu for another type', async () => {
+      await renderMenu(undefined, 'experimentation')
+
+      expect(
+        screen.getByTestId(`variant-${getVariantId(experimentVariant._id)}`),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId(`variant-${getVariantId(defaultTypedVariant._id)}`),
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('links view all to the variants tool overview', async () => {

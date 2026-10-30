@@ -5,16 +5,29 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {createMockVariant} from '../../../../variants/__fixtures__/createMockVariant'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
 import * as variantConditions from '../../../../variants/hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
 import {getVariantId} from '../../../../variants/tool/util'
+import {type SystemVariant} from '../../../../variants/types'
 import {VariantsStudioNavbarLayout} from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()
 
 const routerMock = vi.hoisted(() => ({
   stickyParams: {} as Record<string, string | undefined>,
+}))
+
+const variantsMock = vi.hoisted(() => ({
+  data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
+  loading: false,
+  error: undefined as Error | undefined,
+}))
+
+vi.mock('../../../../variants/store/useAllVariants', () => ({
+  useAllVariants: vi.fn(() => variantsMock),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -46,6 +59,8 @@ describe('VariantsStudioNavbarLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
+    variantsMock.data = []
+    variantsMock.byId = new Map()
   })
 
   it('hides the remove control when the variant is at the default', async () => {
@@ -85,6 +100,57 @@ describe('VariantsStudioNavbarLayout', () => {
     expect(screen.getByTestId('variants-nav-menu-button-language')).toBeInTheDocument()
     expect(screen.getAllByTestId('variants-menu')).toHaveLength(2)
     spy.mockRestore()
+  })
+
+  describe('when the selected variant has a type', () => {
+    const experimentVariant: SystemVariant = {
+      ...createMockVariant('experiment-b'),
+      metadata: {title: 'Experiment B', description: [], type: 'experimentation'},
+    }
+
+    beforeEach(() => {
+      variantsMock.data = [variantAlphaAudience, experimentVariant]
+      variantsMock.byId = new Map(variantsMock.data.map((variant) => [variant._id, variant]))
+    })
+
+    it('labels the default trigger with a selected untyped variant', async () => {
+      routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
+
+      await renderNavbar()
+
+      expect(screen.getByTestId('variants-nav-menu-button')).toHaveTextContent('Alpha audience')
+    })
+
+    it('does not label the default trigger with a variant of another type', async () => {
+      routerMock.stickyParams = {variant: getVariantId(experimentVariant._id)}
+
+      await renderNavbar()
+
+      const trigger = screen.getByTestId('variants-nav-menu-button')
+      expect(trigger).toHaveTextContent('All users')
+      expect(trigger).not.toHaveTextContent('Experiment B')
+    })
+
+    it('labels the trigger of the variant type with its selected variant', async () => {
+      const spy = vi.spyOn(variantConditions, 'useVariantTypes').mockReturnValue({
+        status: 'ready',
+        types: [
+          {key: 'variant', label: 'Variant', conditions: {mode: 'freeform'}},
+          {key: 'experimentation', label: 'Experimentation', conditions: {mode: 'freeform'}},
+        ],
+      })
+      routerMock.stickyParams = {
+        variant: `experimentation:${getVariantId(experimentVariant._id)}`,
+      }
+
+      await renderNavbar()
+
+      expect(screen.getByTestId('variants-nav-menu-button-experimentation')).toHaveTextContent(
+        'Experiment B',
+      )
+      expect(screen.getByTestId('variants-nav-menu-button')).toHaveTextContent('All users')
+      spy.mockRestore()
+    })
   })
 
   it('clears the variant when the remove control is clicked', async () => {

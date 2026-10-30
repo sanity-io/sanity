@@ -8,7 +8,7 @@ import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
 import {type VariantSelection} from '../../../variants/util/variantSelection'
-import {DEFAULT_VARIANT_TYPE_KEY} from '../../../variants/util/variantType'
+import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {useSetVariant} from '../../useSetVariant'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
@@ -24,7 +24,10 @@ function VariantTypeFilter(props: {
   const {t} = useTranslation()
   const setVariant = useSetVariant()
   const selectedVariant = selectedId
-    ? variants.find((variant) => getVariantId(variant._id) === selectedId)
+    ? variants.find(
+        (variant) =>
+          getVariantType(variant) === typeKey && getVariantId(variant._id) === selectedId,
+      )
     : undefined
   const variantLabel = selectedVariant
     ? getVariantTitle(selectedVariant)
