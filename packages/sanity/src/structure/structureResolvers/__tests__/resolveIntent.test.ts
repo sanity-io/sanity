@@ -566,4 +566,129 @@ describe('resolveIntent', () => {
 
     await expect(result).rejects.toThrow('broken child')
   })
+
+  it('checks every resolved pane against the intent once', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+    const canHandleIntent = vi.fn(() => false)
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items(
+        Array.from({length: 20}, (_, index) =>
+          S.listItem()
+            .id(`item${index}`)
+            .title(`Item ${index}`)
+            .child(() =>
+              Promise.resolve(
+                S.component(() => null)
+                  .id(`component${index}`)
+                  .canHandleIntent(canHandleIntent),
+              ),
+            ),
+        ),
+      ) as unknown as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([
+      [{id: '__edit__book123', params: {type: 'book'}, payload: undefined}],
+    ])
+    expect(canHandleIntent).toHaveBeenCalledTimes(20)
+  })
+
+  it('resolves deeper panes while a slower pane above them is loading', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      // @ts-expect-error -- pre-existing, fix later
+      const S = createStructureBuilder({source})
+      const slowItem = (id: string) =>
+        S.listItem()
+          .id(id)
+          .title('Slow')
+          .child(
+            () =>
+              new Promise((resolve) => {
+                setTimeout(() => resolve(S.component(() => null).id(`${id}Pane`)), 1_000)
+              }),
+          )
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([
+          slowItem('slow1'),
+          S.listItem()
+            .id('deep')
+            .title('Deep')
+            .child(
+              S.list()
+                .title('Deep')
+                .items([slowItem('slow2'), S.documentTypeListItem('book').title('Books')]),
+            ),
+        ]) as unknown as UnresolvedPaneNode
+
+      const result = resolveIntent({
+        intent: 'edit',
+        params: {id: 'book123', type: 'book'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: null as any,
+      })
+      await vi.advanceTimersByTimeAsync(1_000)
+
+      await expect(Promise.race([result, Promise.resolve('still resolving')])).resolves.toEqual([
+        [{id: 'deep'}],
+        [{id: 'book'}],
+        [{id: 'book123', params: {}, payload: undefined}],
+      ])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('ignores an error in a pane ordered after the match', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .id('books')
+          .title('Books')
+          .child(
+            () =>
+              new Promise((resolve) => {
+                setTimeout(() => resolve(S.documentTypeList('book')), 10)
+              }),
+          ),
+        S.listItem()
+          .id('broken')
+          .title('Broken')
+          .child(() => Promise.reject(new Error('broken child'))),
+      ]) as unknown as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([
+      [{id: 'books'}],
+      [{id: 'book123', params: {}, payload: undefined}],
+    ])
+  })
 })
