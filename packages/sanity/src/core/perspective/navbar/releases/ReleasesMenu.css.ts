@@ -25,3 +25,9 @@ export const globalPerspectiveMenu = css({
     overflow: 'hidden',
   },
 })
+
+export const releasesMenuItemIcon = css({
+  '&&:not([hidden])': {
+    display: 'inline',
+  },
+})

@@ -4,22 +4,21 @@ import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
-import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
-import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
-import {type ReleasesNavMenuItemPropsGetter} from '../types'
-import {useGetDefaultPerspective} from '../useGetDefaultPerspective'
-import {useSetPerspective} from '../useSetPerspective'
-import {GlobalPerspectiveButton} from './GlobalPerspectiveButton'
-import {globalPerspectiveMenu} from './GlobalPerspectiveMenu.css'
-import {globalPerspectiveMenuItemIcon} from './GlobalPerspectiveMenuItem.css'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
+import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
+import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
+import {type ReleasesNavMenuItemPropsGetter} from '../../types'
+import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
+import {useSetPerspective} from '../../useSetPerspective'
+import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {ReleasesList} from './ReleasesList'
-import {useGlobalPerspectiveLabel} from './useGlobalPerspectiveLabel'
+import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
+import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
-export function GlobalPerspectiveMenu({
+export function ReleasesMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
@@ -31,7 +30,7 @@ export function GlobalPerspectiveMenu({
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const defaultPerspective = useGetDefaultPerspective()
-  const {displayTitle, fullTitle, selectedPerspective} = useGlobalPerspectiveLabel()
+  const {displayTitle, fullTitle, selectedPerspective} = useReleasesLabel()
   // Drafts disabled coerces the default name to `published`, so a truthy name
   // is not enough to tell a selection from the default perspective.
   const canClearPerspective = selectedPerspective !== defaultPerspective
@@ -80,7 +79,7 @@ export function GlobalPerspectiveMenu({
               <ReleaseAvatarIcon
                 release={selectedPerspective}
                 size="small"
-                className={globalPerspectiveMenuItemIcon}
+                className={releasesMenuItemIcon}
               />
             }
             text={displayTitle}

@@ -524,7 +524,7 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
-export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'

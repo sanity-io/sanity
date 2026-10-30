@@ -1,8 +1,11 @@
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useAgentBundles} from '../../store/agent/useAgentBundles'
-import {getGlobalPerspectiveLabel, type GlobalPerspectiveLabel} from '../getGlobalPerspectiveLabel'
-import {type TargetPerspective} from '../types'
-import {usePerspective} from '../usePerspective'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useAgentBundles} from '../../../store/agent/useAgentBundles'
+import {
+  getGlobalPerspectiveLabel,
+  type GlobalPerspectiveLabel,
+} from '../../getGlobalPerspectiveLabel'
+import {type TargetPerspective} from '../../types'
+import {usePerspective} from '../../usePerspective'
 
 /**
  * Label for the releases navbar chip. Release titles stay truncated; `fullTitle`
@@ -10,7 +13,7 @@ import {usePerspective} from '../usePerspective'
  *
  * @internal
  */
-export function useGlobalPerspectiveLabel(): GlobalPerspectiveLabel & {
+export function useReleasesLabel(): GlobalPerspectiveLabel & {
   selectedPerspective: TargetPerspective
 } {
   const {selectedPerspective} = usePerspective()

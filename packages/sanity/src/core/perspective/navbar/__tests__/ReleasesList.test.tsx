@@ -22,7 +22,7 @@ import {
   useReleasesPermissionsMockReturnFalse,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
-import {ReleasesList} from '../ReleasesList'
+import {ReleasesList} from '../releases/ReleasesList'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
@@ -36,11 +36,11 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-vi.mock('../ViewContentReleasesMenuItem', () => ({
+vi.mock('../releases/ViewContentReleasesMenuItem', () => ({
   ViewContentReleasesMenuItem: () => null,
 }))
 
-vi.mock('../ScheduledDraftsMenuItem', () => ({
+vi.mock('../releases/ScheduledDraftsMenuItem', () => ({
   ScheduledDraftsMenuItem: () => null,
 }))
 

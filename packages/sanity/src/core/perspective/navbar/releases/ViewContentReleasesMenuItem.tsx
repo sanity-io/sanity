@@ -3,10 +3,10 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, useCallback} from 'react'
 import {useIntentLink} from 'sanity/router'
 
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
-import {RELEASES_INTENT} from '../../releases/plugin'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {NavigatedToReleasesOverview} from '../../../releases/__telemetry__/navigation.telemetry'
+import {RELEASES_INTENT} from '../../../releases/plugin'
 
 export const ViewContentReleasesMenuItem: ComponentType = () => {
   const {t} = useTranslation()
