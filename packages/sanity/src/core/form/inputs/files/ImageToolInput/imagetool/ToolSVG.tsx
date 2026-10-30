@@ -1,5 +1,6 @@
 import {useTheme} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
+import {croppedDimensions, cropToPixelRect} from '@sanity/util/image'
 import {uuid} from '@sanity/uuid'
 import {
   memo,
@@ -173,12 +174,7 @@ function ToolSVGComponent(props: ToolSVGProps) {
     cropConstraints,
   })
 
-  const croppedDimensions = useMemo(() => {
-    const crop = value.crop || DEFAULT_CROP
-    const croppedWidth = Math.round(sourceSize.width * (1 - crop.left - crop.right))
-    const croppedHeight = Math.round(sourceSize.height * (1 - crop.top - crop.bottom))
-    return {width: croppedWidth, height: croppedHeight}
-  }, [sourceSize.width, sourceSize.height, value.crop])
+  const cropSize = croppedDimensions(cropToPixelRect(value.crop || DEFAULT_CROP, sourceSize))
 
   const cropHandles = useMemo(() => calculateCropHandles(cropRect), [cropRect])
 
@@ -525,8 +521,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
           <CropDimensionsBadge
             x={getRectCenterX(cropRect)}
             y={getRectBottom(cropRect)}
-            width={croppedDimensions.width}
-            height={croppedDimensions.height}
+            width={cropSize.width}
+            height={cropSize.height}
             onMouseEnter={handleCropMouseEnter}
             onMouseLeave={handleMouseLeave}
             visible={
