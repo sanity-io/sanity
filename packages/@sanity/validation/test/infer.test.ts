@@ -546,6 +546,7 @@ describe('asset `accept` inference', () => {
     'image-nomime1-10x10-png': {mimeType: null, extension: 'png'},
     'image-notype1-10x10-png': {mimeType: null, extension: null},
     'file-noext1-pdf': {mimeType: 'application/zip', extension: null},
+    'file-noname1-zip': {mimeType: 'application/zip', extension: 'zip'},
   }
 
   function assetValue(ref: string) {
@@ -651,8 +652,16 @@ describe('asset `accept` inference', () => {
     )
   })
 
-  test('passes extension tokens when the asset has no original filename, like uploads', async () => {
+  test('passes extension tokens when the asset has neither an original filename nor an extension, like uploads', async () => {
     await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toEqual([])
+  })
+
+  test('checks the stored extension against extension tokens when the asset has no original filename', async () => {
+    await expect(
+      validateFields({pdfOrWord: assetValue('file-noname1-zip')}),
+    ).resolves.toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['pdfOrWord']},
+    ])
   })
 
   test('passes when the asset document cannot be found', async () => {
@@ -885,6 +894,8 @@ describe('assetMatchesAccept', () => {
     [{mimeType: null, extension: 'png'}, 'image/png', false],
     [{mimeType: 'image/png', originalFilename: 'photo.png'}, 'image/jpeg, .webp', false],
     [{mimeType: 'application/pdf'}, 'image/*', false],
+    [{mimeType: 'application/zip', extension: 'zip'}, '.pdf', false],
+    [{mimeType: 'application/pdf', extension: 'pdf'}, '.pdf', true],
   ])('%o against %s is %s', (fileType, accept, expected) => {
     expect(assetMatchesAccept(fileType, accept)).toBe(expected)
   })
