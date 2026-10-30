@@ -62,7 +62,9 @@ const DEFAULT_PREVIEWS: HotspotPreview[] = [
  */
 export function getHotspotPreviews(options: ImageOptions | undefined): HotspotPreview[] {
   const configuredPreviews =
-    typeof options?.hotspot === 'object' ? options.hotspot.previews : undefined
+    isHotspotEnabled(options) && typeof options?.hotspot === 'object'
+      ? options.hotspot.previews
+      : undefined
   if (configuredPreviews) {
     return configuredPreviews
   }
