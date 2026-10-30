@@ -31,7 +31,7 @@ export class SquashingBuffer {
    * any new set operations on the same paths overwrites any older set operations.
    * Only set-operations assigning plain values to plain values gets optimized like this.
    */
-  setOperations: Record<string, Mut | undefined>
+  setOperations: Record<string, Mut[] | undefined>
 
   /**
    * `documentPresent` is true whenever we know that the document must be present due
@@ -189,34 +189,35 @@ export class SquashingBuffer {
 
     // If the new and old value are the equal, we optimise this operation by discarding it
     // Now, let's build the operation
-    let op: Mut | null = null
+    let ops: Mut[] = []
     if (match.value === nextValue) {
       // If new and old values are equal, we optimise this by deleting the operation
-      // console.log("Omitting operation")
-      op = null
+      ops = []
     } else if (typeof match.value === 'string' && typeof nextValue === 'string') {
-      // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
       try {
         const patch = stringifyPatches(makePatches(match.value, nextValue))
-        op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
+        // Restoring the base keeps the patch applicable if someone else removed the field first
+        ops = [
+          {patch: {id: this.PRESTAGE._id, setIfMissing: {[path]: match.value}}},
+          {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}},
+        ]
       } catch {
         // patch_make failed due to unicode issue https://github.com/google/diff-match-patch/issues/59
         return false
       }
     } else {
-      // console.log("Not able to rewrite to dmp, making normal set")
       // We are changing the type of the value, so must make a normal set-operation
-      op = {patch: {id: this.PRESTAGE._id, set: {[path]: nextValue}}}
+      ops = [{patch: {id: this.PRESTAGE._id, set: {[path]: nextValue}}}]
     }
 
     // Let's make a plain, concrete path from the array-path. We use this to keep only the latest set
     // operation touching this path in the buffer.
     const canonicalPath = arrayToJSONMatchPath(match.path)
 
-    // Store this operation, overwriting any previous operations touching this same path
-    if (op) {
-      this.setOperations[canonicalPath] = op
+    // Store these operations, overwriting any previous operations touching this same path
+    if (ops.length > 0) {
+      this.setOperations[canonicalPath] = ops
     } else {
       delete this.setOperations[canonicalPath]
     }
@@ -226,18 +227,10 @@ export class SquashingBuffer {
   }
 
   stashStagedOperations(): void {
-    // Short circuit if there are no staged operations
-    const nextOps: Mut[] = []
-
-    // Extract the existing outgoing operations if any
-    Object.keys(this.setOperations).forEach((key) => {
-      const op = this.setOperations[key]
-      if (op) {
-        nextOps.push(op)
-      }
-    })
-
-    nextOps.push(...this.staged)
+    const nextOps: Mut[] = [
+      ...Object.values(this.setOperations).flatMap((ops) => ops ?? []),
+      ...this.staged,
+    ]
     if (nextOps.length > 0) {
       this.PRESTAGE = new Mutation({mutations: nextOps}).apply(this.PRESTAGE) as Doc
       this.staged = []
