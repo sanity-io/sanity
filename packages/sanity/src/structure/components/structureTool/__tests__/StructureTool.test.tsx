@@ -72,7 +72,7 @@ async function renderStructureTool(structure: StructureResolver, panes: RouterPa
     <TestProvider>
       <RouterProvider router={router} state={{panes: routerPanes}} onNavigate={noop}>
         <StructureToolProvider structure={structure}>
-          <StructureTool onPaneChange={noop} />
+          <StructureTool onPaneChange={noop} toolName="structure" />
         </StructureToolProvider>
       </RouterProvider>
     </TestProvider>
