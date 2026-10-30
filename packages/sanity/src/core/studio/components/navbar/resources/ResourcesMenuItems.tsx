@@ -16,6 +16,7 @@ import {isDev} from '../../../../environment'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
+import {reloadStudio} from '../../../reloadStudio'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
@@ -31,10 +32,6 @@ interface ResourcesMenuItemProps {
   deprecatedVersion?: SemVer
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
-}
-
-function reload() {
-  document.location.reload()
 }
 
 export function ResourcesMenuItems({
@@ -142,7 +139,7 @@ function StudioVersion({
       newVersion: newAutoUpdateVersion.version,
     })
     versionTone = 'caution'
-    action = reload
+    action = reloadStudio
     testId = 'menu-item-update-studio-now'
   } else if (isOutdated) {
     subtitle = t('help-resources.latest-sanity-version', {
