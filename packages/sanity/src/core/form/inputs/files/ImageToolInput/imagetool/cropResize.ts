@@ -1,8 +1,6 @@
-import {type ImageAspectRatioRange} from '@sanity/types'
 import {
-  clampRatio,
   type ImagePixelRect,
-  nearestRatio,
+  nearestAllowedRatio,
   type ResolvedImageAspectRatio,
 } from '@sanity/util/image'
 
@@ -40,8 +38,6 @@ export interface CropResizeOptions {
   /** Grows and shrinks the crop evenly about its centre. */
   fromCenter?: boolean
 }
-
-const UNCONSTRAINED_RANGE: ImageAspectRatioRange = {min: 0, max: Infinity}
 
 /**
  * The smallest crop the handles allow, in source pixels: `minDimensions` when the source can hold
@@ -149,9 +145,7 @@ export function resizeCropRect(
   )
 
   const askedRatio = getAskedRatio({rect, direction, lockRatio, pointerWidth, pointerHeight})
-  const ratio = aspectRatio?.snapRatios
-    ? nearestRatio(askedRatio, aspectRatio.snapRatios)
-    : clampRatio(askedRatio, aspectRatio?.range ?? UNCONSTRAINED_RANGE)
+  const ratio = nearestAllowedRatio(askedRatio, aspectRatio)
 
   const targetWidth = direction.dx === 0 ? pointerHeight * ratio : pointerWidth
   const fitted = fitToAvailable(targetWidth, ratio, availableWidth, availableHeight)
