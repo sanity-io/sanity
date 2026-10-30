@@ -1,6 +1,6 @@
 import {type SchemaType, type SchemaTypeDefinition} from '@sanity/types'
 
-const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
+const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset', 'system.release']
 
 /**
  * @internal

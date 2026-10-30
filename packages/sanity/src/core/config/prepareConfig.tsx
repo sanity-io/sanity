@@ -34,6 +34,7 @@ import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
+import {RELEASE_DOCUMENT_TYPE} from '../releases/store/constants'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {createOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
@@ -768,7 +769,7 @@ function resolveSource({
       reducer: schemaTemplatesReducer,
       initialValue: schema
         .getTypeNames()
-        .filter((typeName) => !typeName.startsWith('sanity.'))
+        .filter((typeName) => !typeName.startsWith('sanity.') && typeName !== RELEASE_DOCUMENT_TYPE)
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
@@ -1028,6 +1029,9 @@ function resolveSource({
     i18n: i18n.source,
     document: {
       actions: (partialContext) => {
+        // Releases are written through `sanity.action.release.*`, not document actions.
+        if (partialContext.schemaType === RELEASE_DOCUMENT_TYPE) return []
+
         const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)
         const resolvedActions = resolveConfigProperty({
           config,
