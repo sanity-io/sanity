@@ -4,8 +4,8 @@ import {set, unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
 import {withDefaultCrop} from '../utils/defaultCrop'
 
-const WIDE_REF = 'image-a1b2c3d4e5f6-2000x1000-jpg'
-const SQUARE_REF = 'image-a1b2c3d4e5f6-1000x1000-jpg'
+const WIDE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-2000x1000-jpg'
+const SQUARE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1000x1000-jpg'
 
 function setAsset(ref: string) {
   return set({_type: 'reference', _ref: ref}, ['asset'])
