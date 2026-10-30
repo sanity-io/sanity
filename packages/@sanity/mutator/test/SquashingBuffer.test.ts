@@ -21,14 +21,17 @@ test('basic optimization of assignments to same, explicit key', () => {
   patch(sb, {id: '1', set: {a: 'A strong value'}})
   expect(sb.out.length === 0) // There should not be any stashed changes yet
   expect(sb.setOperations).toEqual({
-    a: {
-      patch: {
-        id: '1',
-        diffMatchPatch: {
-          a: '@@ -2,9 +2,9 @@\n  str\n-i\n+o\n ng v\n',
+    a: [
+      {patch: {id: '1', setIfMissing: {a: 'A string value'}}},
+      {
+        patch: {
+          id: '1',
+          diffMatchPatch: {
+            a: '@@ -2,9 +2,9 @@\n  str\n-i\n+o\n ng v\n',
+          },
         },
       },
-    },
+    ],
   })
   patch(sb, {id: '1', set: {a: 'A strange value'}})
   expect(Object.keys(sb.setOperations)).toEqual(['a']) // Should still only be one patch
@@ -236,5 +239,42 @@ test('rebase with no local edits', () => {
     _id: '1',
     _type: 'test',
     a: 'A rebased string value!',
+  })
+})
+
+test('a string edit squashed into a diff restores the base before patching it', () => {
+  const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
+  patch(sb, {id: '1', set: {a: 'A strong value'}})
+
+  expect(sb.purge('txn_id')?.mutations).toEqual([
+    {patch: {id: '1', setIfMissing: {a: 'A string value'}}},
+    {patch: {id: '1', diffMatchPatch: {a: '@@ -2,9 +2,9 @@\n  str\n-i\n+o\n ng v\n'}}},
+  ])
+})
+
+test('a string edit squashed into a diff still lands when the field was removed before it is applied', () => {
+  const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
+  patch(sb, {id: '1', set: {a: 'A strong value'}})
+  const mut = sb.purge('txn_id')
+  if (!mut) {
+    throw new Error('buffer purge did not result in a mutation')
+  }
+
+  expect(mut.apply({_id: '1', _type: 'test'})).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    a: 'A strong value',
+  })
+})
+
+test('rebase onto a document where the edited field was removed keeps the edit', () => {
+  const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
+  patch(sb, {id: '1', set: {a: 'A strong value'}})
+
+  expect(sb.rebase({_id: '1', _type: 'test'})).toEqual({
+    _id: '1',
+    _type: 'test',
+    a: 'A strong value',
   })
 })

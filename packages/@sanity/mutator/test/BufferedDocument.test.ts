@@ -1,6 +1,7 @@
 import {expect, test, vi} from 'vitest'
 
 import {BufferedDocument, Mutation} from '../src/document'
+import {type CommitHandlerMessage} from '../src/document/BufferedDocument'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
@@ -427,4 +428,55 @@ test('committing nothing while a failed commit waits to retry keeps the document
   } finally {
     vi.useRealTimers()
   }
+})
+
+test('a buffered string edit survives a remote unset of the same field', () => {
+  new BufferedDocumentTester({
+    _id: 'a',
+    _type: 't',
+    _rev: '1',
+    title: 'Hello',
+  })
+    .stage('when applying a local string edit')
+    .localPatch({id: 'a', set: {title: 'Good bye'}})
+    .hasLocalEdits()
+    .stage('when a remote patch unsets the field')
+    .remotePatch('1', '2', {id: 'a', unset: ['title']})
+    .assertHEAD('title', undefined)
+    .assertLOCAL('title', 'Good bye')
+    .stage('when committing local edits')
+    .commit()
+    .hasPendingCommit()
+    .assertEDGE('title', 'Good bye')
+    .stage('when commit succeeds')
+    .commitSucceeds()
+    .assertALL('title', 'Good bye')
+    .isConsistent()
+})
+
+test('a commit that cannot be staged is rejected and later commits still reach the commit handler', async () => {
+  const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const committed: CommitHandlerMessage[] = []
+  doc.commitHandler = (message) => committed.push(message)
+  doc.add(
+    new Mutation({
+      mutations: [{patch: {id: 'a', diffMatchPatch: {title: '@@ -1,5 +1,6 @@\n Hello\n+!\n'}}}],
+    }),
+  )
+  const unsetTitle = new Mutation({
+    transactionId: '2',
+    resultRev: '2',
+    previousRev: '1',
+    mutations: [{patch: {id: 'a', unset: ['title']}}],
+  })
+  expect(() => doc.arrive(unsetTitle)).toThrow('Unable to apply diffMatchPatch to target title')
+
+  await expect(doc.commit()).rejects.toThrow('Unable to apply diffMatchPatch to target title')
+  expect(doc.committerRunning).toBe(false)
+
+  doc.add(new Mutation({mutations: [{patch: {id: 'a', set: {body: 'My friend'}}}]}))
+  void doc.commit()
+  expect(committed.map(({mutation}) => mutation.mutations)).toEqual([
+    [{patch: {id: 'a', set: {body: 'My friend'}}}],
+  ])
 })
