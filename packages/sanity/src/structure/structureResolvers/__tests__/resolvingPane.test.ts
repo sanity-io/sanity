@@ -93,6 +93,15 @@ describe('applyResolvedIntent', () => {
     ).toEqual([[{id: 'books'}], [{id: 'abc', params: undefined, payload: undefined}]])
   })
 
+  it('does not bring back a focus mode the resolving pane already applied', () => {
+    expect(
+      applyResolvedIntent([[{id: '__resolve__abc', params: {type: 'book'}}]], '__resolve__abc', [
+        [{id: 'books'}],
+        [{id: 'abc', params: {mode: 'focus'}}],
+      ]),
+    ).toEqual([[{id: 'books'}], [{id: 'abc', params: undefined, payload: undefined}]])
+  })
+
   it('carries over the params the user set while the intent was resolving', () => {
     expect(
       applyResolvedIntent(

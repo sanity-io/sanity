@@ -113,7 +113,8 @@ export function applyResolvedIntent(
 
   const carriedGroup: RouterPaneGroup = currentPanes[groupIndex].map(
     (sibling): RouterPaneSibling => {
-      const params = {...target.params, ...omit(sibling.params, INTENT_ONLY_PARAMS)}
+      // the resolving pane already applied the intent's mode (StructureTool consumes `mode=focus`)
+      const params = {...omit(target.params, ['mode']), ...omit(sibling.params, INTENT_ONLY_PARAMS)}
       return {
         ...sibling,
         id: target.id,
