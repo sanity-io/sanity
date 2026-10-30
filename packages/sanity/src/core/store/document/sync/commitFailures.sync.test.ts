@@ -4,6 +4,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 import {
   expectConverged,
   expectHealthy,
+  expectNoLostEdits,
   expectRevisionsAgree,
 } from '../../../../../test/sync/oracles'
 import {
@@ -64,6 +65,7 @@ describe('commit failures', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     expect(world.lake.transactions).toHaveLength(0)
     expect(world.lake.rejectedCommits).toEqual([
@@ -77,6 +79,7 @@ describe('commit failures', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     expect(world.lake.rejectedCommits.map((rejected) => rejected.statusCode)).toEqual([409])
     expect(world.lake.transactions).toHaveLength(1)
@@ -88,6 +91,7 @@ describe('commit failures', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     expect(world.lake.get(DRAFT_ID)?.title).toBe('two')
     expect(world.lake.rejectedCommits.map((rejected) => rejected.statusCode)).toEqual([500])
@@ -128,6 +132,7 @@ describe('commit failures', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     const server = world.lake.get(DRAFT_ID)
     expect(server?.title).toBe('from A')

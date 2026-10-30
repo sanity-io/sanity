@@ -38,10 +38,20 @@ export interface SyncTestDefinition {
   steps: Step[]
 }
 
+export interface EditRecord {
+  client: string
+  documentId: string
+  mutations: MutationPayload[]
+  at: number
+  before: SanityDocument | null
+  after: SanityDocument | null
+}
+
 export interface World {
   lake: FakeContentLake
   clients: Record<string, EngineClient>
   idPair: IdPair
+  edits: EditRecord[]
   advance: (ms: number) => Promise<void>
   settle: () => Promise<void>
   teardown: () => void
@@ -124,6 +134,7 @@ export async function createWorld(
     lake,
     clients,
     idPair: definition.idPair,
+    edits: [],
     advance: advanceTimers,
     settle,
     teardown,
@@ -139,6 +150,30 @@ export async function runSteps(world: World, steps: Step[]): Promise<void> {
   }
 }
 
+function toMutations(documentId: string, patches: RawPatch[]): MutationPayload[] {
+  return patches.map((patch) => ({patch: {id: documentId, ...patch}}) as MutationPayload)
+}
+
+function recordEdit(
+  world: World,
+  client: EngineClient,
+  documentId: string,
+  mutations: MutationPayload[],
+  edit: () => void,
+): void {
+  const at = world.lake.clock
+  const before = client.localDocument(documentId)
+  edit()
+  world.edits.push({
+    client: client.id,
+    documentId,
+    mutations,
+    at,
+    before,
+    after: client.localDocument(documentId),
+  })
+}
+
 async function runStep(world: World, step: Step): Promise<void> {
   if (step.do === 'advance') return world.advance(step.ms)
   if (step.do === 'settle') return world.settle()
@@ -151,10 +186,14 @@ async function runStep(world: World, step: Step): Promise<void> {
   const controls = world.lake.client(step.client)
   switch (step.do) {
     case 'patch':
-      client.patch(step.id, step.patches)
+      recordEdit(world, client, step.id, toMutations(step.id, step.patches), () =>
+        client.patch(step.id, step.patches),
+      )
       break
     case 'mutate':
-      client.mutate(step.id, step.mutations)
+      recordEdit(world, client, step.id, step.mutations, () =>
+        client.mutate(step.id, step.mutations),
+      )
       break
     case 'commit':
       client.commit()

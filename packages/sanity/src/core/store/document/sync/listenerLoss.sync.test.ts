@@ -1,7 +1,12 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {expectConverged, expectHealthy, keysOf} from '../../../../../test/sync/oracles'
+import {
+  expectConverged,
+  expectHealthy,
+  expectNoLostEdits,
+  keysOf,
+} from '../../../../../test/sync/oracles'
 import {
   createWorld,
   runSteps,
@@ -81,6 +86,7 @@ describe('a lost listener event', () => {
     await lostEventWorld.settle()
     expectHealthy(lostEventWorld)
     expectConverged(lostEventWorld)
+    expectNoLostEdits(lostEventWorld)
     expect(keysOf(lostEventWorld.lake.get(DRAFT_ID), FIELD)).toEqual(['a', 'x'])
     expect(lostEventWorld.lake.get(DRAFT_ID)?.[FIELD]).toEqual([
       {_key: 'a', _type: 'item', title: 'A by B'},

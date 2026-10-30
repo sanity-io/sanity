@@ -9,13 +9,20 @@ export interface ContentLakeDocument {
 
 export type DocumentIndex = Record<string, ContentLakeDocument>
 
+export interface PatchPayload {
+  id: string
+  ifRevisionID?: string
+  unsetIsEmpty?: boolean
+  [key: string]: unknown
+}
+
 /** A raw mutation as `@sanity/client` sends it, with exactly one key set. */
 export interface MutationPayload {
   create?: ContentLakeDocument
   createIfNotExists?: ContentLakeDocument
   createOrReplace?: ContentLakeDocument
   delete?: {id: string}
-  patch?: {id: string; ifRevisionID?: string; [key: string]: unknown}
+  patch?: PatchPayload
 }
 
 export type EditAction = {
