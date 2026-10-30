@@ -77,6 +77,25 @@ function ImageToolInputHarness() {
   )
 }
 
+const VECTOR_WARNING =
+  "Warning: Hotspot and crop might not be applied to this image where it's presented."
+
+const SVG_DOCUMENT: SanityDocument = {
+  ...DOCUMENT,
+  image: {
+    _type: 'image',
+    asset: {_type: 'reference', _ref: 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-svg'},
+  },
+}
+
+function SvgImageToolInputHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA}>
+      <TestForm document={SVG_DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
 const CROP_ONLY_DOCUMENT: SanityDocument = {
   ...DOCUMENT,
   image: {
@@ -109,6 +128,23 @@ describe('image tool input', () => {
     await waitForFixtureImage()
     await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
     await settleChromaticEndState()
+  })
+
+  test('warns that hotspot and crop might not apply to an SVG asset', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SvgImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText(VECTOR_WARNING)).toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  test('shows no vector warning for a raster asset', async () => {
+    void render(<ImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    await expect.element(page.getByText(VECTOR_WARNING)).not.toBeInTheDocument()
   })
 
   test('edits the crop alone, held to its aspect ratio, when the field has no hotspot', async () => {
