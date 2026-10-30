@@ -4,7 +4,10 @@ import {expect, test} from 'vitest'
 
 import {type ListenerEvent} from '../getPairListener'
 import {mutationEvent} from '../utils/__test__/test-utils'
-import {createObservableBufferedDocument} from './createObservableBufferedDocument'
+import {
+  type CommitRequest,
+  createObservableBufferedDocument,
+} from './createObservableBufferedDocument'
 
 const INITIAL: SanityDocument = {
   _id: 'drafts.doc-1',
@@ -74,4 +77,34 @@ test('a remote patch that cannot apply to the local document does not error the 
   expect(afterHealthy?.body).toMatchObject([
     {_key: 'a', children: [{_key: 'a1', text: 'hello world'}]},
   ])
+})
+
+test('cancelling an in-flight commit with a commit queued behind it raises no unhandled rejection', async () => {
+  const unhandledReasons: unknown[] = []
+  const onUnhandledRejection = (reason: unknown) => unhandledReasons.push(reason)
+  process.on('unhandledRejection', onUnhandledRejection)
+
+  try {
+    const listenerEvent$ = new Subject<ListenerEvent>()
+    const buffered = createObservableBufferedDocument(listenerEvent$)
+    buffered.updates$.subscribe()
+
+    const requests: CommitRequest[] = []
+    buffered.commitRequest$.subscribe((request) => requests.push(request))
+
+    listenerEvent$.next({type: 'snapshot', documentId: 'drafts.doc-1', document: INITIAL})
+
+    buffered.addMutation({patch: {id: 'drafts.doc-1', set: {title: 'one'}}})
+    buffered.commit()
+    buffered.addMutation({patch: {id: 'drafts.doc-1', set: {title: 'two'}}})
+    buffered.commit()
+
+    expect(requests).toHaveLength(1)
+    requests[0].cancel(new Error('Rejected with 409'))
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(unhandledReasons).toEqual([])
+  } finally {
+    process.off('unhandledRejection', onUnhandledRejection)
+  }
 })

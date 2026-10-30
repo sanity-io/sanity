@@ -109,6 +109,13 @@ function hasPendingMutations(bufferedDocument: BufferedDocument): boolean {
   )
 }
 
+// A rejected commit is reported through its commit request, so the promise itself carries nothing more
+function requestCommit(bufferedDocument: BufferedDocument): void {
+  bufferedDocument.commit().catch(noop)
+}
+
+function noop(): void {}
+
 const toSnapshotEvent = (document: any): SnapshotEvent => ({type: 'snapshot', document})
 const getDocument = <T extends {document: any}>(event: T): T['document'] => event.document
 
@@ -211,7 +218,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
           replacedBufferedDocuments.add(bufferedDocument)
-          void bufferedDocument.commit()
+          requestCommit(bufferedDocument)
         }
         // mark as consistent when a new snapshot is received
         firstMutationReceivedAt = undefined
@@ -257,7 +264,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        void bufferedDocument.commit()
+        requestCommit(bufferedDocument)
       }
     }),
     // We subscribe to this only for the side effects
@@ -272,12 +279,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
   const commit = () => {
-    currentBufferedDocument$
-      .pipe(
-        take(1),
-        tap((bufferedDocument) => bufferedDocument.commit()),
-      )
-      .subscribe()
+    currentBufferedDocument$.pipe(take(1), tap(requestCommit)).subscribe()
   }
 
   // A stream of this document's snapshot
