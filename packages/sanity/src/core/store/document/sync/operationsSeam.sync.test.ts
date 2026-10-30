@@ -164,6 +164,42 @@ describe('editOperations and editState, two clients', () => {
     expect(keysOf(server, 'items')).toEqual(['a', 'b'])
   })
 
+  test('OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE: an edit queued behind the draft-creating save is discarded with it when that save gets a 409', async () => {
+    const insert = (key: string) => [
+      {setIfMissing: {items: []}},
+      {insert: {after: 'items[-1]', items: [{_key: key, _type: 'item', title: key}]}},
+    ]
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE',
+      title:
+        'Only a published document exists; A edits it while holding saves, and its draft-creating save gets a 409',
+      seam: 'operations',
+      initial: [document(PUBLISHED_ID, 'Published')],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'B', do: 'patch', id: DRAFT_ID, patches: insert('b')},
+        {client: 'A', do: 'commits', mode: 'hold'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: insert('k')},
+        {client: 'A', do: 'rejectCommit', statusCode: 409},
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'commit'},
+        {client: 'B', do: 'commit'},
+        {do: 'settle'},
+      ],
+    }
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'})
+
+    expectHealthy(world)
+    expectConverged(world)
+    expectNoLostEdits(world)
+    const fromA = world.lake.submissions.filter((submission) => submission.clientId === 'A')
+    expect(fromA.map(({outcome, injected}) => ({outcome, injected}))).toEqual([
+      {outcome: 'rejected', injected: true},
+    ])
+    expect(keysOf(world.lake.get(DRAFT_ID), 'items')).toEqual(['a', 'b'])
+  })
+
   test('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE (SAPP-4794): a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'OPS-REJECTED-SAVE-WITH-QUEUED-SAVE',

@@ -158,6 +158,11 @@ export class FakeContentLake {
     return this.ticks
   }
 
+  /** Takes the next value of the clock, so an event observed outside the lake never ties with one inside it. */
+  stamp(): number {
+    return this.tick()
+  }
+
   get(id: string): SanityDocument | null {
     return (this.documents[id] as SanityDocument | undefined) ?? null
   }
