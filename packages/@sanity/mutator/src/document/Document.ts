@@ -228,17 +228,21 @@ export class Document {
 
     if (mustRebase) {
       this.rebase(rebaseMutations)
-    } else if (this.serverResultDiffersFromOptimistic()) {
-      this.rebase([])
+      return
     }
+    if (this.serverResultMatchesOptimistic()) {
+      return
+    }
+    this.rebase([])
   }
 
-  // The echo of our own transaction can carry fields the server added, eg `_system.base`
-  serverResultDiffersFromOptimistic(): boolean {
-    if (this.hasUnresolvedMutations() || this.EDGE === this.HEAD) {
-      return false
-    }
-    return !isEqual(withoutRevisionStamps(this.EDGE), withoutRevisionStamps(this.HEAD))
+  // Our own echo can carry fields the server added, such as `_system.base`
+  serverResultMatchesOptimistic(): boolean {
+    return (
+      this.hasUnresolvedMutations() ||
+      this.EDGE === this.HEAD ||
+      isEqual(withoutRevisionStamps(this.EDGE), withoutRevisionStamps(this.HEAD))
+    )
   }
 
   // check current consistency state, update flag and invoke callback if needed
