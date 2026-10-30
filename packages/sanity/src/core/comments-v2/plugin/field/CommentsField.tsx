@@ -1,17 +1,14 @@
-import {hues} from '@sanity/color'
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {useBoundaryElement} from '@sanity/ui'
+import {useBoundaryElement, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {use, useCallback, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {type CSSProperties, use, useCallback, useMemo, useRef, useState} from 'react'
 import {VStack} from 'ui5'
 
 import {type FieldProps} from '../../../form/types/fieldProps'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
@@ -21,6 +18,7 @@ import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useComments
 import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {type CommentCreatePayload, type CommentMessage} from '../../types'
+import {fieldStack, highlightDiv, radius3Var, space2Var} from './CommentsField.css'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form
@@ -53,38 +51,6 @@ export default function CommentsField(props: FieldProps) {
   return <CommentFieldInner {...props} />
 }
 
-const HighlightDiv = styled(motion.div)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {radius, space, color} = theme.sanity
-  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
-
-  return css`
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    left: -${space[2]}px;
-    bottom: -${space[2]}px;
-    right: -${space[2]}px;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1;
-    width: calc(100% + ${space[2] * 2}px);
-    height: calc(100% + ${space[2] * 2}px);
-    background-color: ${bg};
-  `
-})
-
-const FieldStack = styled(VStack)`
-  position: relative;
-
-  // Hide when the field component renders nothing (e.g. a custom
-  // field component that returns null) to avoid an empty wrapper
-  // taking up space in the form.
-  &:empty:not([hidden]) {
-    display: none;
-  }
-`
-
 function CommentFieldInner(props: FieldProps) {
   // Settled in place by the plugin's provider long before a form renders, so this reads
   // synchronously; a form that does get here first waits under the document pane's boundary
@@ -92,6 +58,7 @@ function CommentFieldInner(props: FieldProps) {
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
+  const {color, radius, space} = useThemeV2()
 
   const rootRef = useRef<HTMLDivElement | null>(null)
 
@@ -328,7 +295,17 @@ function CommentFieldInner(props: FieldProps) {
   )
 
   return (
-    <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
+    <VStack
+      {...applyCommentsFieldAttr(PathUtils.toString(props.path))}
+      className={fieldStack}
+      ref={rootRef}
+      style={
+        {
+          [radius3Var]: `${radius[3]}px`,
+          [space2Var]: `${space[2]}px`,
+        } as CSSProperties
+      }
+    >
       {props.renderDefault({
         ...props,
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -337,15 +314,16 @@ function CommentFieldInner(props: FieldProps) {
 
       <AnimatePresence>
         {isSelected && !isInlineCommentThread && (
-          <HighlightDiv
+          <motion.div
             animate="animate"
+            className={color._dark ? highlightDiv.dark : highlightDiv.light}
             exit="exit"
             initial="initial"
             variants={HIGHLIGHT_BLOCK_VARIANTS}
           />
         )}
       </AnimatePresence>
-    </FieldStack>
+    </VStack>
   )
 }
 
