@@ -2,6 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Flex, Label, Text, TextInput, useTheme_v2} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
@@ -175,6 +176,9 @@ function DropdownPill(props: {
     search?: Omit<SearchFields, 'title'>
     /** The section the row sits in ("Has 3 variants", "Other variants"). A row with none (the default) stands alone above them. */
     section?: string
+    /** Stands in for the rows of a section with none ("Has 0 variants"): draws no row, only the section heading, whose info mark shows
+     * `hint` as a tooltip. Not a search result. */
+    placeholder?: boolean
   }[]
   testId: string
   /** The leading glyph, as the stock Published and Draft chips have one: it gives the pill their left inset and size. */
@@ -191,7 +195,11 @@ function DropdownPill(props: {
 }) {
   const [query, setQuery] = useState('')
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
-  const found = rankSearch(props.items, query, (item) => ({title: item.text, ...item.search}))
+  const found = rankSearch(
+    props.items.filter((item) => !item.placeholder || !query.trim()),
+    query,
+    (item) => ({title: item.text, ...item.search}),
+  )
   const tone = props.selected ? props.tone : undefined
   // A selected capsule takes the selected ghost chip's colours (as the stock Draft chip beside it): its segments are bleed chips, whose
   // selected fill is paler and whose border is clear, so the capsule's own outline and hairline showed grey on the tone (Faheem, 29 Oct).
@@ -270,34 +278,51 @@ function DropdownPill(props: {
                     />
                   ) : null}
                   {startsSection && item.section ? (
-                    <Box paddingLeft={3} paddingTop={3} paddingBottom={2}>
+                    <Flex align="center" gap={2} paddingLeft={3} paddingTop={3} paddingBottom={2}>
                       <Label muted size={1} style={{textTransform: 'uppercase'}}>
                         {item.section}
                       </Label>
-                    </Box>
+                      {/* An empty section says why in a tooltip on its info mark (30 Oct, Faheem; as the Handoff Studio, 574a45ed37). */}
+                      {item.placeholder && item.hint ? (
+                        <Tooltip content={item.hint} placement="top" portal>
+                          <span
+                            aria-label={item.hint}
+                            data-testid={`${props.testId}-empty-info`}
+                            role="img"
+                            style={{display: 'inline-flex'}}
+                          >
+                            <Text muted size={1}>
+                              <InfoOutlineIcon />
+                            </Text>
+                          </span>
+                        </Tooltip>
+                      ) : null}
+                    </Flex>
                   ) : null}
-                  <MenuItem
-                    __unstable_subtitle={reason}
-                    disabled={!item.onClick}
-                    icon={item.icon}
-                    pressed={item.selected}
-                    selected={item.selected}
-                    onClick={item.onClick}
-                    text={item.text}
-                    tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
-                    renderMenuItem={
-                      item.trailing
-                        ? (content) => (
-                            <Flex align="center" gap={3}>
-                              <Box flex={1} style={{minWidth: 0}}>
-                                {content}
-                              </Box>
-                              {item.trailing}
-                            </Flex>
-                          )
-                        : undefined
-                    }
-                  />
+                  {item.placeholder ? null : (
+                    <MenuItem
+                      __unstable_subtitle={reason}
+                      disabled={!item.onClick}
+                      icon={item.icon}
+                      pressed={item.selected}
+                      selected={item.selected}
+                      onClick={item.onClick}
+                      text={item.text}
+                      tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
+                      renderMenuItem={
+                        item.trailing
+                          ? (content) => (
+                              <Flex align="center" gap={3}>
+                                <Box flex={1} style={{minWidth: 0}}>
+                                  {content}
+                                </Box>
+                                {item.trailing}
+                              </Flex>
+                            )
+                          : undefined
+                      }
+                    />
+                  )}
                 </Fragment>
               )
             })}
@@ -504,7 +529,7 @@ export function OpenBetaPills({
         hint: `Create ${definition.metadata?.title ?? id} version`,
         selected: id === currentVariant,
         search: {id},
-        section: variants.length ? 'Other variants' : 'Variants',
+        section: 'Other variants',
       }
     })
   // One flat row per RELEASE this document is in (the pill counts releases, not versions); no variants nested under them (22 Oct call).
@@ -542,7 +567,7 @@ export function OpenBetaPills({
       hint: `Add to ${release.metadata.title || 'Untitled release'}`,
       selected: current === id,
       search: {id},
-      section: releaseIds.length ? 'Other releases' : 'Releases',
+      section: 'Other releases',
     }))
   const releaseCount = new Set(releases.map((v) => v.bundleId)).size
   // The release in view, if any (this document's, or another picked from the greyed rows): the pill names it and gets the cross, as the
@@ -572,12 +597,33 @@ export function OpenBetaPills({
         title: item.text,
       }
     })
-  const variantRows = sorted
-    ? [baseItem, ...byTitle(variantItems), ...byTitle(missingItems)]
-    : [baseItem, ...variantItems, ...missingItems]
-  const releaseRows = sorted
-    ? [...byPublish(releaseItems), ...byPublish(missingReleaseItems)]
-    : [...releaseItems, ...missingReleaseItems]
+  // "Has N variants" and "In N releases" are always there, so the sections keep their places before and after the first one is created; at 0
+  // the heading carries an info mark with the reason in a tooltip (30 Oct, Pedro and Faheem; SAPP-4722, Andrej's empty-text finding).
+  const noVariants = {
+    key: 'variant-none',
+    text: '',
+    icon: <></>,
+    hint: 'No variants yet. Pick one to create it.',
+    section: 'Has 0 variants',
+    placeholder: true,
+  }
+  const noReleases = {
+    key: 'release-none',
+    text: '',
+    icon: <></>,
+    hint: 'Not in a release yet. Pick one to add it.',
+    section: 'In 0 releases',
+    placeholder: true,
+  }
+  const variantRows = [
+    baseItem,
+    ...(variantItems.length ? (sorted ? byTitle(variantItems) : variantItems) : [noVariants]),
+    ...(sorted ? byTitle(missingItems) : missingItems),
+  ]
+  const releaseRows = [
+    ...(releaseItems.length ? (sorted ? byPublish(releaseItems) : releaseItems) : [noReleases]),
+    ...(sorted ? byPublish(missingReleaseItems) : missingReleaseItems),
+  ]
 
   return (
     // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
@@ -599,7 +645,6 @@ export function OpenBetaPills({
           }
           items={variantRows}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
-          note={variants.length ? undefined : 'No variants yet. Pick one to create it.'}
           selected={Boolean(viewedTitle)}
           testId="pills-variants"
           // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
@@ -670,7 +715,6 @@ export function OpenBetaPills({
             )
           }
           items={releaseRows}
-          note={releases.length ? undefined : 'Not in a release yet. Pick one to add it.'}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
