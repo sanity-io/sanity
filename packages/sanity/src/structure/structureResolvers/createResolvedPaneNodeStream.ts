@@ -360,27 +360,25 @@ function resolvePaneTree({
 }
 
 /**
- * Finds the pane group that shows the carried document: the first group with a
+ * Finds the pane group that shows the carried document: the last group with a
  * sibling for that document id, skipping groups where such a sibling resolved
- * to something other than a document (a list item that shares the id).
+ * to something other than a document. A list item that shares the id is an
+ * ancestor of the document, so it comes first, and may still be loading.
  */
 function findCarriedGroupIndex(panes: ResolvedPaneMeta[], documentId: string): number {
   const skippedGroups = new Set<number>()
-  const candidates = new Set<number>()
+  const candidates: number[] = []
 
   for (const pane of panes) {
     if (getDocumentIdFromPaneId(pane.routerPaneSibling.id) !== documentId) continue
     if (pane.type === 'resolvedMeta' && pane.paneNode.type !== 'document') {
       skippedGroups.add(pane.groupIndex)
     } else {
-      candidates.add(pane.groupIndex)
+      candidates.push(pane.groupIndex)
     }
   }
 
-  for (const groupIndex of candidates) {
-    if (!skippedGroups.has(groupIndex)) return groupIndex
-  }
-  return -1
+  return candidates.findLast((groupIndex) => !skippedGroups.has(groupIndex)) ?? -1
 }
 
 /**

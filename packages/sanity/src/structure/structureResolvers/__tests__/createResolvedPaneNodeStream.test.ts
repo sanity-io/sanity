@@ -259,6 +259,41 @@ describe('createResolvedPaneNodeStream with a resolving pane', () => {
     subscription.unsubscribe()
   })
 
+  it('keeps the document in its own group while a list that shares its id loads', async () => {
+    const {rootPaneNode, structureContext, releaseRoot, releasePages} = await getSlowStructure()
+    releaseRoot()
+    const routerPanes = new BehaviorSubject<RouterPanes>([
+      [{id: '__resolve__pages', params: {type: 'page'}}],
+    ])
+    const emissions: ResolvedPaneMeta[][] = []
+
+    const subscription = createResolvedPaneNodeStream({
+      routerPanesStream: routerPanes,
+      rootPaneNode,
+      structureContext,
+    }).subscribe((metas) => emissions.push(metas))
+    await settle()
+    const swapIndex = emissions.length
+
+    routerPanes.next([[{id: 'pages'}], [{id: 'pages'}]])
+    await settle()
+    releasePages()
+    await settle()
+
+    const afterSwap = emissions.slice(swapIndex).map(summarize)
+    expect(afterSwap[0]).toEqual(['list:root', 'loading:pages', 'document:pages#handoff-pages-0'])
+    for (const emission of afterSwap) {
+      expect(emission[2]).toBe('document:pages#handoff-pages-0')
+    }
+    expect(afterSwap.at(-1)).toEqual([
+      'list:root',
+      'documentList:pages',
+      'document:pages#handoff-pages-0',
+    ])
+
+    subscription.unsubscribe()
+  })
+
   it('stops tagging the document once the user navigates away from it', async () => {
     const {rootPaneNode, structureContext, releaseRoot, releasePages} = await getSlowStructure()
     releaseRoot()
