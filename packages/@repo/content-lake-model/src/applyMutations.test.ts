@@ -25,4 +25,61 @@ describe('applyMutations', () => {
     expect(patchMissing).toThrow(ContentLakeError)
     expect(patchMissing).toThrow(expect.objectContaining({statusCode: 400}))
   })
+
+  describe('a diffMatchPatch on a value that is not a string', () => {
+    const patch = '@@ -1 +1 @@\n-a\n+b\n'
+    const index = {
+      a: {_id: 'a', _type: 'doc', count: 1, items: [{_key: 'k', title: 'x'}], nested: {}},
+    }
+
+    function failureOf(path: string, position = 0) {
+      const mutations = [
+        ...Array.from({length: position}, () => ({patch: {id: 'a', set: {other: 1}}})),
+        {patch: {id: 'a', diffMatchPatch: {[path]: patch}}},
+      ]
+      try {
+        applyMutations(index, mutations)
+      } catch (error) {
+        return error
+      }
+      return undefined
+    }
+
+    it('answers 400 with the body Content Lake sends for a missing field', () => {
+      expect(failureOf('title')).toMatchObject({
+        statusCode: 400,
+        body: {
+          description:
+            "Mutation failed: Can't diff-match-patch \"$['title']\", because it is not a string",
+          items: [
+            {
+              error: {
+                description: "Can't diff-match-patch \"$['title']\", because it is not a string",
+                type: 'validationError',
+              },
+              index: 0,
+            },
+          ],
+          type: 'mutationError',
+        },
+      })
+    })
+
+    it('names the index of the failing mutation', () => {
+      expect(failureOf('title', 2)).toMatchObject({body: {items: [{index: 2}]}})
+    })
+
+    it('rejects a field that holds another type', () => {
+      expect(failureOf('count')).toMatchObject({statusCode: 400})
+    })
+
+    it('extends the path for nested and keyed targets', () => {
+      expect(failureOf('nested.title')).toMatchObject({
+        body: {description: expect.stringContaining("\"$['nested']['title']\"")},
+      })
+      expect(failureOf('items[_key=="k"].missing')).toMatchObject({
+        body: {description: expect.stringContaining("\"$['items'][?(@._key=='k')]['missing']\"")},
+      })
+    })
+  })
 })
