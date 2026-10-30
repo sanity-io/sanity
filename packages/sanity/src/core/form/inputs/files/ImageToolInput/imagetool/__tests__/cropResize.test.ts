@@ -127,6 +127,18 @@ describe('resizeCropRect', () => {
     expectRect(next, {x: 500, y: 500, width: 1300, height: 700})
   })
 
+  test('does not cap a ratio without a constraint', () => {
+    const banner: Size = {width: 20_000, height: 100}
+    const next = resizeCropRect(
+      {x: 0, y: 0, width: 1000, height: 50},
+      HANDLE_DIRECTIONS['crop-bottomRight'],
+      {x: 20_000, y: 5},
+      banner,
+      {minimum: getMinimumCropSize(banner)},
+    )
+    expectRect(next, {x: 0, y: 0, width: 20_000, height: 5})
+  })
+
   test('moves only the dragged edge on a side drag without a ratio', () => {
     const next = resizeCropRect(START, HANDLE_DIRECTIONS['crop-left'], {x: 300, y: 1000}, SOURCE, {
       minimum: MINIMUM,
