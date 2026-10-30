@@ -34,7 +34,13 @@ export interface SyncTestDefinition {
   steps: SyncTestStep[]
 }
 
-export interface GeneratorFailure {
+export interface ReplayableSequence {
+  definition: SyncTestDefinition
+  initial: ContentLakeDocument[]
+  submissions: SubmissionReport[]
+}
+
+export interface GeneratorFailure extends ReplayableSequence {
   signature: string
   signatureFields: {
     rule: string
@@ -45,9 +51,11 @@ export interface GeneratorFailure {
   }
   message: string
   seed: number
-  definition: SyncTestDefinition
-  initial: ContentLakeDocument[]
-  submissions: SubmissionReport[]
+}
+
+export interface GeneratorSample extends ReplayableSequence {
+  seed: number
+  runIndex: number
 }
 
 export interface GeneratorReport {
@@ -58,6 +66,7 @@ export interface GeneratorReport {
   runsPerSeed: number
   maxSteps: number
   failures: GeneratorFailure[]
+  samples?: GeneratorSample[]
 }
 
 const SEAMS = new Set<unknown>(['pair', 'operations'])
@@ -100,30 +109,53 @@ function documentProblems(document: unknown, where: string): string[] {
     : [`${where} must be a document with string _id and _type`]
 }
 
+function sequenceProblems(sequence: Record<string, unknown>, where: string): string[] {
+  const definition = sequence.definition
+  return [
+    ...(isRecord(definition) && Array.isArray(definition.steps)
+      ? []
+      : [`${where}.definition.steps must be an array`]),
+    ...(Array.isArray(sequence.initial)
+      ? sequence.initial.flatMap((document, position) =>
+          documentProblems(document, `${where}.initial[${position}]`),
+        )
+      : [`${where}.initial must be an array`]),
+    ...(Array.isArray(sequence.submissions)
+      ? sequence.submissions.flatMap((submission, position) =>
+          submissionProblems(submission, `${where}.submissions[${position}]`),
+        )
+      : [`${where}.submissions must be an array`]),
+  ]
+}
+
 function failureProblems(failure: unknown, index: number): string[] {
   const where = `failures[${index}]`
   if (isRecord(failure)) {
-    const definition = failure.definition
     return [
       ...(typeof failure.signature === 'string' && failure.signature.length > 0
         ? []
         : [`${where}.signature must be a non-empty string`]),
-      ...(isRecord(definition) && Array.isArray(definition.steps)
-        ? []
-        : [`${where}.definition.steps must be an array`]),
-      ...(Array.isArray(failure.initial)
-        ? failure.initial.flatMap((document, position) =>
-            documentProblems(document, `${where}.initial[${position}]`),
-          )
-        : [`${where}.initial must be an array`]),
-      ...(Array.isArray(failure.submissions)
-        ? failure.submissions.flatMap((submission, position) =>
-            submissionProblems(submission, `${where}.submissions[${position}]`),
-          )
-        : [`${where}.submissions must be an array`]),
+      ...sequenceProblems(failure, where),
     ]
   }
   return [`${where} must be an object`]
+}
+
+function sampleProblems(sample: unknown, index: number): string[] {
+  const where = `samples[${index}]`
+  if (isRecord(sample)) {
+    return [
+      ...(typeof sample.seed === 'number' ? [] : [`${where}.seed must be a number`]),
+      ...(typeof sample.runIndex === 'number' ? [] : [`${where}.runIndex must be a number`]),
+      ...sequenceProblems(sample, where),
+    ]
+  }
+  return [`${where} must be an object`]
+}
+
+function samplesProblems(samples: unknown): string[] {
+  if (samples === undefined) return []
+  return Array.isArray(samples) ? samples.flatMap(sampleProblems) : ['samples must be an array']
 }
 
 export function generatorReportProblems(report: unknown): string[] {
@@ -135,6 +167,7 @@ export function generatorReportProblems(report: unknown): string[] {
       ...(Array.isArray(report.failures)
         ? report.failures.flatMap(failureProblems)
         : ['failures must be an array']),
+      ...samplesProblems(report.samples),
     ]
   }
   return ['report must be a JSON object']

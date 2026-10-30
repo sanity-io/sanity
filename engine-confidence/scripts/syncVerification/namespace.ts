@@ -1,4 +1,4 @@
-import {type GeneratorFailure} from './generatorReport'
+import {type ReplayableSequence} from './generatorReport'
 
 const ID_KEYS = new Set(['_id', 'id', 'draftId', 'publishedId'])
 const DRAFTS_PREFIX = 'drafts.'
@@ -54,14 +54,14 @@ function publishedIdOf(id: string): string {
   return VERSIONS_PATTERN.exec(id)?.[2] ?? id
 }
 
-export function documentIdsOf(failure: GeneratorFailure): string[] {
-  const {idPair} = failure.definition
+export function documentIdsOf(sequence: ReplayableSequence): string[] {
+  const {idPair} = sequence.definition
   const mentioned = [
-    ...failure.initial.map((document) => document._id),
+    ...sequence.initial.map((document) => document._id),
     ...[idPair.publishedId, idPair.draftId, idPair.versionId].filter(
       (id): id is string => typeof id === 'string',
     ),
-    ...failure.submissions.flatMap((submission) => collectIdValues(submission.request)),
+    ...sequence.submissions.flatMap((submission) => collectIdValues(submission.request)),
   ]
   const expanded = mentioned.flatMap((id) => {
     const publishedId = publishedIdOf(id)

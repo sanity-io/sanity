@@ -1,8 +1,13 @@
 import {type ContentLakeDocument} from '@repo/content-lake-model'
 
-import {type GeneratorFailure} from './generatorReport'
+import {fakeSignatureOf} from './fakeSignature'
+import {
+  type GeneratorFailure,
+  type GeneratorSample,
+  type ReplayableSequence,
+} from './generatorReport'
 import {type ReplayEntry, type SubmissionOutcome} from './modelReplay'
-import {type FailureVerdict, type VerdictDifference} from './verdicts'
+import {type FailureVerdict, type SampleVerdict, type VerdictDifference} from './verdicts'
 
 export type ComparableDocument = Omit<ContentLakeDocument, '_rev' | '_updatedAt' | '_createdAt'>
 
@@ -16,11 +21,16 @@ export interface SubmissionComparison {
   realDocuments: Record<string, ComparableDocument | null>
 }
 
-export interface FailureReplay {
-  signature: string
+export interface SequenceReplay {
   plan: ReplayEntry[]
   comparisons: SubmissionComparison[]
   unverifiableSteps: string[]
+}
+
+interface Assessment {
+  divergent?: SubmissionComparison
+  differences: VerdictDifference[]
+  fakeSignature?: string
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -94,15 +104,15 @@ const LISTENER_FAULTS: Record<string, string> = {
   reconnect: 'a listener reconnect',
 }
 
-export function unverifiableStepsOf(failure: GeneratorFailure): string[] {
-  const listenerFaults = failure.definition.steps.flatMap((step) => {
+export function unverifiableStepsOf(sequence: ReplayableSequence): string[] {
+  const listenerFaults = sequence.definition.steps.flatMap((step) => {
     if (step.do === 'releaseEvents' && step.order === 'reverse') {
       return ['listener events delivered out of order']
     }
     const fault = LISTENER_FAULTS[step.do]
     return fault === undefined ? [] : [fault]
   })
-  const injected = failure.submissions
+  const injected = sequence.submissions
     .filter((submission) => submission.injected)
     .map((submission) => `an injected ${submission.statusCode ?? 'unknown'} rejection`)
   return [...new Set([...listenerFaults, ...injected])]
@@ -128,35 +138,39 @@ function describeDifference(difference: VerdictDifference): string {
   return `${where} answered error type ${String(difference.real)} where the fake answered ${String(difference.fake)}`
 }
 
-function divergenceVerdict(replay: FailureReplay, divergent: SubmissionComparison): FailureVerdict {
+function assess(sequence: ReplayableSequence, replay: SequenceReplay): Assessment {
+  const divergent = replay.comparisons.find((comparison) =>
+    outcomeDiffers(comparison.recorded, comparison.fake),
+  )
+  if (divergent) return {divergent, differences: []}
+  const differences = replay.comparisons.flatMap(comparisonDifferences)
+  if (differences.length === 0) return {differences}
+  const firstDisagreement = replay.comparisons.find(
+    (comparison) => comparison.submission === differences[0].submission,
+  )
   return {
-    signature: replay.signature,
-    verdict: 'error',
-    summary: `Replaying the report in submission order through the fake model did not reproduce the generator's recorded outcome for submission ${divergent.submission} (recorded ${describeOutcome(divergent.recorded)}, replayed ${describeOutcome(divergent.fake)}), so the real Content Lake comparison is not meaningful.`,
-    differences: [],
-    replayed: replay.comparisons.length,
-  }
-}
-
-function mismatchVerdict(replay: FailureReplay, differences: VerdictDifference[]): FailureVerdict {
-  const disagreeing = new Set(differences.map((difference) => difference.submission)).size
-  return {
-    signature: replay.signature,
-    verdict: 'fake-mismatch',
-    summary: `The real Content Lake disagreed with the fake on ${disagreeing} of ${plural(replay.comparisons.length, 'replayed submission')}: ${describeDifference(differences[0])}.`,
     differences,
-    replayed: replay.comparisons.length,
+    fakeSignature: firstDisagreement && fakeSignatureOf(sequence.submissions, firstDisagreement),
   }
 }
 
-function nothingReplayedSummary(replay: FailureReplay): string {
+function divergenceSummary(divergent: SubmissionComparison): string {
+  return `Replaying the report in submission order through the fake model did not reproduce the generator's recorded outcome for submission ${divergent.submission} (recorded ${describeOutcome(divergent.recorded)}, replayed ${describeOutcome(divergent.fake)}), so the real Content Lake comparison is not meaningful.`
+}
+
+function mismatchSummary(replay: SequenceReplay, differences: VerdictDifference[]): string {
+  const disagreeing = new Set(differences.map((difference) => difference.submission)).size
+  return `The real Content Lake disagreed with the fake on ${disagreeing} of ${plural(replay.comparisons.length, 'replayed submission')}: ${describeDifference(differences[0])}.`
+}
+
+function nothingReplayedSummary(replay: SequenceReplay, subject: string): string {
   if (replay.plan.length === 0) {
-    return 'The failure sent nothing to the Content Lake, so there is nothing to verify against the real server.'
+    return `The ${subject} sent nothing to the Content Lake, so there is nothing to verify against the real server.`
   }
   return 'Nothing was replayed against the real Content Lake: every submission was either injected by the test or never answered by the fake.'
 }
 
-function agreementSummary(replay: FailureReplay): string {
+function agreementSummary(replay: SequenceReplay): string {
   const rejected = replay.comparisons.filter((comparison) => comparison.real.statusCode !== 200)
   const total = replay.comparisons.length
   const every = total === 1 ? 'the 1 replayed submission' : `all ${total} replayed submissions`
@@ -171,34 +185,86 @@ function agreementSummary(replay: FailureReplay): string {
   return `The real Content Lake answered ${answers}, as the fake did, and matched the fake's documents after ${every}.`
 }
 
-export function classifyFailure(replay: FailureReplay): FailureVerdict {
-  const divergent = replay.comparisons.find((comparison) =>
-    outcomeDiffers(comparison.recorded, comparison.fake),
-  )
-  if (divergent) return divergenceVerdict(replay, divergent)
-
-  const differences = replay.comparisons.flatMap(comparisonDifferences)
-  if (differences.length > 0) return mismatchVerdict(replay, differences)
-
-  const base = {signature: replay.signature, differences: [], replayed: replay.comparisons.length}
+export function classifyFailure(failure: GeneratorFailure, replay: SequenceReplay): FailureVerdict {
+  const base = {signature: failure.signature, replayed: replay.comparisons.length}
+  const {divergent, differences, fakeSignature} = assess(failure, replay)
+  if (divergent) {
+    return {...base, verdict: 'error', summary: divergenceSummary(divergent), differences: []}
+  }
+  if (fakeSignature) {
+    return {
+      ...base,
+      verdict: 'fake-mismatch',
+      fakeSignature,
+      summary: mismatchSummary(replay, differences),
+      differences,
+    }
+  }
   if (replay.comparisons.length === 0) {
-    return {...base, verdict: 'assumed', summary: nothingReplayedSummary(replay)}
+    return {
+      ...base,
+      verdict: 'assumed',
+      summary: nothingReplayedSummary(replay, 'failure'),
+      differences: [],
+    }
   }
   if (replay.unverifiableSteps.length > 0) {
     return {
       ...base,
       verdict: 'assumed',
       summary: `${agreementSummary(replay)} The failure also depends on ${listInWords(replay.unverifiableSteps)}, which the real server cannot be made to reproduce.`,
+      differences: [],
     }
   }
-  return {...base, verdict: 'confirmed', summary: agreementSummary(replay)}
+  return {...base, verdict: 'confirmed', summary: agreementSummary(replay), differences: []}
+}
+
+export function classifySample(sample: GeneratorSample, replay: SequenceReplay): SampleVerdict {
+  const base = {seed: sample.seed, runIndex: sample.runIndex, replayed: replay.comparisons.length}
+  const {divergent, differences, fakeSignature} = assess(sample, replay)
+  if (divergent) {
+    return {...base, verdict: 'error', summary: divergenceSummary(divergent), differences: []}
+  }
+  if (fakeSignature) {
+    return {
+      ...base,
+      verdict: 'fake-mismatch',
+      fakeSignature,
+      summary: mismatchSummary(replay, differences),
+      differences,
+    }
+  }
+  const summary =
+    replay.comparisons.length === 0
+      ? nothingReplayedSummary(replay, 'sample')
+      : agreementSummary(replay)
+  return {...base, verdict: 'confirmed', summary, differences: []}
+}
+
+function errorSummary(subject: string, reason: string): string {
+  return `The verify step could not finish for this ${subject}: ${reason}`
 }
 
 export function errorVerdict(signature: string, reason: string, replayed: number): FailureVerdict {
   return {
     signature,
     verdict: 'error',
-    summary: `The verify step could not finish for this failure: ${reason}`,
+    summary: errorSummary('failure', reason),
+    differences: [],
+    replayed,
+  }
+}
+
+export function sampleErrorVerdict(
+  sample: GeneratorSample,
+  reason: string,
+  replayed: number,
+): SampleVerdict {
+  return {
+    seed: sample.seed,
+    runIndex: sample.runIndex,
+    verdict: 'error',
+    summary: errorSummary('sample', reason),
     differences: [],
     replayed,
   }

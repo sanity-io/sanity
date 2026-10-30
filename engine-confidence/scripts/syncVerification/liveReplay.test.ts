@@ -3,7 +3,7 @@ import {describe, expect, test} from 'vitest'
 import {createFakeContentLakeServer, type RecordedCall} from './__fixtures__/fakeContentLakeServer'
 import {loadFixtureReport} from './__fixtures__/loadFixtureReport'
 import {createContentLakeHttp} from './contentLakeHttp'
-import {openWorkspace, verifyFailures, workspaceErrorVerdicts} from './liveReplay'
+import {openWorkspace, verifyFailures, verifyReport, workspaceErrorResults} from './liveReplay'
 
 const report = loadFixtureReport()
 
@@ -103,6 +103,60 @@ describe('verifyFailures', () => {
   })
 })
 
+describe('verifyReport', () => {
+  test('replays the samples after the failures and confirms the ones the server agrees with', async () => {
+    const server = createFakeContentLakeServer()
+    const {verdicts, samples} = await verifyReport(report, httpFor(server), 'run1')
+    expect(verdicts).toHaveLength(report.failures.length)
+    expect(samples).toEqual([
+      expect.objectContaining({seed: 11, runIndex: 40, verdict: 'confirmed', replayed: 3}),
+      expect.objectContaining({seed: 12, runIndex: 80, verdict: 'confirmed', replayed: 1}),
+    ])
+    const seededPrefixes = server.calls.flatMap((call) => {
+      const seeded = (call.body as {mutations?: Array<{createOrReplace?: {_id: string}}>})
+        ?.mutations?.[0]?.createOrReplace?._id
+      return seeded ? [/fv-probe-run1-(\w+)-/.exec(seeded)?.[1]] : []
+    })
+    expect(seededPrefixes).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 's0', 's1'])
+  })
+
+  test('signs a sample and a failure that hit the same gap identically', async () => {
+    const rejectsReferences = createFakeContentLakeServer((call) => {
+      const mutations = (call.body as {mutations?: unknown[]})?.mutations
+      return JSON.stringify(mutations ?? []).includes('"_ref"')
+        ? new Response(JSON.stringify({error: {type: 'mutationError'}}), {status: 409})
+        : undefined
+    })
+    const [, referenceSample] = report.samples ?? []
+    const failure = {
+      ...report.failures[4],
+      signature: 'converged',
+      definition: referenceSample.definition,
+      submissions: referenceSample.submissions,
+    }
+    const {verdicts, samples = []} = await verifyReport(
+      {...report, failures: [failure], samples: [referenceSample]},
+      httpFor(rejectsReferences),
+      'run1',
+    )
+    expect(samples[0]).toMatchObject({
+      verdict: 'fake-mismatch',
+      fakeSignature: 'fake-mismatch | mutations | patch:set | 200->409 | mutationError',
+    })
+    expect(verdicts[0].fakeSignature).toBe(samples[0].fakeSignature)
+  })
+
+  test('leaves samples out when the report has none', async () => {
+    const {samples: _samples, ...withoutSamples} = report
+    const results = await verifyReport(
+      {...withoutSamples, failures: []},
+      httpFor(createFakeContentLakeServer()),
+      'run1',
+    )
+    expect(results).toEqual({verdicts: []})
+  })
+})
+
 describe('openWorkspace', () => {
   test('creates the dataset and deletes it once on close', async () => {
     const server = createFakeContentLakeServer()
@@ -128,8 +182,9 @@ describe('openWorkspace', () => {
   })
 
   test('gives every failure an error verdict when the dataset cannot be prepared', () => {
-    const verdicts = workspaceErrorVerdicts(report, new Error('HTTP 401'))
+    const {verdicts, samples = []} = workspaceErrorResults(report, new Error('HTTP 401'))
     expect(verdicts).toHaveLength(report.failures.length)
-    expect(verdicts.every(({verdict}) => verdict === 'error')).toBe(true)
+    expect(samples).toHaveLength(2)
+    expect([...verdicts, ...samples].every(({verdict}) => verdict === 'error')).toBe(true)
   })
 })

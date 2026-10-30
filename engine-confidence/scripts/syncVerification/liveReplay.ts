@@ -2,14 +2,21 @@ import {type ContentLakeDocument} from '@repo/content-lake-model'
 
 import {
   classifyFailure,
+  classifySample,
   comparableDocument,
   errorVerdict,
-  type FailureReplay,
+  sampleErrorVerdict,
+  type SequenceReplay,
   type SubmissionComparison,
   unverifiableStepsOf,
 } from './compare'
 import {type ContentLakeHttp} from './contentLakeHttp'
-import {type GeneratorFailure, type GeneratorReport} from './generatorReport'
+import {
+  type GeneratorFailure,
+  type GeneratorReport,
+  type GeneratorSample,
+  type ReplayableSequence,
+} from './generatorReport'
 import {
   ACCEPTED,
   errorTypeOf,
@@ -27,7 +34,7 @@ import {
   mapRevisionPreconditions,
   mapStrings,
 } from './namespace'
-import {type FailureVerdict} from './verdicts'
+import {type FailureVerdict, type SampleVerdict} from './verdicts'
 
 export type DatasetMode = 'create' | 'existing'
 
@@ -41,8 +48,8 @@ interface ReplayProgress {
   log: (message: string) => void
 }
 
-export function documentPrefix(runId: string, failureIndex: number): string {
-  return `fv-probe-${runId}-f${failureIndex}-`
+export function documentPrefix(runId: string, sequenceLabel: string): string {
+  return `fv-probe-${runId}-${sequenceLabel}-`
 }
 
 export async function openWorkspace(http: ContentLakeHttp, mode: DatasetMode): Promise<Workspace> {
@@ -111,13 +118,13 @@ function realDocumentsAsFake(
 }
 
 async function replayStep(
-  failure: GeneratorFailure,
+  sequence: ReplayableSequence,
   step: ModelStep,
   namespace: IdNamespace,
   http: ContentLakeHttp,
   revisions: ReadonlyMap<string, string>,
 ): Promise<{comparison: SubmissionComparison; revisions: ReadonlyMap<string, string>}> {
-  const submission = failure.submissions[step.submission]
+  const submission = sequence.submissions[step.submission]
   const request = mapRevisionPreconditions(
     mapStrings(submission.request, namespace.toReal),
     revisions,
@@ -146,22 +153,22 @@ async function replayStep(
   }
 }
 
-export async function replayFailureLive(
-  failure: GeneratorFailure,
+export async function replaySequenceLive(
+  sequence: ReplayableSequence,
   prefix: string,
   http: ContentLakeHttp,
   progress: ReplayProgress,
-): Promise<FailureReplay> {
-  const namespace = createIdNamespace(prefix, documentIdsOf(failure))
-  const modelSteps = replayOnModel(failure, namespace.fakeIds)
+): Promise<SequenceReplay> {
+  const namespace = createIdNamespace(prefix, documentIdsOf(sequence))
+  const modelSteps = replayOnModel(sequence, namespace.fakeIds)
   try {
-    const seeded = await seedLive(failure.initial, namespace, http)
+    const seeded = await seedLive(sequence.initial, namespace, http)
     const {comparisons} = await modelSteps.reduce<
       Promise<{revisions: ReadonlyMap<string, string>; comparisons: SubmissionComparison[]}>
     >(
       async (previous, step) => {
         const state = await previous
-        const replayed = await replayStep(failure, step, namespace, http, state.revisions)
+        const replayed = await replayStep(sequence, step, namespace, http, state.revisions)
         progress.replayed += 1
         return {
           revisions: replayed.revisions,
@@ -171,10 +178,9 @@ export async function replayFailureLive(
       Promise.resolve({revisions: seeded, comparisons: []}),
     )
     return {
-      signature: failure.signature,
-      plan: replayPlan(failure),
+      plan: replayPlan(sequence),
       comparisons,
-      unverifiableSteps: unverifiableStepsOf(failure),
+      unverifiableSteps: unverifiableStepsOf(sequence),
     }
   } finally {
     await http
@@ -189,17 +195,35 @@ function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
 
+type Log = (message: string) => void
+
+function noLog(): void {}
+
 export async function verifyFailure(
   failure: GeneratorFailure,
   prefix: string,
   http: ContentLakeHttp,
-  log: (message: string) => void = () => undefined,
+  log: Log = noLog,
 ): Promise<FailureVerdict> {
   const progress: ReplayProgress = {replayed: 0, log}
   try {
-    return classifyFailure(await replayFailureLive(failure, prefix, http, progress))
+    return classifyFailure(failure, await replaySequenceLive(failure, prefix, http, progress))
   } catch (error) {
     return errorVerdict(failure.signature, messageOf(error), progress.replayed)
+  }
+}
+
+export async function verifySample(
+  sample: GeneratorSample,
+  prefix: string,
+  http: ContentLakeHttp,
+  log: Log = noLog,
+): Promise<SampleVerdict> {
+  const progress: ReplayProgress = {replayed: 0, log}
+  try {
+    return classifySample(sample, await replaySequenceLive(sample, prefix, http, progress))
+  } catch (error) {
+    return sampleErrorVerdict(sample, messageOf(error), progress.replayed)
   }
 }
 
@@ -207,18 +231,52 @@ export function verifyFailures(
   report: GeneratorReport,
   http: ContentLakeHttp,
   runId: string,
-  log: (message: string) => void = () => undefined,
+  log: Log = noLog,
 ): Promise<FailureVerdict[]> {
   return report.failures.reduce<Promise<FailureVerdict[]>>(async (previous, failure, index) => {
     const verdicts = await previous
-    const verdict = await verifyFailure(failure, documentPrefix(runId, index), http, log)
+    const verdict = await verifyFailure(failure, documentPrefix(runId, `f${index}`), http, log)
     log(`[${verdict.verdict}] ${failure.signature}`)
     return [...verdicts, verdict]
   }, Promise.resolve([]))
 }
 
-export function workspaceErrorVerdicts(report: GeneratorReport, error: unknown): FailureVerdict[] {
-  return report.failures.map((failure) =>
-    errorVerdict(failure.signature, `could not prepare the dataset: ${messageOf(error)}`, 0),
-  )
+export function verifySamples(
+  samples: GeneratorSample[],
+  http: ContentLakeHttp,
+  runId: string,
+  log: Log = noLog,
+): Promise<SampleVerdict[]> {
+  return samples.reduce<Promise<SampleVerdict[]>>(async (previous, sample, index) => {
+    const verdicts = await previous
+    const verdict = await verifySample(sample, documentPrefix(runId, `s${index}`), http, log)
+    log(
+      `[${verdict.verdict}] sample seed ${sample.seed} run ${sample.runIndex}${verdict.fakeSignature ? `: ${verdict.fakeSignature}` : ''}`,
+    )
+    return [...verdicts, verdict]
+  }, Promise.resolve([]))
+}
+
+export interface ReportVerdicts {
+  verdicts: FailureVerdict[]
+  samples?: SampleVerdict[]
+}
+
+/** Failures first, then samples, one sequence at a time to keep staging traffic serial. */
+export async function verifyReport(
+  report: GeneratorReport,
+  http: ContentLakeHttp,
+  runId: string,
+  log: Log = noLog,
+): Promise<ReportVerdicts> {
+  const verdicts = await verifyFailures(report, http, runId, log)
+  if (report.samples === undefined) return {verdicts}
+  return {verdicts, samples: await verifySamples(report.samples, http, runId, log)}
+}
+
+export function workspaceErrorResults(report: GeneratorReport, error: unknown): ReportVerdicts {
+  const reason = `could not prepare the dataset: ${messageOf(error)}`
+  const verdicts = report.failures.map((failure) => errorVerdict(failure.signature, reason, 0))
+  if (report.samples === undefined) return {verdicts}
+  return {verdicts, samples: report.samples.map((sample) => sampleErrorVerdict(sample, reason, 0))}
 }

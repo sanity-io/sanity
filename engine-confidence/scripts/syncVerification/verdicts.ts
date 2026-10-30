@@ -14,6 +14,17 @@ export interface VerdictDifference {
 export interface FailureVerdict {
   signature: string
   verdict: Verdict
+  fakeSignature?: string
+  summary: string
+  differences: VerdictDifference[]
+  replayed: number
+}
+
+export interface SampleVerdict {
+  seed: number
+  runIndex: number
+  verdict: Exclude<Verdict, 'assumed'>
+  fakeSignature?: string
   summary: string
   differences: VerdictDifference[]
   replayed: number
@@ -24,4 +35,5 @@ export interface VerdictsFile {
   commit: string
   seam: Seam
   verdicts: FailureVerdict[]
+  samples?: SampleVerdict[]
 }

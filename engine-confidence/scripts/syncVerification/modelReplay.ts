@@ -9,7 +9,7 @@ import {
 } from '@repo/content-lake-model'
 
 import {
-  type GeneratorFailure,
+  type ReplayableSequence,
   type SubmissionReport,
   type SubmissionRequest,
 } from './generatorReport'
@@ -34,8 +34,8 @@ const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
 export const SEED_REVISION = 'seed'
 export const ACCEPTED: SubmissionOutcome = {statusCode: 200}
 
-export function replayPlan(failure: GeneratorFailure): ReplayEntry[] {
-  return failure.submissions.map((submission, index): ReplayEntry => {
+export function replayPlan(sequence: ReplayableSequence): ReplayEntry[] {
+  return sequence.submissions.map((submission, index): ReplayEntry => {
     const base = {submission: index, transactionId: submission.transactionId}
     if (submission.injected) return {...base, replay: false, reason: 'injected'}
     if (submission.outcome === 'pending') return {...base, replay: false, reason: 'pending'}
@@ -105,8 +105,8 @@ function commitOnModel(
     })
     return {index: committed.index, outcome: ACCEPTED}
   } catch (error) {
-    const failure = asContentLakeError(error)
-    return {index, outcome: {statusCode: failure.statusCode, errorType: failure.body.type}}
+    const rejection = asContentLakeError(error)
+    return {index, outcome: {statusCode: rejection.statusCode, errorType: rejection.body.type}}
   }
 }
 
@@ -118,11 +118,11 @@ function documentsOf(
 }
 
 /** Replays the replayable submissions in report order through the same model the fake uses. */
-export function replayOnModel(failure: GeneratorFailure, documentIds: string[]): ModelStep[] {
-  const replayable = replayPlan(failure).filter((entry) => entry.replay)
+export function replayOnModel(sequence: ReplayableSequence, documentIds: string[]): ModelStep[] {
+  const replayable = replayPlan(sequence).filter((entry) => entry.replay)
   return replayable.reduce<{index: DocumentIndex; steps: ModelStep[]}>(
     ({index, steps}, entry) => {
-      const submission = failure.submissions[entry.submission]
+      const submission = sequence.submissions[entry.submission]
       const committed = commitOnModel(index, submission.request, submission.transactionId)
       const step: ModelStep = {
         submission: entry.submission,
@@ -132,6 +132,6 @@ export function replayOnModel(failure: GeneratorFailure, documentIds: string[]):
       }
       return {index: committed.index, steps: [...steps, step]}
     },
-    {index: seedIndex(failure.initial), steps: []},
+    {index: seedIndex(sequence.initial), steps: []},
   ).steps
 }

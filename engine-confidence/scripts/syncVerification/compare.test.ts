@@ -5,11 +5,13 @@ import {
   classifyFailure,
   comparableDocument,
   comparisonDifferences,
-  type FailureReplay,
+  classifySample,
+  type SequenceReplay,
   type SubmissionComparison,
   unverifiableStepsOf,
 } from './compare'
 
+const [failure] = loadFixtureReport().failures
 const draft = {_id: 'drafts.article-gen', _type: 'article', title: 'draft'}
 
 function comparison(overrides: Partial<SubmissionComparison> = {}): SubmissionComparison {
@@ -25,9 +27,8 @@ function comparison(overrides: Partial<SubmissionComparison> = {}): SubmissionCo
   }
 }
 
-function replay(overrides: Partial<FailureReplay> = {}): FailureReplay {
+function replay(overrides: Partial<SequenceReplay> = {}): SequenceReplay {
   return {
-    signature: 'lost-edits | rejected | 400 | mutationError | diffMatchPatch',
     plan: [{submission: 0, transactionId: 'A-tx-1', replay: true}],
     comparisons: [comparison()],
     unverifiableSteps: [],
@@ -92,6 +93,7 @@ describe('classifyFailure', () => {
   test('confirms a failure whose replayed rejection the real server agrees with', () => {
     const rejected = {statusCode: 400, errorType: 'mutationError'}
     const verdict = classifyFailure(
+      failure,
       replay({comparisons: [comparison({recorded: rejected, fake: rejected, real: rejected})]}),
     )
     expect(verdict).toEqual({
@@ -104,8 +106,9 @@ describe('classifyFailure', () => {
     })
   })
 
-  test('marks a disagreement as a fake mismatch and lists every difference', () => {
+  test('marks a disagreement as a fake mismatch, signs it and lists every difference', () => {
     const verdict = classifyFailure(
+      failure,
       replay({
         comparisons: [
           comparison(),
@@ -114,6 +117,9 @@ describe('classifyFailure', () => {
       }),
     )
     expect(verdict.verdict).toBe('fake-mismatch')
+    expect(verdict.fakeSignature).toBe(
+      'fake-mismatch | actions | document.edit:diffMatchPatch | 200->409 | none',
+    )
     expect(verdict.summary).toBe(
       'The real Content Lake disagreed with the fake on 1 of 2 replayed submissions: submission 1 answered 409 where the fake answered 200.',
     )
@@ -123,13 +129,16 @@ describe('classifyFailure', () => {
   })
 
   test('keeps an agreeing failure that depends on a listener fault as assumed', () => {
-    const verdict = classifyFailure(replay({unverifiableSteps: ['a dropped listener event']}))
+    const verdict = classifyFailure(
+      failure,
+      replay({unverifiableSteps: ['a dropped listener event']}),
+    )
     expect(verdict.verdict).toBe('assumed')
     expect(verdict.summary).toContain('a dropped listener event')
   })
 
   test('marks a failure with nothing to replay as assumed', () => {
-    expect(classifyFailure(replay({plan: [], comparisons: []}))).toMatchObject({
+    expect(classifyFailure(failure, replay({plan: [], comparisons: []}))).toMatchObject({
       verdict: 'assumed',
       replayed: 0,
     })
@@ -137,6 +146,7 @@ describe('classifyFailure', () => {
 
   test('reports an error when the model replay does not reproduce the recorded outcome', () => {
     const verdict = classifyFailure(
+      failure,
       replay({
         comparisons: [
           comparison({
@@ -148,6 +158,60 @@ describe('classifyFailure', () => {
     )
     expect(verdict).toMatchObject({verdict: 'error', differences: []})
     expect(verdict.summary).toContain('recorded 400 mutationError, replayed 200')
+  })
+})
+
+describe('classifySample', () => {
+  const [sample] = loadFixtureReport().samples ?? []
+
+  test('confirms a sample the real server agrees with', () => {
+    expect(classifySample(sample, replay())).toEqual({
+      seed: 11,
+      runIndex: 40,
+      verdict: 'confirmed',
+      summary:
+        'The real Content Lake accepted the 1 replayed submission and left the same documents as the fake.',
+      differences: [],
+      replayed: 1,
+    })
+  })
+
+  test('signs a disagreement with the same builder as failures', () => {
+    const verdict = classifySample(
+      sample,
+      replay({
+        comparisons: [
+          comparison({
+            real: {statusCode: 409, errorType: 'mutationError'},
+            realDocuments: {'drafts.article-gen': {...draft, title: 'other'}},
+          }),
+        ],
+      }),
+    )
+    expect(verdict).toMatchObject({
+      verdict: 'fake-mismatch',
+      fakeSignature: 'fake-mismatch | actions | document.edit:set | 200->409 | mutationError',
+    })
+    expect(verdict.differences.map(({field}) => field)).toEqual([
+      'statusCode',
+      'errorType',
+      'document',
+    ])
+  })
+
+  test('confirms a sample that sent nothing, and never assumes', () => {
+    expect(classifySample(sample, replay({plan: [], comparisons: []}))).toMatchObject({
+      verdict: 'confirmed',
+      replayed: 0,
+    })
+  })
+
+  test('reports an error when the model replay does not reproduce the recorded outcome', () => {
+    const verdict = classifySample(
+      sample,
+      replay({comparisons: [comparison({recorded: {statusCode: 409}})]}),
+    )
+    expect(verdict).toMatchObject({verdict: 'error', differences: []})
   })
 })
 

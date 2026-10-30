@@ -68,6 +68,16 @@ Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision precon
 | `assumed`       | Nothing was replayed, or the failure also depends on a listener fault or an injected rejection, which the real server cannot reproduce.   |
 | `error`         | The step could not finish for that failure, or the model replayed in submission order did not reproduce the generator's recorded outcome. |
 
+Passing samples in `report.samples` are replayed the same way, after the failures, and land in `samples` in the verdicts file as `confirmed`, `fake-mismatch` or `error`. A sample is never `assumed`.
+
+Every `fake-mismatch`, from a failure or a sample, carries a `fakeSignature` built from the first submission the real server answered differently:
+
+```text
+fake-mismatch | <actions|mutations> | <operations> | <fake status>-><real status> | <error type or document:fields>
+```
+
+The operations are the sorted action and patch operations of that request (`document.edit:set`, `patch:insert`, `delete`), without the `_empty_action_guard_pseudo_field_` unset the form path adds. Outside writes count as `mutations`, since they go to the same endpoint. The last part is the real error type, or the fake's when only the fake rejected, and `document:` plus the differing top-level fields when only the documents differ. The signature holds no ids, revisions or values, so the same gap found by a failure and a sample files as one issue.
+
 `--dataset-mode create`, the default, creates `cursor_ci_sync_<random>` on `SANITY_E2E_PROJECT_ID` at `api.sanity.work` and deletes it at the end, on failure and on SIGINT or SIGTERM as well. The e2e cleanup job sweeps any `cursor_ci_` dataset older than 24 hours. `--dataset-mode existing --dataset <name>` reuses a dataset and creates only the prefixed documents. The token comes from `SANITY_E2E_SESSION_TOKEN`, and `SANITY_CLI_API_RATE_LIMIT_BYPASS` is sent when it is set. `--dry-run` needs no token: it validates the report and prints what it would replay.
 
 The command exits 0 whenever it writes the verdicts file, including when a verdict is `error`. It exits 1 for an invalid report or when it cannot delete the dataset it created.
