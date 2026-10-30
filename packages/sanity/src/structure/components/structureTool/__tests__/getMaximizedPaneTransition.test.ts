@@ -16,6 +16,7 @@ import {getMaximizedPaneTransition} from '../getMaximizedPaneTransition'
 
 interface TestPaneData {
   key: string
+  handoffKey?: string
   groupIndex: number
   siblingIndex: number
   selected: boolean
@@ -178,6 +179,30 @@ describe('getMaximizedPaneTransition', () => {
           isResolvingIntent: false,
           paneDataItems: [listPane('root'), docA],
           maximizedPane: docA,
+          previousSelectedIndex: 1,
+        }),
+      ).toEqual({type: 'keep', selectedIndex: 1})
+    })
+
+    it('keeps a document maximized while it moves from a resolving pane to its resolved path', () => {
+      const resolving = documentPane('page123-__resolve__page123-0', {
+        groupIndex: 1,
+        handoffKey: 'handoff-page123-0',
+        selected: true,
+      })
+      expect(
+        getMaximizedPaneTransition({
+          isResolvingIntent: false,
+          paneDataItems: [
+            listPane('root'),
+            documentPane('page123-page123-0', {
+              groupIndex: 1,
+              siblingIndex: 1,
+              handoffKey: 'handoff-page123-0',
+              selected: true,
+            }),
+          ],
+          maximizedPane: resolving,
           previousSelectedIndex: 1,
         }),
       ).toEqual({type: 'keep', selectedIndex: 1})

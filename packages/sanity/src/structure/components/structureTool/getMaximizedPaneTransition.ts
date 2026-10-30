@@ -4,6 +4,7 @@ import {type PaneNode} from '../../types'
 /** The subset of `PaneData` the maximize-sync decision depends on. */
 interface MaximizablePaneData {
   key: string
+  handoffKey?: string
   groupIndex: number
   siblingIndex: number
   selected: boolean
@@ -71,7 +72,10 @@ export function getMaximizedPaneTransition<TPaneData extends MaximizablePaneData
   }
 
   // Clean up or find fallback when maximised pane no longer exists
-  const isMaximizedPanePresent = paneDataItems.some((pane) => pane.key === maximizedPane.key)
+  const maximizedPaneKey = maximizedPane.handoffKey ?? maximizedPane.key
+  const isMaximizedPanePresent = paneDataItems.some(
+    (pane) => (pane.handoffKey ?? pane.key) === maximizedPaneKey,
+  )
   if (!isMaximizedPanePresent) {
     const fallbackPane = paneDataItems.find(
       (pane) =>
