@@ -125,6 +125,45 @@ describe('editOperations and editState, two clients', () => {
     )
   })
 
+  test('OPS-HELD-EDIT-AFTER-PEER-CREATES-DRAFT: a held first edit lands as an edit of the draft a peer created meanwhile', async () => {
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-HELD-EDIT-AFTER-PEER-CREATES-DRAFT',
+      title: 'Only a published document exists; A holds its first edit while B creates the draft',
+      seam: 'operations',
+      initial: [document(PUBLISHED_ID, 'Published')],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'A', do: 'commits', mode: 'hold'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'Edited by A'}}]},
+        {client: 'A', do: 'commit'},
+        {
+          client: 'B',
+          do: 'patch',
+          id: DRAFT_ID,
+          patches: [
+            {insert: {after: 'items[-1]', items: [{_key: 'b', _type: 'item', title: 'B'}]}},
+          ],
+        },
+        {client: 'B', do: 'commit'},
+        {do: 'advance', ms: 10},
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'acceptCommit'},
+        {do: 'settle'},
+      ],
+    }
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'})
+
+    expectHealthy(world)
+    expectConverged(world)
+    expectNoLostEdits(world)
+    const outcomes = world.lake.submissions.map((submission) => submission.outcome)
+    expect(new Set(outcomes)).toEqual(new Set(['accepted']))
+    const server = world.lake.get(DRAFT_ID)
+    expect(server?.title).toBe('Edited by A')
+    expect(keysOf(server, 'items')).toEqual(['a', 'b'])
+  })
+
   test('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE (SAPP-4794): a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'OPS-REJECTED-SAVE-WITH-QUEUED-SAVE',

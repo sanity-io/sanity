@@ -59,7 +59,7 @@ export interface SubmissionRecord {
 
 interface PendingCommit {
   transactionId: string
-  mutations: MutationPayload[]
+  translate: () => MutationPayload[]
   submission: SubmissionRecord
   resolve: (result: unknown) => void
   reject: (error: unknown) => void
@@ -107,6 +107,15 @@ function toClientError(error: unknown): ClientError {
   if (error instanceof ClientError) return error
   if (error instanceof ContentLakeError) return httpError(error.statusCode, error.body)
   return httpError(400, mutationError(String(error)))
+}
+
+// What the request would do if it arrived now; the commit itself is translated again when it is applied.
+function provisionalMutations(translate: () => MutationPayload[]): MutationPayload[] {
+  try {
+    return translate()
+  } catch {
+    return []
+  }
 }
 
 function toListenerEvent(event: MutationEventPayload): MutationEvent {
@@ -248,20 +257,17 @@ export class FakeContentLake {
       const submission: SubmissionRecord = {
         clientId,
         transactionId,
-        mutations: [],
+        mutations: provisionalMutations(toMutations),
         submittedAt: this.tick(),
         outcome: 'pending',
       }
       this.submissions.push(submission)
-      const pending: PendingCommit = {transactionId, mutations: [], submission, resolve, reject}
-      try {
-        pending.mutations = toMutations()
-        submission.mutations = pending.mutations
-      } catch (error) {
-        const failure = toClientError(error)
-        this.recordSettlement(submission, failure, false)
-        reject(failure)
-        return
+      const pending: PendingCommit = {
+        transactionId,
+        translate: toMutations,
+        submission,
+        resolve,
+        reject,
       }
       this.pendingFor(clientId).push(pending)
       if (policy.mode === 'auto') {
@@ -298,8 +304,9 @@ export class FakeContentLake {
       return
     }
     try {
+      pending.submission.mutations = pending.translate()
       const {transactionId, results} = this.applyTransaction(
-        pending.mutations,
+        pending.submission.mutations,
         pending.transactionId,
         clientId,
       )
