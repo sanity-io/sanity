@@ -166,6 +166,8 @@ function DropdownPill(props: {
     search?: Omit<SearchFields, 'title'>
     /** The section the row sits in ("Has 3 variants", "Other variants"). A row with none (All users) stands alone above them. */
     section?: string
+    /** A line of quiet text in place of rows, for a section with none ("Has 0 variants"): not a menu item, and not a search result. */
+    placeholder?: boolean
   }[]
   testId: string
   /** The leading glyph, as the stock Published and Draft chips have one: it gives the pill their left inset and size. */
@@ -182,7 +184,11 @@ function DropdownPill(props: {
 }) {
   const [query, setQuery] = useState('')
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
-  const found = rankSearch(props.items, query, (item) => ({title: item.text, ...item.search}))
+  const found = rankSearch(
+    props.items.filter((item) => !item.placeholder || !query.trim()),
+    query,
+    (item) => ({title: item.text, ...item.search}),
+  )
   const tone = props.selected ? props.tone : undefined
   // A selected capsule takes the selected ghost chip's colours (as the stock Draft chip beside it): its segments are bleed chips, whose
   // selected fill is paler and whose border is clear, so the capsule's own outline and hairline showed grey on the tone (Faheem, 29 Oct).
@@ -267,28 +273,36 @@ function DropdownPill(props: {
                       </Label>
                     </Box>
                   ) : null}
-                  <MenuItem
-                    __unstable_subtitle={reason}
-                    disabled={!item.onClick}
-                    icon={item.icon}
-                    pressed={item.selected}
-                    selected={item.selected}
-                    onClick={item.onClick}
-                    text={item.text}
-                    tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
-                    renderMenuItem={
-                      item.trailing
-                        ? (content) => (
-                            <Flex align="center" gap={3}>
-                              <Box flex={1} style={{minWidth: 0}}>
-                                {content}
-                              </Box>
-                              {item.trailing}
-                            </Flex>
-                          )
-                        : undefined
-                    }
-                  />
+                  {item.placeholder ? (
+                    <Box data-testid={`${props.testId}-placeholder`} paddingX={3} paddingBottom={2}>
+                      <Text muted size={1}>
+                        {item.text}
+                      </Text>
+                    </Box>
+                  ) : (
+                    <MenuItem
+                      __unstable_subtitle={reason}
+                      disabled={!item.onClick}
+                      icon={item.icon}
+                      pressed={item.selected}
+                      selected={item.selected}
+                      onClick={item.onClick}
+                      text={item.text}
+                      tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
+                      renderMenuItem={
+                        item.trailing
+                          ? (content) => (
+                              <Flex align="center" gap={3}>
+                                <Box flex={1} style={{minWidth: 0}}>
+                                  {content}
+                                </Box>
+                                {item.trailing}
+                              </Flex>
+                            )
+                          : undefined
+                      }
+                    />
+                  )}
                 </Fragment>
               )
             })}
@@ -473,7 +487,7 @@ export function DocumentPillsV1({
         hint: `Create ${definition.metadata?.title ?? id} version`,
         selected: id === currentVariant,
         search: {id},
-        section: variants.length ? 'Other variants' : 'Variants',
+        section: 'Other variants',
       }
     })
   // One flat row per RELEASE this document is in (the pill counts releases, not versions); no variants nested under them (22 Oct call).
@@ -542,9 +556,23 @@ export function DocumentPillsV1({
               ? {label: `Back to ${DEFAULT_LABEL}`, onClick: () => goTo(current)}
               : undefined
           }
-          items={[baseItem, ...variantItems, ...missingItems]}
-          // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
-          note={variants.length ? undefined : 'No variants yet. Pick one to create it.'}
+          // Default on top, then "Has N variants" always, with a line in place of rows when it is 0, then Other variants: the sections keep their
+          // places before and after a first variant is created (30 Oct, Pedro and Faheem; replaces the note under the search, SAPP-4722).
+          items={[
+            baseItem,
+            ...(variantItems.length
+              ? variantItems
+              : [
+                  {
+                    key: 'variant-none',
+                    text: "This document isn't in any variant yet. Pick one below to create it.",
+                    icon: <></>,
+                    section: 'Has 0 variants',
+                    placeholder: true,
+                  },
+                ]),
+            ...missingItems,
+          ]}
           selected={Boolean(viewedTitle)}
           testId="pills-variants"
           // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
