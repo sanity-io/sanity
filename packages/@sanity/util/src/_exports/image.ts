@@ -1,10 +1,8 @@
 export {
-  clampRatio,
   describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
   nearestAllowedRatio,
-  nearestRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
