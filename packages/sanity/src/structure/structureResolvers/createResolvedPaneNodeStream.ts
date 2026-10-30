@@ -163,12 +163,7 @@ export type ResolvedPaneMeta = {
   flatIndex: number
   routerPaneSibling: RouterPaneSibling
   path: string[]
-  /**
-   * Set on the pane of a document that was opened while its intent link was
-   * resolving, for as long as that document stays open. It stays the same when
-   * the resolved path moves the pane to another position, so the pane can be
-   * kept mounted.
-   */
+  /** Stable while the resolving document moves to its resolved position, so React keeps the pane mounted. */
   handoffKey?: string
 } & ({type: 'loading'; paneNode: null} | {type: 'resolvedMeta'; paneNode: PaneNode})
 
@@ -181,9 +176,6 @@ interface ResolvePaneTreeOptions {
   structureContext: StructureContext
 }
 
-/**
- * Creates "loading panes" for flattened router panes that are not resolved yet
- */
 function createLoadingPanes(
   flattenedRouterPanes: FlattenedRouterPane[],
   parentPath: string[],
@@ -234,9 +226,7 @@ function resolvePaneTree({
       next.groupIndex !== current.groupIndex &&
       isResolvingPaneId(next.routerPaneSibling.id)
     ) {
-      // the document of a resolving pane renders without this pane, and this
-      // pane could be the slow one, so it is resolved alongside it rather than
-      // first
+      // the resolving document doesn't depend on this pane, which may be the slow one
       const current$ = resolvePane(unresolvedPane, context, current.flatIndex).pipe(
         map((paneNode): ResolvedPaneMeta => ({
           type: 'resolvedMeta',
@@ -359,12 +349,7 @@ function resolvePaneTree({
   }
 }
 
-/**
- * Finds the pane group that shows the carried document: the last group with a
- * sibling for that document id, skipping groups where such a sibling resolved
- * to something other than a document. A list item that shares the id is an
- * ancestor of the document, so it comes first, and may still be loading.
- */
+// a list item can share the document's id; it's an ancestor, so the document is the last match
 function findCarriedGroupIndex(panes: ResolvedPaneMeta[], documentId: string): number {
   const skippedGroups = new Set<number>()
   const candidates: number[] = []
@@ -381,10 +366,6 @@ function findCarriedGroupIndex(panes: ResolvedPaneMeta[], documentId: string): n
   return candidates.findLast((groupIndex) => !skippedGroups.has(groupIndex)) ?? -1
 }
 
-/**
- * The path a pane gets once it has resolved: the id of the last sibling of
- * every group before it, then its own id.
- */
 function getResolvedPanePath(panes: ResolvedPaneMeta[], pane: ResolvedPaneMeta): string[] {
   const lastSiblingIds: string[] = []
   for (const other of panes) {
@@ -396,12 +377,8 @@ function getResolvedPanePath(panes: ResolvedPaneMeta[], pane: ResolvedPaneMeta):
 }
 
 /**
- * Keeps the document of a resolving pane (`__resolve__<id>`) open while the
- * resolved path replaces it. The resolved path loads its panes from the root
- * again, so the document's new position starts out as a loading pane; this
- * fills it with the document pane node that was already open, until the real
- * one resolves. Every pane of that document is tagged with the same
- * `handoffKey` throughout, for as long as the document stays open.
+ * The resolved path loads from the root again, so the document's new slot starts
+ * as a loading pane. Fill it with the already-open document until the real one resolves.
  */
 function carryOptimisticDocument(): MonoTypeOperatorFunction<ResolvedPaneMeta[]> {
   return (source) =>

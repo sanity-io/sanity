@@ -13,12 +13,7 @@ interface PaneData {
   active: boolean
   childItemId: string | null
   groupIndex: number
-  /**
-   * Stays the same while a document opened from a resolving intent link moves
-   * to its place in the structure, unlike `key` and `index`.
-   *
-   * @see ResolvedPaneMeta
-   */
+  /** @see ResolvedPaneMeta */
   handoffKey?: string
   index: number
   itemId: string
@@ -100,7 +95,7 @@ export function useResolvedPanes(): Panes {
               index: flatIndex,
               itemId: routerPaneSibling.id,
               groupIndex,
-              ...(handoffKey ? {handoffKey} : {}),
+              handoffKey,
               key: `${
                 pane.type === 'loading' ? 'unknown' : pane.paneNode.id
               }-${itemId}-${siblingIndex}`,

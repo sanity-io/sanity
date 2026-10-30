@@ -52,9 +52,6 @@ export const StructureTool = memo(function StructureTool({
   const isResolvingIntent = useRouterState(
     useCallback((state) => typeof state.intent === 'string', []),
   )
-  // A document opened from an intent link renders right away in a resolving pane
-  // (`__resolve__<id>`), while the intent is resolved to its place in the structure
-  const hasResolvingPane = paneDataItems.some((pane) => isResolvingPaneId(pane.itemId))
   const {t} = useTranslation(structureLocaleNamespace)
   const {
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -184,7 +181,8 @@ export const StructureTool = memo(function StructureTool({
   // loading placeholders) so navigation churn cannot drop the maximize state.
   useEffect(() => {
     const transition = getMaximizedPaneTransition({
-      isResolvingIntent: isResolvingIntent || hasResolvingPane,
+      isResolvingIntent:
+        isResolvingIntent || paneDataItems.some((pane) => isResolvingPaneId(pane.itemId)),
       paneDataItems,
       maximizedPane,
       previousSelectedIndex: previousSelectedIndexRef.current,
@@ -195,7 +193,7 @@ export const StructureTool = memo(function StructureTool({
     if (transition.type === 'set') {
       setMaximizedPane(transition.pane)
     }
-  }, [hasResolvingPane, isResolvingIntent, maximizedPane, paneDataItems, setMaximizedPane])
+  }, [isResolvingIntent, maximizedPane, paneDataItems, setMaximizedPane])
 
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
@@ -229,9 +227,7 @@ export const StructureTool = memo(function StructureTool({
               maximized,
             } = paneData
             const previousPane = paneItemsToShow[itemIndex - 1]?.pane
-            // stands in for the lists between the root and the document until the
-            // resolved path replaces the resolving pane; kept in this array so the
-            // document pane keeps its place among its siblings
+            // kept in this array so the document keeps its place among its siblings
             const structureResolvingPane =
               isResolvingPaneId(itemId) &&
               siblingIndex === 0 &&

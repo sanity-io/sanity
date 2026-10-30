@@ -3,16 +3,8 @@ import omit from 'lodash-es/omit.js'
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from '../types'
 import {type ResolveIntentOptions} from './resolveIntent'
 
-/**
- * Prefix of the pane that renders a document while its intent link is still
- * being resolved to a place in the structure. Unlike `__edit__`, which is a
- * final destination, a `__resolve__` pane is replaced by the resolved path.
- *
- * @internal
- */
-export const RESOLVING_PANE_ID_PREFIX = '__resolve__'
-
-const FALLBACK_EDITOR_PANE_ID_PREFIX = '__edit__'
+// like `__edit__`, but replaced by the resolved path once the intent resolves
+const RESOLVING_PANE_ID_PREFIX = '__resolve__'
 
 const FALLBACK_EDITOR_PREFIX_PATTERN = /^__(edit|resolve)__/
 
@@ -21,14 +13,9 @@ export function isResolvingPaneId(id: string): boolean {
   return id.startsWith(RESOLVING_PANE_ID_PREFIX)
 }
 
-/**
- * Whether the pane renders the implicit fallback editor (`__edit__<id>` or
- * `__resolve__<id>`) instead of a child of the previous pane.
- *
- * @internal
- */
+/** @internal */
 export function isFallbackEditorPaneId(id: string): boolean {
-  return id.startsWith(FALLBACK_EDITOR_PANE_ID_PREFIX) || isResolvingPaneId(id)
+  return FALLBACK_EDITOR_PREFIX_PATTERN.test(id)
 }
 
 /** @internal */
@@ -39,18 +26,7 @@ export function getDocumentIdFromPaneId(id: string): string {
 /** @internal */
 export type IntentRequest = Omit<ResolveIntentOptions, 'rootPaneNode' | 'structureContext'>
 
-/**
- * Pane params that belong to the pane the user is looking at rather than to the
- * intent, so they survive when the resolved path replaces the resolving pane.
- */
-const INTENT_ONLY_PARAMS = ['intent', 'type']
-
-/**
- * The panes that open the document of an intent right away, while the intent is
- * resolved in the background.
- *
- * @internal
- */
+/** @internal */
 export function createResolvingPanes({intent, params, payload}: IntentRequest): RouterPanes {
   const {id, ...rest} = params
   return [
@@ -64,12 +40,7 @@ export function createResolvingPanes({intent, params, payload}: IntentRequest): 
   ]
 }
 
-/**
- * Rebuilds the intent of a resolving pane, or returns `undefined` when the
- * first pane group is not one.
- *
- * @internal
- */
+/** @internal */
 export function getResolvingRequest(panes: RouterPanes | undefined): IntentRequest | undefined {
   const pane = panes?.[0]?.[0]
   if (!pane || !isResolvingPaneId(pane.id)) return undefined
@@ -85,11 +56,8 @@ export function getResolvingRequest(panes: RouterPanes | undefined): IntentReque
 }
 
 /**
- * Replaces the pane group of a resolving pane with the resolved path. Groups
- * after it (a reference the user opened, say) are kept, and so are the params
- * of every sibling in the group (the view, inspector or focus path the user
- * picked while the intent was resolving). Returns `undefined` when the user has
- * navigated away from the resolving pane.
+ * Keeps the groups opened to the right and each sibling's own params (view,
+ * inspector). Returns `undefined` once the user has navigated away.
  *
  * @internal
  */
@@ -107,7 +75,7 @@ export function applyResolvedIntent(
   const carriedGroup: RouterPaneGroup = currentPanes[groupIndex].map(
     (sibling): RouterPaneSibling => {
       // the resolving pane already applied the intent's mode (StructureTool consumes `mode=focus`)
-      const params = {...omit(target.params, ['mode']), ...omit(sibling.params, INTENT_ONLY_PARAMS)}
+      const params = {...omit(target.params, ['mode']), ...omit(sibling.params, ['intent', 'type'])}
       return {
         ...sibling,
         id: target.id,
