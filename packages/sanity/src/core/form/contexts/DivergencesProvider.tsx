@@ -2,14 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import get from 'lodash-es/get.js'
-import {
-  type ComponentType,
-  type PropsWithChildren,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import {type ComponentType, type PropsWithChildren, use, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, EMPTY, filter, map, of, Subject, tap} from 'rxjs'
 import {type DocumentDivergencesContextValue, DocumentDivergencesContext} from 'sanity/_singletons'
@@ -146,7 +139,7 @@ const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children
  * @internal
  */
 export function useDocumentDivergences(): DocumentDivergencesContextValue {
-  return useContext(DocumentDivergencesContext)
+  return use(DocumentDivergencesContext)
 }
 
 /**

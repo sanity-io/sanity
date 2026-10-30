@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
-import {useContext} from 'react'
+import {use} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
@@ -26,7 +26,7 @@ const ALL_PRESENCE: FormNodePresence[] = [
 
 /** Renders the scoped presence from context so the test can read it back */
 function Probe() {
-  const scopedPresence = useContext(FormFieldPresenceContext)
+  const scopedPresence = use(FormFieldPresenceContext)
   return <pre data-testid="probe">{JSON.stringify(scopedPresence)}</pre>
 }
 
