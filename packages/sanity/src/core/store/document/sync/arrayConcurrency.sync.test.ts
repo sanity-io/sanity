@@ -4,6 +4,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 import {
   expectConverged,
   expectHealthy,
+  expectNoLostEdits,
   expectKeysConserved,
   expectRevisionsAgree,
   fieldOf,
@@ -82,6 +83,7 @@ describe('array of objects, two clients', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     expectKeysConserved(['a', 'b', 'c'], keysOf(world.lake.get(DRAFT_ID), FIELD), {
       added: ['x', 'y'],
@@ -123,6 +125,7 @@ describe('array of objects, two clients', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     expectRevisionsAgree(world)
     const serverDraft = world.lake.get(DRAFT_ID)
     expectKeysConserved(['a', 'b', 'c', 'd'], keysOf(serverDraft, FIELD))
@@ -162,6 +165,7 @@ describe('array of objects, two clients', () => {
 
     expectHealthy(world)
     expectConverged(world)
+    expectNoLostEdits(world)
     const serverDraft = world.lake.get(DRAFT_ID)
     expectKeysConserved(['a', 'b', 'c'], keysOf(serverDraft, FIELD))
     expect(keysOf(serverDraft, FIELD)).toEqual(['a', 'c', 'b'])

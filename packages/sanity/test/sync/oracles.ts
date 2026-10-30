@@ -1,6 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {expect} from 'vitest'
 
+import {describeLostEdit, lostEdits} from './lostEdits'
 import {type World} from './syncTest'
 
 function content(document: SanityDocument | null): Record<string, unknown> | null {
@@ -64,4 +65,11 @@ export function fieldOf<T>(
 ): T | undefined {
   const items = (document?.[field] ?? []) as Array<Record<string, unknown> & {_key: string}>
   return items.find((item) => item._key === key)?.[name] as T | undefined
+}
+
+export function expectNoLostEdits(world: World): void {
+  const lost = lostEdits(world)
+  const fates = [...new Set(lost.map(({fate}) => fate.replaceAll(':', '')))]
+  const edits = lost.map(describeLostEdit)
+  expect(edits, `lost edits (${fates.join('; ')}): ${edits.join('; ')}`).toEqual([])
 }

@@ -151,7 +151,7 @@ export async function handleMutate(
     hub.broadcast(events)
     return bytes
   } catch (error) {
-    return respondWithContentLakeError(req, res, error, 'mutationError')
+    return respondWithContentLakeError(req, res, error)
   }
 }
 
@@ -159,10 +159,9 @@ function respondWithContentLakeError(
   req: ProxyRequest,
   res: ProxyResponse,
   error: unknown,
-  type: 'actionError' | 'mutationError',
 ): number {
   if (error instanceof ContentLakeError) {
-    return json(req, res, error.statusCode, {error: {description: error.message, type}})
+    return json(req, res, error.statusCode, {error: error.body})
   }
   throw error
 }
@@ -188,6 +187,9 @@ export async function handleActions(
 
   try {
     const mutations = actionsToMutations(store.index, body.actions)
+    if (mutations.length === 0) {
+      return json(req, res, 200, {})
+    }
     if (body.dryRun) {
       return json(req, res, 200, {transactionId: body.transactionId ?? newTransactionId()})
     }
@@ -199,6 +201,6 @@ export async function handleActions(
     hub.broadcast(events)
     return bytes
   } catch (error) {
-    return respondWithContentLakeError(req, res, error, 'actionError')
+    return respondWithContentLakeError(req, res, error)
   }
 }
