@@ -108,20 +108,6 @@ const sanitySandboxAuth = {
       : [...prev, sanitySandboxSsoProvider],
 }
 
-// Sanity org SAML SSO, for projects in the Sanity org (`oSyH1iET5`) rather than the sandbox org
-const sanityOrgSsoProvider: AuthProvider = {
-  name: 'saml',
-  title: 'SSO',
-  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/a9fd8216',
-}
-
-const sanityOrgAuth = {
-  providers: (prev: AuthProvider[]) => [
-    ...prev.filter((provider) => provider.name !== sanityOrgSsoProvider.name),
-    sanityOrgSsoProvider,
-  ],
-}
-
 const envConfig = {
   // use this for production workspaces
   production: isStaging
@@ -545,11 +531,10 @@ export default defineConfig([
     name: 'releases-not-on-project',
     title: 'Releases off for the project',
     subtitle: 'A project whose features do not include releases, so the real upsell copy shows',
-    projectId: 'iasp4xei',
+    projectId: 'cpv9woqk',
     dataset: 'production',
-    plugins: [sharedSettings({projectId: 'iasp4xei'})],
+    plugins: [sharedSettings({projectId: 'cpv9woqk'})],
     basePath: '/releases-not-on-project',
-    auth: sanityOrgAuth,
     ...envConfig.production,
     mediaLibrary: {
       enabled: true,
