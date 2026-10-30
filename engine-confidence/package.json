@@ -12,10 +12,12 @@
     "score": "node --conditions=monorepo --import tsx scripts/computeScore.ts",
     "store": "node --conditions=monorepo --import tsx scripts/store.ts",
     "stryker": "node --conditions=monorepo --import tsx scripts/runStryker.ts",
+    "sync-file": "node --conditions=monorepo --import tsx scripts/syncFile.ts",
     "sync-verify": "node --conditions=monorepo --import tsx scripts/syncVerification/verify.ts",
     "unit": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.3",
     "@repo/content-lake-model": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
