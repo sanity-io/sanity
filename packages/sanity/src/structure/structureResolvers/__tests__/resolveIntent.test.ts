@@ -1,5 +1,5 @@
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
-import {Observable} from 'rxjs'
+import {Observable, Subject} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 // oxfmt-ignore
 import {SerializeError} from '../../structureBuilder/SerializeError'
@@ -487,5 +487,83 @@ describe('resolveIntent', () => {
       vi.restoreAllMocks()
       vi.useRealTimers()
     }
+  })
+
+  it('searches deeper while the type loads, ignoring deeper errors once a level matches', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+    const brokenChild = vi.fn(() => {
+      throw new Error('broken child')
+    })
+    const documentType = new Subject<string>()
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.documentTypeListItem('book').title('Books'),
+        S.listItem()
+          .title('Broken')
+          .child(
+            S.list()
+              .title('Broken')
+              .items([S.listItem().title('Child').child(brokenChild)]),
+          ),
+      ]) as unknown as UnresolvedPaneNode
+
+    const result = resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123'},
+      documentType,
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    await vi.waitFor(() => expect(brokenChild).toHaveBeenCalled())
+    documentType.next('book')
+
+    expect(await result).toEqual([
+      [{id: 'book'}],
+      [{id: 'book123', params: {}, payload: undefined}],
+    ])
+  })
+
+  it('fails on a deeper error when nothing matches', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+    const documentType = new Subject<string>()
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Broken')
+          .child(
+            S.list()
+              .title('Broken')
+              .items([
+                S.listItem()
+                  .title('Child')
+                  .child(() => {
+                    throw new Error('broken child')
+                  }),
+              ]),
+          ),
+      ]) as unknown as UnresolvedPaneNode
+
+    const result = resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123'},
+      documentType,
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    documentType.next('book')
+
+    await expect(result).rejects.toThrow('broken child')
   })
 })

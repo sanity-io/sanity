@@ -1,5 +1,8 @@
 import omit from 'lodash-es/omit.js'
 import {
+  catchError,
+  combineLatest,
+  EMPTY,
   filter,
   firstValueFrom,
   map,
@@ -7,8 +10,11 @@ import {
   type Observable,
   of,
   scan,
+  shareReplay,
+  startWith,
   switchMap,
   take,
+  throwError,
   timeout,
 } from 'rxjs'
 
@@ -25,6 +31,8 @@ import {memoBind} from './memoBind'
 
 // async structure children that never emit would otherwise block the intent forever
 const PANE_RESOLUTION_TIMEOUT_MS = 5_000
+
+const DEEPER_PENDING = Symbol('deeperPending')
 
 interface PaneCandidate {
   unresolvedPane: UnresolvedPaneNode | undefined
@@ -60,7 +68,9 @@ function childCandidates(candidate: PaneCandidate, resolvedPane: PaneNode | null
 export interface ResolveIntentOptions {
   rootPaneNode?: UnresolvedPaneNode
   intent: string
-  params: {type: string; id: string; [key: string]: string | undefined}
+  params: {type?: string; id: string; [key: string]: string | undefined}
+  /** The document's type, for when `params.type` isn't known yet. */
+  documentType?: Observable<string>
   payload: unknown
   structureContext: StructureContext
 }
@@ -82,7 +92,12 @@ export interface ResolveIntentOptions {
  */
 export async function resolveIntent(options: ResolveIntentOptions): Promise<RouterPanes> {
   const {intent, params, payload, structureContext} = options
-  const {id: targetId, type: schemaTypeName, ...otherParams} = params
+  const {id: targetId, type, ...otherParams} = params
+  const documentType$ = (options.documentType ?? of(type)).pipe(
+    take(1),
+    // not refCount: subscribers come and go between levels, which would restart the lookup
+    shareReplay({bufferSize: 1, refCount: false}),
+  )
   const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
 
   // this is a simple version of the memoizer in `createResolvedPaneNodeStream`
@@ -97,16 +112,6 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
   }
 
   const resolvePane = createPaneResolver(memoize)
-
-  const fallbackEditorPanes: RouterPanes = [
-    [
-      {
-        id: `__edit__${options.params.id}`,
-        params: {...omit(options.params, ['id']), type: options.params.type},
-        payload: options.payload,
-      },
-    ],
-  ]
 
   function resolveCandidate(candidate: PaneCandidate): Observable<PaneNode | null> {
     const context: RouterPaneSiblingContext = {
@@ -140,6 +145,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
   function findMatch(
     resolvedPane: PaneNode,
     {path, flatIndex}: PaneCandidate,
+    schemaTypeName: string | undefined,
   ): RouterPanes | undefined {
     // if the resolved pane is a document pane and the pane's ID matches then
     // resolve the intent to the current path
@@ -154,10 +160,14 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     // `getIntentState.ts`
     if (
       // if the resolve pane's `canHandleIntent` returns true, then resolve
-      resolvedPane.canHandleIntent?.(intent, params, {
-        pane: resolvedPane,
-        index: flatIndex,
-      }) ||
+      resolvedPane.canHandleIntent?.(
+        intent,
+        {...params, type: schemaTypeName},
+        {
+          pane: resolvedPane,
+          index: flatIndex,
+        },
+      ) ||
       // if the pane's `canHandleIntent` did not return true, then match against
       // this default case. we will resolve the intent if:
       (resolvedPane.type === 'documentList' &&
@@ -185,12 +195,13 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     level: PaneCandidate[],
     priorityOrder: number[],
     settled: Map<number, PaneNode | null>,
+    schemaTypeName: string | undefined,
   ): {match: RouterPanes | undefined} | undefined {
     for (const index of priorityOrder) {
       if (!settled.has(index)) return undefined
 
       const resolvedPane = settled.get(index)
-      const match = resolvedPane && findMatch(resolvedPane, level[index])
+      const match = resolvedPane && findMatch(resolvedPane, level[index], schemaTypeName)
       if (match) return {match}
     }
 
@@ -204,7 +215,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       .map((_, index) => index)
       .toSorted((a, b) => level[a].levelIndex - level[b].levelIndex)
 
-    return merge(
+    const settled$ = merge(
       ...level.map((candidate, index) =>
         resolveCandidate(candidate).pipe(map((resolvedPane) => ({index, resolvedPane}))),
       ),
@@ -213,18 +224,39 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
         (settled, {index, resolvedPane}) => new Map(settled).set(index, resolvedPane),
         new Map<number, PaneNode | null>(),
       ),
-      map((settled) => ({settled, decision: decideLevel(level, priorityOrder, settled)})),
-      filter(({decision}) => decision !== undefined),
-      take(1),
-      switchMap(({settled, decision}) =>
-        decision?.match
-          ? of(decision.match)
-          : searchLevel(
-              level.flatMap((candidate, index) =>
-                childCandidates(candidate, settled.get(index) ?? null),
-              ),
-            ),
+      shareReplay({bufferSize: 1, refCount: true}),
+    )
+
+    const levelMatch$ = combineLatest([settled$, documentType$]).pipe(
+      map(([settled, schemaTypeName]) =>
+        decideLevel(level, priorityOrder, settled, schemaTypeName),
       ),
+      filter((decision) => decision !== undefined),
+      take(1),
+    )
+
+    // the next level doesn't need the document type, so it starts while the type is loading
+    const deeperMatch$ = settled$.pipe(
+      filter((settled) => settled.size === level.length),
+      take(1),
+      switchMap((settled) =>
+        searchLevel(
+          level.flatMap((candidate, index) =>
+            childCandidates(candidate, settled.get(index) ?? null),
+          ),
+        ),
+      ),
+      // a deeper error only matters when this level has no match
+      catchError((error) =>
+        levelMatch$.pipe(switchMap(({match}) => (match ? EMPTY : throwError(() => error)))),
+      ),
+      startWith(DEEPER_PENDING),
+    )
+
+    return combineLatest([levelMatch$, deeperMatch$]).pipe(
+      map(([{match}, deeperMatch]) => match ?? deeperMatch),
+      filter((result): result is RouterPanes | undefined => result !== DEEPER_PENDING),
+      take(1),
     )
   }
 
@@ -245,5 +277,15 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     ),
   )
 
-  return match ?? fallbackEditorPanes
+  return (
+    match ?? [
+      [
+        {
+          id: `__edit__${options.params.id}`,
+          params: {...omit(options.params, ['id']), type: await firstValueFrom(documentType$)},
+          payload: options.payload,
+        },
+      ],
+    ]
+  )
 }

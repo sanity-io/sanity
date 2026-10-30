@@ -46,17 +46,16 @@ export const IntentResolver = memo(function IntentResolver() {
         // resolve immediately instead of re-fetching for a stale intent.
         if (cancelled) return
 
-        const {id, type} = await ensureDocumentIdAndType(
+        const {id, type} = ensureDocumentIdAndType(
           documentStore,
           typeof params.id === 'string' ? params.id : undefined,
           typeof params.type === 'string' ? params.type : undefined,
         )
 
-        if (cancelled) return
-
         const panes = await resolveIntent({
           intent,
-          params: {...params, id, type},
+          params: {...params, id},
+          documentType: type,
           payload,
           rootPaneNode,
           structureContext,
