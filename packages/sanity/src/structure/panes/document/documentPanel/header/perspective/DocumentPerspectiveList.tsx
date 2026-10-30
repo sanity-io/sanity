@@ -7,6 +7,7 @@ import {
   getVersionId,
   isGoingToUnpublish,
   isReleaseScheduledOrScheduling,
+  isVersionableDocumentType,
   type ReleaseDocument,
   ReleaseTitle,
   type SanityDocumentLike,
@@ -112,39 +113,47 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     nonReleaseVersions,
   } = useDocumentPerspectiveList()
 
+  const publishedChip = (
+    <VersionChip
+      tooltipContent={
+        <Text size={1} as="div" trim={true}>
+          {editState?.published && editState?.published?._updatedAt ? (
+            <Translate
+              t={t}
+              i18nKey="release.chip.tooltip.published-date"
+              values={{date: dateTimeFormat.format(new Date(editState?.published._updatedAt))}}
+            />
+          ) : (
+            <>{t('release.chip.tooltip.not-published')}</>
+          )}
+        </Text>
+      }
+      disabled={isPublishedChipDisabled}
+      onClick={() => handlePerspectiveChange('published')}
+      selected={isPublishSelected}
+      text={t('release.chip.published')}
+      tone="positive"
+      onCopyToDraftsComplete={clearScheduledDraftPerspective}
+      contextValues={{
+        documentGroupId,
+        versionId: getPublishedId(documentGroupId),
+        releases: filteredReleases.notCurrentReleases,
+        releasesLoading: loading,
+        documentType,
+        bundleId: 'published',
+        isVersion: false,
+        disabled: !editState?.published,
+      }}
+    />
+  )
+
+  if (!isVersionableDocumentType(documentType)) {
+    return publishedChip
+  }
+
   return (
     <>
-      <VersionChip
-        tooltipContent={
-          <Text size={1} as="div" trim={true}>
-            {editState?.published && editState?.published?._updatedAt ? (
-              <Translate
-                t={t}
-                i18nKey="release.chip.tooltip.published-date"
-                values={{date: dateTimeFormat.format(new Date(editState?.published._updatedAt))}}
-              />
-            ) : (
-              <>{t('release.chip.tooltip.not-published')}</>
-            )}
-          </Text>
-        }
-        disabled={isPublishedChipDisabled}
-        onClick={() => handlePerspectiveChange('published')}
-        selected={isPublishSelected}
-        text={t('release.chip.published')}
-        tone="positive"
-        onCopyToDraftsComplete={clearScheduledDraftPerspective}
-        contextValues={{
-          documentGroupId,
-          versionId: getPublishedId(documentGroupId),
-          releases: filteredReleases.notCurrentReleases,
-          releasesLoading: loading,
-          documentType,
-          bundleId: 'published',
-          isVersion: false,
-          disabled: !editState?.published,
-        }}
-      />
+      {publishedChip}
       {isDraftModelEnabled && (
         <VersionChip
           tooltipContent={
