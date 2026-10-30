@@ -3,10 +3,19 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {findByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
+import {
+  mockUseActiveReleases,
+  useActiveReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useActiveReleases.mock'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CreateReleaseDialog} from '../CreateReleaseDialog'
+
+vi.mock('../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
 
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
@@ -36,6 +45,8 @@ describe('CreateReleaseDialog', () => {
     }
 
     beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue(useActiveReleasesMockReturn)
+      useReleaseOperationsMockReturn.createRelease.mockClear()
       onCancelMock.mockClear()
       onSubmitMock.mockClear()
     })
@@ -81,6 +92,34 @@ describe('CreateReleaseDialog', () => {
           )
         },
         {timeout: 3000},
+      )
+    })
+
+    it('should not create the release when the workspace limit was reached while the dialog was open', async () => {
+      const wrapper = await createTestProvider({config: {releases: {limit: 1}}})
+      render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+
+      await waitFor(() => expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument(), {
+        timeout: 5000,
+        interval: 500,
+      })
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease],
+      })
+
+      await userEvent.type(screen.getByTestId('release-form-title'), 'Over the limit')
+
+      const submitButton = screen.getByTestId('submit-release-button')
+      await waitFor(() => expect(submitButton.closest('button')).not.toBeDisabled())
+      await userEvent.click(submitButton)
+
+      await waitFor(() => expect(onCancelMock).toHaveBeenCalledOnce())
+      expect(useReleaseOperationsMockReturn.createRelease).not.toHaveBeenCalled()
+      expect(onSubmitMock).not.toHaveBeenCalled()
+      expect(await findByDataUi(document.body, 'Toast')).toHaveTextContent(
+        'This workspace is limited to 1 release',
       )
     })
   })

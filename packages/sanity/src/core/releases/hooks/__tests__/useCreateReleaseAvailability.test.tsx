@@ -104,6 +104,22 @@ describe('useCreateReleaseAvailability', () => {
     })
   })
 
+  it('is loading while the active releases load under a workspace limit', async () => {
+    mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, loading: true})
+
+    const {result} = await renderAvailability(2)
+
+    expect(result.current).toEqual({status: 'loading', disabled: true, tooltip: undefined})
+  })
+
+  it('ignores loading active releases when no workspace limit is configured', async () => {
+    mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, loading: true})
+
+    const {result} = await renderAvailability()
+
+    await waitFor(() => expect(result.current.status).toBe('allowed'))
+  })
+
   it('reports the workspace limit ahead of a missing permission', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
 

@@ -3,11 +3,13 @@ import {useObservable} from 'react-rx'
 import {defer} from 'rxjs'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../studio/workspace'
-import {useActiveReleases} from '../store/useActiveReleases'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {useReleasePermissions} from '../store/useReleasePermissions'
 import {getReleaseDefaults} from '../util/util'
+import {
+  useWorkspaceReleaseLimit,
+  type WorkspaceReleaseLimitStatus,
+} from './useWorkspaceReleaseLimit'
 
 type CreateReleaseStatus = 'loading' | 'allowed' | 'no-permission' | 'limit-reached'
 
@@ -19,23 +21,20 @@ export interface CreateReleaseAvailability {
 
 function getCreateReleaseStatus(
   hasPermission: boolean | null,
-  isLimitReached: boolean,
+  workspaceLimitStatus: WorkspaceReleaseLimitStatus,
 ): CreateReleaseStatus {
-  if (isLimitReached) return 'limit-reached'
-  if (hasPermission === null) return 'loading'
+  if (workspaceLimitStatus === 'limit-reached') return 'limit-reached'
+  if (workspaceLimitStatus === 'pending' || hasPermission === null) return 'loading'
   return hasPermission ? 'allowed' : 'no-permission'
 }
 
 /**
- * The workspace limit counts every active release in the dataset, scheduled drafts included,
- * though scheduling a draft is not gated by it.
  * Plan limits are left to `guardWithReleaseLimitUpsell`, which checks them on click.
  * @internal
  */
 export function useCreateReleaseAvailability(): CreateReleaseAvailability {
   const {t} = useTranslation()
-  const {releases} = useWorkspace()
-  const {data: activeReleases} = useActiveReleases()
+  const workspaceLimit = useWorkspaceReleaseLimit()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
 
@@ -45,14 +44,13 @@ export function useCreateReleaseAvailability(): CreateReleaseAvailability {
   )
   const hasPermission = useObservable(hasPermission$, null)
 
-  const limit = releases?.limit ?? Infinity
-  const status = getCreateReleaseStatus(hasPermission, activeReleases.length >= limit)
+  const status = getCreateReleaseStatus(hasPermission, workspaceLimit.status)
 
   const tooltipByStatus: Record<CreateReleaseStatus, string | undefined> = {
     'loading': undefined,
     'allowed': undefined,
     'no-permission': t('release.action.permission.error'),
-    'limit-reached': t('release.action.new-release.limit-reached', {count: limit}),
+    'limit-reached': workspaceLimit.message,
   }
 
   return {status, disabled: status !== 'allowed', tooltip: tooltipByStatus[status]}

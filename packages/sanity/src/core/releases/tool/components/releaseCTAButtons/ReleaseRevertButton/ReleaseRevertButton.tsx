@@ -14,6 +14,7 @@ import {Translate} from '../../../../../i18n/Translate'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseAvailability} from '../../../../hooks/useCreateReleaseAvailability'
+import {useWorkspaceReleaseLimitGuard} from '../../../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -89,6 +90,7 @@ const ConfirmReleaseDialog = ({
   const telemetry = useTelemetry()
   const {revertRelease} = useReleaseOperations()
   const router = useRouter()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
 
   const navigateToRevertRelease = useCallback(
     (revertReleaseId: string) => () =>
@@ -97,6 +99,11 @@ const ConfirmReleaseDialog = ({
   )
 
   const handleRevertRelease = useCallback(async () => {
+    if (blockAtWorkspaceReleaseLimit()) {
+      setRevertReleaseStatus('idle')
+      return
+    }
+
     setRevertReleaseStatus('reverting')
 
     const revertReleaseId = createReleaseId()
@@ -183,6 +190,7 @@ const ConfirmReleaseDialog = ({
         setRevertReleaseStatus('idle')
       })
   }, [
+    blockAtWorkspaceReleaseLimit,
     setRevertReleaseStatus,
     documentRevertStates,
     revertRelease,

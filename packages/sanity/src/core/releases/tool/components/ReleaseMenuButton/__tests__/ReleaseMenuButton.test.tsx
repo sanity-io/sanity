@@ -3,6 +3,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {findByDataUi} from '../../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -14,6 +15,10 @@ import {
 } from '../../../../__fixtures__/release.fixture'
 import {useReleasesUpsellMockReturn} from '../../../../contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
+import {
+  mockUseActiveReleases,
+  useActiveReleasesMockReturn,
+} from '../../../../store/__tests__/__mocks/useActiveReleases.mock'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
@@ -31,6 +36,10 @@ import {
   useBundleDocumentsMockReturnWithResults,
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
+
+vi.mock('../../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
 
 vi.mock('../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
@@ -78,6 +87,8 @@ describe('ReleaseMenuButton', () => {
     vi.clearAllMocks()
 
     mockUseBundleDocuments.mockRestore()
+
+    mockUseActiveReleases.mockReturnValue(useActiveReleasesMockReturn)
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
   })
@@ -568,6 +579,41 @@ describe('ReleaseMenuButton', () => {
         expect(
           await screen.findByText('This workspace is limited to 0 releases'),
         ).toBeInTheDocument()
+      })
+
+      test('blocks confirming a duplicate when the workspace release limit was reached while the dialog was open', async () => {
+        const wrapper = await createTestProvider({
+          config: {releases: {limit: 1}},
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+        const renderMenuButton = (documentsCount: number) => (
+          <ReleaseMenuButton
+            release={activeScheduledRelease}
+            documentsCount={documentsCount}
+            documents={[]}
+          />
+        )
+        const {rerender} = render(renderMenuButton(1), {wrapper})
+
+        await userEvent.click(await screen.findByTestId('release-menu-button'))
+        const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+        await waitFor(() => expect(duplicateMenuItem).not.toBeDisabled())
+        await userEvent.click(duplicateMenuItem)
+        screen.getByTestId('confirm-duplicate-dialog')
+
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [activeASAPRelease],
+        })
+        rerender(renderMenuButton(2))
+
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        expect(duplicateReleaseMock).not.toHaveBeenCalled()
+        expect(screen.queryByTestId('confirm-duplicate-dialog')).not.toBeInTheDocument()
+        expect(await findByDataUi(document.body, 'Toast')).toHaveTextContent(
+          'This workspace is limited to 1 release',
+        )
       })
 
       describe('when duplication fails', () => {

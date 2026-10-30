@@ -49,6 +49,10 @@ export const ReleaseMenu = ({
   const [hasPublishPermission, setHasPublishPermission] = useState<boolean | null>(null)
   const [hasSchedulePermission, setHasSchedulePermission] = useState<boolean | null>(null)
   const duplicateAvailability = useCreateReleaseAvailability()
+  const duplicateTooltip =
+    duplicateAvailability.status === 'no-permission'
+      ? t('permissions.error.duplicate')
+      : duplicateAvailability.tooltip
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -246,18 +250,15 @@ export const ReleaseMenu = ({
         text={t('action.duplicate-release')}
         data-testid="duplicate-release-menu-item"
         tooltipProps={{
-          content:
-            duplicateAvailability.status === 'no-permission'
-              ? t('permissions.error.duplicate')
-              : duplicateAvailability.tooltip,
+          disabled: duplicateTooltip === undefined,
+          content: duplicateTooltip,
         }}
       />
     )
   }, [
     handleOnInitiateAction,
-    duplicateAvailability.status,
     duplicateAvailability.disabled,
-    duplicateAvailability.tooltip,
+    duplicateTooltip,
     release.state,
     releaseMenuDisabled,
     t,
