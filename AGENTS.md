@@ -1390,7 +1390,7 @@ added new feature                       # missing type and scope
 
 ### 1. Create as Draft PR First
 
-**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team. This applies to every way of opening a PR, not only `gh`: an agent PR tool must be called with its draft option set (`draft: true`).
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
@@ -1522,6 +1522,10 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
 ### Git branch naming
 
 When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
+
+### Pull requests
+
+Always open pull requests as drafts. Cloud agents create PRs with the agent's PR tool rather than `gh` (which is read-only in the VM), so pass `draft: true` on every create call. Never open a PR ready for review: the prompter marks it ready after reviewing it (see [Pull Request Workflow](#pull-request-workflow)).
 
 ### Services
 
