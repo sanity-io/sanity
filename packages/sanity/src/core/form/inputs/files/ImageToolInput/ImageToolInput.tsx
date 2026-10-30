@@ -7,8 +7,7 @@ import {
 } from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
 import {
-  croppedDimensions,
-  cropToPixelRect,
+  getCroppedImageDimensions,
   getImageRefDimensions,
   isSvgImageRef,
   resolveAspectRatio,
@@ -168,10 +167,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   const hotspotPreviews = getHotspotPreviews(schemaType.options)
 
-  const cropSize =
-    sourceSize && hasCropSizeReadout(schemaType.options)
-      ? croppedDimensions(cropToPixelRect(localValue.crop || DEFAULT_CROP, sourceSize))
-      : undefined
+  const cropSize = hasCropSizeReadout(schemaType.options)
+    ? getCroppedImageDimensions({asset: value?.asset, crop: localValue.crop})
+    : undefined
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
