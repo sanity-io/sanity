@@ -1,3 +1,4 @@
+import {releaseMetadata} from '../releases/releaseMetadata'
 import {allTypes} from './allTypes'
 import author from './author'
 import book from './book'
@@ -392,5 +393,8 @@ export function createSchemaTypes(projectId: string) {
 
     // Test documents for docs
     ...v3docs.types,
+
+    // Release metadata with fields added to the core ones
+    releaseMetadata,
   ]
 }
