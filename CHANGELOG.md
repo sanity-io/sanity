@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-10-30)
+
+### Features
+
+* **bench:** add per-navigation soft-navigation stats and report rows ([#15538](https://github.com/sanity-io/sanity/issues/15538)) ([f2e1886](https://github.com/sanity-io/sanity/commit/f2e18860baa4d865d5dd6195658f360958f62cbd))
+* **bench:** add soft-navigation mode and scenario ([#15537](https://github.com/sanity-io/sanity/issues/15537)) ([d08ae23](https://github.com/sanity-io/sanity/commit/d08ae2367ef3dca716a3b87e9b82e5e8fd863785))
+* **core:** add soft-navigation change classifier ([#15536](https://github.com/sanity-io/sanity/issues/15536)) ([d4b8f0e](https://github.com/sanity-io/sanity/commit/d4b8f0ef6b9cb9f5253cd2ce1ffd3861d0eeb4e7))
+* **core:** report soft-navigation web vitals from studio ([#15534](https://github.com/sanity-io/sanity/issues/15534)) ([245a0c0](https://github.com/sanity-io/sanity/commit/245a0c0783a5a5c1d49ded626fa937250926e33b))
+* **core:** support auto-updating studios in workbench ([#15553](https://github.com/sanity-io/sanity/issues/15553)) ([6fe51da](https://github.com/sanity-io/sanity/commit/6fe51da95c8c73d6c631403bbdd70f9ab079ce85))
+* **radar:** render soft-navigation web vitals in a navigation tab ([#15535](https://github.com/sanity-io/sanity/issues/15535)) ([34f50e7](https://github.com/sanity-io/sanity/commit/34f50e75411dd43ac3acae4780681f5f9a545af9))
+* **radar:** store and show a core studio engine score beside the total ([#15531](https://github.com/sanity-io/sanity/issues/15531)) ([88e9dc8](https://github.com/sanity-io/sanity/commit/88e9dc8358c80a989afaca8f49e34a24cfda21c7))
+* **sanity:** add soft-navigation route descriptor util ([#15532](https://github.com/sanity-io/sanity/issues/15532)) ([8c4cd64](https://github.com/sanity-io/sanity/commit/8c4cd643a25ce2fe2adaa49a9e8ce454bdd6f306))
+* **schema:** upload encoded schema descriptors ([#15681](https://github.com/sanity-io/sanity/issues/15681)) ([a43dc62](https://github.com/sanity-io/sanity/commit/a43dc627a93476a926946c57721d1b310609e856))
+* **structure:** open the document right away while intent links resolve ([#15683](https://github.com/sanity-io/sanity/issues/15683)) ([890ddaf](https://github.com/sanity-io/sanity/commit/890ddaf88843e9481bc26d805f47388682ebd70f))
+
+### Bug Fixes
+
+* **core:** move perspective pickers into the nav drawer on mobile ([#15659](https://github.com/sanity-io/sanity/issues/15659)) ([5162998](https://github.com/sanity-io/sanity/commit/5162998566c33794d4a5150dd53a8e717dfec086))
+* **core:** stop studio reloads from reloading workbench ([#15443](https://github.com/sanity-io/sanity/issues/15443)) ([a2b8c4c](https://github.com/sanity-io/sanity/commit/a2b8c4cec09c16b854f4e868bd815b622d012fdb))
+* **deps:** update dependency @sanity/cli to ^8.25.0 ([#15648](https://github.com/sanity-io/sanity/issues/15648)) ([eab12de](https://github.com/sanity-io/sanity/commit/eab12debc16c782f904cc9c154ad7806e7b7e474))
+* **deps:** update dependency @sanity/client to ^8.13.0 ([#15649](https://github.com/sanity-io/sanity/issues/15649)) ([45e94d2](https://github.com/sanity-io/sanity/commit/45e94d28b732a1f72ccfcce5e54def94b3c40c90))
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
+* **deps:** update portabletext ([#15646](https://github.com/sanity-io/sanity/issues/15646)) ([c0a0e7f](https://github.com/sanity-io/sanity/commit/c0a0e7f31cd9a0c762172875beb5523f2e0cae2e))
+* **form:** render relative-only url fields as text inputs ([#15692](https://github.com/sanity-io/sanity/issues/15692)) ([c47a3e5](https://github.com/sanity-io/sanity/commit/c47a3e58cc79aca6f52bcb282d5e0d75049bcfee))
+* **releases:** apply the workspace release limit wherever a release can be created ([#15603](https://github.com/sanity-io/sanity/issues/15603)) ([e23edf1](https://github.com/sanity-io/sanity/commit/e23edf1a2d0e6bfb5abfae17bb476e4095a33894))
+* **releases:** hold the workspace release limit while releases load and on dialog submit ([#15687](https://github.com/sanity-io/sanity/issues/15687)) ([f26142a](https://github.com/sanity-io/sanity/commit/f26142a124dc4ccf49b0eaa0dde7bc98ec15dc1a))
+* **router:** accept intent links without params ([#15639](https://github.com/sanity-io/sanity/issues/15639)) ([4e7479b](https://github.com/sanity-io/sanity/commit/4e7479bf1b0f8ae23c0921b3324784b5994cb77c))
+* **structure:** promote custom first action as primary for live-edit documents ([#15686](https://github.com/sanity-io/sanity/issues/15686)) ([1124da6](https://github.com/sanity-io/sanity/commit/1124da6dfbb1eaa4b0174b350bde344c4c30be5d))
+* **validation:** cancel abandoned reference batches ([#15652](https://github.com/sanity-io/sanity/issues/15652)) ([05ef2d9](https://github.com/sanity-io/sanity/commit/05ef2d9e0a4d2ab9579543afceb071a218c77ea1))
+* **variants:** use dated api version instead of vX ([#15568](https://github.com/sanity-io/sanity/issues/15568)) ([1ada254](https://github.com/sanity-io/sanity/commit/1ada2542e6260e6df781c7054b198f6dac0ca469))
+
+### Performance Improvements
+
+* **structure:** open intent links without resolving the whole structure ([#15661](https://github.com/sanity-io/sanity/issues/15661)) ([f3659de](https://github.com/sanity-io/sanity/commit/f3659dea975d294f3454a3c450bb63e63927c276))
+* **structure:** preload the document so it is ready when its pane opens ([#15675](https://github.com/sanity-io/sanity/issues/15675)) ([9964a63](https://github.com/sanity-io/sanity/commit/9964a6383b575bc2d7b2208668f1c99a94f8b702))
+* **structure:** search the structure without waiting for the document type ([#15674](https://github.com/sanity-io/sanity/issues/15674)) ([6730c94](https://github.com/sanity-io/sanity/commit/6730c94871820b4fe5ef4ebb5f3f35d779bb4c83))
 ## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
 
 ### Features

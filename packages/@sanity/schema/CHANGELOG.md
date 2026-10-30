@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-10-30)
+
+### Features
+
+* **schema:** upload encoded schema descriptors ([#15681](https://github.com/sanity-io/sanity/issues/15681)) ([a43dc62](https://github.com/sanity-io/sanity/commit/a43dc627a93476a926946c57721d1b310609e856))
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
 ## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
 
 ### Bug Fixes
