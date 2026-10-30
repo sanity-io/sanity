@@ -11,6 +11,7 @@ import {
 import {emptyToolReady, loginReady, loginToEmptyTool, loginToTool, toolReady} from './load'
 import {recipe} from './recipe'
 import {singleString} from './singleString'
+import {softNav} from './softNav'
 import {synthetic, syntheticLarge} from './synthetic'
 import {type BenchScenario} from './types'
 import {wrappedForm} from './wrappedForm'
@@ -28,6 +29,8 @@ export const SCENARIOS: BenchScenario[] = [
   toolReady,
   emptyToolReady,
   loginToEmptyTool,
+  // Soft-navigation scenario — softnav mode only
+  softNav,
   // Customization scenarios — one workspace each, only in the customization
   // build (pnpm --filter bench build:customizations)
   previewHeavy,
