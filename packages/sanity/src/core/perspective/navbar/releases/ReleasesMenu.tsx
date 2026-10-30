@@ -20,10 +20,13 @@ import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 export function ReleasesMenu({
+  fullWidth,
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
 }: {
+  /** Stretches the trigger to its parent's width. */
+  fullWidth?: boolean
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
@@ -76,6 +79,7 @@ export function ReleasesMenu({
           <GlobalPerspectiveButton
             data-testid="global-perspective-menu-button"
             fullText={fullTitle}
+            fullWidth={fullWidth}
             handleClearPerspective={canClearPerspective ? handleClearPerspective : undefined}
             icon={
               <ReleaseAvatarIcon

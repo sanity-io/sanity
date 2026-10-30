@@ -20,8 +20,7 @@ import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
-import {ReleasesNav} from '../../../perspective/navbar/releases/ReleasesNav'
-import {VariantsStudioNavbarLayout} from '../../../perspective/navbar/variants/VariantsStudioNavbarLayout'
+import {GlobalPerspectiveNav} from '../../../perspective/navbar/GlobalPerspectiveNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
@@ -65,7 +64,7 @@ const RootCard = styled(Card)`
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {__internal_actions: actions = EMPTY_ARRAY} = props
 
-  const {beta, name, tools} = useWorkspace()
+  const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -113,6 +112,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
+      perspectivesInDrawer: mediaIndex <= 1,
     }),
     [mediaIndex],
   )
@@ -272,8 +272,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout />}
-                <ReleasesNav />
+                {!shouldRender.perspectivesInDrawer && <GlobalPerspectiveNav />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
@@ -303,6 +302,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             activeToolName={activeToolName}
             isOpen={drawerOpen}
             onClose={handleCloseDrawer}
+            showPerspectives={shouldRender.perspectivesInDrawer}
             tools={tools}
           />
         )}

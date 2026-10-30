@@ -8,17 +8,22 @@ import {css} from '#styled-system/css'
  * `&:not([hidden]) { display: block }` and the menu's `overflow: auto` class.
  * The inner `Stack` rule uses the same three classes plus `[data-ui="Stack"]`
  * so it beats `Stack`'s `&&:not([hidden]) { display: grid }` and its `grid-gap`.
+ *
+ * `--perspective-menu-viewport-inset` is the space kept on each side. Both widths subtract it
+ * twice so the menu fits a phone, and they sit in the same three-class block because `Box`
+ * resets `min-width: 0` with one class.
  */
 export const variantsMenu = css({
-  'minWidth': '280px',
-  'maxWidth': '360px',
   '&&&': {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-    maxHeight: '100%',
-    overflow: 'hidden',
+    '--perspective-menu-viewport-inset': '12px',
+    'minWidth': 'min(280px, calc(100vw - (var(--perspective-menu-viewport-inset) * 2)))',
+    'maxWidth': 'min(360px, calc(100vw - (var(--perspective-menu-viewport-inset) * 2)))',
+    'display': 'flex',
+    'flexDirection': 'column',
+    'flex': 1,
+    'minHeight': 0,
+    'maxHeight': '100%',
+    'overflow': 'hidden',
   },
   '&&& > [data-ui="Stack"]': {
     display: 'flex',
