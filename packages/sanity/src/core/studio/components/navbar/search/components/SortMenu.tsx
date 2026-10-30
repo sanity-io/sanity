@@ -10,7 +10,7 @@ import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../workspace'
-import {useSearchState} from '../contexts/search/useSearchState'
+import {useSearchSelector, useSearchState} from '../contexts/search/useSearchState'
 import {getOrderings} from '../definitions/getOrderings'
 import {type SearchOrdering} from '../types'
 import {sortMenuContentFlex} from './SortMenu.css'
@@ -25,16 +25,12 @@ function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDi
 
 function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const {t} = useTranslation()
-  const {
-    dispatch,
-    state: {ordering: currentOrdering},
-  } = useSearchState()
+  const {searchActorRef} = useSearchState()
+  const isSelected = useSearchSelector((snapshot) => isEqual(snapshot.context.ordering, ordering))
 
   const handleClick = useCallback(() => {
-    dispatch({ordering, type: 'ORDERING_SET'})
-  }, [dispatch, ordering])
-
-  const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
+    searchActorRef.send({ordering, type: 'ORDERING_SET'})
+  }, [ordering, searchActorRef])
 
   return (
     <MenuItem
@@ -49,9 +45,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
 export function SortMenu() {
   const {t} = useTranslation()
   const {strategy: searchStrategy} = useWorkspace().search
-  const {
-    state: {ordering},
-  } = useSearchState()
+  const ordering = useSearchSelector((snapshot) => snapshot.context.ordering)
 
   const menuButtonId = useId()
 

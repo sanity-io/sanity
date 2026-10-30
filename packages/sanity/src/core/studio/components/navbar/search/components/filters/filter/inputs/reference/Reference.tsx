@@ -11,7 +11,8 @@ import {Box, VStack} from 'ui5'
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
 import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {selectDocumentTypesNarrowed} from '../../../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
@@ -22,10 +23,8 @@ export function SearchFilterReferenceInput({
   onChange,
   value,
 }: OperatorInputComponentProps<ReferenceValue>) {
-  const {
-    onClose,
-    state: {documentTypesNarrowed},
-  } = useSearchState()
+  const {onClose} = useSearchState()
+  const documentTypesNarrowed = useSearchSelector(selectDocumentTypesNarrowed)
   const schema = useSchema()
   const {t} = useTranslation()
 
