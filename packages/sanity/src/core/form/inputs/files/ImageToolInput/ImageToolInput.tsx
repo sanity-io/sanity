@@ -1,7 +1,7 @@
 import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {getImageRefDimensions, resolveAspectRatio} from '@sanity/util/image'
+import {getImageRefDimensions, isSvgImageRef, resolveAspectRatio} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -167,7 +167,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     [hotspotEnabled, onChange, readOnly, schemaType.fields],
   )
 
-  const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
+  const isSvg = useMemo(() => isSvgImageRef(assetRef), [assetRef])
 
   const {t} = useTranslation()
   return (
