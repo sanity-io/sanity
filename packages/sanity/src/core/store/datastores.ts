@@ -309,24 +309,24 @@ export function useDocumentStore(): DocumentStore {
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {bifur} = useSource().__internal
+  const {bifur, bifurToken$: token$} = useSource().__internal
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const connectionStatusStore =
       resourceCache.get<ConnectionStatusStore>({
         namespace: 'connectionStatusStore',
-        dependencies: [bifur],
-      }) || createConnectionStatusStore({bifur})
+        dependencies: [bifur, token$ ?? null],
+      }) || createConnectionStatusStore({bifur, token$})
 
     resourceCache.set({
       namespace: 'connectionStatusStore',
-      dependencies: [bifur],
+      dependencies: [bifur, token$ ?? null],
       value: connectionStatusStore,
     })
 
     return connectionStatusStore
-  }, [bifur, resourceCache])
+  }, [bifur, token$, resourceCache])
 }
 
 /**

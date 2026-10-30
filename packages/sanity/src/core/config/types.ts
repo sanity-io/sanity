@@ -1210,6 +1210,8 @@ export interface Source {
   __internal: {
     /** @internal */
     bifur: BifurClient
+    /** The shared token stream used by bifur and its connection status store. @internal */
+    bifurToken$?: Observable<string | null>
     /** @internal */
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
     /** @internal */
