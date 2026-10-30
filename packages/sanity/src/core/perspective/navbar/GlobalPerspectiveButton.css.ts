@@ -1,13 +1,10 @@
 import {css} from '#styled-system/css'
 
-/** `@sanity/ui` `radius="full"`. Large enough that the 31px controls become a pill. */
-const pillRadius = '9999px'
-
 /**
- * The height of the pill.
- * This is hardcoded to match the rest of the items in the navbar in height. It has 31px which then makes it into a 33px tall component when the border is applied.
+ * `@sanity/ui` `radius="full"`. Large enough that the controls become a pill.
+ * Their height is `--perspective-control-height` (set from `perspectiveChipHeight`).
  */
-const pillHeight = '31px'
+const pillRadius = '9999px'
 
 /**
  * Centers the trigger and the clear control in the pill, and clips their
@@ -34,7 +31,7 @@ export const perspectiveButtonCardFullWidth = css({
 /** Hairline between the trigger and the clear control. */
 export const perspectiveButtonDivider = css({
   width: '1px',
-  height: pillHeight,
+  height: 'var(--perspective-control-height)',
   alignSelf: 'stretch',
   backgroundColor: 'var(--card-border-color)',
 })
@@ -46,7 +43,7 @@ export const perspectiveButtonDivider = css({
  */
 export const perspectiveButtonClear = css({
   '&&': {
-    height: pillHeight,
+    height: 'var(--perspective-control-height)',
     padding: '0 2px',
     borderTopRightRadius: pillRadius,
     borderBottomRightRadius: pillRadius,
@@ -65,7 +62,7 @@ export const perspectiveButtonClear = css({
  */
 export const perspectiveButtonTrigger = css({
   '&&': {
-    height: pillHeight,
+    height: 'var(--perspective-control-height)',
     paddingLeft: '6px',
     paddingRight: '4px',
     borderTopLeftRadius: pillRadius,

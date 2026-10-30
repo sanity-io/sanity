@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 // oxlint-disable-next-line no-restricted-imports -- the label is an animated node; the studio Button types `text` as a string
-import {Button as UIButton, Card, type ButtonProps as UIButtonProps} from '@sanity/ui'
+import {Button as UIButton, Card, type ButtonProps as UIButtonProps, useTheme_v2} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type MouseEvent, useCallback} from 'react'
 import {Text, Box} from 'ui5'
@@ -18,6 +18,7 @@ import {
   perspectiveButtonTrigger,
   perspectiveButtonTriggerFullWidth,
 } from './GlobalPerspectiveButton.css'
+import {perspectiveControlStyle} from './perspectiveChipHeight'
 
 /** Same cap as `ReleaseTitle`, so a long release name wraps in the tooltip. */
 const FULL_TEXT_TOOLTIP_MAX_WIDTH = '300px'
@@ -54,6 +55,7 @@ type GlobalPerspectiveButtonProps = {
  */
 export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
   const {text, fullText, fullWidth, icon, handleClearPerspective, ref, ...buttonProps} = props
+  const theme = useTheme_v2()
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const showFullText = fullText !== undefined && fullText !== text
@@ -78,6 +80,7 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
       display="flex"
       flex="none"
       radius="full"
+      style={perspectiveControlStyle(theme)}
     >
       <Tooltip
         content={

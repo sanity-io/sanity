@@ -1,10 +1,11 @@
-import {Skeleton} from '@sanity/ui'
+import {Skeleton, useTheme_v2} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {lazy, Suspense, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Box} from 'ui5'
 
 import {parseVariantStickyParam} from '../../../variants/util/variantSelection'
+import {perspectiveControlStyle} from '../perspectiveChipHeight'
 import {
   navbarFallback,
   navbarFallbackFullWidth,
@@ -21,11 +22,13 @@ const VariantsStudioNavbar = lazy(() => import('./VariantsStudioNavbar'))
  */
 export function VariantsStudioNavbarFallback(props: {fullWidth?: boolean}) {
   const {fullWidth} = props
+  const theme = useTheme_v2()
   return (
     <Box
       border
       className={clsx(navbarFallback, fullWidth && navbarFallbackFullWidth)}
       radius="full"
+      style={perspectiveControlStyle(theme)}
     >
       <Skeleton
         animated

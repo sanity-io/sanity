@@ -25,7 +25,7 @@ describe('VariantsStudioNavbarLayout fallback', () => {
           <VariantsStudioNavbarFallback />
         </div>
         {/* A settled filter, as `VariantsStudioNavbar` renders it: the bordered chip, not the
-            trigger inside it. The border is what makes the pill taller than the 31px trigger. */}
+            trigger inside it. The border is what makes the pill taller than the trigger. */}
         <GlobalPerspectiveButton
           data-testid="pill-trigger"
           icon={<RhombusIcon className={suggestIconColor} />}
