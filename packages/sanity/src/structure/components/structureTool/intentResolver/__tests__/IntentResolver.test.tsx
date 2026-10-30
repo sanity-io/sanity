@@ -342,6 +342,30 @@ describe('IntentResolver', () => {
       )
     })
 
+    it('falls back to the standalone editor when the structure fails to resolve', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      mockRouter.state = {
+        panes: [[{id: '__resolve__doc-id', params: {type: 'book', view: 'preview'}}]],
+      }
+      mockResolveIntent.mockRejectedValue(new PaneResolutionError({message: 'Broken list'}))
+
+      const {boundary} = renderResolver()
+
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {
+            panes: [
+              [{id: '__edit__doc-id', params: {type: 'book', view: 'preview'}, payload: undefined}],
+            ],
+          },
+          {replace: true},
+        ),
+      )
+      expect(boundary.current?.state.error).toBeNull()
+      expect(warn).toHaveBeenCalled()
+      warn.mockRestore()
+    })
+
     it('resolves a resolving pane that was opened directly, for example on reload', async () => {
       mockRouter.state = {panes: [[{id: '__resolve__doc-id', params: {type: 'book'}}]]}
       mockResolveIntent.mockResolvedValue(resolvedPanes)

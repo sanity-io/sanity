@@ -203,19 +203,11 @@ export const IntentResolver = memo(function IntentResolver() {
 
   // oxlint-disable-next-line consistent-return
   useEffect(() => {
-    if (resolvingPaneId) {
+    const request = getResolvingRequest(getCurrentPanes())
+    if (resolvingPaneId && request) {
       const paneId = resolvingPaneId
       let cancelled = false
-      async function effect() {
-        if (cancelled) return
-
-        const request = getResolvingRequest(getCurrentPanes())
-        if (!request) return
-
-        const resolution = getResolution(request)
-        const resolvedPanes = await resolution
-        forgetResolution(pendingRef, resolution)
-
+      const moveTo = (resolvedPanes: RouterPanes) => {
         // the effect is cleaned up when the user navigates away from the
         // resolving pane, and the resolution is then dropped
         if (cancelled) return
@@ -226,7 +218,23 @@ export const IntentResolver = memo(function IntentResolver() {
         }
       }
 
-      errorHandler.attempt(effect, {retryable: true}).catch(setError)
+      const effect = async () => {
+        if (cancelled) return
+
+        const resolution = getResolution(request)
+        const resolvedPanes = await resolution
+        forgetResolution(pendingRef, resolution)
+        moveTo(resolvedPanes)
+      }
+
+      // The document is already open, so a broken structure falls back to the
+      // standalone editor like a document the structure doesn't list, instead
+      // of replacing the whole tool with the error screen.
+      errorHandler.attempt(effect, {retryable: true}).catch((structureError: unknown) => {
+        const {id, ...params} = request.params
+        console.warn('Could not find document "%s" in the structure', id, structureError)
+        moveTo([[{id: `__edit__${id}`, params, payload: request.payload}]])
+      })
 
       return () => {
         cancelled = true
