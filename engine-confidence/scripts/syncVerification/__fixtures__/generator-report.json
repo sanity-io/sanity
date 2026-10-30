@@ -807,5 +807,348 @@
         }
       ]
     }
+  ],
+  "samples": [
+    {
+      "seed": 11,
+      "runIndex": 40,
+      "definition": {
+        "id": "gen-11-run-40",
+        "title": "passing sample",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "A",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "set": {
+                  "title": "two"
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "do": "outside",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "unset": ["items[_key==\"a\"]"]
+                }
+              }
+            ]
+          },
+          {
+            "client": "B",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "setIfMissing": {
+                  "items": []
+                }
+              },
+              {
+                "insert": {
+                  "after": "items[-1]",
+                  "items": [
+                    {
+                      "_key": "c",
+                      "_type": "item",
+                      "title": "C"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "client": "B",
+            "do": "commit"
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "set": {
+                    "title": "two"
+                  }
+                }
+              },
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "unset": ["_empty_action_guard_pseudo_field_"]
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        },
+        {
+          "clientId": "outside",
+          "transactionId": "ext-1",
+          "request": {
+            "kind": "outside",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "unset": ["items[_key==\"a\"]"]
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        },
+        {
+          "clientId": "B",
+          "transactionId": "B-tx-1",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "setIfMissing": {
+                    "items": []
+                  }
+                }
+              },
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "insert": {
+                    "after": "items[-1]",
+                    "items": [
+                      {
+                        "_key": "c",
+                        "_type": "item",
+                        "title": "C"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "runIndex": 80,
+      "definition": {
+        "id": "gen-12-run-80",
+        "title": "passing sample with a live edit",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "A",
+            "do": "mutate",
+            "id": "drafts.article-gen",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "set": {
+                    "author": {
+                      "_type": "reference",
+                      "_ref": "fv-probe-missing-author"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "mutations",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "set": {
+                    "author": {
+                      "_type": "reference",
+                      "_ref": "fv-probe-missing-author"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        }
+      ]
+    }
   ]
 }

@@ -35,7 +35,8 @@ describe('generatorReportProblems', () => {
 describe('dryRunLines', () => {
   test('lists what each failure would replay and skip', () => {
     const lines = dryRunLines(loadFixtureReport())
-    expect(lines[0]).toBe('Report a669759627 (pair seam): 5 failure(s)')
+    expect(lines[0]).toBe('Report a669759627 (pair seam): 5 failure(s), 2 passing sample(s)')
+    expect(lines).toContain('[sample 1] seed 12 run 80')
     expect(lines).toContain(
       '    replay #1 actions (1 action) -> POST data/actions; recorded 400 mutationError, model 400 mutationError',
     )
