@@ -7,8 +7,10 @@ import {
   type FailureVerdict,
   type GeneratorFailure,
   type GeneratorReport,
+  type GeneratorSample,
   parseGeneratorReport,
   parseVerdictsFile,
+  type SampleVerdict,
   type Seam,
   type VerdictsFile,
 } from './contracts'
@@ -29,6 +31,7 @@ const handFiledIssues = JSON.parse(
 
 const COMMIT = 'a669759627'
 const DMP_SIGNATURE = 'lost-edits | rejected | 400 | mutationError | diffMatchPatch'
+const FAKE_SIGNATURE = 'fake-mismatch | mutations | diffMatchPatch | 200->400 | mutationError'
 
 function failure(signature: string, seam: Seam = 'pair'): GeneratorFailure {
   return {
@@ -73,10 +76,48 @@ function pair(
   failures: GeneratorFailure[],
   verdicts: FailureVerdict[],
   seam: Seam = 'pair',
+  sampled: {samples: GeneratorSample[]; verdicts: SampleVerdict[]} = {samples: [], verdicts: []},
 ): ReportPair {
-  const report: GeneratorReport = {version: 1, commit: COMMIT, seam, failures}
-  const verdictsFile: VerdictsFile = {version: 1, commit: COMMIT, seam, verdicts}
+  const report: GeneratorReport = {
+    version: 1,
+    commit: COMMIT,
+    seam,
+    failures,
+    samples: sampled.samples,
+  }
+  const verdictsFile: VerdictsFile = {
+    version: 1,
+    commit: COMMIT,
+    seam,
+    verdicts,
+    samples: sampled.verdicts,
+  }
   return {report, verdicts: verdictsFile}
+}
+
+function sample(runIndex: number): GeneratorSample {
+  return {seed: 7, runIndex, definition: failure(DMP_SIGNATURE).definition}
+}
+
+function sampleVerdict(runIndex: number, overrides: Partial<SampleVerdict> = {}): SampleVerdict {
+  return {
+    seed: 7,
+    runIndex,
+    verdict: 'confirmed',
+    summary: 'Every submission matched.',
+    differences: [],
+    replayed: 3,
+    ...overrides,
+  }
+}
+
+const fakeMismatchSample = {
+  verdict: 'fake-mismatch' as const,
+  fakeSignature: FAKE_SIGNATURE,
+  summary: 'The real Content Lake rejected a diffMatchPatch the fake accepted.',
+  differences: [
+    {submission: 1, transactionId: 'tx-2', field: 'statusCode' as const, fake: 200, real: 400},
+  ],
 }
 
 function fakeLinear(existing: LinearIssueWithDescription[] = []) {
@@ -282,6 +323,7 @@ describe('fileFailures', () => {
     const explain = explainWith()
     const mismatch = verdict(DMP_SIGNATURE, {
       verdict: 'fake-mismatch',
+      fakeSignature: FAKE_SIGNATURE,
       summary: 'The real Content Lake accepted the submission the fake rejected.',
       differences: [
         {submission: 0, transactionId: 'tx-1', field: 'statusCode', fake: 400, real: 200},
@@ -296,10 +338,12 @@ describe('fileFailures', () => {
 
     expect(explain).not.toHaveBeenCalled()
     expect(linear.findBySignatureLine).toHaveBeenCalledWith(
-      `sync-gen-fake-signature: ${DMP_SIGNATURE}`,
+      `sync-gen-fake-signature: ${FAKE_SIGNATURE}`,
     )
     const [{title, description}] = linear.create.mock.calls[0]
-    expect(title).toMatch(/^fake content lake differs from the real one: /)
+    expect(title).toBe(
+      'fake content lake differs from the real one: mutations | diffMatchPatch | 200->400 | mutationError',
+    )
     expect(description).toContain('"fake": 400')
     expect(description).not.toContain(`sync-gen-signature: ${DMP_SIGNATURE}`)
   })
@@ -311,11 +355,30 @@ describe('fileFailures', () => {
     const linear = fakeLinear(existing)
 
     const summary = await fileFailures(
-      [pair([failure(DMP_SIGNATURE)], [verdict(DMP_SIGNATURE, {verdict: 'fake-mismatch'})])],
+      [
+        pair(
+          [failure(DMP_SIGNATURE)],
+          [verdict(DMP_SIGNATURE, {verdict: 'fake-mismatch', fakeSignature: FAKE_SIGNATURE})],
+        ),
+      ],
       {dryRun: false, linear, explain: explainWith()},
     )
 
     expect(summary.outcomes).toMatchObject([{action: 'filed', kind: 'fake-model'}])
+  })
+
+  test('files nothing for a fake mismatch without a fakeSignature', async () => {
+    const linear = fakeLinear()
+
+    const summary = await fileFailures(
+      [pair([failure(DMP_SIGNATURE)], [verdict(DMP_SIGNATURE, {verdict: 'fake-mismatch'})])],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    expect(summary.outcomes).toMatchObject([
+      {action: 'error', reason: 'fake-mismatch verdict has no fakeSignature'},
+    ])
+    expect(linear.create).not.toHaveBeenCalled()
   })
 
   test('files nothing for an error verdict and reports it', async () => {
@@ -402,6 +465,155 @@ describe('fileFailures', () => {
   })
 })
 
+describe('passing samples', () => {
+  test('files a fake-mismatch sample as a fidelity issue without the AI step', async () => {
+    const linear = fakeLinear()
+    const explain = explainWith()
+
+    const summary = await fileFailures(
+      [
+        pair([], [], 'pair', {
+          samples: [sample(4)],
+          verdicts: [sampleVerdict(4, fakeMismatchSample)],
+        }),
+      ],
+      {dryRun: false, linear, explain},
+    )
+
+    expect(explain).not.toHaveBeenCalled()
+    expect(summary.outcomes).toMatchObject([
+      {source: 'sample', signature: FAKE_SIGNATURE, kind: 'fake-model', action: 'filed'},
+    ])
+    const [{title, description}] = linear.create.mock.calls[0]
+    expect(title).toMatch(/^fake content lake differs from the real one: mutations/)
+    expect(description).toContain('passing run 4')
+    expect(description).toContain('"real": 400')
+    expect(description).not.toContain('It fails with')
+    expect(description.split('\n').filter((line) => line.startsWith('sync-gen-'))).toEqual([
+      `sync-gen-fake-signature: ${FAKE_SIGNATURE}`,
+    ])
+  })
+
+  test('skips a sample gap already filed in Linear, matching whole lines only', async () => {
+    const existing = [
+      {
+        identifier: 'SAPP-7',
+        url: 'u7',
+        description: `\`\`\`\nsync-gen-fake-signature: ${FAKE_SIGNATURE}\n\`\`\``,
+      },
+      {
+        identifier: 'SAPP-8',
+        url: 'u8',
+        description: `sync-gen-fake-signature: ${FAKE_SIGNATURE} | document`,
+      },
+    ]
+    const linear = fakeLinear(existing)
+
+    const summary = await fileFailures(
+      [
+        pair([], [], 'pair', {
+          samples: [sample(4)],
+          verdicts: [sampleVerdict(4, fakeMismatchSample)],
+        }),
+      ],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    expect(summary.outcomes).toMatchObject([
+      {action: 'duplicate', issues: [{identifier: 'SAPP-7'}]},
+    ])
+    expect(linear.create).not.toHaveBeenCalled()
+  })
+
+  test('files nothing for confirmed samples and counts them as matched', async () => {
+    const linear = fakeLinear()
+
+    const summary = await fileFailures(
+      [
+        pair([], [], 'pair', {
+          samples: [sample(1), sample(2), sample(3)],
+          verdicts: [
+            sampleVerdict(1),
+            sampleVerdict(2),
+            sampleVerdict(3, {verdict: 'error', summary: 'Request timed out', replayed: 0}),
+          ],
+        }),
+      ],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    expect(linear.findBySignatureLine).not.toHaveBeenCalled()
+    expect(linear.create).not.toHaveBeenCalled()
+    expect(summary.outcomes).toMatchObject([
+      {
+        source: 'sample',
+        signature: 'sample seed 7 run 3',
+        action: 'error',
+        reason: 'verify failed: Request timed out',
+      },
+    ])
+    expect(summary.fidelity).toEqual({
+      samples: 3,
+      replayed: 2,
+      matched: 2,
+      mismatched: 0,
+      errors: 1,
+      submissions: 6,
+    })
+    expect(summaryMarkdown(summary)).toContain(
+      'Fake fidelity: 2 of 2 replayed samples matched the real Content Lake (0 mismatches, 1 error, 6 submissions replayed).',
+    )
+  })
+
+  test('files a gap found by a failure and by samples once', async () => {
+    const linear = fakeLinear()
+
+    const summary = await fileFailures(
+      [
+        pair([], [], 'operations', {
+          samples: [sample(5)],
+          verdicts: [sampleVerdict(5, fakeMismatchSample)],
+        }),
+        pair(
+          [failure(DMP_SIGNATURE)],
+          [verdict(DMP_SIGNATURE, {verdict: 'fake-mismatch', fakeSignature: FAKE_SIGNATURE})],
+          'pair',
+          {samples: [sample(6)], verdicts: [sampleVerdict(6, fakeMismatchSample)]},
+        ),
+      ],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    expect(linear.create).toHaveBeenCalledTimes(1)
+    expect(linear.create.mock.calls[0][0].description).toContain('It fails with')
+    expect(
+      summary.outcomes.map((outcome) => [outcome.source, outcome.action, outcome.reason]),
+    ).toEqual([
+      ['failure', 'filed', undefined],
+      ['sample', 'duplicate', `the same gap as failure \`${DMP_SIGNATURE}\` in this run`],
+      ['sample', 'duplicate', `the same gap as failure \`${DMP_SIGNATURE}\` in this run`],
+    ])
+  })
+
+  test('reports a sample without a verdict and a sample verdict without a sample', async () => {
+    const summary = await fileFailures(
+      [pair([], [], 'pair', {samples: [sample(1)], verdicts: [sampleVerdict(2)]})],
+      {dryRun: true, explain: explainWith()},
+    )
+
+    expect(summary.outcomes.map((outcome) => [outcome.signature, outcome.reason])).toEqual([
+      ['sample seed 7 run 2', 'sample verdict has no matching sample in the report'],
+      ['sample seed 7 run 1', 'no verdict for this sample'],
+    ])
+  })
+
+  test('says so when no samples were replayed', async () => {
+    const summary = await fileFailures([pair([], [])], {dryRun: true, explain: explainWith()})
+
+    expect(summaryMarkdown(summary)).toContain('Fake fidelity: no passing samples were replayed.')
+  })
+})
+
 describe('issue titles', () => {
   test('start lowercase and read from the signature fields', () => {
     expect(
@@ -424,6 +636,24 @@ describe('contracts', () => {
     })
 
     expect(() => parseVerdictsFile(raw)).toThrow(/verdict must be one of/)
+  })
+
+  test('rejects a sample verdict outside confirmed, fake-mismatch and error', () => {
+    const raw = JSON.stringify({
+      version: 1,
+      commit: COMMIT,
+      seam: 'pair',
+      verdicts: [],
+      samples: [{...sampleVerdict(1), verdict: 'assumed'}],
+    })
+
+    expect(() => parseVerdictsFile(raw)).toThrow(/samples\[0\]\.verdict must be one of/)
+  })
+
+  test('accepts a report without samples', () => {
+    const raw = JSON.stringify({version: 1, commit: COMMIT, seam: 'pair', failures: []})
+
+    expect(parseGeneratorReport(raw).samples).toBeUndefined()
   })
 
   test('rejects a report failure without signature fields', () => {
