@@ -56,6 +56,8 @@ import {languageFilter} from './plugins/language-filter/plugin'
 import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
+import {upsellDebug} from './plugins/upsell-debug/plugin'
+import {UPSELL_SCENARIO_BASE_PATHS} from './plugins/upsell-debug/scenarios'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -279,6 +281,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       presenceDebug(),
+      upsellDebug(),
       media(),
       wave(),
       autoCloseBrackets(),
@@ -509,6 +512,20 @@ export default defineConfig([
     title: 'Test Studio (US)',
     dataset: 'test-us',
     basePath: '/us',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'releases-quota-reached',
+    title: 'Releases quota reached',
+    subtitle: 'The plan quota for active releases is used up',
+    basePath: UPSELL_SCENARIO_BASE_PATHS['releases-quota-reached'],
+  },
+  {
+    ...defaultWorkspace,
+    name: 'releases-feature-disabled',
+    title: 'Releases not on the plan',
+    subtitle: 'Releases are enabled in the config but missing from the project features',
+    basePath: UPSELL_SCENARIO_BASE_PATHS['releases-feature-disabled'],
   },
   {
     ...defaultWorkspace,
