@@ -120,6 +120,14 @@ describe('Comments', () => {
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await expect.element($editable).toHaveFocus()
+
+      const divider = document.querySelector<HTMLElement>(
+        '#comment-input-root [data-ui="MenuDivider"]',
+      )!
+      const dividerStyle = getComputedStyle(divider)
+      expect(dividerStyle.height).toBe('20px')
+      expect(dividerStyle.width).toBe('1px')
+
       await settleChromaticEndState()
       await expectFocusRingSettled()
     })
