@@ -151,7 +151,7 @@ async function getSlowStructure() {
     ]) as unknown as UnresolvedPaneNode
 
   return {
-    rootPaneNode: rootList.asObservable() as unknown as UnresolvedPaneNode,
+    rootPaneNode: rootList.asObservable(),
     structureContext: S.context,
     releaseRoot: () => rootList.next(root),
     releasePages: () =>
@@ -172,36 +172,13 @@ function summarize(metas: ResolvedPaneMeta[]) {
 }
 
 describe('createResolvedPaneNodeStream with a resolving pane', () => {
-  it('renders the document of a resolving pane while the root is still loading', async () => {
-    const {rootPaneNode, structureContext} = await getSlowStructure()
-    const emissions: ResolvedPaneMeta[][] = []
-
-    const subscription = createResolvedPaneNodeStream({
-      routerPanesStream: of([[{id: '__resolve__page123', params: {type: 'page'}}]]),
-      rootPaneNode,
-      structureContext,
-    }).subscribe((metas) => emissions.push(metas))
-    await settle()
-    subscription.unsubscribe()
-
-    expect(emissions.map(summarize).at(-1)).toEqual([
-      'loading:root',
-      'document:__resolve__page123#handoff-page123-0',
-    ])
-    const documentPane = emissions.at(-1)?.[1]
-    expect(documentPane?.paneNode?.type === 'document' && documentPane.paneNode.options).toEqual({
-      id: 'page123',
-      type: 'page',
-    })
-  })
-
   it('waits for the root before an `__edit__` pane, as before', async () => {
     const emissions: ResolvedPaneMeta[][] = []
     const {structureContext} = await getSlowStructure()
 
     const subscription = createResolvedPaneNodeStream({
       routerPanesStream: of([[{id: '__edit__page123', params: {type: 'page'}}]]),
-      rootPaneNode: NEVER as unknown as UnresolvedPaneNode,
+      rootPaneNode: NEVER,
       structureContext,
     }).subscribe((metas) => emissions.push(metas))
     await settle()
@@ -223,6 +200,22 @@ describe('createResolvedPaneNodeStream with a resolving pane', () => {
       structureContext,
     }).subscribe((metas) => emissions.push(metas))
     await settle()
+
+    // the document renders before the root resolves
+    expect(summarize(emissions.at(-1)!)).toEqual([
+      'loading:root',
+      'document:__resolve__page123#handoff-page123-0',
+    ])
+    const documentPane = emissions.at(-1)![1]
+    expect(
+      documentPane.type === 'resolvedMeta' &&
+        documentPane.paneNode.type === 'document' &&
+        documentPane.paneNode.options,
+    ).toEqual({
+      id: 'page123',
+      type: 'page',
+    })
+
     releaseRoot()
     await settle()
 

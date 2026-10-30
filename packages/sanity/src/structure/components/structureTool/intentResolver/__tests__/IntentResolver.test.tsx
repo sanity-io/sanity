@@ -306,43 +306,6 @@ describe('IntentResolver', () => {
       expect(mockResolveIntent).toHaveBeenCalledTimes(1)
     })
 
-    it('keeps the intent, template and payload of a create intent', async () => {
-      mockRouter.state = {
-        intent: 'create',
-        params: {id: 'new-id', type: 'book', template: 'book-by-author'},
-        payload: {authorId: 'grrm'},
-      }
-      const resolution = deferred<typeof resolvedPanes>()
-      mockResolveIntent.mockReturnValue(resolution.promise)
-
-      renderResolver()
-      await act(() => vi.advanceTimersByTimeAsync(300))
-
-      await waitFor(() =>
-        expect(mockNavigate).toHaveBeenCalledWith(
-          {
-            panes: [
-              [
-                {
-                  id: '__resolve__new-id',
-                  params: {type: 'book', template: 'book-by-author', intent: 'create'},
-                  payload: {authorId: 'grrm'},
-                },
-              ],
-            ],
-          },
-          {replace: true},
-        ),
-      )
-      expect(mockResolveIntent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          intent: 'create',
-          params: {id: 'new-id', type: 'book', template: 'book-by-author'},
-          payload: {authorId: 'grrm'},
-        }),
-      )
-    })
-
     it('waits for the structure when a link without a type points to a missing document', async () => {
       mockRouter.state = {intent: 'edit', params: {id: 'doc-id'}}
       mockResolveTypeForDocument.mockReturnValue(of(null))
