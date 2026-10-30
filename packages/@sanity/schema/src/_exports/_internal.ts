@@ -5,9 +5,11 @@ export {
   type SchemaSynchronizationResult,
 } from '../descriptors/sync'
 export {
+  type EncodedSchemaDescriptor,
   type PreparedSchemaUpload,
   prepareSchemaUpload,
   type PrepareSchemaUploadOptions,
+  uploadEncodedSchema,
   uploadSchema,
   type UploadSchemaOptions,
   type UploadSchemaPhase,
