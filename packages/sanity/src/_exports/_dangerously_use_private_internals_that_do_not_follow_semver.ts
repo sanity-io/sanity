@@ -607,6 +607,7 @@ export {getReleaseDocumentIdFromReleaseId} from '../core/releases/util/getReleas
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
 export {getReleaseTone} from '../core/releases/util/getReleaseTone'
 export {isGoingToUnpublish} from '../core/releases/util/isGoingToUnpublish'
+export {isVersionableDocumentType} from '../core/releases/util/isVersionableDocumentType'
 export {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
