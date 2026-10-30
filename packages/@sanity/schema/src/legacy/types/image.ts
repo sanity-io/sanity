@@ -4,6 +4,7 @@ import startCase from 'lodash-es/startCase.js'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD, MEDIA_LIBRARY_ASSET_FIELD} from './image/fieldDefs'
+import {isHotspotEnabled, isImageToolEnabled} from './image/imageTool'
 import {createFieldsets} from './object'
 import {hiddenGetter, lazyGetter} from './utils'
 
@@ -25,13 +26,9 @@ export const ImageType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    const hasHotspot = Boolean(options.hotspot)
-    // A constrained crop is edited in the crop tool even without a hotspot
-    const hasCropTool =
-      hasHotspot || options.aspectRatio !== undefined || options.minDimensions !== undefined
     const hotspotFields = [
-      hasHotspot ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
-      hasCropTool ? CROP_FIELD : {...CROP_FIELD, hidden: true},
+      isHotspotEnabled(options) ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
+      isImageToolEnabled(options) ? CROP_FIELD : {...CROP_FIELD, hidden: true},
     ]
 
     const fields = [

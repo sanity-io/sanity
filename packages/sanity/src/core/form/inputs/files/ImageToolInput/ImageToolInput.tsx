@@ -1,3 +1,4 @@
+import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {
   type Image,
   type ImageCropDimensions,
@@ -9,6 +10,7 @@ import {
   croppedDimensions,
   cropToPixelRect,
   getImageRefDimensions,
+  isSvgImageRef,
   resolveAspectRatio,
 } from '@sanity/util/image'
 import {
@@ -43,7 +45,6 @@ import {
   getHotspotPreviews,
   getImageToolPath,
   hasCropSizeReadout,
-  isHotspotEnabled,
 } from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
@@ -209,7 +210,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     [hotspotEnabled, onChange, readOnly, schemaType.fields],
   )
 
-  const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
+  const isSvg = useMemo(() => isSvgImageRef(assetRef), [assetRef])
 
   const {t} = useTranslation()
   return (
