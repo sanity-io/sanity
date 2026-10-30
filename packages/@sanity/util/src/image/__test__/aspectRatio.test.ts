@@ -5,7 +5,7 @@ import {
   describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
-  FREE_ASPECT_RATIO_RANGE,
+  nearestAllowedRatio,
   nearestRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
@@ -14,10 +14,6 @@ import {
 const RANGE = {min: 4 / 3, max: 16 / 9}
 
 describe('resolveAspectRatio', () => {
-  it('falls back to the free range for undefined', () => {
-    expect(resolveAspectRatio(undefined)).toEqual({range: FREE_ASPECT_RATIO_RANGE})
-  })
-
   it('locks a single number to an equal-bounds range', () => {
     expect(resolveAspectRatio(1.5)).toEqual({range: {min: 1.5, max: 1.5}})
   })
@@ -65,6 +61,34 @@ describe('nearestRatio', () => {
 
   it('returns the sole member of a one-element list', () => {
     expect(nearestRatio(3, [1.5])).toBe(1.5)
+  })
+})
+
+describe('nearestAllowedRatio', () => {
+  it('returns the ratio unchanged without a constraint', () => {
+    expect(nearestAllowedRatio(0.001, undefined)).toBe(0.001)
+    expect(nearestAllowedRatio(250, undefined)).toBe(250)
+  })
+
+  it('passes a ratio inside a range through and clamps one outside it to the nearest bound', () => {
+    const range = resolveAspectRatio(RANGE)
+    expect(nearestAllowedRatio(1.5, range)).toBe(1.5)
+    expect(nearestAllowedRatio(1, range)).toBe(RANGE.min)
+    expect(nearestAllowedRatio(3, range)).toBe(RANGE.max)
+  })
+
+  it('locks every ratio to a fixed ratio', () => {
+    expect(nearestAllowedRatio(0.5, resolveAspectRatio(16 / 9))).toBe(16 / 9)
+    expect(nearestAllowedRatio(3, resolveAspectRatio(16 / 9))).toBe(16 / 9)
+  })
+
+  it('snaps to the nearest listed ratio, ignoring the values between them', () => {
+    const snap = resolveAspectRatio([16 / 9, 1, 4 / 3])
+    expect(nearestAllowedRatio(1.01, snap)).toBe(1)
+    expect(nearestAllowedRatio(1.5, snap)).toBe(4 / 3)
+    expect(nearestAllowedRatio(1.7, snap)).toBe(16 / 9)
+    expect(nearestAllowedRatio(0.2, snap)).toBe(1)
+    expect(nearestAllowedRatio(5, snap)).toBe(16 / 9)
   })
 })
 
