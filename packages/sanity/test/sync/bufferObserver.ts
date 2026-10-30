@@ -1,5 +1,4 @@
 import {BufferedDocument, type Mutation} from '@sanity/mutator'
-import {vi} from 'vitest'
 
 export interface BufferOwner {
   client: string
@@ -31,7 +30,8 @@ export function observeBuffers(stamp: () => number): BufferObserver {
   const originalAdd = BufferedDocument.prototype.add
   const originalCommit = BufferedDocument.prototype.commit
 
-  const add = vi.spyOn(BufferedDocument.prototype, 'add').mockImplementation(function observedAdd(
+  // A vi.spyOn wrapper would subscribe to the returned commit promise and hide its unhandled rejection.
+  BufferedDocument.prototype.add = function observedAdd(
     this: BufferedDocument,
     mutation: Mutation,
   ) {
@@ -40,14 +40,12 @@ export function observeBuffers(stamp: () => number): BufferObserver {
       inProgress.lastAddAt = stamp()
     }
     return originalAdd.call(this, mutation)
-  })
-  const commit = vi
-    .spyOn(BufferedDocument.prototype, 'commit')
-    .mockImplementation(function observedCommit(this: BufferedDocument) {
-      const owner = owners.get(this)
-      if (owner && this.buffer.hasChanges()) commits.push({...owner, at: stamp()})
-      return originalCommit.call(this)
-    })
+  }
+  BufferedDocument.prototype.commit = function observedCommit(this: BufferedDocument) {
+    const owner = owners.get(this)
+    if (owner && this.buffer.hasChanges()) commits.push({...owner, at: stamp()})
+    return originalCommit.call(this)
+  }
 
   function edit(owner: BufferOwner, action: () => void): number {
     inProgress.owner = owner
@@ -61,8 +59,8 @@ export function observeBuffers(stamp: () => number): BufferObserver {
   }
 
   function stop(): void {
-    add.mockRestore()
-    commit.mockRestore()
+    BufferedDocument.prototype.add = originalAdd
+    BufferedDocument.prototype.commit = originalCommit
   }
 
   return {commits, edit, stop}
