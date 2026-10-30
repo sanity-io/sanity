@@ -58,13 +58,19 @@ const getSanityImportMapEntryValue = memoize(() =>
 // but for now, we only care about the `sanity`-package
 const REFERENCE_PACKAGE = 'sanity'
 
-export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
+export function PackageVersionStatusProvider({
+  children,
+  importMapUrl,
+}: {
+  children: ReactNode
+  importMapUrl?: string
+}) {
   const importMapInfo = useMemo(() => {
-    const importMapUrl = getSanityImportMapEntryValue()
-    if (!importMapUrl) {
+    const sanityImportMapUrl = importMapUrl ?? getSanityImportMapEntryValue()
+    if (!sanityImportMapUrl) {
       return undefined
     }
-    const result = parseImportMapModuleCdnUrl(importMapUrl)
+    const result = parseImportMapModuleCdnUrl(sanityImportMapUrl)
     if (!result.valid) {
       console.warn(
         new Error(
@@ -76,7 +82,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     return result.valid
       ? {...result, minVersion: semver.coerce(result.minVersion, {includePrerelease: true})!}
       : result
-  }, [])
+  }, [importMapUrl])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
   const isAutoUpdating = Boolean(importMapInfo)
