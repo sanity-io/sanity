@@ -32,7 +32,7 @@ export function AlertStrip(props: AlertProps & Omit<HTMLProps<HTMLDivElement>, '
       <Flex padding={1}>
         {children && (
           <Box flexBasis="0%" flexGrow={1}>
-            <Details icon={STATUS_ICONS[status]} title={title}>
+            <Details icon={STATUS_ICONS[status]} title={title} tone={STATUS_TONES[status]}>
               <Box marginLeft={3} marginTop={3}>
                 {children}
               </Box>

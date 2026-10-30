@@ -8,9 +8,10 @@ import {
   type ObjectSchemaType,
   type PortableTextBlock,
 } from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {Text} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -94,7 +95,7 @@ function AnnotatedText() {
   }, [element, highlightType, linkType, register, unregister])
 
   return (
-    <Text>
+    <Text as="div" trim={true}>
       Text with an{' '}
       <span data-testid="annotated-text" ref={setElement} style={{textDecoration: 'underline'}}>
         annotated phrase

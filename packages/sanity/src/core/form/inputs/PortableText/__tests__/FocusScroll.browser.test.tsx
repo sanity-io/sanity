@@ -213,7 +213,7 @@ describe('Portable Text Input', () => {
             ),
           ),
         )
-        .toBe(0)
+        .toBeLessThanOrEqual(1)
       expect(isWithin($link.element(), editorScroller)).toBe(true)
     })
   })

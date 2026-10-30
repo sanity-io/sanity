@@ -1,7 +1,7 @@
 import {DownloadIcon} from '@sanity/icons/Download'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
@@ -15,7 +15,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -255,10 +255,12 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} alignItems="center">
-              <Text size={1}>
-                <InfoOutlineIcon />
-              </Text>
-              <Text size={1}>
+              <Icon
+                size={1}
+                icon={InfoOutlineIcon}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem', flexShrink: 0}}
+              />
+              <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
                 <Translate
                   t={t}
                   i18nKey="asset-source.dialog.accept-message"

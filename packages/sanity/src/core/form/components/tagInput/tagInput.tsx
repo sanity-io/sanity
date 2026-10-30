@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Card, isHTMLElement, rem, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -14,7 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -141,7 +141,10 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
     left: 0;
     right: 0;
     pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
+
+    [data-ui='Text'] {
+      --card-fg-color: ${color.default.enabled.placeholder};
+    }
   `
 })
 
@@ -265,7 +268,7 @@ export function TagInput(
     >
       {enabled && (
         <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
-          <Text textOverflow="ellipsis">
+          <Text truncate={1} as="div" trim={true}>
             {placeholderProp
               ? placeholderProp
               : t('inputs.tags.placeholder', {
@@ -330,7 +333,7 @@ function Tag(props: {
           paddingLeft={2}
           paddingRight={enabled ? undefined : 2}
         >
-          <Text muted={muted} textOverflow="ellipsis">
+          <Text muted={muted} truncate={1} as="div" trim={true}>
             {tag.value}
           </Text>
         </Box>

@@ -76,6 +76,7 @@ export function BooleanInput(props: BooleanInputProps) {
                 inputId={id}
                 validation={validation}
                 title={schemaType.title}
+                tone={hasErrors ? 'critical' : undefined}
               />
             }
           />

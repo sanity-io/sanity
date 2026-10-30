@@ -160,7 +160,7 @@ export function FederatedAssetSourceDialog(props: {
         >
           {failed ? (
             <Box padding={4}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('asset-sources.federated.error.unavailable')}
               </Text>
             </Box>

@@ -1,5 +1,6 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -37,7 +38,7 @@ function UserPresenceCursorHarness() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={5} style={{maxWidth: 480}}>
-        <Text>
+        <Text as="div" trim={true}>
           Hello, <UserPresenceCursor presence={USER_A} />
           this is <UserPresenceCursor presence={USER_B} />
           some text in the editor.

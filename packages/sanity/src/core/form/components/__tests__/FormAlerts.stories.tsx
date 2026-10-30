@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack, Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 
 import {Alert} from '../Alert'
 import {AlertStrip} from '../AlertStrip'
@@ -8,7 +8,9 @@ import {Details} from '../Details'
 
 const SUFFIX = (
   <Box padding={3}>
-    <Text size={1}>Reset this field</Text>
+    <Text size={1} as="div" trim={true} tone="critical">
+      Reset this field
+    </Text>
   </Box>
 )
 
@@ -32,23 +34,27 @@ export const States: Story = {
     <Card padding={4} style={{maxWidth: 480}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             alert warning
           </Text>
           <Alert status="warning" title="Incompatible value">
-            <Text size={1}>Expected type string, got number.</Text>
+            <Text size={1} as="div" trim={true} tone="caution">
+              Expected type string, got number.
+            </Text>
           </Alert>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             alert error with suffix
           </Text>
           <Alert status="error" suffix={SUFFIX} title="Could not resolve value">
-            <Text size={1}>The stored value does not match the schema.</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              The stored value does not match the schema.
+            </Text>
           </Alert>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             alert strip closed
           </Text>
           <AlertStrip status="warning" title="Missing keys">
@@ -56,11 +62,13 @@ export const States: Story = {
           </AlertStrip>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             details open
           </Text>
           <Details open title="Validation details">
-            <Text size={1}>Title is required.</Text>
+            <Text size={1} as="div" trim={true}>
+              Title is required.
+            </Text>
           </Details>
         </VStack>
       </VStack>
