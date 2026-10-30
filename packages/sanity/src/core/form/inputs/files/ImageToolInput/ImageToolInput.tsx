@@ -1,3 +1,4 @@
+import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
 import {getImageRefDimensions, resolveAspectRatio} from '@sanity/util/image'
@@ -28,7 +29,7 @@ import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
 import {type CropConstraints} from './imagetool/types'
 import {placeholder} from './ImageToolInput.css'
-import {getImageToolPath, isHotspotEnabled} from './imageToolOptions'
+import {getImageToolPath} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<

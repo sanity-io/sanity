@@ -1,8 +1,9 @@
+import {isHotspotEnabled, isImageToolEnabled} from '@sanity/schema/_internal'
 import {defineType, type ImageOptions, type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {createSchema} from '../../../../../schema/createSchema'
-import {getImageToolPath, isHotspotEnabled, isImageToolEnabled} from '../imageToolOptions'
+import {getImageToolPath} from '../imageToolOptions'
 
 const IMAGE_OPTIONS: Record<string, ImageOptions | undefined> = {
   plain: undefined,

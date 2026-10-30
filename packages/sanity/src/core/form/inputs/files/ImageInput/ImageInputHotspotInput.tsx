@@ -1,3 +1,4 @@
+import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -6,7 +7,6 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
 import {type InputProps} from '../../../types/inputProps'
 import {ImageToolInput} from '../ImageToolInput'
-import {isHotspotEnabled} from '../ImageToolInput/imageToolOptions'
 import {type BaseImageInputProps} from './types'
 
 export function ImageInputHotspotInput(props: {
