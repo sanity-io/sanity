@@ -78,6 +78,15 @@ export function useAiCredits(client: AiCreditsClient): AiCredits | undefined {
 }
 
 /**
+ * The project's AI credits as far as they are known, without reading them: what a control that
+ * spends them last read, or the limit a request was turned down for. For what follows the
+ * credits without spending them, like the upsell.
+ */
+export function useKnownAiCredits(projectId: string): AiCredits | undefined {
+  return useSyncExternalStore(subscribe, () => entries.get(projectId)?.credits)
+}
+
+/**
  * A request was turned down for the credits: every control shows the limit right away, with the
  * usage the response carried, rather than the reading from before
  */
