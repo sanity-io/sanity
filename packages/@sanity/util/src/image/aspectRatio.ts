@@ -15,13 +15,6 @@ export interface ResolvedImageAspectRatio {
   snapRatios?: number[]
 }
 
-/**
- * Wide enough to admit any real image ratio, so a field without a constraint crops freely.
- *
- * @internal
- */
-export const FREE_ASPECT_RATIO_RANGE: ImageAspectRatioRange = {min: 0.01, max: 100}
-
 // Slack on the ratio itself; rounding to whole pixels is handled separately.
 const RATIO_MATCH_TOLERANCE = 0.01
 
@@ -51,16 +44,11 @@ export function nearestRatio(ratio: number, ratios: number[]): number {
 /**
  * Resolves an authored aspect ratio. A number becomes a range with equal bounds, a range passes
  * through, and an array becomes the range between its extremes with its sorted, de-duplicated
- * members as `snapRatios`. `undefined` resolves to {@link FREE_ASPECT_RATIO_RANGE}.
+ * members as `snapRatios`.
  *
  * @internal
  */
-export function resolveAspectRatio(
-  aspectRatio: ImageAspectRatio | undefined,
-): ResolvedImageAspectRatio {
-  if (aspectRatio === undefined) {
-    return {range: FREE_ASPECT_RATIO_RANGE}
-  }
+export function resolveAspectRatio(aspectRatio: ImageAspectRatio): ResolvedImageAspectRatio {
   if (typeof aspectRatio === 'number') {
     return {range: {min: aspectRatio, max: aspectRatio}}
   }
@@ -72,6 +60,24 @@ export function resolveAspectRatio(
 }
 
 /**
+ * The ratio the constraint allows that is closest to `ratio`: the nearest listed ratio, the ratio
+ * clamped to the range, or `ratio` itself without a constraint.
+ *
+ * @internal
+ */
+export function nearestAllowedRatio(
+  ratio: number,
+  constraint: ResolvedImageAspectRatio | undefined,
+): number {
+  if (constraint === undefined) {
+    return ratio
+  }
+  return constraint.snapRatios
+    ? nearestRatio(ratio, constraint.snapRatios)
+    : clampRatio(ratio, constraint.range)
+}
+
+/**
  * Whether `ratio` satisfies a resolved constraint within a relative tolerance. A snap list
  * matches its nearest member, and a range matches anything inside it.
  *
@@ -79,10 +85,10 @@ export function resolveAspectRatio(
  */
 export function ratioMatchesConstraint(
   ratio: number,
-  {range, snapRatios}: ResolvedImageAspectRatio,
+  constraint: ResolvedImageAspectRatio,
   tolerance = RATIO_MATCH_TOLERANCE,
 ): boolean {
-  const target = snapRatios ? nearestRatio(ratio, snapRatios) : clampRatio(ratio, range)
+  const target = nearestAllowedRatio(ratio, constraint)
   return Math.abs(ratio - target) <= target * tolerance
 }
 

@@ -3,7 +3,7 @@ export {
   describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
-  FREE_ASPECT_RATIO_RANGE,
+  nearestAllowedRatio,
   nearestRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
