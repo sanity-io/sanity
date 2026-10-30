@@ -1,6 +1,6 @@
 import {type ContentLakeDocument} from '@repo/content-lake-model'
 
-import {type SubmissionRequest} from './generatorReport'
+import {type SubmissionRequest} from './contracts'
 
 /** The Studio commits actions and mutations on this version (`checkoutPair.ts`, `studioClient.ts`). */
 export const STUDIO_API_VERSION = 'v2025-02-19'

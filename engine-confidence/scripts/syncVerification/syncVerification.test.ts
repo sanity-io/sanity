@@ -33,6 +33,24 @@ const COMMIT = 'a669759627'
 const DMP_SIGNATURE = 'lost-edits | rejected | 400 | mutationError | diffMatchPatch'
 const FAKE_SIGNATURE = 'fake-mismatch | mutations | diffMatchPatch | 200->400 | mutationError'
 
+const INITIAL = [{_id: 'drafts.article-gen', _type: 'article', title: 'draft'}]
+
+function definition(seam: Seam, id: string, title: string): GeneratorFailure['definition'] {
+  return {
+    id,
+    title,
+    seam,
+    initial: INITIAL,
+    idPair: {publishedId: 'article-gen', draftId: 'drafts.article-gen'},
+    clients: ['A', 'B'],
+    steps: [
+      {client: 'A', do: 'patch', id: 'drafts.article-gen', patches: [{set: {title: 'one'}}]},
+      {do: 'outside', mutations: [{patch: {id: 'drafts.article-gen', unset: ['title']}}]},
+      {do: 'settle'},
+    ],
+  }
+}
+
 function failure(signature: string, seam: Seam = 'pair'): GeneratorFailure {
   return {
     signature,
@@ -45,19 +63,9 @@ function failure(signature: string, seam: Seam = 'pair'): GeneratorFailure {
     },
     message: 'Lost edits: A set title "one" (rejected with 400)',
     seed: 7,
-    definition: {
-      id: 'GEN',
-      title: 'Generated sequence',
-      seam,
-      initial: [{_id: 'drafts.article-gen', _type: 'article', title: 'draft'}],
-      idPair: {publishedId: 'article-gen', draftId: 'drafts.article-gen'},
-      clients: ['A', 'B'],
-      steps: [
-        {client: 'A', do: 'patch', id: 'drafts.article-gen', patches: [{set: {title: 'one'}}]},
-        {do: 'outside', mutations: [{patch: {id: 'drafts.article-gen', unset: ['title']}}]},
-        {do: 'settle'},
-      ],
-    },
+    definition: definition(seam, 'GEN-7-1', 'Generated with SYNC_GEN_SEED=7'),
+    initial: INITIAL,
+    submissions: [],
   }
 }
 
@@ -82,6 +90,9 @@ function pair(
     version: 1,
     commit: COMMIT,
     seam,
+    seeds: [7],
+    runsPerSeed: 100,
+    maxSteps: 8,
     failures,
     samples: sampled.samples,
   }
@@ -96,7 +107,17 @@ function pair(
 }
 
 function sample(runIndex: number): GeneratorSample {
-  return {seed: 7, runIndex, definition: failure(DMP_SIGNATURE).definition}
+  return {
+    seed: 7,
+    runIndex,
+    definition: definition(
+      'pair',
+      `GEN-SAMPLE-7-${runIndex}`,
+      `Passing run ${runIndex} of SYNC_GEN_SEED=7`,
+    ),
+    initial: INITIAL,
+    submissions: [],
+  }
 }
 
 function sampleVerdict(runIndex: number, overrides: Partial<SampleVerdict> = {}): SampleVerdict {
@@ -486,7 +507,7 @@ describe('passing samples', () => {
     ])
     const [{title, description}] = linear.create.mock.calls[0]
     expect(title).toMatch(/^fake content lake differs from the real one: mutations/)
-    expect(description).toContain('passing run 4')
+    expect(description).toContain('Passing run 4 of SYNC_GEN_SEED=7')
     expect(description).toContain('"real": 400')
     expect(description).not.toContain('It fails with')
     expect(description.split('\n').filter((line) => line.startsWith('sync-gen-'))).toEqual([

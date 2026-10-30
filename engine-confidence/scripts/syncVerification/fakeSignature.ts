@@ -1,5 +1,5 @@
 import {type SubmissionComparison} from './compare'
-import {type SubmissionRequest} from './generatorReport'
+import {type SubmissionRequest} from './contracts'
 
 const ACTION_TYPE_PREFIX = 'sanity.action.'
 const EMPTY_ACTION_GUARD_FIELD = '_empty_action_guard_pseudo_field_'

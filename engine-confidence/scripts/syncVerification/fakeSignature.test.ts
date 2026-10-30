@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest'
 
 import {type SubmissionComparison} from './compare'
+import {type SubmissionRequest} from './contracts'
 import {fakeSignatureOf, requestOperations} from './fakeSignature'
-import {type SubmissionRequest} from './generatorReport'
 
 function referenceMutations(documentId: string, revision: string, target: string): unknown[] {
   return [

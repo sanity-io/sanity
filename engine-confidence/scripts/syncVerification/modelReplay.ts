@@ -8,11 +8,7 @@ import {
   type MutationPayload,
 } from '@repo/content-lake-model'
 
-import {
-  type ReplayableSequence,
-  type SubmissionReport,
-  type SubmissionRequest,
-} from './generatorReport'
+import {type ReplayableSequence, type SubmissionReport, type SubmissionRequest} from './contracts'
 
 export interface SubmissionOutcome {
   statusCode: number
