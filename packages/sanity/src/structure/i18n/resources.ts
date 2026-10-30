@@ -508,6 +508,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
 
+  /** Label of the variants menu trigger in the document header when no variant is selected */
+  'document-panel-navigation.variants.button.text': 'Variants',
+  /** Placeholder of the filter input in the variants menu of the document header */
+  'document-panel-navigation.variants.filter-placeholder': 'Find',
+  /** Section header listing the variants the document has versions in */
+  'document-panel-navigation.variants.section.has-variants_one': 'Has {{count}} variant',
+  /** Section header listing the variants the document has versions in */
+  'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
+  /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
+  'document-panel-navigation.variants.section.no-variants-tooltip':
+    "This document isn't in any variant yet. Pick one below to create it.",
+  /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
+  'document-panel-navigation.variants.versions-tooltip_one': '{{count}} version: {{bundles}}',
+  /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
+  'document-panel-navigation.variants.versions-tooltip_other': '{{count}} versions: {{bundles}}',
+
   /** Tooltip on target badges when the document does not exist in the selected perspective */
   'document-target-badges.not-in-target.tooltip':
     "Document doesn't exist in the selected perspective yet.",
