@@ -99,7 +99,10 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         // Otherwise, only show custom (non-Sanity-defined) actions as primary
         firstActionState &&
         (shouldShowScheduleAsFirstActionButton || !isSanityDefinedAction(firstActionState))
-      : firstActionState && (!editState?.liveEdit || editState?.version)
+      : // For live-edit documents, only show custom (non-Sanity-defined) actions as primary,
+        // so built-ins like Duplicate or Delete stay in the menu
+        firstActionState &&
+        (!editState?.liveEdit || editState?.version || !isSanityDefinedAction(firstActionState))
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton

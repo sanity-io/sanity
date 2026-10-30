@@ -119,6 +119,36 @@ describe('DocumentStatusBarActions', () => {
     expect(screen.queryByTestId('action-menu-button')).not.toBeInTheDocument()
   })
 
+  describe('live-edit documents', () => {
+    beforeEach(() => {
+      const value = buildDocumentPaneValue()
+      mockUseDocumentPane.mockReturnValue({
+        ...value,
+        editState: {...value.editState!, liveEdit: true, draft: null},
+      })
+    })
+
+    it('promotes the first action as primary when it is a custom action', () => {
+      renderActions([
+        {label: 'View ticket', onHandle: vi.fn()},
+        {label: 'Duplicate', onHandle: vi.fn(), action: 'duplicate'},
+      ])
+
+      expect(screen.getByTestId('action-viewticket')).toBeInTheDocument()
+      expect(screen.getByTestId('action-menu-button')).toBeInTheDocument()
+    })
+
+    it('keeps a Sanity-defined first action in the menu', () => {
+      renderActions([
+        {label: 'Duplicate', onHandle: vi.fn(), action: 'duplicate'},
+        {label: 'Delete', onHandle: vi.fn(), action: 'delete'},
+      ])
+
+      expect(screen.queryByTestId('action-duplicate')).not.toBeInTheDocument()
+      expect(screen.getByTestId('action-menu-button')).toBeInTheDocument()
+    })
+  })
+
   describe('tasks footer', () => {
     it('keeps the other actions visible and starts the footer chunk while the tasks mode is still pending', async () => {
       expect(tasksFooterLoads.count).toBe(0)
