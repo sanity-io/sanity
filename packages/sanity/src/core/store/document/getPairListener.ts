@@ -1,8 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
-import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
+import {defer, EMPTY, merge, type Observable, of, Subject, throwError} from 'rxjs'
+import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
@@ -21,6 +21,12 @@ import {
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
+import {
+  type CommitAcknowledgement,
+  type ListenerStallDetails,
+  ListenerStalledError,
+  watchForListenerStall,
+} from './utils/watchForListenerStall'
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -87,6 +93,11 @@ export interface DocumentStoreExtraOptions {
    * @param error - the {@link OutOfSyncError} recovered from
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
+  /**
+   * Called when saved changes weren't echoed by the listener in time and the
+   * listener is restarted. Meant for error tracking / telemetry purposes
+   */
+  onListenerStall?(details: ListenerStallDetails): void
   onReportLatency?: (event: LatencyReportEvent) => void
   onSlowCommit?: () => void
   onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
@@ -129,7 +140,9 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 export function getPairListener(
   _client: SanityClient,
   idPair: IdPair,
-  options: DocumentStoreExtraOptions = {},
+  options: DocumentStoreExtraOptions & {
+    commitAcknowledged$?: Observable<CommitAcknowledgement>
+  } = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
   const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client
@@ -177,7 +190,9 @@ export function getPairListener(
     ),
   )
 
+  const serverEvents$ = new Subject<ListenerEvent>()
   const pairEvents$ = sharedEvents.pipe(
+    tap((event) => serverEvents$.next(event)),
     concatMap((event) => {
       const shouldSyncDocument =
         event.type === 'reset' ||
@@ -260,8 +275,20 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
-  return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
+  const deliveredEvents$ = merge(draftEvents$, publishedEvents$, versionEvents$)
+  const {commitAcknowledged$} = options
+  const watchedEvents$ = commitAcknowledged$
+    ? deliveredEvents$.pipe(watchForListenerStall({serverEvents$, commitAcknowledged$}))
+    : deliveredEvents$
+
+  return watchedEvents$.pipe(
     catchError((err, caught$) => {
+      if (err instanceof ListenerStalledError) {
+        debug('Restarting stalled listener')
+        options.onListenerStall?.(err.details)
+        return caught$
+      }
+
       if (err instanceof OutOfSyncError) {
         debug('Recovering from OutOfSyncError: %s', err.name)
         if (typeof options?.onSyncErrorRecovery === 'function') {

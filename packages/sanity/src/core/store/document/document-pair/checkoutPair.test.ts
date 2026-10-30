@@ -3012,3 +3012,72 @@ describe('checkoutPair -- version documents', () => {
     sub.unsubscribe()
   })
 })
+
+describe('checkoutPair -- listener stall', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  async function commitOnce(options: {echo: boolean; reconnectWhileCommitting?: boolean}) {
+    const onListenerStall = vi.fn()
+    const listenerSubject = new Subject()
+    const listen = vi.fn(() => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject))
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen,
+        action: vi.fn(() => of({transactionId: 'tx1', results: []}).pipe(delay(100))),
+      },
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onListenerStall,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'test'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(50)
+    if (options.reconnectWhileCommitting) {
+      listenerSubject.next({type: 'welcome'})
+    }
+    await vi.advanceTimersByTimeAsync(50)
+    if (options.echo) {
+      listenerSubject.next(createMutationEvent('tx1', 'draftId', 'any', 'tx1'))
+    }
+    await vi.advanceTimersByTimeAsync(30_000)
+
+    sub.unsubscribe()
+    return {onListenerStall, listen}
+  }
+
+  test('restarts the listener when a successful commit is never echoed', async () => {
+    const {onListenerStall, listen} = await commitOnce({echo: false})
+
+    expect(onListenerStall).toHaveBeenCalledOnce()
+    expect(listen).toHaveBeenCalledTimes(2)
+  })
+
+  test('leaves the listener alone when the commit is echoed', async () => {
+    const {onListenerStall, listen} = await commitOnce({echo: true})
+
+    expect(onListenerStall).not.toHaveBeenCalled()
+    expect(listen).toHaveBeenCalledOnce()
+  })
+
+  test('leaves the listener alone when it reconnects while the commit is in flight', async () => {
+    const {onListenerStall, listen} = await commitOnce({
+      echo: false,
+      reconnectWhileCommitting: true,
+    })
+
+    expect(onListenerStall).not.toHaveBeenCalled()
+    expect(listen).toHaveBeenCalledOnce()
+  })
+})

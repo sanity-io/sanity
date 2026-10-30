@@ -6,6 +6,7 @@ import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
 import {OutOfSyncError} from './utils/sequentializeListenerEvents'
+import {type CommitAcknowledgement} from './utils/watchForListenerStall'
 
 function createMutationEvent(
   overrides: Partial<MutationEvent> & Pick<MutationEvent, 'documentId'>,
@@ -520,6 +521,206 @@ describe('getPairListener', () => {
       expect(delegated).toEqual([serverError])
       expect(getDocuments).toHaveBeenCalledTimes(2)
 
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener stall detection', () => {
+    let commitAcknowledged$: Subject<CommitAcknowledgement>
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      commitAcknowledged$ = new Subject<CommitAcknowledgement>()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function subscribe() {
+      const onListenerStall = vi.fn()
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {commitAcknowledged$, onListenerStall}).subscribe(
+        (event) => events.push(event),
+      )
+      return {onListenerStall, events, sub}
+    }
+
+    async function connect() {
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(0)
+    }
+
+    function acknowledge(transactionId: string, submittedAt = Date.now()) {
+      commitAcknowledged$.next({transactionId, submittedAt})
+    }
+
+    function serveNextSnapshot(snapshot$: Observable<unknown[]>) {
+      vi.mocked(client.observable.getDocuments).mockReturnValueOnce(snapshot$ as never)
+    }
+
+    const ownSave = createMutationEvent({
+      documentId: DRAFT_ID,
+      transactionId: 'own-save',
+      previousRev: 'draft-rev',
+      resultRev: 'own-save',
+    })
+
+    test('restarts the listener when a confirmed save is not echoed within 30 seconds', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      acknowledge('own-save')
+      await vi.advanceTimersByTimeAsync(29_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(onListenerStall).toHaveBeenCalledExactlyOnceWith({
+        echoReceivedFromServer: false,
+        waitingOnMultiDocumentTransaction: false,
+        unconfirmedCommits: 1,
+        msSinceLastListenerEvent: 30_000,
+      })
+      expect(client.observable.listen).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+
+    test('does nothing when the save is echoed', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      acknowledge('own-save')
+      listener$.next(ownSave)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('does nothing when the echo arrives before the save is confirmed', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      listener$.next(ownSave)
+      acknowledge('own-save')
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('reports an echo held back by an incomplete multi-document transaction', async () => {
+      const {onListenerStall, events, sub} = subscribe()
+      await connect()
+
+      listener$.next(
+        createMultiTxMutationEvent(DRAFT_ID, {
+          transactionId: 'multi-tx',
+          transactionTotalEvents: 2,
+          transactionCurrentEvent: 1,
+          previousRev: 'draft-rev',
+          resultRev: 'multi-tx',
+        }),
+      )
+      acknowledge('own-save')
+      listener$.next({...ownSave, previousRev: 'multi-tx'})
+      await vi.advanceTimersByTimeAsync(30_000)
+
+      expect(events.filter((event) => event.type === 'mutation')).toHaveLength(0)
+      expect(onListenerStall).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({
+          echoReceivedFromServer: true,
+          waitingOnMultiDocumentTransaction: true,
+        }),
+      )
+      sub.unsubscribe()
+    })
+
+    test('does not count time spent disconnected', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      acknowledge('own-save')
+      listener$.next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(29_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(onListenerStall).toHaveBeenCalledOnce()
+      sub.unsubscribe()
+    })
+
+    test('ignores a save the snapshot of a new connection already contains', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      const submittedAt = Date.now()
+      await vi.advanceTimersByTimeAsync(100)
+      const snapshot$ = new Subject<unknown[]>()
+      serveNextSnapshot(snapshot$)
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      acknowledge('own-save', submittedAt)
+      listener$.next(ownSave)
+      snapshot$.next([publishedDoc, {...draftDoc, _rev: 'own-save'}])
+      snapshot$.complete()
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('ignores a late confirmation for a save echoed before a reset', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      const submittedAt = Date.now()
+      await vi.advanceTimersByTimeAsync(50)
+      listener$.next(ownSave)
+      serveNextSnapshot(of([publishedDoc, {...draftDoc, _rev: 'own-save'}]))
+      listener$.next({type: 'reset'})
+      await vi.advanceTimersByTimeAsync(100)
+      acknowledge('own-save', submittedAt)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).not.toHaveBeenCalled()
+      sub.unsubscribe()
+    })
+
+    test('does not restart again for a save in flight across a restart', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      acknowledge('lost-save')
+      await vi.advanceTimersByTimeAsync(29_900)
+      const inFlightSubmittedAt = Date.now()
+      await vi.advanceTimersByTimeAsync(100)
+      expect(onListenerStall).toHaveBeenCalledOnce()
+
+      await connect()
+      await vi.advanceTimersByTimeAsync(50)
+      acknowledge('in-flight-save', inFlightSubmittedAt)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(onListenerStall).toHaveBeenCalledOnce()
+      sub.unsubscribe()
+    })
+
+    test('still restarts for a save made after a reset that is never echoed', async () => {
+      const {onListenerStall, sub} = subscribe()
+      await connect()
+
+      listener$.next({type: 'reset'})
+      await vi.advanceTimersByTimeAsync(100)
+      acknowledge('own-save')
+      await vi.advanceTimersByTimeAsync(29_999)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(onListenerStall).toHaveBeenCalledOnce()
       sub.unsubscribe()
     })
   })
