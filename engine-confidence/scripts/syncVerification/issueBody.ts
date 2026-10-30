@@ -1,4 +1,4 @@
-import {type FailureVerdict, type GeneratorFailure, type SignatureFields} from './contracts'
+import {type Seam, type SignatureFields, type Verdict, type VerdictDifference} from './contracts'
 
 export const ENGINE_SIGNATURE_PREFIX = 'sync-gen-signature: '
 export const FAKE_SIGNATURE_PREFIX = 'sync-gen-fake-signature: '
@@ -52,12 +52,29 @@ export function signatureLineText({prefix, signature}: SignatureLine): string {
   return `${prefix}${signature}`
 }
 
-export function printDefinition(failure: GeneratorFailure): string {
+export interface ReproSource {
+  definition: Record<string, unknown> & {seam: Seam}
+  seed: number
+  runIndex?: number
+  message?: string
+}
+
+export interface ReplayResult {
+  verdict: Verdict
+  summary: string
+  differences: VerdictDifference[]
+  replayed: number
+}
+
+export function printDefinition(source: ReproSource): string {
+  const fromFailure = source.runIndex === undefined
   const literal = JSON.stringify(
     {
-      ...failure.definition,
-      id: `GEN-${failure.seed}`,
-      title: `Generated with SYNC_GEN_SEED=${failure.seed}`,
+      ...source.definition,
+      id: fromFailure ? `GEN-${source.seed}` : `GEN-${source.seed}-${source.runIndex}`,
+      title: fromFailure
+        ? `Generated with SYNC_GEN_SEED=${source.seed}`
+        : `Generated with SYNC_GEN_SEED=${source.seed}, passing run ${source.runIndex}`,
     },
     null,
     2,
@@ -75,8 +92,8 @@ export function engineIssueTitle(fields: SignatureFields): string {
   return `${rule}${fate}${statusText}${operation}${check}`
 }
 
-export function fakeIssueTitle(fields: SignatureFields): string {
-  return `fake content lake differs from the real one: ${engineIssueTitle(fields)}`
+export function fakeIssueTitle(fakeSignature: string): string {
+  return `fake content lake differs from the real one: ${fakeSignature.replace(/^fake-mismatch \| /, '')}`
 }
 
 function fenced(language: string, text: string): string {
@@ -93,33 +110,43 @@ function firstLines(text: string): string {
     : text
 }
 
-export function reproSection(failure: GeneratorFailure, commit: string): string {
-  const seam = failure.definition.seam
+function foundBy(source: ReproSource, commit: string): string {
+  const seam = source.definition.seam
+  return source.runIndex === undefined
+    ? `Found by the weekly sync generator on commit \`${commit}\` (seed ${source.seed}, ${seam} seam).`
+    : `Found by the weekly sync generator's passing sample on commit \`${commit}\` (seed ${source.seed}, run ${source.runIndex}, ${seam} seam). The sequence passes in the harness; the real Content Lake answers some of its submissions differently from the fake.`
+}
+
+export function reproSection(source: ReproSource, commit: string): string {
   const runCall =
-    seam === 'operations'
+    source.definition.seam === 'operations'
       ? `This uses the operations seam, so build \`@sanity/validation\` first (\`pnpm --filter @sanity/validation build\`) and run it with \`runSyncTest(syncTest, {schema, typeName: 'article'})\`, where \`schema\` is the generator's schema in \`${GENERATOR_PATH}\`.`
       : 'Pass it to `runSyncTest(syncTest)`.'
+  const intro = `${foundBy(source, commit)} Put this in a scratch \`*.sync.test.ts\` in \`${SYNC_DIRECTORY}/\`. ${runCall}`
+  const failureOutput =
+    source.message === undefined
+      ? [intro]
+      : [`${intro} It fails with:`, fenced('', firstLines(source.message))]
   return [
-    `Found by the weekly sync generator on commit \`${commit}\` (seed ${failure.seed}, ${seam} seam). Put this in a scratch \`*.sync.test.ts\` in \`${SYNC_DIRECTORY}/\`. ${runCall} It fails with:`,
-    fenced('', firstLines(failure.message)),
-    fenced('ts', printDefinition(failure)),
+    ...failureOutput,
+    fenced('ts', printDefinition(source)),
     fenced('bash', `pnpm vitest run --project=sanity ${SYNC_DIRECTORY}/<scratch>.sync.test.ts`),
   ].join('\n\n')
 }
 
-const VERDICT_LEADS: Record<FailureVerdict['verdict'], string> = {
+const VERDICT_LEADS: Record<Verdict, string> = {
   'confirmed': 'Confirmed.',
   'assumed': 'Not verified against the real server.',
   'fake-mismatch': 'The real server disagrees with the fake.',
   'error': 'The verify step failed.',
 }
 
-export function realContentLakeSection(verdict: FailureVerdict): string {
+export function realContentLakeSection(verdict: ReplayResult): string {
   const replayed = `${verdict.replayed} submission${verdict.replayed === 1 ? '' : 's'} replayed against a fresh dataset.`
   return `${VERDICT_LEADS[verdict.verdict]} ${verdict.summary.trim()} ${replayed}`.trim()
 }
 
-export function differencesSection(verdict: FailureVerdict): string {
+export function differencesSection(verdict: ReplayResult): string {
   return verdict.differences
     .map((difference) => {
       const target = difference.documentId === undefined ? '' : ` of \`${difference.documentId}\``

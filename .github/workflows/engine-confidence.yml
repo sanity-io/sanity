@@ -254,13 +254,15 @@ jobs:
     strategy:
       fail-fast: false
       # The operations seam's memoize caches grow about 0.5 MB per sequence,
-      # so its budget is split across processes
+      # so its budget is split across processes. `sample` is passing sequences
+      # kept per seed for the fake fidelity check: 38 in all, which keeps
+      # sync-verify to a few minutes of staging traffic (see the README).
       matrix:
         include:
-          - {seam: pair, shard: 0, first-seed: 0, last-seed: 9, runs: 2500}
-          - {seam: operations, shard: 0, first-seed: 10, last-seed: 11, runs: 1500}
-          - {seam: operations, shard: 1, first-seed: 12, last-seed: 13, runs: 1500}
-          - {seam: operations, shard: 2, first-seed: 14, last-seed: 15, runs: 1500}
+          - {seam: pair, shard: 0, first-seed: 0, last-seed: 9, runs: 2500, sample: 2}
+          - {seam: operations, shard: 0, first-seed: 10, last-seed: 11, runs: 1500, sample: 3}
+          - {seam: operations, shard: 1, first-seed: 12, last-seed: 13, runs: 1500, sample: 3}
+          - {seam: operations, shard: 2, first-seed: 14, last-seed: 15, runs: 1500, sample: 3}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -281,6 +283,7 @@ jobs:
           SYNC_GEN_COLLECT: "1"
           SYNC_GEN_SEAM: ${{ matrix.seam }}
           SYNC_GEN_RUNS: ${{ matrix.runs }}
+          SYNC_GEN_SAMPLE: ${{ matrix.sample }}
           SYNC_GEN_MAX_STEPS: "8"
           SYNC_GEN_COMMIT: ${{ github.sha }}
           SYNC_GEN_REPORT: ${{ github.workspace }}/engine-confidence/reports/sync-verification/report-${{ matrix.seam }}-${{ matrix.shard }}.json
