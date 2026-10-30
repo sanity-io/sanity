@@ -3,7 +3,7 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Box, Flex} from 'ui5'
 
@@ -13,13 +13,12 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
+import {useCreateReleaseAvailability} from '../../../../hooks/useCreateReleaseAvailability'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
-import {useReleasePermissions} from '../../../../store/useReleasePermissions'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseDefaults} from '../../../../util/util'
 import {type DocumentInRelease} from '../../../detail/types'
 import {useDocumentRevertStates} from './useDocumentRevertStates'
 import {usePostPublishTransactions} from './usePostPublishTransactions'
@@ -320,31 +319,16 @@ export const ReleaseRevertButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
-  const {createRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const createReleaseAvailability = useCreateReleaseAvailability()
 
   const handleMoveToConfirmStatus = useCallback(async () => {
     setIsPendingGuardResponse(true)
     await guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm'))
     setIsPendingGuardResponse(false)
   }, [guardWithReleaseLimitUpsell])
-
-  const isMounted = useRef(false)
-  useEffect(() => {
-    isMounted.current = true
-    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
-      if (isMounted.current) setHasCreatePermission(hasPermissions)
-    })
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, createRelease])
 
   return (
     <>
@@ -354,8 +338,8 @@ export const ReleaseRevertButton = ({
         text={t('action.revert')}
         tone="critical"
         tooltipProps={{
-          disabled: hasCreatePermission === true,
-          content: tCore('release.action.permission.error'),
+          disabled: createReleaseAvailability.tooltip === undefined,
+          content: createReleaseAvailability.tooltip,
         }}
         /**
          * This is an immature assertion of permissions
@@ -363,7 +347,7 @@ export const ReleaseRevertButton = ({
          * Permissions to create a request (implemented)
          * @todo Permissions to create each schema type within the release (not implemented)
          */
-        disabled={isPendingGuardResponse || !hasCreatePermission || disabled}
+        disabled={isPendingGuardResponse || createReleaseAvailability.disabled || disabled}
         data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (

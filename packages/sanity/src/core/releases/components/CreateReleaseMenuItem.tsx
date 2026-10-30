@@ -1,16 +1,9 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {type ComponentProps, type ComponentType, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {from} from 'rxjs'
+import {type ComponentType} from 'react'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../studio/workspace'
-import {useCreateReleaseMetadata} from '../hooks/useCreateReleaseMetadata'
-import {useActiveReleases} from '../store/useActiveReleases'
-import {useReleaseOperations} from '../store/useReleaseOperations'
-import {useReleasePermissions} from '../store/useReleasePermissions'
-import {getReleaseDefaults} from '../util/util'
+import {useCreateReleaseAvailability} from '../hooks/useCreateReleaseAvailability'
 
 interface Props {
   onCreateRelease: () => void
@@ -18,61 +11,16 @@ interface Props {
 
 export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) => {
   const {t} = useTranslation()
-  const {createRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const createReleaseMetadata = useCreateReleaseMetadata()
+  const {disabled, tooltip} = useCreateReleaseAvailability()
 
-  const hasCreatePermission = useObservable(
-    useMemo(
-      () =>
-        from(checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults()))),
-      [checkWithPermissionGuard, createRelease, createReleaseMetadata],
-    ),
-    undefined,
+  return (
+    <MenuItem
+      icon={AddIcon}
+      onClick={onCreateRelease}
+      data-testid="create-new-release-button"
+      text={t('release.action.create-new')}
+      tooltipProps={{disabled: tooltip === undefined, content: tooltip}}
+      disabled={disabled}
+    />
   )
-
-  const activeReleases = useActiveReleases()
-  const activeReleaseCount = activeReleases.data.length
-
-  const {releases} = useWorkspace()
-  const workspaceReleaseLimit = releases?.limit ?? Infinity
-  const isWorkspaceReleaseLimitReached = activeReleaseCount >= workspaceReleaseLimit
-
-  const menuItemProps: Pick<ComponentProps<typeof MenuItem>, 'icon' | 'onClick' | 'text'> & {
-    'data-testid': string
-  } = {
-    'icon': AddIcon,
-    'onClick': onCreateRelease,
-    'data-testid': 'create-new-release-button',
-    'text': t('release.action.create-new'),
-  }
-
-  if (isWorkspaceReleaseLimitReached) {
-    return (
-      <MenuItem
-        {...menuItemProps}
-        text={t('release.action.create-new')}
-        tooltipProps={{
-          content: t('release.action.new-release.limit-reached', {
-            count: workspaceReleaseLimit,
-          }),
-        }}
-        disabled
-      />
-    )
-  }
-
-  if (!hasCreatePermission) {
-    return (
-      <MenuItem
-        {...menuItemProps}
-        tooltipProps={{
-          content: t('release.action.permission.error'),
-        }}
-        disabled
-      />
-    )
-  }
-
-  return <MenuItem {...menuItemProps} />
 }

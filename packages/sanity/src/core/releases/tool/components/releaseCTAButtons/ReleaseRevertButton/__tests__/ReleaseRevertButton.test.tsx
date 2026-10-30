@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, type Mock, test, vi} from 'vitest'
 
@@ -172,5 +172,25 @@ describe('ReleaseRevertButton', () => {
       'The previous state of 1 document could not be determined, so the release cannot be reverted.',
     )
     expect(screen.getByTestId('confirm-button')).toBeDisabled()
+  })
+
+  test('stays disabled once the workspace release limit is reached', async () => {
+    mockUseDocumentRevertStates.mockReturnValue(resolvedStates)
+    const wrapper = await createTestProvider({
+      config: {releases: {limit: 0}},
+      resources: [releasesUsEnglishLocaleBundle],
+    })
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- settles the permission check so only the limit can disable the button
+    await act(async () => {
+      render(<ReleaseRevertButton release={publishedASAPRelease} documents={documents} />, {
+        wrapper,
+      })
+    })
+
+    expect(useReleasesPermissionsMockReturnTrue.checkWithPermissionGuard).toHaveBeenCalled()
+    expect(screen.getByTestId('revert-button')).toBeDisabled()
+
+    await userEvent.hover(screen.getByTestId('revert-button'))
+    expect(await screen.findByText('This workspace is limited to 0 releases')).toBeInTheDocument()
   })
 })
