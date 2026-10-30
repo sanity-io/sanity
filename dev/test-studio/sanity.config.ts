@@ -551,6 +551,9 @@ export default defineConfig([
     basePath: '/releases-not-on-project',
     auth: sanityOrgAuth,
     ...envConfig.production,
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     ...defaultWorkspace,
