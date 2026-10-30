@@ -1,39 +1,56 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useMemo, useState, type JSX} from 'react'
+import {Menu} from '@sanity/ui/menu'
+import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
+import {useIntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Text, Flex, Box, Icon} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
-import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
+import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
+import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
-import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
+import {suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
   max-width: 320px;
 
-  > [data-ui='Stack'] {
+  /* The menu's own rule is overflow: auto, which scrolls the whole popover.
+     Cap this column to the popover height and let the list section scroll. */
+  && {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  && > [data-ui='Stack'] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     gap: 0;
+    overflow: hidden;
   }
 `
-
-const SectionHeader = styled(Text)`
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`
+const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
+  return <RhombusIconLarge className={suggestIconColor} {...props} />
+}
 
 function VariantMenuItem(props: {
   isSelected: boolean
@@ -49,7 +66,7 @@ function VariantMenuItem(props: {
   return (
     <MenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
-      icon={<Icon icon={RhombusIcon} size={2} className={suggestIconColor} />}
+      icon={VariantMenuItemIcon}
       iconRight={
         mismatches.length > 0 ? (
           <span data-testid="variant-condition-mismatch">
@@ -95,6 +112,7 @@ export function VariantsMenu({
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
     [typeKey, variants],
   )
+  const [_creatingVariant, setCreatingVariant] = useState(false)
   const selectedVariant = useMemo(
     () =>
       typeVariants.find((variant) =>
@@ -131,6 +149,14 @@ export function VariantsMenu({
 
   const isDefaultSelected = !selectedVariant
 
+  const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
+    intent: VARIANTS_INTENT,
+  })
+
+  const handleNewAudience = useCallback(() => {
+    setCreatingVariant(true)
+  }, [])
+
   return (
     <MenuButton
       button={trigger}
@@ -145,59 +171,82 @@ export function VariantsMenu({
           }
           padding={0}
         >
-          <Box padding={2}>
+          <Flex flexDirection="column" flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
             <TextInput
               fontSize={1}
+              icon={SearchIcon}
               onChange={handleFilterChange}
               placeholder={t('navbar.variant.filter-placeholder')}
               radius={2}
               value={filterQuery}
             />
-          </Box>
-
-          <Box paddingX={2} paddingY={1}>
+          </Flex>
+          <Flex
+            flexDirection="column"
+            flexGrow={1}
+            flexShrink={1}
+            minHeight="0"
+            overflowY="auto"
+            paddingX={3}
+            paddingBottom={2}
+          >
+            {/* Menu items are flex children with min-height: 0, so they collapse
+                when they sit directly in this scroller. Keep them in a column
+                that sizes to its content. */}
+            <Flex flexDirection="column" flexShrink={0} gap={1}>
+              <MenuItem
+                data-testid="variant-default"
+                onClick={handleSelectDefault}
+                pressed={isDefaultSelected}
+                selected={isDefaultSelected}
+                text={t('document-group.base-variant')}
+              />
+              {filteredVariants.map((variant) => (
+                <VariantMenuItem
+                  key={variant._id}
+                  isSelected={selectedVariant?._id === variant._id}
+                  onSelect={handleSelectVariant}
+                  variant={variant}
+                />
+              ))}
+            </Flex>
+          </Flex>
+          <Flex
+            flexDirection="column"
+            flexShrink={0}
+            gap={1}
+            borderTop
+            paddingX={3}
+            paddingTop={2}
+            paddingBottom={3}
+          >
             <MenuItem
-              data-testid="variant-default"
-              icon={<Icon icon={RhombusOutlinedIcon} size={2} className={suggestIconColor} />}
-              onClick={handleSelectDefault}
-              pressed={isDefaultSelected}
-              selected={isDefaultSelected}
-              text={t('navbar.variant.default')}
+              as="a"
+              data-testid="view-all"
+              href={viewAllHref}
+              icon={RhombusIconLarge}
+              onClick={handleViewAll}
+              text={t('navbar.variant.menu.view-all')}
             />
-          </Box>
-          <MenuDivider />
-
-          {filteredVariants.length > 0 && (
-            <>
-              <Box paddingX={2}>
-                <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
-                  {/* Spacer for icon alignment */}
-                  <Box className={menuIconSpacer} />
-                  <Box>
-                    <SectionHeader muted size={0} weight="medium" trim={true}>
-                      {t('navbar.variant.other')}
-                    </SectionHeader>
-                  </Box>
-                </Flex>
-              </Box>
-              <Box paddingX={2}>
-                {filteredVariants.map((variant) => (
-                  <VariantMenuItem
-                    key={variant._id}
-                    isSelected={selectedVariant?._id === variant._id}
-                    onSelect={handleSelectVariant}
-                    variant={variant}
-                  />
-                ))}
-              </Box>
-            </>
-          )}
+            <MenuItem
+              data-testid="new-audience"
+              onClick={handleNewAudience}
+              icon={AddIcon}
+              text={t('navbar.variant.menu.new-audience')}
+              tooltipProps={{
+                content: 'This action is not yet implemented.',
+              }}
+              // TODO: temporary disabled until we add the create variants form here.
+              disabled
+            />
+          </Flex>
         </StyledMenu>
       }
       popover={{
         __unstable_margins: [0, 0, 32, 0],
         constrainSize: true,
         fallbackPlacements: ['bottom-end'],
+        overflow: 'hidden',
         placement: 'bottom-end',
         portal: true,
         // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>

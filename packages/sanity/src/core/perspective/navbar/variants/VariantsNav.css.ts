@@ -24,8 +24,3 @@ export const rhombusIconLarge = css({
     marginRight: '-2px',
   },
 })
-
-/** Spacer to align section headers with menu item icons. */
-export const menuIconSpacer = css({
-  width: 15,
-})

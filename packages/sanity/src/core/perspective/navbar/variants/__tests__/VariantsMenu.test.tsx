@@ -7,6 +7,7 @@ import {type SingleWorkspace} from '../../../../config/types'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {VariantsMenu} from '../VariantsMenu'
@@ -62,10 +63,16 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
-  it('names the unselected option All users', async () => {
+  it('links view all to the variants tool overview', async () => {
     await renderMenu()
 
-    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users')
+    expect(screen.getByTestId('view-all')).toHaveAttribute('href', `/intent/${VARIANTS_INTENT}`)
+  })
+
+  it('names the unselected option All users (Default)', async () => {
+    await renderMenu()
+
+    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
   })
 
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {

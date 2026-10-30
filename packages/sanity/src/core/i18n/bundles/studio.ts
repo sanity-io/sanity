@@ -1544,8 +1544,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'All users',
+  /** View all option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.view-all': 'View all',
+  /** New audience option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Filter variants…',
+  'navbar.variant.filter-placeholder': 'Find audience',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
 
