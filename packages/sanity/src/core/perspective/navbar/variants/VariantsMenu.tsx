@@ -201,7 +201,7 @@ export function VariantsMenu({
                 onClick={handleSelectDefault}
                 pressed={isDefaultSelected}
                 selected={isDefaultSelected}
-                text={t('navbar.variant.menu.default')}
+                text={t('document-group.base-variant')}
               />
               {filteredVariants.map((variant) => (
                 <VariantMenuItem
