@@ -125,7 +125,7 @@ describe('editOperations and editState, two clients', () => {
     )
   })
 
-  test.fails('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE (SAPP-4794): a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
+  test('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE (SAPP-4794): a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'OPS-REJECTED-SAVE-WITH-QUEUED-SAVE',
       title: 'A holds a save, queues a second behind it, and the server answers 409 to the first',
