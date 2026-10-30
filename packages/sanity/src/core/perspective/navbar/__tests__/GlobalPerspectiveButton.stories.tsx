@@ -30,7 +30,7 @@ export const States: Story = {
       timeout: 5000,
     })
 
-    await expect(within(idle).getByRole('button', {name: 'All users'})).toBeVisible()
+    await expect(within(idle).getByRole('button', {name: 'Default'})).toBeVisible()
     await expect(within(idle).queryByRole('button', {name: 'Clear selection'})).toBeNull()
 
     await expect(within(selected).getByRole('button', {name: 'Norwegian market'})).toBeVisible()

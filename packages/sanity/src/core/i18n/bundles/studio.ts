@@ -1545,7 +1545,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
   'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
   /** Default option label when no variant is selected. */
-  'navbar.variant.default': 'All users',
+  'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.view-all': 'View all',
   /** New audience option label for the menu item dropdown in the variants selection menu. */
