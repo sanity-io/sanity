@@ -9,7 +9,6 @@ packages:
   - packages/@sanity/*
   - packages/groq
   - packages/sanity
-  - packages/sanity/fixtures/examples/*
 
 allowBuilds:
   # Panda CSS dependency; its postinstall is only a fallback downloader, the native binary arrives
