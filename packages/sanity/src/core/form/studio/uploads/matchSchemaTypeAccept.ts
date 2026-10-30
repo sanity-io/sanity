@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
+import {accepts} from '@sanity/validation/_internal'
 
 import {_isType} from '../../../util/schemaUtils'
-import {accepts} from './accepts'
 import {type FileLike} from './types'
 
 const ASSET_TYPE_CONFIG = {

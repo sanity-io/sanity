@@ -1,51 +1,38 @@
 import {type CustomValidator, type ValidationContext} from '@sanity/types'
 
 import {validationMarkerCodes} from '../codes'
+import {accepts} from '../util/accepts'
 
 const DEFAULT_API_VERSION = '2025-02-19'
 
-const ASSET_FILE_TYPE_QUERY = `*[_id == $id][0]{mimeType, extension}`
+const ASSET_FILE_TYPE_QUERY = `*[_id == $id][0]{mimeType, extension, originalFilename}`
 
-const EXTENSION_ALIASES: Record<string, string> = {jpeg: 'jpg', tif: 'tiff'}
-
-type AssetFileType = {mimeType?: string | null; extension?: string | null}
+type AssetFileType = {
+  mimeType?: string | null
+  extension?: string | null
+  originalFilename?: string | null
+}
 
 export type AcceptedAssetType = 'image' | 'file'
 
 // Asset ids are content hashes, so a resolved file type never changes for a given id.
 const resolvedFileTypes = new Map<string, AssetFileType>()
 
-function normalizeExtension(extension: string): string {
-  const lowerCased = extension.toLowerCase()
-  return EXTENSION_ALIASES[lowerCased] ?? lowerCased
-}
-
-function matchesAcceptToken(fileType: AssetFileType, token: string): boolean {
-  const mimeType = fileType.mimeType ?? ''
-  const extension = fileType.extension ?? ''
-  if (token === '*' || token === '*/*') return true
-  if (token.startsWith('.')) {
-    return normalizeExtension(token.slice(1)) === normalizeExtension(extension)
-  }
-  if (token.endsWith('/*')) return mimeType.toLowerCase().startsWith(token.slice(0, -1))
-  return mimeType.toLowerCase() === token
-}
-
 function isUnknownFileType(fileType: AssetFileType): boolean {
   return [fileType.mimeType, fileType.extension].every((value) => (value ?? '') === '')
 }
 
 /**
- * Checks a stored asset against an HTML `accept` string, matching how uploads are checked.
+ * Checks a stored asset against an HTML `accept` string with the same matcher uploads and
+ * copy-paste use.
  *
  * @internal
  */
 export function assetMatchesAccept(fileType: AssetFileType, accept: string): boolean {
-  const tokens = accept
-    .split(',')
-    .map((token) => token.trim().toLowerCase())
-    .filter(Boolean)
-  return tokens.length === 0 || tokens.some((token) => matchesAcceptToken(fileType, token))
+  return accepts(
+    {type: fileType.mimeType ?? '', name: fileType.originalFilename ?? undefined},
+    accept,
+  )
 }
 
 function getAssetId(value: unknown): string | undefined {
