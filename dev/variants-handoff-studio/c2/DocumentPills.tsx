@@ -2,6 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Flex, Label, Text, TextInput, useTheme_v2} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
@@ -166,7 +167,8 @@ function DropdownPill(props: {
     search?: Omit<SearchFields, 'title'>
     /** The section the row sits in ("Has 3 variants", "Other variants"). A row with none (All users) stands alone above them. */
     section?: string
-    /** A line of quiet text in place of rows, for a section with none ("Has 0 variants"): not a menu item, and not a search result. */
+    /** Stands in for the rows of a section with none ("Has 0 variants"): draws no row, only the section heading, whose info mark shows
+     * `hint` as a tooltip. Not a search result. */
     placeholder?: boolean
   }[]
   testId: string
@@ -267,19 +269,28 @@ function DropdownPill(props: {
                     />
                   ) : null}
                   {startsSection && item.section ? (
-                    <Box paddingLeft={3} paddingTop={3} paddingBottom={2}>
+                    <Flex align="center" gap={2} paddingLeft={3} paddingTop={3} paddingBottom={2}>
                       <Label muted size={1} style={{textTransform: 'uppercase'}}>
                         {item.section}
                       </Label>
-                    </Box>
+                      {/* An empty section says why in a tooltip on its info mark, not in a line of text (30 Oct, Faheem). */}
+                      {item.placeholder && item.hint ? (
+                        <Tooltip content={item.hint} placement="top" portal>
+                          <span
+                            aria-label={item.hint}
+                            data-testid={`${props.testId}-empty-info`}
+                            role="img"
+                            style={{display: 'inline-flex'}}
+                          >
+                            <Text muted size={1}>
+                              <InfoOutlineIcon />
+                            </Text>
+                          </span>
+                        </Tooltip>
+                      ) : null}
+                    </Flex>
                   ) : null}
-                  {item.placeholder ? (
-                    <Box data-testid={`${props.testId}-placeholder`} paddingX={3} paddingBottom={2}>
-                      <Text muted size={1}>
-                        {item.text}
-                      </Text>
-                    </Box>
-                  ) : (
+                  {item.placeholder ? null : (
                     <MenuItem
                       __unstable_subtitle={reason}
                       disabled={!item.onClick}
@@ -525,7 +536,7 @@ export function DocumentPillsV1({
       hint: `Add to ${release.metadata.title || 'Untitled release'}`,
       selected: current === id,
       search: {id},
-      section: releaseIds.length ? 'Other releases' : 'Releases',
+      section: 'Other releases',
     }))
   const releaseCount = new Set(releases.map((v) => v.bundleId)).size
   // The release in view, if any (this document's, or another picked from the greyed rows): the pill names it and gets the cross, as the
@@ -565,8 +576,9 @@ export function DocumentPillsV1({
               : [
                   {
                     key: 'variant-none',
-                    text: "This document isn't in any variant yet. Pick one below to create it.",
+                    text: '',
                     icon: <></>,
+                    hint: 'No variants yet. Pick one to create it.',
                     section: 'Has 0 variants',
                     placeholder: true,
                   },
@@ -642,8 +654,22 @@ export function DocumentPillsV1({
               <DotIcon />
             )
           }
-          items={[...releaseItems, ...missingReleaseItems]}
-          note={releases.length ? undefined : 'Not in a release yet. Pick one to add it.'}
+          // As the Variants menu: "In N releases" always, with an info mark when it is 0, then Other releases (30 Oct, Faheem).
+          items={[
+            ...(releaseItems.length
+              ? releaseItems
+              : [
+                  {
+                    key: 'release-none',
+                    text: '',
+                    icon: <></>,
+                    hint: 'Not in a release yet. Pick one to add it.',
+                    section: 'In 0 releases',
+                    placeholder: true,
+                  },
+                ]),
+            ...missingReleaseItems,
+          ]}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
