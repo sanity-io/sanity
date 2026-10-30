@@ -208,6 +208,8 @@ How it works:
 
 Two test studio workspaces show the releases upsells against the real `/test` dataset, locally and on the Vercel preview: `/releases-quota-reached` (the org's active release quota is used up) and `/releases-feature-disabled` (releases enabled in the config, `contentReleases` missing from `/features`). The `upsell-debug` plugin (`dev/test-studio/plugins/upsell-debug`) rewrites those two responses in the browser while a scenario workspace is open. The studio caches both answers for the session, so the plugin reloads the page when you switch into or out of a scenario workspace.
 
+The journey service (`personalization-forge`) picks the upsell copy from the real project, so `/releases-feature-disabled` still shows the quota copy. `/releases-not-on-project` uses project `iasp4xei` in the Sanity org, whose features genuinely lack `contentReleases`, so it shows the real "Upgrade to unlock" copy with nothing faked. Log in with the Sanity org SSO; you need to be a member of that project.
+
 ### Profiling studio re-renders with React DevTools (agent-react-devtools)
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
