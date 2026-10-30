@@ -25,17 +25,12 @@ const MAX_LABEL_DENOMINATOR = 16
 
 const LABEL_DENOMINATORS = Array.from({length: MAX_LABEL_DENOMINATOR}, (_value, index) => index + 1)
 
-/** @internal */
-export function clampRatio(ratio: number, range: ImageAspectRatioRange): number {
+function clampRatio(ratio: number, range: ImageAspectRatioRange): number {
   return Math.min(Math.max(ratio, range.min), range.max)
 }
 
-/**
- * The member of `ratios` closest to `ratio`. `ratios` must not be empty.
- *
- * @internal
- */
-export function nearestRatio(ratio: number, ratios: number[]): number {
+/** The member of `ratios` closest to `ratio`. `ratios` must not be empty. */
+function nearestRatio(ratio: number, ratios: number[]): number {
   return ratios.reduce((best, candidate) =>
     Math.abs(candidate - ratio) < Math.abs(best - ratio) ? candidate : best,
   )
