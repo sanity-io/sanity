@@ -21,6 +21,7 @@ import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseActionsResolver} from '../../../components/ReleaseActionsResolver'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useCustomReleaseActions} from '../../../hooks/useCustomReleaseActions'
+import {useWorkspaceReleaseLimitGuard} from '../../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -93,6 +94,7 @@ export const ReleaseMenuButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
   const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
   const {document} = useWorkspace()
@@ -222,6 +224,17 @@ export const ReleaseMenuButton = ({
     ],
   )
 
+  const handleConfirmAction = useCallback(
+    (action: ReleaseAction) => {
+      if (action === 'duplicate' && blockAtWorkspaceReleaseLimit()) {
+        setSelectedAction(undefined)
+        return
+      }
+      void handleAction(action)
+    },
+    [blockAtWorkspaceReleaseLimit, handleAction],
+  )
+
   /** in some instances, immediately execute the action without requiring confirmation */
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
@@ -248,7 +261,7 @@ export const ReleaseMenuButton = ({
           confirmButton: {
             text: t(confirmDialog.dialogConfirmButtonI18nKey),
             tone: confirmDialog.confirmButtonTone,
-            onClick: () => handleAction(selectedAction),
+            onClick: () => handleConfirmAction(selectedAction),
             loading: isPerformingOperation,
             disabled: isPerformingOperation,
           },
@@ -280,7 +293,7 @@ export const ReleaseMenuButton = ({
     isPerformingOperation,
     release,
     documentsCount,
-    handleAction,
+    handleConfirmAction,
   ])
 
   const closePopover = useCallback(() => {

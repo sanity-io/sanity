@@ -2,9 +2,14 @@ import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, type Mock, test, vi} from 'vitest'
 
+import {findByDataUi} from '../../../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {publishedASAPRelease} from '../../../../../__fixtures__/release.fixture'
+import {activeASAPRelease, publishedASAPRelease} from '../../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../../i18n'
+import {
+  mockUseActiveReleases,
+  useActiveReleasesMockReturn,
+} from '../../../../../store/__tests__/__mocks/useActiveReleases.mock'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
@@ -18,6 +23,10 @@ import {type DocumentInRelease} from '../../../../detail/types'
 import {ReleaseRevertButton} from '../ReleaseRevertButton'
 import {type DocumentRevertStates, useDocumentRevertStates} from '../useDocumentRevertStates'
 import {usePostPublishTransactions} from '../usePostPublishTransactions'
+
+vi.mock('../../../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
 
 vi.mock('../../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
@@ -110,6 +119,7 @@ async function openConfirmRevertDialog() {
 describe('ReleaseRevertButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseActiveReleases.mockReturnValue(useActiveReleasesMockReturn)
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
     mockUseReleaseOperations.mockReturnValue(useReleaseOperationsMockReturn)
     useReleaseOperationsMockReturn.revertRelease.mockResolvedValue(undefined)
@@ -192,5 +202,37 @@ describe('ReleaseRevertButton', () => {
 
     await userEvent.hover(screen.getByTestId('revert-button'))
     expect(await screen.findByText('This workspace is limited to 0 releases')).toBeInTheDocument()
+  })
+
+  test('blocks confirming a revert when the workspace release limit was reached while the dialog was open', async () => {
+    mockUseDocumentRevertStates.mockReturnValue(resolvedStates)
+    const wrapper = await createTestProvider({
+      config: {releases: {limit: 1}},
+      resources: [releasesUsEnglishLocaleBundle],
+    })
+    const {rerender} = render(
+      <ReleaseRevertButton release={publishedASAPRelease} documents={documents} />,
+      {wrapper},
+    )
+
+    await waitFor(() => expect(screen.getByTestId('revert-button')).not.toBeDisabled())
+    await userEvent.click(screen.getByTestId('revert-button'))
+    await screen.findByTestId('confirm-button')
+
+    mockUseActiveReleases.mockReturnValue({
+      ...useActiveReleasesMockReturn,
+      data: [activeASAPRelease],
+    })
+    rerender(
+      <ReleaseRevertButton release={publishedASAPRelease} documents={documents.slice(0, 2)} />,
+    )
+
+    await userEvent.click(screen.getByTestId('confirm-button'))
+
+    await waitFor(() => expect(screen.queryByTestId('confirm-button')).not.toBeInTheDocument())
+    expect(useReleaseOperationsMockReturn.revertRelease).not.toHaveBeenCalled()
+    expect(await findByDataUi(document.body, 'Toast')).toHaveTextContent(
+      'This workspace is limited to 1 release',
+    )
   })
 })
