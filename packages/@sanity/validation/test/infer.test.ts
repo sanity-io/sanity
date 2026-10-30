@@ -4,7 +4,7 @@ import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
 import has from 'lodash-es/has.js'
-import {afterEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {validationMarkerCodes} from '../src'
 import {
@@ -14,6 +14,7 @@ import {
   type ValidateDocumentInternalOptions,
   validateDocumentInternal,
 } from '../src/_internal'
+import {assetMatchesAccept} from '../src/validators/assetAcceptValidator'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 const client = createMockSanityClient()
@@ -500,6 +501,190 @@ describe('schema validation inference', () => {
 
       expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
     })
+  })
+})
+
+describe('asset `accept` inference', () => {
+  const schema = createSchema({
+    name: 'default',
+    types: [
+      {name: 'pngImage', type: 'image', options: {accept: 'image/png'}},
+      {
+        name: 'assetDocument',
+        type: 'document',
+        fields: [
+          {name: 'pngOnly', type: 'image', options: {accept: 'image/png'}},
+          {
+            name: 'requiredPngOnly',
+            type: 'image',
+            options: {accept: 'image/png'},
+            validation: (rule: Rule) => rule.required(),
+          },
+          {name: 'namedPngOnly', type: 'pngImage'},
+          {name: 'anyImage', type: 'image'},
+          {name: 'pdfOrWord', type: 'file', options: {accept: '.pdf, application/msword'}},
+        ],
+      },
+    ],
+  })
+
+  const assetFileTypes: Record<
+    string,
+    {mimeType: string | null; extension: string | null; originalFilename?: string}
+  > = {
+    'image-jpeg1-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg2-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg3-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg4-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-png1-10x10-png': {mimeType: 'image/png', extension: 'png'},
+    'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.pdf'},
+    'file-zip1-zip': {
+      mimeType: 'application/zip',
+      extension: 'zip',
+      originalFilename: 'archive.zip',
+    },
+    'image-nomime1-10x10-png': {mimeType: null, extension: 'png'},
+    'image-notype1-10x10-png': {mimeType: null, extension: null},
+    'file-noext1-pdf': {mimeType: 'application/zip', extension: null},
+    'file-noname1-zip': {mimeType: 'application/zip', extension: 'zip'},
+  }
+
+  function assetValue(ref: string) {
+    return {_type: 'image', asset: {_type: 'reference', _ref: ref}}
+  }
+
+  function validateFields(fields: Record<string, unknown>) {
+    return validateDocument({
+      client: sanityClient,
+      document: {
+        _id: 'assetDocument',
+        _type: 'assetDocument',
+        _createdAt: '2021-08-26T18:47:55.497Z',
+        _updatedAt: '2021-08-26T18:47:55.497Z',
+        _rev: 'example-rev',
+        requiredPngOnly: assetValue('image-png1-10x10-png'),
+        ...fields,
+      },
+      getDocumentExists: () => Promise.resolve(true),
+      schema,
+    })
+  }
+
+  beforeEach(() => {
+    client.fetch.mockImplementation((_query, params) =>
+      Promise.resolve(assetFileTypes[String(params?.id)] ?? null),
+    )
+  })
+
+  afterEach(() => {
+    client.fetch.mockReset()
+  })
+
+  test('warns when an image asset does not match `accept`', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-jpeg1-10x10-jpg')})).resolves.toEqual([
+      {
+        __internal_metadata: undefined,
+        code: validationMarkerCodes.assetNotAccepted,
+        details: {accept: 'image/png', mimeType: 'image/jpeg', extension: 'jpg'},
+        item: {message: 'Image type "image/jpeg" is not accepted'},
+        level: 'warning',
+        message: 'Image type "image/jpeg" is not accepted',
+        path: ['pngOnly'],
+      },
+    ])
+  })
+
+  test('passes an image asset that matches `accept`', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-png1-10x10-png')})).resolves.toEqual([])
+  })
+
+  test('stays a warning when the field has authored error rules', async () => {
+    const markers = await validateFields({requiredPngOnly: assetValue('image-jpeg2-10x10-jpg')})
+    expect(markers).toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['requiredPngOnly']},
+    ])
+  })
+
+  test('applies `accept` inherited from a named type', async () => {
+    const markers = await validateFields({namedPngOnly: assetValue('image-jpeg3-10x10-jpg')})
+    expect(markers).toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, path: ['namedPngOnly']},
+    ])
+  })
+
+  test('skips fields without `accept`', async () => {
+    await expect(validateFields({anyImage: assetValue('image-jpeg4-10x10-jpg')})).resolves.toEqual(
+      [],
+    )
+    expect(client.fetch).not.toHaveBeenCalled()
+  })
+
+  test('matches file assets by extension and MIME type', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-pdf1-pdf')})).resolves.toEqual([])
+    await expect(validateFields({pdfOrWord: assetValue('file-zip1-zip')})).resolves.toMatchObject([
+      {
+        code: validationMarkerCodes.assetNotAccepted,
+        level: 'warning',
+        message: 'File type "application/zip" is not accepted',
+      },
+    ])
+  })
+
+  test('warns on the extension when the asset has no MIME type', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-nomime1-10x10-png')})).resolves.toEqual(
+      [
+        {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.assetNotAccepted,
+          details: {accept: 'image/png', mimeType: null, extension: 'png'},
+          item: {message: 'Image type "png" is not accepted'},
+          level: 'warning',
+          message: 'Image type "png" is not accepted',
+          path: ['pngOnly'],
+        },
+      ],
+    )
+  })
+
+  test('passes when neither the MIME type nor the extension is known', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-notype1-10x10-png')})).resolves.toEqual(
+      [],
+    )
+  })
+
+  test('passes extension tokens when the asset has neither an original filename nor an extension, like uploads', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toEqual([])
+  })
+
+  test('checks the stored extension against extension tokens when the asset has no original filename', async () => {
+    await expect(
+      validateFields({pdfOrWord: assetValue('file-noname1-zip')}),
+    ).resolves.toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['pdfOrWord']},
+    ])
+  })
+
+  test('passes when the asset document cannot be found', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-missing-10x10-jpg')})).resolves.toEqual(
+      [],
+    )
+  })
+})
+
+describe('assetMatchesAccept', () => {
+  test.each([
+    [{mimeType: 'image/png'}, 'image/*', true],
+    [{mimeType: 'image/png'}, 'IMAGE/PNG', true],
+    [{mimeType: 'image/jpeg', originalFilename: 'photo.JPEG'}, '.jpeg', true],
+    [{mimeType: 'application/pdf', originalFilename: 'brief.docx'}, '.pdf', false],
+    [{mimeType: 'application/pdf'}, '.pdf', true],
+    [{mimeType: null, extension: 'png'}, 'image/png', false],
+    [{mimeType: 'image/png', originalFilename: 'photo.png'}, 'image/jpeg, .webp', false],
+    [{mimeType: 'application/pdf'}, 'image/*', false],
+    [{mimeType: 'application/zip', extension: 'zip'}, '.pdf', false],
+    [{mimeType: 'application/pdf', extension: 'pdf'}, '.pdf', true],
+  ])('%o against %s is %s', (fileType, accept, expected) => {
+    expect(assetMatchesAccept(fileType, accept)).toBe(expected)
   })
 })
 
