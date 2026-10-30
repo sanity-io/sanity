@@ -82,7 +82,7 @@ describe('lost edits', () => {
     expect(unhandled.reasons).toEqual([])
   })
 
-  test('EDIT-REJECTED-ON-PURPOSE:an edit discarded by an injected 409 is accounted for', async () => {
+  test('EDIT-REJECTED-ON-PURPOSE: an edit discarded by an injected 409 is accounted for', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'EDIT-REJECTED-ON-PURPOSE',
       title: 'A commits a title and the server answers 409',
