@@ -1,0 +1,811 @@
+{
+  "version": 1,
+  "commit": "a669759627",
+  "seam": "pair",
+  "seeds": [11, 12, 13, 14, 15],
+  "runsPerSeed": 100,
+  "maxSteps": 12,
+  "failures": [
+    {
+      "signature": "lost-edits | rejected | 400 | mutationError | diffMatchPatch",
+      "signatureFields": {
+        "rule": "lost-edits",
+        "fate": "rejected",
+        "statusCode": 400,
+        "errorType": "mutationError",
+        "operation": "diffMatchPatch"
+      },
+      "message": "A lost an edit: the commit was rejected with 400",
+      "seed": 11,
+      "definition": {
+        "id": "gen-11",
+        "title": "dmp on a removed field",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "A",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "set": {
+                  "title": "one"
+                }
+              }
+            ]
+          },
+          {
+            "do": "outside",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "unset": ["title"]
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "outside",
+          "transactionId": "ext-1",
+          "request": {
+            "kind": "outside",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "unset": ["title"]
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        },
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "diffMatchPatch": {
+                    "title": "@@ -1,5 +1,3 @@\n-draft\n+one\n"
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "rejected",
+          "statusCode": 400,
+          "responseBody": {
+            "error": {
+              "type": "mutationError",
+              "description": "Mutation failed: Unable to apply diffMatchPatch to target title",
+              "items": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "signature": "converged",
+      "signatureFields": {
+        "rule": "converged"
+      },
+      "message": "B view of drafts.article-gen did not converge",
+      "seed": 12,
+      "definition": {
+        "id": "gen-12",
+        "title": "dropped listener event",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "B",
+            "do": "listener",
+            "mode": "hold"
+          },
+          {
+            "client": "A",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "set": {
+                  "title": "two"
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "client": "B",
+            "do": "dropEvent"
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "set": {
+                    "title": "two"
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        }
+      ]
+    },
+    {
+      "signature": "unhandled-rejections | 409",
+      "signatureFields": {
+        "rule": "unhandled-rejections",
+        "statusCode": 409
+      },
+      "message": "unhandled rejections [Rejected with 409]",
+      "seed": 13,
+      "definition": {
+        "id": "gen-13",
+        "title": "rejected queued commit",
+        "seam": "operations",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "A",
+            "do": "commits",
+            "mode": "hold"
+          },
+          {
+            "client": "A",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "set": {
+                  "title": "one"
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "client": "A",
+            "do": "rejectCommit",
+            "statusCode": 409
+          },
+          {
+            "client": "A",
+            "do": "commits",
+            "mode": "auto"
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "set": {
+                    "title": "one"
+                  }
+                }
+              }
+            ]
+          },
+          "injected": true,
+          "outcome": "rejected",
+          "statusCode": 409,
+          "responseBody": {
+            "error": {
+              "type": "mutationError",
+              "description": "Rejected with 409",
+              "items": []
+            }
+          }
+        },
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-2",
+          "request": {
+            "kind": "actions",
+            "actions": [
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "set": {
+                    "title": "one"
+                  }
+                }
+              },
+              {
+                "actionType": "sanity.action.document.edit",
+                "draftId": "drafts.article-gen",
+                "publishedId": "article-gen",
+                "patch": {
+                  "unset": ["_empty_action_guard_pseudo_field_"]
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        }
+      ]
+    },
+    {
+      "signature": "settle | inconsistent",
+      "signatureFields": {
+        "rule": "settle"
+      },
+      "message": "World did not settle within 20 rounds; inconsistent",
+      "seed": 14,
+      "definition": {
+        "id": "gen-14",
+        "title": "commit with no net change",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "do": "outside",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "drafts.article-gen",
+                  "set": {
+                    "title": "one"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "patch",
+            "id": "drafts.article-gen",
+            "patches": [
+              {
+                "set": {
+                  "title": "one"
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "commit"
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": []
+    },
+    {
+      "signature": "revisions | live edit",
+      "signatureFields": {
+        "rule": "revisions"
+      },
+      "message": "A and the lake disagree on the revision of article-gen",
+      "seed": 15,
+      "definition": {
+        "id": "gen-15",
+        "title": "live edit chain",
+        "seam": "pair",
+        "initial": [
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "article-gen",
+            "title": "published"
+          },
+          {
+            "_type": "article",
+            "_rev": "seed",
+            "_createdAt": "2026-01-01T00:00:00.000Z",
+            "_updatedAt": "2026-01-01T00:00:00.000Z",
+            "_id": "drafts.article-gen",
+            "title": "draft",
+            "items": [
+              {
+                "_key": "a",
+                "_type": "item",
+                "title": "A"
+              },
+              {
+                "_key": "b",
+                "_type": "item",
+                "title": "B"
+              }
+            ]
+          }
+        ],
+        "idPair": {
+          "publishedId": "article-gen",
+          "draftId": "drafts.article-gen"
+        },
+        "clients": ["A", "B"],
+        "steps": [
+          {
+            "client": "A",
+            "do": "mutate",
+            "id": "article-gen",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "seed",
+                  "set": {
+                    "title": "live one"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "mutate",
+            "id": "article-gen",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "A-tx-1",
+                  "setIfMissing": {
+                    "items": []
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "client": "A",
+            "do": "mutate",
+            "id": "article-gen",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "seed",
+                  "set": {
+                    "title": "stale"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "do": "settle"
+          }
+        ]
+      },
+      "initial": [
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "article-gen",
+          "title": "published"
+        },
+        {
+          "_type": "article",
+          "_rev": "seed",
+          "_createdAt": "2026-01-01T00:00:00.000Z",
+          "_updatedAt": "2026-01-01T00:00:00.000Z",
+          "_id": "drafts.article-gen",
+          "title": "draft",
+          "items": [
+            {
+              "_key": "a",
+              "_type": "item",
+              "title": "A"
+            },
+            {
+              "_key": "b",
+              "_type": "item",
+              "title": "B"
+            }
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-1",
+          "request": {
+            "kind": "mutations",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "seed",
+                  "set": {
+                    "title": "live one"
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        },
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-2",
+          "request": {
+            "kind": "mutations",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "A-tx-1",
+                  "setIfMissing": {
+                    "items": []
+                  }
+                }
+              },
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "insert": {
+                    "after": "items[-1]",
+                    "items": [
+                      {
+                        "_key": "c",
+                        "_type": "item",
+                        "title": "C"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "accepted"
+        },
+        {
+          "clientId": "A",
+          "transactionId": "A-tx-3",
+          "request": {
+            "kind": "mutations",
+            "mutations": [
+              {
+                "patch": {
+                  "id": "article-gen",
+                  "ifRevisionID": "seed",
+                  "set": {
+                    "title": "stale"
+                  }
+                }
+              }
+            ]
+          },
+          "injected": false,
+          "outcome": "rejected",
+          "statusCode": 409,
+          "responseBody": {
+            "error": {
+              "type": "mutationError",
+              "description": "Mutation failed: Document \"article-gen\" has unexpected revision ID",
+              "items": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
