@@ -3,6 +3,7 @@ import {vi} from 'vitest'
 
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
 import {type IdPair} from '../../src/core/store/document/types'
+import {type BufferObserver, type CommitRecord, observeBuffers} from './bufferObserver'
 import {FakeContentLake} from './fakeContentLake'
 import {expectQuiescent} from './oracles'
 import {
@@ -71,6 +72,8 @@ export interface World {
   clients: Record<string, EngineClient>
   idPair: IdPair
   edits: EditRecord[]
+  commits: CommitRecord[]
+  buffers: BufferObserver
   advance: (ms: number) => Promise<void>
   settle: () => Promise<void>
   teardown: () => void
@@ -144,8 +147,11 @@ export async function createWorld(
     }
   }
 
+  const buffers = observeBuffers(() => lake.stamp())
+
   function teardown(): void {
     Object.values(clients).forEach((client) => client.teardown())
+    buffers.stop()
     vi.useRealTimers()
   }
 
@@ -154,6 +160,8 @@ export async function createWorld(
     clients,
     idPair: definition.idPair,
     edits: [],
+    commits: buffers.commits,
+    buffers,
     advance: advanceTimers,
     settle,
     teardown,
@@ -180,9 +188,8 @@ function recordEdit(
   mutations: MutationPayload[],
   edit: () => void,
 ): void {
-  const at = world.lake.clock
   const before = client.localDocument(documentId)
-  edit()
+  const at = world.buffers.edit({client: client.id, documentId}, edit)
   world.edits.push({
     client: client.id,
     documentId,

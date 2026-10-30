@@ -143,4 +143,43 @@ describe('editOperations and editState, two clients', () => {
     expect(server?.title).toBe('Edited by A')
     expect(keysOf(server, 'items')).toEqual(['a', 'b'])
   })
+
+  test('OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE: an edit queued behind the draft-creating save is discarded with it when that save gets a 403', async () => {
+    const insert = (key: string) => [
+      {setIfMissing: {items: []}},
+      {insert: {after: 'items[-1]', items: [{_key: key, _type: 'item', title: key}]}},
+    ]
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE',
+      title:
+        'Only a published document exists; A edits it while holding saves, and its draft-creating save gets a 403',
+      seam: 'operations',
+      evidence: 'L2',
+      initial: [document(PUBLISHED_ID, 'Published')],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'B', do: 'patch', id: DRAFT_ID, patches: insert('b')},
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: insert('k')},
+        {
+          client: 'A',
+          do: 'rejectCommit',
+          statusCode: 403,
+          represents: 'permission revoked mid-session',
+        },
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'commit'},
+        {client: 'B', do: 'commit'},
+        {do: 'settle'},
+      ],
+    }
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'})
+
+    const fromA = world.lake.submissions.filter((submission) => submission.clientId === 'A')
+    expect(fromA.map(({outcome, injected}) => ({outcome, injected}))).toEqual([
+      {outcome: 'rejected', injected: true},
+    ])
+    expect(keysOf(world.lake.get(DRAFT_ID), 'items')).toEqual(['a', 'b'])
+  })
 })
