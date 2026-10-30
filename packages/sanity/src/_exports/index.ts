@@ -1134,6 +1134,10 @@ export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 export {sortReleases} from '../core/releases/hooks/utils'
+export {
+  defineReleaseMetadata,
+  type ReleaseMetadataDefinition,
+} from '../core/releases/metadata/defineReleaseMetadata'
 export {RELEASES_INTENT} from '../core/releases/plugin'
 export {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
