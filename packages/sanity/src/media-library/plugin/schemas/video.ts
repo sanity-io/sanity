@@ -1,4 +1,4 @@
-import {defineType} from '@sanity/types'
+import {defineType, type PreviewValue} from '@sanity/types'
 
 import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
 import {VideoField} from '../VideoInput/VideoField'
@@ -10,6 +10,21 @@ export const video = defineType({
   components: {
     input: StudioVideoInput,
     field: VideoField,
+  },
+  preview: {
+    select: {
+      asset: 'asset',
+      media: 'media',
+    },
+    prepare: ({asset, media}) => ({
+      // PreviewValue.media is typed for React nodes; prepare returns a structured video source.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- structured video media for SanityDefaultPreview
+      media: {
+        _type: 'sanity.video' as const,
+        asset,
+        media,
+      } as unknown as PreviewValue['media'],
+    }),
   },
   fields: [
     {

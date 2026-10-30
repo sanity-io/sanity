@@ -15,10 +15,14 @@ import {
 
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks/useClient'
+import {parseMediaLibraryReference} from './parseMediaLibraryReference'
 import {type VideoPlaybackInfo} from './types'
 
 const POLLING_DELAY = 2_000
 const POLLING_MAX_DURATION = 120_000
+/** Max /playback-info retries after the asset is already ready but still 404s. */
+const PLAYBACK_INFO_NOT_FOUND_MAX_RETRIES = 5
+const PLAYBACK_INFO_RETRY_DELAY = 2_000
 
 class AssetProcessingError extends Error {
   constructor(message: string) {
@@ -31,7 +35,9 @@ interface DocResponse {
 }
 
 function isPlaybackNotFoundError(error: unknown): boolean {
-  return (error as any)?.statusCode === 404
+  return (
+    typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 404
+  )
 }
 
 /**
@@ -94,28 +100,40 @@ function parseAssetInstanceId(assetRef: string): string {
     return assetRef
   }
 
-  const parts = assetRef.split(':')
+  const parsed = parseMediaLibraryReference(assetRef)
+  if (!parsed) throw new Error(`Invalid Media Library asset reference: ${assetRef}`)
 
-  if (parts.length !== 3) {
-    throw new Error(`Invalid asset reference format: expected 3 parts, got ${parts.length}`)
-  }
-
-  const [resourceType, mediaLibraryId, instanceId] = parts
-
-  if (resourceType !== 'media-library') {
-    throw new Error(`Invalid resource type: expected "media-library", got "${resourceType}"`)
-  }
-
-  if (!instanceId) {
-    throw new Error('Missing asset instance ID in reference')
-  }
-
-  return instanceId
+  return parsed.documentId
 }
 
 export interface UseVideoPlaybackInfoParams {
   mediaLibraryId: string
   assetRef: Reference
+  thumbnail?: {
+    width: number
+    height: number
+    fit: 'smartcrop'
+  }
+}
+
+export function getVideoPlaybackInfoRequest(params: UseVideoPlaybackInfoParams) {
+  const {mediaLibraryId, assetRef, thumbnail} = params
+  const assetInstanceId = parseAssetInstanceId(assetRef._ref)
+  const baseRequest = {
+    url: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
+    tag: 'media-library.video-playback-info',
+  }
+
+  if (!thumbnail) return baseRequest
+
+  return {
+    ...baseRequest,
+    query: {
+      thumbnailWidth: String(thumbnail.width),
+      thumbnailHeight: String(thumbnail.height),
+      thumbnailFit: thumbnail.fit,
+    },
+  }
 }
 
 export type VideoPlaybackInfoLoadable =
@@ -160,13 +178,7 @@ export function useVideoPlaybackInfo(
     const obs$ = trigger$.pipe(
       switchMap(() =>
         defer(() => {
-          const assetInstanceId = parseAssetInstanceId(assetRef._ref)
-          return from(
-            client.request<VideoPlaybackInfo>({
-              url: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
-              tag: 'media-library.video-playback-info',
-            }),
-          )
+          return from(client.request<VideoPlaybackInfo>(getVideoPlaybackInfoRequest(params)))
         }).pipe(
           map(
             (result) =>
@@ -178,6 +190,7 @@ export function useVideoPlaybackInfo(
               }) as const,
           ),
           retryOperator({
+            count: PLAYBACK_INFO_NOT_FOUND_MAX_RETRIES,
             delay: (error) => {
               if (!isPlaybackNotFoundError(error)) {
                 throw error
@@ -185,7 +198,11 @@ export function useVideoPlaybackInfo(
 
               const assetInstanceId = parseAssetInstanceId(assetRef._ref)
 
-              return pollForReadyState(client, mediaLibraryId, assetInstanceId)
+              // Wait until the asset is ready, then pause before retrying so a
+              // ready-but-still-404ing asset cannot spin without delay.
+              return pollForReadyState(client, mediaLibraryId, assetInstanceId).pipe(
+                mergeMap(() => timer(PLAYBACK_INFO_RETRY_DELAY)),
+              )
             },
           }),
           catchError((err: Error) => {
