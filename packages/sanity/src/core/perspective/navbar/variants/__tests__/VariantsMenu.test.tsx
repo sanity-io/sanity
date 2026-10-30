@@ -92,6 +92,49 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
   })
 
+  it('filters the default option with the rest of the list', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'alpha')
+
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).toBeInTheDocument()
+  })
+
+  it('keeps the default option when the query matches its label', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'default')
+
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('perspective-filter-no-matches')).not.toBeInTheDocument()
+  })
+
+  it('shows a message when the filter matches nothing', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'zzz')
+
+    expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
+      'Nothing matches "zzz"',
+    )
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).not.toBeInTheDocument()
+  })
+
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {
     await renderMenu({
       beta: {

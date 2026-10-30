@@ -13,6 +13,7 @@ import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
+import {FilterNoMatches} from '../FilterNoMatches'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {getRangePosition, ReleasesMenuItem, type LayerRange} from './ReleasesMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
@@ -153,6 +154,15 @@ export function ReleasesList({
       matchesPerspectiveFilter(t('version.agent-bundle.proposed-changes'), normalizedQuery))
   const rangePosition = (index: number) =>
     showStackLine && isRangeVisible ? getRangePosition(range, index) : undefined
+  const hasReleaseMatches = orderedReleaseTypes.some(
+    (releaseType) => sortedReleaseTypeReleases[releaseType].length > 0,
+  )
+  const hasMatches =
+    showPublished || showDrafts || showAgentBundle || (areReleasesEnabled && hasReleaseMatches)
+
+  if (isFiltering && !hasMatches) {
+    return <FilterNoMatches filter={filterQuery.trim()} />
+  }
 
   return (
     <Card radius={3}>

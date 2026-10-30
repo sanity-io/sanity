@@ -5,7 +5,7 @@ import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -17,11 +17,18 @@ import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVar
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
 import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
-import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../../variants/tool/util'
+import {
+  filterVariantsForSearch,
+  getVariantId,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../../../variants/tool/util'
 import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
+import {FilterNoMatches} from '../FilterNoMatches'
+import {useStableMenuWidth} from '../useStableMenuWidth'
 import {variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
@@ -84,6 +91,7 @@ export function VariantsMenu({
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -98,9 +106,10 @@ export function VariantsMenu({
     [selectedVariants, typeVariants],
   )
 
+  const defaultVariantTitle = t('document-group.base-variant')
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(typeVariants, filterQuery),
-    [filterQuery, typeVariants],
+    () => filterVariantsForSearch(typeVariants, filterQuery, defaultVariantTitle),
+    [defaultVariantTitle, filterQuery, typeVariants],
   )
 
   const handleSelectDefault = useCallback(() => {
@@ -121,8 +130,9 @@ export function VariantsMenu({
   }, [])
 
   const handleMenuClose = useCallback(() => {
+    resetMenuWidth()
     setFilterQuery('')
-  }, [])
+  }, [resetMenuWidth])
 
   const isDefaultSelected = !selectedVariant
 
@@ -155,6 +165,7 @@ export function VariantsMenu({
         button={trigger}
         id={`variants-nav-menu-${typeKey}`}
         onClose={handleMenuClose}
+        onOpen={lockMenuWidth}
         menu={
           <Menu
             className={variantsMenu}
@@ -164,14 +175,10 @@ export function VariantsMenu({
                 : `variants-nav-menu-${typeKey}`
             }
             padding={0}
+            ref={menuRef}
+            style={menuStyle}
           >
-            <Flex
-              flexDirection="column"
-              flexShrink={0}
-              paddingX={3}
-              paddingTop={3}
-              paddingBottom={2}
-            >
+            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
               <TextInput
                 fontSize={1}
                 icon={SearchIcon}
@@ -180,37 +187,45 @@ export function VariantsMenu({
                 radius={2}
                 value={filterQuery}
               />
-            </Flex>
-            <Flex
-              flexDirection="column"
-              flexGrow={1}
-              flexShrink={1}
-              minHeight="0"
-              overflowY="auto"
-              paddingX={3}
-              paddingBottom={2}
-            >
-              {/* Menu items are flex children with min-height: 0, so they collapse
+            </Box>
+            {filteredVariants.length === 0 ? (
+              <FilterNoMatches filter={filterQuery.trim()} />
+            ) : (
+              <Flex
+                flexDirection="column"
+                flexGrow={1}
+                flexShrink={1}
+                minHeight="0"
+                overflowY="auto"
+                paddingX={3}
+                paddingBottom={2}
+              >
+                {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1}>
-                <MenuItem
-                  data-testid="variant-default"
-                  onClick={handleSelectDefault}
-                  pressed={isDefaultSelected}
-                  selected={isDefaultSelected}
-                  text={t('document-group.base-variant')}
-                />
-                {filteredVariants.map((variant) => (
-                  <VariantMenuItem
-                    key={variant._id}
-                    isSelected={selectedVariant?._id === variant._id}
-                    onSelect={handleSelectVariant}
-                    variant={variant}
-                  />
-                ))}
+                <Flex flexDirection="column" flexShrink={0} gap={1}>
+                  {filteredVariants.map((variant) =>
+                    isDefaultVariant(variant) ? (
+                      <MenuItem
+                        data-testid="variant-default"
+                        key={variant._id}
+                        onClick={handleSelectDefault}
+                        pressed={isDefaultSelected}
+                        selected={isDefaultSelected}
+                        text={variant.title}
+                      />
+                    ) : (
+                      <VariantMenuItem
+                        key={variant._id}
+                        isSelected={selectedVariant?._id === variant._id}
+                        onSelect={handleSelectVariant}
+                        variant={variant}
+                      />
+                    ),
+                  )}
+                </Flex>
               </Flex>
-            </Flex>
+            )}
             <Flex
               flexDirection="column"
               flexShrink={0}
@@ -219,7 +234,7 @@ export function VariantsMenu({
               paddingX={3}
               paddingTop={2}
               paddingBottom={3}
-              hidden={!!filterQuery}
+              hidden={filterQuery.trim().length > 0}
             >
               <MenuItem
                 as="a"
