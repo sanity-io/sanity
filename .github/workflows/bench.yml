@@ -871,13 +871,14 @@ jobs:
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
     outputs:
-      # Read by alert-scheduled-failure: the article soak step never fails the job
+      # Read by alert-scheduled-failure: these steps never fail the job
       article_soak_outcome: ${{ steps.article_soak.outcome }}
+      softnav_outcome: ${{ steps.softnav.outcome }}
       # Read by sqrl-score: a settle mismatch fails the job after the run is stored
       benchrun_store_outcome: ${{ steps.store.outcome }}
-    # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
-    # 4 sessions, the two red-by-design ones costing the 30s cap per session —
-    # ~20m)
+    # Soak (~10m) + article soak (~11m) + INP (~10m) + soft navigations
+    # (4 sessions, ~1m) + settle (9 scenarios × 4 sessions, the two
+    # red-by-design ones costing the 30s cap per session — ~20m)
     timeout-minutes: 60
     permissions:
       contents: read
@@ -985,6 +986,32 @@ jobs:
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
 
+      # Own step and results file, and allowed to fail, so a systematic break
+      # (sample-count-mismatch or paint-attribution across sessions — see
+      # perf/bench/README.md "Soft-navigation mode") costs this suite alone,
+      # not the stored run. The failure is still reported: annotation and
+      # summary line below, Slack alert via the job output.
+      - name: Run soft-navigation benchmarks
+        id: softnav
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          set -o pipefail
+          pnpm bench run --mode softnav --scenario softNav --sessions 4 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__softnav.json" \
+            2>&1 | tee "$RUNNER_TEMP/softnav.log"
+
+      - name: Report soft-navigation failure
+        if: steps.softnav.outcome == 'failure'
+        run: |
+          log="$RUNNER_TEMP/softnav.log"
+          reason=$(grep -m 1 -oE '\[(sample-count-mismatch|paint-attribution)\] .*' "$log" \
+            || grep -m 1 -oE 'SessionError: .*' "$log" \
+            || grep -m 1 -oE 'Error: .*' "$log" \
+            || echo "no error line in the log (step timeout?)")
+          echo "::warning title=Soft-navigation benchmarks failed::${reason}"
+          echo "- :warning: Soft-navigation benchmarks failed; the run was stored without them: \`${reason}\`" >> "$GITHUB_STEP_SUMMARY"
+
       # Settle: the render-loop detector — customization scenarios plus two
       # vanilla controls (core-surface loops show on any workspace). It runs
       # against the customization dist; documentActions and listenQueryPane
@@ -1089,7 +1116,8 @@ jobs:
     if: >-
       always() && github.event_name == 'schedule' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') ||
-       needs.track-main.outputs.article_soak_outcome == 'failure')
+       needs.track-main.outputs.article_soak_outcome == 'failure' ||
+       needs.track-main.outputs.softnav_outcome == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -1104,13 +1132,15 @@ jobs:
               "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }
 
-      - name: Send article soak Slack notification
-        if: needs.track-main.outputs.article_soak_outcome == 'failure'
+      - name: Send soak/softnav Slack notification
+        if: >-
+          needs.track-main.outputs.article_soak_outcome == 'failure' ||
+          needs.track-main.outputs.softnav_outcome == 'failure'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without the article soak — the soak failed, see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without ${{ (needs.track-main.outputs.article_soak_outcome == 'failure' && needs.track-main.outputs.softnav_outcome == 'failure' && 'the article soak and soft-navigation benchmarks') || (needs.track-main.outputs.article_soak_outcome == 'failure' && 'the article soak') || 'soft-navigation benchmarks' }} — see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }
