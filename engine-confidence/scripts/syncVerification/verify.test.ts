@@ -1,7 +1,7 @@
 import {describe, expect, test} from 'vitest'
 
 import {loadFixtureReport} from './__fixtures__/loadFixtureReport'
-import {generatorReportProblems} from './generatorReport'
+import {generatorReportProblems} from './contracts'
 import {dryRunLines} from './verify'
 
 describe('generatorReportProblems', () => {

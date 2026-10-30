@@ -1,13 +1,15 @@
 import {type ContentLakeDocument} from '@repo/content-lake-model'
 
-import {fakeSignatureOf} from './fakeSignature'
 import {
+  type FailureVerdict,
   type GeneratorFailure,
   type GeneratorSample,
   type ReplayableSequence,
-} from './generatorReport'
+  type SampleVerdict,
+  type VerdictDifference,
+} from './contracts'
+import {fakeSignatureOf} from './fakeSignature'
 import {type ReplayEntry, type SubmissionOutcome} from './modelReplay'
-import {type FailureVerdict, type SampleVerdict, type VerdictDifference} from './verdicts'
 
 export type ComparableDocument = Omit<ContentLakeDocument, '_rev' | '_updatedAt' | '_createdAt'>
 

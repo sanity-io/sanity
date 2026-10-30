@@ -12,7 +12,8 @@ import {
   type GeneratorReport,
   parseGeneratorReport,
   type ReplayableSequence,
-} from './generatorReport'
+  type VerdictsFile,
+} from './contracts'
 import {
   type DatasetMode,
   openWorkspace,
@@ -22,7 +23,6 @@ import {
 } from './liveReplay'
 import {recordedOutcome, replayOnModel, replayPlan} from './modelReplay'
 import {documentIdsOf} from './namespace'
-import {type VerdictsFile} from './verdicts'
 
 const USAGE = `Usage: engine-confidence sync-verify <report.json> --out <verdicts.json> [--dry-run]
   [--dataset-mode create|existing] [--dataset <name>] [--project-id <id>] [--api-host <host>]

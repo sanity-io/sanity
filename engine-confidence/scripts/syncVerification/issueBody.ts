@@ -1,4 +1,9 @@
-import {type Seam, type SignatureFields, type Verdict, type VerdictDifference} from './contracts'
+import {
+  type SignatureFields,
+  type SyncTestDefinition,
+  type Verdict,
+  type VerdictDifference,
+} from './contracts'
 
 export const ENGINE_SIGNATURE_PREFIX = 'sync-gen-signature: '
 export const FAKE_SIGNATURE_PREFIX = 'sync-gen-fake-signature: '
@@ -53,7 +58,7 @@ export function signatureLineText({prefix, signature}: SignatureLine): string {
 }
 
 export interface ReproSource {
-  definition: Record<string, unknown> & {seam: Seam}
+  definition: SyncTestDefinition
   seed: number
   runIndex?: number
   message?: string
@@ -67,18 +72,7 @@ export interface ReplayResult {
 }
 
 export function printDefinition(source: ReproSource): string {
-  const fromFailure = source.runIndex === undefined
-  const literal = JSON.stringify(
-    {
-      ...source.definition,
-      id: fromFailure ? `GEN-${source.seed}` : `GEN-${source.seed}-${source.runIndex}`,
-      title: fromFailure
-        ? `Generated with SYNC_GEN_SEED=${source.seed}`
-        : `Generated with SYNC_GEN_SEED=${source.seed}, passing run ${source.runIndex}`,
-    },
-    null,
-    2,
-  )
+  const literal = JSON.stringify(source.definition, null, 2)
   return `const syncTest: SyncTestDefinition = ${literal.replace(/"(\w+)":/g, '$1:')}`
 }
 

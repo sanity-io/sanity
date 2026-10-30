@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
-import {type GeneratorReport, parseGeneratorReport} from '../generatorReport'
+import {type GeneratorReport, parseGeneratorReport} from '../contracts'
 
 export const FIXTURE_REPORT_PATH = path.join(import.meta.dirname, 'generator-report.json')
 

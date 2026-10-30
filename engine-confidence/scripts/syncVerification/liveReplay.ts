@@ -12,11 +12,13 @@ import {
 } from './compare'
 import {type ContentLakeHttp} from './contentLakeHttp'
 import {
+  type FailureVerdict,
   type GeneratorFailure,
   type GeneratorReport,
   type GeneratorSample,
   type ReplayableSequence,
-} from './generatorReport'
+  type SampleVerdict,
+} from './contracts'
 import {
   ACCEPTED,
   errorTypeOf,
@@ -34,7 +36,6 @@ import {
   mapRevisionPreconditions,
   mapStrings,
 } from './namespace'
-import {type FailureVerdict, type SampleVerdict} from './verdicts'
 
 export type DatasetMode = 'create' | 'existing'
 

@@ -1,4 +1,4 @@
-import {type ReplayableSequence} from './generatorReport'
+import {type ReplayableSequence} from './contracts'
 
 const ID_KEYS = new Set(['_id', 'id', 'draftId', 'publishedId'])
 const DRAFTS_PREFIX = 'drafts.'

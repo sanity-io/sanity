@@ -58,6 +58,20 @@ For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz
 
 ## Sync verification
 
+Three more jobs in the weekly workflow look for new sync engine bugs. They are independent of the score: a failure in them never blocks `score` or `store`.
+
+- `sync-generate` runs the sync generator (`packages/sanity/src/core/store/document/sync/generated.sync.test.ts`) in collect mode on new seeds each ISO week (`<year><week>NN`), on both seams. The operations seam is split across three processes because its memoize caches grow with every sequence. Each shard also keeps a few passing sequences per seed (`SYNC_GEN_SAMPLE`) for the fake fidelity check, and uploads a generator report. It holds no secrets.
+- `sync-verify` replays each failure against a fresh staging dataset with `SANITY_E2E_WRITE_TOKEN` and writes a verdict per failure: `confirmed`, `fake-mismatch`, `assumed` (not verifiable, such as listener faults) or `error`. It replays the passing samples the same way and marks each `confirmed`, `fake-mismatch` or `error`, which catches the fake answering differently from the real server when no rule broke.
+- `sync-file` runs `sync-file` with `LINEAR_API_KEY` and `SYNC_VERIFICATION_CLAUDE_API_KEY`. For each failure it searches the SAPP team for an issue with the exact line `sync-gen-signature: <signature>`, and skips the failure when one exists. Otherwise it files an issue in the Mutation engine coverage project with the "Sync verification bug" label. A `fake-mismatch` from a failure or a sample becomes an issue about the fake Content Lake, with no AI step, deduped on its own `sync-gen-fake-signature: <fakeSignature>` line. A gap found by a failure and by samples in the same run is filed once, with the failure's repro. A `confirmed` sample files nothing, and an `error` verdict files nothing and is listed in the job summary. The summary's "Fake fidelity" line counts how many replayed samples matched the real server, the rate to watch week over week.
+
+The sample budget is 2 per seed on the pair shard (20 samples) and 3 per seed on each operations shard (18 samples): 38 samples a week. A passing sample sends 1.8 submissions on the pair seam and 2.5 on the operations seam on average (6 at most), so with its initial documents and a read-back per submission that is about 300 requests to the staging project, a few minutes of `sync-verify` run one report at a time, on top of the failures. Raise `sample` in the `sync-generate` matrix to widen the check.
+
+`sync-verify` and `sync-file` run on `main` only, for the schedule or a manual dispatch, and each holds only its own secrets. Scheduled runs file for real. A manual dispatch is a dry run unless `sync_dry_run` is turned off: it still looks up duplicates, and prints every issue it would file in the job summary.
+
+The report and verdicts shapes live in `scripts/syncVerification/contracts.ts`.
+
+### Verifying against the real Content Lake
+
 `sync-verify` checks the fake Content Lake against the real one for every failure in a sync generator report. It seeds the failure's `initial` documents, sends each submission the fake answered on its own to the actions or mutate endpoint on API version `v2025-02-19`, the version the Studio commits on, and reads the documents back after each one. It compares the status code, the error `body.type` and the documents, ignoring `_rev`, `_createdAt` and `_updatedAt`, with the same submissions replayed through `@repo/content-lake-model`. Injected rejections and submissions the fake never answered are skipped.
 
 Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision preconditions are rewritten to the real revisions, so failures never touch each other's documents. Each failure's documents are deleted when it finishes.
@@ -82,6 +96,18 @@ The operations are the sorted action and patch operations of that request (`docu
 `--dataset-mode create`, the default, creates `cursor_ci_sync_<random>` on `SANITY_E2E_PROJECT_ID` at `api.sanity.work` and deletes it at the end, on failure and on SIGINT or SIGTERM as well. The e2e cleanup job sweeps any `cursor_ci_` dataset older than 24 hours. `--dataset-mode existing --dataset <name>` reuses a dataset and creates only the prefixed documents. The token comes from `SANITY_E2E_SESSION_TOKEN`, and `SANITY_CLI_API_RATE_LIMIT_BYPASS` is sent when it is set. `--dry-run` needs no token: it validates the report and prints what it would replay.
 
 The command exits 0 whenever it writes the verdicts file, including when a verdict is `error`. It exits 1 for an invalid report or when it cannot delete the dataset it created.
+
+### Filing in Linear
+
+Dedupe matches whole lines only. An issue can carry several signature lines, and a signature that is a prefix of another never matches it. To mark a hand-filed issue as covering a signature, add the line to its `Failure signature` block.
+
+The script owns the title, the repro (the shrunk `SyncTestDefinition`, how to run it and the commit), the real Content Lake result and the signature line. Claude writes only what happens, the user impact and the likely cause, labelled a hypothesis. The script checks its own sections are byte-identical after the AI step, and files nothing for that failure when they are not. `SYNC_VERIFICATION_CLAUDE_MODEL` overrides the model.
+
+Run it locally with the generator report and the verdicts file of each seam. Without the keys, a dry run skips the dedupe lookup and prints a placeholder for the AI sections:
+
+```bash
+pnpm engine-confidence sync-file reports/sync-verification/report-pair-0.json reports/sync-verification/verdicts-pair-0.json --dry-run
+```
 
 ## The exclusion register
 
@@ -119,25 +145,3 @@ Retire an entry with `retiredOn` and `retiredReason` in its sidecar when the cod
 ### Rejected candidate
 
 Another candidate, `pair-teardown-drops-uncommitted-edits`, removed the 5 s grace period before a document pair is torn down. It is probably inert: `editState` has its own 1 s grace that keeps the pair alive past the autocommit. No harness caught it and no witness could be written, so it is not in the catalogue.
-
-## Sync verification
-
-Three more jobs in the weekly workflow look for new sync engine bugs. They are independent of the score: a failure in them never blocks `score` or `store`.
-
-- `sync-generate` runs the sync generator (`packages/sanity/src/core/store/document/sync/generated.sync.test.ts`) in collect mode on new seeds each ISO week (`<year><week>NN`), on both seams. The operations seam is split across three processes because its memoize caches grow with every sequence. Each shard also keeps a few passing sequences per seed (`SYNC_GEN_SAMPLE`) for the fake fidelity check, and uploads a generator report. It holds no secrets.
-- `sync-verify` replays each failure against a fresh staging dataset with `SANITY_E2E_WRITE_TOKEN` and writes a verdict per failure: `confirmed`, `fake-mismatch`, `assumed` (not verifiable, such as listener faults) or `error`. It replays the passing samples the same way and marks each `confirmed`, `fake-mismatch` or `error`, which catches the fake answering differently from the real server when no rule broke.
-- `sync-file` runs `sync-file` with `LINEAR_API_KEY` and `SYNC_VERIFICATION_CLAUDE_API_KEY`. For each failure it searches the SAPP team for an issue with the exact line `sync-gen-signature: <signature>`, and skips the failure when one exists. Otherwise it files an issue in the Mutation engine coverage project with the "Sync verification bug" label. A `fake-mismatch` from a failure or a sample becomes an issue about the fake Content Lake, with no AI step, deduped on its own `sync-gen-fake-signature: <fakeSignature>` line. A gap found by a failure and by samples in the same run is filed once, with the failure's repro. A `confirmed` sample files nothing, and an `error` verdict files nothing and is listed in the job summary. The summary's "Fake fidelity" line counts how many replayed samples matched the real server, the rate to watch week over week.
-
-The sample budget is 2 per seed on the pair shard (20 samples) and 3 per seed on each operations shard (18 samples): 38 samples a week. A passing sample sends 1.8 submissions on the pair seam and 2.5 on the operations seam on average (6 at most), so with its initial documents and a read-back per submission that is about 300 requests to the staging project, a few minutes of `sync-verify` run one report at a time, on top of the failures. Raise `sample` in the `sync-generate` matrix to widen the check.
-
-`sync-verify` and `sync-file` run on `main` only, for the schedule or a manual dispatch, and each holds only its own secrets. Scheduled runs file for real. A manual dispatch is a dry run unless `sync_dry_run` is turned off: it still looks up duplicates, and prints every issue it would file in the job summary.
-
-Dedupe matches whole lines only. An issue can carry several signature lines, and a signature that is a prefix of another never matches it. To mark a hand-filed issue as covering a signature, add the line to its `Failure signature` block.
-
-The script owns the title, the repro (the shrunk `SyncTestDefinition`, how to run it and the commit), the real Content Lake result and the signature line. Claude writes only what happens, the user impact and the likely cause, labelled a hypothesis. The script checks its own sections are byte-identical after the AI step, and files nothing for that failure when they are not. `SYNC_VERIFICATION_CLAUDE_MODEL` overrides the model.
-
-Run it locally with the generator report and the verdicts file of each seam. Without the keys, a dry run skips the dedupe lookup and prints a placeholder for the AI sections:
-
-```bash
-pnpm engine-confidence sync-file reports/sync-verification/report-pair-0.json reports/sync-verification/verdicts-pair-0.json --dry-run
-```
