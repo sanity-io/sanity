@@ -13,6 +13,13 @@ interface PaneData {
   active: boolean
   childItemId: string | null
   groupIndex: number
+  /**
+   * Stays the same while a document opened from a resolving intent link moves
+   * to its place in the structure, unlike `key` and `index`.
+   *
+   * @see ResolvedPaneMeta
+   */
+  handoffKey?: string
   index: number
   itemId: string
   key: string
@@ -83,7 +90,7 @@ export function useResolvedPanes(): Panes {
           const groupsLen = routerPanes.length
 
           const paneDataItems = resolvedPanes.map((pane) => {
-            const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path} = pane
+            const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path, handoffKey} = pane
             const itemId = routerPaneSibling.id
             const nextGroup = routerPanes[groupIndex + 1] as RouterPaneGroup | undefined
 
@@ -93,6 +100,7 @@ export function useResolvedPanes(): Panes {
               index: flatIndex,
               itemId: routerPaneSibling.id,
               groupIndex,
+              ...(handoffKey ? {handoffKey} : {}),
               key: `${
                 pane.type === 'loading' ? 'unknown' : pane.paneNode.id
               }-${itemId}-${siblingIndex}`,
@@ -166,7 +174,9 @@ export function useResolvedPanes(): Panes {
   const paneDataItemsWithMaximized = useMemo(() => {
     return data.paneDataItems.map((item) => ({
       ...item,
-      maximized: maximizedPane ? item.key === maximizedPane.key : false,
+      maximized: maximizedPane
+        ? (item.handoffKey ?? item.key) === (maximizedPane.handoffKey ?? maximizedPane.key)
+        : false,
     }))
   }, [data.paneDataItems, maximizedPane])
 
