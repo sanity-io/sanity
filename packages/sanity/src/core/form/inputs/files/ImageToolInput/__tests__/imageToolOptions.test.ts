@@ -93,6 +93,13 @@ describe('hotspot previews', () => {
   ])('keeps $name set on the field over its aspect ratio', ({previews}) => {
     expect(getHotspotPreviews({hotspot: {previews}, aspectRatio: 1})).toBe(previews)
   })
+
+  test('falls back to the aspect ratio when an untyped schema sets the hotspot to null', () => {
+    const hotspot: unknown = null
+    expect(getHotspotPreviews({hotspot, aspectRatio: 1} as ImageOptions)).toEqual([
+      {title: '1:1', aspectRatio: 1},
+    ])
+  })
 })
 
 describe('crop size readout', () => {
