@@ -1,12 +1,10 @@
 import {describe, expect, it} from 'vitest'
 
 import {
-  clampRatio,
   describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
   nearestAllowedRatio,
-  nearestRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
 } from '../aspectRatio'
@@ -31,36 +29,6 @@ describe('resolveAspectRatio', () => {
 
   it('reduces a one-element array to a fixed ratio', () => {
     expect(resolveAspectRatio([1.5])).toEqual({range: {min: 1.5, max: 1.5}, snapRatios: [1.5]})
-  })
-})
-
-describe('clampRatio', () => {
-  it('passes ratios already inside the range through unchanged', () => {
-    expect(clampRatio(1.5, RANGE)).toBeCloseTo(1.5)
-  })
-
-  it('clamps to the nearest bound', () => {
-    expect(clampRatio(1, RANGE)).toBeCloseTo(RANGE.min)
-    expect(clampRatio(3, RANGE)).toBeCloseTo(RANGE.max)
-  })
-})
-
-describe('nearestRatio', () => {
-  const ratios = [1, 4 / 3, 16 / 9]
-
-  it('returns the closest member', () => {
-    expect(nearestRatio(1.01, ratios)).toBe(1)
-    expect(nearestRatio(1.35, ratios)).toBe(4 / 3)
-    expect(nearestRatio(1.7, ratios)).toBe(16 / 9)
-  })
-
-  it('snaps values outside the spread to the nearest extreme', () => {
-    expect(nearestRatio(0.2, ratios)).toBe(1)
-    expect(nearestRatio(5, ratios)).toBe(16 / 9)
-  })
-
-  it('returns the sole member of a one-element list', () => {
-    expect(nearestRatio(3, [1.5])).toBe(1.5)
   })
 })
 
@@ -89,6 +57,10 @@ describe('nearestAllowedRatio', () => {
     expect(nearestAllowedRatio(1.7, snap)).toBe(16 / 9)
     expect(nearestAllowedRatio(0.2, snap)).toBe(1)
     expect(nearestAllowedRatio(5, snap)).toBe(16 / 9)
+  })
+
+  it('returns the sole member of a one-element list', () => {
+    expect(nearestAllowedRatio(3, resolveAspectRatio([1.5]))).toBe(1.5)
   })
 })
 

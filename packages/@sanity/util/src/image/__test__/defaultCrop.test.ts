@@ -2,7 +2,12 @@ import {type ImageCropDimensions} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {resolveAspectRatio} from '../aspectRatio'
-import {defaultCropRect, getDefaultImageCrop, largestRectForRatio} from '../defaultCrop'
+import {
+  defaultCropRect,
+  getDefaultImageCrop,
+  largestRectForRatio,
+  largestSizeForRatio,
+} from '../defaultCrop'
 
 const RANGE = resolveAspectRatio({min: 4 / 3, max: 16 / 9})
 const SNAP = resolveAspectRatio([4 / 3, 16 / 9])
@@ -10,6 +15,22 @@ const SNAP = resolveAspectRatio([4 / 3, 16 / 9])
 function ratioOf(rect: {width: number; height: number}) {
   return rect.width / rect.height
 }
+
+describe('largestSizeForRatio', () => {
+  it('fills the width when the bounds are taller than the ratio', () => {
+    expect(largestSizeForRatio({width: 1000, height: 3000}, 4 / 3)).toEqual({
+      width: 1000,
+      height: 750,
+    })
+  })
+
+  it('fills the height exactly when the bounds are wider than the ratio', () => {
+    expect(largestSizeForRatio({width: 318, height: 114}, 2.35)).toEqual({
+      width: 114 * 2.35,
+      height: 114,
+    })
+  })
+})
 
 describe('largestRectForRatio', () => {
   it('fills the height and centres horizontally when the source is wider than the ratio', () => {
@@ -28,6 +49,12 @@ describe('largestRectForRatio', () => {
       width: 1000,
       height: 1000,
     })
+  })
+
+  it('stays inside the source when the height limits the ratio', () => {
+    const rect = largestRectForRatio({width: 318, height: 114}, 2.35)
+    expect(rect.y).toBe(0)
+    expect(rect.height).toBe(114)
   })
 })
 

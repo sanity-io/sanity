@@ -1,8 +1,7 @@
 import {type ImageAspectRatio, type ImageCrop, type ImageCropDimensions} from '@sanity/types'
 
 import {
-  clampRatio,
-  nearestRatio,
+  nearestAllowedRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
@@ -10,13 +9,27 @@ import {
 import {getImageRefDimensions, type ImagePixelRect, pixelRectToCrop} from './cropDimensions'
 
 /**
+ * The largest size at `ratio` that fits inside `bounds`, matching `bounds` exactly on the axis that
+ * limits it.
+ *
+ * @internal
+ */
+export function largestSizeForRatio(
+  bounds: ImageCropDimensions,
+  ratio: number,
+): ImageCropDimensions {
+  return bounds.width / ratio > bounds.height
+    ? {width: bounds.height * ratio, height: bounds.height}
+    : {width: bounds.width, height: bounds.width / ratio}
+}
+
+/**
  * The largest rectangle at `ratio` that fits inside `source`, centered.
  *
  * @internal
  */
 export function largestRectForRatio(source: ImageCropDimensions, ratio: number): ImagePixelRect {
-  const width = Math.min(source.width, source.height * ratio)
-  const height = width / ratio
+  const {width, height} = largestSizeForRatio(source, ratio)
   return {
     x: (source.width - width) / 2,
     y: (source.height - height) / 2,
@@ -33,11 +46,9 @@ export function largestRectForRatio(source: ImageCropDimensions, ratio: number):
  */
 export function defaultCropRect(
   source: ImageCropDimensions,
-  {range, snapRatios}: ResolvedImageAspectRatio,
+  constraint: ResolvedImageAspectRatio,
 ): ImagePixelRect {
-  const sourceRatio = source.width / source.height
-  const ratio = snapRatios ? nearestRatio(sourceRatio, snapRatios) : clampRatio(sourceRatio, range)
-  return largestRectForRatio(source, ratio)
+  return largestRectForRatio(source, nearestAllowedRatio(source.width / source.height, constraint))
 }
 
 /**

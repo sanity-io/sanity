@@ -1,10 +1,8 @@
 export {
-  clampRatio,
   describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
   nearestAllowedRatio,
-  nearestRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
@@ -20,4 +18,9 @@ export {
   isSvgImageRef,
   pixelRectToCrop,
 } from '../image/cropDimensions'
-export {defaultCropRect, getDefaultImageCrop, largestRectForRatio} from '../image/defaultCrop'
+export {
+  defaultCropRect,
+  getDefaultImageCrop,
+  largestRectForRatio,
+  largestSizeForRatio,
+} from '../image/defaultCrop'
