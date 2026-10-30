@@ -1,4 +1,4 @@
-import {expect, test} from 'vitest'
+import {expect, test, vi} from 'vitest'
 
 import {BufferedDocument, Mutation} from '../src/document'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
@@ -408,14 +408,23 @@ test('committing a local edit with no net change reports the document consistent
   expect(consistencyEvents).toEqual([false, true])
 })
 
-test('committing nothing while a commit is in flight keeps the document inconsistent', async () => {
-  const {doc, consistencyEvents} = createObservedDocument()
-  doc.commitHandler = () => {}
+test('committing nothing while a failed commit waits to retry keeps the document inconsistent', async () => {
+  vi.useFakeTimers()
+  try {
+    const {doc, consistencyEvents} = createObservedDocument()
+    let failCommit: (() => void) | undefined
+    doc.commitHandler = (message) => {
+      failCommit = message.failure
+    }
 
-  doc.add(setTitle('Good bye'))
-  void doc.commit()
-  doc.add(setTitle('Good bye'))
-  await doc.commit()
+    doc.add(setTitle('Good bye'))
+    void doc.commit()
+    failCommit?.()
+    doc.add(setTitle('Good bye'))
+    await doc.commit()
 
-  expect([...new Set(consistencyEvents)]).toEqual([false])
+    expect(consistencyEvents).not.toContain(true)
+  } finally {
+    vi.useRealTimers()
+  }
 })
