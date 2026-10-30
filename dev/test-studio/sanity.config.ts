@@ -57,6 +57,7 @@ import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
+import {releaseMetadataFields} from './releases/releaseMetadata'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
@@ -351,29 +352,9 @@ const defaultWorkspace = defineConfig({
       return prev
     },
     metadata: {
-      fields: [
-        defineField({
-          name: 'legalReview',
-          title: 'Legal review',
-          type: 'string',
-          initialValue: 'notReviewed',
-          options: {
-            list: [
-              {title: 'Not reviewed', value: 'notReviewed'},
-              {title: 'Reviewed', value: 'reviewed'},
-            ],
-          },
-        }),
-        defineField({
-          name: 'signOff',
-          title: 'Sign-off',
-          type: 'object',
-          fields: [
-            defineField({name: 'reviewer', title: 'Reviewer', type: 'string'}),
-            defineField({name: 'approved', title: 'Approved', type: 'boolean'}),
-          ],
-        }),
-      ],
+      // The release dialogs still read `releases.metadata.fields`. The same fields are
+      // declared on the `sanity.releaseMetadata` schema type in `./releases/releaseMetadata`.
+      fields: releaseMetadataFields,
     },
   },
   beta: {
