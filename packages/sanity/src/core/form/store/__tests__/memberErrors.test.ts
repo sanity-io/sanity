@@ -248,6 +248,13 @@ describe('array-of-objects member errors', () => {
     expect(errorMember(state, 'quotes').error.type).toBe('MISSING_KEYS')
   })
 
+  test('classifies an empty-string _key as MISSING_KEYS', () => {
+    const quotes = [{_key: '', quoteText: 'empty key'}]
+    const state = prepare({_id: 'book-1', _type: 'book', quotes})
+
+    expect(errorMember(state, 'quotes').error.type).toBe('MISSING_KEYS')
+  })
+
   test('treats an empty array as a normal field, not an error', () => {
     const state = prepare({_id: 'book-1', _type: 'book', quotes: []})
 
@@ -272,7 +279,7 @@ describe('array-of-objects member errors', () => {
     expect(fieldMember(state, 'quotes').kind).toBe('field')
   })
 
-  test('classifies colliding empty-string keys as DUPLICATE_KEYS', () => {
+  test('classifies colliding empty-string keys as MISSING_KEYS', () => {
     const state = prepare({
       _id: 'book-1',
       _type: 'book',
@@ -282,15 +289,10 @@ describe('array-of-objects member errors', () => {
       ],
     })
 
-    expect(errorMember(state, 'quotes').error).toEqual(
-      expect.objectContaining({
-        type: 'DUPLICATE_KEYS',
-        duplicates: [[1, '']],
-      }),
-    )
+    expect(errorMember(state, 'quotes').error.type).toBe('MISSING_KEYS')
   })
 
-  test.fails('classifies an undefined _key as MISSING_KEYS', () => {
+  test('classifies an undefined _key as MISSING_KEYS', () => {
     const quotes = [{_key: undefined, quoteText: 'undefined key'}]
     const state = prepare({_id: 'book-1', _type: 'book', quotes})
 
