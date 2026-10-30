@@ -41,6 +41,13 @@ vi.mock('../../../perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
+const mockUseGetDefaultPerspective = vi.hoisted(() =>
+  vi.fn(() => 'drafts' as 'drafts' | 'published'),
+)
+vi.mock('../../useGetDefaultPerspective', () => ({
+  useGetDefaultPerspective: mockUseGetDefaultPerspective,
+}))
+
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
@@ -81,7 +88,7 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [],
   })
-  currentRenderedInstance = render(<ReleasesNav withReleasesToolButton />, {wrapper})
+  currentRenderedInstance = render(<ReleasesNav />, {wrapper})
 
   return currentRenderedInstance
 }
@@ -91,14 +98,15 @@ describe('ReleasesNav', () => {
     vi.clearAllMocks()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    mockUseGetDefaultPerspective.mockReturnValue('drafts')
+    usePerspectiveMockReturn.selectedPerspective = 'drafts'
+    usePerspectiveMockReturn.selectedPerspectiveName = undefined
   })
-  it('should have link to releases tool', async () => {
+
+  it('shows the drafts label when no perspective is chosen', async () => {
     await renderTest()
 
-    const releasesLink = screen.getByRole('link')
-
-    expect(releasesLink).toHaveAttribute('href', '/')
-    expect(releasesLink).not.toHaveAttribute('data-selected')
+    screen.getByRole('button', {name: 'Drafts'})
   })
 
   it('should have dropdown menu for global perspectives', async () => {
@@ -110,7 +118,26 @@ describe('ReleasesNav', () => {
   it('should not have clear button when no perspective is chosen', async () => {
     await renderTest()
 
-    expect(screen.queryByTestId('clear-perspective-button')).toBeNull()
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+  })
+
+  it('hides the clear control when published is the default perspective', async () => {
+    mockUseGetDefaultPerspective.mockReturnValue('published')
+    usePerspectiveMockReturn.selectedPerspective = 'published'
+    usePerspectiveMockReturn.selectedPerspectiveName = 'published'
+
+    await renderTest()
+
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+  })
+
+  it('shows the clear control when published is selected and drafts are the default', async () => {
+    usePerspectiveMockReturn.selectedPerspective = 'published'
+    usePerspectiveMockReturn.selectedPerspectiveName = 'published'
+
+    await renderTest()
+
+    expect(screen.getByTestId('global-perspective-button-clear')).toBeInTheDocument()
   })
 
   it('should list the title of the chosen perspective', async () => {
@@ -120,6 +147,33 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     screen.getByText('active Release')
+  })
+
+  it('clears a chosen perspective', async () => {
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+
+    await userEvent.click(screen.getByTestId('global-perspective-button-clear'))
+
+    expect(mockedSetPerspective).toHaveBeenCalledWith(undefined)
+  })
+
+  it('truncates a long release title and keeps the full title in a tooltip', async () => {
+    const longTitle = 'A'.repeat(60)
+    usePerspectiveMockReturn.selectedPerspective = {
+      ...activeScheduledRelease,
+      metadata: {...activeScheduledRelease.metadata, title: longTitle},
+    }
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+
+    const truncated = `${'A'.repeat(50)}\u2026`
+    screen.getByText(truncated)
+    screen.getByRole('button', {name: longTitle})
+    screen.getByText(longTitle)
   })
 
   describe('global perspective menu', () => {
@@ -216,9 +270,10 @@ describe('ReleasesNav', () => {
     describe('release layering', () => {
       beforeEach(() => {
         // since usePerspective is mocked, and the layering exclude toggle is
-        // controlled by currentGlobalBundleId, we need to manually set it
-        // to the release that will be selected in below tests
+        // controlled by the selected release, set both the name and the document.
+        // Drafts can only be hidden while the selected perspective is a release.
         usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
+        usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
         // add an undecided release to expand testing
         useActiveReleasesMockReturn.data = [
           ...useActiveReleasesMockReturn.data,
@@ -350,6 +405,72 @@ describe('ReleasesNav', () => {
 
         const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
         expect(indicatorIcon).toHaveStyle({opacity: '0'})
+      })
+
+      describe('filtering', () => {
+        beforeEach(() => {
+          // A selected release extends the stack line through the releases under it,
+          // so the filter test can tell the line was removed rather than never painted.
+          usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
+          usePerspectiveMockReturn.selectedPerspective = {
+            ...activeScheduledRelease,
+            _id: '_.releases.rScheduled2',
+            metadata: {...activeScheduledRelease.metadata, title: 'active Scheduled 2'},
+          }
+        })
+
+        it('returns matching releases under their category and drops the stack line', async () => {
+          await renderAndWaitForStableMenu()
+          const releaseMenuElement = screen.getByTestId('release-menu')
+          const releaseMenu = within(releaseMenuElement)
+
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
+
+          await userEvent.type(
+            releaseMenu.getByPlaceholderText('Find a version or release'),
+            'ACTIVE',
+          )
+
+          releaseMenu.getByText('As soon as possible')
+          releaseMenu.getByText('At time')
+          releaseMenu.getByText('active asap Release')
+          releaseMenu.getByText('active asap Error Release')
+          releaseMenu.getByText('active Release')
+          releaseMenu.getByText('active Scheduled 2')
+
+          expect(releaseMenu.queryByText('Undecided')).toBeNull()
+          expect(releaseMenu.queryByText('scheduled Release')).toBeNull()
+          expect(releaseMenu.queryByText('Published')).toBeNull()
+          expect(releaseMenu.queryByText('Drafts')).toBeNull()
+          expect(releaseMenu.queryByTestId('create-new-release-button')).toBeNull()
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
+        })
+
+        it('matches a system perspective and restores the menu when the filter is cleared', async () => {
+          await renderAndWaitForStableMenu()
+          const releaseMenuElement = screen.getByTestId('release-menu')
+          const releaseMenu = within(releaseMenuElement)
+
+          await userEvent.type(
+            releaseMenu.getByPlaceholderText('Find a version or release'),
+            'draft',
+          )
+
+          releaseMenu.getByText('Drafts')
+          expect(releaseMenu.queryByText('Published')).toBeNull()
+          expect(releaseMenu.queryByText('As soon as possible')).toBeNull()
+          expect(releaseMenu.queryByText('active Release')).toBeNull()
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
+
+          await userEvent.clear(releaseMenu.getByPlaceholderText('Find a version or release'))
+
+          releaseMenu.getByText('Published')
+          releaseMenu.getByText('Drafts')
+          releaseMenu.getByText('As soon as possible')
+          releaseMenu.getByText('active Release')
+          releaseMenu.getByTestId('create-new-release-button')
+          expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
+        })
       })
 
       describe('when releases are disabled', () => {

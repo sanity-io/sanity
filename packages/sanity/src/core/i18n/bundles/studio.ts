@@ -1809,6 +1809,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.view-releases': 'View Content Releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
+  /** Placeholder for the releases perspective filter. */
+  'release.navbar.filter-placeholder': 'Find a version or release',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */

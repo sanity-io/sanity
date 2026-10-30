@@ -144,6 +144,7 @@ export function GlobalPerspectiveMenuItem(
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
       $inRange={Boolean(rangePosition)}
+      data-stack-line={rangePosition ? 'true' : undefined}
       ref={ref}
     >
       <MenuItem

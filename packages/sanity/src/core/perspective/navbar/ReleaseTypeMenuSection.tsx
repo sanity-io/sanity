@@ -27,12 +27,15 @@ export function ReleaseTypeMenuSection({
   range,
   currentGlobalBundleMenuItemRef,
   menuItemProps,
+  showStackLine = true,
 }: {
   releaseType: ReleaseType
   releases: ReleaseDocument[]
   range: LayerRange
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /** The stack line joins the selected perspective to the releases under it. A filter hides it. */
+  showStackLine?: boolean
 }): React.JSX.Element | null {
   const {t} = useTranslation()
   const {selectedReleaseId} = usePerspective()
@@ -49,12 +52,13 @@ export function ReleaseTypeMenuSection({
 
   const {lastIndex, offsets} = range
   const releaseTypeOffset = offsets[releaseType]
+  const labelWithinStack = showStackLine && releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset
 
   return (
     <Card padding={1} borderBottom>
       <VStack gap={1}>
         <GlobalPerspectiveMenuLabelIndicator
-          $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
+          $withinRange={labelWithinStack}
           paddingLeft={2}
           paddingTop={3}
           paddingBottom={1}
@@ -69,7 +73,9 @@ export function ReleaseTypeMenuSection({
               key={release._id}
               release={release}
               ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
-              rangePosition={getRangePosition(range, releaseTypeOffset + index)}
+              rangePosition={
+                showStackLine ? getRangePosition(range, releaseTypeOffset + index) : undefined
+              }
               menuItemProps={menuItemProps}
             />
           ))}
