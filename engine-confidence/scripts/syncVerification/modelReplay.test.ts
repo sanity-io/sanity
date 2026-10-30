@@ -15,6 +15,21 @@ describe('replayPlan', () => {
       {submission: 2, transactionId: 'A-tx-2', replay: false, reason: 'pending'},
     ])
   })
+
+  test('replays a held commit after the requests the fake applied before it', () => {
+    const [unset, heldPatch] = removedField.submissions
+    const arrivedFirst = {
+      ...removedField,
+      submissions: [
+        {...heldPatch, settledAt: 2},
+        {...unset, settledAt: 1},
+      ],
+    }
+    expect(replayPlan(arrivedFirst).map(({submission}) => submission)).toEqual([1, 0])
+    expect(
+      replayOnModel(arrivedFirst, documentIdsOf(arrivedFirst)).map(({outcome}) => outcome),
+    ).toEqual([{statusCode: 200}, {statusCode: 400, errorType: 'mutationError'}])
+  })
 })
 
 describe('errorTypeOf', () => {

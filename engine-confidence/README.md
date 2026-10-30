@@ -72,7 +72,7 @@ The report and verdicts shapes live in `scripts/syncVerification/contracts.ts`.
 
 ### Verifying against the real Content Lake
 
-`sync-verify` checks the fake Content Lake against the real one for every failure in a sync generator report. It seeds the failure's `initial` documents, sends each submission the fake answered on its own to the actions or mutate endpoint on API version `v2025-02-19`, the version the Studio commits on, and reads the documents back after each one. It compares the status code, the error `body.type` and the documents, ignoring `_rev`, `_createdAt` and `_updatedAt`, with the same submissions replayed through `@repo/content-lake-model`. Injected rejections and submissions the fake never answered are skipped.
+`sync-verify` checks the fake Content Lake against the real one for every failure in a sync generator report. It seeds the failure's `initial` documents, sends each submission the fake answered on its own, in the order the fake applied them (`settledAt`), to the actions or mutate endpoint on API version `v2025-02-19`, the version the Studio commits on, and reads the documents back after each one. It compares the status code, the error `body.type` and the documents, ignoring `_rev`, `_createdAt` and `_updatedAt`, with the same submissions replayed through `@repo/content-lake-model`. Injected rejections and submissions the fake never answered are skipped.
 
 Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision preconditions are rewritten to the real revisions, so failures never touch each other's documents. Each failure's documents are deleted when it finishes.
 
