@@ -50,9 +50,8 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryButton} from './DocumentGroupInventoryButton'
-import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {DocumentTargetBadges} from './DocumentTargetBadges'
+import {DocumentPanelNavigation} from './DocumentPanelNavigation/DocumentPanelNavigation'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -225,42 +224,40 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           borderBottom
         >
           <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
-            {!hasDocumentGroupInventory && (
-              <HorizontalScroller $showGradient={showGradient}>
-                <Flex
-                  flexBasis="0%"
-                  flexGrow={1}
-                  gap={1}
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-perspective-list"
-                  ref={scrollContainerRef}
-                >
-                  <DocumentPerspectiveList />
-                </Flex>
-              </HorizontalScroller>
-            )}
-            {hasDocumentGroupInventory && (
-              <HorizontalScroller $showGradient={false}>
-                <Flex
-                  flexBasis="0%"
-                  flexGrow={1}
-                  gap={2}
-                  alignItems="center"
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-target-badges"
-                  style={{minWidth: 0}}
-                >
-                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                    <DocumentTargetBadges />
-                  </Box>
-                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                    <DocumentGroupInventoryHint />
-                  </Box>
-                </Flex>
-              </HorizontalScroller>
-            )}
+            {
+              // Variants switch the inventory on today; checking both keeps the navigation for variants if
+              // that coupling is ever removed.
+              beta?.variants?.enabled === true || hasDocumentGroupInventory ? (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    alignItems="center"
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-panel-navigation"
+                    ref={scrollContainerRef}
+                    style={{minWidth: 0}}
+                  >
+                    <DocumentPanelNavigation />
+                  </Flex>
+                </HorizontalScroller>
+              ) : (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    gap={1}
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-perspective-list"
+                    ref={scrollContainerRef}
+                  >
+                    <DocumentPerspectiveList />
+                  </Flex>
+                </HorizontalScroller>
+              )
+            }
 
             <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
               <Flex alignItems="center" gap={1}>

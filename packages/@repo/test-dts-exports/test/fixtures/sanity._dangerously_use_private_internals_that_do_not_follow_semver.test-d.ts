@@ -149,6 +149,7 @@ import type {
   DEFAULT_INTENT_HANDLER,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DEFAULT_VARIANT_TYPE_KEY,
   defaultInitialValueTemplateItems,
   defaultIntentChecker,
   defaultLocale,
@@ -284,6 +285,7 @@ import type {
   FieldStatusProps,
   FieldValueError,
   Filters,
+  filterVariantsForSearch,
   findIndex,
   FIXME,
   flattenConfig,
@@ -368,6 +370,7 @@ import type {
   getValueError,
   getVariantPublishedSibling,
   getVariantTitle,
+  getVariantType,
   getVersionInlineBadge,
   getWorkspaceIdentifier,
   GlobalCopyPasteElementHandler,
@@ -406,6 +409,7 @@ import type {
   isCardinalityOneRelease,
   isClientRequestError,
   isCookielessCompatibleLoginMethod,
+  isDefaultVariant,
   isDev,
   isDocumentInSelectedVariant,
   isDocumentLimitError,
@@ -1339,6 +1343,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
   })
+  test('DEFAULT_VARIANT_TYPE_KEY', () => {
+    expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
+  })
   test('defaultInitialValueTemplateItems', () => {
     expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
   })
@@ -1744,6 +1751,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
+  test('filterVariantsForSearch', () => {
+    expectTypeOf<typeof filterVariantsForSearch>().toBeFunction()
+  })
   test('findIndex', () => {
     expectTypeOf<typeof findIndex>().toBeFunction()
   })
@@ -1997,6 +2007,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
+  test('getVariantType', () => {
+    expectTypeOf<typeof getVariantType>().toBeFunction()
+  })
   test('getVersionInlineBadge', () => {
     expectTypeOf<typeof getVersionInlineBadge>().not.toBeNever()
   })
@@ -2110,6 +2123,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
+  })
+  test('isDefaultVariant', () => {
+    expectTypeOf<typeof isDefaultVariant>().toBeFunction()
   })
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
