@@ -109,13 +109,6 @@ function hasPendingMutations(bufferedDocument: BufferedDocument): boolean {
   )
 }
 
-// A rejected commit is reported through its commit request, so the promise itself carries nothing more
-function requestCommit(bufferedDocument: BufferedDocument): void {
-  bufferedDocument.commit().catch(noop)
-}
-
-function noop(): void {}
-
 const toSnapshotEvent = (document: any): SnapshotEvent => ({type: 'snapshot', document})
 const getDocument = <T extends {document: any}>(event: T): T['document'] => event.document
 
@@ -151,6 +144,18 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   const replacedBufferedDocuments = new WeakSet<BufferedDocument>()
   // The instance receiving local mutations, read synchronously for telemetry
   let latestBufferedDocument: BufferedDocument | undefined
+
+  const cancelledCommitErrors = new WeakSet<Error>()
+
+  // Cancelled commits already surface through their commit request; anything else must stay unhandled
+  function ignoreCancelledCommitError(error: unknown): void {
+    if (error instanceof Error && cancelledCommitErrors.has(error)) return
+    throw error
+  }
+
+  function requestCommit(bufferedDocument: BufferedDocument): void {
+    bufferedDocument.commit().catch(ignoreCancelledCommitError)
+  }
 
   const createInitialBufferedDocument = (initialSnapshot: SanityDocument | null) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
@@ -204,7 +209,15 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       // Reset so the next commit batch doesn't reuse a stale timestamp
       // from a previous batch when the document stays inconsistent
       firstMutationReceivedAt = undefined
-      commitRequests.next({...commitArg, firstMutationReceivedAt: captured, owner})
+      commitRequests.next({
+        ...commitArg,
+        cancel: (error: Error) => {
+          cancelledCommitErrors.add(error)
+          commitArg.cancel(error)
+        },
+        firstMutationReceivedAt: captured,
+        owner,
+      })
     }
 
     return bufferedDocument
