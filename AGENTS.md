@@ -454,13 +454,43 @@ pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/
 ```
 
 - The tests live in `packages/sanity/src/core/store/document/sync/` and are named `*.sync.test.ts`. They count toward the Stryker `sanity` target only while they sit under `store/document/`, and a `*.fuzz.test.*` name drops them from it.
-- The helpers live in `packages/sanity/test/sync/`. `fakeContentLake.ts` holds the connections and the per-client controls (held or rejected commits, held, dropped or reordered listener events, disconnect and reconnect). `fakeSanityClient.ts` is the `SanityClient` slice the store calls. The documents, the commit semantics and the action mapping come from `@repo/content-lake-model` (`packages/@repo/content-lake-model`), which the bench mock API also uses; it applies mutations with `@sanity/mutate`, so the server's result never comes from the `@sanity/mutator` code under test. `studioEngine.ts` attaches a client at the pair seam (`checkoutPair`) or the operations seam (`editOperations` and `editState`, with autocommit). `syncTest.ts` runs the steps.
+- The helpers live in `packages/sanity/test/sync/`. `fakeContentLake.ts` holds the connections and the per-client controls (held or rejected commits, held, dropped or reordered listener events, disconnect and reconnect). `fakeSanityClient.ts` is the `SanityClient` slice the store calls. The documents, the commit semantics and the action mapping come from `@repo/content-lake-model` (`packages/@repo/content-lake-model`), which the bench mock API also uses; it applies mutations with `@sanity/mutate`, so the server's result never comes from the `@sanity/mutator` code under test. `studioEngine.ts` attaches a client at the pair seam (`checkoutPair`) or the operations seam (`editOperations` and `editState`, with autocommit). `syncTest.ts` runs the steps. `bufferObserver.ts` records, without changing the engine, which commit took each edit out of its client's buffer; the lost-edit check uses it to tell an edit discarded with a rejected save's queue from one left in the buffer and never sent. Edits, commits, submissions and settlements share one strictly increasing clock (`FakeContentLake.stamp()`), so no two of them tie. The fake translates actions when it applies a commit, not when the request arrives, as Content Lake does.
 - A new fault control goes into `fakeContentLake.ts`, never into a second fake server or a hand-rolled listener `Subject`. A change to how the Content Lake commits or maps actions goes into `@repo/content-lake-model`, and `pnpm bench:unit` checks that the bench mock still holds its contract.
 - `runSyncTest` settles the world and then checks that it is quiescent (`expectQuiescent`): every client healthy and converged on the server copy apart from `_rev`, `_updatedAt`, `_createdAt` and `_system`, and every edit either saved, overwritten locally, a no-op or discarded by an injected rejection (`test/sync/lostEdits.ts`).
 - A test for a known, unfixed bug asserts the correct behaviour and is marked `test.fails`, and the PR that fixes the bug changes it to `test`. Never assert a bug's current behaviour as correct.
 - Every sync test states its `evidence`: `L1` when the server behaviour was captured against real Content Lake, `L2` when it was seen in production or follows from the documented client and server protocol, `L3` when only the fake shows it. A client fix needs `L2` or better. Every injected fault step (`hold`, `rejectCommit`, `dropEvent`, `disconnect`) names the real behaviour it stands for in `represents`, and a `test.fails` test names its bug in `knownBug`.
 - Test names start with a provisional id (`ARR-`, `LSN-`, `CMT-`, `OPS-`), which would be mapped onto the collaborative editing scenario list once it exists.
 - The store's memo caches key on token and dataset, so every world gets a fresh dataset and every client its own token. A test that reuses a dataset reads another test's cached pair.
+
+#### Generated step sequences
+
+`generated.sync.test.ts` runs random step sequences from [fast-check](https://fast-check.dev) through two clients (edits, held, accepted and rejected commits, held, reordered and dropped listener events, disconnects, outside edits) and checks the same oracles plus array-key conservation and no lost edits. `packages/sanity/test/sync/generator.ts` turns each generated intent into a valid step or skips it, so a shrunk failure always replays. On the operations seam a sequence may also start from a published document with no draft, so the first edit creates the draft. The default run (seed 1, 100 sequences, pair seam) is part of the suite and must stay green: there is no ignore list for known bugs.
+
+```bash
+pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/generated.sync.test.ts
+SYNC_GEN_SEED=7 SYNC_GEN_RUNS=3000 pnpm vitest run --project=sanity <same path>
+SYNC_GEN_COLLECT=1 SYNC_GEN_SEEDS=1-20 SYNC_GEN_REPORT=/tmp/sync-gen.json pnpm vitest run --project=sanity <same path>
+```
+
+| Env var              | Default | Meaning                                                                             |
+| -------------------- | ------- | ----------------------------------------------------------------------------------- |
+| `SYNC_GEN_SEED`      | 1       | fast-check seed                                                                     |
+| `SYNC_GEN_SEEDS`     | none    | seeds to run, as a comma list or an `a-b` range; replaces `SYNC_GEN_SEED`           |
+| `SYNC_GEN_RUNS`      | 100     | sequences per seed                                                                  |
+| `SYNC_GEN_MAX_STEPS` | 8       | intents per sequence, before the clean-up tail                                      |
+| `SYNC_GEN_SEAM`      | `pair`  | `pair` or `operations`                                                              |
+| `SYNC_GEN_IGNORE`    | none    | `;`-separated failure signatures to treat as passing                                |
+| `SYNC_GEN_COLLECT`   | unset   | `1` keeps searching after a failure and collects one shrunk failure per signature   |
+| `SYNC_GEN_REPORT`    | none    | path of a JSON report with every collected failure and the requests the fake served |
+| `SYNC_GEN_COMMIT`    | `HEAD`  | commit sha written into the report                                                  |
+| `SYNC_GEN_SAMPLE`    | 0       | passing sequences per seed to write into the report's `samples`                     |
+
+- A failure prints `Rule broken: <signature>`, the human message and a `SyncTestDefinition` literal that replays with `runSyncTest` (operations-seam literals need `{schema, typeName: 'article'}`). Turn a real bug into a named sync test.
+- The signature joins structured fields with `|` in a fixed order: rule, check (document kind, unhealthy state or step), detail (differing fields, last save state, key fault), lost-edit fate, status code, Content Lake error `body.type` (or the thrown error's name), the failing patch operation and, for an error with no Content Lake body, the function that threw. Examples: `lost-edits | rejected | 400 | mutationError | diffMatchPatch`, `converged | draft | _system`, `settle | consistent | nothing-sent`, `settle | stream-errors | Error | DiffMatchPatch.apply`. It never carries message text, document ids or client names, so a known bug keeps its signature across seeds, seams and runs. The report shape is the contract the weekly verification job reads; change both together.
+- `SYNC_GEN_SAMPLE` spreads its picks over each seed's first run of sequences and skips a passing run whose requests have the same kinds and operations as an earlier sample, so the weekly job can replay a varied set of passing requests against the real Content Lake. It is off by default and costs nothing then.
+- Without `SYNC_GEN_COLLECT` the run stops at the first failing seed. With it, each new signature joins the ignore set and the same seed runs again (up to 10 times) before the next one.
+- The operations seam grows memory by about 0.5 MB per sequence (the store's memo caches are never evicted), so one process runs at most 5,000 operations-seam sequences. A larger `SYNC_GEN_RUNS` fails at load, and seeds past the budget are skipped, named in the failure and left out of the report's `seeds`. Run them in another process.
+- Every value is parsed strictly: a non-integer seed or count, or an unknown seam, fails the file at load.
 
 ### E2E Tests (Token Required)
 

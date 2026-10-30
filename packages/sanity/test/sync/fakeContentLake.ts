@@ -45,17 +45,29 @@ export interface TransactionRecord {
   events: MutationEvent[]
 }
 
+export type SubmissionRequest =
+  | {kind: 'actions'; actions: Action[]}
+  | {kind: 'mutations'; mutations: MutationPayload[]}
+
 export interface SubmissionRecord {
   clientId: string
   transactionId: string
+  request?: SubmissionRequest
   mutations: MutationPayload[]
   submittedAt: number
   outcome: 'pending' | 'accepted' | 'rejected'
   statusCode?: number
   reason?: string
+  errorType?: string
+  error?: ClientError
+  responseBody?: unknown
   injected?: boolean
   settledAt?: number
 }
+
+export type RequestRecord =
+  | {kind: 'submission'; submission: SubmissionRecord}
+  | {kind: 'outside'; transactionId: string; mutations: MutationPayload[]}
 
 interface PendingCommit {
   transactionId: string
@@ -88,6 +100,10 @@ export interface ClientControls {
 }
 
 const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
+
+function errorBodyOf(error: ClientError): {error?: ContentLakeErrorBody} | undefined {
+  return error.response?.body as {error?: ContentLakeErrorBody} | undefined
+}
 
 function httpError(statusCode: number, body: ContentLakeErrorBody): ClientError {
   return new ClientError({
@@ -131,6 +147,8 @@ export class FakeContentLake {
   private ticks = 0
   readonly transactions: TransactionRecord[] = []
   readonly submissions: SubmissionRecord[] = []
+  /** Every request in arrival order, outside edits included. */
+  readonly requests: RequestRecord[] = []
   readonly rejectedCommits: Array<{clientId: string; transactionId: string; statusCode: number}> =
     []
 
@@ -183,11 +201,12 @@ export class FakeContentLake {
     mutations: MutationPayload[],
     transactionId = `ext-${this.transactions.length + 1}`,
   ): void {
+    this.requests.push({kind: 'outside', transactionId, mutations})
     this.applyTransaction(mutations, transactionId, 'outside')
   }
 
   submitActions(clientId: string, actions: Action[], transactionId: string): Promise<unknown> {
-    return this.submit(clientId, transactionId, () =>
+    return this.submit(clientId, transactionId, {kind: 'actions', actions}, () =>
       actionsToMutations(this.documents, actions as ContentLakeAction[]),
     )
   }
@@ -197,7 +216,7 @@ export class FakeContentLake {
     mutations: MutationPayload[],
     transactionId: string,
   ): Promise<unknown> {
-    return this.submit(clientId, transactionId, () => mutations)
+    return this.submit(clientId, transactionId, {kind: 'mutations', mutations}, () => mutations)
   }
 
   getDocuments(ids: string[]): Array<SanityDocument | null> {
@@ -243,6 +262,7 @@ export class FakeContentLake {
   private submit(
     clientId: string,
     transactionId: string,
+    request: SubmissionRequest,
     toMutations: () => MutationPayload[],
   ): Promise<unknown> {
     const policy = this.client(clientId).commits
@@ -250,11 +270,13 @@ export class FakeContentLake {
       const submission: SubmissionRecord = {
         clientId,
         transactionId,
+        request: structuredClone(request),
         mutations: provisionalMutations(toMutations),
         submittedAt: this.tick(),
         outcome: 'pending',
       }
       this.submissions.push(submission)
+      this.requests.push({kind: 'submission', submission})
       const pending: PendingCommit = {
         transactionId,
         translate: toMutations,
@@ -304,6 +326,7 @@ export class FakeContentLake {
         clientId,
       )
       this.recordSettlement(pending.submission, undefined, false)
+      pending.submission.responseBody = {transactionId, results}
       pending.resolve({transactionId, results})
     } catch (error) {
       const failure = toClientError(error)
@@ -336,6 +359,9 @@ export class FakeContentLake {
     submission.outcome = 'rejected'
     submission.statusCode = failure.statusCode
     submission.reason = failure.message
+    submission.errorType = errorBodyOf(failure)?.error?.type
+    submission.error = failure
+    submission.responseBody = errorBodyOf(failure)
     submission.injected = injected
   }
 
