@@ -1,6 +1,6 @@
 import {SanityEncoder} from '@sanity/mutate'
 import {applyInIndex} from '@sanity/mutate/_unstable_apply'
-import {getAtPath, parse, type Path} from '@sanity/mutate/path'
+import {getAtPath, isArrayElement, parse, type Path, type PathElement} from '@sanity/mutate/path'
 
 import {ContentLakeError, mutationFailed} from './contentLakeError'
 import {
@@ -60,13 +60,36 @@ function jsonPathOf(path: Path): string {
   return `$${segments.join('')}`
 }
 
+function childAt(value: unknown, element: PathElement): unknown {
+  return value === undefined || value === null
+    ? undefined
+    : (getAtPath([element], value) as unknown)
+}
+
+function valueAt(path: Path, document: ContentLakeDocument | undefined): unknown {
+  const elements: PathElement[] = [...path]
+  return elements.reduce<unknown>(childAt, document)
+}
+
+// Content Lake answers 200 and changes nothing when a path names an array item that is not there.
+function matchesNoArrayItem(path: Path, document: ContentLakeDocument | undefined): boolean {
+  return path.some((element, depth) => {
+    const parent = isArrayElement(element) ? valueAt(path.slice(0, depth), document) : undefined
+    return Array.isArray(parent) && getAtPath([element], parent) === undefined
+  })
+}
+
+function diffMatchPatchPaths(patch: PatchPayload): string[] {
+  return Object.keys((patch.diffMatchPatch ?? {}) as Record<string, unknown>)
+}
+
 function assertDiffMatchPatchable(
   document: ContentLakeDocument | undefined,
   patch: PatchPayload,
 ): void {
-  Object.keys((patch.diffMatchPatch ?? {}) as Record<string, unknown>).forEach((key) => {
+  diffMatchPatchPaths(patch).forEach((key) => {
     const path = parse(key)
-    if (typeof getAtPath(path, document) === 'string') return
+    if (typeof valueAt(path, document) === 'string') return
     throw new ContentLakeError(400, {
       description: `Can't diff-match-patch "${jsonPathOf(path)}", because it is not a string`,
       type: 'validationError',
@@ -74,10 +97,26 @@ function assertDiffMatchPatchable(
   })
 }
 
+function withoutMissingItemDiffs(
+  document: ContentLakeDocument | undefined,
+  mutation: MutationPayload,
+): MutationPayload {
+  const patch = mutation.patch
+  if (patch?.diffMatchPatch === undefined) return mutation
+  const diffMatchPatch = Object.fromEntries(
+    Object.entries(patch.diffMatchPatch as Record<string, unknown>).flatMap((entry) =>
+      matchesNoArrayItem(parse(entry[0]), document) ? [] : [entry],
+    ),
+  )
+  return {patch: {...patch, diffMatchPatch}}
+}
+
 function applyMutation(index: DocumentIndex, mutation: MutationPayload): DocumentIndex {
-  if (mutation.patch) assertDiffMatchPatchable(index[mutation.patch.id], mutation.patch)
+  const target = mutation.patch ? index[mutation.patch.id] : undefined
+  const applicable = withoutMissingItemDiffs(target, mutation)
+  if (applicable.patch) assertDiffMatchPatchable(target, applicable.patch)
   const decoded = SanityEncoder.decodeAll(
-    withMissingParents(mutation).map(stripTransactionFields).map(normalizeIncDec) as never[],
+    withMissingParents(applicable).map(stripTransactionFields).map(normalizeIncDec) as never[],
   )
   return applyInIndex(index as never, decoded as never) as DocumentIndex
 }
