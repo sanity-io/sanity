@@ -15,6 +15,7 @@ export interface SubmissionReport {
   outcome: 'accepted' | 'rejected' | 'pending'
   statusCode?: number
   responseBody?: unknown
+  settledAt?: number
 }
 
 export interface SyncTestStep {

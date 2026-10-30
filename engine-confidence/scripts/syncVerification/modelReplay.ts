@@ -30,8 +30,17 @@ const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
 export const SEED_REVISION = 'seed'
 export const ACCEPTED: SubmissionOutcome = {statusCode: 200}
 
+function applyOrder(submissions: SubmissionReport[]): number[] {
+  const tickOf = (index: number) => submissions[index].settledAt ?? Number.POSITIVE_INFINITY
+  return submissions
+    .map((_, index) => index)
+    .toSorted((left, right) => tickOf(left) - tickOf(right))
+}
+
+/** In the fake's apply order: a held commit applies after requests that arrived later. */
 export function replayPlan(sequence: ReplayableSequence): ReplayEntry[] {
-  return sequence.submissions.map((submission, index): ReplayEntry => {
+  return applyOrder(sequence.submissions).map((index): ReplayEntry => {
+    const submission = sequence.submissions[index]
     const base = {submission: index, transactionId: submission.transactionId}
     if (submission.injected) return {...base, replay: false, reason: 'injected'}
     if (submission.outcome === 'pending') return {...base, replay: false, reason: 'pending'}
@@ -113,7 +122,7 @@ function documentsOf(
   return Object.fromEntries(documentIds.map((id) => [id, index[id] ?? null]))
 }
 
-/** Replays the replayable submissions in report order through the same model the fake uses. */
+/** Replays the replayable submissions in apply order through the same model the fake uses. */
 export function replayOnModel(sequence: ReplayableSequence, documentIds: string[]): ModelStep[] {
   const replayable = replayPlan(sequence).filter((entry) => entry.replay)
   return replayable.reduce<{index: DocumentIndex; steps: ModelStep[]}>(
