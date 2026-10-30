@@ -28,7 +28,7 @@
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "chalk": "^6.0.0",
     "esbuild": "0.28.2",
-    "groq-js": "^2.0.0",
+    "groq-js": "^2.0.1",
     "mendoza": "^3.0.8",
     "playwright": "catalog:",
     "react": "catalog:",
