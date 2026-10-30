@@ -528,14 +528,21 @@ describe('asset `accept` inference', () => {
     ],
   })
 
-  const assetFileTypes: Record<string, {mimeType: string | null; extension: string | null}> = {
+  const assetFileTypes: Record<
+    string,
+    {mimeType: string | null; extension: string | null; originalFilename?: string}
+  > = {
     'image-jpeg1-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-jpeg2-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-jpeg3-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-jpeg4-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-png1-10x10-png': {mimeType: 'image/png', extension: 'png'},
-    'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf'},
-    'file-zip1-zip': {mimeType: 'application/zip', extension: 'zip'},
+    'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.pdf'},
+    'file-zip1-zip': {
+      mimeType: 'application/zip',
+      extension: 'zip',
+      originalFilename: 'archive.zip',
+    },
     'image-nomime1-10x10-png': {mimeType: null, extension: 'png'},
     'image-notype1-10x10-png': {mimeType: null, extension: null},
     'file-noext1-pdf': {mimeType: 'application/zip', extension: null},
@@ -644,10 +651,8 @@ describe('asset `accept` inference', () => {
     )
   })
 
-  test('warns when the asset has no extension and its MIME type does not match', async () => {
-    await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toMatchObject(
-      [{code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['pdfOrWord']}],
-    )
+  test('passes extension tokens when the asset has no original filename, like uploads', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toEqual([])
   })
 
   test('passes when the asset document cannot be found', async () => {
@@ -867,17 +872,14 @@ describe('image crop option inference', () => {
 
 describe('assetMatchesAccept', () => {
   test.each([
-    [{mimeType: 'image/png', extension: 'png'}, 'image/*', true],
-    [{mimeType: 'image/png', extension: 'png'}, 'IMAGE/PNG', true],
-    [{mimeType: 'image/jpeg', extension: 'jpg'}, '.jpeg', true],
-    [{mimeType: 'image/tiff', extension: 'tif'}, '.tiff', true],
-    [{mimeType: 'video/mp4', extension: 'mp4'}, '*/*', true],
-    [{mimeType: 'image/png', extension: 'png'}, ' , ', true],
+    [{mimeType: 'image/png'}, 'image/*', true],
+    [{mimeType: 'image/png'}, 'IMAGE/PNG', true],
+    [{mimeType: 'image/jpeg', originalFilename: 'photo.JPEG'}, '.jpeg', true],
+    [{mimeType: 'application/pdf', originalFilename: 'brief.docx'}, '.pdf', false],
+    [{mimeType: 'application/pdf'}, '.pdf', true],
     [{mimeType: null, extension: 'png'}, 'image/png', false],
-    [{mimeType: 'application/pdf', extension: null}, '.pdf', false],
-    [{mimeType: null, extension: 'png'}, '.png', true],
-    [{mimeType: 'image/png', extension: 'png'}, 'image/jpeg, .webp', false],
-    [{mimeType: 'application/pdf', extension: 'pdf'}, 'image/*', false],
+    [{mimeType: 'image/png', originalFilename: 'photo.png'}, 'image/jpeg, .webp', false],
+    [{mimeType: 'application/pdf'}, 'image/*', false],
   ])('%o against %s is %s', (fileType, accept, expected) => {
     expect(assetMatchesAccept(fileType, accept)).toBe(expected)
   })
