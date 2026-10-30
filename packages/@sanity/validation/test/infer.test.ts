@@ -692,12 +692,13 @@ describe('image crop option inference', () => {
     ],
   })
 
-  const WIDE = 'image-a1-1600x900-jpg'
-  const THREE_BY_TWO = 'image-a2-1200x800-jpg'
-  const SQUARE = 'image-a3-1000x1000-png'
-  const FOUR_BY_THREE = 'image-a4-1200x900-jpg'
-  const SMALL_WIDE = 'image-a5-640x360-jpg'
-  const SMALL_THREE_BY_TWO = 'image-a11-600x400-jpg'
+  const ASSET_HASH = 'a75b03fdd5b5fa36947bf2b776a542e0c940f682'
+  const WIDE = `image-${ASSET_HASH}-1600x900-jpg`
+  const THREE_BY_TWO = `image-${ASSET_HASH}-1200x800-jpg`
+  const SQUARE = `image-${ASSET_HASH}-1000x1000-png`
+  const FOUR_BY_THREE = `image-${ASSET_HASH}-1200x900-jpg`
+  const SMALL_WIDE = `image-${ASSET_HASH}-640x360-jpg`
+  const SMALL_THREE_BY_TWO = `image-${ASSET_HASH}-600x400-jpg`
 
   function imageValue(ref: string, crop?: Record<string, number>) {
     return {
@@ -826,7 +827,9 @@ describe('image crop option inference', () => {
   })
 
   test('keeps the error and warning levels alongside an authored required rule', async () => {
-    const markers = await validateFields({requiredCrop: imageValue('image-a6-640x480-jpg')})
+    const markers = await validateFields({
+      requiredCrop: imageValue(`image-${ASSET_HASH}-640x480-jpg`),
+    })
     expect(markers).toMatchObject([
       {code: validationMarkerCodes.imageBelowMinDimensions, level: 'error'},
       {code: validationMarkerCodes.imageAspectRatioMismatch, level: 'error'},
@@ -844,8 +847,8 @@ describe('image crop option inference', () => {
   test('skips SVG images', async () => {
     await expect(
       validateFields({
-        requiredCrop: imageValue('image-a7-svg'),
-        namedWide: imageValue('image-a8-100x400-svg'),
+        requiredCrop: imageValue(`image-${ASSET_HASH}-100x400-svg`),
+        namedWide: imageValue(`image-${ASSET_HASH}-100x400-svg`),
       }),
     ).resolves.toEqual([])
   })
@@ -866,7 +869,9 @@ describe('image crop option inference', () => {
   })
 
   test('skips images without crop options', async () => {
-    await expect(validateFields({plain: imageValue('image-a10-10x500-jpg')})).resolves.toEqual([])
+    await expect(
+      validateFields({plain: imageValue(`image-${ASSET_HASH}-10x500-jpg`)}),
+    ).resolves.toEqual([])
   })
 })
 

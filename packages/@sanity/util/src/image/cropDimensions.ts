@@ -1,3 +1,4 @@
+import {isImageAssetId, parseImageAssetId, type SanityImageAssetIdParts} from '@sanity/asset-utils'
 import {type ImageCrop, type ImageCropDimensions, type ImageValue} from '@sanity/types'
 
 /**
@@ -12,32 +13,37 @@ export interface ImagePixelRect {
   height: number
 }
 
-const SVG_IMAGE_REF_PATTERN = /^image-[^-]+(?:-\d+x\d+)?-svg$/
-
-const DIMENSIONED_IMAGE_REF_PATTERN = /^image-[^-]+-(\d+)x(\d+)-\w+$/
+function parseImageRef(ref: string | undefined): SanityImageAssetIdParts | undefined {
+  try {
+    return typeof ref === 'string' && isImageAssetId(ref) ? parseImageAssetId(ref) : undefined
+  } catch {
+    // A well-formed ID with a zero width or height still throws
+    return undefined
+  }
+}
 
 /**
- * Whether an asset reference is an SVG image (`image-<hash>-svg` or `image-<hash>-<w>x<h>-svg`).
- * The image API does not transform SVGs, so they cannot be cropped.
+ * Whether an asset reference is an SVG image (`image-<hash>-<w>x<h>-svg`). The image API does not
+ * transform SVGs, so they cannot be cropped.
  *
  * @internal
  */
-export function isSvgImageRef(ref: string): boolean {
-  return SVG_IMAGE_REF_PATTERN.test(ref)
+export function isSvgImageRef(ref: string | undefined): boolean {
+  return parseImageRef(ref)?.extension === 'svg'
 }
 
 /**
  * The source size encoded in a raster image asset reference (`image-<hash>-<w>x<h>-<format>`), or
- * `undefined` for an SVG or a reference without dimensions.
+ * `undefined` for an SVG or a reference that is not a valid image asset ID.
  *
  * @internal
  */
 export function getImageRefDimensions(ref: string | undefined): ImageCropDimensions | undefined {
-  if (ref === undefined || isSvgImageRef(ref)) {
+  const parts = parseImageRef(ref)
+  if (parts === undefined || parts.extension === 'svg') {
     return undefined
   }
-  const match = DIMENSIONED_IMAGE_REF_PATTERN.exec(ref)
-  return match ? {width: Number(match[1]), height: Number(match[2])} : undefined
+  return {width: parts.width, height: parts.height}
 }
 
 /**
