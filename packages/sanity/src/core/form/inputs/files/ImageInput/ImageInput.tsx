@@ -1,4 +1,5 @@
 import {isImageSource} from '@sanity/asset-utils'
+import {isImageToolEnabled} from '@sanity/schema/_internal'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -28,7 +29,7 @@ import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
-import {getImageToolPath, isImageToolEnabled} from '../ImageToolInput/imageToolOptions'
+import {getImageToolPath} from '../ImageToolInput/imageToolOptions'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
