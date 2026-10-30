@@ -1,7 +1,7 @@
 import {dequal as isEqual} from 'dequal/lite'
 
 import {debug} from './debug'
-import {Document} from './Document'
+import {Document, type SubmissionResponder} from './Document'
 import {Mutation} from './Mutation'
 import {SquashingBuffer} from './SquashingBuffer'
 import {type Doc, type Mut} from './types'
@@ -213,8 +213,17 @@ export class BufferedDocument {
     }
 
     this.committerRunning = true
-    const squashed = commit.squash(this.LOCAL)
-    const docResponder = this.document.stage(squashed, true)
+    let squashed: Mutation
+    let docResponder: SubmissionResponder
+    try {
+      squashed = commit.squash(this.LOCAL)
+      docResponder = this.document.stage(squashed, true)
+    } catch (error) {
+      const stageError = error instanceof Error ? error : new Error(String(error))
+      commit.reject(stageError)
+      this.cancelCommits(stageError)
+      return
+    }
 
     const responder = {
       success: () => {
@@ -248,14 +257,7 @@ export class BufferedDocument {
         }
       },
 
-      cancel: (error: Error) => {
-        this.commits.forEach((comm) => comm.reject(error))
-        this.commits = []
-
-        // The buffer holds edits made after this commit was sent, so they are rebased onto HEAD and kept
-        this.reset(this.document.HEAD)
-        this.committerRunning = false
-      },
+      cancel: (error: Error) => this.cancelCommits(error),
     }
 
     debug('Posting commit')
@@ -267,6 +269,15 @@ export class BufferedDocument {
         cancel: responder.cancel,
       })
     }
+  }
+
+  private cancelCommits(error: Error): void {
+    this.committerRunning = false
+    this.commits.forEach((comm) => comm.reject(error))
+    this.commits = []
+
+    // The buffer holds edits made after this commit was sent, so they are rebased onto HEAD and kept
+    this.reset(this.document.HEAD)
   }
 
   handleDocRebase(edge: Doc | null, remoteMutations: Mutation[], localMutations: Mutation[]): void {
