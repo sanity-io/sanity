@@ -1,7 +1,7 @@
 import {ResourceProvider} from '@sanity/sdk-react'
 import {type PayloadOf} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
-import {createBrowserHistory} from 'history'
+import {type BrowserHistory, createBrowserHistory} from 'history'
 import {type ReactNode} from 'react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, expect, it} from 'vitest'
@@ -33,7 +33,7 @@ function StudioRouter({history, children}: {history: RouterHistory; children: Re
 }
 
 // A message bus host that records Studio's navigation reports and accepts them.
-function renderWithMessageBusHost() {
+function renderWithMessageBusHost(history: BrowserHistory = createBrowserHistory()) {
   const host = stubMessageBusHost()
   const reports: PayloadOf<'navigation.location.update'>[] = []
   host.respond('navigation.location.update', (message) => {
@@ -41,7 +41,6 @@ function renderWithMessageBusHost() {
     message.reply({ok: true})
   })
 
-  const history = createBrowserHistory()
   render(
     <ResourceCacheProvider>
       <ResourceProvider projectId="test" dataset="test" fallback={null}>
@@ -66,6 +65,18 @@ it("reports Studio's URL to a message bus host as a replace", async () => {
       {url: `${STUDIO_URL}/book;book-1?perspective=drafts`, history: 'replace'},
     ]),
   )
+})
+
+it('does not report auth params from a stale hash to a message bus host', async () => {
+  // The auth modules remove `#sid=` with `window.history.replaceState`, which a `history`
+  // instance created earlier never sees, so its location still has it.
+  window.history.replaceState(null, '', `${STUDIO_URL}#sid=12345678901234567890&keep=me`)
+  const history = createBrowserHistory()
+  window.history.replaceState(null, '', `${STUDIO_URL}#keep=me`)
+
+  const {reports} = renderWithMessageBusHost(history)
+
+  await waitFor(() => expect(reports).toEqual([{url: `${STUDIO_URL}#keep=me`, history: 'replace'}]))
 })
 
 it('reports back and forward to a message bus host without adding history entries', async () => {
