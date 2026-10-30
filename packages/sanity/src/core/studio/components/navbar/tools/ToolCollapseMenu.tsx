@@ -40,16 +40,19 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
   const children = useMemo(
     () =>
-      tools.map((tool, index) => {
+      tools.map((tool) => {
         const title = tool?.title || startCase(tool.name)
 
         // `ToolLink` is rendered as the button's element directly. A wrapper component defined
         // here would be a new component type every time this list is rebuilt, so every tool
         // switch would remount every tool link (and the measurement clones observing them)
-        // instead of updating them in place.
+        // instead of updating them in place. The overflow menu also builds its items from these
+        // buttons' props, so each child has to be the button itself. Keyed by name rather than
+        // position, so inserting a tool doesn't remount the tabs after it, which would give them
+        // new view-transition-names.
         return (
           <Button
-            key={`${tool.name}-${index}`}
+            key={`${tool.name}-${title}`}
             as={ToolLink}
             data-as="a"
             mode="bleed"

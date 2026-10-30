@@ -28,9 +28,8 @@ const NARROW = 250
 const WIDE = 600
 const TAB_STYLE = {width: 90} as const
 
-// Mirrors ToolCollapseMenu, which keys tools by `${tool.name}-${index}` — inserting
-// a tool (e.g. Schedules appearing once its async feature check resolves) shifts
-// the keys of every tool after it.
+// Keyed by index on purpose: inserting a tab shifts the keys of every tab after it,
+// which CollapseTabList has to cope with whatever keys its consumer picks.
 function makeTabs(names: string[]) {
   return names.map((name, index) => (
     <Button key={`${name}-${index}`} mode="bleed" style={TAB_STYLE} text={name} />
@@ -143,6 +142,38 @@ describe('CollapseTabList', () => {
     await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
     await takeSnapshot('overflow-menu-open')
   })
+
+  it.runIf(typeof document.startViewTransition === 'function')(
+    'names the shown tabs and the overflow button, not their hidden clones, so a view transition can start',
+    async () => {
+      configure({disableAutoSnapshot: true})
+      await render(
+        <TestList width={NARROW}>{makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])}</TestList>,
+      )
+      await expect.element(overflowMenuButton).toBeVisible()
+
+      // The measuring row renders aria-hidden clones of the tabs and of the overflow button,
+      // hidden but still laid out. A copy of a name there makes the browser skip the whole
+      // transition, so only the shown copies may be named.
+      const list = document.querySelector('[data-testid="collapse-tab-list"]')!
+      const nameOf = (el: Element) => getComputedStyle(el).viewTransitionName
+      const label = (el: Element) => el.getAttribute('aria-label') ?? el.textContent
+      const named = Array.from(list.querySelectorAll('*')).filter((el) => nameOf(el) !== 'none')
+      const shown = Array.from(list.querySelectorAll('button')).filter(
+        (button) => !button.closest('[aria-hidden="true"]'),
+      )
+      expect(shown.map(label)).toContain('Alpha')
+      expect(shown.at(-1)).toBe(overflowMenuButton.element())
+      expect(named.map(label)).toEqual(shown.map(label))
+      const names = named.map(nameOf)
+      expect(names.every((name) => CSS.supports('view-transition-name', name))).toBe(true)
+      expect(new Set(names).size).toBe(names.length)
+
+      const transition = document.startViewTransition(() => {})
+      await expect(transition.ready).resolves.toBeUndefined()
+      await transition.finished
+    },
+  )
 
   it('removes the overflow button when the container grows enough to fit all children', async () => {
     const tabs = makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])
