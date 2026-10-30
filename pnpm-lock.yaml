@@ -1138,6 +1138,9 @@ importers:
 
   engine-confidence:
     dependencies:
+      '@repo/content-lake-model':
+        specifier: workspace:*
+        version: link:../packages/@repo/content-lake-model
       '@repo/utils':
         specifier: workspace:*
         version: link:../packages/@repo/utils

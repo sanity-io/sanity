@@ -21,14 +21,15 @@ The score cannot reach 100%: some mutants are equivalent to the original code. T
 
 Run from the repo root as `pnpm engine-confidence <command>`. Every command writes under `engine-confidence/reports/` (gitignored). Paths passed to a command resolve from the `engine-confidence/` directory, so the report is `reports/engine-confidence-run.json`.
 
-| Command                                                                                                                        | What it does                                                                                                                |
-| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `stryker --target <sanity\|mutator> [--full] [--previous-dir <dir>]`                                                           | Runs Stryker for one target. Reuses the previous incremental result when the pinned config matches, otherwise runs in full. |
-| `catalogue [--suites <ids>] [--only <ids>] [--check-only]`                                                                     | Applies each catalogue patch, runs the suites, reverts. `--check-only` only checks the patches apply.                       |
-| `score [--stryker-dir <dir>] [--catalogue <file>] [--started-at <iso>] [--trigger <schedule\|dispatch\|local>] [--out <file>]` | Builds the run document from the Stryker reports and the catalogue results.                                                 |
-| `store <file> [--dry-run]`                                                                                                     | Writes the document to Radar. `--dry-run` prints the id and the document and needs no token.                                |
-| `pin`                                                                                                                          | Recomputes the config hash and bumps `config.version` when it changed.                                                      |
-| `unit`                                                                                                                         | Runs this package's unit tests.                                                                                             |
+| Command                                                                                                                                                      | What it does                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `stryker --target <sanity\|mutator> [--full] [--previous-dir <dir>]`                                                                                         | Runs Stryker for one target. Reuses the previous incremental result when the pinned config matches, otherwise runs in full. |
+| `catalogue [--suites <ids>] [--only <ids>] [--check-only]`                                                                                                   | Applies each catalogue patch, runs the suites, reverts. `--check-only` only checks the patches apply.                       |
+| `score [--stryker-dir <dir>] [--catalogue <file>] [--started-at <iso>] [--trigger <schedule\|dispatch\|local>] [--out <file>]`                               | Builds the run document from the Stryker reports and the catalogue results.                                                 |
+| `store <file> [--dry-run]`                                                                                                                                   | Writes the document to Radar. `--dry-run` prints the id and the document and needs no token.                                |
+| `pin`                                                                                                                                                        | Recomputes the config hash and bumps `config.version` when it changed.                                                      |
+| `sync-verify <report.json> --out <verdicts.json> [--dry-run] [--dataset-mode <create\|existing>] [--dataset <name>] [--project-id <id>] [--api-host <host>]` | Replays a sync generator report against a real Content Lake and writes one verdict per failure. See below.                  |
+| `unit`                                                                                                                                                       | Runs this package's unit tests.                                                                                             |
 
 Exit codes: `score` returns 8 when the exclusion register has a problem. `stryker` returns 3 for a dirty package, 5 when a guard fails (a surviving mutant that ran no test, or fewer dry run tests than `dryRunFloor`) and 6 for a config hash mismatch. `catalogue` returns 2 for a patch that does not apply, 3 for a dirty tree, 4 for a suite that is red on the clean tree, 6 for a hash mismatch and 7 for a witness that passes with its patch applied.
 
@@ -53,6 +54,23 @@ pnpm engine-confidence store reports/engine-confidence-run.json --dry-run
 ```
 
 For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz suite and records it as `not-run`. The known bugs count of such a run is not comparable with a full one.
+
+## Sync verification
+
+`sync-verify` checks the fake Content Lake against the real one for every failure in a sync generator report. It seeds the failure's `initial` documents, sends each submission the fake answered on its own to the actions or mutate endpoint on API version `v2025-02-19`, the version the Studio commits on, and reads the documents back after each one. It compares the status code, the error `body.type` and the documents, ignoring `_rev`, `_createdAt` and `_updatedAt`, with the same submissions replayed through `@repo/content-lake-model`. Injected rejections and submissions the fake never answered are skipped.
+
+Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision preconditions are rewritten to the real revisions, so failures never touch each other's documents. Each failure's documents are deleted when it finishes.
+
+| Verdict         | Meaning                                                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`     | The real server agreed on every replayed submission.                                                                                      |
+| `fake-mismatch` | The real server disagreed on at least one submission. `differences` lists each one.                                                       |
+| `assumed`       | Nothing was replayed, or the failure also depends on a listener fault or an injected rejection, which the real server cannot reproduce.   |
+| `error`         | The step could not finish for that failure, or the model replayed in submission order did not reproduce the generator's recorded outcome. |
+
+`--dataset-mode create`, the default, creates `cursor_ci_sync_<random>` on `SANITY_E2E_PROJECT_ID` at `api.sanity.work` and deletes it at the end, on failure and on SIGINT or SIGTERM as well. The e2e cleanup job sweeps any `cursor_ci_` dataset older than 24 hours. `--dataset-mode existing --dataset <name>` reuses a dataset and creates only the prefixed documents. The token comes from `SANITY_E2E_SESSION_TOKEN`, and `SANITY_CLI_API_RATE_LIMIT_BYPASS` is sent when it is set. `--dry-run` needs no token: it validates the report and prints what it would replay.
+
+The command exits 0 whenever it writes the verdicts file, including when a verdict is `error`. It exits 1 for an invalid report or when it cannot delete the dataset it created.
 
 ## The exclusion register
 
