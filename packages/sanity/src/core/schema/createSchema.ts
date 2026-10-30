@@ -1,5 +1,10 @@
 import {Schema as SchemaBuilder, type SchemaValidationResult} from '@sanity/schema'
-import {builtinTypes, groupProblems, validateSchema} from '@sanity/schema/_internal'
+import {
+  builtinTypes,
+  groupProblems,
+  resolveReleaseTypes,
+  validateSchema,
+} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import {inferFromSchema as inferValidation} from '@sanity/validation/_internal'
 
@@ -15,13 +20,14 @@ inferValidation(builtinSchema)
  * @hidden
  * @beta */
 export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
-  const validated = validateSchema(schemaDef.types).getTypes()
+  const types = resolveReleaseTypes(schemaDef.types)
+  const validated = validateSchema(types).getTypes()
   const validation = groupProblems(validated)
   const hasErrors = validation.some((group) => group.problems.some(isError))
 
   const compiled = SchemaBuilder.compile({
     name: schemaDef.name,
-    types: hasErrors ? [] : schemaDef.types.filter(Boolean),
+    types: hasErrors ? [] : types.filter(Boolean),
     parent: builtinSchema,
   })
 
