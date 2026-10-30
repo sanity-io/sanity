@@ -29,11 +29,21 @@ function EditorButton({onClick}: {onClick: () => void}) {
 
 **Example (preload when feature flag is enabled):**
 
+```ts
+// monaco-editor-init.lazy.ts
+export {init as default} from './monaco-editor'
+```
+
 ```tsx
+async function initializeEditor() {
+  const {default: init} = await import('./monaco-editor-init.lazy')
+  init()
+}
+
 function FlagsProvider({children, flags}: Props) {
   useEffect(() => {
     if (flags.editorEnabled && typeof window !== 'undefined') {
-      void import('./monaco-editor').then((mod) => mod.init())
+      void initializeEditor()
     }
   }, [flags.editorEnabled])
 
