@@ -1551,7 +1551,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Find in Audience',
+  'navbar.variant.filter-placeholder': 'Find audience',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
 
