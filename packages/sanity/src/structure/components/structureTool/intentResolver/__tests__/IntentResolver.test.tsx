@@ -4,7 +4,7 @@ import {firstValueFrom, from, NEVER, Observable, of, throwError} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {createRequestErrorChannel, type DocumentStore} from 'sanity'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {PaneResolutionError} from '../../../../structureResolvers/PaneResolutionError'
 import * as USE_STRUCTURE_TOOL from '../../../../useStructureTool'
@@ -206,8 +206,13 @@ describe('IntentResolver', () => {
     const resolvedPanes = [[{id: 'books'}], [{id: 'doc-id', params: {}}]]
 
     beforeEach(() => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
       mockRouter.state = {intent: 'edit', params: {id: 'doc-id', type: 'book'}}
       mockResolveTypeForDocument.mockReturnValue(of('book'))
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
     })
 
     it('navigates straight to a resolution that settles within the grace period', async () => {
@@ -224,6 +229,7 @@ describe('IntentResolver', () => {
       mockResolveIntent.mockReturnValue(resolution.promise)
 
       renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
 
       await waitFor(() =>
         expect(mockNavigate).toHaveBeenCalledWith(
@@ -261,7 +267,7 @@ describe('IntentResolver', () => {
 
       renderResolver()
 
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      await act(() => vi.advanceTimersByTimeAsync(300))
       expect(mockNavigate).not.toHaveBeenCalled()
 
       await act(async () => documentType.resolve('book'))
@@ -287,6 +293,7 @@ describe('IntentResolver', () => {
       mockResolveIntent.mockReturnValue(resolution.promise)
 
       renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
 
       await waitFor(() => expect(mockNavigate).toHaveBeenCalledTimes(1))
       act(() => {
@@ -309,6 +316,7 @@ describe('IntentResolver', () => {
       mockResolveIntent.mockReturnValue(resolution.promise)
 
       renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
 
       await waitFor(() =>
         expect(mockNavigate).toHaveBeenCalledWith(
@@ -332,6 +340,42 @@ describe('IntentResolver', () => {
           params: {id: 'new-id', type: 'book', template: 'book-by-author'},
           payload: {authorId: 'grrm'},
         }),
+      )
+    })
+
+    it('waits for the structure when a link without a type points to a missing document', async () => {
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id'}}
+      mockResolveTypeForDocument.mockReturnValue(of(null))
+      const resolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValue(resolution.promise)
+
+      renderResolver()
+      await act(() => vi.advanceTimersByTimeAsync(300))
+      expect(mockNavigate).not.toHaveBeenCalled()
+
+      await act(async () => resolution.resolve(resolvedPanes))
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith({panes: resolvedPanes}, {replace: true}),
+      )
+    })
+
+    it('does not reuse a resolution started for other params of the same document', async () => {
+      mockRouter.state = {intent: 'edit', params: {id: 'doc-id', type: 'book', comment: 'c1'}}
+      const firstResolution = deferred<typeof resolvedPanes>()
+      mockResolveIntent.mockReturnValueOnce(firstResolution.promise)
+      mockResolveIntent.mockResolvedValue(resolvedPanes)
+
+      renderResolver()
+      await waitFor(() => expect(mockResolveIntent).toHaveBeenCalledTimes(1))
+      act(() => mockRouter.setState({panes: [[{id: 'authors'}]]}))
+      await act(async () => firstResolution.resolve(resolvedPanes))
+      act(() =>
+        mockRouter.setState({intent: 'edit', params: {id: 'doc-id', type: 'book', comment: 'c2'}}),
+      )
+
+      await waitFor(() => expect(mockResolveIntent).toHaveBeenCalledTimes(2))
+      expect(mockResolveIntent).toHaveBeenLastCalledWith(
+        expect.objectContaining({params: {id: 'doc-id', type: 'book', comment: 'c2'}}),
       )
     })
 

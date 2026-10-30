@@ -1,19 +1,25 @@
+import {dequal} from 'dequal/lite'
+import omit from 'lodash-es/omit.js'
 import {memo, type RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import {
   catchError,
   EMPTY,
   filter,
   firstValueFrom,
+  from,
+  of,
   shareReplay,
   type Subscription,
   switchMap,
   take,
+  timeout,
 } from 'rxjs'
 import {getPublishedId, isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
-import {resolveIntent, type ResolveIntentOptions} from '../../../structureResolvers/resolveIntent'
+import {type StructureContext} from '../../../structureBuilder/types'
+import {resolveIntent} from '../../../structureResolvers/resolveIntent'
 import {
   applyResolvedIntent,
   createResolvingPanes,
@@ -27,22 +33,21 @@ import {ensureDocumentIdAndType} from './utils'
 
 const EMPTY_RECORD: Record<string, unknown> = {}
 
-/**
- * How long an intent may take to resolve before its document is opened on its
- * own. It matches the delay before `LoadingPane` shows, so a fast resolution
- * navigates straight to the result without an intermediate state.
- */
+/** Matches the `LoadingPane` delay, so a fast resolution navigates straight to the result. */
 const RESOLVING_GRACE_PERIOD_MS = 300
 
 const GRACE_PERIOD_ELAPSED = Symbol('grace period elapsed')
 
-type ResolutionRequest = Omit<ResolveIntentOptions, 'rootPaneNode' | 'structureContext'>
-
 interface PendingResolution {
-  key: string
+  key: unknown
   rootPaneNode: UnresolvedPaneNode
-  structureContext: unknown
+  structureContext: StructureContext
   resolution: Promise<RouterPanes>
+}
+
+// `type` may still be a pending lookup, and StructureTool strips `mode` from the resolving pane
+function getResolutionKey({intent, params, payload}: IntentRequest) {
+  return {intent, params: omit(params, ['type', 'mode']), payload}
 }
 
 /**
@@ -94,13 +99,12 @@ export const IntentResolver = memo(function IntentResolver() {
 
   // the same resolution serves the intent state and the resolving pane that
   // replaces it, so moving from one to the other doesn't start it again
-  const getResolution = useEffectEvent((request: ResolutionRequest): Promise<RouterPanes> => {
-    // keyed without the type, which the intent state may only know as a pending lookup
-    const key = `${request.intent}:${request.params.id}`
+  const getResolution = useEffectEvent((request: IntentRequest): Promise<RouterPanes> => {
+    const key = getResolutionKey(request)
     const pending = pendingRef.current
     if (
       pending &&
-      pending.key === key &&
+      dequal(pending.key, key) &&
       pending.rootPaneNode === rootPaneNode &&
       pending.structureContext === structureContext
     ) {
@@ -108,10 +112,9 @@ export const IntentResolver = memo(function IntentResolver() {
     }
 
     const resolution = resolveIntent({...request, rootPaneNode, structureContext})
-    const entry: PendingResolution = {key, rootPaneNode, structureContext, resolution}
-    pendingRef.current = entry
+    pendingRef.current = {key, rootPaneNode, structureContext, resolution}
     // a failed resolution is started again when the request-error dialog retries it
-    resolution.catch(() => forgetResolution(pendingRef, entry.resolution))
+    resolution.catch(() => forgetResolution(pendingRef, resolution))
     return resolution
   })
 
@@ -156,31 +159,34 @@ export const IntentResolver = memo(function IntentResolver() {
           documentType: documentType$,
           payload,
         })
-        let timer: ReturnType<typeof setTimeout> | undefined
-        const result = await Promise.race([
-          resolution,
-          new Promise<typeof GRACE_PERIOD_ELAPSED>((resolve) => {
-            timer = setTimeout(resolve, RESOLVING_GRACE_PERIOD_MS, GRACE_PERIOD_ELAPSED)
-          }),
-        ]).finally(() => clearTimeout(timer))
+        let panes = await firstValueFrom(
+          from(resolution).pipe(
+            timeout({first: RESOLVING_GRACE_PERIOD_MS, with: () => of(GRACE_PERIOD_ELAPSED)}),
+          ),
+        )
 
-        if (cancelled) return
-
-        if (result === GRACE_PERIOD_ELAPSED) {
+        if (panes === GRACE_PERIOD_ELAPSED && !cancelled) {
           const documentType = await firstValueFrom(documentType$)
-          if (cancelled) return
-
-          const request: IntentRequest = {
-            intent,
-            params: {...params, id, type: documentType},
-            payload,
+          // without a type the document can't render on its own, so wait for the structure
+          if (documentType && !cancelled) {
+            navigate(
+              {
+                panes: createResolvingPanes({
+                  intent,
+                  params: {...params, id, type: documentType},
+                  payload,
+                }),
+              },
+              {replace: true},
+            )
+            return
           }
-          navigate({panes: createResolvingPanes(request)}, {replace: true})
-          return
+          panes = await resolution
         }
 
         forgetResolution(pendingRef, resolution)
-        navigate({panes: result}, {replace: true})
+        if (cancelled || panes === GRACE_PERIOD_ELAPSED) return
+        navigate({panes}, {replace: true})
       }
 
       // Delegate infrastructure failures (network, 5xx, 429) to the studio's request-error

@@ -1,6 +1,7 @@
 import omit from 'lodash-es/omit.js'
 
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from '../types'
+import {type ResolveIntentOptions} from './resolveIntent'
 
 /**
  * Prefix of the pane that renders a document while its intent link is still
@@ -35,16 +36,8 @@ export function getDocumentIdFromPaneId(id: string): string {
   return id.replace(FALLBACK_EDITOR_PREFIX_PATTERN, '')
 }
 
-/**
- * An intent that the structure tool resolves to a path of panes.
- *
- * @internal
- */
-export interface IntentRequest {
-  intent: string
-  params: {type: string; id: string; [key: string]: string | undefined}
-  payload: unknown
-}
+/** @internal */
+export type IntentRequest = Omit<ResolveIntentOptions, 'rootPaneNode' | 'structureContext'>
 
 /**
  * Pane params that belong to the pane the user is looking at rather than to the
