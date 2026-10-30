@@ -31,6 +31,8 @@ import {
   STRYKER_TARGET_IDS,
   type StrykerTargetId,
   type StrykerTargetRun,
+  STUDIO_ENGINE_TARGET,
+  targetScoreOf,
 } from '@repo/utils/engine-confidence'
 import {engineConfidenceRunId} from '@repo/utils/radar-ids'
 
@@ -847,6 +849,7 @@ function demoEngineRun(week: number, weekStart: Date): EngineConfidenceRunDocume
       fuzzRuns: 150,
     },
     score,
+    studioScore: targetScoreOf(files, STUDIO_ENGINE_TARGET),
     knownBugs,
   }
 }
