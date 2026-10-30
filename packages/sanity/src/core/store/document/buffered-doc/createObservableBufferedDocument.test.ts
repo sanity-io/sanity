@@ -1,7 +1,9 @@
+import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
 import {type SanityDocument} from '@sanity/types'
 import {Subject} from 'rxjs'
 import {expect, test} from 'vitest'
 
+import {captureUnhandledRejections} from '../../../../../test/sync/unhandledRejections'
 import {type ListenerEvent} from '../getPairListener'
 import {mutationEvent} from '../utils/__test__/test-utils'
 import {
@@ -79,20 +81,24 @@ test('a remote patch that cannot apply to the local document does not error the 
   ])
 })
 
+function createCommittingDocument() {
+  const listenerEvent$ = new Subject<ListenerEvent>()
+  const buffered = createObservableBufferedDocument(listenerEvent$)
+  buffered.updates$.subscribe({error: () => {}})
+  const requests: CommitRequest[] = []
+  buffered.commitRequest$.subscribe((request) => requests.push(request))
+  listenerEvent$.next({type: 'snapshot', documentId: 'drafts.doc-1', document: INITIAL})
+  return {listenerEvent$, buffered, requests}
+}
+
+function settle(): Promise<unknown> {
+  return new Promise((resolve) => setTimeout(resolve, 0))
+}
+
 test('cancelling an in-flight commit with a commit queued behind it raises no unhandled rejection', async () => {
-  const unhandledReasons: unknown[] = []
-  const onUnhandledRejection = (reason: unknown) => unhandledReasons.push(reason)
-  process.on('unhandledRejection', onUnhandledRejection)
-
+  const unhandled = captureUnhandledRejections()
   try {
-    const listenerEvent$ = new Subject<ListenerEvent>()
-    const buffered = createObservableBufferedDocument(listenerEvent$)
-    buffered.updates$.subscribe()
-
-    const requests: CommitRequest[] = []
-    buffered.commitRequest$.subscribe((request) => requests.push(request))
-
-    listenerEvent$.next({type: 'snapshot', documentId: 'drafts.doc-1', document: INITIAL})
+    const {buffered, requests} = createCommittingDocument()
 
     buffered.addMutation({patch: {id: 'drafts.doc-1', set: {title: 'one'}}})
     buffered.commit()
@@ -102,9 +108,48 @@ test('cancelling an in-flight commit with a commit queued behind it raises no un
     expect(requests).toHaveLength(1)
     requests[0].cancel(new Error('Rejected with 409'))
 
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(unhandledReasons).toEqual([])
+    await settle()
+    expect(unhandled.reasons).toEqual([])
   } finally {
-    process.off('unhandledRejection', onUnhandledRejection)
+    unhandled.stop()
+  }
+})
+
+test('a commit that fails to stage still surfaces as an unhandled rejection', async () => {
+  const unhandled = captureUnhandledRejections()
+  try {
+    const {listenerEvent$, buffered, requests} = createCommittingDocument()
+
+    listenerEvent$.next(
+      mutationEvent({
+        documentId: 'drafts.doc-1',
+        previousRev: 'r0',
+        resultRev: 'r1',
+        mutations: [{patch: {id: 'drafts.doc-1', set: {title: 'zero'}}}],
+      }),
+    )
+    buffered.addMutation({
+      patch: {
+        id: 'drafts.doc-1',
+        diffMatchPatch: {title: stringifyPatches(makePatches('zero', 'one'))},
+      },
+    })
+    listenerEvent$.next(
+      mutationEvent({
+        documentId: 'drafts.doc-1',
+        previousRev: 'r1',
+        resultRev: 'r2',
+        mutations: [{patch: {id: 'drafts.doc-1', unset: ['title']}}],
+      }),
+    )
+    buffered.commit()
+
+    await settle()
+    expect(requests).toEqual([])
+    expect(unhandled.reasons).toEqual([
+      expect.objectContaining({message: expect.stringMatching(/diffMatchPatch/)}),
+    ])
+  } finally {
+    unhandled.stop()
   }
 })
