@@ -1497,6 +1497,25 @@ pnpm check:format
 pnpm check:oxlint
 ```
 
+### Merge Conflicts in `pnpm-lock.yaml`
+
+Git auto-merges the lockfile line by line and the result is usually broken, even when it reports
+no conflict: `pnpm install` then fails with `ERR_PNPM_LOCKFILE_MISSING_DEPENDENCY` naming a
+package whose importer entry survived but whose resolution did not (its peer-suffixed key
+belongs to versions only one side had). Do not hand-edit it and do not run
+`pnpm install --fix-lockfile`, which patches the broken merge in place. Take the base branch's
+lockfile and let pnpm re-resolve the branch's own `package.json` changes on top:
+
+```bash
+git checkout origin/main -- pnpm-lock.yaml
+pnpm install --lockfile-only
+git add pnpm-lock.yaml
+```
+
+The result should be a minimal diff against the base branch — only the entries the branch's
+`package.json` edits actually add. Verify with `git diff origin/main -- pnpm-lock.yaml` before
+committing, then run a normal `pnpm install`.
+
 ## Environment Variables
 
 Key env vars used in development:

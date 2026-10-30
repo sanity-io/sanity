@@ -4,6 +4,7 @@ import {Card, Text} from '@sanity/ui'
 import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {InlinePreview} from '../../portableText/InlinePreview'
 import {CompactPreview} from '../CompactPreview'
 import {DefaultPreview} from '../DefaultPreview'
 import {DetailPreview} from '../DetailPreview'
@@ -67,6 +68,18 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              inline / media
+            </Text>
+            <InlinePreview media={<DocumentIcon />} title="Summer launch" />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              inline / fallback title
+            </Text>
+            <InlinePreview />
           </VStack>
         </VStack>
       </Card>
