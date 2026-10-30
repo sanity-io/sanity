@@ -23,6 +23,7 @@ pnpm bench run --mode pageload --scenario singleString        # load vitals + bu
 pnpm bench run --mode inp --scenario singleString --sessions 3
 pnpm bench run --mode soak --scenario singleString --minutes 5
 pnpm bench run --mode soak --scenario article --minutes 2       # long-session soak smoke (PTE body, menus, doc switches, live presence)
+pnpm bench run --mode stall --scenario article --sessions 3     # listener stall recovery (~31.5s healthy, 90s cap)
 pnpm --filter bench build:reference-config \
   && pnpm bench run --scenario singleString --reference-dist perf/bench/.reference/dist   # self-test: must be all-neutral
 pnpm bench prepare-backfill --sha <sha>                       # build a historical commit into perf/bench/dist (tarball recipe)

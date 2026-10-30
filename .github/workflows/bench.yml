@@ -875,10 +875,10 @@ jobs:
       article_soak_outcome: ${{ steps.article_soak.outcome }}
       # Read by sqrl-score: a settle mismatch fails the job after the run is stored
       benchrun_store_outcome: ${{ steps.store.outcome }}
-    # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
-    # 4 sessions, the two red-by-design ones costing the 30s cap per session —
-    # ~20m)
-    timeout-minutes: 60
+    # Soak (~10m) + article soak (~11m) + INP (~10m) + listener stall (~3m,
+    # ~6m at the cap) + settle (9 scenarios × 4 sessions, the two
+    # red-by-design ones costing the 30s cap per session — ~20m)
+    timeout-minutes: 65
     permissions:
       contents: read
     env:
@@ -984,6 +984,17 @@ jobs:
         run: |
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
+
+      # Listener stall recovery: a healthy session waits out the studio's 30s
+      # stall watchdog and a broken one runs to the 90s cap, which is too slow
+      # for the PR shards. Allowed to fail so a broken run never costs the
+      # stored run; its absence shows as a gap in the Radar series.
+      - name: Run listener stall benchmark
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          pnpm bench run --mode stall --scenario article --sessions 3 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__stall.json"
 
       # Settle: the render-loop detector — customization scenarios plus two
       # vanilla controls (core-surface loops show on any workspace). It runs

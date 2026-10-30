@@ -127,6 +127,20 @@ export interface BenchScenario {
    * presence socket parked.
    */
   soak?: SoakPlan
+  /** Listener-stall mode (runner/session/stall.ts); scenarios without one are skipped. */
+  stall?: StallPlan
+}
+
+/**
+ * A peer deletes a Portable Text block while the page's listener is silently
+ * stalled and the page keeps typing into it. Measures how long the page
+ * shows the deleted block.
+ */
+export interface StallPlan {
+  /** `fieldPath` of the Portable Text interaction target. */
+  target: string
+  /** `_key` of the top-level block the caret is placed in and the peer deletes. */
+  blockKey: string
 }
 
 /**

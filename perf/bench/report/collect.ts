@@ -9,6 +9,7 @@ import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
 import {type LoadCondition, type PageLoadSample} from '../runner/session/pageLoad'
 import {type SettleSessionResult} from '../runner/session/settle'
+import {type StallSessionResult} from '../runner/session/stall'
 import {type BenchScenario} from '../scenarios/types'
 import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
@@ -440,6 +441,42 @@ export function collectInp(
         (acc, session) => ({
           count: acc.count + session.readOnlyInterruptions.count,
           totalMs: acc.totalMs + session.readOnlyInterruptions.totalMs,
+        }),
+        {count: 0, totalMs: 0},
+      ),
+    },
+    loafAttribution: [],
+  }
+}
+
+export const STALL_RECOVERY_LABEL = 'listener stall recovery'
+
+/** A session that hit the cap records the cap, so a broken recovery charts as a step to it. */
+export function collectStall(
+  scenario: string,
+  sessions: StallSessionResult[],
+  sourceFile?: string,
+): ScenarioReport {
+  const recoveryTimes = sessions.map((session) => [session.recoveryMs])
+  return {
+    scenario,
+    ...(sourceFile ? {sourceFile} : {}),
+    kind: 'interaction',
+    mode: 'stall',
+    metrics: [
+      {
+        label: STALL_RECOVERY_LABEL,
+        unit: 'ms',
+        presentAsEfps: false,
+        experiment: {sessions: recoveryTimes, summary: summarize(recoveryTimes.flat())},
+      },
+    ],
+    failures: [],
+    interruptions: {
+      experiment: sessions.reduce(
+        (acc, session) => ({
+          count: acc.count + session.interruptions.count,
+          totalMs: acc.totalMs + session.interruptions.totalMs,
         }),
         {count: 0, totalMs: 0},
       ),
