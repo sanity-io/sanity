@@ -123,6 +123,23 @@ describe('ResultGraph', () => {
     expect(translate()[0]).toBe(x - 48)
   })
 
+  it('glides to the view the zoom and fit buttons pick, and follows direct input at once', () => {
+    renderGraph()
+    const canvas = () => screen.getByTestId('vista-graph-canvas')
+    const viewport = screen.getByTestId('vista-result-graph')
+    expect(canvas().getAttribute('data-animate')).toBe('false')
+
+    fireEvent.click(screen.getByTestId('vista-graph-zoom-in'))
+    expect(canvas().getAttribute('data-animate')).toBe('true')
+    fireEvent.keyDown(viewport, {key: '+'})
+    expect(canvas().getAttribute('data-animate')).toBe('false')
+    fireEvent.click(screen.getByTestId('vista-graph-fit'))
+    expect(canvas().getAttribute('data-animate')).toBe('true')
+    fireEvent.pointerDown(viewport, {pointerId: 1, button: 0, clientX: 100, clientY: 100})
+    fireEvent.pointerMove(viewport, {pointerId: 1, clientX: 120, clientY: 100})
+    expect(canvas().getAttribute('data-animate')).toBe('false')
+  })
+
   it('pans while its background is dragged', () => {
     renderGraph()
     const viewport = screen.getByTestId('vista-result-graph')
