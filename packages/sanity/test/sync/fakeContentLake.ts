@@ -67,7 +67,7 @@ export interface SubmissionRecord {
 
 export type RequestRecord =
   | {kind: 'submission'; submission: SubmissionRecord}
-  | {kind: 'outside'; transactionId: string; mutations: MutationPayload[]}
+  | {kind: 'outside'; transactionId: string; mutations: MutationPayload[]; appliedAt: number}
 
 interface PendingCommit {
   transactionId: string
@@ -213,7 +213,7 @@ export class FakeContentLake {
     mutations: MutationPayload[],
     transactionId = `ext-${this.transactions.length + 1}`,
   ): void {
-    this.requests.push({kind: 'outside', transactionId, mutations})
+    this.requests.push({kind: 'outside', transactionId, mutations, appliedAt: this.tick()})
     this.applyTransaction(mutations, transactionId, 'outside')
   }
 

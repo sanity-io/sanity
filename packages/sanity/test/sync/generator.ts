@@ -476,6 +476,7 @@ export interface SubmissionReport {
   outcome: SubmissionRecord['outcome']
   statusCode?: number
   responseBody?: unknown
+  settledAt?: number
 }
 
 export interface RunFailure {
@@ -732,6 +733,7 @@ function submissionReport(submission: SubmissionRecord): SubmissionReport {
     outcome: submission.outcome,
     statusCode: submission.statusCode,
     responseBody: submission.responseBody,
+    settledAt: submission.settledAt,
   })
 }
 
@@ -745,6 +747,7 @@ function submissionReports(world: World): SubmissionReport[] {
           request: {kind: 'outside', mutations: request.mutations},
           injected: false,
           outcome: outsideOutcome(world, request.transactionId),
+          settledAt: request.appliedAt,
         },
   )
 }
