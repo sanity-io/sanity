@@ -34,6 +34,7 @@ import {
   type LatencyReportEvent,
   type MutationPerformanceEvent,
 } from './document/getPairListener'
+import {getListenerStalledToastParams} from './document/utils/listenerStalledToast'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {type ListenerStallDetails} from './document/utils/watchForListenerStall'
 import {createGrantsStore} from './grants/grantsStore'
@@ -190,8 +191,9 @@ export function useDocumentStore(): DocumentStore {
   const handleListenerStall = useCallback(
     (details: ListenerStallDetails) => {
       telemetry.log(DocumentListenerStalled, details)
+      toast.push(getListenerStalledToastParams(t))
     },
-    [telemetry],
+    [telemetry, toast, t],
   )
 
   const handleReportLatency = useCallback(

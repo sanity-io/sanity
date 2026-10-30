@@ -682,6 +682,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating that the revision was not found */
   'document-status.revision-not-found': 'Revision not found',
 
+  /** Toast description shown when the document was reloaded because saved changes were not echoed back */
+  'document-store.listener-stalled.description':
+    'It has been reloaded with the latest version. Edits you made to content someone else removed may not have saved.',
+  /** Toast title shown when the document was reloaded because saved changes were not echoed back */
+  'document-store.listener-stalled.title': 'This document was out of date',
   /** Toast description shown when saving changes is taking longer than expected */
   'document-store.slow-commit.description': 'Your changes are still being saved.',
   /** Toast title shown when saving changes is taking longer than expected */
