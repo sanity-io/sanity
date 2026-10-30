@@ -511,6 +511,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The title of the reconnecting toast */
   'common.reconnecting.toast.title': 'Trying to connect…',
 
+  /** Tooltip when a variant has more than one condition that is not in the configured list. */
+  'conditions.mismatch.multiple':
+    'This variant uses conditions that are no longer configured. Edit the variant to fix it.',
+  /** Tooltip when a stored condition key is not in the configured list. */
+  'conditions.mismatch.unknown-key':
+    'The condition "{{key}}" is not in the configured list. Edit the variant to fix it.',
+  /** Tooltip when a stored condition value is not in the configured list for that key. */
+  'conditions.mismatch.unknown-value':
+    'The value "{{value}}" is not valid for "{{key}}". Edit the variant to fix it.',
+
   /** --- Configuration issues --- */
 
   /** Default label text on configuration issues button */
@@ -1532,6 +1542,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Default option label when no variant is selected. */
+  'navbar.variant.default': 'All users',
+  /** Placeholder for the variant filter input in the dropdown. */
+  'navbar.variant.filter-placeholder': 'Filter variants…',
+  /** Section header for non-default variants in the dropdown. */
+  'navbar.variant.other': 'Other variants',
+
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
@@ -1598,6 +1615,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.tooltip.other': '{{count}} people are editing this document right now',
   /** Release title used in the document preview presence tooltip when the release has no title */
   'presence.tooltip.untitled-release': 'Untitled',
+
+  /** Accessible name and tooltip for the button that clears the selected global perspective */
+  'perspective.action.clear': 'Clear selection',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',

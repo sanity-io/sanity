@@ -1,13 +1,13 @@
 import {configure} from '@chromatic-com/vitest'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {expectStable} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
-import {Button} from '../../../../../ui-components/button/Button'
-import {PerspectiveFilter} from '../PerspectiveFilter'
+import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
+import {GlobalPerspectiveButton} from '../../GlobalPerspectiveButton'
+import {suggestIconColor} from '../VariantsNav.css'
 import {VariantsStudioNavbarFallback} from '../VariantsStudioNavbarLayout'
 
 // The bar's fallback reserves one row while the filters' chunk loads, so the filters replace it
@@ -24,22 +24,22 @@ describe('VariantsStudioNavbarLayout fallback', () => {
         <div data-testid="fallback">
           <VariantsStudioNavbarFallback />
         </div>
-        {/* A settled filter, as `VariantsStudioNavbar` renders it: a default-size trigger button
-            inside the pill's bordered card */}
-        <PerspectiveFilter prefix="Version" tone="default" label="Drafts">
-          <Button
-            data-testid="pill-trigger"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            text="Drafts"
-          />
-        </PerspectiveFilter>
+        {/* A settled filter, as `VariantsStudioNavbar` renders it: the bordered chip, not the
+            trigger inside it. The border is what makes the pill taller than the 31px trigger. */}
+        <GlobalPerspectiveButton
+          data-testid="pill-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text="Drafts"
+        />
       </TestWrapper>,
     )
 
     await expect.element(page.getByTestId('pill-trigger')).toBeVisible()
-    const pill = page.getByTestId('pill-trigger').element().closest('[data-ui="PerspectiveFilter"]')
-    if (!pill) throw new Error('PerspectiveFilter not found')
+    const pill = page
+      .getByTestId('pill-trigger')
+      .element()
+      .closest('[data-ui="GlobalPerspectiveButton"]')
+    if (!pill) throw new Error('GlobalPerspectiveButton not found')
     const fallback = page.getByTestId('fallback').element().firstElementChild
     if (!fallback) throw new Error('fallback row not found')
 

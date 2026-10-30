@@ -21,6 +21,7 @@ import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {VariantsStudioNavbarLayout} from '../../../perspective/navbar/variants/VariantsStudioNavbarLayout'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
@@ -271,7 +272,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
+                {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout />}
+                {<ReleasesNav withReleasesToolButton />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />

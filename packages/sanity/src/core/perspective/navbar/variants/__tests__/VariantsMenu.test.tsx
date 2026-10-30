@@ -5,10 +5,10 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
-import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
-import {variantsUsEnglishLocaleBundle} from '../../../i18n'
-import {getVariantId} from '../../../tool/util'
-import {type SystemVariant} from '../../../types'
+import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
+import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {getVariantId} from '../../../../variants/tool/util'
+import {type SystemVariant} from '../../../../variants/types'
 import {VariantsMenu} from '../VariantsMenu'
 
 const variantsMock = vi.hoisted(() => ({
@@ -24,7 +24,7 @@ vi.mock('../../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => setVariant),
 }))
 
-vi.mock('../../../store/useAllVariants', () => ({
+vi.mock('../../../../variants/store/useAllVariants', () => ({
   useAllVariants: vi.fn(() => variantsMock),
 }))
 
@@ -62,10 +62,10 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
-  it('names the unselected option All users (Default)', async () => {
+  it('names the unselected option All users', async () => {
     await renderMenu()
 
-    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
+    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users')
   })
 
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {

@@ -5,14 +5,13 @@ import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TFunction} from '../../i18n/types'
-import {variantsLocaleNamespace} from '../i18n'
 import {type ConditionMismatch} from '../util/getVariantConditionMismatches'
 
 /**
  * @internal
  */
 export function getConditionMismatchMessage(
-  t: TFunction<'variants'>,
+  t: TFunction,
   mismatches: readonly ConditionMismatch[],
 ): string {
   if (mismatches.length !== 1) {
@@ -40,7 +39,7 @@ export function ConditionMismatchIndicator(props: {
   testId?: string
 }): React.JSX.Element | null {
   const {mismatches, testId = 'variant-condition-mismatch'} = props
-  const {t} = useTranslation(variantsLocaleNamespace)
+  const {t} = useTranslation()
 
   if (mismatches.length === 0) {
     return null
