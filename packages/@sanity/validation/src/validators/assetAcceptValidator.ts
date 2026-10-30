@@ -29,10 +29,12 @@ function isUnknownFileType(fileType: AssetFileType): boolean {
  * @internal
  */
 export function assetMatchesAccept(fileType: AssetFileType, accept: string): boolean {
-  return accepts(
-    {type: fileType.mimeType ?? '', name: fileType.originalFilename ?? undefined},
-    accept,
-  )
+  return accepts({type: fileType.mimeType ?? '', name: getAssetFilename(fileType)}, accept)
+}
+
+function getAssetFilename(fileType: AssetFileType): string | undefined {
+  if (fileType.originalFilename) return fileType.originalFilename
+  return fileType.extension ? `asset.${fileType.extension}` : undefined
 }
 
 function getAssetId(value: unknown): string | undefined {
