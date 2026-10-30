@@ -27,6 +27,7 @@ import {Text, Box, Flex, Grid, VStack} from 'ui5'
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {validationLocaleNamespace} from '../../../../i18n/localeNamespaces'
 import {Translate} from '../../../../i18n/Translate'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {Details} from '../../../components/Details'
@@ -88,6 +89,7 @@ function LoadStatus(props: {children: ReactNode}) {
 function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions | undefined}) {
   const {dimensions, options} = props
   const {t} = useTranslation()
+  const {t: tValidation} = useTranslation(validationLocaleNamespace)
   const {tone, threshold} = getCropSizeStatus(dimensions, options)
 
   return (
@@ -104,12 +106,12 @@ function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions
       </Text>
       {tone === 'critical' ? (
         <Text size={1} tone={tone}>
-          {t('inputs.imagetool.crop-size.below-minimum', {...threshold})}
+          {tValidation('object.image-below-min-dimensions', {...threshold})}
         </Text>
       ) : null}
       {tone === 'caution' ? (
         <Text size={1} tone={tone}>
-          {t('inputs.imagetool.crop-size.below-recommended', {...threshold})}
+          {tValidation('object.image-below-recommended-dimensions', {...threshold})}
         </Text>
       ) : null}
     </Flex>

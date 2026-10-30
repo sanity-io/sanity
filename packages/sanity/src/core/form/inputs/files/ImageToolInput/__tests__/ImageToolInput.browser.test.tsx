@@ -209,7 +209,7 @@ describe('image tool input', () => {
     await expect.element(getCropSize()).toHaveAttribute('data-tone', 'caution')
     await expect
       .element(getCropSize())
-      .toHaveTextContent('2000 × 1000 pxSmaller than the recommended 2400 × 1200 px')
+      .toHaveTextContent('2000 × 1000 pxCropped image should be at least 2400 × 1200 px')
     await settleChromaticEndState()
   })
 
@@ -229,7 +229,7 @@ describe('image tool input', () => {
     await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
     await expect
       .element(getCropSize())
-      .toHaveTextContent('2000 × 1000 pxSmaller than the minimum 2400 × 600 px')
+      .toHaveTextContent('2000 × 1000 pxCropped image must be at least 2400 × 600 px')
     await settleChromaticEndState()
   })
 
