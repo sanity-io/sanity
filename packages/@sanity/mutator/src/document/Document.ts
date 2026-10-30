@@ -7,6 +7,14 @@ import {debug} from './debug'
 import {Mutation} from './Mutation'
 import {type Doc} from './types'
 
+function withoutRevisionStamps(doc: Doc | null): Omit<Doc, '_rev' | '_updatedAt'> | null {
+  if (doc === null) {
+    return null
+  }
+  const {_rev, _updatedAt, ...content} = doc
+  return content
+}
+
 /**
  * @internal
  */
@@ -220,7 +228,17 @@ export class Document {
 
     if (mustRebase) {
       this.rebase(rebaseMutations)
+    } else if (this.serverResultDiffersFromOptimistic()) {
+      this.rebase([])
     }
+  }
+
+  // The echo of our own transaction can carry fields the server added, eg `_system.base`
+  serverResultDiffersFromOptimistic(): boolean {
+    if (this.hasUnresolvedMutations() || this.EDGE === this.HEAD) {
+      return false
+    }
+    return !isEqual(withoutRevisionStamps(this.EDGE), withoutRevisionStamps(this.HEAD))
   }
 
   // check current consistency state, update flag and invoke callback if needed

@@ -2,6 +2,7 @@ import {expect, test, vi} from 'vitest'
 
 import {BufferedDocument, Mutation} from '../src/document'
 import {type CommitHandlerMessage} from '../src/document/BufferedDocument'
+import {type Doc} from '../src/document/types'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
@@ -487,4 +488,66 @@ test('a commit that cannot be staged is rejected and later commits still reach t
   expect(committed.map(({mutation}) => mutation.mutations)).toEqual([
     [{patch: {id: 'a', set: {body: 'My friend'}}}],
   ])
+})
+
+const PUBLISHED = {
+  _id: 'drafts.a',
+  _type: 't',
+  _createdAt: '2025-01-01T00:00:00.000Z',
+  title: 'Published',
+}
+
+function createDraftFromPublished() {
+  const rebases: Array<Doc | null> = []
+  const commits: CommitHandlerMessage[] = []
+  const document = new BufferedDocument(null)
+  document.onRebase = (localDocument) => rebases.push(localDocument)
+  document.commitHandler = (message) => commits.push(message)
+
+  document.add(
+    new Mutation({
+      mutations: [
+        {createIfNotExists: {...PUBLISHED}},
+        {patch: {id: 'drafts.a', set: {title: 'Edited'}}},
+      ],
+    }),
+  )
+  void document.commit()
+  const [commit] = commits
+  commit.success()
+
+  return {document, rebases, commit}
+}
+
+function echoOf(commit: CommitHandlerMessage, createdDocument: Doc): Mutation {
+  return new Mutation({
+    transactionId: commit.mutation.transactionId,
+    resultRev: commit.mutation.transactionId,
+    timestamp: '2026-01-01T00:00:00.000Z',
+    mutations: [{create: createdDocument}, {patch: {id: 'drafts.a', set: {title: 'Edited'}}}],
+  })
+}
+
+test('fields the server adds to our own transaction reach the local document', () => {
+  const {document, rebases, commit} = createDraftFromPublished()
+  document.add(new Mutation({mutations: [{patch: {id: 'drafts.a', set: {body: 'Typed'}}}]}))
+
+  document.arrive(echoOf(commit, {...PUBLISHED, _system: {base: {id: 'a', rev: 'r1'}}}))
+
+  expect(rebases).toHaveLength(1)
+  expect(document.document.EDGE?._system).toEqual({base: {id: 'a', rev: 'r1'}})
+  expect(document.LOCAL).toMatchObject({
+    title: 'Edited',
+    body: 'Typed',
+    _system: {base: {id: 'a', rev: 'r1'}},
+  })
+})
+
+test('an echo of our own transaction that matches the optimistic result does not rebase', () => {
+  const {document, rebases, commit} = createDraftFromPublished()
+
+  document.arrive(echoOf(commit, {...PUBLISHED}))
+
+  expect(rebases).toHaveLength(0)
+  expect(document.LOCAL?.title).toBe('Edited')
 })

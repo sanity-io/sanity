@@ -117,7 +117,7 @@ describe('editOperations and editState, two clients', () => {
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
   })
 
-  test.fails('OPS-EDIT-WITHOUT-DRAFT-SYSTEM-BASE (SAPP-4795): the editor sees the server-added _system on the draft it created', async () => {
+  test('OPS-EDIT-WITHOUT-DRAFT-SYSTEM-BASE (SAPP-4795): the editor sees the server-added _system on the draft it created', async () => {
     world = await runSyncTest(editWithoutDraft, {schema, typeName: 'article'})
 
     expect(world.clients.A.localDocument(DRAFT_ID)?._system).toEqual(
