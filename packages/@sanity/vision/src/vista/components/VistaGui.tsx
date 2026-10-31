@@ -1,3 +1,4 @@
+import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useMemo, useState} from 'react'
 import {Flex} from 'ui5'
@@ -28,6 +29,12 @@ import * as styles from './vista.module.css'
 import {VistaDialogs} from './VistaDialogs'
 import {VistaUrlState} from './VistaUrlState'
 import {VistaWebMcp} from './VistaWebMcp'
+
+/**
+ * The first tooltip waits a moment so passing the pointer over a control does not flash one; once
+ * one is open, its neighbours open without waiting, as in the studio's own toolbars
+ */
+const TOOLTIP_DELAY = {open: 400}
 
 /** Below this width the request and response columns stack */
 const STACKED_BREAKPOINT = 900
@@ -93,31 +100,33 @@ export function VistaGui(props: VistaGuiProps) {
           <PendingEditsContext.Provider value={pendingEdits}>
             <SidebarBadgesContext.Provider value={sidebarBadges}>
               <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-                <Flex
-                  className={styles.root}
-                  data-testid="vista-root"
-                  data-vista-layout={layout}
-                  height="100%"
-                  overflow="hidden"
-                  ref={setRootElement}
-                >
-                  <VistaSidebar />
+                <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                   <Flex
-                    flexBasis="0%"
-                    flexDirection="column"
-                    flexGrow={1}
-                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                    inert={layout === 'mobile' && openDrawer !== null}
-                    minWidth="0"
+                    className={styles.root}
+                    data-testid="vista-root"
+                    data-vista-layout={layout}
+                    height="100%"
                     overflow="hidden"
+                    ref={setRootElement}
                   >
-                    <QueryTabBar />
-                    <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    <VistaSidebar />
+                    <Flex
+                      flexBasis="0%"
+                      flexDirection="column"
+                      flexGrow={1}
+                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                      inert={layout === 'mobile' && openDrawer !== null}
+                      minWidth="0"
+                      overflow="hidden"
+                    >
+                      <QueryTabBar />
+                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    </Flex>
                   </Flex>
-                </Flex>
-                <VistaDialogs />
-                <VistaUrlState tab={activeTab} />
-                <VistaWebMcp tab={activeTab} />
+                  <VistaDialogs />
+                  <VistaUrlState tab={activeTab} />
+                  <VistaWebMcp tab={activeTab} />
+                </TooltipDelayGroupProvider>
               </TabDrawerSlotContext.Provider>
             </SidebarBadgesContext.Provider>
           </PendingEditsContext.Provider>
