@@ -51,7 +51,7 @@ describe('useValidationStatus', () => {
   it('returns the initial status until the observable emits', () => {
     const results: ValidationStatus[] = []
     function Probe() {
-      results.push(useValidationStatus('doc-1', 'author', false))
+      results.push(useValidationStatus('doc-1', 'author'))
       return null
     }
     render(<Probe />)
@@ -64,7 +64,7 @@ describe('useValidationStatus', () => {
     let bumpTick: (() => void) | null = null
 
     function Probe() {
-      const status = useValidationStatus('doc-1', 'author', false)
+      const status = useValidationStatus('doc-1', 'author')
       const [tick, setTick] = useState(0)
       useEffect(() => {
         bumpTick = () => setTick((current) => current + 1)

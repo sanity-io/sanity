@@ -28,6 +28,7 @@ import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExi
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import {createPace, createUnpacedPace, type Pace, type ValidationScheduling} from './util/pace'
 import {typeString} from './util/typeString'
+import {withReleaseReferences} from './util/withReleaseReferences'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
@@ -477,9 +478,9 @@ function evaluateDocumentsInternal({
   )
   const getConcurrencyLimitedClient = (clientOptions: {apiVersion: string}) =>
     limitConcurrency(getClient(clientOptions))
-  const sharedGetDocumentExists =
-    getDocumentExists ||
-    createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal)
+  const batchedGetDocumentExists = getDocumentExists
+    ? undefined
+    : createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal)
 
   return Promise.all(
     documents.map((document) =>
@@ -488,7 +489,18 @@ function evaluateDocumentsInternal({
         getClient: getConcurrencyLimitedClient,
         i18n,
         schema,
-        getDocumentExists: sharedGetDocumentExists,
+        getDocumentExists: batchedGetDocumentExists
+          ? withReleaseReferences({
+              documentId: document._id,
+              getDocumentExists: batchedGetDocumentExists,
+              isUnpublished: ({id, signal: checkSignal}) =>
+                getConcurrencyLimitedClient(DEFAULT_VALIDATION_CLIENT_OPTIONS).fetch<boolean>(
+                  '*[_id == $id][0]._system.delete == true',
+                  {id},
+                  {perspective: 'raw', signal: checkSignal, tag: 'validation.release-reference'},
+                ),
+            })
+          : getDocumentExists,
         environment,
         maxCustomValidationConcurrency,
         currentUser,

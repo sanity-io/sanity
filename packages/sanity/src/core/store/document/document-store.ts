@@ -122,10 +122,10 @@ export interface DocumentStore {
     validation: (
       validationTargetId: string,
       type: string,
-      // Whether to require referenced documents to be published
-      // if `true`, any reference to a document that's not published will yield a validation error
-      // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
-      // as the document we're validating
+      /**
+       * @deprecated Ignored. Release documents may reference documents in the same release, and
+       * every other document requires references to be published, based on `validationTargetId`.
+       */
       validatePublishedReferences: boolean,
       options?: {
         /**
@@ -302,18 +302,11 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requirePublishedReferences, options) {
+      validation(validationTargetId, type, _validatePublishedReferences, options) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(
-          ctx,
-          idPair,
-          type,
-          validationTarget,
-          requirePublishedReferences,
-          options?.scheduling,
-        )
+        return validation(ctx, idPair, type, validationTarget, options?.scheduling)
       },
     },
   }

@@ -47,6 +47,32 @@ function createClient(omitted: Array<{id: string; reason: 'existence' | 'permiss
 
 const referenceFields = [{name: 'author', type: 'reference', to: [{type: 'article'}]}]
 
+function createReleaseClient(existing: string[], unpublished: string[] = []) {
+  const {client, request} = createClient()
+  request.mockImplementation(async ({url = ''}) => {
+    if (url.includes('/data/doc/')) {
+      const ids = decodeURIComponent(url.split('/').pop()!.split('?')[0]).split(',')
+      return {
+        omitted: ids
+          .filter((id) => !existing.includes(id))
+          .map((id) => ({id, reason: 'existence'})),
+      }
+    }
+    const id = new URL(url, 'https://api.sanity.io').searchParams.get('$id')
+    return {result: unpublished.includes(JSON.parse(id!))}
+  })
+  return client
+}
+
+async function validateReference(client: SanityClient, documentId: string) {
+  const [{markers}] = await validateDocuments({
+    client,
+    schema: createSchema(referenceFields),
+    documents: [document(documentId, {author: {_type: 'reference', _ref: 'author'}})],
+  })
+  return markers.map(({code}) => code)
+}
+
 describe('validateDocuments', () => {
   it('shares reference requests across documents and preserves input order and permission omissions', async () => {
     const {client, request} = createClient([
@@ -245,5 +271,36 @@ describe('validateDocuments', () => {
       validateDocuments({client, schema: createSchema(), documents: []}),
     ).resolves.toEqual([])
     expect(client.withConfig).not.toHaveBeenCalled()
+  })
+
+  describe('release documents', () => {
+    it('accepts references to unpublished documents in the same release', async () => {
+      const client = createReleaseClient(['versions.release.author'])
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([])
+    })
+
+    it('rejects references to documents only in another release or a draft', async () => {
+      const client = createReleaseClient(['versions.other.author', 'drafts.author'])
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
+    it('rejects references to documents the release unpublishes', async () => {
+      const client = createReleaseClient(
+        ['author', 'versions.release.author'],
+        ['versions.release.author'],
+      )
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
+    it('still requires drafts to reference published documents', async () => {
+      const client = createReleaseClient(['versions.release.author'])
+      await expect(validateReference(client, 'drafts.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
   })
 })

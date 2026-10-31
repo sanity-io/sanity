@@ -43,7 +43,6 @@ const validationStreams = memoize(
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
-    validatePublishedReferences: boolean,
   ) => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
@@ -89,12 +88,7 @@ const validationStreams = memoize(
     const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
     const status$ = combineLatest([
       documentRevision$,
-      validateDocumentWithReferences(
-        ctx,
-        documentToValidate$,
-        validatePublishedReferences,
-        scheduling,
-      ),
+      validateDocumentWithReferences(ctx, documentToValidate$, scheduling),
     ]).pipe(
       map(([revision, validationStatus]) => {
         return {...validationStatus, revision}
@@ -108,7 +102,7 @@ const validationStreams = memoize(
 
     return {status$, immediate$: merge(holdImmediate$, status$)}
   },
-  (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
+  (ctx, idPair, typeName, validationTarget) => {
     // Use the actual document ID being validated in the cache key for explicitness
     const documentId =
       validationTarget === 'draft'
@@ -120,7 +114,7 @@ const validationStreams = memoize(
     // the module-level memo cache is never cleared, so without this a new user
     // would replay the previous user's validation result.
     const userId = ctx.currentUser?.id ?? ''
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${userId}`
   },
 )
 
@@ -135,15 +129,8 @@ export function validation(
   idPair: IdPair,
   typeName: string,
   validationTarget: DocumentVariantType,
-  validatePublishedReferences: boolean,
   scheduling?: ValidationScheduling,
 ): Observable<ValidationStatus> {
-  const {status$, immediate$} = validationStreams(
-    ctx,
-    idPair,
-    typeName,
-    validationTarget,
-    validatePublishedReferences,
-  )
+  const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget)
   return scheduling === 'immediate' ? immediate$ : status$
 }

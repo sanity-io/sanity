@@ -4,10 +4,10 @@ import {
   isReference,
   type SanityDocument,
   type Schema,
-  type ValidationContext,
   type ValidationMarker,
   type CurrentUser,
 } from '@sanity/types'
+import {withReleaseReferences} from '@sanity/validation'
 import {evaluateDocumentObservable, type ValidationScheduling} from '@sanity/validation/_internal'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
@@ -39,7 +39,7 @@ import {
 import {type SourceClientOptions} from '../config/types'
 import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
-import {getVersionFromId} from '../util/draftUtils'
+import {getVersionFromId, getVersionId} from '../util/draftUtils'
 import {shallowEquals} from '../util/shallowEquals'
 
 /**
@@ -71,20 +71,33 @@ function findReferenceIds(obj: any): Set<string> {
 
 const EMPTY_VALIDATION: ValidationMarker[] = []
 
-type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
+interface DocumentExistence {
+  exists: boolean
+  unpublished: boolean
+}
 
-const listenDocumentExists = (
+/**
+ * Listens to the published document and, for release documents, its version in the same release.
+ * Emits an entry per document ID so `withReleaseReferences` can decide what the reference resolves to.
+ */
+const listenDocumentExistence = (
   observeDocumentAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability'],
   id: string,
-  versionId: string | undefined,
-): Observable<boolean> =>
-  observeDocumentAvailability(id, {version: versionId}).pipe(
+  releaseName: string | undefined,
+): Observable<[string, DocumentExistence][]> =>
+  observeDocumentAvailability(id, {version: releaseName}).pipe(
     map(({published, version}) => {
-      if (!version?.available && version?.reason === 'VERSION_DELETED') {
-        return false
+      const entries: [string, DocumentExistence][] = [
+        [id, {exists: published.available, unpublished: false}],
+      ]
+      if (releaseName && version) {
+        const unpublished = version.reason === 'VERSION_DELETED'
+        entries.push([
+          getVersionId(id, releaseName),
+          {exists: version.available || unpublished, unpublished},
+        ])
       }
-
-      return published.available || version?.available || false
+      return entries
     }),
   )
 
@@ -112,9 +125,6 @@ export function validateDocumentWithReferences(
     currentUser?: Omit<CurrentUser, 'role'> | null
   },
   document$: Observable<SanityDocument | null | undefined>,
-  // whether to require all references to exist as published documents
-  // set to false to allow references to versions as long they exist in the same bundle
-  requirePublishedReferences: boolean,
   scheduling?: BehaviorSubject<ValidationScheduling>,
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
@@ -130,36 +140,28 @@ export function validateDocumentWithReferences(
     mergeMap((refIds$) =>
       refIds$.pipe(
         distinct(),
-        mergeMap(([document, referenceId]) => {
-          // listen for reference document existence
-          // if we're require the referenced document to be published: pass undefined as version id
-          // as that will check for existence of published document
-          // Otherwise, pass the version of the referencing document
-          // to validate that the version exists in the same bundle
-          const versionId = requirePublishedReferences
-            ? undefined
-            : getVersionFromId(document?._id || '')
-          return listenDocumentExists(
+        // release documents may reference documents in the same release, so listen to those too
+        mergeMap(([document, referenceId]) =>
+          listenDocumentExistence(
             ctx.observeDocumentPairAvailability,
             referenceId,
-            versionId,
-          ).pipe(map((result) => [referenceId, result] as const))
-        }),
+            getVersionFromId(document?._id || ''),
+          ),
+        ),
       ),
     ),
-    scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {
-      if (acc[id] === result) {
-        return acc
-      }
-      return {...acc, [id]: result}
+    scan((acc: Record<string, DocumentExistence>, entries) => {
+      const changed = entries.filter(
+        ([id, {exists, unpublished}]) =>
+          acc[id]?.exists !== exists || acc[id]?.unpublished !== unpublished,
+      )
+      return changed.length === 0 ? acc : {...acc, ...Object.fromEntries(changed)}
     }, {}),
     distinctUntilChanged(shallowEquals),
     shareLatestWithRefCount(),
   )
 
-  // Provided to individual validation functions to support using existence of a weakly referenced document
-  // as part of the validation rule (used by references in place)
-  const getDocumentExists: GetDocumentExists = ({id}) =>
+  const getDocumentExistence = (id: string) =>
     lastValueFrom(
       referenceExistence$.pipe(
         // If the id is not present as key in the `referenceExistence` map it means it's existence status
@@ -168,6 +170,15 @@ export function validateDocumentWithReferences(
         map((referenceExistence) => referenceExistence[id]),
       ),
     )
+
+  // Provided to individual validation functions to support using existence of a weakly referenced document
+  // as part of the validation rule (used by references in place)
+  const getDocumentExists = (documentId: string) =>
+    withReleaseReferences({
+      documentId,
+      getDocumentExists: ({id}) => getDocumentExistence(id).then(({exists}) => exists),
+      isUnpublished: ({id}) => getDocumentExistence(id).then(({unpublished}) => unpublished),
+    })
 
   const referenceDocumentUpdates$ = referenceExistence$.pipe(
     // we'll skip the first emission since the document already gets an initial validation pass
@@ -188,7 +199,7 @@ export function validateDocumentWithReferences(
           evaluateDocumentObservable({
             document,
             getClient: ctx.getClient,
-            getDocumentExists,
+            getDocumentExists: getDocumentExists(document._id),
             i18n: ctx.i18n,
             schema: ctx.schema,
             environment: 'studio',

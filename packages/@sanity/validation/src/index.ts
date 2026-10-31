@@ -20,3 +20,4 @@ export {
   type ValidationSchema,
   type ValidationSource,
 } from './validateDocument'
+export {type ReleaseReferenceOptions, withReleaseReferences} from './util/withReleaseReferences'

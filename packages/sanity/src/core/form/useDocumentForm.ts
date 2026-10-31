@@ -245,12 +245,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(
-    value._id,
-    documentType,
-    // require referenced documents to be published unless the document is in a release
-    !releaseId,
-  )
+  const {validation: validationRaw} = useValidationStatus(value._id, documentType)
 
   // Validation is computed against the live editable document (draft/published/
   // version). When viewing a historical revision those markers don't describe
