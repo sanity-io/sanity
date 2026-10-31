@@ -147,6 +147,6 @@
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@12.16.1",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
