@@ -10,14 +10,16 @@ const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
-  requirePublishedReferences: boolean,
+  /**
+   * @deprecated Ignored. Whether references must be published is decided by `validationTargetId`.
+   */
+  _requirePublishedReferences?: boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
-    () =>
-      documentStore.pair.validation(validationTargetId, docTypeName, requirePublishedReferences),
-    [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences],
+    () => documentStore.pair.validation(validationTargetId, docTypeName, false),
+    [docTypeName, documentStore.pair, validationTargetId],
   )
 
   // Kept synchronous: consumers use this as a write-side gate, not just for

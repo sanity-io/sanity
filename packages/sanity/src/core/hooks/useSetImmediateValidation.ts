@@ -24,7 +24,10 @@ import {useDocumentStore} from '../store/datastores'
 export function useSetImmediateValidation(
   validationTargetId: string,
   docTypeName: string,
-  requirePublishedReferences: boolean,
+  /**
+   * @deprecated Ignored. Whether references must be published is decided by `validationTargetId`.
+   */
+  _requirePublishedReferences: boolean,
   {enabled}: {enabled: boolean},
 ): void {
   const documentStore = useDocumentStore()
@@ -32,11 +35,9 @@ export function useSetImmediateValidation(
   useEffect(() => {
     if (!enabled) return undefined
     const subscription = documentStore.pair
-      .validation(validationTargetId, docTypeName, requirePublishedReferences, {
-        scheduling: 'immediate',
-      })
+      .validation(validationTargetId, docTypeName, false, {scheduling: 'immediate'})
       // `useValidationStatus` already reports a failure; reporting it here too would duplicate it
       .subscribe({error: () => undefined})
     return () => subscription.unsubscribe()
-  }, [enabled, docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences])
+  }, [enabled, docTypeName, documentStore.pair, validationTargetId])
 }
