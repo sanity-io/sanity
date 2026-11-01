@@ -8,6 +8,7 @@ import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/men
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {StatusButton} from '../../../../components/StatusButton'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {presenceIdentity} from '../../../../store/presence/agentPresence'
 import {useGlobalPresence} from '../../../../store/presence/useGlobalPresence'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
@@ -87,11 +88,13 @@ export function PresenceMenu() {
           {hasPresence &&
             presence.map((item) => (
               <PresenceMenuItem
-                key={item.user.id}
-                focused={focusedId === item.user.id}
+                key={presenceIdentity(item)}
+                focused={focusedId === presenceIdentity(item)}
                 onFocus={handleItemFocus}
                 locations={item.locations}
                 user={item.user}
+                actor={item.actor}
+                sessionId={item.sessionId}
               />
             ))}
 

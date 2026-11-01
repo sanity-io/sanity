@@ -19,7 +19,7 @@ vi.mock('../../useCanInviteMembers', () => ({
   useCanInviteProjectMembers: () => true,
 }))
 
-const PRESENCE: Pick<GlobalPresence, 'user' | 'locations'>[] = [
+const PRESENCE: Pick<GlobalPresence, 'user' | 'locations' | 'actor' | 'sessionId'>[] = [
   {
     user: {id: 'user-ada', displayName: 'Ada Lovelace'},
     locations: [
@@ -36,6 +36,11 @@ const PRESENCE: Pick<GlobalPresence, 'user' | 'locations'>[] = [
     locations: [],
   },
 ]
+
+PRESENCE.push(
+  {...PRESENCE[0], actor: {type: 'agent', id: 'agent-one'}, sessionId: 'op-one'},
+  {...PRESENCE[0], actor: {type: 'agent', id: 'agent-two'}, sessionId: 'op-two'},
+)
 
 // The navbar has no pane above it, so its menus measure `constrainSize`
 // against the viewport in the studio. The wrapper's pane is only as tall as
@@ -68,9 +73,11 @@ describe('PresenceMenu', () => {
 
     const menu = page.getByRole('menu')
     await expect.element(menu).toBeVisible()
-    await expect.element(menu.getByText('Ada Lovelace')).toBeVisible()
+    await expect.element(menu.getByText('Ada Lovelace', {exact: true})).toBeVisible()
     await expect.element(menu.getByText('Grace Hopper')).toBeVisible()
     await expect.element(menu.getByText('Invite members')).toBeVisible()
+    await expect.element(menu.getByText('Agent acting for Ada Lovelace').first()).toBeVisible()
+    expect(menu.element().querySelectorAll('[data-presence-actor="agent"]')).toHaveLength(2)
     // `toBeVisible` passes for a menu clamped to a few pixels by `constrainSize`.
     await expect.poll(() => menu.element().getBoundingClientRect().height).toBeGreaterThan(100)
 

@@ -1,6 +1,6 @@
 import {type Observable} from 'rxjs'
 
-import {type PresenceLocation} from '../types'
+import {type PresenceActor, type PresenceLocation} from '../types'
 
 // Not sure if this is the best choice of words, but:
 // Message: something you send
@@ -12,6 +12,7 @@ export interface StateMessage {
 }
 
 export interface StateEvent extends StateMessage {
+  actor?: PresenceActor
   userId: string
   timestamp: string
   sessionId: string

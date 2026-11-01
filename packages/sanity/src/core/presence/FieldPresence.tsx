@@ -4,10 +4,11 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
-import {UserAvatar} from '../components/userAvatar/UserAvatar'
+import {presenceIdentity} from '../store/presence/agentPresence'
 import {AVATAR_DISTANCE, AVATAR_SIZE, DEFAULT_MAX_AVATARS_FIELDS} from './constants'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {usePresenceReporter} from './overlay/tracker'
+import {PresenceAvatar} from './PresenceAvatar'
 import {PresenceTooltip} from './PresenceTooltip'
 import {type FormNodePresence} from './types'
 import {splitRight} from './utils'
@@ -29,15 +30,17 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
   stack = true,
 }: FieldPresenceInnerProps) {
-  const uniquePresence = uniqBy(presence || [], (item) => item.user.id)
+  const uniquePresence = uniqBy(presence || [], presenceIdentity)
   const sorted = sortBy(uniquePresence, (_presence) => _presence.user.id)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [
     ...visible.reverse().map((_visible) => ({
-      key: _visible.user.id,
+      key: presenceIdentity(_visible),
       element: (
-        <UserAvatar
+        <PresenceAvatar
+          actor={_visible.actor}
+          withTooltip={_visible.actor?.type === 'agent'}
           animateArrowFrom={animateArrowFrom}
           position={position}
           status="online"
@@ -108,7 +111,7 @@ export function FieldPresence(props: FieldPresenceProps) {
   )
   usePresenceReporter(element ? reporterId : null, reporterGetSnapshot)
 
-  const uniquePresence = useMemo(() => uniqBy(presence || [], (item) => item.user.id), [presence])
+  const uniquePresence = useMemo(() => uniqBy(presence || [], presenceIdentity), [presence])
 
   return (
     <PresenceTooltip items={uniquePresence}>

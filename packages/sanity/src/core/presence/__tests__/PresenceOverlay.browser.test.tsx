@@ -5,14 +5,17 @@ import {
   type Path,
   type SanityDocument,
 } from '@sanity/types'
+import {Card} from '@sanity/ui'
 import {type FormNodePresence} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {ColorSchemeProvider} from '../../studio/colorScheme'
+import {DocumentPreviewPresence} from '../DocumentPreviewPresence'
 import {PresenceOverlay} from '../overlay/PresenceOverlay'
 
 /**
@@ -445,4 +448,67 @@ describe('PresenceOverlay', () => {
     expect(dockAvatars('bottom')).toHaveLength(0)
     await settlePresenceSnapshot()
   })
+})
+
+describe('agent presence', () => {
+  it.each(['light', 'dark'] as const)(
+    'keeps a human and one badged agent at the same field in %s mode',
+    async (scheme) => {
+      const human = presence('u1', ['field0'])
+      const agent = {
+        ...human,
+        actor: {type: 'agent' as const, id: 'agent-one'},
+        sessionId: 'op-one',
+      }
+      const entries = [human, agent, {...agent, sessionId: 'op-two'}]
+      await render(
+        <TestWrapper schemaTypes={schemaTypes}>
+          <ColorSchemeProvider scheme={scheme}>
+            <Card padding={4}>
+              <div data-testid="document-presence">
+                <DocumentPreviewPresence
+                  presence={entries.map((entry) => ({...entry, documentId: 'drafts.123'}))}
+                />
+              </div>
+              <div
+                data-testid="presence-test-pane"
+                style={{height: '70vh', overflow: 'auto', position: 'relative'}}
+              >
+                <PresenceOverlay>
+                  <TestForm document={DOCUMENT} presence={entries} />
+                </PresenceOverlay>
+              </div>
+            </Card>
+          </ColorSchemeProvider>
+        </TestWrapper>,
+      )
+      await expect.poll(() => fieldAvatars('field0')).toHaveLength(2)
+      const documentAvatars = page.getByTestId('document-presence')
+      await expect
+        .element(documentAvatars.getByRole('img', {name: 'Agent acting for User u1', exact: true}))
+        .toBeVisible()
+      expect(documentAvatars.element().querySelectorAll('[data-ui="Avatar"]')).toHaveLength(2)
+      await userEvent.hover(
+        documentAvatars.getByRole('img', {name: 'Agent acting for User u1', exact: true}),
+      )
+      await expect
+        .poll(() =>
+          Array.from(document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]'))
+            .filter((tooltip) => tooltip.getClientRects().length > 0)
+            .map((tooltip) => tooltip.textContent),
+        )
+        .toEqual(['2 collaborators are editing this document'])
+      const avatars = fieldAvatars('field0')
+      const agentAvatar = avatars.find((avatar) => avatar.closest('[data-presence-actor="agent"]'))!
+      expect(agentAvatar).toBeDefined()
+      const wrapper = agentAvatar.closest('[data-presence-actor="agent"]')!
+      expect(wrapper.getAttribute('aria-label')).toBe('Agent acting for User u1')
+      const badge = wrapper.lastElementChild!.querySelector('svg')!
+      const bounds = badge.getBoundingClientRect()
+      expect(bounds.width).toBeGreaterThanOrEqual(10)
+      expect(bounds.height).toBeGreaterThanOrEqual(10)
+      expect(isWithin(bounds, field('field0').getBoundingClientRect())).toBe(true)
+      await settlePresenceSnapshot()
+    },
+  )
 })

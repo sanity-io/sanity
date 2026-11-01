@@ -3,7 +3,6 @@ import {type User} from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
 import groupBy from 'lodash-es/groupBy.js'
-import omit from 'lodash-es/omit.js'
 import uniq from 'lodash-es/uniq.js'
 import {nanoid} from 'nanoid'
 import {
@@ -14,7 +13,7 @@ import {
   from,
   fromEvent,
   merge,
-  NEVER,
+  of,
   type Observable,
   ReplaySubject,
   timer,
@@ -25,7 +24,6 @@ import {
   filter,
   map,
   mergeMapTo,
-  scan,
   share,
   shareReplay,
   switchMap,
@@ -39,6 +37,7 @@ import {documentIdEquals} from '../../util/draftUtils'
 import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
 import {debugParams$} from '../debugParams/debugParams'
 import {type UserStore} from '../user/userStore'
+import {observePresenceSessions, presenceIdentity, smoothAgentPresence} from './agentPresence'
 import {createBifurTransport} from './message-transports/bifurTransport'
 import {
   type DisconnectEvent,
@@ -258,32 +257,11 @@ export function createPresenceStore(context: {
     ),
   )
 
-  const stateEventToSession = (stateEvent: StateEvent): Session => {
-    return {
-      lastActiveAt: stateEvent.timestamp,
-      locations: stateEvent.locations,
-      sessionId: stateEvent.sessionId,
-      userId: stateEvent.userId,
-    }
-  }
-
-  const states$: Observable<{[sessionId: string]: Session}> = merge(
-    syncEvent$,
-    useMock$,
-    debugEvents$,
-  ).pipe(
-    scan(
-      (keyed, event: StateEvent | DisconnectEvent): {[sessionId: string]: Session} =>
-        event.type === 'disconnect'
-          ? omit(keyed, event.sessionId)
-          : {...keyed, [event.sessionId]: stateEventToSession(event)},
-      {},
-    ),
-  )
+  const states$ = merge(syncEvent$, useMock$, debugEvents$).pipe(observePresenceSessions())
 
   const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
-    switchMap((status) => (status === 'connected' ? merge(states$, reportLocation$) : NEVER)),
-    map((keyedSessions) => Object.values(keyedSessions)),
+    switchMap((status) => (status === 'connected' ? merge(states$, reportLocation$) : of([]))),
+    smoothAgentPresence(),
     switchMap((sessions) => {
       const userIds = uniq(sessions.map((sess) => sess.userId))
       return from(userStore.getUsers(userIds)).pipe(
@@ -313,11 +291,11 @@ export function createPresenceStore(context: {
     map((sessions): {user: User; sessions: Session[]}[] => {
       const grouped = groupBy(
         sessions.map((s) => s.session),
-        (e) => e.userId,
+        (e) => presenceIdentity({user: {id: e.userId}, ...e}),
       )
 
       return Object.keys(grouped).map((userId): {user: User; sessions: Session[]} => ({
-        user: sessions.find((s) => s.user.id === userId)?.user as User,
+        user: sessions.find((s) => s.session === grouped[userId][0])!.user,
         sessions: grouped[userId],
       }))
     }),
@@ -331,6 +309,8 @@ export function createPresenceStore(context: {
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
+        actor: userAndSession.sessions[0]?.actor,
+        sessionId: userAndSession.sessions[0]?.sessionId,
         status: 'online',
         lastActiveAt: userAndSession.sessions.sort((a, b) =>
           b.lastActiveAt.localeCompare(a.lastActiveAt),
@@ -358,6 +338,7 @@ export function createPresenceStore(context: {
             documentId: location.documentId,
             presence: {
               user: userAndSession.user,
+              actor: userAndSession.session.actor,
               lastActiveAt: userAndSession.session.lastActiveAt,
               path: location.path || [],
               sessionId: userAndSession.session.sessionId,
@@ -367,7 +348,7 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
     ),
-    shareReplay(1),
+    shareReplay({refCount: true, bufferSize: 1}),
   )
 
   /**

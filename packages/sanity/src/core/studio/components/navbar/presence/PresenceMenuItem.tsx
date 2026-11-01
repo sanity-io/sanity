@@ -4,8 +4,9 @@ import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {PresenceAvatar} from '../../../../presence/PresenceAvatar'
+import {presenceIdentity} from '../../../../store/presence/agentPresence'
 import {type GlobalPresence} from '../../../../store/presence/types'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 
@@ -14,10 +15,13 @@ interface PresenceListRowProps {
   onFocus: (id: string) => void
   locations: GlobalPresence['locations']
   user: GlobalPresence['user']
+  actor?: GlobalPresence['actor']
+  sessionId?: string
 }
 
 export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceListRowProps) {
-  const {locations, user, focused, onFocus} = props
+  const {locations, user, actor, sessionId, focused, onFocus} = props
+  const identity = presenceIdentity({user, actor, sessionId})
   const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
   const {t} = useTranslation()
 
@@ -37,8 +41,8 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   }, [menuItemElement, focused])
 
   const handleFocus = useCallback(() => {
-    onFocus(user.id)
-  }, [onFocus, user.id])
+    onFocus(identity)
+  }, [onFocus, identity])
 
   const lastActiveLocation = orderBy(locations || [], ['lastActiveAt'], ['desc']).find(
     (location) => location.documentId,
@@ -59,9 +63,13 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
         // Shared props
         data-as="a"
         onFocus={handleFocus}
-        preview={<UserAvatar size={1} user={user} />}
+        preview={<PresenceAvatar size={1} user={user} actor={actor} />}
         ref={setMenuItemElement}
-        text={user.displayName}
+        text={
+          actor?.type === 'agent'
+            ? t('presence.agent-label', {displayName: user.displayName})
+            : user.displayName
+        }
       />
     )
   }
@@ -76,9 +84,13 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       // Shared props
       data-as="a"
       onFocus={handleFocus}
-      preview={<UserAvatar size={1} user={user} />}
+      preview={<PresenceAvatar size={1} user={user} actor={actor} />}
       ref={setMenuItemElement}
-      text={user.displayName}
+      text={
+        actor?.type === 'agent'
+          ? t('presence.agent-label', {displayName: user.displayName})
+          : user.displayName
+      }
     />
   )
 })
