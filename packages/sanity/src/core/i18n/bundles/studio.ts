@@ -1612,6 +1612,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.not-in-a-document': 'Not in a document',
   /** Tooltip content text for presence menu button */
   'presence.tooltip-content': 'Who is here',
+  /** Label identifying an agent acting on behalf of a project member */
+  'presence.agent-label': 'Agent acting for {{displayName}}',
+  /** Presence count including people and agents */
+  'presence.tooltip.collaborators': '{{count}} collaborators are editing this document',
   /** Tooltip text for document previews when one user is editing the document in a release */
   'presence.tooltip.one':
     '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',

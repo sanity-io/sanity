@@ -42,6 +42,25 @@ const renderPresence = async (documentId: string) => {
 }
 
 describe('DocumentPreviewPresence', () => {
+  it('deduplicates agent operations while keeping its human and other agents separate', async () => {
+    const wrapper = await createTestProvider({resources: [studioDefaultLocaleResources]})
+    const human = presence('drafts.thesis-1')
+    const agent = {...human, actor: {type: 'agent' as const, id: 'agent-one'}}
+    render(
+      <DocumentPreviewPresence
+        presence={[
+          human,
+          agent,
+          {...agent, sessionId: 'another-operation'},
+          {...agent, actor: {type: 'agent', id: 'agent-two'}},
+        ]}
+      />,
+      {wrapper},
+    )
+    expect(screen.getByLabelText('3 collaborators are editing this document')).toBeInTheDocument()
+    expect(screen.getAllByRole('img', {name: 'Agent acting for Nancy Du'})).toHaveLength(1)
+  })
+
   it('does not claim a published live-edit document is in an Untitled release', async () => {
     await renderPresence('thesis-1')
 

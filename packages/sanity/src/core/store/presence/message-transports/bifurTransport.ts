@@ -2,6 +2,7 @@ import {type BifurClient} from '@sanity/bifur-client'
 import {EMPTY, type Observable} from 'rxjs'
 import {map, share} from 'rxjs/operators'
 
+import {parsePresenceActor} from '../agentPresence'
 import {type PresenceLocation} from '../types'
 import {type Transport, type TransportEvent, type TransportMessage} from './transport'
 
@@ -10,6 +11,7 @@ type BifurStateMessage = {
   i: string
   m: {
     sessionId: string
+    actor?: unknown
     locations: PresenceLocation[]
   }
 }
@@ -37,9 +39,10 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
     }
   }
   if (event.type === 'state') {
-    const {sessionId, locations} = event.m
+    const {sessionId, locations, actor} = event.m
     return {
       type: 'state',
+      actor: parsePresenceActor(actor),
       userId: event.i,
       sessionId: sessionId,
       timestamp: new Date().toISOString(),

@@ -4,13 +4,14 @@ import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components/tooltip/Tooltip'
-import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {presenceIdentity} from '../store/presence/agentPresence'
 import {type DocumentPresence} from '../store/presence/types'
 import {getVersionFromId} from '../util/draftUtils'
 import {isNonNullable} from '../util/isNonNullable'
+import {PresenceAvatar} from './PresenceAvatar'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
@@ -40,9 +41,9 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   const uniquePresence = useMemo(
     () =>
-      Array.from(new Set(presence.map((a) => a.user.id)))
+      Array.from(new Set(presence.map(presenceIdentity)))
         .map((id) => {
-          return presence.find((a) => a.user.id === id)
+          return presence.find((a) => presenceIdentity(a) === id)
         })
         .filter(isNonNullable),
     [presence],
@@ -53,7 +54,10 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
       const firstPresence = uniquePresence[0]
       const documentId = firstPresence?.documentId
       const versionId = documentId ? getVersionFromId(documentId) : undefined
-      const displayName = firstPresence.user.displayName
+      const displayName =
+        firstPresence.actor?.type === 'agent'
+          ? t('presence.agent-label', {displayName: firstPresence.user.displayName})
+          : firstPresence.user.displayName
 
       if (!versionId) {
         return t('presence.tooltip.one-without-release', {displayName})
@@ -68,7 +72,12 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     }
 
     if (uniquePresence.length > 1) {
-      return t('presence.tooltip.other', {count: uniquePresence.length})
+      return t(
+        uniquePresence.some((item) => item.actor?.type === 'agent')
+          ? 'presence.tooltip.collaborators'
+          : 'presence.tooltip.other',
+        {count: uniquePresence.length},
+      )
     }
 
     return undefined
@@ -79,7 +88,12 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
       <AvatarStackBox>
         <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
           {uniquePresence.map((item) => (
-            <UserAvatar key={item.user.id} size={0} user={item.user} />
+            <PresenceAvatar
+              key={presenceIdentity(item)}
+              actor={item.actor}
+              size={0}
+              user={item.user}
+            />
           ))}
         </AvatarStack>
       </AvatarStackBox>

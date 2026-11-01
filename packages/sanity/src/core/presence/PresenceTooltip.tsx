@@ -2,7 +2,9 @@ import {useMemo} from 'react'
 import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
-import {UserAvatar} from '../components/userAvatar/UserAvatar'
+import {useTranslation} from '../i18n/hooks/useTranslation'
+import {presenceIdentity} from '../store/presence/agentPresence'
+import {PresenceAvatar} from './PresenceAvatar'
 import {type FormNodePresence} from './types'
 
 interface PresenceTooltipProps {
@@ -18,24 +20,27 @@ interface PresenceTooltipProps {
 
 export function PresenceTooltip(props: PresenceTooltipProps) {
   const {children, items} = props
+  const {t} = useTranslation()
 
   const content = useMemo(
     () => (
       <VStack>
         {items.map((item) => (
-          <Flex key={item.user.id} alignItems="center" gap={2}>
+          <Flex key={presenceIdentity(item)} alignItems="center" gap={2}>
             <div>
-              <UserAvatar user={item.user} status="online" />
+              <PresenceAvatar actor={item.actor} user={item.user} status="online" />
             </div>
 
             <Text size={1} as="div" trim={true}>
-              {item.user.displayName}
+              {item.actor?.type === 'agent'
+                ? t('presence.agent-label', {displayName: item.user.displayName})
+                : item.user.displayName}
             </Text>
           </Flex>
         ))}
       </VStack>
     ),
-    [items],
+    [items, t],
   )
 
   return (

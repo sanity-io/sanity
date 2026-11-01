@@ -6,7 +6,7 @@ import {distinctUntilChanged, map} from 'rxjs'
 import {usePresenceStore} from '../datastores'
 import {type GlobalPresence} from './types'
 
-type GlobalPresenceEntry = Pick<GlobalPresence, 'user' | 'locations'>
+type GlobalPresenceEntry = Pick<GlobalPresence, 'user' | 'locations' | 'actor' | 'sessionId'>
 
 const initial: GlobalPresenceEntry[] = []
 
@@ -16,7 +16,14 @@ export function useGlobalPresence(): GlobalPresenceEntry[] {
   const presence$ = useMemo(
     () =>
       presenceStore.globalPresence$.pipe(
-        map((presence) => presence.map(({user, locations}) => ({user, locations}))),
+        map((presence) =>
+          presence.map(({user, locations, actor, sessionId}) => ({
+            user,
+            locations,
+            actor,
+            sessionId,
+          })),
+        ),
         distinctUntilChanged<GlobalPresenceEntry[]>(dequal),
       ),
     [presenceStore],
