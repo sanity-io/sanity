@@ -1,29 +1,21 @@
 // oxlint-disable no-console
-import {mkdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {mkdirSync, writeFileSync} from 'node:fs'
 import path from 'node:path'
 import {parseArgs} from 'node:util'
 
 import {reportsDirectory} from './paths'
-import {parseGeneratorReport, parseVerdictsFile} from './syncVerification/contracts'
 import {
   createClaudeExplainer,
   DEFAULT_CLAUDE_MODEL,
   type Explainer,
   placeholderExplainer,
 } from './syncVerification/explain'
-import {fileFailures, type ReportPair, summaryMarkdown} from './syncVerification/fileFailures'
+import {fileFailures, summaryMarkdown} from './syncVerification/fileFailures'
 import {createLinearIssues} from './syncVerification/linear'
+import {readPairs} from './syncVerification/readPairs'
 
 const USAGE =
   'Usage: engine-confidence sync-file <report.json> <verdicts.json> [<report.json> <verdicts.json>...] [--dry-run] [--summary-dir <dir>]'
-
-function readPairs(positionals: string[]): ReportPair[] {
-  const reportPaths = positionals.filter((_, index) => index % 2 === 0)
-  return reportPaths.map((reportPath, pairIndex) => ({
-    report: parseGeneratorReport(readFileSync(path.resolve(reportPath), 'utf8')),
-    verdicts: parseVerdictsFile(readFileSync(path.resolve(positionals[pairIndex * 2 + 1]), 'utf8')),
-  }))
-}
 
 function exitWith(message: string): never {
   console.error(message)
@@ -49,12 +41,7 @@ async function main(): Promise<void> {
   })
   if (positionals.length === 0 || positionals.length % 2 === 1) exitWith(USAGE)
 
-  let pairs: ReportPair[] = []
-  try {
-    pairs = readPairs(positionals)
-  } catch (error) {
-    exitWith(error instanceof Error ? error.message : String(error))
-  }
+  const {pairs, errors: unreadable} = readPairs(positionals)
 
   const mode = values['dry-run'] ? 'dry-run' : 'file'
   const linearApiKey = process.env.LINEAR_API_KEY ?? ''
@@ -65,11 +52,12 @@ async function main(): Promise<void> {
     exitWith(`Filing needs ${missingKeys.join(' and ')}; pass --dry-run to only print the issues`)
   }
 
-  const summary = await fileFailures(pairs, {
+  const filed = await fileFailures(pairs, {
     dryRun: mode === 'dry-run',
     linear: linearApiKey === '' ? undefined : createLinearIssues(linearApiKey),
     explain: createExplainer(),
   })
+  const summary = {...filed, outcomes: [...filed.outcomes, ...unreadable]}
   const markdown = summaryMarkdown(summary)
   const summaryDirectory = path.resolve(values['summary-dir'])
   mkdirSync(summaryDirectory, {recursive: true})

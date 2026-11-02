@@ -44,7 +44,7 @@ export type OutcomeSource = 'failure' | 'sample'
 export interface FailureOutcome {
   source: OutcomeSource
   signature: string
-  seam: Seam
+  seam?: Seam
   verdict?: Verdict
   kind?: IssueKind
   action: OutcomeAction
