@@ -21,6 +21,8 @@ export interface OAuthTokenResponse {
 export class OAuthRequestError extends Error {
   readonly statusCode: number
   readonly error: string | undefined
+  /** Whether the body had an `error` at all, whether or not it was a usable code. */
+  readonly sentError: boolean
 
   constructor(statusCode: number, body: unknown) {
     const parsed =
@@ -37,6 +39,7 @@ export class OAuthRequestError extends Error {
     )
     this.name = 'OAuthRequestError'
     this.statusCode = statusCode
+    this.sentError = rawError !== undefined
     this.error = rfcErrorCode(rawError) ?? errorCodeFromMessage(description)
   }
 }
@@ -53,8 +56,15 @@ const RFC_ERROR_CODES = new Set([
   'temporarily_unavailable',
 ])
 
+/**
+ * The shape of an RFC 6749 error code. Anything else from a server is free text.
+ *
+ * @internal
+ */
+export const OAUTH_ERROR_CODE = /^[a-z_]{1,64}$/
+
 function rfcErrorCode(value: string | undefined): string | undefined {
-  return value !== undefined && /^[a-z_]{1,64}$/.test(value) ? value : undefined
+  return value !== undefined && OAUTH_ERROR_CODE.test(value) ? value : undefined
 }
 
 /**

@@ -6,12 +6,18 @@ import {catchError, map, of} from 'rxjs'
 import {CapabilityGate} from '../components/CapabilityGate'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDashboardAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {isOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
 import {type AuthStore} from '../store/auth/types'
 import {useComlinkStore, useRenderingContextStore} from '../store/datastores'
 import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {
   AuthBoundaryResolved,
   OAuthCodeExchangeCompleted,
+  OAuthOriginCheckFailed,
+  OAuthRequestRetried,
+  OAuthSessionEnded,
+  OAuthSignInStarted,
+  OAuthTokenRenewed,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
@@ -176,6 +182,41 @@ export function AuthBoundary({
     return () => {
       superseded = true
     }
+  }, [activeWorkspace.auth, telemetry])
+
+  // The OAuth store reports its renewals and session ends as events already reduced to what is
+  // safe to send (see `store/auth/oauth/telemetry.ts`); log them as they come.
+  useEffect(() => {
+    const auth = activeWorkspace.auth
+    if (!isOAuthAuthStore(auth)) return undefined
+    const subscription = auth.telemetryEvents.subscribe((event) => {
+      switch (event.type) {
+        case 'token-renewed': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthTokenRenewed, data)
+          break
+        }
+        case 'session-ended': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthSessionEnded, data)
+          break
+        }
+        case 'sign-in-started':
+          telemetry.log(OAuthSignInStarted, {})
+          break
+        case 'request-retried': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthRequestRetried, data)
+          break
+        }
+        case 'origin-check-failed': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthOriginCheckFailed, data)
+          break
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
   }, [activeWorkspace.auth, telemetry])
 
   if (loggedIn === 'loading') return <LoadingComponent />
