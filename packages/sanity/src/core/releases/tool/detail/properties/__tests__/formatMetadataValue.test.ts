@@ -3,7 +3,7 @@ import {describe, expect, it} from 'vitest'
 
 import {createSchema} from '../../../../../schema/createSchema'
 import {compileReleaseMetadataSchema} from '../../../../metadata/compileReleaseMetadataType'
-import {formatMetadataValue, type MetadataFormatters} from '../formatMetadataValue'
+import {formatMetadataValue, hasMetadataRow, type MetadataFormatters} from '../formatMetadataValue'
 
 const formatters: MetadataFormatters = {
   number: new Intl.NumberFormat('en-US'),
@@ -86,22 +86,65 @@ describe('formatMetadataValue', () => {
     expect(format(signOff, {note: ''})).toEqual({status: 'empty'})
   })
 
-  it('reports an object with a nested object, which does not fit on one line', () => {
+  describe('an object with a nested object', () => {
     const outer = defineField({
       name: 'outer',
       type: 'object',
       fields: [
+        defineField({name: 'name', title: 'Name', type: 'string'}),
         defineField({
           name: 'inner',
           type: 'object',
-          fields: [defineField({name: 'name', type: 'string'})],
+          fields: [defineField({name: 'detail', type: 'string'})],
         }),
       ],
     })
 
-    expect(format(outer, {inner: {name: 'x'}})).toEqual({
-      status: 'unsupported',
-      reason: 'field "inner" is a nested object',
+    it('is empty while unset', () => {
+      expect(format(outer, undefined)).toEqual({status: 'empty'})
+    })
+
+    it('shows its other fields and omits the nested object', () => {
+      expect(format(outer, {name: 'x', inner: {detail: 'y'}})).toEqual({
+        status: 'value',
+        text: 'Name: x',
+      })
+    })
+
+    it('is empty when only the nested object is set', () => {
+      expect(format(outer, {inner: {detail: 'y'}})).toEqual({status: 'empty'})
+    })
+  })
+
+  describe('hasMetadataRow', () => {
+    it('is false for an object whose fields are all nested objects', () => {
+      const onlyNested = defineField({
+        name: 'onlyNested',
+        type: 'object',
+        fields: [
+          defineField({
+            name: 'inner',
+            type: 'object',
+            fields: [defineField({name: 'detail', type: 'string'})],
+          }),
+        ],
+      })
+
+      expect(hasMetadataRow(compiledType(onlyNested))).toBe(false)
+    })
+
+    it('is true for scalars and for objects with a scalar field', () => {
+      const mixed = defineField({
+        name: 'mixed',
+        type: 'object',
+        fields: [
+          defineField({name: 'name', type: 'string'}),
+          defineField({name: 'inner', type: 'object', fields: [{name: 'detail', type: 'string'}]}),
+        ],
+      })
+
+      expect(hasMetadataRow(compiledType(defineField({name: 'note', type: 'string'})))).toBe(true)
+      expect(hasMetadataRow(compiledType(mixed))).toBe(true)
     })
   })
 

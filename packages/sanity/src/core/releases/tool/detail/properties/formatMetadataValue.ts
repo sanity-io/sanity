@@ -61,6 +61,16 @@ function metadataKind(type: SchemaType): MetadataKind | undefined {
     .find(isMetadataKind)
 }
 
+function isRowField(field: ObjectField): boolean {
+  return metadataKind(field.type) !== 'object'
+}
+
+export function hasMetadataRow(type: SchemaType): boolean {
+  return (
+    metadataKind(type) !== 'object' || (isObjectSchemaType(type) && type.fields.some(isRowField))
+  )
+}
+
 function isEmptyValue(value: unknown): boolean {
   return value === undefined || value === null || value === ''
 }
@@ -134,12 +144,8 @@ function formatObject(
   if (!isObjectSchemaType(type) || !isRecord(value)) return mismatch('object', value)
 
   const parts = type.fields
-    .filter((field) => !options.isFieldHidden(field, value))
+    .filter((field) => isRowField(field) && !options.isFieldHidden(field, value))
     .map((field): FormattedMetadataValue & {title?: string} => {
-      const kind = metadataKind(field.type)
-      if (kind === 'object') {
-        return {status: 'unsupported', reason: `field "${field.name}" is a nested object`}
-      }
       const nested = formatMetadataValue({...options, type: field.type, value: value[field.name]})
       return nested.status === 'value' ? {...nested, title: field.type.title || field.name} : nested
     })

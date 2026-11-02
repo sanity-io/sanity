@@ -14,7 +14,7 @@ import {useCurrentUser} from '../../../../store/user/hooks'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {formValueFromMetadata} from '../../../metadata/formValueFromMetadata'
 import {useReleaseMetadataSchemaType} from '../../../metadata/useReleaseMetadataSchemaType'
-import {formatMetadataValue, type MetadataFormatters} from './formatMetadataValue'
+import {formatMetadataValue, hasMetadataRow, type MetadataFormatters} from './formatMetadataValue'
 import {warnOncePerProperty} from './warnOncePerProperty'
 
 function useMetadataFormatters(): MetadataFormatters {
@@ -95,7 +95,7 @@ export interface DefaultReleaseProperties {
 }
 
 /**
- * Studio's default release properties: one row per configured metadata field, in field order.
+ * Studio's default release properties: one row per configured metadata field that can show a value, in field order.
  * The components keep their identity while the compiled metadata type does, since the property
  * collector keys each row by component.
  */
@@ -105,9 +105,10 @@ export function useDefaultReleaseProperties(): DefaultReleaseProperties {
   return useMemo(() => {
     const fields = compiled?.schemaType.fields ?? []
     const fieldNames = fields.map((field) => field.name)
+    const rowFields = fields.filter((field) => hasMetadataRow(field.type))
     return {
-      properties: fields.map((field) => createMetadataFieldProperty(field, fieldNames)),
-      fieldTitles: new Map(fields.map((field) => [field.name, fieldTitle(field)])),
+      properties: rowFields.map((field) => createMetadataFieldProperty(field, fieldNames)),
+      fieldTitles: new Map(rowFields.map((field) => [field.name, fieldTitle(field)])),
     }
   }, [compiled])
 }
