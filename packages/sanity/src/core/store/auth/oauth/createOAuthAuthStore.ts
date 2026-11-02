@@ -16,6 +16,7 @@ import {
   firstValueFrom,
   from,
   fromEvent,
+  isObservable,
   merge,
   type Observable,
   of,
@@ -63,12 +64,23 @@ import {createOAuthLoginComponent, type OAuthCallbackError} from './createOAuthL
 import {debug, describeTokens, refreshTokenTag, tokenTag} from './debug'
 import {
   createOAuthEndpoints,
+  OAUTH_ERROR_CODE,
   type OAuthEndpoints,
   OAuthRequestError,
   OAuthRequestTimeoutError,
   type OAuthTokenResponse,
 } from './oauthEndpoints'
 import {createCodeChallenge, createCodeVerifier, createState} from './pkce'
+import {
+  failureOf,
+  type OAuthFailure,
+  type OAuthRenewalOutcome,
+  type OAuthRenewalTrigger,
+  type OAuthSessionEndReason,
+  type OAuthTelemetryEvent,
+  sessionAgeBucket,
+  tokenLifetimeBucket,
+} from './telemetry'
 import {type OAuthCallbackResult} from './types'
 
 /** Parameters of an authorization response (RFC 6749 section 4.1.2, RFC 9207 `iss`). */
@@ -82,14 +94,11 @@ const MIN_REFRESH_DELAY_MS = 5_000
 
 /**
  * How long a refused refresh token waits for another tab's rotation to land before it is taken
- * as the end of the session. Only matters without an exclusive cross-tab lock, where two tabs
+ * as the end of the session. Only waited for without an exclusive cross-tab lock, where two tabs
  * can redeem the same refresh token at once and the loser's `invalid_grant` is caused by the
  * winner's rotation, not by a dead session.
  */
 const INVALID_GRANT_GRACE_MS = 1_000
-
-/** The shape of an RFC 6749 error code. Anything else from a server is free text. */
-const OAUTH_ERROR_CODE = /^[a-z_]{1,64}$/
 
 /**
  * The token pair a signed-in Studio holds, persisted per project and client.
@@ -104,6 +113,11 @@ export interface OAuthTokens {
   expiresAt: number
   /** Epoch milliseconds when the Studio renews the access token, ahead of `expiresAt`. */
   refreshAt: number
+  /**
+   * Epoch milliseconds of the sign-in this pair descends from, kept across renewals. Only ever
+   * reported as a coarse session age. Missing for pairs stored before it was recorded.
+   */
+  signedInAt?: number
 }
 
 /** The authorization request in flight between leaving for the authorization server and returning. */
@@ -160,6 +174,26 @@ export interface OAuthAuthStoreEnvironment {
    * `visible$` renews on return, and a request with an expired token renews on its own.
    */
   isHidden?: () => boolean
+  /** Whether `withLock` is exclusive across tabs (Web Locks). */
+  locksAvailable: boolean
+}
+
+/**
+ * The OAuth store, with the telemetry it reports. `AuthBoundary` logs the events.
+ *
+ * @internal
+ */
+export interface OAuthAuthStore extends AuthStore {
+  telemetryEvents: Observable<OAuthTelemetryEvent>
+}
+
+/**
+ * Whether `auth` is an OAuth store, which reports telemetry.
+ *
+ * @internal
+ */
+export function isOAuthAuthStore(auth: AuthStore): auth is OAuthAuthStore {
+  return 'telemetryEvents' in auth && isObservable(auth.telemetryEvents)
 }
 
 /**
@@ -178,6 +212,7 @@ function toTokens(
     refreshToken: response.refresh_token ?? previous?.refreshToken,
     expiresAt: issuedAt + lifetimeMs,
     refreshAt: issuedAt + renewAfterMs(lifetimeMs, renewBeforeExpiryMs),
+    signedInAt: previous ? previous.signedInAt : issuedAt,
   }
 }
 
@@ -208,9 +243,7 @@ function isSameAuthState(a: AuthState, b: AuthState): boolean {
  */
 function exchangeFailureReason(err: unknown): string {
   if (err instanceof OAuthRequestError) {
-    return err.error && OAUTH_ERROR_CODE.test(err.error)
-      ? err.error
-      : `token endpoint error (${err.statusCode})`
+    return err.error ?? `token endpoint error (${err.statusCode})`
   }
   if (err instanceof OAuthRequestTimeoutError) return 'token endpoint timeout'
   return 'code exchange failed'
@@ -251,6 +284,27 @@ function assertRedirectUri(redirectUri: string, origin: string): void {
       `auth.experimental_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
     )
   }
+}
+
+/**
+ * A promise whose work starts the first time something waits for it. `await`, `catch` and
+ * `finally` all call `then`, so any of them starts it.
+ */
+function lazyPromise<T>(start: () => Promise<T>): Promise<T> {
+  let begin = () => {}
+  const promise = new Promise<T>((resolve, reject) => {
+    begin = () => {
+      begin = () => {}
+      start().then(resolve, reject)
+    }
+  })
+  const then = promise.then.bind(promise)
+  // oxlint-disable-next-line unicorn/no-thenable -- it is a promise, meant to be awaited
+  promise.then = (onfulfilled, onrejected) => {
+    begin()
+    return then(onfulfilled, onrejected)
+  }
+  return promise
 }
 
 function bearerTokenOf(request: RequestHandlerOptions): string | undefined {
@@ -336,7 +390,8 @@ export function _createOAuthAuthStore({
   withLock,
   visible$ = defaultEnvironment.visible$,
   isHidden = defaultEnvironment.isHidden,
-}: OAuthAuthStoreOptions & OAuthAuthStoreEnvironment): AuthStore {
+  locksAvailable,
+}: OAuthAuthStoreOptions & OAuthAuthStoreEnvironment): OAuthAuthStore {
   if (!Number.isFinite(renewBeforeExpiryMs) || renewBeforeExpiryMs < 0) {
     throw new Error(
       `auth.experimental_oauth.renewBeforeExpiryMs must be a non-negative number of milliseconds, got ${renewBeforeExpiryMs}`,
@@ -389,6 +444,17 @@ export function _createOAuthAuthStore({
   )
 
   let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
+
+  /** Telemetry the store reports; see `./telemetry` for what may go in it. */
+  const telemetryEvents$ = new Subject<OAuthTelemetryEvent>()
+  const reportSessionEnded = (reason: OAuthSessionEndReason, tokens: OAuthTokens | undefined) => {
+    const signedInAt = tokens?.signedInAt
+    telemetryEvents$.next({
+      type: 'session-ended',
+      reason,
+      ...(signedInAt === undefined ? {} : {sessionAge: sessionAgeBucket(Date.now() - signedInAt)}),
+    })
+  }
   /**
    * Every renewal this tab starts, as it starts. The session credentials hand it to the client,
    * so a request made while it is out waits for the new token instead of sending the old one.
@@ -424,28 +490,44 @@ export function _createOAuthAuthStore({
    * another tab rotated it in the meantime, that pair is adopted instead of redeeming a refresh
    * token that no longer works.
    */
-  function refresh(rejected: OAuthTokens): Promise<OAuthTokens | undefined> {
+  function refresh(
+    rejected: OAuthTokens,
+    trigger: OAuthRenewalTrigger,
+  ): Promise<OAuthTokens | undefined> {
     const epoch = sessionEpoch()
     if (inflightRefresh) {
       debug('refresh requested for %s: joining the refresh in flight', describeTokens(rejected))
       return inflightRefresh
     }
     debug('refresh requested for %s, waiting for the lock', describeTokens(rejected))
+    const startedAt = performance.now()
+    // How the renewal ended, for telemetry; set on every path that returns.
+    let outcome: OAuthRenewalOutcome = 'failed'
+    let lifetimeMs: number | undefined
+    let failure: OAuthFailure | undefined
+    /** Takes over a pair another tab stored. */
+    const adopt = (tokens: OAuthTokens): OAuthTokens => {
+      if (tokens.accessToken !== tokenStorage.get()?.accessToken) tokenStorage.update(tokens)
+      outcome = 'adopted-other-tab'
+      return tokens
+    }
     const renewal = withLock(refreshLockName, async () => {
       const stored = latestTokens()
       if (!stored) {
         debug('refresh: no stored pair (signed out meanwhile), clearing')
         tokenStorage.update(undefined)
+        outcome = 'session-ended'
         return undefined
       }
       if (stored.refreshToken !== rejected.refreshToken) {
         debug('refresh: another tab already rotated, adopting %s', describeTokens(stored))
-        if (stored.accessToken !== tokenStorage.get()?.accessToken) tokenStorage.update(stored)
-        return stored
+        return adopt(stored)
       }
       if (!stored.refreshToken) {
         debug('refresh: no refresh token to redeem, signing out')
         tokenStorage.update(undefined)
+        reportSessionEnded('refresh-refused', stored)
+        outcome = 'session-ended'
         return undefined
       }
       try {
@@ -459,12 +541,14 @@ export function _createOAuthAuthStore({
         if (epoch !== sessionEpoch()) {
           debug('refresh: logged out while the request was out, revoking the pair it returned')
           await revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          outcome = 'session-ended'
           return undefined
         }
         const latest = latestTokens()
         if (latest && latest.refreshToken !== stored.refreshToken) {
           debug('refresh: pair replaced while the request was out, revoking the pair it returned')
           await revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          outcome = 'adopted-other-tab'
           return latest
         }
         // `latest` may be gone without a logout: without an exclusive lock, a tab that redeemed
@@ -473,6 +557,8 @@ export function _createOAuthAuthStore({
         const next = toTokens(response, renewBeforeExpiryMs, stored)
         debug('refresh: renewed, %s', describeTokens(next))
         tokenStorage.update(next)
+        outcome = 'renewed'
+        lifetimeMs = response.expires_in * 1000
         return next
       } catch (err) {
         // `invalid_grant`: the refresh token expired, was used already, or its session was
@@ -482,25 +568,39 @@ export function _createOAuthAuthStore({
           // Without an exclusive lock, another tab may have redeemed this refresh token first,
           // in which case its rotation is what made ours invalid. Give that pair a moment to
           // land and adopt it; only then is the refusal the end of the session.
-          const rotated = await rotationBy(stored, INVALID_GRANT_GRACE_MS)
+          const rotated = locksAvailable
+            ? undefined
+            : await rotationBy(stored, INVALID_GRANT_GRACE_MS)
           if (rotated) {
             debug(
               'refresh: refused because another tab rotated first, adopting %s',
               describeTokens(rotated),
             )
-            if (rotated.accessToken !== tokenStorage.get()?.accessToken)
-              tokenStorage.update(rotated)
-            return rotated
+            return adopt(rotated)
           }
           debug('refresh: refresh token refused (invalid_grant), signing out: %s', err.message)
           tokenStorage.update(undefined)
+          reportSessionEnded('refresh-refused', stored)
+          outcome = 'session-ended'
+          failure = failureOf(err)
           return undefined
         }
         debug('refresh: failed, keeping the pair: %s', err instanceof Error ? err.message : err)
+        outcome = 'failed'
+        failure = failureOf(err)
         throw err
       }
     }).finally(() => {
       inflightRefresh = undefined
+      telemetryEvents$.next({
+        type: 'token-renewed',
+        trigger,
+        outcome,
+        durationMs: Math.round(performance.now() - startedAt),
+        lockAvailable: locksAvailable,
+        ...(lifetimeMs === undefined ? {} : {accessTokenLifetime: tokenLifetimeBucket(lifetimeMs)}),
+        ...(failure ? {failure} : {}),
+      })
     })
     inflightRefresh = renewal
     renewalStarted$.next({rejected, renewal})
@@ -544,14 +644,23 @@ export function _createOAuthAuthStore({
         tokenTag(current?.accessToken),
       )
       if (!current) throw err
-      // A request that went out before a renewal only needs the pair that replaced its token.
-      const tokens = sent === current.accessToken ? await refresh(current) : current
+      // A request that went out before a renewal only needs the pair that replaced its token,
+      // unless that one has expired too.
+      const needsRenewal = sent === current.accessToken || Date.now() >= current.expiresAt
+      const tokens = needsRenewal ? await refresh(current, 'rejected-request') : current
       if (!tokens) {
         debug('request rejected: session is over, giving up on %s', request.url)
         throw err
       }
       debug('request rejected: retrying %s with %s', request.url, tokenTag(tokens.accessToken))
-      return next(withBearerToken(request, tokens.accessToken))
+      try {
+        const response = await next(withBearerToken(request, tokens.accessToken))
+        telemetryEvents$.next({type: 'request-retried', renewed: needsRenewal, recovered: true})
+        return response
+      } catch (retryErr) {
+        telemetryEvents$.next({type: 'request-retried', renewed: needsRenewal, recovered: false})
+        throw retryErr
+      }
     }
   }
 
@@ -570,10 +679,16 @@ export function _createOAuthAuthStore({
     map((tokens): Promise<ClientAuthState> => {
       if (!tokens) return Promise.resolve(undefined)
       if (Date.now() < tokens.expiresAt) return Promise.resolve({token: tokens.accessToken})
-      debug('access token %s has expired, renewing before use', tokenTag(tokens.accessToken))
-      // A failure keeps the pair (`renewAtBoot` has shown it), so the expired token goes out
-      // and fails as a visible 401 rather than hanging every request.
-      return renewAtBoot(tokens).then((renewed) => ({token: (renewed ?? tokens).accessToken}))
+      // Started by the first request that needs it: every workspace gets a store when the Studio
+      // starts, and one the user never opens must not rotate its refresh token.
+      return lazyPromise(() => {
+        debug('access token %s has expired, renewing before use', tokenTag(tokens.accessToken))
+        // A failure keeps the pair (`renewAtBoot` has shown it), so the expired token goes out
+        // and fails as a visible 401 rather than hanging every request.
+        return renewAtBoot(tokens, 'expired').then((renewed) => ({
+          token: (renewed ?? tokens).accessToken,
+        }))
+      })
     }),
   )
   const renewing$ = renewalStarted$.pipe(
@@ -662,7 +777,7 @@ export function _createOAuthAuthStore({
     const tokens = tokenStorage.get()
     if (!tokens || tokens.accessToken !== accessToken || !tokens.refreshToken) return state
     if (accessToken === tokenRenewedByProbe) return state
-    const renewed = await renewAtBoot(tokens)
+    const renewed = await renewAtBoot(tokens, 'rejected-probe')
     if (renewed && renewed.accessToken !== accessToken) tokenRenewedByProbe = renewed.accessToken
     // A new token has replaced this probe through `authState$`; otherwise this is the answer.
     return state
@@ -676,13 +791,16 @@ export function _createOAuthAuthStore({
    * does not claim (a token endpoint 5xx, an unexpected 4xx) keeps the pair for the next attempt
    * and shows the signed-out state.
    */
-  async function renewAtBoot(tokens: OAuthTokens): Promise<OAuthTokens | undefined> {
+  async function renewAtBoot(
+    tokens: OAuthTokens,
+    trigger: 'expired' | 'rejected-probe',
+  ): Promise<OAuthTokens | undefined> {
     const errorHandler = getRequestErrorHandler?.()
     debug('access token rejected at boot, renewing %s', describeTokens(tokens))
     try {
       return errorHandler
-        ? await errorHandler.attempt(() => refresh(tokens), {retryable: true})
-        : await refresh(tokens)
+        ? await errorHandler.attempt(() => refresh(tokens, trigger), {retryable: true})
+        : await refresh(tokens, trigger)
     } catch (err) {
       debug(
         'renewal at boot failed, keeping the pair and showing signed out: %s',
@@ -741,8 +859,11 @@ export function _createOAuthAuthStore({
    * Renews `tokens` in the background. A failure keeps the pair and is left to the invalid-session
    * handler, which renews again on the next rejected request.
    */
-  function renewQuietly(tokens: OAuthTokens, reason: string): Observable<never> {
-    return defer(() => refresh(tokens)).pipe(
+  function renewQuietly(
+    tokens: OAuthTokens,
+    reason: 'scheduled' | 'tab-visible',
+  ): Observable<never> {
+    return defer(() => refresh(tokens, reason)).pipe(
       ignoreElements(),
       catchError((err: unknown) => {
         debug(
@@ -789,7 +910,7 @@ export function _createOAuthAuthStore({
     tap((tokens) =>
       debug('tab visible with a renewal overdue, renewing %s', describeTokens(tokens)),
     ),
-    mergeMap((tokens) => renewQuietly(tokens, 'on wake')),
+    mergeMap((tokens) => renewQuietly(tokens, 'tab-visible')),
   )
 
   // Every request this store makes carries a bearer token, which the API gateway accepts from
@@ -803,8 +924,10 @@ export function _createOAuthAuthStore({
     return from(checkCors(client, new QuickLRU({maxSize: 1}))).pipe(
       tap((cors) => {
         if (cors === 'project-not-found') {
+          telemetryEvents$.next({type: 'origin-check-failed', result: 'project-not-found'})
           diagnostics.onRequestFailure({type: 'project-not-found'}, client)
         } else if (cors && !cors.allowed) {
+          telemetryEvents$.next({type: 'origin-check-failed', result: 'origin-not-allowed'})
           diagnostics.onRequestFailure(
             {type: 'cors', allowed: cors.allowed, withCredentials: cors.withCredentials},
             client,
@@ -828,6 +951,7 @@ export function _createOAuthAuthStore({
 
   async function login(redirectPath: string): Promise<void> {
     callbackError$.next(undefined)
+    telemetryEvents$.next({type: 'sign-in-started'})
     const codeVerifier = createCodeVerifier()
     const oauthState = createState()
     const {origin} = getLocation()
@@ -1072,7 +1196,9 @@ export function _createOAuthAuthStore({
     )
   }
 
-  async function logout(): Promise<void> {
+  async function logout(options?: {
+    reason?: 'session-expired' | 'session-not-found'
+  }): Promise<void> {
     debug('logout requested')
     sessionGeneration++
     try {
@@ -1086,6 +1212,7 @@ export function _createOAuthAuthStore({
       const tokens = latestTokens() ?? tokenStorage.get()
       clearFlow(flowStorageKey)
       tokenStorage.update(undefined)
+      if (tokens) reportSessionEnded(options?.reason ?? 'user-signed-out', tokens)
       return tokens
     })
     // Best-effort and not awaited, like `createLegacyAuthStore`: a forced logout reacting to a 401
@@ -1128,6 +1255,7 @@ export function _createOAuthAuthStore({
     LoginComponent: createOAuthLoginComponent({login, callbackError$}),
     logout,
     currentUserId,
+    telemetryEvents: telemetryEvents$.asObservable(),
   }
 }
 
@@ -1148,13 +1276,14 @@ const defaultEnvironment: OAuthAuthStoreEnvironment &
           filter(() => document.visibilityState === 'visible'),
         ),
   isHidden: () => typeof document !== 'undefined' && document.visibilityState === 'hidden',
+  locksAvailable: typeof navigator !== 'undefined' && Boolean(navigator.locks),
 }
 
 /**
  * @internal
  */
-export const createOAuthAuthStore: (options: OAuthAuthStoreOptions) => AuthStore = memoize(
-  (options: OAuthAuthStoreOptions): AuthStore =>
+export const createOAuthAuthStore: (options: OAuthAuthStoreOptions) => OAuthAuthStore = memoize(
+  (options: OAuthAuthStoreOptions): OAuthAuthStore =>
     _createOAuthAuthStore({...options, ...defaultEnvironment}),
   // Same cache key rule as `createLegacyAuthStore`: the lazy getters are runtime wiring, not identity.
   ({

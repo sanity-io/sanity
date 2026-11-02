@@ -24,6 +24,7 @@ import {
   OAuthRequestTimeoutError,
   type OAuthTokenResponse,
 } from '../oauthEndpoints'
+import {type OAuthTelemetryEvent} from '../telemetry'
 
 // Mock supportsLocalStorage to return true so the token pair is persisted to localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
@@ -143,6 +144,7 @@ function createEnvironment(search = '') {
       location.search = url.search
     }),
     withLock: ((_name, task) => task()) satisfies OAuthAuthStoreEnvironment['withLock'],
+    locksAvailable: false,
   }
 }
 
@@ -664,6 +666,32 @@ describe('createOAuthAuthStore', () => {
       })
     })
 
+    it('renews an expired access token only once something uses the credential', async () => {
+      // Every workspace gets its auth store when the Studio starts, also the ones the user never
+      // opens. Renewing their expired tokens right away would rotate refresh tokens nobody uses.
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({...storedTokens('expired', 'refresh-1'), expiresAt: Date.now() - 1000}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-2']))
+      const endpoints = createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+
+      await settle(50)
+      expect(endpoints.refresh).not.toHaveBeenCalled()
+
+      const state = await authenticatedState(store.state)
+      expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+      expect(await tokenOf(state.client)).toBe('access-2')
+    })
+
     it('stops renewing when the renewed access token is rejected by /users/me as well', async () => {
       // Every renewal succeeds at the token endpoint, but /users/me rejects every access token
       // (a grant problem, not a session problem). One renewal per rejected access token is the
@@ -812,6 +840,39 @@ describe('createOAuthAuthStore', () => {
 
       expect(state.currentUser).toBeNull()
       expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+    })
+
+    it('signs out at once when the refresh token is refused under an exclusive lock', async () => {
+      // No other tab can rotate the pair while this one holds the lock, so there is no rotation
+      // to wait for.
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'revoked')))
+      const {factory} = createMockClientFactory(new Set())
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestError(400, {error: 'invalid_grant'})
+          }),
+        }),
+        ...createEnvironment(),
+        locksAvailable: true,
+      })
+      const renewals: Extract<OAuthTelemetryEvent, {type: 'token-renewed'}>[] = []
+      const telemetry = store.telemetryEvents.subscribe((event) => {
+        if (event.type === 'token-renewed') renewals.push(event)
+      })
+
+      const subscription = store.state.subscribe()
+      await vi.waitFor(() => expect(renewals).toHaveLength(1), {timeout: 2_000})
+      subscription.unsubscribe()
+      telemetry.unsubscribe()
+
+      expect(renewals[0].outcome).toBe('session-ended')
+      // Well under the grace period another tab's rotation gets without a lock.
+      expect(renewals[0].durationMs).toBeLessThan(500)
     })
 
     it('adopts a pair another tab rotated instead of redeeming a used refresh token', async () => {
@@ -1293,13 +1354,7 @@ describe('createOAuthAuthStore', () => {
       // request with the old token (401 SIO-401-ANF). The handler retried with the current token
       // without renewing, but that token had expired as well (401 SIO-401-AEX), and the second
       // 401 signed the user out.
-      const expired: OAuthTokens = {
-        accessToken: 'access-1',
-        refreshToken: 'refresh-1',
-        expiresAt: Date.now() - 60_000,
-        refreshAt: Date.now() - 240_000,
-      }
-      localStorage.setItem(TOKENS_KEY, JSON.stringify(expired))
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
       const {factory} = createMockClientFactory(new Set(['access-1', 'access-2']))
       const endpoints = createMockEndpoints()
       const store = _createOAuthAuthStore({
@@ -1312,6 +1367,8 @@ describe('createOAuthAuthStore', () => {
       })
       const state = await authenticatedState(store.state)
       const handler = state.client.config().requestHandler as RequestHandler
+      // The tab was idle until `access-1` expired.
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 2 * 3_600_000)
 
       const next = vi.fn(async (request: RequestHandlerOptions) => {
         const authorization = Object.entries(request.headers ?? {}).find(
@@ -1652,6 +1709,272 @@ describe('createOAuthAuthStore', () => {
     })
   })
 
+  describe('telemetry', () => {
+    /** Collects the store's telemetry events from now on. */
+    function recordEvents(store: ReturnType<typeof _createOAuthAuthStore>) {
+      const events: unknown[] = []
+      const subscription = store.telemetryEvents.subscribe((event) => events.push(event))
+      return {events, stop: () => subscription.unsubscribe()}
+    }
+
+    function createStore(endpoints = createMockEndpoints(), validTokens = new Set(['access-2'])) {
+      const {factory} = createMockClientFactory(validTokens)
+      return _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+    }
+
+    it('reports a renewal of a rejected access token', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const store = createStore()
+      const {events, stop} = recordEvents(store)
+
+      await authenticatedState(store.state)
+      await vi.waitFor(() => expect(events).toHaveLength(1))
+
+      expect(events[0]).toEqual({
+        type: 'token-renewed',
+        // `/users/me` rejects the stored access token at start, which renews it.
+        trigger: 'rejected-probe',
+        outcome: 'renewed',
+        durationMs: expect.any(Number),
+        lockAvailable: expect.any(Boolean),
+        // `expires_in` is 3600s in the mock response.
+        accessTokenLifetime: '30m-2h',
+      })
+      stop()
+    })
+
+    it('reports a refused refresh token as a renewal that ended the session', async () => {
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({...storedTokens('expired', 'revoked'), signedInAt: Date.now() - 90_000}),
+      )
+      const store = createStore(
+        createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestError(400, {error: 'invalid_grant'})
+          }),
+        }),
+        new Set(),
+      )
+      const {events, stop} = recordEvents(store)
+
+      await firstValueFrom(store.state.pipe(filter((s) => !s.authenticated)))
+      await vi.waitFor(() => expect(events).toHaveLength(2))
+
+      expect(events).toEqual([
+        {type: 'session-ended', reason: 'refresh-refused', sessionAge: '<1h'},
+        expect.objectContaining({
+          type: 'token-renewed',
+          outcome: 'session-ended',
+          failure: {failureKind: 'http', httpStatus: 400, error: 'invalid_grant'},
+        }),
+      ])
+      stop()
+    })
+
+    it('reports a failed renewal with its status and error code, never the server text', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const store = createStore(
+        createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestError(503, {
+              error: 'Service Unavailable',
+              message: 'Upstream sk-secret failed for user@example.com',
+            })
+          }),
+        }),
+        new Set(),
+      )
+      const {events, stop} = recordEvents(store)
+
+      await firstValueFrom(store.state)
+      await vi.waitFor(() => expect(events).toHaveLength(1))
+
+      expect(events[0]).toEqual(
+        expect.objectContaining({
+          type: 'token-renewed',
+          outcome: 'failed',
+          failure: {failureKind: 'http', httpStatus: 503, error: 'unrecognized'},
+        }),
+      )
+      stop()
+    })
+
+    it('reports an error code it does not know when it has the shape of one', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const store = createStore(
+        createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestError(503, {error: 'temporarily_unavailable'})
+          }),
+        }),
+        new Set(),
+      )
+      const {events, stop} = recordEvents(store)
+
+      await firstValueFrom(store.state)
+      await vi.waitFor(() => expect(events).toHaveLength(1))
+
+      expect(events[0]).toEqual(
+        expect.objectContaining({
+          failure: {failureKind: 'http', httpStatus: 503, error: 'temporarily_unavailable'},
+        }),
+      )
+      stop()
+    })
+
+    it('reports a renewal that timed out without a status', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const store = createStore(
+        createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestTimeoutError(
+              'https://test-project.api.sanity.io/token',
+              10_000,
+              new Error('aborted'),
+            )
+          }),
+        }),
+        new Set(),
+      )
+      const {events, stop} = recordEvents(store)
+
+      await firstValueFrom(store.state)
+      await vi.waitFor(() => expect(events).toHaveLength(1))
+
+      expect(events[0]).toEqual(
+        expect.objectContaining({outcome: 'failed', failure: {failureKind: 'timeout'}}),
+      )
+      stop()
+    })
+
+    it('reports a sign-out with how long the session lasted, in a coarse bucket', async () => {
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          signedInAt: Date.now() - 3 * 60 * 60 * 1000,
+        }),
+      )
+      const store = createStore(createMockEndpoints(), new Set(['access-1']))
+      await authenticatedState(store.state)
+      const {events, stop} = recordEvents(store)
+
+      await store.logout!()
+
+      expect(events).toEqual([
+        {type: 'session-ended', reason: 'user-signed-out', sessionAge: '1-24h'},
+      ])
+      stop()
+    })
+
+    it('leaves out the session age of a pair stored before it was recorded', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const store = createStore(createMockEndpoints(), new Set(['access-1']))
+      await authenticatedState(store.state)
+      const {events, stop} = recordEvents(store)
+
+      await store.logout!()
+
+      expect(events).toEqual([{type: 'session-ended', reason: 'user-signed-out'}])
+      stop()
+    })
+
+    it('reports why the Studio logged the user out after the API rejected the session', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const store = createStore(createMockEndpoints(), new Set(['access-1']))
+      await authenticatedState(store.state)
+      const {events, stop} = recordEvents(store)
+
+      await store.logout!({reason: 'session-expired'})
+
+      expect(events).toEqual([{type: 'session-ended', reason: 'session-expired'}])
+      stop()
+    })
+
+    it('records when the session started at sign-in, and keeps it across renewals', async () => {
+      const signedInAt = Date.now() - 60_000
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({...storedTokens('expired', 'refresh-1'), signedInAt}),
+      )
+      const store = createStore()
+
+      await authenticatedState(store.state)
+
+      expect(JSON.parse(localStorage.getItem(TOKENS_KEY)!)).toMatchObject({
+        accessToken: 'access-2',
+        signedInAt,
+      })
+    })
+
+    it('reports a request retried after a renewal, and whether the retry went through', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const store = createStore(createMockEndpoints(), new Set(['access-1', 'access-2']))
+      const requestHandler = (await authenticatedState(store.state)).client.config()
+        .requestHandler as RequestHandler
+      const {events, stop} = recordEvents(store)
+
+      await requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValueOnce(createExpiredSessionError()).mockResolvedValueOnce({}),
+      )
+      await expect(
+        requestHandler(
+          {url: '/data/query', headers: {Authorization: 'Bearer access-2'}},
+          vi.fn().mockRejectedValue(createExpiredSessionError()),
+        ),
+      ).rejects.toThrow()
+
+      const retries = events.filter((event) => (event as {type: string}).type === 'request-retried')
+      expect(retries).toEqual([
+        {type: 'request-retried', renewed: true, recovered: true},
+        {type: 'request-retried', renewed: true, recovered: false},
+      ])
+      stop()
+    })
+
+    it('reports a request retried with the token a renewal already replaced', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-2', 'refresh-2')))
+      const store = createStore(createMockEndpoints(), new Set(['access-2']))
+      const requestHandler = (await authenticatedState(store.state)).client.config()
+        .requestHandler as RequestHandler
+      const {events, stop} = recordEvents(store)
+
+      // Sent with the previous token, before the renewal landed: retried with the current one.
+      await requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValueOnce(createExpiredSessionError()).mockResolvedValueOnce({}),
+      )
+
+      expect(events).toEqual([{type: 'request-retried', renewed: false, recovered: true}])
+      stop()
+    })
+
+    it('never reports a token, an identifier, a URL or server text', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const store = createStore()
+      const {events, stop} = recordEvents(store)
+
+      await authenticatedState(store.state)
+      await store.logout!()
+      await vi.waitFor(() => expect(events.length).toBeGreaterThanOrEqual(2))
+
+      const reported = JSON.stringify(events)
+      for (const value of ['access-', 'refresh-', CLIENT_ID, PROJECT_ID, DATASET, 'http', '@']) {
+        expect(reported).not.toContain(value)
+      }
+      stop()
+    })
+  })
+
   describe('origin check', () => {
     const CORS_CHECK_URL = `https://${PROJECT_ID}.api.sanity.io/v1/check/cors`
 
@@ -1733,6 +2056,20 @@ describe('createOAuthAuthStore', () => {
       await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled())
       await new Promise((resolve) => setTimeout(resolve, 0))
       expect(onRequestFailure).not.toHaveBeenCalled()
+    })
+
+    it('reports a disallowed origin as telemetry', async () => {
+      mockCorsCheck({allowed: false, withCredentials: false})
+      const store = createStore()
+      const events: unknown[] = []
+      const telemetry = store.telemetryEvents.subscribe((event) => events.push(event))
+      const sub = store.state.subscribe()
+
+      await vi.waitFor(() =>
+        expect(events).toEqual([{type: 'origin-check-failed', result: 'origin-not-allowed'}]),
+      )
+      sub.unsubscribe()
+      telemetry.unsubscribe()
     })
 
     it('checks once per store', async () => {

@@ -637,3 +637,92 @@ describe('AuthBoundary telemetry', () => {
     expect(studioAuthReadyCalls()).toHaveLength(1)
   })
 })
+
+describe('AuthBoundary OAuth telemetry', () => {
+  let telemetryEvents$: Subject<unknown>
+  let telemetryLog: ReturnType<typeof vi.fn>
+  let AuthBoundary: typeof AuthBoundaryType
+
+  beforeEach(async () => {
+    vi.resetModules()
+    telemetryEvents$ = new Subject()
+    telemetryLog = vi.fn()
+
+    const {useTelemetry} = await import('@sanity/telemetry/react')
+    ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: telemetryLog})
+
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
+    ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
+      activeWorkspace: {
+        auth: {
+          state: new Subject<AuthState>(),
+          handleCallbackUrl: undefined,
+          telemetryEvents: telemetryEvents$,
+        },
+      },
+    })
+
+    ;({AuthBoundary} = await import('../AuthBoundary'))
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("logs the OAuth store's renewals and session ends", async () => {
+    const {OAuthTokenRenewed, OAuthSessionEnded} =
+      await import('../__telemetry__/authBoundary.telemetry')
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+
+    act(() => {
+      telemetryEvents$.next({
+        type: 'token-renewed',
+        trigger: 'scheduled',
+        outcome: 'renewed',
+        durationMs: 120,
+        lockAvailable: true,
+        accessTokenLifetime: '5-30m',
+      })
+      telemetryEvents$.next({type: 'session-ended', reason: 'user-signed-out', sessionAge: '1-7d'})
+    })
+
+    expect(telemetryLog).toHaveBeenCalledWith(OAuthTokenRenewed, {
+      trigger: 'scheduled',
+      outcome: 'renewed',
+      durationMs: 120,
+      lockAvailable: true,
+      accessTokenLifetime: '5-30m',
+    })
+    expect(telemetryLog).toHaveBeenCalledWith(OAuthSessionEnded, {
+      reason: 'user-signed-out',
+      sessionAge: '1-7d',
+    })
+  })
+
+  it("logs the OAuth store's sign-ins, retried requests and origin check failures", async () => {
+    const {OAuthSignInStarted, OAuthRequestRetried, OAuthOriginCheckFailed} =
+      await import('../__telemetry__/authBoundary.telemetry')
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+
+    act(() => {
+      telemetryEvents$.next({type: 'sign-in-started'})
+      telemetryEvents$.next({type: 'request-retried', renewed: true, recovered: false})
+      telemetryEvents$.next({type: 'origin-check-failed', result: 'project-not-found'})
+    })
+
+    expect(telemetryLog).toHaveBeenCalledWith(OAuthSignInStarted, {})
+    expect(telemetryLog).toHaveBeenCalledWith(OAuthRequestRetried, {
+      renewed: true,
+      recovered: false,
+    })
+    expect(telemetryLog).toHaveBeenCalledWith(OAuthOriginCheckFailed, {result: 'project-not-found'})
+  })
+})

@@ -46,6 +46,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: false})
     const {LoginComponent} = store
@@ -79,6 +80,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     const {LoginComponent} = store
     if (!LoginComponent) throw new Error('expected a LoginComponent')
@@ -109,6 +111,36 @@ describe('OAuth login component', () => {
     expect(flow).toMatchObject({redirectUri: ORIGIN, redirectPath: '/structure'})
   })
 
+  it('reports that sign-in started, with nothing else', async () => {
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'}),
+      getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
+      navigate: vi.fn(),
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    const events: unknown[] = []
+    const subscription = store.telemetryEvents.subscribe((event) => events.push(event))
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+      </TestProvider>,
+    )
+    await userEvent.click(screen.getByRole('button', {name: 'Sign in with Sanity'}))
+
+    await waitFor(() => expect(events).toEqual([{type: 'sign-in-started'}]))
+    subscription.unsubscribe()
+  })
+
   it('leaves an earlier authorization response out of the path it returns to', async () => {
     // A response this tab did not request stays in the URL, and the login screen passes that URL
     // on. Returning to it after the next sign-in would bring the old code back.
@@ -123,6 +155,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     if (!LoginComponent) throw new Error('expected a LoginComponent')
     const TestProvider = await createTestProvider()
@@ -159,6 +192,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     if (!LoginComponent) throw new Error('expected a LoginComponent')
     const TestProvider = await createTestProvider()
@@ -195,6 +229,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     if (!LoginComponent) throw new Error('expected a LoginComponent')
     const TestProvider = await createTestProvider()
@@ -227,6 +262,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     if (!LoginComponent) throw new Error('expected a LoginComponent')
     const TestProvider = await createTestProvider()
@@ -263,6 +299,7 @@ describe('OAuth login component', () => {
       navigate,
       replaceUrl: vi.fn(),
       withLock: (_name, task) => task(),
+      locksAvailable: false,
     })
     if (!LoginComponent) throw new Error('expected a LoginComponent')
     const TestProvider = await createTestProvider()

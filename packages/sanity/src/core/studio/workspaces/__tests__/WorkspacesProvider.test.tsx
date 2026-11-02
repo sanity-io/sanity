@@ -149,6 +149,17 @@ describe('WorkspacesProvider forced logout', () => {
     harness.claimAuthStore = undefined
   })
 
+  it('tells the auth store why it logs the user out', async () => {
+    const logout = vi.fn((_options?: {reason?: string}) => Promise.resolve())
+    harness.workspaces = [workspace('proja', logout)]
+    harness.claimProjectId = 'proja'
+
+    renderProvider()
+
+    // The claim's error is `SIO-401-ANF`, a session the API does not know.
+    await waitFor(() => expect(logout).toHaveBeenCalledWith({reason: 'session-not-found'}))
+  })
+
   it('logs out a nested source whose project differs from every root workspace', async () => {
     const rootLogout = vi.fn(() => Promise.resolve())
     const nestedLogout = vi.fn(() => Promise.resolve())
