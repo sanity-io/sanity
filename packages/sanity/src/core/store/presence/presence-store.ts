@@ -12,7 +12,6 @@ import {
   defer,
   EMPTY,
   from,
-  fromEvent,
   merge,
   NEVER,
   type Observable,
@@ -33,7 +32,6 @@ import {
   shareReplay,
   switchMap,
   switchMapTo,
-  takeUntil,
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -337,9 +335,6 @@ export function createPresenceStore(context: {
         ),
       )
     }),
-    takeUntil(
-      fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'}))),
-    ),
     shareReplay({refCount: true, bufferSize: 1}),
   )
 
