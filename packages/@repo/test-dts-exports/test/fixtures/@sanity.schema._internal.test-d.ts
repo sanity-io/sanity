@@ -14,6 +14,7 @@ import type {
   DefaultWorkspaceSchemaId,
   DescriptorConverter,
   DescriptorRequester,
+  EncodedSchemaDescriptor,
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
   extractSchema,
@@ -43,6 +44,7 @@ import type {
   SchemaSynchronizationResult,
   StoredWorkspaceSchema,
   TypeWithProblems,
+  uploadEncodedSchema,
   uploadSchema,
   UploadSchemaOptions,
   UploadSchemaPhase,
@@ -89,6 +91,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('DescriptorRequester', () => {
     expectTypeOf<DescriptorRequester>().not.toBeNever()
+  })
+  test('EncodedSchemaDescriptor', () => {
+    expectTypeOf<EncodedSchemaDescriptor>().toBeObject()
   })
   test('extractCreateWorkspaceManifest', () => {
     expectTypeOf<typeof extractCreateWorkspaceManifest>().toBeFunction()
@@ -176,6 +181,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
+  })
+  test('uploadEncodedSchema', () => {
+    expectTypeOf<typeof uploadEncodedSchema>().toBeFunction()
   })
   test('uploadSchema', () => {
     expectTypeOf<typeof uploadSchema>().toBeFunction()
