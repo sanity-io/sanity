@@ -46,8 +46,12 @@ export interface AuthStore {
    * Custom auth stores can implement a function that runs when the user logs
    * out. The implementation is expected to remove all credentials both locally
    * and on the server.
+   *
+   * `reason` is set when the Studio logs the user out because the API rejected
+   * the session (`SIO-401-AEX` expired, `SIO-401-ANF` not found), and missing
+   * when the user signed out.
    */
-  logout?: () => Promise<void>
+  logout?: (options?: {reason?: 'session-expired' | 'session-not-found'}) => Promise<void>
   /**
    * Custom auth stores can implement a function that is designated to run when
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less

@@ -52,7 +52,8 @@ function UserMenuAuthActionInner({
         rel: 'noopener noreferrer',
         target: '_blank',
       }
-    : {onClick: auth.logout}
+    : // Called without arguments: `logout` takes options, not the click event.
+      {onClick: () => void auth.logout?.()}
 
   if (layout === 'drawer') {
     return (

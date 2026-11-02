@@ -24,6 +24,7 @@ function createStore(clientId: string) {
     navigate: vi.fn(),
     replaceUrl: vi.fn(),
     withLock: ((_name, task) => task()) satisfies OAuthAuthStoreEnvironment['withLock'],
+    locksAvailable: false,
   }
   const endpoints: OAuthEndpoints = {
     authorizeUrl: () => 'https://api.sanity.io/v1/auth/oauth/authorize',

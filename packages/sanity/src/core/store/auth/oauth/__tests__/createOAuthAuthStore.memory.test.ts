@@ -79,6 +79,7 @@ describe('createOAuthAuthStore without localStorage', () => {
       navigate: vi.fn(),
       replaceUrl: vi.fn(),
       withLock: <T>(_name: string, task: () => Promise<T>) => task(),
+      locksAvailable: false,
     })
     const clientFactory = createClientFactory(new Set(['access-1']))
     const otherTab = _createOAuthAuthStore({
