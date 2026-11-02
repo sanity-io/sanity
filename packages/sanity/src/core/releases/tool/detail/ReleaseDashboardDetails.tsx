@@ -31,6 +31,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromRele
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
+import {ReleaseMetadataProperties} from './properties/ReleaseMetadataProperties'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseDetailSlot} from './ReleaseDetailSlot'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
@@ -39,6 +40,9 @@ import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 
 const RELEASE_IDENTITY_MIN_WIDTH = '280px'
+
+// Keeps the properties in view beside a tall detail until the document table starts.
+const STICKY_PROPERTIES_STYLE = {position: 'sticky', top: 'var(--space-3)', flex: 'none'} as const
 
 function ReleaseDashboardDetailsProduction({
   release,
@@ -283,6 +287,45 @@ export function ReleaseDashboardDetails({
     )
   }
 
+  const builtInRows: DetailPropertiesSection['rows'] = [
+    isNotArchivedRelease(release) && {
+      icon: <ReleaseAvatar release={release} padding={0} />,
+      label: tRelease('dashboard.details.metadata.schedule'),
+      value: <ReleaseTypePicker release={release} />,
+    },
+    {
+      icon: statusGlyph,
+      label: tRelease('dashboard.details.metadata.status'),
+      value: loading ? (
+        <Skeleton animated radius={1} style={{width: 48, height: 11}} />
+      ) : (
+        <ReleaseValidationBadge documents={documents} />
+      ),
+    },
+    {
+      icon: <Icon size={1} muted style={{margin: '-0.375rem'}} icon={DocumentsIcon} />,
+      label: tRelease('dashboard.details.metadata.documents'),
+      value: loading ? (
+        <Skeleton animated radius={1} style={{width: 24, height: 11}} />
+      ) : (
+        String(documents.length)
+      ),
+    },
+    {
+      icon: createAuthor ? (
+        <UserAvatar size={0} user={createAuthor} />
+      ) : (
+        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={UserIcon} />
+      ),
+      label: tRelease('dashboard.details.metadata.created'),
+      value: (
+        <Text size={1} as="div" trim={true}>
+          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
+        </Text>
+      ),
+    },
+  ]
+
   return (
     <Container size={3}>
       {/* Tight top padding: the header above already pads its bottom, so the title sits close under
@@ -304,55 +347,22 @@ export function ReleaseDashboardDetails({
               />
             </VStack>
           </Box>
-          <DetailPropertiesPanel
-            testId="release-detail-metadata"
-            sections={
-              [
-                {
-                  rows: [
-                    isNotArchivedRelease(release) && {
-                      icon: <ReleaseAvatar release={release} padding={0} />,
-                      label: tRelease('dashboard.details.metadata.schedule'),
-                      value: <ReleaseTypePicker release={release} />,
-                    },
-                    {
-                      icon: statusGlyph,
-                      label: tRelease('dashboard.details.metadata.status'),
-                      value: loading ? (
-                        <Skeleton animated radius={1} style={{width: 48, height: 11}} />
-                      ) : (
-                        <ReleaseValidationBadge documents={documents} />
-                      ),
-                    },
-                    {
-                      icon: (
-                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={DocumentsIcon} />
-                      ),
-                      label: tRelease('dashboard.details.metadata.documents'),
-                      value: loading ? (
-                        <Skeleton animated radius={1} style={{width: 24, height: 11}} />
-                      ) : (
-                        String(documents.length)
-                      ),
-                    },
-                    {
-                      icon: createAuthor ? (
-                        <UserAvatar size={0} user={createAuthor} />
-                      ) : (
-                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={UserIcon} />
-                      ),
-                      label: tRelease('dashboard.details.metadata.created'),
-                      value: (
-                        <Text size={1} as="div" trim={true}>
-                          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
-                        </Text>
-                      ),
-                    },
-                  ],
-                },
-              ] satisfies DetailPropertiesSection[]
-            }
-          />
+          <ReleaseMetadataProperties
+            key={release._id}
+            release={release}
+            documents={documents}
+            loading={loading}
+          >
+            {({rows: metadataRows, footer}) => (
+              <Box style={STICKY_PROPERTIES_STYLE}>
+                <DetailPropertiesPanel
+                  testId="release-detail-metadata"
+                  footer={footer}
+                  sections={[{rows: [...builtInRows, ...metadataRows]}]}
+                />
+              </Box>
+            )}
+          </ReleaseMetadataProperties>
         </Flex>
         {shouldDisplayError && (
           <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">

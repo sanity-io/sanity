@@ -1276,6 +1276,11 @@ import type {
   ReleaseDocument,
   ReleaseId,
   ReleaseMetadataRecord,
+  ReleasePropertiesContext,
+  ReleasePropertiesResolver,
+  ReleasePropertyComponent,
+  ReleasePropertyDescription,
+  ReleasePropertyProps,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -5720,6 +5725,21 @@ describe('sanity', () => {
   })
   test('ReleaseMetadataRecord', () => {
     expectTypeOf<ReleaseMetadataRecord>().not.toBeNever()
+  })
+  test('ReleasePropertiesContext', () => {
+    expectTypeOf<ReleasePropertiesContext>().not.toBeNever()
+  })
+  test('ReleasePropertiesResolver', () => {
+    expectTypeOf<ReleasePropertiesResolver>().not.toBeNever()
+  })
+  test('ReleasePropertyComponent', () => {
+    expectTypeOf<ReleasePropertyComponent>().toBeObject()
+  })
+  test('ReleasePropertyDescription', () => {
+    expectTypeOf<ReleasePropertyDescription>().toBeObject()
+  })
+  test('ReleasePropertyProps', () => {
+    expectTypeOf<ReleasePropertyProps>().toBeObject()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()

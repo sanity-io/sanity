@@ -133,8 +133,10 @@ export function DetailPropertiesPanel(props: {
   testId?: string
   /** Upper bound on the panel width; it shrinks to fit its content below this. */
   maxWidth?: number
+  /** Rendered under the sections, inside the panel. */
+  footer?: ReactNode
 }): React.JSX.Element {
-  const {sections, testId, maxWidth = 300} = props
+  const {sections, testId, maxWidth = 300, footer} = props
 
   return (
     <PropertiesCard
@@ -185,6 +187,7 @@ export function DetailPropertiesPanel(props: {
             </VStack>
           )
         })}
+        {footer && <Box>{footer}</Box>}
       </VStack>
     </PropertiesCard>
   )

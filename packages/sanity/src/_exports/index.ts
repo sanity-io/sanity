@@ -303,6 +303,12 @@ export {
 } from '../core/config/releases/actions'
 export {type ReleaseDetailComponent, type ReleaseDetailProps} from '../core/config/releases/detail'
 export {
+  type ReleasePropertiesContext,
+  type ReleasePropertyComponent,
+  type ReleasePropertyDescription,
+  type ReleasePropertyProps,
+} from '../core/config/releases/properties'
+export {
   createSourceFromConfig,
   createWorkspaceFromConfig,
   type CreateWorkspaceFromConfigOptions,
@@ -362,6 +368,7 @@ export {
   type PluginOptions,
   type PreparedConfig,
   type ReleaseActionsResolver,
+  type ReleasePropertiesResolver,
   type ResolveProductionUrlContext,
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
