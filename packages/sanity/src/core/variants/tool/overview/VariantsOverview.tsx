@@ -2,7 +2,7 @@ import {AddIcon} from '@sanity/icons/Add'
 import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Text, Container, Flex, VStack} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -23,6 +23,7 @@ import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
+import {VariantsOverviewHeader} from './VariantsOverviewHeader'
 
 const VARIANT_TABLE_ROW_ID = '_id'
 const getRowKey = (variant: TableVariant): string => variant._id
@@ -140,33 +141,15 @@ export function VariantsOverview(): React.JSX.Element {
 
   return (
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
-      {/* Same container width as the releases document table (`container[3]`), so the page header
-          aligns with the table's row content below. */}
-      <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
-        <Flex flexDirection="column" paddingX={3}>
-          <Card flex="none" paddingBottom={4} paddingTop={5}>
-            <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
-              <VStack gap={2}>
-                <Text as="h1" size={4} weight="bold" trim={true}>
-                  {t('overview.title')}
-                </Text>
-                <Text muted size={1} as="div" trim={true}>
-                  {t('overview.description')}
-                </Text>
-              </VStack>
-              {createVariantButton}
-            </Flex>
+      <VariantsOverviewHeader action={createVariantButton}>
+        {error && (
+          <Card flex="none" marginBottom={4} padding={3} tone="critical">
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('overview.error')}
+            </Text>
           </Card>
-
-          {error && (
-            <Card flex="none" marginBottom={4} padding={3} tone="critical">
-              <Text size={1} as="div" trim={true} tone="critical">
-                {t('overview.error')}
-              </Text>
-            </Card>
-          )}
-        </Flex>
-      </Container>
+        )}
+      </VariantsOverviewHeader>
 
       {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
           the command lane and per-row actions. (Multi-select is supported by the component but not
