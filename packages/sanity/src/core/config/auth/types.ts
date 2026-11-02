@@ -108,12 +108,30 @@ export interface OAuthConfig {
   clientId: string
 
   /**
-   * The URL the user returns to after signing in. Must match one of the application's registered
-   * redirect URLs exactly, and be on the origin the Studio is served from, which is where the
-   * sign-in request is kept until the user returns. Defaults to the Studio URL: that origin,
-   * followed by the workspace base path.
+   * The URL the user returns to after signing in. Must be on the origin the Studio is served from,
+   * which is where the sign-in request is kept until the user returns. Defaults to the Studio URL:
+   * that origin, followed by the workspace base path.
+   *
+   * Without `redirectRelayUri`, this is the `redirect_uri` sent to the authorization server, and
+   * must match one of the application's registered redirect URLs exactly. With
+   * `redirectRelayUri`, the relay URL is sent and registered instead, and this URL only has to be
+   * on the relay's allowlist.
    */
   redirectUri?: string
+
+  /**
+   * URL of a redirect relay, for Studios whose URL isn't known ahead of time, such as branch
+   * deploys. When set, this is the `redirect_uri` sent to the authorization server instead of
+   * `redirectUri`, so it is the URL to register on the application, and the code is redeemed
+   * with it. The authorization server sends the user to the relay, which reads the Studio URL
+   * (`redirectUri`, or its default) from `state` and redirects there with every parameter of the
+   * response. Must be an absolute `https` URL without a fragment.
+   *
+   * The relay must only redirect to Studio URLs on an allowlist of hosts you control. Anyone can
+   * start a sign-in with their own PKCE verifier, so a relay that follows any URL in `state` hands
+   * codes to whoever wrote the URL.
+   */
+  redirectRelayUri?: string
 
   /**
    * How long before the access token expires the Studio renews it, in milliseconds. Defaults to

@@ -42,3 +42,13 @@ export async function createCodeChallenge(verifier: string): Promise<string> {
 export function createState(): string {
   return randomString(16)
 }
+
+/**
+ * `state` for a sign-in through a redirect relay: the random `state`, then the URL the relay sends
+ * the response to, as `<state>.<base64url(returnTo)>`. A random `state` never contains `.`.
+ *
+ * @internal
+ */
+export function stateWithReturnTo(state: string, returnTo: string): string {
+  return `${state}.${base64url(new TextEncoder().encode(returnTo))}`
+}
