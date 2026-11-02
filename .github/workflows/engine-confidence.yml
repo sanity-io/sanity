@@ -338,6 +338,8 @@ jobs:
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
+          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
+          DATASET_PREFIX: cursor_ci_sync_${{ github.run_id }}_${{ github.run_attempt }}
         run: |
           shopt -s nullglob
           REPORTS=("$PWD"/engine-confidence/reports/sync-verification/report-*.json)
@@ -348,10 +350,34 @@ jobs:
           # One at a time to stay under the staging rate limits. A failed dataset
           # delete still writes the verdicts, so keep going and fail at the end.
           STATUS=0
-          for REPORT in "${REPORTS[@]}"; do
-            pnpm engine-confidence sync-verify "$REPORT" --out "${REPORT%/*}/verdicts-${REPORT##*/report-}" || STATUS=1
+          for INDEX in "${!REPORTS[@]}"; do
+            REPORT="${REPORTS[$INDEX]}"
+            pnpm engine-confidence sync-verify "$REPORT" --dataset "${DATASET_PREFIX}_${INDEX}" --out "${REPORT%/*}/verdicts-${REPORT##*/report-}" || STATUS=1
           done
           exit $STATUS
+
+      # pnpm runs the script in its own process group, so a cancelled run may never
+      # reach the script's signal handler: delete the datasets by their fixed names
+      - name: Delete the replay datasets
+        if: always()
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
+          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
+          DATASET_PREFIX: cursor_ci_sync_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          shopt -s nullglob
+          REPORTS=("$PWD"/engine-confidence/reports/sync-verification/report-*.json)
+          for INDEX in "${!REPORTS[@]}"; do
+            HTTP_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -X DELETE \
+              "https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2025-02-19/datasets/${DATASET_PREFIX}_${INDEX}?tag=sync-verify" \
+              -H "Authorization: Bearer ${SANITY_E2E_SESSION_TOKEN}" \
+              ${SANITY_CLI_API_RATE_LIMIT_BYPASS:+-H "x-sanity-ratelimit-bypass: ${SANITY_CLI_API_RATE_LIMIT_BYPASS}"})
+            case "$HTTP_STATUS" in
+              2??|404) ;;
+              *) echo "::warning::Could not delete ${DATASET_PREFIX}_${INDEX}: HTTP $HTTP_STATUS" ;;
+            esac
+          done
 
       - uses: actions/upload-artifact@v7
         if: always()
