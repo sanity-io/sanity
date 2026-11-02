@@ -1450,6 +1450,8 @@ exports[`exports snapshot 1`] = `
     "UserApplicationCacheContext": "object",
     "UserColorManagerContext": "object",
     "ValidationContext": "object",
+    "VariantsModePromiseContext": "object",
+    "VariantsUpsellContext": "object",
     "VirtualizerScrollInstanceContext": "object",
     "VisibleWorkspacesContext": "object",
     "WorkspaceContext": "object",
