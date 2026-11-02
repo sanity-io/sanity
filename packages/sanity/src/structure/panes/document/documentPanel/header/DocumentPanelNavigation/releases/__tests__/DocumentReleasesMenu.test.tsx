@@ -192,7 +192,7 @@ describe('DocumentReleasesMenu', () => {
     expect(documentSection).toHaveTextContent('In 0 releases')
     expect(
       within(documentSection).getByTestId('document-releases-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any release yet.")
+    ).toHaveAccessibleName("This document isn't in any release yet. Pick one below to add it.")
   })
 
   it('changes the global perspective to the release picked', async () => {
