@@ -21,6 +21,8 @@ import {
   useDocumentStore,
 } from 'sanity'
 
+import {EXCLUDE_RELEASE_DOCUMENTS_FILTER} from '../../util/excludeReleaseDocumentsFilter'
+
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
 // https://nodejs.org/api/packages.html#dual-package-hazard
@@ -294,7 +296,7 @@ function fetchInternalReferences(
   documentStore: DocumentStore,
 ): Observable<ReferringDocuments['internalReferences']> {
   // Documents now self reference themselves, within the _system.group field. We need to exclude them from the references query.
-  const referencesQuery = `*[references($documentId) && _system.group._ref != $documentId]`
+  const referencesQuery = `*[references($documentId) && _system.group._ref != $documentId && ${EXCLUDE_RELEASE_DOCUMENTS_FILTER}]`
   const referencesClause = `${referencesQuery}[0...100]{_id,_type}`
   const totalClause = `count(${referencesQuery})`
   const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`

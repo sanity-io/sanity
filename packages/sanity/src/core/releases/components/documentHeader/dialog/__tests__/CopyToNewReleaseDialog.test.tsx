@@ -4,6 +4,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {ReferenceInputOptionsProvider} from '../../../../../form/studio/contexts/ReferenceInputOptions'
 import {useReleaseOperationsMockReturn} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CopyToNewReleaseDialog} from '../CopyToNewReleaseDialog'
 
@@ -160,5 +161,54 @@ describe('CopyToNewReleaseDialog metadata fields', () => {
     })
     expect(screen.getByTestId('release-form-title')).toHaveValue('Kept title')
     expect(select).toHaveValue('1')
+  })
+
+  it('offers no create-new button for a reference field inside a document pane', async () => {
+    const relatedAuthor = defineField({
+      name: 'relatedAuthor',
+      title: 'Related author',
+      type: 'reference',
+      to: [{type: 'author'}],
+    })
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {metadata: {fields: [relatedAuthor]}},
+      },
+    })
+    render(
+      <ReferenceInputOptionsProvider
+        onEditReference={vi.fn()}
+        initialValueTemplateItems={[
+          {
+            id: 'author',
+            title: 'Author',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+            templateId: 'author',
+            granted: true,
+            reason: 'Granted',
+            resolvedInitialValue: {},
+            template: {id: 'author', schemaType: 'author', title: 'Author', value: {}},
+          },
+        ]}
+      >
+        <CopyToNewReleaseDialog
+          documentType="author"
+          onClose={vi.fn()}
+          onCreateVersion={vi.fn()}
+          release="r1"
+          title="Spring"
+          versionId="drafts.author-1"
+        />
+      </ReferenceInputOptionsProvider>,
+      {wrapper},
+    )
+
+    await screen.findByTestId('autocomplete')
+    expect(screen.queryByTestId(/^create-new-document-select/)).toBeNull()
   })
 })
