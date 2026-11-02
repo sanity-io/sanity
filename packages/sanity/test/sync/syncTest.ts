@@ -240,6 +240,11 @@ export async function runSyncTest(
   options: RunOptions = {},
 ): Promise<World> {
   const world = await createWorld(definition, options)
-  await runSteps(world, definition.steps)
+  try {
+    await runSteps(world, definition.steps)
+  } catch (error) {
+    world.teardown()
+    throw error
+  }
   return world
 }
