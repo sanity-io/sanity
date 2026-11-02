@@ -6,12 +6,13 @@ import {DraftBadge} from './badges/DraftBadge'
 import {PublishedBadge} from './badges/PublishedBadge'
 import {useNavigationBadges} from './badges/useNavigationBadges'
 import {DocumentReleasesMenu} from './releases/DocumentReleasesMenu'
+import {DocumentScheduledDraftsMenu} from './scheduledDrafts/DocumentScheduledDraftsMenu'
 import {DocumentVariantsMenu} from './variants/DocumentVariantsMenu'
 
 /**
  * The navigation on the left of the document header, shown when variants or the document group
  * inventory are enabled: the variants menu, the Published and Draft badges of the selected
- * variant, the releases menu, and the current user's agent bundle.
+ * variant, the releases and scheduled drafts menus, and the current user's agent bundle.
  *
  * @internal
  */
@@ -25,6 +26,7 @@ export function DocumentPanelNavigation() {
       <PublishedBadge navigate={navigate} state={published} />
       {draft ? <DraftBadge navigate={navigate} state={draft} /> : null}
       <DocumentReleasesMenu />
+      <DocumentScheduledDraftsMenu />
       {agent ? <AgentChangesBadge agent={agent} navigate={navigate} /> : null}
     </Flex>
   )

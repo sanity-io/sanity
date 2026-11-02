@@ -505,6 +505,7 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -861,6 +862,7 @@ export {
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {

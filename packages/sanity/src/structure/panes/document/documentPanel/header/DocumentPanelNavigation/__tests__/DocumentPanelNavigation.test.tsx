@@ -9,6 +9,8 @@ import {
   useDocumentVersions,
   usePerspective,
   useReleasesToolAvailable,
+  useScheduledDraftsEnabled,
+  useSingleDocRelease,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -28,6 +30,8 @@ vi.mock('sanity', async (importOriginal) => ({
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
   useReleasesToolAvailable: vi.fn(),
+  useScheduledDraftsEnabled: vi.fn(),
+  useSingleDocRelease: vi.fn(),
 }))
 
 vi.mock('../../../../useDocumentPane')
@@ -41,6 +45,10 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseReleasesToolAvailable = useReleasesToolAvailable as Mock<
   typeof useReleasesToolAvailable
 >
+const mockUseScheduledDraftsEnabled = useScheduledDraftsEnabled as Mock<
+  typeof useScheduledDraftsEnabled
+>
+const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
 const mockUseDocumentPane = useDocumentPane as Mock<() => Partial<DocumentPaneContextValue>>
 const mockUsePerspectiveNavigator = usePerspectiveNavigator as Mock<typeof usePerspectiveNavigator>
 
@@ -48,9 +56,15 @@ const OWN_AGENT_BUNDLE = 'agent-mine'
 
 const variantA = createVariant('variantA', 'Variant A')
 const releaseA = createRelease('rA', 'Release A')
+const scheduledDraft = createRelease('rScheduled', '', {
+  cardinality: 'one',
+  releaseType: 'scheduled',
+  intendedPublishAt: '2026-11-15T12:00:00.000Z',
+})
 const versions = [
   createVersion({bundle: 'published'}),
   createVersion({bundle: {release: 'rA'}}),
+  createVersion({bundle: {release: 'rScheduled'}}),
   createVersion({bundle: {agent: OWN_AGENT_BUNDLE}}),
 ]
 
@@ -86,6 +100,8 @@ describe('DocumentPanelNavigation', () => {
     mockUsePerspective.mockReturnValue(createPerspective())
     mockUsePerspectiveNavigator.mockReturnValue({navigate})
     mockUseReleasesToolAvailable.mockReturnValue(true)
+    mockUseScheduledDraftsEnabled.mockReturnValue(true)
+    mockUseSingleDocRelease.mockReturnValue({onSetScheduledDraftPerspective: vi.fn()})
     mockUseAllVariants.mockReturnValue({
       data: [variantA],
       byId: new Map([[variantA._id, variantA]]),
@@ -97,8 +113,11 @@ describe('DocumentPanelNavigation', () => {
       loading: false,
     })
     mockUseActiveReleases.mockReturnValue({
-      data: [releaseA],
-      byId: new Map([[releaseA._id, releaseA]]),
+      data: [releaseA, scheduledDraft],
+      byId: new Map([
+        [releaseA._id, releaseA],
+        [scheduledDraft._id, scheduledDraft],
+      ]),
       loading: false,
       dispatch: vi.fn(),
     })
@@ -115,7 +134,7 @@ describe('DocumentPanelNavigation', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the variants menu, the Published and Draft badges, the releases menu and the agent badge in order', async () => {
+  it('renders the variants menu, the Published and Draft badges, the releases and scheduled drafts menus and the agent badge in order', async () => {
     const published = await renderNavigation({variants: true})
 
     expectInOrder([
@@ -124,6 +143,7 @@ describe('DocumentPanelNavigation', () => {
       published,
       screen.getByTestId('document-panel-navigation-badge-draft'),
       screen.getByTestId('document-releases-menu-button'),
+      screen.getByTestId('document-scheduled-drafts-menu-button'),
       screen.getByTestId('document-panel-navigation-badge-agent'),
     ])
   })

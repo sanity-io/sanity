@@ -108,6 +108,7 @@ import type {
   ConnectionStatusStore,
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
   CorsCheckResult,
@@ -846,6 +847,7 @@ import type {
   useTimeAgo,
   useTimelineSelector,
   useTimelineStore,
+  useTimeZone,
   useTrackerStore,
   useTrackerStoreReporter,
   useUnique,
@@ -1219,6 +1221,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
+  })
+  test('CONTENT_RELEASES_TIME_ZONE_SCOPE', () => {
+    expectTypeOf<typeof CONTENT_RELEASES_TIME_ZONE_SCOPE>().not.toBeNever()
   })
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
@@ -3438,6 +3443,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useTimelineStore', () => {
     expectTypeOf<typeof useTimelineStore>().toBeFunction()
+  })
+  test('useTimeZone', () => {
+    expectTypeOf<typeof useTimeZone>().not.toBeNever()
   })
   test('useTrackerStore', () => {
     expectTypeOf<typeof useTrackerStore>().toBeFunction()

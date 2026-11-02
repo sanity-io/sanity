@@ -972,6 +972,7 @@ export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTarg
 export {useTemplates} from '../core/hooks/useTemplates'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useTools} from '../core/hooks/useTools'
 export {
   type FormattableMeasurementUnit,
@@ -1557,6 +1558,7 @@ export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   type BaseOptions,
