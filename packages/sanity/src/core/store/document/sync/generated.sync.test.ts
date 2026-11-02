@@ -3,11 +3,12 @@ import {writeFileSync} from 'node:fs'
 import {resolve} from 'node:path'
 
 import * as fc from 'fast-check'
-import {describe, expect, test} from 'vitest'
+import {afterEach, describe, expect, test} from 'vitest'
 
 import {
   caseArbitrary,
   checkCase,
+  expectGeneratedKeys,
   type GeneratedCase,
   GeneratedRunError,
   type PassingRun,
@@ -16,7 +17,7 @@ import {
   type RunFailure,
   type SubmissionReport,
 } from '../../../../../test/sync/generator'
-import {type SyncTestDefinition} from '../../../../../test/sync/syncTest'
+import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
 
 type Seam = SyncTestDefinition['seam']
 
@@ -349,4 +350,80 @@ describe(`generated step sequences against the ${seam} seam`, () => {
       expect.fail(summary(search))
     },
   )
+})
+
+describe('the generated array-key check', () => {
+  const draftId = 'drafts.article-gen'
+  const draft = {
+    _id: draftId,
+    _type: 'article',
+    _rev: 'seed',
+    _createdAt: '2026-01-01T00:00:00.000Z',
+    _updatedAt: '2026-01-01T00:00:00.000Z',
+    items: [
+      {_key: 'a', _type: 'item', title: 'A'},
+      {_key: 'b', _type: 'item', title: 'B'},
+    ],
+  }
+  const insert = (key: string) => [
+    {setIfMissing: {items: []}},
+    {insert: {after: 'items[-1]', items: [{_key: key, _type: 'item', title: key}]}},
+  ]
+  function rejectedSaveAfter(steps: SyncTestDefinition['steps']): SyncTestDefinition {
+    return {
+      id: 'GEN-KEYS',
+      title: 'A saves, then holds a save and the server answers 409',
+      seam: 'pair',
+      initial: [draft],
+      idPair: {publishedId: 'article-gen', draftId},
+      clients: ['A'],
+      steps: [
+        ...steps,
+        {client: 'A', do: 'commits', mode: 'hold'},
+        {client: 'A', do: 'patch', id: draftId, patches: [{set: {title: 'one'}}]},
+        {client: 'A', do: 'commit'},
+        {client: 'A', do: 'rejectCommit', statusCode: 409},
+        {do: 'settle'},
+      ],
+    }
+  }
+
+  let world: World | undefined
+  afterEach(() => {
+    world?.teardown()
+    world = undefined
+  })
+
+  test('GEN-KEYS-ACCEPTED-BEFORE-REJECTION: a key accepted before an injected 409 on the same client stays checked', async () => {
+    world = await runSyncTest(
+      rejectedSaveAfter([
+        {client: 'A', do: 'patch', id: draftId, patches: insert('k1')},
+        {client: 'A', do: 'commit'},
+        {do: 'advance', ms: 10},
+      ]),
+    )
+    const history = {
+      world,
+      initialKeys: ['a', 'b'],
+      touches: [{key: 'k1', type: 'insert' as const, edit: world.edits[0]}],
+    }
+    expectGeneratedKeys(history)
+
+    world.lake.mutateFromOutside([{patch: {id: draftId, unset: ['items[_key=="k1"]']}}])
+
+    expect(() => expectGeneratedKeys(history)).toThrow()
+  })
+
+  test('GEN-KEYS-DISCARDED-BY-REJECTION: a key whose insert an injected 409 discarded may be missing', async () => {
+    world = await runSyncTest(
+      rejectedSaveAfter([{client: 'A', do: 'patch', id: draftId, patches: insert('k1')}]),
+    )
+
+    expect(world.lake.get(draftId)?.items).toHaveLength(2)
+    expectGeneratedKeys({
+      world,
+      initialKeys: ['a', 'b'],
+      touches: [{key: 'k1', type: 'insert', edit: world.edits[0]}],
+    })
+  })
 })

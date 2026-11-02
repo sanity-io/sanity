@@ -199,7 +199,7 @@ function fateOf(context: EditContext): Omit<LostEdit, 'edit'> {
   return {fate: 'never sent', fateKind: 'never-sent'}
 }
 
-function lostEditsOf(edit: EditRecord, world: EditHistory): LostEdit[] {
+function contextsOf(edit: EditRecord, world: EditHistory): EditContext[] {
   const ownEdits = world.edits.filter(
     (other) => other.client === edit.client && other.documentId === edit.documentId,
   )
@@ -209,10 +209,23 @@ function lostEditsOf(edit: EditRecord, world: EditHistory): LostEdit[] {
   const ownCommits = (world.commits ?? []).filter(
     (commit) => commit.client === edit.client && commit.documentId === edit.documentId,
   )
-  const [unaccounted] = pathsOf(edit.mutations, edit.documentId)
-    .map((path) => ({edit, path, ownEdits, ownSubmissions, ownCommits}))
-    .filter(isLost)
+  return pathsOf(edit.mutations, edit.documentId).map((path) => ({
+    edit,
+    path,
+    ownEdits,
+    ownSubmissions,
+    ownCommits,
+  }))
+}
+
+function lostEditsOf(edit: EditRecord, world: EditHistory): LostEdit[] {
+  const [unaccounted] = contextsOf(edit, world).filter(isLost)
   return unaccounted ? [{edit, ...fateOf(unaccounted)}] : []
+}
+
+/** Whether an injected 4xx discarded the edit with the save that carried it or the saves queued behind that one. */
+export function wasDiscardedOnPurpose(edit: EditRecord, world: EditHistory): boolean {
+  return contextsOf(edit, world).some(discardedOnPurpose)
 }
 
 // An edit is accounted for when it reached the server, was overwritten locally before the next save, changed nothing, or was discarded by an injected 4xx.

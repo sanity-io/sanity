@@ -7,7 +7,7 @@ import {expect} from 'vitest'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
 import {type SubmissionRecord} from './fakeContentLake'
-import {type LostEditFateKind, lostEdits} from './lostEdits'
+import {type LostEditFateKind, lostEdits, wasDiscardedOnPurpose} from './lostEdits'
 import {
   expectConverged,
   expectHealthy,
@@ -17,7 +17,14 @@ import {
   keysOf,
 } from './oracles'
 import {type RawPatch} from './studioEngine'
-import {createWorld, runSteps, type Step, type SyncTestDefinition, type World} from './syncTest'
+import {
+  createWorld,
+  type EditRecord,
+  runSteps,
+  type Step,
+  type SyncTestDefinition,
+  type World,
+} from './syncTest'
 import {captureUnhandledRejections, type UnhandledRejections} from './unhandledRejections'
 
 const PUBLISHED_ID = 'article-gen'
@@ -78,10 +85,17 @@ interface ClientState {
   heldEvents: 'none' | 'maybe'
 }
 
-interface KeyTouch {
+export interface KeyTouch {
   key: string
-  actor: Actor
   type: 'insert' | 'unset' | 'move'
+  /** The client's recorded edit; an outside edit has none. */
+  edit?: EditRecord
+}
+
+export interface KeyHistory {
+  world: World
+  initialKeys: string[]
+  touches: KeyTouch[]
 }
 
 const clientArbitrary = fc.constantFrom(...CLIENTS)
@@ -274,11 +288,8 @@ function isPendingCommitMissing(error: unknown): boolean {
   return error instanceof Error && error.message.startsWith('No pending commit')
 }
 
-interface Builder {
-  world: World
+interface Builder extends KeyHistory {
   steps: Step[]
-  initialKeys: string[]
-  touches: KeyTouch[]
   insertedCount: number
   droppedEvent: boolean
   clients: Record<ClientId, ClientState>
@@ -342,15 +353,21 @@ async function applyEdit(builder: Builder, actor: Actor, edit: Edit): Promise<vo
   if (actor === 'outside' && builder.world.lake.get(DRAFT_ID) === null) return
   const key = resolveKey(builder, actor, edit)
   if (key === undefined) return
-  const type = touchType(edit)
-  if (type) builder.touches.push({key, actor, type})
   const patches = toPatches(edit, key)
   if (actor === 'outside') {
     const mutations = patches.map((patch) => ({patch: {id: DRAFT_ID, ...patch}}))
     await apply(builder, {do: 'outside', mutations: mutations as MutationPayload[]})
-    return
+  } else {
+    await apply(builder, {client: actor, do: 'patch', id: DRAFT_ID, patches})
   }
-  await apply(builder, {client: actor, do: 'patch', id: DRAFT_ID, patches})
+  recordTouch(builder, actor, edit, key)
+}
+
+function recordTouch(builder: Builder, actor: Actor, edit: Edit, key: string): void {
+  const type = touchType(edit)
+  if (type === undefined) return
+  const record = actor === 'outside' ? undefined : builder.world.edits.at(-1)
+  builder.touches.push(record ? {key, type, edit: record} : {key, type})
 }
 
 async function applyIntent(builder: Builder, intent: Intent): Promise<void> {
@@ -914,15 +931,8 @@ export function requestShapeOf(submissions: SubmissionReport[]): string {
     .join(' ; ')
 }
 
-function terminallyRejectedClients(world: World): Set<string> {
-  return new Set(
-    world.lake.rejectedCommits.flatMap((rejected) =>
-      rejected.statusCode < 500 ? [rejected.clientId] : [],
-    ),
-  )
-}
-
-function unsureKeys(touches: KeyTouch[], rejected: Set<string>): Set<string> {
+// A key is unsure when an injected 4xx may have discarded one of its touches, or when a move races an unset.
+function unsureKeys(world: World, touches: KeyTouch[]): Set<string> {
   const touchesByKey = touches.reduce((byKey, touch) => {
     byKey.set(touch.key, [...(byKey.get(touch.key) ?? []), touch])
     return byKey
@@ -930,9 +940,11 @@ function unsureKeys(touches: KeyTouch[], rejected: Set<string>): Set<string> {
   return new Set(
     [...touchesByKey].flatMap(([key, keyTouches]) => {
       const types = new Set(keyTouches.map((touch) => touch.type))
-      const touchedByRejected = keyTouches.some((touch) => rejected.has(touch.actor))
+      const discarded = keyTouches.some(
+        (touch) => touch.edit !== undefined && wasDiscardedOnPurpose(touch.edit, world),
+      )
       const moveRacesUnset = types.has('unset') && types.has('move')
-      return touchedByRejected || moveRacesUnset ? [key] : []
+      return discarded || moveRacesUnset ? [key] : []
     }),
   )
 }
@@ -954,9 +966,9 @@ interface KeyExpectation {
   removed: string[]
 }
 
-function keyExpectation({world, touches, initialKeys}: Builder): KeyExpectation {
+function keyExpectation({world, touches, initialKeys}: KeyHistory): KeyExpectation {
   const serverKeys = keysOf(world.lake.get(DRAFT_ID), FIELD)
-  const unsure = unsureKeys(touches, terminallyRejectedClients(world))
+  const unsure = unsureKeys(world, touches)
   const unset = touchedKeys(touches, 'unset')
   const initial = without(initialKeys, unsure)
   const added = without(without(touchedKeys(touches, 'insert'), unsure), unset)
@@ -965,8 +977,9 @@ function keyExpectation({world, touches, initialKeys}: Builder): KeyExpectation 
   return {serverKeys, initial, actual: without(serverKeys, unsure), expected, added, removed}
 }
 
-function expectGeneratedKeys(builder: Builder): void {
-  const {serverKeys, initial, actual, added, removed} = keyExpectation(builder)
+/** Every array key on the server is one the history accounts for, and none is duplicated. */
+export function expectGeneratedKeys(history: KeyHistory): void {
+  const {serverKeys, initial, actual, added, removed} = keyExpectation(history)
   expect(new Set(serverKeys).size, 'duplicate keys').toBe(serverKeys.length)
   expectKeysConserved(initial, actual, {added, removed})
 }
