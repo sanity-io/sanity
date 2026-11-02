@@ -77,7 +77,6 @@ function createSubscription(
   const getClient = () => client
   const {typeName = 'movie', currentUser, documentId = 'example-id'} = options
 
-  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
@@ -85,6 +84,7 @@ function createSubscription(
       schema,
       observeDocumentPairAvailability,
       i18n: getFallbackLocaleSource(),
+      // @ts-expect-error -- pre-existing, fix later
       currentUser,
     },
     {publishedId: documentId, draftId: `drafts.${documentId}`},
@@ -120,7 +120,6 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
-  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
@@ -369,7 +368,6 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {
           client,
@@ -423,7 +421,6 @@ describe('validation', () => {
     ])
 
     const immediatePlayback = await firstValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -433,7 +430,6 @@ describe('validation', () => {
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -670,15 +666,15 @@ describe('validation', () => {
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing, fix later
       const observableUserA = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-a'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing, fix later
       const observableUserB = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-b'}},
         idPair,
         'movie',
@@ -688,7 +684,7 @@ describe('validation', () => {
       expect(observableUserA).not.toBe(observableUserB)
     })
 
-    it('returns the SAME observable for the same currentUser id', () => {
+    it('returns the SAME observable for the same currentUser id regardless of the deprecated reference flag', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
       mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
@@ -705,9 +701,9 @@ describe('validation', () => {
       }
 
       // @ts-expect-error -- pre-existing, fix later
-      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft', true)
       // @ts-expect-error -- pre-existing, fix later
-      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft', false)
 
       expect(firstObservable).toBe(secondObservable)
     })
@@ -727,14 +723,13 @@ describe('validation', () => {
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing, fix later
       const observableWithUser = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-d'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing, fix later
       const observableWithoutUser = validation(
         {...sharedCtx, currentUser: null},
         idPair,

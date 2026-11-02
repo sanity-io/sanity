@@ -37,7 +37,7 @@ function setup() {
     store.pair.validation(documentId, 'movie', false, {scheduling}).subscribe()
 
   store.pair.validation(documentId, 'movie', false)
-  const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[3]
+  const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
   if (!(scheduling instanceof BehaviorSubject)) {
     throw new Error('validation was not handed a scheduling that runs can follow')
   }
