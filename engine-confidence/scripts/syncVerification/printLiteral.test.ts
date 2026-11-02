@@ -1,3 +1,5 @@
+import {runInNewContext} from 'node:vm'
+
 import {describe, expect, test} from 'vitest'
 
 import {printLiteral} from './printLiteral'
@@ -58,5 +60,21 @@ describe('printLiteral', () => {
 
   test('prints empty containers', () => {
     expect(printLiteral({steps: [], extra: {}})).toBe('{steps: [], extra: {}}')
+  })
+
+  test('prints a literal that evaluates back to the original for control characters and quotes', () => {
+    const awkward = [
+      'line\nbreak',
+      'carriage\rreturn',
+      'tab\there',
+      'separator\u2028and\u2029paragraph',
+      'nul\u0000and\u001fbell\u0007',
+      'it\'s "quoted" \\ back\\slash \\"',
+      'lone \ud800 surrogate',
+    ]
+    awkward.forEach((text) => {
+      expect(runInNewContext(`(${printLiteral(text)})`)).toBe(text)
+      expect(runInNewContext(`(${printLiteral({[text]: [text]})})`)).toEqual({[text]: [text]})
+    })
   })
 })

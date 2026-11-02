@@ -71,6 +71,7 @@ export function describeOutcome(outcome: SubmissionOutcome): string {
 
 function outcomeDiffers(expected: SubmissionOutcome, actual: SubmissionOutcome): boolean {
   if (expected.statusCode !== actual.statusCode) return true
+  // A recorded response body is optional, so a missing recorded errorType matches anything
   return expected.errorType !== undefined && expected.errorType !== actual.errorType
 }
 
