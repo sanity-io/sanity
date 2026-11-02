@@ -253,17 +253,21 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       fail-fast: false
-      # The operations seam's memoize caches grow about 0.5 MB per sequence,
-      # so its budget is split across processes. `sample` is passing sequences
-      # kept per seed for the fake fidelity check: 38 in all, about 300
-      # requests, which keeps sync-verify to a few minutes of staging traffic
-      # (see the README).
+      # The operations seam's memoize caches grow about 0.5 MB per sequence and
+      # a process stops at 5,000 sequences, which collect-mode reruns and
+      # shrinking count toward, so each operations shard runs one seed. `sample`
+      # is passing sequences kept per seed for the fake fidelity check: 38 in
+      # all, about 300 requests, which keeps sync-verify to a few minutes of
+      # staging traffic (see the README).
       matrix:
         include:
           - {seam: pair, shard: 0, first-seed: 0, last-seed: 9, runs: 2500, sample: 2}
-          - {seam: operations, shard: 0, first-seed: 10, last-seed: 11, runs: 1500, sample: 3}
-          - {seam: operations, shard: 1, first-seed: 12, last-seed: 13, runs: 1500, sample: 3}
-          - {seam: operations, shard: 2, first-seed: 14, last-seed: 15, runs: 1500, sample: 3}
+          - {seam: operations, shard: 0, first-seed: 10, last-seed: 10, runs: 1500, sample: 3}
+          - {seam: operations, shard: 1, first-seed: 11, last-seed: 11, runs: 1500, sample: 3}
+          - {seam: operations, shard: 2, first-seed: 12, last-seed: 12, runs: 1500, sample: 3}
+          - {seam: operations, shard: 3, first-seed: 13, last-seed: 13, runs: 1500, sample: 3}
+          - {seam: operations, shard: 4, first-seed: 14, last-seed: 14, runs: 1500, sample: 3}
+          - {seam: operations, shard: 5, first-seed: 15, last-seed: 15, runs: 1500, sample: 3}
     steps:
       - uses: actions/checkout@v7
         with:
