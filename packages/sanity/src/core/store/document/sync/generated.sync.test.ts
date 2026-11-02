@@ -249,6 +249,18 @@ function advanceSampling(search: Search): void {
   if (search.sampling) search.sampling.runIndex += 1
 }
 
+// After a failure fast-check calls the property for shrink candidates, which are not runs of the seed.
+async function sampledCheck(search: Search, generatedCase: GeneratedCase): Promise<void> {
+  try {
+    await checkUnlessIgnored(search, generatedCase)
+  } catch (error) {
+    search.sampling = undefined
+    throw error
+  } finally {
+    advanceSampling(search)
+  }
+}
+
 async function searchSeed(seed: number, search: Search, round: number): Promise<void> {
   if (round === MAX_FAILURES_PER_SEED) return
   if (round > 0 && overBudget(search)) {
@@ -261,7 +273,7 @@ async function searchSeed(seed: number, search: Search, round: number): Promise<
     round === 0 && sampleSize > 0 ? {seed, runIndex: 0, nextAt: 0, taken: 0} : undefined
   const result = await fc.check(
     fc.asyncProperty(caseArbitrary(maxSteps, seam), (generatedCase) =>
-      checkUnlessIgnored(search, generatedCase).finally(() => advanceSampling(search)),
+      sampledCheck(search, generatedCase),
     ),
     {seed, numRuns: runs},
   )
