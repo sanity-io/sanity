@@ -25,11 +25,21 @@ export interface LinearIssues {
   create: (issue: NewLinearIssue) => Promise<LinearIssueRef>
 }
 
-const SEARCH_QUERY = `query SyncVerificationSignatureSearch($filter: IssueFilter) {
-  issues(filter: $filter, first: 50, includeArchived: true) {
+const MAX_SEARCH_PAGES = 10
+
+const SEARCH_QUERY = `query SyncVerificationSignatureSearch($filter: IssueFilter, $after: String) {
+  issues(filter: $filter, first: 50, after: $after, includeArchived: true) {
     nodes { identifier url description }
+    pageInfo { hasNextPage endCursor }
   }
 }`
+
+interface SearchPage {
+  issues: {
+    nodes: LinearIssueWithDescription[]
+    pageInfo: {hasNextPage: boolean; endCursor: string | null}
+  }
+}
 
 const CREATE_MUTATION = `mutation SyncVerificationCreateIssue($input: IssueCreateInput!) {
   issueCreate(input: $input) {
@@ -75,10 +85,20 @@ export function createLinearIssues(
 
   return {
     async findBySignatureLine(line) {
-      const data = await request<{issues: {nodes: LinearIssueWithDescription[]}}>(SEARCH_QUERY, {
-        filter: {team: {id: {eq: LINEAR_TARGET.teamId}}, description: {contains: line}},
-      })
-      return issuesWithWholeLine(data.issues.nodes, line)
+      async function searchFrom(after: string | null, page: number): Promise<LinearIssueRef[]> {
+        const data = await request<SearchPage>(SEARCH_QUERY, {
+          filter: {team: {id: {eq: LINEAR_TARGET.teamId}}, description: {contains: line}},
+          after,
+        })
+        const matches = issuesWithWholeLine(data.issues.nodes, line)
+        const {hasNextPage, endCursor} = data.issues.pageInfo
+        if (matches.length > 0 || ! hasNextPage || endCursor === null) return matches
+        if (page + 1 >= MAX_SEARCH_PAGES) {
+          throw new Error(`Linear search for "${line}" found no match in ${MAX_SEARCH_PAGES} pages`)
+        }
+        return searchFrom(endCursor, page + 1)
+      }
+      return searchFrom(null, 0)
     },
     async create(issue) {
       const data = await request<{
