@@ -120,7 +120,7 @@ export function getVideoPlaybackInfoRequest(params: UseVideoPlaybackInfoParams) 
   const {mediaLibraryId, assetRef, thumbnail} = params
   const assetInstanceId = parseAssetInstanceId(assetRef._ref)
   const baseRequest = {
-    uri: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
+    url: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
     tag: 'media-library.video-playback-info',
   }
 
