@@ -135,6 +135,9 @@ function setSessionId(id: string) {
   return id
 }
 
+/** How long document presence keeps running after the last document stops using it. */
+const DOCUMENT_PRESENCE_GRACE = 5_000
+
 /** @internal */
 export const SESSION_ID = getSessionId() || setSessionId(generate())
 
@@ -401,7 +404,13 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
     ),
-    shareReplay(1),
+    // Presence stops once no document has used it for a while, as when the login screen replaces
+    // the studio after a session ends. The delay keeps it running while switching documents, when
+    // the previous pane unmounts before the next one mounts.
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(DOCUMENT_PRESENCE_GRACE),
+    }),
   )
 
   /**

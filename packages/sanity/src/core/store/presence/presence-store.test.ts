@@ -11,6 +11,9 @@ import {type DocumentPresence, type GlobalPresence, type PresenceLocation} from 
 // Own location announcements are audited at this interval
 const ANNOUNCE_DELAY = 200
 
+// How long document presence keeps running after the last document stops using it
+const DOCUMENT_PRESENCE_GRACE = 5_000
+
 const CONNECTED: ConnectionStatus = {type: 'connected', lastHeartbeat: new Date(0)}
 
 type BifurRequest = {name: string; params: unknown}
@@ -333,6 +336,45 @@ describe('presence-store', () => {
 
       expect(values.length).toBe(emissionsAfterFirst)
       subscription.unsubscribe()
+    })
+
+    it('stops listening and looking up users once no document presence is subscribed', async () => {
+      // When the last form unmounts (the login screen replacing the studio after a session
+      // ends), nothing may keep presence running: every update from another session looks up
+      // users, and with a dead credential each lookup is a 401.
+      const {store, incoming$, getUsers} = createHarness()
+      const {subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(getUsers).toHaveBeenCalled()
+
+      subscription.unsubscribe()
+      getUsers.mockClear()
+      await vi.advanceTimersByTimeAsync(DOCUMENT_PRESENCE_GRACE)
+
+      expect(incoming$.observed).toBe(false)
+      incoming$.next(stateEvent('bob', 'session-bob', [location('doc-1')]))
+      await settle()
+      expect(getUsers).not.toHaveBeenCalled()
+    })
+
+    it('keeps presence running while switching from one document to another', async () => {
+      // The pane of the previous document unmounts before the next one mounts, so for a moment
+      // no document uses presence. Starting over would listen and request a roll call again, and
+      // show no one in the next document until the other sessions answer.
+      const {store, incoming$, requests} = createHarness()
+      const previous = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-2')]))
+      await settle()
+
+      previous.subscription.unsubscribe()
+      await settle()
+      const next = collect<DocumentPresence[]>(store.documentPresence('doc-2'))
+      await settle()
+
+      expect(requests.filter((r) => r.name === 'presence_rollcall')).toHaveLength(1)
+      expect(next.latest().map((p) => p.user.id)).toEqual(['alice'])
+      next.subscription.unsubscribe()
     })
   })
 
