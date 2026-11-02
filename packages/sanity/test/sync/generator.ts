@@ -28,7 +28,7 @@ const INITIAL_KEYS = ['a', 'b']
 const TITLES = ['one', 'two', 'three']
 const MAX_PENDING_ACCEPTS = 20
 
-const schema = createSchema({
+export const articleSchema = createSchema({
   name: 'generated',
   types: [
     {
@@ -856,7 +856,7 @@ async function runInWorld(
   unhandled: UnhandledRejections,
   keep: boolean,
 ): Promise<PassingRun | undefined> {
-  const world = await createWorld(definition, {schema, typeName: 'article'})
+  const world = await createWorld(definition, {schema: articleSchema, typeName: 'article'})
   const builder = createBuilder(world, definition, start)
   try {
     await buildAndCheck(builder, intents, unhandled)
