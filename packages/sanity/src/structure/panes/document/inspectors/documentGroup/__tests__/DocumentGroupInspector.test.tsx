@@ -1,6 +1,6 @@
 import {act, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {type ComponentType, type RefAttributes, useImperativeHandle} from 'react'
+import {type ComponentType, type ReactNode, type RefAttributes, useImperativeHandle} from 'react'
 import {EMPTY} from 'rxjs'
 import {
   DocumentGroupInventory,
@@ -8,10 +8,12 @@ import {
   type DocumentGroupInventoryProps,
   type SanityDocument,
 } from 'sanity'
+import {PaneLayoutContext} from 'sanity/_singletons'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {useTestDocumentGroupInventoryHandle} from '../../../../../../../test/testUtils/useTestDocumentGroupInventoryHandle'
+import {type PaneLayoutContextValue} from '../../../../../components/pane/types'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
@@ -95,6 +97,19 @@ function lastInventoryProps(): DocumentGroupInventoryProps {
   return props
 }
 
+const PANE_LAYOUT: PaneLayoutContextValue = {
+  collapse: () => undefined,
+  collapsed: false,
+  expand: () => undefined,
+  expandedElement: null,
+  mount: () => () => undefined,
+  resize: () => undefined,
+  resizing: false,
+  panes: [],
+}
+
+const COLLAPSED_PANE_LAYOUT: PaneLayoutContextValue = {...PANE_LAYOUT, collapsed: true}
+
 const test = baseTest
   .extend('TestProvider', {scope: 'file'}, () =>
     createTestProvider({
@@ -107,7 +122,8 @@ const test = baseTest
     }),
   )
   .extend('documentPaneValue', () => buildDocumentPaneValue())
-  .extend('renderInspector', ({TestProvider, documentPaneValue}) => {
+  .extend('layoutCollapsed', () => false)
+  .extend('renderInspector', ({TestProvider, documentPaneValue, layoutCollapsed}) => {
     const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
 
     mockUseDocumentPane.mockReturnValue(documentPaneValue)
@@ -128,13 +144,23 @@ const test = baseTest
       return handle
     }
 
+    const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
+
+    const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
+      return (
+        <TestProvider>
+          <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
+        </TestProvider>
+      )
+    }
+
     // The test provider renders a spinner until the locale resources have loaded.
     return async () => {
       const onClose = vi.fn()
 
       render(
         <DocumentGroupInspector documentId="doc-123" documentType="author" onClose={onClose} />,
-        {wrapper: TestProvider},
+        {wrapper: Wrapper},
       )
 
       await screen.findByRole('heading', {name: 'Manage versions'})
@@ -164,6 +190,31 @@ describe('DocumentGroupInspector', () => {
       mode: 'manage',
       documentId: 'drafts.doc-123',
       documentType: 'author',
+    })
+  })
+
+  test('lets the inventory scroll its own versions in the pane layout', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    expect(screen.getByTestId('document-group-inspector-content')).not.toHaveAttribute(
+      'data-document-group-inventory-scroll',
+    )
+  })
+
+  describe('when the pane layout is collapsed', () => {
+    test.override('layoutCollapsed', () => true)
+
+    test('leaves scrolling the versions to the page, which scrolls in that layout', async ({
+      renderInspector,
+    }) => {
+      await renderInspector()
+
+      expect(screen.getByTestId('document-group-inspector-content')).toHaveAttribute(
+        'data-document-group-inventory-scroll',
+        'ancestor',
+      )
     })
   })
 
