@@ -115,13 +115,17 @@ export function createClaudeExplainer(options: {
       output_config: {effort: 'medium', format: {type: 'json_schema', schema: RESPONSE_SCHEMA}},
       messages: [{role: 'user', content: failurePrompt(input)}],
     })
-    if (response.stop_reason === 'refusal') {
-      throw new Error(`Claude declined to explain "${input.signature}"`)
+    if (response.stop_reason === 'end_turn') {
+      const text = response.content.flatMap((block) => (block.type === 'text' ? [block.text] : []))
+      const parsed: unknown = JSON.parse(text.join(''))
+      if (isExplanation(parsed)) return parsed
+      throw new Error(`Claude returned an unexpected shape for "${input.signature}"`)
     }
-    const text = response.content.flatMap((block) => (block.type === 'text' ? [block.text] : []))
-    const parsed: unknown = JSON.parse(text.join(''))
-    if (isExplanation(parsed)) return parsed
-    throw new Error(`Claude returned an unexpected shape for "${input.signature}"`)
+    throw new Error(
+      response.stop_reason === 'refusal'
+        ? `Claude declined to explain "${input.signature}"`
+        : `Claude stopped with ${response.stop_reason} before finishing "${input.signature}"`,
+    )
   }
 }
 
