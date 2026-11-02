@@ -9,7 +9,7 @@ import {
   isCardinalityOneRelease,
   isPausedCardinalityOneRelease,
   isReleaseDocument,
-  ReleaseAvatarIcon,
+  ReleaseAvatar,
   useActiveReleases,
   useDocumentVersions,
   usePerspective,
@@ -46,7 +46,7 @@ function ScheduledDraftMenuItem(props: {
   return (
     <MenuItem
       data-testid={`document-scheduled-draft-${getReleaseIdFromReleaseDocumentId(release._id)}`}
-      icon={<ReleaseAvatarIcon release={release} />}
+      icon={<ReleaseAvatar padding={2} release={release} />}
       iconRight={isPausedCardinalityOneRelease(release) ? UnlockIcon : undefined}
       onClick={handleClick}
       pressed={isSelected}
