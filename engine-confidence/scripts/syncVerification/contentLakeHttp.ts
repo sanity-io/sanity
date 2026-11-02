@@ -10,6 +10,7 @@ const DATASET_READINESS_RETRY_STATUSES = new Set([404, ...INFRASTRUCTURE_RETRY_S
 const SUBMISSION_RETRY_STATUSES = new Set([429])
 const MAX_ATTEMPTS = 6
 const BASE_DELAY_MS = 2_000
+const DEFAULT_REQUEST_TIMEOUT_MS = 30_000
 const MAX_DELAY_MS = 60_000
 
 export interface ContentLakeTarget {
@@ -18,6 +19,7 @@ export interface ContentLakeTarget {
   token: string
   apiHost: string
   rateLimitBypass?: string
+  requestTimeoutMs?: number
   fetch?: typeof fetch
   sleep?: (ms: number) => Promise<void>
   log?: (message: string) => void
@@ -69,6 +71,7 @@ export function createContentLakeHttp(target: ContentLakeTarget): ContentLakeHtt
   const fetchImplementation = target.fetch ?? fetch
   const sleep = target.sleep ?? defaultSleep
   const log = target.log ?? (() => undefined)
+  const requestTimeoutMs = target.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
   const projectBase = `https://${target.projectId}.${target.apiHost}/${STUDIO_API_VERSION}`
   const dataBase = `${projectBase}/data`
   const headers = {
@@ -78,15 +81,23 @@ export function createContentLakeHttp(target: ContentLakeTarget): ContentLakeHtt
   }
 
   async function request(method: string, url: string, body?: unknown): Promise<HttpAnswer> {
-    const response = await fetchImplementation(url, {
-      method,
-      headers,
-      ...(body === undefined ? {} : {body: JSON.stringify(body)}),
-    })
-    return {
-      status: response.status,
-      body: parseBody(await response.text()),
-      retryAfter: response.headers.get('retry-after'),
+    try {
+      const response = await fetchImplementation(url, {
+        method,
+        headers,
+        signal: AbortSignal.timeout(requestTimeoutMs),
+        ...(body === undefined ? {} : {body: JSON.stringify(body)}),
+      })
+      return {
+        status: response.status,
+        body: parseBody(await response.text()),
+        retryAfter: response.headers.get('retry-after'),
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'TimeoutError') {
+        throw new Error(`${method} ${new URL(url).pathname} timed out after ${requestTimeoutMs}ms`, { cause: error })
+      }
+      throw error
     }
   }
 

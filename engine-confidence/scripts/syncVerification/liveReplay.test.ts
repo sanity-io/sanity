@@ -101,6 +101,34 @@ describe('verifyFailures', () => {
     },
   )
 
+  test('turns a hung replayed submission into an error verdict and still cleans up', async () => {
+    const server = createFakeContentLakeServer()
+    const hangingOnSubmission = ((input: string | URL | Request, init?: RequestInit) =>
+      String(input).includes('/data/actions/')
+        ? new Promise<Response>((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => reject(init.signal?.reason))
+          })
+        : server.fetch(input, init)) as typeof fetch
+    const http = createContentLakeHttp({
+      projectId: 'ittbm412',
+      dataset: 'cursor_ci_sync_test',
+      token: 'token',
+      apiHost: 'api.sanity.work',
+      fetch: hangingOnSubmission,
+      sleep: async () => undefined,
+      requestTimeoutMs: 20,
+    })
+    const [verdict] = await verifyFailures(
+      {...report, failures: [report.failures[0]]},
+      http,
+      'run1',
+    )
+    expect(verdict.verdict).toBe('error')
+    expect(verdict.summary).toContain('timed out after 20ms')
+    const lastBody = server.calls.at(-1)?.body as {mutations?: Array<{delete?: unknown}>}
+    expect(lastBody.mutations?.every((mutation) => mutation.delete !== undefined)).toBe(true)
+  })
+
   test('turns one failure into an error verdict without stopping the rest', async () => {
     const server = createFakeContentLakeServer((call) => {
       const seeding = (call.body as {mutations?: Array<{createOrReplace?: {_id: string}}>})
