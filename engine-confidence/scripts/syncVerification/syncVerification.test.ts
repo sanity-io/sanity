@@ -216,7 +216,14 @@ describe('whole-line dedupe', () => {
 
   test('the Linear client filters the API substring matches down to whole lines', async () => {
     const fetchMock = vi.fn<typeof fetch>(
-      async () => new Response(JSON.stringify({data: {issues: {nodes: handFiledIssues}}})),
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              issues: {nodes: handFiledIssues, pageInfo: {hasNextPage: false, endCursor: null}},
+            },
+          }),
+        ),
     )
     const linear = createLinearIssues('lin_key', fetchMock)
     const line = 'sync-gen-signature: World did not settle within N rounds; inconsistent'
@@ -229,6 +236,47 @@ describe('whole-line dedupe', () => {
       team: {id: {eq: LINEAR_TARGET.teamId}},
       description: {contains: line},
     })
+  })
+
+  test('the Linear client follows pages until the whole-line match turns up', async () => {
+    const line = 'sync-gen-signature: A view of drafts.article-N'
+    const longer = {
+      identifier: 'SAPP-1',
+      url: 'u1',
+      description: `${line} and then some`,
+    }
+    const exact = {identifier: 'SAPP-2', url: 'u2', description: line}
+    const pages = [
+      {nodes: [longer], pageInfo: {hasNextPage: true, endCursor: 'cursor-1'}},
+      {nodes: [exact], pageInfo: {hasNextPage: false, endCursor: null}},
+    ]
+    const fetchMock = vi.fn<typeof fetch>(
+      async () => new Response(JSON.stringify({data: {issues: pages.shift()}})),
+    )
+    const linear = createLinearIssues('lin_key', fetchMock)
+
+    const found = await linear.findBySignatureLine(line)
+
+    expect(found.map((issue) => issue.identifier)).toEqual(['SAPP-2'])
+    const afters = fetchMock.mock.calls.map(
+      (call) => JSON.parse(String(call[1]?.body)).variables.after,
+    )
+    expect(afters).toEqual([null, 'cursor-1'])
+  })
+
+  test('the Linear client gives up with an error when the pages never end', async () => {
+    const fetchMock = vi.fn<typeof fetch>(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {issues: {nodes: [], pageInfo: {hasNextPage: true, endCursor: 'more'}}},
+          }),
+        ),
+    )
+    const linear = createLinearIssues('lin_key', fetchMock)
+
+    await expect(linear.findBySignatureLine('sync-gen-signature: x')).rejects.toThrow(/10 pages/)
+    expect(fetchMock).toHaveBeenCalledTimes(10)
   })
 
   test('the Linear client creates issues in the SAPP project with the sync label only', async () => {
