@@ -53,6 +53,34 @@ const otherRelease = {
   },
 } as ReleaseDocument
 
+const portableTextDescription = [
+  {
+    _key: 'block1',
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [
+      {_key: 'span1', _type: 'span', marks: [], text: 'Ships with '},
+      {_key: 'ref1', _type: 'releaseReference', releaseId: 'rOther'},
+      {_key: 'span2', _type: 'span', marks: [], text: ' tomorrow'},
+    ],
+  },
+  {
+    _key: 'block2',
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [{_key: 'span3', _type: 'span', marks: [], text: 'Second paragraph'}],
+  },
+]
+
+// Release metadata is untyped JSON on a system document, so any shape can arrive from the store.
+function releaseFromContentLake(description: unknown): ReleaseDocument {
+  return JSON.parse(
+    JSON.stringify({...initialRelease, metadata: {...initialRelease.metadata, description}}),
+  )
+}
+
 function getDescriptionTelemetryPayloads(): unknown[] {
   return mockTelemetryLog.mock.calls
     .filter(([event]) => event === ReleaseDescriptionSet)
@@ -205,6 +233,69 @@ describe('ReleaseDetailsEditor', () => {
       vi.useRealTimers()
     })
 
+    it('shows the plain text of a Portable Text description in the description field', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-form-description')).toHaveValue(
+        'Ships with  tomorrow\n\nSecond paragraph',
+      )
+    })
+
+    it('keeps a Portable Text description untouched when only the title is edited', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              title: 'New Title',
+              description: portableTextDescription,
+            }),
+          }),
+        )
+      })
+      expect(getDescriptionTelemetryPayloads()).toEqual([])
+      vi.useRealTimers()
+    })
+
+    it('saves the edited plain text when a Portable Text description is edited', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      const descriptionInput = screen.getByTestId('release-form-description') as HTMLTextAreaElement
+      await userEvent.type(descriptionInput, '!', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              description: 'Ships with  tomorrow\n\nSecond paragraph!',
+            }),
+          }),
+        )
+      })
+      vi.useRealTimers()
+    })
+
     it('does not render metadata fields, and a title edit still saves', async () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
       const wrapper = await createTestProvider({
@@ -260,6 +351,35 @@ describe('ReleaseDetailsEditor', () => {
       expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
       expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
       expect(screen.queryByTestId('release-form-title')).toBeNull()
+    })
+
+    it('renders the plain text of a Portable Text description', async () => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+      expect(screen.getByTestId('release-description-display')).toHaveTextContent(
+        'Ships with tomorrow Second paragraph',
+      )
+    })
+
+    it.each([
+      ['an object', {_type: 'unknown', text: 'Not a description'}],
+      ['a number', 42],
+    ])('renders no description when the description is %s', async (_label, description) => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+      expect(screen.queryByTestId('release-description-display')).toBeNull()
     })
   })
 

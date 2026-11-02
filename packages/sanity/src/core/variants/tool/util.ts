@@ -1,6 +1,5 @@
-import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
-
 import {type PerspectiveBundle} from '../../perspective/types'
+import {getDescriptionText} from '../../util/getDescriptionText'
 import {VARIANT_DOCUMENTS_PATH} from '../store/constants'
 import {type SystemVariant} from '../types'
 
@@ -83,13 +82,7 @@ export function decodeVariantIdFromRoute(variantIdRaw: string | undefined): stri
  * @internal
  */
 export function getVariantDescription(variant: SystemVariant): string {
-  const description = variant.metadata?.description
-
-  if (!Array.isArray(description) || !description.every(isPortableTextBlock)) {
-    return ''
-  }
-
-  return toPlainText(description).trim()
+  return getDescriptionText(variant.metadata?.description).trim()
 }
 
 const DEFAULT_VARIANT_ID = '__default_variant__'
