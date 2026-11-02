@@ -32,6 +32,7 @@ export const dropdownButtonTrigger = css({
     borderBottomLeftRadius: pillRadius,
     borderTopRightRadius: '0',
     borderBottomRightRadius: '0',
+    zIndex: 1,
   },
   '&&:only-child': {
     borderTopRightRadius: pillRadius,
@@ -45,5 +46,9 @@ export const dropdownButtonClear = css({
     borderBottomLeftRadius: '0',
     borderTopRightRadius: pillRadius,
     borderBottomRightRadius: pillRadius,
+    marginLeft: '-1px',
+  },
+  '&&:hover': {
+    zIndex: 2,
   },
 })

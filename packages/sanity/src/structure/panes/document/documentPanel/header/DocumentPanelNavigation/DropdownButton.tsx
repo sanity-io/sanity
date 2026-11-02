@@ -58,7 +58,6 @@ export function DropdownButton(props: DropdownButtonProps) {
 
   return (
     <Card
-      border={hasSelection}
       className={dropdownButtonCard}
       data-selected={hasSelection ? '' : undefined}
       data-ui="DropdownButton"
@@ -72,19 +71,18 @@ export function DropdownButton(props: DropdownButtonProps) {
         className={clsx(dropdownButtonTrigger, className)}
         icon={icon}
         iconRight={ChevronDownIcon}
-        mode={hasSelection ? 'bleed' : 'ghost'}
+        mode="ghost"
         ref={ref}
         text={text}
       />
       {hasSelection ? (
         <>
-          <div aria-hidden className={dropdownButtonDivider} />
           <Button
             aria-label={clearLabel}
             className={dropdownButtonClear}
             data-testid="dropdown-button-clear"
             icon={CloseIcon}
-            mode="bleed"
+            mode="ghost"
             onClick={handleClear}
             onMouseDown={handleClearMouseDown}
             tooltipProps={{content: clearLabel}}
