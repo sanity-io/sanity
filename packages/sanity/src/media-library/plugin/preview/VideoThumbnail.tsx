@@ -1,8 +1,9 @@
 import {PlayIcon} from '@sanity/icons/Play'
-import {Flex, Skeleton} from '@sanity/ui'
+import {Skeleton} from '@sanity/ui'
 import {useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
-import {type PreviewMediaDimensions} from '../../../core/components/previews'
+import {type PreviewMediaDimensions} from '../../../core/components/previews/types'
 import {
   useVideoPlaybackInfo,
   type UseVideoPlaybackInfoParams,
@@ -36,9 +37,9 @@ export function getVideoThumbnailParams(
 function ThumbnailFallback() {
   return (
     <Flex
-      align="center"
+      alignItems="center"
       data-testid="video-thumbnail-fallback"
-      justify="center"
+      justifyContent="center"
       style={{width: '100%', height: '100%'}}
     >
       <PlayIcon />
