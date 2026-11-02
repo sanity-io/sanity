@@ -100,7 +100,7 @@ describe('variants tool utilities', () => {
       ...createMockVariant('developer'),
       metadata: {title: 'Developer audience', description: []},
     }
-    const defaultTitle = 'All users (Default)'
+    const defaultTitle = 'Default'
 
     const [defaultVariant, listedVariant] = filterVariantsForSearch([variant], '', defaultTitle)
 

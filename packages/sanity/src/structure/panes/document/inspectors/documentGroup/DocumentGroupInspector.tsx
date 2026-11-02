@@ -1,4 +1,3 @@
-import {Card} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -28,12 +27,14 @@ import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspecti
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
+import {CompareVersionsAction} from './CompareVersionsAction'
 import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
   ReferencePreviewLink,
   VersionsPreviewList,
+  CompareVersionsAction,
 }
 
 export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX.Element {
@@ -97,7 +98,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         onClose={onClose}
         title={t('document-group-inventory.action.manage-versions')}
       />
-      <Card className={documentGroupInventoryContainer} flex={1}>
+      <div className={documentGroupInventoryContainer}>
         {typeof targetDocumentId !== 'undefined' && (
           <DocumentGroupInventory
             // The inventory's machines read their input once, so they must be recreated when the
@@ -114,7 +115,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             onSelect={selectDocumentGroupVariant}
           />
         )}
-      </Card>
+      </div>
     </Flex>
   )
 }

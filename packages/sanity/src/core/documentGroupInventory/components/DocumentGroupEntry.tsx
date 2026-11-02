@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
 import {Text} from 'ui5'
 
@@ -46,38 +45,40 @@ export function DocumentGroupEntry({
 
   return (
     <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
+      <div className="atom">{leading}</div>
       <div className="atom">
-        <button
-          type="button"
-          className="primary-action"
-          ref={primaryActionRef}
-          onClick={onPrimaryAction}
-          onContextMenu={onContextMenu}
-        >
-          {variant.name}
-        </button>
-        {leading}
-        <Text size={1} weight="medium" className="inert" as="div" trim={true}>
-          {variant.name}
-        </Text>
-      </div>
-      <div className="atom inert">
-        {isSelected && (
-          <StatusBadge radius={2} tone="primary">
-            <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
-          </StatusBadge>
-        )}
-        {agentBundleName ? (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="suggest" />
-        ) : (
-          <ReleaseAvatarIcon
-            release={
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-              (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-            }
-          />
-        )}
+        <div className="atom">
+          <button
+            type="button"
+            className="primary-action"
+            ref={primaryActionRef}
+            onClick={onPrimaryAction}
+            onContextMenu={onContextMenu}
+          >
+            {variant.name}
+          </button>
+          <Text size={1} weight="medium" trim={true}>
+            {variant.name}
+          </Text>
+        </div>
+        <div className="atom">
+          {isSelected && (
+            <StatusBadge radius={2} tone="primary">
+              {t('document-group-inventory.viewing-item-label')}
+            </StatusBadge>
+          )}
+          {agentBundleName ? (
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            <ReleaseAvatarIcon tone="suggest" />
+          ) : (
+            <ReleaseAvatarIcon
+              release={
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+                (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
+              }
+            />
+          )}
+        </div>
       </div>
     </VariantSetEntry>
   )

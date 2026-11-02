@@ -73,7 +73,7 @@ export function VariantsMenuStory() {
                 icon={RhombusIcon}
                 iconRight={ChevronDownIcon}
                 mode="bleed"
-                text="All users (Default)"
+                text="Default"
               />
             }
           />

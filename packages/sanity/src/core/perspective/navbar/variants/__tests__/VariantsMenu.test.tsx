@@ -86,10 +86,10 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('view-all')).toHaveAttribute('href', `/intent/${VARIANTS_INTENT}`)
   })
 
-  it('names the unselected option All users (Default)', async () => {
+  it('names the unselected option Default', async () => {
     await renderMenu()
 
-    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
+    expect(screen.getByTestId('variant-default')).toHaveTextContent('Default')
   })
 
   it('filters the default option with the rest of the list', async () => {

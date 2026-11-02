@@ -1,20 +1,12 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-export const Body = styled.div(({theme}) => {
-  const {space} = getThemeV2(theme)
-
+export const Body = styled.div(() => {
   return css`
+    flex: 1 1 auto;
+    min-block-size: 0;
     overflow-x: clip;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: calc(${space[5]}px * 0.5) calc(${space[4]}px);
-
-    @property --start-mask-color {
-      syntax: '<color>';
-      inherits: false;
-      initial-value: #000;
-    }
 
     @property --end-mask-color {
       syntax: '<color>';
@@ -24,16 +16,13 @@ export const Body = styled.div(({theme}) => {
 
     @keyframes fade-mask {
       0% {
-        --start-mask-color: #000;
         --end-mask-color: transparent;
       }
       2%,
       98% {
-        --start-mask-color: transparent;
         --end-mask-color: transparent;
       }
       100% {
-        --start-mask-color: transparent;
         --end-mask-color: #000;
       }
     }
@@ -41,8 +30,6 @@ export const Body = styled.div(({theme}) => {
     --mask-size: 3rem;
 
     mask-image: linear-gradient(
-      to var(--direction, bottom),
-      var(--start-mask-color),
       #000 var(--mask-size),
       #000 calc(100% - var(--mask-size)),
       var(--end-mask-color)
