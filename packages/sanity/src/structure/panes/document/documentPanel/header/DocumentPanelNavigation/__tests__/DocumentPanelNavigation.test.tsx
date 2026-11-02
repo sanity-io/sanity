@@ -1,12 +1,14 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
+  getVersionFromId,
   type ObjectSchemaType,
   useActiveReleases,
   useAgentVersionDisplay,
   useAllVariants,
   useDocumentVersions,
   usePerspective,
+  useReleasesToolAvailable,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -25,6 +27,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+  useReleasesToolAvailable: vi.fn(),
 }))
 
 vi.mock('../../../../useDocumentPane')
@@ -35,12 +38,21 @@ const mockUseAgentVersionDisplay = useAgentVersionDisplay as Mock<typeof useAgen
 const mockUseAllVariants = useAllVariants as Mock<typeof useAllVariants>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUseReleasesToolAvailable = useReleasesToolAvailable as Mock<
+  typeof useReleasesToolAvailable
+>
 const mockUseDocumentPane = useDocumentPane as Mock<() => Partial<DocumentPaneContextValue>>
 const mockUsePerspectiveNavigator = usePerspectiveNavigator as Mock<typeof usePerspectiveNavigator>
 
+const OWN_AGENT_BUNDLE = 'agent-mine'
+
 const variantA = createVariant('variantA', 'Variant A')
 const releaseA = createRelease('rA', 'Release A')
-const versions = [createVersion({bundle: 'published'}), createVersion({bundle: {release: 'rA'}})]
+const versions = [
+  createVersion({bundle: 'published'}),
+  createVersion({bundle: {release: 'rA'}}),
+  createVersion({bundle: {agent: OWN_AGENT_BUNDLE}}),
+]
 
 const navigate = vi.fn()
 
@@ -57,6 +69,14 @@ async function renderNavigation(options: {variants: boolean}) {
   return screen.findByTestId('document-panel-navigation-badge-published')
 }
 
+function expectInOrder(elements: HTMLElement[]) {
+  for (let index = 1; index < elements.length; index++) {
+    expect(elements[index - 1].compareDocumentPosition(elements[index])).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  }
+}
+
 describe('DocumentPanelNavigation', () => {
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue({
@@ -65,6 +85,7 @@ describe('DocumentPanelNavigation', () => {
     })
     mockUsePerspective.mockReturnValue(createPerspective())
     mockUsePerspectiveNavigator.mockReturnValue({navigate})
+    mockUseReleasesToolAvailable.mockReturnValue(true)
     mockUseAllVariants.mockReturnValue({
       data: [variantA],
       byId: new Map([[variantA._id, variantA]]),
@@ -81,32 +102,45 @@ describe('DocumentPanelNavigation', () => {
       loading: false,
       dispatch: vi.fn(),
     })
-    mockUseAgentVersionDisplay.mockReturnValue({
-      filteredVersionIds: [],
-      getVersionDisplay: () => null,
-    })
+    mockUseAgentVersionDisplay.mockImplementation((versionIds) => ({
+      filteredVersionIds: versionIds.filter((id) => getVersionFromId(id) === OWN_AGENT_BUNDLE),
+      getVersionDisplay: (id) =>
+        getVersionFromId(id) === OWN_AGENT_BUNDLE
+          ? {displayName: 'Proposed changes', tone: 'suggest'}
+          : null,
+    }))
   })
 
   afterEach(() => {
     vi.clearAllMocks()
   })
 
-  it('puts the variants menu and its divider before the badges when variants are enabled', async () => {
+  it('renders the variants menu, the Published and Draft badges, the releases menu and the agent badge in order', async () => {
     const published = await renderNavigation({variants: true})
 
-    const menuButton = screen.getByTestId('document-variants-menu-button')
-    const divider = screen.getByTestId('document-variants-menu-divider')
-    expect(menuButton.compareDocumentPosition(divider)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(divider.compareDocumentPosition(published)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expectInOrder([
+      screen.getByTestId('document-variants-menu-button'),
+      screen.getByTestId('document-variants-menu-divider'),
+      published,
+      screen.getByTestId('document-panel-navigation-badge-draft'),
+      screen.getByTestId('document-releases-menu-button'),
+      screen.getByTestId('document-panel-navigation-badge-agent'),
+    ])
   })
 
-  it('renders only the badges with the document group inventory alone', async () => {
+  it('lists releases in the releases menu instead of a badge per release', async () => {
+    await renderNavigation({variants: true})
+
+    expect(screen.queryByTestId('document-panel-navigation-badge-release-rA')).toBeNull()
+  })
+
+  it('renders the badges and the releases menu without the variants menu with the document group inventory alone', async () => {
     await renderNavigation({variants: false})
 
     expect(screen.queryByTestId('document-variants-menu-button')).toBeNull()
     expect(screen.queryByTestId('document-variants-menu-divider')).toBeNull()
     expect(screen.getByTestId('document-panel-navigation-badge-draft')).toBeInTheDocument()
-    expect(screen.getByTestId('document-panel-navigation-badge-release-rA')).toBeInTheDocument()
+    expect(screen.getByTestId('document-releases-menu-button')).toBeInTheDocument()
   })
 
   it('marks the bundles the selected variant has no version in as inactive', async () => {
@@ -120,9 +154,6 @@ describe('DocumentPanelNavigation', () => {
 
   it('changes the global perspective when a badge is clicked, inactive ones included', async () => {
     await renderNavigation({variants: true})
-
-    await userEvent.click(screen.getByTestId('document-panel-navigation-badge-release-rA'))
-    expect(navigate).toHaveBeenLastCalledWith(releaseA)
 
     await userEvent.click(screen.getByTestId('document-panel-navigation-badge-draft'))
     expect(navigate).toHaveBeenLastCalledWith('drafts')
