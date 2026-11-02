@@ -82,6 +82,25 @@ describe('verifyFailures', () => {
     ])
   })
 
+  test.each([408, 429, 503])(
+    'turns a transient %i on a replayed submission into an error verdict',
+    async (status) => {
+      const server = createFakeContentLakeServer((call) =>
+        call.path.includes('/data/actions/')
+          ? new Response('upstream unavailable', {status})
+          : undefined,
+      )
+      const [verdict] = await verifyFailures(
+        {...report, failures: [report.failures[0]]},
+        httpFor(server),
+        'run1',
+      )
+      expect(verdict.verdict).toBe('error')
+      expect(verdict.fakeSignature).toBeUndefined()
+      expect(verdict.summary).toContain(`HTTP ${status}`)
+    },
+  )
+
   test('turns one failure into an error verdict without stopping the rest', async () => {
     const server = createFakeContentLakeServer((call) => {
       const seeding = (call.body as {mutations?: Array<{createOrReplace?: {_id: string}}>})
