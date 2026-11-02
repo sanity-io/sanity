@@ -129,6 +129,10 @@ export function validation(
   idPair: IdPair,
   typeName: string,
   validationTarget: DocumentVariantType,
+  /**
+   * @deprecated Ignored. Whether references must be published is decided by the document.
+   */
+  _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
 ): Observable<ValidationStatus> {
   const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget)

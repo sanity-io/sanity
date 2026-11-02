@@ -306,7 +306,7 @@ export function createDocumentStore({
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, options?.scheduling)
+        return validation(ctx, idPair, type, validationTarget, undefined, options?.scheduling)
       },
     },
   }

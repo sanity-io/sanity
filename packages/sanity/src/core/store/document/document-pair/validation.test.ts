@@ -684,7 +684,7 @@ describe('validation', () => {
       expect(observableUserA).not.toBe(observableUserB)
     })
 
-    it('returns the SAME observable for the same currentUser id', () => {
+    it('returns the SAME observable for the same currentUser id regardless of the deprecated reference flag', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
       mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
@@ -701,9 +701,9 @@ describe('validation', () => {
       }
 
       // @ts-expect-error -- pre-existing, fix later
-      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft', true)
       // @ts-expect-error -- pre-existing, fix later
-      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft', false)
 
       expect(firstObservable).toBe(secondObservable)
     })
