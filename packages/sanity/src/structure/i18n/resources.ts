@@ -508,10 +508,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
 
+  /** Placeholder of the filter input in the variants and releases menus of the document header */
+  'document-panel-navigation.filter-placeholder': 'Find',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
-  /** Placeholder of the filter input in the variants menu of the document header */
-  'document-panel-navigation.variants.filter-placeholder': 'Find',
   /** Section header listing the variants the document has versions in */
   'document-panel-navigation.variants.section.has-variants_one': 'Has {{count}} variant',
   /** Section header listing the variants the document has versions in */
@@ -519,6 +519,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
   'document-panel-navigation.variants.section.no-variants-tooltip':
     "This document isn't in any variant yet. Pick one below to create it.",
+  /** Section header listing the variants the document has no version in */
+  'document-panel-navigation.variants.section.other': 'Other variants',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
   'document-panel-navigation.variants.versions-tooltip_one': '{{count}} version: {{bundles}}',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */

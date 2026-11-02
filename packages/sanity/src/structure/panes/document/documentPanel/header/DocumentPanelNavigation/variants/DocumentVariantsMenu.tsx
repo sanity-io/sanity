@@ -1,17 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Label, TextInput} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
-import {
-  type ChangeEvent,
-  type ReactNode,
-  type RefAttributes,
-  type SVGProps,
-  useCallback,
-  useId,
-  useMemo,
-  useState,
-} from 'react'
+import {Text} from '@sanity/ui'
+import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_VARIANT_TYPE_KEY,
   filterVariantsForSearch,
@@ -30,21 +19,16 @@ import {
   useSetVariant,
   useTranslation,
 } from 'sanity'
-import {Box, Flex, Text} from 'ui5'
+import {Flex} from 'ui5'
 
-import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../../../i18n'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DropdownButton} from '../DropdownButton'
+import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
 import {RhombusIcon, RhombusOutlineIcon} from '../RhombusIcons'
-import {
-  documentVariantsMenu,
-  menuDivider,
-  variantIcon,
-  versionCount,
-} from './DocumentVariantsMenu.css'
+import {menuDivider, variantIcon, versionCount} from './DocumentVariantsMenu.css'
 import {getDocumentVariantBundles} from './getDocumentVariantBundles'
 import {useSelectedVariant} from './useSelectedVariant'
 
@@ -67,7 +51,7 @@ function VersionCount(props: {bundleTitles: string[]}) {
   return (
     <Tooltip
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div">
           {t('document-panel-navigation.variants.versions-tooltip', {
             count: bundleTitles.length,
             bundles: listFormat.format(bundleTitles),
@@ -77,48 +61,15 @@ function VersionCount(props: {bundleTitles: string[]}) {
       placement="top"
       portal
     >
-      <span className={versionCount} data-testid="variant-version-count">
-        {bundleTitles.length}
-        <DocumentsIcon />
-      </span>
-    </Tooltip>
-  )
-}
-
-function MenuSection(props: {
-  children?: ReactNode
-  label: string
-  testId: string
-  /** Explains the section, behind an info icon beside the label. */
-  tooltip?: string
-}) {
-  const {children, label, testId, tooltip} = props
-  return (
-    <Flex borderTop data-testid={testId} flexDirection="column" gap={1} paddingTop={1}>
-      <Flex alignItems="center" gap={2} paddingX={3} paddingTop={3} paddingBottom={2}>
-        <Label muted size={1} style={{textTransform: 'uppercase'}}>
-          {label}
-        </Label>
-        {tooltip ? (
-          <Tooltip
-            content={
-              <Text size={1} as="div" trim={true}>
-                {tooltip}
-              </Text>
-            }
-            placement="top"
-            portal
-          >
-            <span aria-label={tooltip} data-testid={`${testId}-tooltip`} role="img">
-              <Text muted size={1}>
-                <InfoOutlineIcon />
-              </Text>
-            </span>
-          </Tooltip>
-        ) : null}
+      <Flex alignItems="center" gap={1}>
+        <Text muted size={1} className={versionCount} data-testid="variant-version-count">
+          {bundleTitles.length}
+        </Text>
+        <Text muted size={0}>
+          <DocumentsIcon />
+        </Text>
       </Flex>
-      {children}
-    </Flex>
+    </Tooltip>
   )
 }
 
@@ -156,7 +107,6 @@ function VariantMenuItem(props: {
 export function DocumentVariantsMenu() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tStudio} = useTranslation()
-  const menuId = useId()
   const {documentId} = useDocumentPane()
   const {data: variants} = useAllVariants()
   const {versions} = useDocumentVersions({documentId})
@@ -236,20 +186,10 @@ export function DocumentVariantsMenu() {
     [setVariant],
   )
 
-  const handleFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setFilterQuery(event.currentTarget.value)
-  }, [])
-
-  const handleMenuClose = useCallback(() => {
-    setFilterQuery('')
-  }, [])
-
   if (typeVariants.length === 0) {
     return null
   }
 
-  const isFiltering = filterQuery.trim().length > 0
-  const hasMatches = filteredVariants.length > 0
   const isDefaultSelected = !selectedVariant
   const renderVariantItem = (variant: SystemVariant) => {
     const bundles = variantBundles.get(variant._id)
@@ -266,7 +206,8 @@ export function DocumentVariantsMenu() {
 
   return (
     <>
-      <MenuButton
+      <DocumentNavigationMenu
+        testId="document-variants-menu"
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
@@ -280,90 +221,45 @@ export function DocumentVariantsMenu() {
             }
           />
         }
-        id={menuId}
-        onClose={handleMenuClose}
-        menu={
-          <Menu className={documentVariantsMenu} data-testid="document-variants-menu" padding={1}>
-            <Box flexShrink={0} padding={1}>
-              <TextInput
-                fontSize={1}
-                onChange={handleFilterChange}
-                placeholder={t('document-panel-navigation.variants.filter-placeholder')}
-                radius={2}
-                value={filterQuery}
-              />
-            </Box>
-            {hasMatches ? (
-              <Flex
-                flexDirection="column"
-                flexGrow={1}
-                flexShrink={1}
-                minHeight="0"
-                overflowY="auto"
-                paddingX={1}
-                paddingBottom={1}
-              >
-                {/* Menu items are flex children with min-height: 0, so they collapse when they sit
-              directly in this scroller. Keep them in a column that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1}>
-                  {showDefault ? (
-                    <MenuItem
-                      data-testid="document-variant-default"
-                      icon={defaultBundleTitles.length > 0 ? FilledVariantIcon : OutlineVariantIcon}
-                      iconRight={
-                        defaultBundleTitles.length > 0 ? (
-                          <VersionCount bundleTitles={defaultBundleTitles} />
-                        ) : undefined
-                      }
-                      onClick={handleSelectDefault}
-                      pressed={isDefaultSelected}
-                      selected={isDefaultSelected}
-                      text={defaultLabel}
-                    />
-                  ) : null}
-                  {!isFiltering || documentVariants.length > 0 ? (
-                    <MenuSection
-                      label={t('document-panel-navigation.variants.section.has-variants', {
-                        count: documentVariantCount,
-                      })}
-                      testId="document-variants-menu-section-document"
-                      tooltip={
-                        documentVariantCount === 0
-                          ? t('document-panel-navigation.variants.section.no-variants-tooltip')
-                          : undefined
-                      }
-                    >
-                      {documentVariants.map(renderVariantItem)}
-                    </MenuSection>
-                  ) : null}
-                  {otherVariants.length > 0 ? (
-                    <MenuSection
-                      label={tStudio('navbar.variant.other')}
-                      testId="document-variants-menu-section-other"
-                    >
-                      {otherVariants.map(renderVariantItem)}
-                    </MenuSection>
-                  ) : null}
-                </Flex>
-              </Flex>
-            ) : (
-              <Box data-testid="document-variants-menu-no-matches" paddingX={4} paddingBottom={3}>
-                <Text muted size={1}>
-                  {tStudio('navbar.filter.no-matches', {filter: filterQuery.trim()})}
-                </Text>
-              </Box>
-            )}
-          </Menu>
+        filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+        filterQuery={filterQuery}
+        onFilterChange={setFilterQuery}
+        leadingItems={
+          showDefault ? (
+            <MenuItem
+              data-testid="document-variant-default"
+              icon={defaultBundleTitles.length > 0 ? FilledVariantIcon : OutlineVariantIcon}
+              iconRight={
+                defaultBundleTitles.length > 0 ? (
+                  <VersionCount bundleTitles={defaultBundleTitles} />
+                ) : undefined
+              }
+              onClick={handleSelectDefault}
+              pressed={isDefaultSelected}
+              selected={isDefaultSelected}
+              text={defaultLabel}
+            />
+          ) : null
         }
-        popover={{
-          constrainSize: true,
-          fallbackPlacements: ['bottom-end'],
-          overflow: 'hidden',
-          placement: 'bottom-start',
-          portal: true,
-          tone: 'default',
-          zOffset: 3000,
-        }}
+        sections={[
+          {
+            key: 'document',
+            label: t('document-panel-navigation.variants.section.has-variants', {
+              count: documentVariantCount,
+            }),
+            items: documentVariants.map(renderVariantItem),
+            alwaysShow: true,
+            tooltip:
+              documentVariantCount === 0
+                ? t('document-panel-navigation.variants.section.no-variants-tooltip')
+                : undefined,
+          },
+          {
+            key: 'other',
+            label: t('document-panel-navigation.variants.section.other'),
+            items: otherVariants.map(renderVariantItem),
+          },
+        ]}
       />
       <div aria-hidden className={menuDivider} data-testid="document-variants-menu-divider" />
     </>
