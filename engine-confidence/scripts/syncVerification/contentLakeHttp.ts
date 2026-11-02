@@ -95,7 +95,10 @@ export function createContentLakeHttp(target: ContentLakeTarget): ContentLakeHtt
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'TimeoutError') {
-        throw new Error(`${method} ${new URL(url).pathname} timed out after ${requestTimeoutMs}ms`, { cause: error })
+        throw new Error(
+          `${method} ${new URL(url).pathname} timed out after ${requestTimeoutMs}ms`,
+          {cause: error},
+        )
       }
       throw error
     }

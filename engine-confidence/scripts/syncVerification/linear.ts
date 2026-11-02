@@ -92,7 +92,7 @@ export function createLinearIssues(
         })
         const matches = issuesWithWholeLine(data.issues.nodes, line)
         const {hasNextPage, endCursor} = data.issues.pageInfo
-        if (matches.length > 0 || ! hasNextPage || endCursor === null) return matches
+        if (matches.length > 0 || !hasNextPage || endCursor === null) return matches
         if (page + 1 >= MAX_SEARCH_PAGES) {
           throw new Error(`Linear search for "${line}" found no match in ${MAX_SEARCH_PAGES} pages`)
         }
