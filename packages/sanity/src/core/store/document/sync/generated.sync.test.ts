@@ -308,7 +308,7 @@ function describeFailure(failure: ReportedFailure): string {
   )
   const replayNote =
     seam === 'operations'
-      ? `\n\nReplay it with runSyncTest(syncTest, {schema, typeName: 'article'}).`
+      ? `\n\nReplay it with runSyncTest(syncTest, {schema: articleSchema, typeName: 'article'}), importing articleSchema from test/sync/generator.`
       : ''
   return `Rule broken: ${failure.signature}\n\n${failure.message}\n\n${definition}${replayNote}`
 }
