@@ -59,7 +59,7 @@ export function requestOperations(request: SubmissionRequest): string {
       .map((operation) => operation.split(':')[0]),
   )
   const named = unique.filter((operation) => !qualifiedKinds.has(operation))
-  return named.toSorted().join(',') || 'none'
+  return named.toSorted().join('+') || 'none'
 }
 
 /** Outside writes and live edits both go to the mutate endpoint, so one gap gets one kind. */
@@ -93,7 +93,7 @@ function documentGap(comparison: SubmissionComparison): string {
       comparison.realDocuments[documentId] ?? null,
     ),
   )
-  return `document:${[...new Set(fields)].toSorted().join(',')}`
+  return `document:${[...new Set(fields)].toSorted().join('+')}`
 }
 
 function gapOf(comparison: SubmissionComparison): string {
