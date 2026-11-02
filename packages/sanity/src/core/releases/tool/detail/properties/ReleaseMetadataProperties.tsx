@@ -243,6 +243,7 @@ export interface ReleaseMetadataPropertiesProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   loading: boolean
+  documentsError?: boolean
   children: (props: {rows: MetadataPropertyRow[]; footer?: ReactNode}) => ReactNode
 }
 
@@ -251,6 +252,7 @@ export function ReleaseMetadataProperties({
   release,
   documents,
   loading,
+  documentsError = false,
   children,
 }: ReleaseMetadataPropertiesProps): React.JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -264,8 +266,9 @@ export function ReleaseMetadataProperties({
 
   const properties = useMemo(() => {
     if (awaitingDocuments) return []
+    if (documentsError) return defaultProperties
     return resolveProperties ? resolveProperties(args, defaultProperties) : defaultProperties
-  }, [args, awaitingDocuments, defaultProperties, resolveProperties])
+  }, [args, awaitingDocuments, defaultProperties, documentsError, resolveProperties])
 
   const keyedProperties = useMemo(() => keyProperties(properties), [properties])
 

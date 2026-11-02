@@ -352,6 +352,7 @@ export function ReleaseDashboardDetails({
             release={release}
             documents={documents}
             loading={loading}
+            documentsError={documentsError}
           >
             {({rows: metadataRows, footer}) => (
               <Box style={STICKY_PROPERTIES_STYLE}>

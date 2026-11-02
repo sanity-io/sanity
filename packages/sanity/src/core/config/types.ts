@@ -1490,7 +1490,9 @@ export type DefaultPluginsWorkspaceOptions = {
     /**
      * Rows shown after the built-in rows in the properties of the release detail page. `prev`
      * holds one row per metadata field. Each entry is called as a hook and returns a
-     * description of its row, or `null` to hide it.
+     * description of its row, or `null` to hide it. Define rows at module scope: a row created
+     * inside a resolver gets a new identity on every documents update and remounts, losing its
+     * hook state.
      *
      * @beta
      */

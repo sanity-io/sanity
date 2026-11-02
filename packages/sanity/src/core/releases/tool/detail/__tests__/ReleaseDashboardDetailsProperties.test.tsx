@@ -66,6 +66,7 @@ async function renderProperties({
   plugins,
   metadata = {},
   loading = false,
+  documentsError = false,
   documents = [documentsInRelease],
 }: {
   fields?: FieldDefinition[]
@@ -73,6 +74,7 @@ async function renderProperties({
   plugins?: SingleWorkspace['plugins']
   metadata?: Record<string, unknown>
   loading?: boolean
+  documentsError?: boolean
   documents?: DocumentInRelease[]
 }) {
   const config: Partial<SingleWorkspace> = {
@@ -91,6 +93,7 @@ async function renderProperties({
       documents={documents}
       events={[]}
       loading={isLoading}
+      documentsError={documentsError}
     />
   )
 
@@ -393,21 +396,41 @@ describe('ReleaseDashboardDetails release properties', () => {
         label: 'Count',
         value: String(documents.length),
       }))
+      const resolver = vi.fn<ReleasePropertiesResolver>((prev) => [...prev, Row])
 
       const {panel, finishLoading} = await renderProperties({
         fields: [legalReview],
         metadata: {legalReview: 'reviewed'},
         loading: true,
-        properties: [Row],
+        properties: resolver,
       })
 
       expect(within(panel()).getByText('Legal review')).toBeInTheDocument()
       expect(within(panel()).queryByText('Reviewed')).toBeNull()
+      expect(resolver).not.toHaveBeenCalled()
       expect(Row).not.toHaveBeenCalled()
 
       await finishLoading()
 
+      expect(resolver).toHaveBeenCalled()
       expect(panel()).toHaveTextContent('Legal reviewReviewedCount1')
+    })
+
+    it('skips the resolver and renders the default rows when the documents failed to load', async () => {
+      const Row: ReleasePropertyComponent = () => ({label: 'Count', value: '0'})
+      const resolver = vi.fn<ReleasePropertiesResolver>((prev) => [...prev, Row])
+
+      const {panel} = await renderProperties({
+        fields: [legalReview],
+        metadata: {legalReview: 'reviewed'},
+        documents: [],
+        documentsError: true,
+        properties: resolver,
+      })
+
+      expect(resolver).not.toHaveBeenCalled()
+      expect(panel()).toHaveTextContent('Legal reviewReviewed')
+      expect(within(panel()).queryByText('Count')).toBeNull()
     })
   })
 
