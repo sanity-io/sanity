@@ -841,4 +841,30 @@ describe('createClaudeExplainer', () => {
       }),
     )
   })
+
+  test.each(['max_tokens', 'refusal'])(
+    'fails with a clear error when Claude stops with %s',
+    async (reason) => {
+      const create = vi.fn(async () => ({
+        stop_reason: reason,
+        content: [{type: 'text', text: '{"whatHappens": "cut off'}],
+      }))
+      const explain = createClaudeExplainer({
+        apiKey: 'unused',
+        model: 'claude-sonnet-5-5',
+        client: {messages: {create}} as never,
+      })
+
+      await expect(
+        explain({
+          title: 't',
+          signature: DMP_SIGNATURE,
+          message: 'm',
+          definitionLiteral: 'd',
+          seam: 'pair',
+          realContentLake: 'r',
+        }),
+      ).rejects.toThrow(reason === 'refusal' ? /declined to explain/ : /stopped with max_tokens/)
+    },
+  )
 })
