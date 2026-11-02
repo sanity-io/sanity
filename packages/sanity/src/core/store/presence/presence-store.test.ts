@@ -1,6 +1,6 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError, WebSocketError} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {BehaviorSubject, of, Subject} from 'rxjs'
+import {BehaviorSubject, defer, merge, mergeMap, of, Subject, take, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ConnectionStatus} from '../connection-status/connection-status-store'
@@ -22,20 +22,70 @@ interface Harness {
   requests: BifurRequest[]
   connectionStatus$: BehaviorSubject<ConnectionStatus>
   getUsers: ReturnType<typeof vi.fn>
+  /** Closes the socket: open subscriptions and new requests fail until `reconnect` */
+  dropConnection: () => void
+  reconnect: () => void
+  /** Ends the presence subscription with a closed-socket error, without changing the status */
+  closeSubscription: (code?: number) => void
+  /** How many times presence subscribed to the `presence` channel */
+  presenceSubscriptions: () => number
 }
 
-function createHarness(): Harness {
+function createHarness({
+  rejectedRequests = [],
+  rejectListen = false,
+}: {
+  /** Requests the server answers with a JSON-RPC error */
+  rejectedRequests?: string[]
+  rejectListen?: boolean
+} = {}): Harness {
   const incoming$ = new Subject<unknown>()
   const requests: BifurRequest[] = []
+  const rejection = () => new RpcError('Unauthorized', ERROR_CODES.UNAUTHORIZED)
+  const closed = (code = 1000) =>
+    new WebSocketError('WebSocket connection closed', 'CONNECTION_CLOSED', code, 'closed')
+  const drop$ = new Subject<number | undefined>()
+  let connected = true
+  let presenceSubscriptions = 0
+  const listen = vi.fn(() =>
+    defer(() => {
+      presenceSubscriptions++
+      return rejectListen
+        ? throwError(rejection)
+        : merge(
+            incoming$,
+            drop$.pipe(
+              take(1),
+              mergeMap((code) => throwError(() => closed(code))),
+            ),
+          )
+    }),
+  )
   const bifur = {
-    listen: vi.fn(() => incoming$),
+    listen,
     request: vi.fn((name: string, params: unknown) => {
       requests.push({name, params})
-      return of(undefined)
+      if (!connected) return throwError(closed)
+      return rejectedRequests.includes(name) ? throwError(rejection) : of(undefined)
     }),
   } as unknown as BifurClient
 
   const connectionStatus$ = new BehaviorSubject<ConnectionStatus>(CONNECTED)
+  const dropConnection = () => {
+    connected = false
+    drop$.next(undefined)
+    connectionStatus$.next({
+      type: 'error',
+      error: closed(),
+      attemptNo: 1,
+      isOffline: false,
+      retryAt: new Date(),
+    })
+  }
+  const reconnect = () => {
+    connected = true
+    connectionStatus$.next(CONNECTED)
+  }
 
   // Users are resolved by id; the "unknown" user cannot be fetched (e.g. insufficient privileges)
   const getUsers = vi.fn(async (ids: string[]): Promise<User[]> =>
@@ -48,7 +98,17 @@ function createHarness(): Harness {
     userStore: {getUsers} as unknown as UserStore,
   })
 
-  return {store, incoming$, requests, connectionStatus$, getUsers}
+  return {
+    store,
+    incoming$,
+    requests,
+    connectionStatus$,
+    getUsers,
+    dropConnection,
+    reconnect,
+    closeSubscription: (code) => drop$.next(code),
+    presenceSubscriptions: () => presenceSubscriptions,
+  }
 }
 
 function location(documentId: string, overrides: Partial<PresenceLocation> = {}): PresenceLocation {
@@ -463,6 +523,52 @@ describe('presence-store', () => {
     })
   })
 
+  describe('requests the server rejects', () => {
+    it('keeps presence running when the server rejects a roll call or an announcement', async () => {
+      const {store, incoming$} = createHarness({
+        rejectedRequests: ['presence_rollcall', 'presence_announce'],
+      })
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      expect(warn).toHaveBeenCalledWith(
+        'Presence: the server returned an error: %s',
+        'Unauthorized',
+      )
+      subscription.unsubscribe()
+      warn.mockRestore()
+    })
+
+    it('does not error presence, or retry, when the server rejects the presence subscription', async () => {
+      const {store, presenceSubscriptions} = createHarness({rejectListen: true})
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const errors: unknown[] = []
+      const subscription = store.globalPresence$.subscribe({error: (err) => errors.push(err)})
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      const subscribed = presenceSubscriptions()
+      await vi.advanceTimersByTimeAsync(300_000)
+
+      expect(errors).toEqual([])
+      expect(presenceSubscriptions()).toBe(subscribed)
+      expect(warn).toHaveBeenCalledWith(
+        'Presence: the server returned an error: %s',
+        'Unauthorized',
+      )
+      subscription.unsubscribe()
+      warn.mockRestore()
+    })
+  })
+
   describe('connection status', () => {
     it('only listens to presence while connected', async () => {
       const {store, incoming$, connectionStatus$} = createHarness()
@@ -477,6 +583,64 @@ describe('presence-store', () => {
       incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
       await settle()
 
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+
+    it('listens again when the presence subscription closes while the connection stays up', async () => {
+      // bifur-client v3 takes the status through `error` on the same close, but presence doesn't
+      // depend on that
+      const {store, incoming$, closeSubscription} = createHarness()
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await settle()
+
+      closeSubscription()
+      await vi.advanceTimersByTimeAsync(1000)
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+
+    it('does not listen again when the socket is closed for a rejected token', async () => {
+      const {store, closeSubscription, presenceSubscriptions} = createHarness()
+      const errors: unknown[] = []
+      const subscription = store.globalPresence$.subscribe({error: (err) => errors.push(err)})
+      await settle()
+      const subscribed = presenceSubscriptions()
+
+      closeSubscription(4001)
+      await vi.advanceTimersByTimeAsync(300_000)
+      expect(errors).toEqual([])
+      expect(presenceSubscriptions()).toBe(subscribed)
+      subscription.unsubscribe()
+    })
+
+    it('keeps presence running when the connection closes, and resumes it on reconnect', async () => {
+      const {store, incoming$, dropConnection, reconnect} = createHarness()
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await settle()
+
+      dropConnection()
+      store.setLocation([location('doc-1')])
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      expect(errors).toEqual([])
+
+      reconnect()
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
       expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
     })
