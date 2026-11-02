@@ -53,6 +53,7 @@ export interface SubmissionRecord {
   clientId: string
   transactionId: string
   request?: SubmissionRequest
+  /** What Content Lake applied, or the request's own patches when it could not translate them. */
   mutations: MutationPayload[]
   submittedAt: number
   outcome: 'pending' | 'accepted' | 'rejected'
@@ -125,12 +126,29 @@ function toClientError(error: unknown): ClientError {
   return httpError(400, mutationError(String(error)))
 }
 
-// What the request would do if it arrived now; the commit itself is translated again when it is applied.
-function provisionalMutations(translate: () => MutationPayload[]): MutationPayload[] {
+function requestedMutations(request: SubmissionRequest): MutationPayload[] {
+  if (request.kind === 'mutations') return request.mutations
+  return (request.actions as ContentLakeAction[]).flatMap((action): MutationPayload[] => {
+    switch (action.actionType) {
+      case 'sanity.action.document.edit':
+        return [{patch: {id: action.draftId, ...action.patch}} as MutationPayload]
+      case 'sanity.action.document.create':
+        return [{createOrReplace: action.attributes} as MutationPayload]
+      default:
+        return []
+    }
+  })
+}
+
+// What the request would do if it arrived now, or its own patches when it cannot be translated; the commit itself is translated again when it is applied.
+function provisionalMutations(
+  translate: () => MutationPayload[],
+  request: SubmissionRequest,
+): MutationPayload[] {
   try {
     return translate()
   } catch {
-    return []
+    return requestedMutations(request)
   }
 }
 
@@ -271,7 +289,7 @@ export class FakeContentLake {
         clientId,
         transactionId,
         request: structuredClone(request),
-        mutations: provisionalMutations(toMutations),
+        mutations: provisionalMutations(toMutations, request),
         submittedAt: this.tick(),
         outcome: 'pending',
       }
