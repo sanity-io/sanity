@@ -7,7 +7,12 @@ function isContainer(value: unknown): value is object {
 }
 
 function quote(text: string): string {
-  const escaped = text.replaceAll('\\', '\\\\').replaceAll("'", "\\'").replaceAll('\n', '\\n')
+  const escaped = JSON.stringify(text)
+    .slice(1, -1)
+    .replaceAll('\\"', '"')
+    .replaceAll("'", "\\'")
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029')
   return `'${escaped}'`
 }
 
