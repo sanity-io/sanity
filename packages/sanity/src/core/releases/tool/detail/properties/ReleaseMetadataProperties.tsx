@@ -244,7 +244,11 @@ export interface ReleaseMetadataPropertiesProps {
   documents: DocumentInRelease[]
   loading: boolean
   documentsError?: boolean
-  children: (props: {rows: MetadataPropertyRow[]; footer?: ReactNode}) => ReactNode
+  children: (props: {
+    rows: MetadataPropertyRow[]
+    hiddenRows: MetadataPropertyRow[]
+    footer?: ReactNode
+  }) => ReactNode
 }
 
 /** Each row runs in its own error-bounded host and reports from a layout effect, so rows paint with the page. */
@@ -314,7 +318,9 @@ export function ReleaseMetadataProperties({
 
   const collapsible = resolvedRows.length >= COLLAPSE_THRESHOLD
   const metadataRows = awaitingDocuments ? skeletonRows : resolvedRows
-  const rows = collapsible && collapsed ? [] : metadataRows
+  const hidingRows = collapsible && collapsed
+  const rows = hidingRows ? [] : metadataRows
+  const hiddenRows = hidingRows ? metadataRows : []
 
   const footer = collapsible ? (
     <Button
@@ -341,7 +347,7 @@ export function ReleaseMetadataProperties({
           onState={handleState}
         />
       ))}
-      {children({rows, footer})}
+      {children({rows, hiddenRows, footer})}
     </>
   )
 }

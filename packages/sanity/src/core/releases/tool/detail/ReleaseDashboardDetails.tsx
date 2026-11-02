@@ -354,12 +354,12 @@ export function ReleaseDashboardDetails({
             loading={loading}
             documentsError={documentsError}
           >
-            {({rows: metadataRows, footer}) => (
+            {({rows: metadataRows, hiddenRows, footer}) => (
               <Box style={STICKY_PROPERTIES_STYLE}>
                 <DetailPropertiesPanel
                   testId="release-detail-metadata"
                   footer={footer}
-                  sections={[{rows: [...builtInRows, ...metadataRows]}]}
+                  sections={[{rows: [...builtInRows, ...metadataRows], hiddenRows}]}
                 />
               </Box>
             )}

@@ -4,7 +4,10 @@ import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {type ReleasePropertyComponent} from '../../../../config/releases/properties'
+import {type PluginOptions} from '../../../../config/types'
 import {studioDefaultLocaleResources} from '../../../../i18n/bundles/studio'
 import {LocaleProvider} from '../../../../i18n/components/LocaleProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
@@ -18,12 +21,33 @@ function TallDetail() {
   return <div data-testid="tall-detail" style={{height: DETAIL_HEIGHT}} />
 }
 
-function ScrollingDetailHarness({children}: {children: ReactNode}) {
+const TALL_DETAIL_PLUGINS: PluginOptions[] = [{name: 'tall-detail', releases: {detail: TallDetail}}]
+
+const WideLabelProperty: ReleasePropertyComponent = () => ({
+  label: 'A property label wider than every built-in one',
+  value: 'Value',
+})
+const ShortProperty: ReleasePropertyComponent = () => ({label: 'Short', value: 'Value'})
+
+const COLLAPSIBLE_PROPERTIES_PLUGINS: PluginOptions[] = [
+  {
+    name: 'collapsible-properties',
+    releases: {properties: [WideLabelProperty, ShortProperty, ShortProperty]},
+  },
+]
+
+function ScrollingDetailHarness({
+  children,
+  plugins = TALL_DETAIL_PLUGINS,
+}: {
+  children: ReactNode
+  plugins?: PluginOptions[]
+}) {
   return (
     <TestWrapper
       betaFeatures={{variants: {enabled: true}}}
       i18nBundles={[studioDefaultLocaleResources, releasesUsEnglishLocaleBundle]}
-      plugins={[{name: 'tall-detail', releases: {detail: TallDetail}}]}
+      plugins={plugins}
       schemaTypes={[]}
     >
       <LocaleProvider>
@@ -40,6 +64,15 @@ function offsetFromScrollerTop(testId: string): {top: number; bottom: number} {
   const scroller = page.getByTestId('detail-scroller').element().getBoundingClientRect()
   const element = page.getByTestId(testId).element().getBoundingClientRect()
   return {top: element.top - scroller.top, bottom: element.bottom - scroller.top}
+}
+
+function propertiesLayout(): {panelWidth: number; valueColumnLeft: number} {
+  const panel = page.getByTestId('release-detail-metadata')
+  const createdValue = panel.getByText('Created', {exact: true}).element().nextElementSibling
+  return {
+    panelWidth: panel.element().getBoundingClientRect().width,
+    valueColumnLeft: createdValue?.getBoundingClientRect().left ?? Number.NaN,
+  }
 }
 
 function scrollTo(top: number) {
@@ -66,5 +99,24 @@ describe('release properties', () => {
     scrollTo(DETAIL_HEIGHT + SCROLLER_HEIGHT / 2)
     await expect.poll(() => offsetFromScrollerTop('release-detail-metadata').bottom).toBeLessThan(0)
     expect(offsetFromScrollerTop('document-table').top).toBeLessThan(SCROLLER_HEIGHT)
+  })
+
+  test('keep their width and columns when the metadata rows collapse', async () => {
+    void render(
+      <ScrollingDetailHarness plugins={COLLAPSIBLE_PROPERTIES_PLUGINS}>
+        <ReleaseDashboardDetails documents={[]} events={[]} release={activeASAPRelease} />
+      </ScrollingDetailHarness>,
+    )
+
+    const toggle = page.getByTestId('release-properties-toggle')
+    await expect.element(toggle).toHaveTextContent('Show fewer')
+    const expanded = propertiesLayout()
+
+    await toggle.click()
+
+    await expect.element(toggle).toHaveTextContent('Show 3 more')
+    expect(propertiesLayout()).toEqual(expanded)
+
+    await testHelpers().settleChromaticEndState()
   })
 })

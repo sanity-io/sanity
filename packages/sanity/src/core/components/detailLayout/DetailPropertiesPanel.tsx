@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {Fragment, type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Flex, Box, VStack} from 'ui5'
 
@@ -71,48 +71,92 @@ interface DetailPropertyRow {
   value: ReactNode
 }
 
+type OptionalDetailPropertyRow = DetailPropertyRow | null | false | undefined
+
 /** A group of rows, optionally headed by a section title. */
 export interface DetailPropertiesSection {
   title?: string
-  rows: (DetailPropertyRow | null | false | undefined)[]
+  rows: OptionalDetailPropertyRow[]
   /**
    * When set, a section with several rows splits into two side-by-side columns (each a self-aligned
    * `[glyph] [label] [value]` grid), collapsing back to one column when the panel is too narrow to
    * hold both. Off by default, so single-column sections (e.g. Releases) are unaffected.
    */
   multiColumn?: boolean
+  /** Laid out invisibly over the first row, so the columns keep the width they have when shown. */
+  hiddenRows?: OptionalDetailPropertyRow[]
+}
+
+function isPropertyRow(row: OptionalDetailPropertyRow): row is DetailPropertyRow {
+  return Boolean(row)
+}
+
+// Every cell is placed explicitly: hidden rows share the first row, which auto-placement would skip.
+function PropertyRowCells({
+  row,
+  gridRow,
+  hasGlyphs,
+  hidden = false,
+}: {
+  row: DetailPropertyRow
+  gridRow: number
+  hasGlyphs: boolean
+  hidden?: boolean
+}): React.JSX.Element {
+  const labelColumn = hasGlyphs ? 2 : 1
+  const cellStyle = (gridColumn: number): CSSProperties => ({
+    gridRow,
+    gridColumn,
+    visibility: hidden ? 'hidden' : undefined,
+  })
+
+  return (
+    <>
+      {hasGlyphs && <GlyphCell style={cellStyle(1)}>{row.icon}</GlyphCell>}
+      <Text muted size={1} as="div" trim={true} style={cellStyle(labelColumn)}>
+        {row.label}
+      </Text>
+      {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
+          text) rather than wrapping and breaking the single-line grid. */}
+      <Box style={cellStyle(labelColumn + 1)}>
+        {typeof row.value === 'string' ? (
+          <Text size={1} truncate={1} title={row.value} as="div" trim={true}>
+            {row.value}
+          </Text>
+        ) : (
+          row.value
+        )}
+      </Box>
+    </>
+  )
 }
 
 // One aligned [glyph] [label] [value] grid for a set of rows. Factored out so a multi-column
 // section can render two of them side by side while each keeps its own internal alignment.
 function PropertyRowsGrid({
   rows,
+  hiddenRows = [],
   hasGlyphs,
 }: {
   rows: DetailPropertyRow[]
+  hiddenRows?: DetailPropertyRow[]
   hasGlyphs: boolean
 }): React.JSX.Element {
   return (
     <SectionGrid $hasGlyphs={hasGlyphs}>
       {rows.map((row, rowIndex) => (
         // oxlint-disable-next-line no-array-index-key
-        <Fragment key={rowIndex}>
-          {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
-          <Text muted size={1} as="div" trim={true}>
-            {row.label}
-          </Text>
-          {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
-              text) rather than wrapping and breaking the single-line grid. */}
-          <Box>
-            {typeof row.value === 'string' ? (
-              <Text size={1} truncate={1} title={row.value} as="div" trim={true}>
-                {row.value}
-              </Text>
-            ) : (
-              row.value
-            )}
-          </Box>
-        </Fragment>
+        <PropertyRowCells key={rowIndex} row={row} gridRow={rowIndex + 1} hasGlyphs={hasGlyphs} />
+      ))}
+      {hiddenRows.map((row, rowIndex) => (
+        <PropertyRowCells
+          // oxlint-disable-next-line no-array-index-key
+          key={`hidden-${rowIndex}`}
+          row={row}
+          gridRow={1}
+          hasGlyphs={hasGlyphs}
+          hidden
+        />
       ))}
     </SectionGrid>
   )
@@ -150,10 +194,11 @@ export function DetailPropertiesPanel(props: {
     >
       <VStack gap={4}>
         {sections.map((section, sectionIndex) => {
-          const rows = section.rows.filter((row): row is DetailPropertyRow => Boolean(row))
+          const rows = section.rows.filter(isPropertyRow)
           if (rows.length === 0) return null
+          const hiddenRows = (section.hiddenRows ?? []).filter(isPropertyRow)
           // Only reserve the glyph column when a row in this section actually carries a glyph.
-          const hasGlyphs = rows.some((row) => Boolean(row.icon))
+          const hasGlyphs = [...rows, ...hiddenRows].some((row) => Boolean(row.icon))
           // A multi-column section splits its rows into two balanced columns that wrap back to one
           // when the panel is squeezed (flex-wrap, so no container-query fragility). The first
           // (left) column takes the ceiling half, so an odd count leans left.
@@ -178,11 +223,15 @@ export function DetailPropertiesPanel(props: {
               )}
               {splitIntoColumns ? (
                 <Flex gap={4} flexWrap="wrap">
-                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
+                  <PropertyRowsGrid
+                    hasGlyphs={hasGlyphs}
+                    rows={rows.slice(0, leftCount)}
+                    hiddenRows={hiddenRows}
+                  />
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
                 </Flex>
               ) : (
-                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows} />
+                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows} hiddenRows={hiddenRows} />
               )}
             </VStack>
           )

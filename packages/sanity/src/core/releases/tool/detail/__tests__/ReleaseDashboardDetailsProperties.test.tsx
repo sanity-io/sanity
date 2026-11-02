@@ -458,7 +458,7 @@ describe('ReleaseDashboardDetails release properties', () => {
 
       expect(toggle).toHaveTextContent('Show 3 more')
       expect(toggle).toHaveAttribute('aria-expanded', 'false')
-      expect(within(panel()).queryByText('One')).toBeNull()
+      expect(within(panel()).getByText('One')).not.toBeVisible()
       expect(within(panel()).getByText('Documents')).toBeInTheDocument()
       expect(within(panel()).getByText('Created')).toBeInTheDocument()
 
