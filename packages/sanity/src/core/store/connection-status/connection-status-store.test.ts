@@ -1,5 +1,6 @@
+import {RpcError, WebSocketError} from '@sanity/bifur-client'
 import {createClient} from '@sanity/client'
-import {BehaviorSubject, defer, of, ReplaySubject, Subject, Subscription} from 'rxjs'
+import {BehaviorSubject, type Observable, ReplaySubject, Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createBifurClient} from '../../config/createBifurClient'
@@ -71,9 +72,17 @@ class TestWebSocket extends EventTarget {
   }
 
   reply(method: string, result: unknown) {
+    this.receive({jsonrpc: '2.0', id: this.lastRequest(method).id, result})
+  }
+
+  replyError(method: string, code: number) {
+    this.receive({jsonrpc: '2.0', id: this.lastRequest(method).id, error: {code, message: 'Nope'}})
+  }
+
+  lastRequest(method: string) {
     const request = this.requests.findLast((entry) => entry.method === method)
     if (!request) throw new Error(`No ${method} request`)
-    this.receive({jsonrpc: '2.0', id: request.id, result})
+    return request
   }
 
   closeFromServer(code: number) {
@@ -98,7 +107,14 @@ function socketAt(index: number) {
  */
 const flushAuthorization = () => vi.advanceTimersByTimeAsync(0)
 
-describe('connection status authorization rejection', () => {
+const authorizations = (socket: TestWebSocket) =>
+  socket.requests
+    .filter((request) => request.method === 'authorization')
+    .map((request) => request.params)
+
+const bearer = (token: string) => ({authorization: `Bearer ${token}`, apiVersion: 'v1'})
+
+describe('connection status', () => {
   let subscriptions: Subscription
 
   beforeEach(() => {
@@ -116,101 +132,127 @@ describe('connection status authorization rejection', () => {
     vi.unstubAllGlobals()
   })
 
-  function connect(token$ = new BehaviorSubject<string | null>('rejected-token')) {
-    const options = createBifurClient(client, token$)
+  function connect(token$: Observable<string | null> = new BehaviorSubject('rejected-token')) {
+    const bifur = createBifurClient(client, token$)
+    const options = {bifur, token$}
     const store = createConnectionStatusStore(options)
     const statuses: ConnectionStatus[] = []
     subscriptions.add(store.connectionStatus$.subscribe((status) => statuses.push(status)))
-    return {bifur: options.bifur, store, token$, statuses}
+    return {bifur, store, statuses}
+  }
+
+  /** Opens the socket and lets bifur send its `authorization` request. */
+  async function openSocket(index: number) {
+    const socket = socketAt(index)
+    socket.open()
+    await flushAuthorization()
+    return socket
   }
 
   it('reports connecting while waiting for the initial token', async () => {
     const token$ = new ReplaySubject<string | null>(1)
-    const options = createBifurClient(client, token$)
-    const store = createConnectionStatusStore(options)
-    const statuses: ConnectionStatus[] = []
-    subscriptions.add(store.connectionStatus$.subscribe((status) => statuses.push(status)))
+    const {statuses} = connect(token$)
 
     expect(statuses).toEqual([{type: 'connecting'}])
     token$.next('initial-token')
     await flushAuthorization()
-    socketAt(0).open()
-    await flushAuthorization()
-    expect(socketAt(0).requests).toEqual([
-      expect.objectContaining({
-        method: 'authorization',
-        params: {authorization: 'Bearer initial-token', apiVersion: 'v1'},
-      }),
-    ])
+    const socket = await openSocket(0)
+    expect(authorizations(socket)).toEqual([bearer('initial-token')])
+    socket.reply('authorization', {})
+    expect(statuses.at(-1)?.type).toBe('connected')
   })
 
-  it('authorizes with tokens from a non-replaying stream, including after rejection', async () => {
-    const token$ = new Subject<string | null>()
-    const options = createBifurClient(client, token$)
-    const store = createConnectionStatusStore(options)
-    subscriptions.add(store.connectionStatus$.subscribe())
+  it('stops retrying after the server closes the socket on a rejected token', async () => {
+    const {statuses} = connect()
+    // The server welcomes every socket before it checks the token. The welcome must not count as
+    // a connection, or the rejection would look like a new failure every time.
+    const socket = await openSocket(0)
+    expect(authorizations(socket)).toEqual([bearer('rejected-token')])
+    socket.closeFromServer(4001)
 
-    token$.next('initial-token')
-    await flushAuthorization()
-    socketAt(0).open()
-    await flushAuthorization()
-    expect(socketAt(0).requests).toEqual([
-      expect.objectContaining({
-        method: 'authorization',
-        params: {authorization: 'Bearer initial-token', apiVersion: 'v1'},
-      }),
-    ])
-    socketAt(0).closeFromServer(4001)
-
-    token$.next('new-token')
-    await flushAuthorization()
-    socketAt(1).open()
-    await flushAuthorization()
-    expect(socketAt(1).requests).toEqual([
-      expect.objectContaining({
-        method: 'authorization',
-        params: {authorization: 'Bearer new-token', apiVersion: 'v1'},
-      }),
-    ])
-    socketAt(1).reply('authorization', {})
-  })
-
-  it('subscribes to a cold token producer once for status and authorization', async () => {
-    let tokenSubscriptions = 0
-    const token$ = defer(() => {
-      tokenSubscriptions++
-      return of('initial-token')
-    })
-    const options = createBifurClient(client, token$)
-    const store = createConnectionStatusStore(options)
-    subscriptions.add(store.connectionStatus$.subscribe())
-    socketAt(0).open()
-    await flushAuthorization()
-
-    expect(tokenSubscriptions).toBe(1)
-    expect(socketAt(0).requests).toEqual([expect.objectContaining({method: 'authorization'})])
-  })
-
-  it('stops automatic retries after welcome followed by a 4001 close', async () => {
-    const {statuses, token$} = connect()
-    socketAt(0).open()
-    socketAt(0).closeFromServer(4001)
-
+    const status = statuses.at(-1)
+    expect(status).toMatchObject({type: 'error', attemptNo: 1, retryAt: null})
+    expect(status?.type === 'error' && status.error).toBeInstanceOf(WebSocketError)
     await vi.advanceTimersByTimeAsync(300_000)
     window.dispatchEvent(new Event('online'))
-    token$.next('rejected-token')
     await vi.advanceTimersByTimeAsync(300_000)
-
     expect(sockets).toHaveLength(1)
-    expect(statuses.at(-1)).toMatchObject({
-      type: 'error',
-      error: {code: 4001},
-      retryAt: null,
-    })
+    expect(statuses.some((s) => s.type === 'connected')).toBe(false)
   })
 
-  it('retries with a new token and restores presence on the shared connection', async () => {
-    const {bifur, store, token$, statuses} = connect()
+  it('stops retrying after the server rejects the authorization request', async () => {
+    const {statuses} = connect()
+    ;(await openSocket(0)).replyError('authorization', 4001)
+
+    const status = statuses.at(-1)
+    expect(status).toMatchObject({type: 'error', attemptNo: 1, retryAt: null})
+    expect(status?.type === 'error' && status.error).toBeInstanceOf(RpcError)
+    expect(status?.type === 'error' && status.error).toMatchObject({code: 4001})
+    await vi.advanceTimersByTimeAsync(300_000)
+    expect(sockets).toHaveLength(1)
+  })
+
+  it('connects right away with a new token after a rejection', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {statuses} = connect(token$)
+    ;(await openSocket(0)).closeFromServer(4001)
+
+    token$.next('valid-token')
+    await flushAuthorization()
+    expect(sockets).toHaveLength(2)
+    const recovered = await openSocket(1)
+    expect(authorizations(recovered)).toEqual([bearer('valid-token')])
+    recovered.reply('authorization', {})
+    expect(statuses.at(-1)?.type).toBe('connected')
+  })
+
+  it('retries a renewed token once when it is rejected, then stops', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {statuses} = connect(token$)
+    ;(await openSocket(0)).closeFromServer(4001)
+
+    token$.next('also-rejected-token')
+    await flushAuthorization()
+    ;(await openSocket(1)).closeFromServer(4001)
+    expect(statuses.at(-1)).toMatchObject({type: 'error', attemptNo: 1})
+    await vi.advanceTimersByTimeAsync(200)
+    ;(await openSocket(2)).closeFromServer(4001)
+    expect(statuses.at(-1)).toMatchObject({type: 'error', attemptNo: 2, retryAt: null})
+
+    await vi.advanceTimersByTimeAsync(300_000)
+    expect(sockets).toHaveLength(3)
+  })
+
+  it('stays stopped when the same token is emitted again', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    connect(token$)
+    ;(await openSocket(0)).closeFromServer(4001)
+
+    token$.next('rejected-token')
+    await vi.advanceTimersByTimeAsync(300_000)
+    expect(sockets).toHaveLength(1)
+  })
+
+  it('recovers when a new token arrives just before the server closes the socket on the old one', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {statuses} = connect(token$)
+    const socket = await openSocket(0)
+
+    // The new token is sent on the open socket, but the server already rejected the old one
+    token$.next('valid-token')
+    await flushAuthorization()
+    socket.closeFromServer(4001)
+
+    await vi.advanceTimersByTimeAsync(200)
+    const recovered = await openSocket(1)
+    expect(authorizations(recovered)).toEqual([bearer('valid-token')])
+    recovered.reply('authorization', {})
+    expect(statuses.at(-1)?.type).toBe('connected')
+  })
+
+  it('restores presence on the shared connection once a new token is accepted', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {bifur, store, statuses} = connect(token$)
     const presence = createPresenceStore({
       bifur,
       connectionStatusStore: store,
@@ -224,24 +266,13 @@ describe('connection status authorization rejection', () => {
       presence.documentPresence('doc-1').subscribe((value) => locations.push(value)),
     )
 
-    socketAt(0).open()
-    await flushAuthorization()
-    socketAt(0).closeFromServer(4001)
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(sockets).toHaveLength(1)
-
+    ;(await openSocket(0)).closeFromServer(4001)
     token$.next('valid-token')
-    await flushAuthorization()
-    const recovered = socketAt(1)
-    recovered.open()
-    await flushAuthorization()
-    expect(recovered.requests).toEqual([
-      expect.objectContaining({
-        method: 'authorization',
-        params: {authorization: 'Bearer valid-token', apiVersion: 'v1'},
-      }),
-    ])
+    await vi.advanceTimersByTimeAsync(200)
+    const recovered = await openSocket(1)
+    expect(authorizations(recovered)).toEqual([bearer('valid-token')])
     recovered.reply('authorization', {})
+    await flushAuthorization()
     recovered.reply('presence_subscribe', 'presence-subscription')
     recovered.receive({
       jsonrpc: '2.0',
@@ -275,43 +306,27 @@ describe('connection status authorization rejection', () => {
       }),
     ])
     expect(sockets).toHaveLength(2)
-    expect(recovered.requests.filter((request) => request.method === 'authorization')).toHaveLength(
-      1,
-    )
-  })
-
-  it('allows an explicit retry and stops again if the same token is rejected', async () => {
-    connect()
-    socketAt(0).open()
-    socketAt(0).closeFromServer(4001)
-
-    onRetry()
-    socketAt(1).open()
-    socketAt(1).closeFromServer(4001)
-    await vi.advanceTimersByTimeAsync(300_000)
-
-    expect(sockets).toHaveLength(2)
+    expect(authorizations(recovered)).toHaveLength(1)
   })
 
   it('retries with cookie authentication when the token is cleared', async () => {
-    const {token$, statuses} = connect()
-    socketAt(0).open()
-    socketAt(0).closeFromServer(4001)
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {statuses} = connect(token$)
+    ;(await openSocket(0)).closeFromServer(4001)
 
     token$.next(null)
-    socketAt(1).open()
-    await flushAuthorization()
+    await vi.advanceTimersByTimeAsync(200)
+    const recovered = await openSocket(1)
 
     expect(sockets).toHaveLength(2)
-    expect(socketAt(1).requests).toEqual([])
+    expect(recovered.requests).toEqual([])
     expect(statuses.at(-1)?.type).toBe('connected')
   })
 
   it('reauthorizes an active connection once when the token changes', async () => {
-    const {token$, statuses} = connect()
-    const socket = socketAt(0)
-    socket.open()
-    await flushAuthorization()
+    const token$ = new BehaviorSubject<string | null>('initial-token')
+    const {statuses} = connect(token$)
+    const socket = await openSocket(0)
     socket.reply('authorization', {})
 
     token$.next('refreshed-token')
@@ -319,48 +334,51 @@ describe('connection status authorization rejection', () => {
     socket.reply('authorization', {})
 
     expect(sockets).toHaveLength(1)
-    expect(socket.requests.filter((request) => request.method === 'authorization')).toEqual([
-      expect.objectContaining({params: {authorization: 'Bearer rejected-token', apiVersion: 'v1'}}),
-      expect.objectContaining({
-        params: {authorization: 'Bearer refreshed-token', apiVersion: 'v1'},
-      }),
-    ])
+    expect(authorizations(socket)).toEqual([bearer('initial-token'), bearer('refreshed-token')])
     expect(statuses.at(-1)?.type).toBe('connected')
   })
 
-  it('allows an explicit retry when the client uses cookies', async () => {
-    const store = createConnectionStatusStore(createBifurClient(client))
-    subscriptions.add(store.connectionStatus$.subscribe())
-    socketAt(0).open()
-    socketAt(0).closeFromServer(4001)
-    await vi.advanceTimersByTimeAsync(1000)
+  it('does not reauthorize when the same token is emitted again', async () => {
+    // The auth store emits its token again on every update and cross-tab broadcast
+    const token$ = new BehaviorSubject<string | null>('initial-token')
+    connect(token$)
+    const socket = await openSocket(0)
+    socket.reply('authorization', {})
+
+    token$.next('initial-token')
+    await flushAuthorization()
+
+    expect(authorizations(socket)).toEqual([bearer('initial-token')])
+  })
+
+  it('allows an explicit retry, and stops again if the same token is rejected', async () => {
+    connect()
+    ;(await openSocket(0)).closeFromServer(4001)
     expect(sockets).toHaveLength(1)
 
     onRetry()
-    socketAt(1).open()
+    expect(sockets).toHaveLength(2)
+    ;(await openSocket(1)).closeFromServer(4001)
+    await vi.advanceTimersByTimeAsync(300_000)
     expect(sockets).toHaveLength(2)
   })
 
-  it('shares retries across status subscribers', async () => {
-    const {store} = connect()
+  it('shares one retry cycle between status subscribers', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    const {store, statuses} = connect(token$)
     const otherStatuses: ConnectionStatus[] = []
     subscriptions.add(store.connectionStatus$.subscribe((status) => otherStatuses.push(status)))
-    socketAt(0).open()
-    await flushAuthorization()
-    socketAt(0).closeFromServer(4001)
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(sockets).toHaveLength(1)
+    ;(await openSocket(0)).closeFromServer(4001)
 
-    onRetry()
-    const recovered = socketAt(1)
-    recovered.open()
-    await flushAuthorization()
+    token$.next('valid-token')
+    await vi.advanceTimersByTimeAsync(200)
+    expect(sockets).toHaveLength(2)
+    const recovered = await openSocket(1)
     recovered.reply('authorization', {})
 
     expect(sockets).toHaveLength(2)
-    expect(recovered.requests.filter((request) => request.method === 'authorization')).toHaveLength(
-      1,
-    )
+    expect(authorizations(recovered)).toEqual([bearer('valid-token')])
+    expect(statuses.at(-1)?.type).toBe('connected')
     expect(otherStatuses.at(-1)?.type).toBe('connected')
   })
 
@@ -387,9 +405,10 @@ describe('connection status authorization rejection', () => {
     expect(sockets).toHaveLength(3)
   })
 
-  it('cancels retries and token observation when the last subscriber leaves', async () => {
-    const {token$} = connect()
-    socketAt(0).closeFromServer(1006)
+  it('cancels retries when the last subscriber leaves', async () => {
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+    connect(token$)
+    ;(await openSocket(0)).closeFromServer(4001)
 
     subscriptions.unsubscribe()
     token$.next('new-token')

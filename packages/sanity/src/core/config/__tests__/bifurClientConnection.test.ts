@@ -84,7 +84,7 @@ const client = createClient({
 describe('the studio bifur connection (createBifurClient)', () => {
   let subscriptions: Subscription[]
 
-  const createHeartbeats = () => createBifurClient(client).bifur.heartbeats
+  const createHeartbeats = () => createBifurClient(client).heartbeats
 
   const subscribe = (
     heartbeats$: ReturnType<typeof createHeartbeats>,

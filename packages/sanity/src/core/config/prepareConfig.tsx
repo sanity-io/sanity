@@ -608,7 +608,7 @@ function resolveSource({
   i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const {bifur, token$: bifurToken$} = createBifurClient(client, auth.token)
+  const bifur = createBifurClient(client, auth.token)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
   const getClient = (options: SourceClientOptions): SanityClient => {
@@ -1166,7 +1166,6 @@ function resolveSource({
 
     __internal: {
       bifur,
-      bifurToken$,
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
