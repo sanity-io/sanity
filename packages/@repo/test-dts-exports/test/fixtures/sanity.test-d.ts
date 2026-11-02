@@ -1271,6 +1271,8 @@ import type {
   ReleaseActionsResolver,
   ReleaseAvatar,
   ReleaseAvatarIcon,
+  ReleaseDetailComponent,
+  ReleaseDetailProps,
   ReleaseDocument,
   ReleaseId,
   ReleaseMetadataRecord,
@@ -5703,6 +5705,12 @@ describe('sanity', () => {
   })
   test('ReleaseAvatarIcon', () => {
     expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
+  })
+  test('ReleaseDetailComponent', () => {
+    expectTypeOf<ReleaseDetailComponent>().toBeObject()
+  })
+  test('ReleaseDetailProps', () => {
+    expectTypeOf<ReleaseDetailProps>().toBeObject()
   })
   test('ReleaseDocument', () => {
     expectTypeOf<ReleaseDocument>().toBeObject()

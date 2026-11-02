@@ -32,6 +32,7 @@ import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
+import {ReleaseDetailSlot} from './ReleaseDetailSlot'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {ReleaseValidationBadge} from './ReleaseValidationBadge'
 import {type DocumentInRelease} from './types'
@@ -291,7 +292,10 @@ export function ReleaseDashboardDetails({
             the perspective bar, matching the Variants pin removal). */}
         <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
           <Box flexBasis="0%" flexGrow={1} minWidth={RELEASE_IDENTITY_MIN_WIDTH}>
-            <ReleaseDetailsEditor release={release} />
+            <VStack gap={3}>
+              <ReleaseDetailsEditor release={release} />
+              <ReleaseDetailSlot release={release} documents={documents} loading={loading} />
+            </VStack>
           </Box>
           <DetailPropertiesPanel
             testId="release-detail-metadata"
