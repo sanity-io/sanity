@@ -92,6 +92,12 @@ function socketAt(index: number) {
   return socket
 }
 
+/**
+ * Lets bifur send what it authorizes with. Its credential is a promise per value (`auth`), so the
+ * `authorization` request goes out a microtask after the socket opens or the token changes.
+ */
+const flushAuthorization = () => vi.advanceTimersByTimeAsync(0)
+
 describe('connection status authorization rejection', () => {
   let subscriptions: Subscription
 
@@ -118,7 +124,7 @@ describe('connection status authorization rejection', () => {
     return {bifur: options.bifur, store, token$, statuses}
   }
 
-  it('reports connecting while waiting for the initial token', () => {
+  it('reports connecting while waiting for the initial token', async () => {
     const token$ = new ReplaySubject<string | null>(1)
     const options = createBifurClient(client, token$)
     const store = createConnectionStatusStore(options)
@@ -127,7 +133,9 @@ describe('connection status authorization rejection', () => {
 
     expect(statuses).toEqual([{type: 'connecting'}])
     token$.next('initial-token')
+    await flushAuthorization()
     socketAt(0).open()
+    await flushAuthorization()
     expect(socketAt(0).requests).toEqual([
       expect.objectContaining({
         method: 'authorization',
@@ -136,14 +144,16 @@ describe('connection status authorization rejection', () => {
     ])
   })
 
-  it('authorizes with tokens from a non-replaying stream, including after rejection', () => {
+  it('authorizes with tokens from a non-replaying stream, including after rejection', async () => {
     const token$ = new Subject<string | null>()
     const options = createBifurClient(client, token$)
     const store = createConnectionStatusStore(options)
     subscriptions.add(store.connectionStatus$.subscribe())
 
     token$.next('initial-token')
+    await flushAuthorization()
     socketAt(0).open()
+    await flushAuthorization()
     expect(socketAt(0).requests).toEqual([
       expect.objectContaining({
         method: 'authorization',
@@ -153,7 +163,9 @@ describe('connection status authorization rejection', () => {
     socketAt(0).closeFromServer(4001)
 
     token$.next('new-token')
+    await flushAuthorization()
     socketAt(1).open()
+    await flushAuthorization()
     expect(socketAt(1).requests).toEqual([
       expect.objectContaining({
         method: 'authorization',
@@ -163,7 +175,7 @@ describe('connection status authorization rejection', () => {
     socketAt(1).reply('authorization', {})
   })
 
-  it('subscribes to a cold token producer once for status and authorization', () => {
+  it('subscribes to a cold token producer once for status and authorization', async () => {
     let tokenSubscriptions = 0
     const token$ = defer(() => {
       tokenSubscriptions++
@@ -173,6 +185,7 @@ describe('connection status authorization rejection', () => {
     const store = createConnectionStatusStore(options)
     subscriptions.add(store.connectionStatus$.subscribe())
     socketAt(0).open()
+    await flushAuthorization()
 
     expect(tokenSubscriptions).toBe(1)
     expect(socketAt(0).requests).toEqual([expect.objectContaining({method: 'authorization'})])
@@ -212,13 +225,16 @@ describe('connection status authorization rejection', () => {
     )
 
     socketAt(0).open()
+    await flushAuthorization()
     socketAt(0).closeFromServer(4001)
     await vi.advanceTimersByTimeAsync(1000)
     expect(sockets).toHaveLength(1)
 
     token$.next('valid-token')
+    await flushAuthorization()
     const recovered = socketAt(1)
     recovered.open()
+    await flushAuthorization()
     expect(recovered.requests).toEqual([
       expect.objectContaining({
         method: 'authorization',
@@ -277,26 +293,29 @@ describe('connection status authorization rejection', () => {
     expect(sockets).toHaveLength(2)
   })
 
-  it('retries with cookie authentication when the token is cleared', () => {
+  it('retries with cookie authentication when the token is cleared', async () => {
     const {token$, statuses} = connect()
     socketAt(0).open()
     socketAt(0).closeFromServer(4001)
 
     token$.next(null)
     socketAt(1).open()
+    await flushAuthorization()
 
     expect(sockets).toHaveLength(2)
     expect(socketAt(1).requests).toEqual([])
     expect(statuses.at(-1)?.type).toBe('connected')
   })
 
-  it('reauthorizes an active connection once when the token changes', () => {
+  it('reauthorizes an active connection once when the token changes', async () => {
     const {token$, statuses} = connect()
     const socket = socketAt(0)
     socket.open()
+    await flushAuthorization()
     socket.reply('authorization', {})
 
     token$.next('refreshed-token')
+    await flushAuthorization()
     socket.reply('authorization', {})
 
     expect(sockets).toHaveLength(1)
@@ -327,6 +346,7 @@ describe('connection status authorization rejection', () => {
     const otherStatuses: ConnectionStatus[] = []
     subscriptions.add(store.connectionStatus$.subscribe((status) => otherStatuses.push(status)))
     socketAt(0).open()
+    await flushAuthorization()
     socketAt(0).closeFromServer(4001)
     await vi.advanceTimersByTimeAsync(1000)
     expect(sockets).toHaveLength(1)
@@ -334,6 +354,7 @@ describe('connection status authorization rejection', () => {
     onRetry()
     const recovered = socketAt(1)
     recovered.open()
+    await flushAuthorization()
     recovered.reply('authorization', {})
 
     expect(sockets).toHaveLength(2)

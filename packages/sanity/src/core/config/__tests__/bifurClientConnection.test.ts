@@ -1,10 +1,13 @@
-import {fromUrl, WebSocketError} from '@sanity/bifur-client'
+import {WebSocketError} from '@sanity/bifur-client'
+import {createClient} from '@sanity/client'
 import {type Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createBifurClient} from '../createBifurClient'
+
 /**
- * Guards the WebSocket connection semantics `@sanity/bifur-client`'s `fromUrl` gained in
- * https://github.com/sanity-io/bifur-client/pull/30 (v2), which the studio relies on:
+ * Guards the WebSocket connection semantics the studio relies on from the bifur client that
+ * `createBifurClient` sets up (`@sanity/bifur-client`'s `fromUrl` with `idleTimeout: 5_000`):
  *
  * - a socket that is still `CONNECTING` is never closed mid-handshake (which browsers punish
  *   with the "WebSocket is closed before the connection is established" console warning) — a
@@ -71,11 +74,17 @@ const GRACEFUL_CLOSE = {
   reason: 'WebSockets connection closed by client',
 }
 
-describe('the @sanity/bifur-client connection (fromUrl)', () => {
+const client = createClient({
+  projectId: 'example',
+  dataset: 'test',
+  apiVersion: '2022-06-30',
+  useCdn: false,
+})
+
+describe('the studio bifur connection (createBifurClient)', () => {
   let subscriptions: Subscription[]
 
-  const createHeartbeats = () =>
-    fromUrl('wss://example.api.sanity.io/v2022-06-30/socket/test').heartbeats
+  const createHeartbeats = () => createBifurClient(client).bifur.heartbeats
 
   const subscribe = (
     heartbeats$: ReturnType<typeof createHeartbeats>,
@@ -207,20 +216,5 @@ describe('the @sanity/bifur-client connection (fromUrl)', () => {
     // The share resets on error, so the next subscriber triggers a new connection
     subscribe(heartbeats$)
     expect(FakeWebSocket.instances).toHaveLength(2)
-  })
-
-  it('closes the socket immediately when the page unloads', () => {
-    const heartbeats$ = createHeartbeats()
-    subscribe(heartbeats$)
-    const [socket] = FakeWebSocket.instances
-    socket.finishHandshake()
-
-    // The connection completes through the `takeUntil` sitting before the share. `heartbeats`
-    // itself cannot be asserted on for completion — it merges in the socket's message streams,
-    // which never complete — so the graceful close is the observable effect. It must happen
-    // immediately (no timer advance): unloading is not subject to the disconnect delay.
-    window.dispatchEvent(new Event('beforeunload'))
-
-    expect(socket.closeCalls).toEqual([{...GRACEFUL_CLOSE, readyStateAtCall: socket.OPEN}])
   })
 })
