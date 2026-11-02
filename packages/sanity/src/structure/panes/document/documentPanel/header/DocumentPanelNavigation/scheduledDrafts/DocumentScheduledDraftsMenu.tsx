@@ -6,6 +6,7 @@ import {
   DEFAULT_VARIANT_TYPE_KEY,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
+  getReleaseTone,
   isCardinalityOneRelease,
   isPausedCardinalityOneRelease,
   isReleaseDocument,
@@ -14,11 +15,11 @@ import {
   useDocumentVersions,
   usePerspective,
   useScheduledDraftsEnabled,
-  useSingleDocRelease,
   useTranslation,
 } from 'sanity'
 
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
+import {usePaneRouter} from '../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {structureLocaleNamespace} from '../../../../../../i18n'
 import {useDocumentPane} from '../../../../useDocumentPane'
@@ -73,8 +74,8 @@ export function DocumentScheduledDraftsMenu() {
   const {selectedPerspective} = usePerspective()
   const selectedVariant = useSelectedVariant(DEFAULT_VARIANT_TYPE_KEY)
   const formatPublishDateTime = useFormatPublishDateTime()
-  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
   const {navigate} = usePerspectiveNavigator()
+  const {params, setParams} = usePaneRouter()
   const [filterQuery, setFilterQuery] = useState('')
 
   const variantId = selectedVariant?._id
@@ -107,10 +108,11 @@ export function DocumentScheduledDraftsMenu() {
     },
     [navigate],
   )
-  const handleClear = useCallback(
-    () => onSetScheduledDraftPerspective(''),
-    [onSetScheduledDraftPerspective],
-  )
+  // Drop the pane param only. `onSetScheduledDraftPerspective` also clears the global
+  // perspective, which is what opening a scheduled draft does so it does not stay inside a release.
+  const handleClear = useCallback(() => {
+    setParams({...params, scheduledDraft: undefined})
+  }, [params, setParams])
 
   if (!isScheduledDraftsEnabled || scheduledDrafts.length === 0) {
     return null
@@ -129,7 +131,7 @@ export function DocumentScheduledDraftsMenu() {
           data-testid="document-scheduled-drafts-menu-button"
           icon={isPausedCardinalityOneRelease(selectedScheduledDraft) ? UnlockIcon : ClockIcon}
           onClear={selectedScheduledDraft ? handleClear : undefined}
-          tone="caution"
+          tone={selectedScheduledDraft ? getReleaseTone(selectedScheduledDraft) : undefined}
           text={
             selectedScheduledDraft
               ? getLabel(selectedScheduledDraft)

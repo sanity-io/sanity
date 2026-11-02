@@ -6,12 +6,12 @@ import {
   useDocumentVersions,
   usePerspective,
   useScheduledDraftsEnabled,
-  useSingleDocRelease,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {usePaneRouter} from '../../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
@@ -31,11 +31,11 @@ vi.mock('sanity', async (importOriginal) => ({
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
   useScheduledDraftsEnabled: vi.fn(),
-  useSingleDocRelease: vi.fn(),
 }))
 
 vi.mock('../../../../../useDocumentPane')
 vi.mock('../../../../../../../hooks/usePerspectiveNavigator')
+vi.mock('../../../../../../../components/paneRouter/usePaneRouter')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
@@ -43,9 +43,9 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseScheduledDraftsEnabled = useScheduledDraftsEnabled as Mock<
   typeof useScheduledDraftsEnabled
 >
-const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
 const mockUseDocumentPane = useDocumentPane as Mock<() => Partial<DocumentPaneContextValue>>
 const mockUsePerspectiveNavigator = usePerspectiveNavigator as Mock<typeof usePerspectiveNavigator>
+const mockUsePaneRouter = usePaneRouter as Mock<() => Partial<ReturnType<typeof usePaneRouter>>>
 
 /**
  * A scheduled draft going out on `date`, mid-month at noon so the day is the same everywhere.
@@ -72,7 +72,7 @@ const variantDraft = createScheduledDraft('rVariant', '2026-11-20')
 const release = createRelease('rA', 'Release A')
 
 const navigate = vi.fn()
-const onSetScheduledDraftPerspective = vi.fn()
+const setParams = vi.fn()
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 function mockVersions(versions: VersionInfoDocumentStub[]) {
@@ -109,8 +109,8 @@ describe('DocumentScheduledDraftsMenu', () => {
     mockUseDocumentPane.mockReturnValue({documentId: GROUP_ID})
     mockUsePerspective.mockReturnValue(createPerspective())
     mockUsePerspectiveNavigator.mockReturnValue({navigate})
+    mockUsePaneRouter.mockReturnValue({params: {view: 'form'}, setParams})
     mockUseScheduledDraftsEnabled.mockReturnValue(true)
-    mockUseSingleDocRelease.mockReturnValue({onSetScheduledDraftPerspective})
     const activeReleases = [release, decemberDraft, novemberDraft, variantDraft]
     mockUseActiveReleases.mockReturnValue({
       data: activeReleases,
@@ -203,7 +203,9 @@ describe('DocumentScheduledDraftsMenu', () => {
 
     await userEvent.click(screen.getByTestId('dropdown-button-clear'))
 
-    expect(onSetScheduledDraftPerspective).toHaveBeenCalledWith('')
+    // Only the pane param goes. The global perspective is left as it is.
+    expect(setParams).toHaveBeenCalledTimes(1)
+    expect(setParams).toHaveBeenCalledWith({view: 'form', scheduledDraft: undefined})
   })
 
   it('marks the paused scheduled drafts with the unlocked icon', async () => {
@@ -231,6 +233,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     expect(trigger).toHaveTextContent('Dec 15, 2026')
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).not.toBeNull()
     expect(trigger.querySelector('[data-sanity-icon="clock"]')).toBeNull()
+    expect(trigger.closest('[data-ui="DropdownButton"]')).toHaveAttribute('data-tone', 'caution')
   })
 
   it('keeps the clock on the trigger for a scheduled draft that is not paused', async () => {
@@ -246,6 +249,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     const trigger = screen.getByTestId('document-scheduled-drafts-menu-button')
     expect(trigger.querySelector('[data-sanity-icon="clock"]')).not.toBeNull()
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).toBeNull()
+    expect(trigger.closest('[data-ui="DropdownButton"]')).toHaveAttribute('data-tone', 'suggest')
   })
 
   it('filters the scheduled drafts by date and says when nothing matches', async () => {
