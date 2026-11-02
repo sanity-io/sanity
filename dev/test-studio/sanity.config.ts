@@ -303,6 +303,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
   })()
 }
 
+/**
+ * The OAuth workspaces sign in through a redirect relay, which the OAuth applications register as
+ * their only redirect URL. It sends each sign-in back to the Studio that started it, so the same
+ * setup works locally (localhost:3333), on test-studio.sanity.dev and on branch deploys, whose
+ * URLs can't be registered ahead of time.
+ */
+const OAUTH_REDIRECT_RELAY = 'https://test-studio-oauth-relay.sanity.dev/'
+
 const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
@@ -457,9 +465,9 @@ export default defineConfig([
     // OAuth 2.1. The other workspaces keep the legacy sign-in.
     auth: {
       experimental_oauth: {
-        // An OAuth application on `ppsg7ml5`, with `http://localhost:3333/test-oauth` among its
-        // redirect URLs.
+        // An OAuth application on `ppsg7ml5`.
         clientId: 'oc-88d793a8d1b3',
+        redirectRelayUri: OAUTH_REDIRECT_RELAY,
       },
     },
   },
@@ -689,9 +697,9 @@ export default defineConfig([
     basePath: '/oauth',
     auth: {
       experimental_oauth: {
-        // An OAuth application on the staging project `exx11uqh`, with
-        // `http://localhost:3333/oauth` among its redirect URLs.
+        // An OAuth application on the staging project `exx11uqh`.
         clientId: 'oc-3f7b8ef7fb70',
+        redirectRelayUri: OAUTH_REDIRECT_RELAY,
       },
     },
     tasks: {
