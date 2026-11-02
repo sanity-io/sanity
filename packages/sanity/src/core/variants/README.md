@@ -8,6 +8,8 @@ For how variant _document editing_ works through the document pair (target resol
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
 
+Whether the plan includes variants is a second gate. The plugin's `VariantsStudioProvider` checks the `contentVariants` feature (`FEATURES.contentVariants`) and publishes the mode as a promise through `VariantsModePromiseContext`: `'default'`, `'upsell'` without the feature, `null` when the check failed. Read it with `use(useVariantsMode())`. `VariantsTool` suspends on it, then renders `tool/upsell/VariantsUpsellOverview` on every route unless the mode is `'default'`: the overview header with its create button, plus a placeholder upsell panel, or an unavailable notice when the mode is `null`. In upsell mode the create buttons (the overview's and the navbar's "New audience") call `useVariantsUpsell().handleOpenDialog()`, which opens the placeholder `VariantsUpsellDialog`; with a `null` mode they fail closed. The panel and dialog are placeholders until the content variants upsell content is published, at which point they become `UpsellPanel` / `UpsellDialog` fed by `useUpsellData`, as in releases.
+
 Variant definitions are stored as system documents:
 
 - Document type: `system.variant`
