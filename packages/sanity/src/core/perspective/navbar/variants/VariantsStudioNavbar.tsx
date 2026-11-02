@@ -15,11 +15,12 @@ import {VariantsMenu} from './VariantsMenu'
 import {rhombusIconLarge, suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
+  fullWidth?: boolean
   selectedId: string | undefined
   typeKey: string
   variants: SystemVariant[]
 }) {
-  const {selectedId, typeKey, variants} = props
+  const {fullWidth, selectedId, typeKey, variants} = props
   const {t} = useTranslation()
   const setVariant = useSetVariant()
   const selectedVariant = selectedId
@@ -34,6 +35,7 @@ function VariantTypeFilter(props: {
 
   return (
     <VariantsMenu
+      allowCreate={!fullWidth}
       typeKey={typeKey}
       trigger={
         <GlobalPerspectiveButton
@@ -42,6 +44,7 @@ function VariantTypeFilter(props: {
               ? 'variants-nav-menu-button'
               : `variants-nav-menu-button-${typeKey}`
           }
+          fullWidth={fullWidth}
           handleClearPerspective={selectedId ? handleClear : undefined}
           icon={<RhombusIconLarge className={clsx(suggestIconColor, rhombusIconLarge)} />}
           text={variantLabel}
@@ -53,8 +56,10 @@ function VariantTypeFilter(props: {
 
 /** The filters of the perspective bar; `VariantsStudioNavbarLayout` owns the bar itself */
 export default function VariantsStudioNavbar({
+  fullWidth,
   variantSelections,
 }: {
+  fullWidth?: boolean
   variantSelections: VariantSelection[]
 }) {
   const {data: variants} = useAllVariants()
@@ -65,6 +70,7 @@ export default function VariantsStudioNavbar({
 
   return navbarTypes.map((type) => (
     <VariantTypeFilter
+      fullWidth={fullWidth}
       key={type.key}
       selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
       typeKey={type.key}

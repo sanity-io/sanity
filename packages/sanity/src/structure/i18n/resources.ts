@@ -757,6 +757,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document does not exist, and no schema type was specified for it.',
   /** Default message shown while resolving the structure definition for an asynchronous node */
   'panes.resolving.default-message': 'Loading…',
+  /** Message shown in place of the structure while a document opened from a link is being found in it */
+  'panes.resolving.finding-document-message': 'Finding the document in the structure…',
   /** Message shown while resolving the structure definition for an asynchronous node and it is taking a while (more than 5s) */
   'panes.resolving.slow-resolve-message': 'Still loading…',
   /** The text to display when type is missing */

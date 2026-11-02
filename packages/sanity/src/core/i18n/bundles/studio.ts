@@ -1542,10 +1542,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
+  'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'All users',
+  /** View all option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.view-all': 'View all',
+  /** New audience option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Filter variants…',
+  'navbar.variant.filter-placeholder': 'Find audience',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
 
@@ -1805,6 +1811,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.view-releases': 'View Content Releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
+  /** Placeholder for the releases perspective filter. */
+  'release.navbar.filter-placeholder': 'Find a version or release',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */

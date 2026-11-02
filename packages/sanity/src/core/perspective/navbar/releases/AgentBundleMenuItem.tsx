@@ -4,10 +4,10 @@ import {MenuItem} from '@sanity/ui/menu'
 import {type CSSProperties, memo, useCallback} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type AgentBundle} from '../../store/agent/createAgentBundlesStore'
-import {usePerspective} from '../usePerspective'
-import {useSetPerspective} from '../useSetPerspective'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type AgentBundle} from '../../../store/agent/createAgentBundlesStore'
+import {usePerspective} from '../../usePerspective'
+import {useSetPerspective} from '../../useSetPerspective'
 
 const iconStyle: CSSProperties & {'--icon-color': string} = {
   '--icon-color': 'var(--card-badge-suggest-icon-color)',
@@ -16,7 +16,7 @@ const iconStyle: CSSProperties & {'--icon-color': string} = {
 
 /**
  * Renders a menu item for an active agent bundle in the global perspective
- * picker. Visually matches `GlobalPerspectiveMenuItem` so it blends into the
+ * picker. Visually matches `ReleasesMenuItem` so it blends into the
  * existing release list.
  *
  * @internal

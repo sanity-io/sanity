@@ -11,6 +11,7 @@ import {
   getVariantDescription,
   getVariantId,
   getVariantTitle,
+  isDefaultVariant,
   isPublishedBundleId,
   isReleaseBundle,
   variantMatchesConditionFilters,
@@ -92,6 +93,25 @@ describe('variants tool utilities', () => {
     expect(filterVariantsForSearch([developerVariant, localeVariant], 'nb-no')).toEqual([
       localeVariant,
     ])
+  })
+
+  it('includes the default variant in the same filtered list', () => {
+    const variant = {
+      ...createMockVariant('developer'),
+      metadata: {title: 'Developer audience', description: []},
+    }
+    const defaultTitle = 'All users (Default)'
+
+    const [defaultVariant, listedVariant] = filterVariantsForSearch([variant], '', defaultTitle)
+
+    expect(defaultVariant && isDefaultVariant(defaultVariant) && defaultVariant.title).toBe(
+      defaultTitle,
+    )
+    expect(listedVariant).toBe(variant)
+    expect(filterVariantsForSearch([variant], 'default', defaultTitle)).toEqual([defaultVariant])
+    expect(filterVariantsForSearch([variant], 'developer', defaultTitle)).toEqual([variant])
+    expect(filterVariantsForSearch([variant], 'zzzz', defaultTitle)).toEqual([])
+    expect(isDefaultVariant(variant)).toBe(false)
   })
 
   it('treats undefined and published bundle ids as published', () => {

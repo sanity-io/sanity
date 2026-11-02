@@ -7,8 +7,10 @@ import {type SingleWorkspace} from '../../../../config/types'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
+import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../variants/util/variantType'
 import {VariantsMenu} from '../VariantsMenu'
 
 const variantsMock = vi.hoisted(() => ({
@@ -20,6 +22,12 @@ const variantsMock = vi.hoisted(() => ({
 
 const setVariant = vi.fn()
 
+const variantOperationsMock = vi.hoisted(() => ({
+  createVariant: vi.fn(),
+  updateVariant: vi.fn(),
+  deleteVariant: vi.fn(),
+}))
+
 vi.mock('../../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => setVariant),
 }))
@@ -28,25 +36,35 @@ vi.mock('../../../../variants/store/useAllVariants', () => ({
   useAllVariants: vi.fn(() => variantsMock),
 }))
 
+vi.mock('../../../../variants/store/useVariantOperations', () => ({
+  useVariantOperations: vi.fn(() => variantOperationsMock),
+}))
+
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    variantOperationsMock.createVariant.mockResolvedValue(undefined)
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
     perspectiveContextValueMock.selectedVariants = []
     perspectiveContextValueMock.selectedVariantNames = []
   })
 
-  const renderMenu = async (config?: Partial<SingleWorkspace>) => {
+  const renderMenu = async (config?: Partial<SingleWorkspace>, typeKey?: string) => {
     const wrapper = await createTestProvider({
       config,
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsMenu trigger={<button type="button">Open variants</button>} />, {
-      wrapper,
-    })
+    const view = render(
+      <VariantsMenu trigger={<button type="button">Open variants</button>} typeKey={typeKey} />,
+      {wrapper},
+    )
     await userEvent.setup().click(await screen.findByRole('button', {name: 'Open variants'}))
-    await screen.findByTestId('variants-nav-menu')
+    await screen.findByTestId(
+      !typeKey || typeKey === DEFAULT_VARIANT_TYPE_KEY
+        ? 'variants-nav-menu'
+        : `variants-nav-menu-${typeKey}`,
+    )
     return view
   }
 
@@ -62,10 +80,59 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
-  it('names the unselected option All users', async () => {
+  it('links view all to the variants tool overview', async () => {
     await renderMenu()
 
-    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users')
+    expect(screen.getByTestId('view-all')).toHaveAttribute('href', `/intent/${VARIANTS_INTENT}`)
+  })
+
+  it('names the unselected option All users (Default)', async () => {
+    await renderMenu()
+
+    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
+  })
+
+  it('filters the default option with the rest of the list', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'alpha')
+
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).toBeInTheDocument()
+  })
+
+  it('keeps the default option when the query matches its label', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'default')
+
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('perspective-filter-no-matches')).not.toBeInTheDocument()
+  })
+
+  it('shows a message when the filter matches nothing', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu()
+
+    await user.type(screen.getByPlaceholderText('Find audience'), 'zzz')
+
+    expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
+      'Nothing matches "zzz"',
+    )
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+    ).not.toBeInTheDocument()
   })
 
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {
@@ -104,6 +171,51 @@ describe('VariantsMenu', () => {
     })
 
     expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('opens the create form for the menu type and selects the created variant', async () => {
+    const user = userEvent.setup()
+
+    await renderMenu(undefined, 'language')
+
+    await user.click(screen.getByTestId('new-audience'))
+
+    expect(
+      await screen.findByRole('dialog', {name: 'Create variant definition'}),
+    ).toBeInTheDocument()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Spanish readers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'locale')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'es')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.metadata.type).toBe('language')
+    expect(setVariant).toHaveBeenCalledWith({
+      type: 'language',
+      variantId: createdVariant._id,
+    })
+    expect(
+      screen.queryByRole('dialog', {name: 'Create variant definition'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('leaves out the new audience item when creating is not allowed', async () => {
+    const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
+    render(
+      <VariantsMenu allowCreate={false} trigger={<button type="button">Open variants</button>} />,
+      {wrapper},
+    )
+    await userEvent.setup().click(await screen.findByRole('button', {name: 'Open variants'}))
+    await screen.findByTestId('variants-nav-menu')
+
+    expect(screen.getByTestId('view-all')).toBeInTheDocument()
+    expect(screen.queryByTestId('new-audience')).not.toBeInTheDocument()
   })
 
   it('does not show a mismatch error when configured conditions resolve empty', async () => {

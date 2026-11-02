@@ -3,7 +3,7 @@ import {expect, userEvent, waitFor, within} from 'storybook/test'
 import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {GlobalPerspectiveMenu} from '../GlobalPerspectiveMenu'
+import {ReleasesMenu} from '../releases/ReleasesMenu'
 
 /**
  * The navbar's perspective menu: the chevron trigger and, once opened, the
@@ -18,7 +18,7 @@ import {GlobalPerspectiveMenu} from '../GlobalPerspectiveMenu'
  */
 const meta = {
   title: 'Perspective/Global Perspective Menu',
-  component: GlobalPerspectiveMenu,
+  component: ReleasesMenu,
   decorators: [
     (Story) => (
       <TestWrapper schemaTypes={[]}>
@@ -28,7 +28,7 @@ const meta = {
       </TestWrapper>
     ),
   ],
-} satisfies Meta<typeof GlobalPerspectiveMenu>
+} satisfies Meta<typeof ReleasesMenu>
 
 export default meta
 type Story = StoryObj<typeof meta>
