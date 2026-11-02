@@ -97,6 +97,11 @@ async function seedLive(
   )
 }
 
+// Content Lake never answers like this on purpose, and a retry could apply the request twice
+function isTransientStatus(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500
+}
+
 function realOutcomeOf(status: number, body: unknown): SubmissionOutcome {
   if (status >= 200 && status < 300) return ACCEPTED
   const errorType = errorTypeOf(body)
@@ -131,6 +136,9 @@ async function replayStep(
     revisions,
   )
   const answer = await http.submit(request)
+  if (isTransientStatus(answer.status)) {
+    throw new Error(`Submission ${step.submission} got HTTP ${answer.status}, a transient answer`)
+  }
   const real = realOutcomeOf(answer.status, answer.body)
   const realTransactionId = (answer.body as {transactionId?: unknown} | null)?.transactionId
   const nextRevisions =
