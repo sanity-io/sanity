@@ -1,4 +1,3 @@
-import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -97,6 +96,7 @@ import {
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
+import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
@@ -598,17 +598,6 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
 }
 
-function getBifurClient(client: SanityClient, auth: AuthStore) {
-  const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
-  const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
-  const urlWithTag = `${url}?tag=${requestTagPrefix}`
-
-  const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(urlWithTag, options)
-}
-
 function resolveSource({
   config,
   client,
@@ -619,7 +608,7 @@ function resolveSource({
   i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = getBifurClient(client, auth)
+  const {bifur, token$: bifurToken$} = createBifurClient(client, auth.token)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
   const getClient = (options: SourceClientOptions): SanityClient => {
@@ -1177,6 +1166,7 @@ function resolveSource({
 
     __internal: {
       bifur,
+      bifurToken$,
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,

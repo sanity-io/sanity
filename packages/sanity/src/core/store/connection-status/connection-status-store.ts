@@ -1,7 +1,16 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, WebSocketError} from '@sanity/bifur-client'
 import {observableCallback} from 'observable-callback'
 import {concat, fromEvent, merge, NEVER, type Observable, of, throwError, timer} from 'rxjs'
-import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  map,
+  mergeMapTo,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs/operators'
 
 import {catchWithCount} from '../../util/catchWithCount'
 
@@ -26,7 +35,8 @@ export type ErrorStatus = {
   error: Error
   attemptNo: number
   isOffline: boolean
-  retryAt: Date
+  /** Null when retrying requires changed credentials or an explicit retry. */
+  retryAt: Date | null
 }
 
 /** @internal */
@@ -59,7 +69,7 @@ const createErrorStatus = ({
   error: Error
   isOffline: boolean
   attemptNo: number
-  retryAt: Date
+  retryAt: Date | null
 }): ErrorStatus => ({
   type: 'error',
   error,
@@ -71,6 +81,8 @@ const createErrorStatus = ({
 /** @internal */
 export interface ConnectionStatusStoreOptions {
   bifur: BifurClient
+  /** The shared, replaying token observable passed to bifur, used to resume after rejection. */
+  token$?: Observable<string | null>
 }
 
 /**
@@ -80,32 +92,44 @@ export interface ConnectionStatusStoreOptions {
  */
 export function createConnectionStatusStore({
   bifur,
+  token$,
 }: ConnectionStatusStoreOptions): ConnectionStatusStore {
-  const connectionStatus$: Observable<ConnectionStatus> = merge(
-    bifur.heartbeats,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline')))),
-  ).pipe(
-    map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
-    catchWithCount((error, successiveErrorsCount, caught) => {
-      const timeUntilRetry = Math.min(1000 * 240, expBackoff(successiveErrorsCount))
-      const retryAt = new Date(new Date().getTime() + timeUntilRetry)
-      const expiry$ = timer(retryAt)
-      const isOffline = !navigator.onLine
-      const initialErrorStatus = createErrorStatus({
-        error: error as Error,
-        retryAt,
-        isOffline,
-        attemptNo: successiveErrorsCount,
-      })
+  const connectionStatus$: Observable<ConnectionStatus> = (token$ || of(null)).pipe(
+    distinctUntilChanged(),
+    switchMap(() =>
+      merge(
+        bifur.heartbeats,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline')))),
+      ).pipe(
+        map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
+        catchWithCount((error, successiveErrorsCount, caught) => {
+          const unauthorized =
+            error instanceof WebSocketError && error.code === ERROR_CODES.UNAUTHORIZED
+          const timeUntilRetry = Math.min(1000 * 240, expBackoff(successiveErrorsCount))
+          const retryAt = unauthorized ? null : new Date(Date.now() + timeUntilRetry)
+          const isOffline = !navigator.onLine
+          const initialErrorStatus = createErrorStatus({
+            error: error instanceof Error ? error : new Error(String(error)),
+            retryAt,
+            isOffline,
+            attemptNo: successiveErrorsCount,
+          })
 
-      const triggerRetry$ = NEVER.pipe(
-        takeUntil(isOffline ? onOnline$ : merge(expiry$, onOnline$, onRetry$)),
-      )
+          const retry$ =
+            retryAt === null
+              ? onRetry$
+              : isOffline
+                ? onOnline$
+                : merge(timer(retryAt), onOnline$, onRetry$)
+          const triggerRetry$ = NEVER.pipe(takeUntil(retry$))
 
-      return concat(of(initialErrorStatus), triggerRetry$.pipe(take(1)), caught)
-    }),
+          return concat(of(initialErrorStatus), triggerRetry$.pipe(take(1)), caught)
+        }),
+      ),
+    ),
     startWith(CONNECTING),
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   return {connectionStatus$}
