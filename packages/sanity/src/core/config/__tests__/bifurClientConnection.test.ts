@@ -217,4 +217,36 @@ describe('the studio bifur connection (createBifurClient)', () => {
     subscribe(heartbeats$)
     expect(FakeWebSocket.instances).toHaveLength(2)
   })
+
+  it('closes the socket when the page enters the back/forward cache', () => {
+    const heartbeats$ = createHeartbeats()
+    const errors: unknown[] = []
+    subscribe(heartbeats$, {error: (err) => errors.push(err)})
+    const [socket] = FakeWebSocket.instances
+    socket.finishHandshake()
+
+    // Left open, the browser closes it itself and logs "WebSocket connection to … failed: Page
+    // entered Back-Forward Cache"
+    window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: true}))
+
+    expect(socket.closeCalls).toEqual([
+      expect.objectContaining({code: 1000, readyStateAtCall: socket.OPEN}),
+    ])
+    expect(errors).toEqual([expect.any(WebSocketError)])
+
+    // A page restored from the cache connects again
+    subscribe(heartbeats$)
+    expect(FakeWebSocket.instances).toHaveLength(2)
+  })
+
+  it('keeps the socket open when the page is hidden without entering the back/forward cache', () => {
+    const heartbeats$ = createHeartbeats()
+    subscribe(heartbeats$)
+    const [socket] = FakeWebSocket.instances
+    socket.finishHandshake()
+
+    window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: false}))
+
+    expect(socket.closeCalls).toEqual([])
+  })
 })
