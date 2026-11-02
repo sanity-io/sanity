@@ -15,6 +15,7 @@ import {
   type VerdictsFile,
 } from './contracts'
 import {createClaudeExplainer, type Explainer} from './explain'
+import {fakeSignatureOf} from './fakeSignature'
 import {fileFailures, type ReportPair, summaryMarkdown} from './fileFailures'
 import {engineIssueTitle, parseSections, printDefinition} from './issueBody'
 import {
@@ -31,7 +32,25 @@ const handFiledIssues = JSON.parse(
 
 const COMMIT = 'a669759627'
 const DMP_SIGNATURE = 'lost-edits | rejected | 400 | mutationError | diffMatchPatch'
-const FAKE_SIGNATURE = 'fake-mismatch | mutations | diffMatchPatch | 200->400 | mutationError'
+const FAKE_SIGNATURE = fakeSignatureOf(
+  [
+    {
+      request: {
+        kind: 'mutations',
+        mutations: [{patch: {id: 'drafts.article-gen', diffMatchPatch: {title: '@@ -1 +1 @@'}}}],
+      },
+    },
+  ],
+  {
+    submission: 0,
+    transactionId: 'tx-1',
+    recorded: {statusCode: 200},
+    fake: {statusCode: 200},
+    real: {statusCode: 400, errorType: 'mutationError'},
+    fakeDocuments: {},
+    realDocuments: {},
+  },
+)
 
 const INITIAL = [{_id: 'drafts.article-gen', _type: 'article', title: 'draft'}]
 
@@ -404,7 +423,7 @@ describe('fileFailures', () => {
     )
     const [{title, description}] = linear.create.mock.calls[0]
     expect(title).toBe(
-      'fake content lake differs from the real one: mutations | diffMatchPatch | 200->400 | mutationError',
+      'fake content lake differs from the real one: mutations | patch:diffMatchPatch | 200->400 | mutationError',
     )
     expect(description).toContain('"fake": 400')
     expect(description).not.toContain(`sync-gen-signature: ${DMP_SIGNATURE}`)

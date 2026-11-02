@@ -78,7 +78,7 @@ describe('fakeSignatureOf', () => {
     })
     expect(
       fakeSignatureOf([{request: referencePatch('drafts.article-gen', 'seed', 'x')}], comparison),
-    ).toBe('fake-mismatch | mutations | patch:set | 200->200 | document:author,title')
+    ).toBe('fake-mismatch | mutations | patch:set | 200->200 | document:author+title')
   })
 
   test('names a document only one side has', () => {
@@ -93,6 +93,14 @@ describe('fakeSignatureOf', () => {
 })
 
 describe('requestOperations', () => {
+  test('joins operations with the + the generator uses for the operations of one mutation', () => {
+    const request: SubmissionRequest = {
+      kind: 'mutations',
+      mutations: [{patch: {id: 'a', set: {title: 'one'}, insert: {after: 'items[-1]', items: []}}}],
+    }
+    expect(requestOperations(request)).toBe('patch:insert+patch:set')
+  })
+
   test('lists action and patch operations once, sorted, without the empty action guard', () => {
     const request: SubmissionRequest = {
       kind: 'actions',
@@ -105,7 +113,7 @@ describe('requestOperations', () => {
       ],
     }
     expect(requestOperations(request)).toBe(
-      'document.create,document.edit:insert,document.edit:set,document.edit:setIfMissing',
+      'document.create+document.edit:insert+document.edit:set+document.edit:setIfMissing',
     )
   })
 
@@ -118,6 +126,6 @@ describe('requestOperations', () => {
         {delete: {id: 'b'}},
       ],
     }
-    expect(requestOperations(request)).toBe('createIfNotExists,delete,patch:unset')
+    expect(requestOperations(request)).toBe('createIfNotExists+delete+patch:unset')
   })
 })
