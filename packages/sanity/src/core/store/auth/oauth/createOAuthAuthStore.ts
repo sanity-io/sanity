@@ -70,7 +70,7 @@ import {
   OAuthRequestTimeoutError,
   type OAuthTokenResponse,
 } from './oauthEndpoints'
-import {createCodeChallenge, createCodeVerifier, createState} from './pkce'
+import {createCodeChallenge, createCodeVerifier, createState, stateWithReturnTo} from './pkce'
 import {
   failureOf,
   type OAuthFailure,
@@ -260,29 +260,26 @@ function createTabState<T>(): Pick<BroadcastedState<T>, 'value' | 'get' | 'updat
 }
 
 /**
- * Refuses a redirect URI the authorization server would reject, before the flow is stored: it has
- * to be absolute and without a fragment (RFC 6749 section 3.1.2). It also has to be on the Studio
- * origin, because the verifier and `state` live in this origin's sessionStorage and the response
- * has to come back here to be exchanged.
+ * Refuses a redirect URL the authorization server would reject, before the flow is stored: it has
+ * to be absolute and without a fragment (RFC 6749 section 3.1.2). `redirectUri` also has to be on
+ * the Studio `origin`, because the verifier and `state` live in this origin's sessionStorage and
+ * the response has to come back here to be exchanged. `redirectRelay` is on another origin, since
+ * the relay sends the response back here, and has to be `https`.
  */
-function assertRedirectUri(redirectUri: string, origin: string): void {
-  let url: URL
-  try {
-    url = new URL(redirectUri)
-  } catch {
-    throw new Error(
-      `auth.experimental_oauth.redirectUri must be an absolute URL, got ${redirectUri}`,
-    )
+function assertRedirectUrl(
+  option: 'redirectUri' | 'redirectRelay',
+  value: string,
+  rules: {origin?: string; https?: boolean},
+): void {
+  const name = `auth.experimental_oauth.${option}`
+  if (!URL.canParse(value)) throw new Error(`${name} must be an absolute URL, got ${value}`)
+  if (value.includes('#')) throw new Error(`${name} must not have a fragment, got ${value}`)
+  const url = new URL(value)
+  if (rules.https && url.protocol !== 'https:') {
+    throw new Error(`${name} must be an https URL, got ${value}`)
   }
-  if (redirectUri.includes('#')) {
-    throw new Error(
-      `auth.experimental_oauth.redirectUri must not have a fragment, got ${redirectUri}`,
-    )
-  }
-  if (url.origin !== origin) {
-    throw new Error(
-      `auth.experimental_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
-    )
+  if (rules.origin !== undefined && url.origin !== rules.origin) {
+    throw new Error(`${name} must be on the Studio origin (${rules.origin}), got ${value}`)
   }
 }
 
@@ -375,6 +372,7 @@ function clearFlow(key: string): void {
 export function _createOAuthAuthStore({
   clientId,
   redirectUri: redirectUriOption,
+  redirectRelay,
   renewBeforeExpiryMs = DEFAULT_RENEW_BEFORE_EXPIRY_MS,
   projectId,
   dataset,
@@ -392,6 +390,9 @@ export function _createOAuthAuthStore({
   isHidden = defaultEnvironment.isHidden,
   locksAvailable,
 }: OAuthAuthStoreOptions & OAuthAuthStoreEnvironment): OAuthAuthStore {
+  if (redirectRelay !== undefined) {
+    assertRedirectUrl('redirectRelay', redirectRelay, {https: true})
+  }
   if (!Number.isFinite(renewBeforeExpiryMs) || renewBeforeExpiryMs < 0) {
     throw new Error(
       `auth.experimental_oauth.renewBeforeExpiryMs must be a non-negative number of milliseconds, got ${renewBeforeExpiryMs}`,
@@ -955,11 +956,16 @@ export function _createOAuthAuthStore({
     const codeVerifier = createCodeVerifier()
     const oauthState = createState()
     const {origin} = getLocation()
-    const redirectUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
-    assertRedirectUri(redirectUri, origin)
+    const studioUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
+    assertRedirectUrl('redirectUri', studioUri, {origin})
+    // Through a relay, the authorization server redirects to the relay, which redirects on to the
+    // Studio URL it reads from `state`. The code is then redeemed with the relay URL, the redirect
+    // URL it was issued for.
+    const redirectUri = redirectRelay ?? studioUri
+    const state = redirectRelay ? stateWithReturnTo(oauthState, studioUri) : oauthState
     writeFlow(flowStorageKey, {
       codeVerifier,
-      state: oauthState,
+      state,
       redirectUri,
       redirectPath: withoutResponseParams(redirectPath, origin),
     })
@@ -973,7 +979,7 @@ export function _createOAuthAuthStore({
         clientId,
         redirectUri,
         codeChallenge: await createCodeChallenge(codeVerifier),
-        state: oauthState,
+        state,
       }),
     )
   }

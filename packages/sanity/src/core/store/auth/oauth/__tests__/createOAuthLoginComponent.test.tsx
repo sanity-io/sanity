@@ -141,6 +141,72 @@ describe('OAuth login component', () => {
     subscription.unsubscribe()
   })
 
+  it('sends the authorization response through a redirect relay, with the Studio URL in state', async () => {
+    // A branch deploy's origin isn't known ahead of time, so it can't be a registered redirect
+    // URL. The application registers a relay instead, which reads the Studio URL from `state`
+    // and redirects there.
+    const relay = 'https://oauth-relay.example/'
+    const navigate = vi.fn()
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      redirectRelay: relay,
+      basePath: '/oauth',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'}),
+      getLocation: () => ({origin: ORIGIN, pathname: '/oauth', search: ''}),
+      navigate,
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/oauth/structure" />
+      </TestProvider>,
+    )
+    await userEvent.click(screen.getByRole('button', {name: 'Sign in with Sanity'}))
+
+    await waitFor(() => expect(navigate).toHaveBeenCalledTimes(1))
+    const authorizeUrl = new URL(navigate.mock.calls[0][0])
+    const flow = JSON.parse(sessionStorage.getItem(FLOW_KEY)!)
+    const state = authorizeUrl.searchParams.get('state')!
+    const [random, returnTo] = state.split('.')
+
+    expect(authorizeUrl.searchParams.get('redirect_uri')).toBe(relay)
+    expect(random).toMatch(/^[A-Za-z0-9_-]+$/)
+    expect(Buffer.from(returnTo, 'base64url').toString()).toBe(`${ORIGIN}/oauth`)
+    // The code is redeemed with the redirect URL it was issued for: the relay.
+    expect(flow).toMatchObject({state, redirectUri: relay, redirectPath: '/oauth/structure'})
+  })
+
+  it('refuses a redirect relay that is not an absolute https URL without a fragment', () => {
+    const create = (redirectRelay: string) => () =>
+      _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: 'test-dataset',
+        clientId: 'oc-test-client',
+        redirectRelay,
+        clientFactory: createAnonymousClient,
+        endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'}),
+        getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
+        navigate: vi.fn(),
+        replaceUrl: vi.fn(),
+        withLock: (_name, task) => task(),
+        locksAvailable: false,
+      })
+
+    expect(create('http://oauth-relay.example/')).toThrow(/redirectRelay/)
+    expect(create('/relay')).toThrow(/redirectRelay/)
+    expect(create('https://oauth-relay.example/#x')).toThrow(/redirectRelay/)
+    expect(create('https://oauth-relay.example/')).not.toThrow()
+  })
+
   it('leaves an earlier authorization response out of the path it returns to', async () => {
     // A response this tab did not request stays in the URL, and the login screen passes that URL
     // on. Returning to it after the next sign-in would bring the old code back.

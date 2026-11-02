@@ -116,6 +116,19 @@ export interface OAuthConfig {
   redirectUri?: string
 
   /**
+   * URL of a redirect relay registered as the application's redirect URL, for Studios whose URL
+   * isn't known ahead of time, such as branch deploys. The authorization server sends the user to
+   * the relay, which reads the Studio URL (`redirectUri`, or its default) from `state` and
+   * redirects there. The code is redeemed with the relay URL as the redirect URL. Must be an
+   * absolute `https` URL without a fragment.
+   *
+   * The relay must only redirect to Studio URLs on an allowlist. Anyone can start a sign-in with
+   * their own PKCE verifier, so a relay that follows any URL in `state` hands codes to whoever
+   * wrote the URL.
+   */
+  redirectRelay?: string
+
+  /**
    * How long before the access token expires the Studio renews it, in milliseconds. Defaults to
    * 60 seconds, which covers request latency. The renewal is never scheduled earlier than halfway
    * through the token's lifetime, so a margin longer than a short-lived token cannot make the
