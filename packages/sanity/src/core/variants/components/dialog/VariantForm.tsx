@@ -1,7 +1,9 @@
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon} from '@sanity/icons/Add'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
+import {type PortableTextBlock} from '@sanity/types'
 import {Inline, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
@@ -21,7 +23,6 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {getDescriptionText} from '../../../util/getDescriptionText'
 import {
   type ResolvedVariantType,
   useVariantConditions,
@@ -167,6 +168,14 @@ function hasConditionRowsValidationErrors(
   validation: Map<number, ConditionRowValidation>,
 ): boolean {
   return Array.from(validation.values()).some(({key, value}) => key || value)
+}
+
+function getPortableTextDescriptionValue(description?: PortableTextBlock[]): string {
+  if (!Array.isArray(description) || !description.every(isPortableTextBlock)) {
+    return ''
+  }
+
+  return toPlainText(description)
 }
 
 function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
@@ -443,7 +452,7 @@ export function VariantForm(props: {
           onChange={handleDescriptionChange}
           placeholder={t('dialog.create.description.placeholder')}
           rows={3}
-          value={getDescriptionText(value.metadata?.description)}
+          value={getPortableTextDescriptionValue(value.metadata?.description)}
         />
       </VStack>
 

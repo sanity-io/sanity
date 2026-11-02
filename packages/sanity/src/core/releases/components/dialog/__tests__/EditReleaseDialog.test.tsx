@@ -20,18 +20,20 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasesPermissionsMockReturnTrue),
 }))
 
-const portableTextDescription = [
+const blockArrayDescription = [
   {
     _key: 'block1',
     _type: 'block',
     style: 'normal',
     markDefs: [],
-    children: [
-      {_key: 'span1', _type: 'span', marks: [], text: 'Ships with '},
-      {_key: 'ref1', _type: 'releaseReference', releaseId: 'rOther'},
-      {_key: 'span2', _type: 'span', marks: [], text: ' tomorrow'},
-    ],
+    children: [{_key: 'span1', _type: 'span', marks: [], text: 'Written as blocks'}],
   },
+]
+
+const nonStringDescriptions: [string, unknown][] = [
+  ['an array of blocks', blockArrayDescription],
+  ['an object', {_type: 'unknown', text: 'Not a description'}],
+  ['a number', 42],
 ]
 
 // Release metadata is untyped JSON on a system document, so any shape can arrive from the store.
@@ -65,14 +67,18 @@ describe('EditReleaseDialog with a description that is not a string', () => {
     useReleaseOperationsMockReturn.updateRelease.mockClear()
   })
 
-  it('shows the plain text of a Portable Text description', async () => {
-    await renderEditDialog(releaseFromContentLake(portableTextDescription))
+  it.each(nonStringDescriptions)(
+    'renders the title and an empty description field when the description is %s',
+    async (_label, description) => {
+      await renderEditDialog(releaseFromContentLake(description))
 
-    expect(screen.getByTestId('release-form-description')).toHaveValue('Ships with  tomorrow')
-  })
+      expect(screen.getByTestId('release-form-title')).toHaveValue('Spring')
+      expect(screen.getByTestId('release-form-description')).toHaveValue('')
+    },
+  )
 
-  it('keeps a Portable Text description untouched when only the title is saved', async () => {
-    await renderEditDialog(releaseFromContentLake(portableTextDescription))
+  it('keeps a description that is not a string untouched when only the title is saved', async () => {
+    await renderEditDialog(releaseFromContentLake(blockArrayDescription))
 
     await userEvent.type(screen.getByTestId('release-form-title'), ' drop')
     await userEvent.click(screen.getByTestId('save-release-details-button'))
@@ -82,23 +88,8 @@ describe('EditReleaseDialog with a description that is not a string', () => {
         expect.objectContaining({
           metadata: expect.objectContaining({
             title: 'Spring drop',
-            description: portableTextDescription,
+            description: blockArrayDescription,
           }),
-        }),
-      )
-    })
-  })
-
-  it('saves the edited plain text when a Portable Text description is edited', async () => {
-    await renderEditDialog(releaseFromContentLake(portableTextDescription))
-
-    await userEvent.type(screen.getByTestId('release-form-description'), '!')
-    await userEvent.click(screen.getByTestId('save-release-details-button'))
-
-    await waitFor(() => {
-      expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalledWith(
-        expect.objectContaining({
-          metadata: expect.objectContaining({description: 'Ships with  tomorrow!'}),
         }),
       )
     })

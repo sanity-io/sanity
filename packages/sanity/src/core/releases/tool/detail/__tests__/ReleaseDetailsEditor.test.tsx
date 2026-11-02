@@ -53,25 +53,20 @@ const otherRelease = {
   },
 } as ReleaseDocument
 
-const portableTextDescription = [
+const blockArrayDescription = [
   {
     _key: 'block1',
     _type: 'block',
     style: 'normal',
     markDefs: [],
-    children: [
-      {_key: 'span1', _type: 'span', marks: [], text: 'Ships with '},
-      {_key: 'ref1', _type: 'releaseReference', releaseId: 'rOther'},
-      {_key: 'span2', _type: 'span', marks: [], text: ' tomorrow'},
-    ],
+    children: [{_key: 'span1', _type: 'span', marks: [], text: 'Written as blocks'}],
   },
-  {
-    _key: 'block2',
-    _type: 'block',
-    style: 'normal',
-    markDefs: [],
-    children: [{_key: 'span3', _type: 'span', marks: [], text: 'Second paragraph'}],
-  },
+]
+
+const nonStringDescriptions: [string, unknown][] = [
+  ['an array of blocks', blockArrayDescription],
+  ['an object', {_type: 'unknown', text: 'Not a description'}],
+  ['a number', 42],
 ]
 
 // Release metadata is untyped JSON on a system document, so any shape can arrive from the store.
@@ -233,22 +228,22 @@ describe('ReleaseDetailsEditor', () => {
       vi.useRealTimers()
     })
 
-    it('shows the plain text of a Portable Text description in the description field', async () => {
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
-        wrapper,
-      })
-      await flushMicrotasksThisIsACodeSmell()
+    it.each(nonStringDescriptions)(
+      'renders the title and an empty description field when the description is %s',
+      async (_label, description) => {
+        const wrapper = await createTestProvider()
+        render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
+        await flushMicrotasksThisIsACodeSmell()
 
-      expect(screen.getByTestId('release-form-description')).toHaveValue(
-        'Ships with  tomorrow\n\nSecond paragraph',
-      )
-    })
+        expect(screen.getByTestId('release-form-title')).toHaveValue('Initial Title')
+        expect(screen.getByTestId('release-form-description')).toHaveValue('')
+      },
+    )
 
-    it('keeps a Portable Text description untouched when only the title is edited', async () => {
+    it('keeps a description that is not a string untouched when only the title is edited', async () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
       const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(blockArrayDescription)} />, {
         wrapper,
       })
       await flushMicrotasksThisIsACodeSmell()
@@ -263,36 +258,12 @@ describe('ReleaseDetailsEditor', () => {
           expect.objectContaining({
             metadata: expect.objectContaining({
               title: 'New Title',
-              description: portableTextDescription,
+              description: blockArrayDescription,
             }),
           }),
         )
       })
       expect(getDescriptionTelemetryPayloads()).toEqual([])
-      vi.useRealTimers()
-    })
-
-    it('saves the edited plain text when a Portable Text description is edited', async () => {
-      vi.useFakeTimers({shouldAdvanceTime: true})
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
-        wrapper,
-      })
-      await flushMicrotasksThisIsACodeSmell()
-
-      const descriptionInput = screen.getByTestId('release-form-description') as HTMLTextAreaElement
-      await userEvent.type(descriptionInput, '!', {delay: null})
-      await vi.advanceTimersByTimeAsync(250)
-
-      await waitFor(() => {
-        expect(getUpdateReleaseMock()).toHaveBeenLastCalledWith(
-          expect.objectContaining({
-            metadata: expect.objectContaining({
-              description: 'Ships with  tomorrow\n\nSecond paragraph!',
-            }),
-          }),
-        )
-      })
       vi.useRealTimers()
     })
 
@@ -353,34 +324,19 @@ describe('ReleaseDetailsEditor', () => {
       expect(screen.queryByTestId('release-form-title')).toBeNull()
     })
 
-    it('renders the plain text of a Portable Text description', async () => {
-      const wrapper = await createTestProvider({
-        config: {beta: {variants: {enabled: true}}},
-      })
-      render(<ReleaseDetailsEditor release={releaseFromContentLake(portableTextDescription)} />, {
-        wrapper,
-      })
-      await flushMicrotasksThisIsACodeSmell()
+    it.each(nonStringDescriptions)(
+      'renders no description when the description is %s',
+      async (_label, description) => {
+        const wrapper = await createTestProvider({
+          config: {beta: {variants: {enabled: true}}},
+        })
+        render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
+        await flushMicrotasksThisIsACodeSmell()
 
-      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
-      expect(screen.getByTestId('release-description-display')).toHaveTextContent(
-        'Ships with tomorrow Second paragraph',
-      )
-    })
-
-    it.each([
-      ['an object', {_type: 'unknown', text: 'Not a description'}],
-      ['a number', 42],
-    ])('renders no description when the description is %s', async (_label, description) => {
-      const wrapper = await createTestProvider({
-        config: {beta: {variants: {enabled: true}}},
-      })
-      render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
-      await flushMicrotasksThisIsACodeSmell()
-
-      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
-      expect(screen.queryByTestId('release-description-display')).toBeNull()
-    })
+        expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+        expect(screen.queryByTestId('release-description-display')).toBeNull()
+      },
+    )
   })
 
   describe('when there is no permission', () => {
