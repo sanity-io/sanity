@@ -290,6 +290,47 @@ describe('fileFailures', () => {
     ])
   })
 
+  test('prints the repro as a hand-filed style literal with the harness imports', async () => {
+    const linear = fakeLinear()
+
+    await fileFailures([pair([failure(DMP_SIGNATURE)], [verdict(DMP_SIGNATURE)])], {
+      dryRun: false,
+      linear,
+      explain: explainWith(),
+    })
+
+    const [{description}] = linear.create.mock.calls[0]
+    const repro = parseSections(description).find((section) => section.heading === 'Repro')?.body
+    expect(repro).toContain(
+      "import {runSyncTest, type SyncTestDefinition} from '../../../../../test/sync/syncTest'",
+    )
+    expect(repro).not.toContain('articleSchema')
+    expect(repro).toContain('Pass it to `runSyncTest(syncTest)`.')
+    expect(repro).toContain("id: 'GEN',")
+    expect(repro).toContain(
+      "{client: 'A', do: 'patch', id: 'drafts.article-gen', patches: [{set: {title: 'one'}}]},",
+    )
+    const literal = repro?.match(/```ts\n([\s\S]*?)\n```/)?.[1]
+    expect(literal).not.toContain('"')
+  })
+
+  test('points an operations repro at the exported article schema', async () => {
+    const linear = fakeLinear()
+
+    await fileFailures(
+      [pair([failure(DMP_SIGNATURE, 'operations')], [verdict(DMP_SIGNATURE)], 'operations')],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    const [{description}] = linear.create.mock.calls[0]
+    expect(description).toContain(
+      "import {articleSchema} from '../../../../../test/sync/generator'",
+    )
+    expect(description).toContain(
+      "runSyncTest(syncTest, {schema: articleSchema, typeName: 'article'})",
+    )
+  })
+
   test('files nothing when the AI text rewrites a script-owned section', async () => {
     const linear = fakeLinear()
     const explain = explainWith({
@@ -507,7 +548,7 @@ describe('passing samples', () => {
     ])
     const [{title, description}] = linear.create.mock.calls[0]
     expect(title).toMatch(/^fake content lake differs from the real one: mutations/)
-    expect(description).toContain('Passing run 4 of SYNC_GEN_SEED=7')
+    expect(description).toContain('seed 7, run 4')
     expect(description).toContain('"real": 400')
     expect(description).not.toContain('It fails with')
     expect(description.split('\n').filter((line) => line.startsWith('sync-gen-'))).toEqual([

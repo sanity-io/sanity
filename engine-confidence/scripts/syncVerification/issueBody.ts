@@ -4,6 +4,7 @@ import {
   type Verdict,
   type VerdictDifference,
 } from './contracts'
+import {printLiteral} from './printLiteral'
 
 export const ENGINE_SIGNATURE_PREFIX = 'sync-gen-signature: '
 export const FAKE_SIGNATURE_PREFIX = 'sync-gen-fake-signature: '
@@ -28,7 +29,7 @@ export const ENGINE_SECTION_ORDER = [
 ]
 
 const SYNC_DIRECTORY = 'packages/sanity/src/core/store/document/sync'
-const GENERATOR_PATH = 'packages/sanity/test/sync/generator.ts'
+const HARNESS_IMPORT_PATH = '../../../../../test/sync'
 const MESSAGE_LINE_LIMIT = 40
 
 const RULE_PHRASES: Record<string, string> = {
@@ -72,8 +73,17 @@ export interface ReplayResult {
 }
 
 export function printDefinition(source: ReproSource): string {
-  const literal = JSON.stringify(source.definition, null, 2)
-  return `const syncTest: SyncTestDefinition = ${literal.replace(/"(\w+)":/g, '$1:')}`
+  const definition = {...source.definition, id: 'GEN', title: 'Generated sequence'}
+  return `const syncTest: SyncTestDefinition = ${printLiteral(definition)}`
+}
+
+export function reproImports(seam: SyncTestDefinition['seam']): string {
+  const schemaImport =
+    seam === 'operations' ? [`import {articleSchema} from '${HARNESS_IMPORT_PATH}/generator'`] : []
+  return [
+    ...schemaImport,
+    `import {runSyncTest, type SyncTestDefinition} from '${HARNESS_IMPORT_PATH}/syncTest'`,
+  ].join('\n')
 }
 
 export function engineIssueTitle(fields: SignatureFields): string {
@@ -118,7 +128,7 @@ function foundBy(source: ReproSource, commit: string): string {
 export function reproSection(source: ReproSource, commit: string): string {
   const runCall =
     source.definition.seam === 'operations'
-      ? `This uses the operations seam, so build \`@sanity/validation\` first (\`pnpm --filter @sanity/validation build\`) and run it with \`runSyncTest(syncTest, {schema, typeName: 'article'})\`, where \`schema\` is the generator's schema in \`${GENERATOR_PATH}\`.`
+      ? `This uses the operations seam, so build \`@sanity/validation\` first (\`pnpm --filter @sanity/validation build\`) and run it with \`runSyncTest(syncTest, {schema: articleSchema, typeName: 'article'})\`.`
       : 'Pass it to `runSyncTest(syncTest)`.'
   const intro = `${foundBy(source, commit)} Put this in a scratch \`*.sync.test.ts\` in \`${SYNC_DIRECTORY}/\`. ${runCall}`
   const failureOutput =
@@ -127,7 +137,7 @@ export function reproSection(source: ReproSource, commit: string): string {
       : [`${intro} It fails with:`, fenced('', firstLines(source.message))]
   return [
     ...failureOutput,
-    fenced('ts', printDefinition(source)),
+    fenced('ts', `${reproImports(source.definition.seam)}\n\n${printDefinition(source)}`),
     fenced('bash', `pnpm vitest run --project=sanity ${SYNC_DIRECTORY}/<scratch>.sync.test.ts`),
   ].join('\n\n')
 }
