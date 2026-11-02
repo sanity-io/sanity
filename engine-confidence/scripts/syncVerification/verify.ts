@@ -166,9 +166,14 @@ async function runAgainstWorkspace(
     console.error(error instanceof Error ? error.message : String(error))
     return workspaceErrorResults(report, error)
   }
+  function reportCloseFailure(error: unknown): void {
+    console.error(
+      `Could not delete ${http.dataset}: ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
   const closeAndExit = async (signal: string) => {
     console.error(`${signal}: cleaning up ${http.dataset} before exiting`)
-    await workspace.close()
+    await workspace.close().catch(reportCloseFailure)
     process.exit(130)
   }
   process.once('SIGINT', closeAndExit)
@@ -177,9 +182,7 @@ async function runAgainstWorkspace(
     return await verifyReport(report, http, runId, console.log)
   } finally {
     await workspace.close().catch((error: unknown) => {
-      console.error(
-        `Could not delete ${http.dataset}: ${error instanceof Error ? error.message : String(error)}`,
-      )
+      reportCloseFailure(error)
       process.exitCode = 1
     })
   }
