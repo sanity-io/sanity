@@ -292,7 +292,7 @@ export function ReleasesMenuItem(
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Button
                 as="span"
-                data-testid="release-detail-link-space"
+                data-testid="detail-link-space"
                 icon={LaunchIcon}
                 mode="bleed"
                 padding={2}

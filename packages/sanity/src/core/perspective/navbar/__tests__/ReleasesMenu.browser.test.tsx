@@ -204,7 +204,7 @@ describe('ReleasesMenu release detail link', () => {
     await userEvent.hover(menuItem)
     await expect.poll(() => detailLinkOpacity('rASAP')).toBe('1')
 
-    const space = menuItem.element().querySelector('[data-testid="release-detail-link-space"]')!
+    const space = menuItem.element().querySelector('[data-testid="detail-link-space"]')!
     const spaceRect = space.getBoundingClientRect()
     const linkRect = detailLink('rASAP').getBoundingClientRect()
     expect(linkRect.width).toBeGreaterThan(0)
