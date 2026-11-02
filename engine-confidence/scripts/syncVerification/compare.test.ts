@@ -94,13 +94,23 @@ describe('classifyFailure', () => {
     const rejected = {statusCode: 400, errorType: 'mutationError'}
     const verdict = classifyFailure(
       failure,
-      replay({comparisons: [comparison({recorded: rejected, fake: rejected, real: rejected})]}),
+      replay({
+        comparisons: [
+          comparison({
+            submission: 1,
+            transactionId: 'A-tx-2',
+            recorded: rejected,
+            fake: rejected,
+            real: rejected,
+          }),
+        ],
+      }),
     )
     expect(verdict).toEqual({
       signature: 'lost-edits | rejected | 400 | mutationError | diffMatchPatch',
       verdict: 'confirmed',
       summary:
-        "The real Content Lake answered 400 mutationError for submission 0, as the fake did, and matched the fake's documents after the 1 replayed submission.",
+        "The real Content Lake answered 400 mutationError for submission 1, as the fake did, and matched the fake's documents after the 1 replayed submission.",
       differences: [],
       replayed: 1,
     })
@@ -135,6 +145,13 @@ describe('classifyFailure', () => {
     )
     expect(verdict.verdict).toBe('assumed')
     expect(verdict.summary).toContain('a dropped listener event')
+  })
+
+  test('marks a failure whose only replayed submission is an outside edit as assumed', () => {
+    const verdict = classifyFailure(failure, replay())
+    expect(failure.submissions[0].request.kind).toBe('outside')
+    expect(verdict).toMatchObject({verdict: 'assumed', replayed: 1, differences: []})
+    expect(verdict.summary).toContain('Only outside edits were replayed')
   })
 
   test('marks a failure with nothing to replay as assumed', () => {

@@ -76,12 +76,12 @@ The report and verdicts shapes live in `scripts/syncVerification/contracts.ts`.
 
 Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision preconditions are rewritten to the real revisions, so failures never touch each other's documents. Each failure's documents are deleted when it finishes.
 
-| Verdict         | Meaning                                                                                                                                   |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `confirmed`     | The real server agreed on every replayed submission.                                                                                      |
-| `fake-mismatch` | The real server disagreed on at least one submission. `differences` lists each one.                                                       |
-| `assumed`       | Nothing was replayed, or the failure also depends on a listener fault or an injected rejection, which the real server cannot reproduce.   |
-| `error`         | The step could not finish for that failure, or the model replayed in submission order did not reproduce the generator's recorded outcome. |
+| Verdict         | Meaning                                                                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`     | The real server agreed on every replayed submission.                                                                                                                      |
+| `fake-mismatch` | The real server disagreed on at least one submission. `differences` lists each one.                                                                                       |
+| `assumed`       | Nothing was replayed, only outside edits were replayed, or the failure also depends on a listener fault or an injected rejection, which the real server cannot reproduce. |
+| `error`         | The step could not finish for that failure, or the model replayed in submission order did not reproduce the generator's recorded outcome.                                 |
 
 Passing samples in `report.samples` are replayed the same way, after the failures, and land in `samples` in the verdicts file as `confirmed`, `fake-mismatch` or `error`. A sample is never `assumed`.
 

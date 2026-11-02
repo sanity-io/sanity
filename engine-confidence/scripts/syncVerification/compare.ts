@@ -218,6 +218,17 @@ export function classifyFailure(failure: GeneratorFailure, replay: SequenceRepla
       differences: [],
     }
   }
+  const replayedFromClient = replay.comparisons.some(
+    (comparison) => failure.submissions[comparison.submission].request.kind !== 'outside',
+  )
+  if (!replayedFromClient) {
+    return {
+      ...base,
+      verdict: 'assumed',
+      summary: `${agreementSummary(replay)} Only outside edits were replayed, and the failure depends on how a Studio client handled them, which the real server cannot be made to reproduce.`,
+      differences: [],
+    }
+  }
   return {...base, verdict: 'confirmed', summary: agreementSummary(replay), differences: []}
 }
 
