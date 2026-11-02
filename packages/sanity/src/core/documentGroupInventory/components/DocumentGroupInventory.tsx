@@ -26,6 +26,7 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {usePerspective} from '../../perspective/usePerspective'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -52,6 +53,7 @@ import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -428,6 +430,17 @@ const Select: ComponentType<{
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
+  const perspective = usePerspective()
+
+  const servedVersion = readOnly
+    ? undefined
+    : resolveServedVersion({
+        perspective,
+        variantsEnabled: variantsEnabled ?? false,
+        versions: sets.flatMap((set) => set.variants.map(({document}) => document)),
+      })
+
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const isLocked = useSelector(machine, (snapshot) => snapshot.matches('locked'))
 
@@ -484,6 +497,9 @@ const Select: ComponentType<{
                     documentType={documentType}
                     onSelect={onSelect}
                     isSelected={selectedId === variant.id}
+                    servedStatus={
+                      servedVersion?.id === variant.id ? servedVersion.status : undefined
+                    }
                     perspectiveList={perspectiveList}
                   />
                 ),
@@ -524,12 +540,22 @@ const ManagedVariantRow: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
+  servedStatus: ServedStatus | undefined
   /**
    * Always supplied by manage mode, where this row is rendered. Optional only
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
+}> = ({
+  variant,
+  machine,
+  inventoryRef,
+  documentType,
+  onSelect,
+  isSelected,
+  servedStatus,
+  perspectiveList,
+}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -590,6 +616,7 @@ const ManagedVariantRow: ComponentType<{
         variant={variant}
         releases={releases}
         isSelected={isSelected}
+        servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}
