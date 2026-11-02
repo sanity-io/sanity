@@ -676,6 +676,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** The label text that indicates a version in the document group is served for the selected perspective and variant */
+  'document-group.version.served': 'Served',
+  /** The label text that indicates a base version in the document group is served because the selected variant has no version */
+  'document-group.version.served-instead': 'Served instead',
+  /** The tooltip for the badges that indicate which version in the document group is served for the selected perspective and variant */
+  'document-group.version.served.tooltip':
+    'A visitor matching the selected perspective will see this version.',
 
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
