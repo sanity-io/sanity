@@ -2,12 +2,21 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
 import {Button} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
-import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type RefAttributes,
+} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
@@ -26,6 +35,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useExcludedPerspective} from '../../useExcludedPerspective'
 import {usePerspective} from '../../usePerspective'
 import {useSetPerspective} from '../../useSetPerspective'
+import {ReleaseDetailLink} from './ReleaseDetailLink'
 import {ReleasesMenuItemIndicator} from './ReleasesLayerIndicator'
 
 export interface LayerRange {
@@ -52,7 +62,8 @@ const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
       }
     }
 
-    [data-ui='MenuItem']:hover & {
+    [data-ui='MenuItem']:hover &,
+    [data-ui='MenuItem'][data-hovered] & {
       opacity: 1;
     }
   `,
@@ -89,9 +100,14 @@ export function ReleasesMenuItem(
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
+    /** Called when the release's detail link is followed. */
+    onNavigateToRelease?: () => void
   } & RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, release, rangePosition} = props
+  const {ref, release, rangePosition, onNavigateToRelease} = props
+  const menuItemRef = useRef<HTMLButtonElement>(null)
+  const detailLinkRef = useRef<HTMLAnchorElement>(null)
+  const [detailLinkHovered, setDetailLinkHovered] = useState(false)
 
   const {
     document: {
@@ -131,6 +147,27 @@ export function ReleasesMenuItem(
     [releaseId, setPerspective],
   )
 
+  const handleMenuItemKeyDown = useCallback((event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== 'ArrowRight' || !detailLinkRef.current) return
+    event.preventDefault()
+    detailLinkRef.current.focus()
+  }, [])
+
+  // The menu's own handler still receives the other keys: the arrow keys move on from this
+  // release, because focusing the link leaves it as the menu's active item.
+  const handleDetailLinkKeyDown = useCallback((event: KeyboardEvent<HTMLAnchorElement>) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      menuItemRef.current?.focus()
+    } else if (event.key === ' ') {
+      event.preventDefault()
+      event.currentTarget.click()
+    }
+  }, [])
+
+  const handleDetailLinkMouseEnter = useCallback(() => setDetailLinkHovered(true), [])
+  const handleDetailLinkMouseLeave = useCallback(() => setDetailLinkHovered(false), [])
+
   const canReleaseBeExcluded = useMemo(() => {
     if (release === 'published') return false
     if (isDraftPerspective(release)) return isReleaseDocument(selectedPerspective)
@@ -148,9 +185,14 @@ export function ReleasesMenuItem(
       ref={ref}
     >
       <MenuItem
+        // The detail link lies over the item but outside it, so hovering the link ends the item's
+        // own hover; `data-hovered` keeps the row highlighted
+        data-hovered={detailLinkHovered ? '' : undefined}
         onClick={handleOnReleaseClick}
+        onKeyDown={handleMenuItemKeyDown}
         padding={1}
         pressed={active}
+        ref={menuItemRef}
         selected={active}
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
@@ -245,8 +287,32 @@ export function ReleasesMenuItem(
               </Box>
             )}
           </Box>
+          {isReleaseDocument(release) && (
+            // Reserves the detail link's footprint: the same button, hidden and inert
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+              <Button
+                as="span"
+                data-testid="release-detail-link-space"
+                icon={LaunchIcon}
+                mode="bleed"
+                padding={2}
+                style={{visibility: 'hidden'}}
+              />
+            </Box>
+          )}
         </Flex>
       </MenuItem>
+      {isReleaseDocument(release) && (
+        <ReleaseDetailLink
+          onKeyDown={handleDetailLinkKeyDown}
+          onMouseEnter={handleDetailLinkMouseEnter}
+          onMouseLeave={handleDetailLinkMouseLeave}
+          onNavigate={onNavigateToRelease}
+          ref={detailLinkRef}
+          releaseId={releaseId}
+          title={release.metadata.title || t('release.placeholder-untitled-release')}
+        />
+      )}
     </ReleasesMenuItemIndicator>
   )
 }

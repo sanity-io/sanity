@@ -49,6 +49,7 @@ export function ReleasesList({
   handleOpenBundleDialog,
   scrollElementRef,
   menuItemProps,
+  onNavigateToRelease,
   filterQuery = '',
 }: {
   areReleasesEnabled: boolean
@@ -58,6 +59,8 @@ export function ReleasesList({
   handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /** Called when a release's detail link is followed. */
+  onNavigateToRelease?: () => void
   filterQuery?: string
 }): JSX.Element {
   const {t} = useTranslation()
@@ -203,6 +206,7 @@ export function ReleasesList({
               range={range}
               currentGlobalBundleMenuItemRef={scrollElementRef}
               menuItemProps={menuItemProps}
+              onNavigateToRelease={onNavigateToRelease}
               showStackLine={showStackLine}
             />
           ))}

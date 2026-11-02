@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ChangeEvent, useCallback, useState} from 'react'
+import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -72,6 +72,14 @@ export function ReleasesMenu({
     setFilterQuery('')
   }, [resetMenuWidth, resetRangeVisibility])
 
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  // A release's detail link is not a menu item, so following it does not close the menu.
+  // Focusing the trigger does: the menu closes when focus leaves it, which is also how it handles
+  // Tab, and focus ends up where a menu item click leaves it.
+  const handleNavigateToRelease = useCallback(() => {
+    triggerRef.current?.focus()
+  }, [])
+
   return (
     <>
       <MenuButton
@@ -94,6 +102,7 @@ export function ReleasesMenu({
         id="releases-menu"
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
+        ref={triggerRef}
         menu={
           <Menu
             className={globalPerspectiveMenu}
@@ -123,6 +132,7 @@ export function ReleasesMenu({
                 selectedPerspectiveName={selectedPerspectiveName}
                 handleOpenBundleDialog={handleOpenBundleDialog}
                 menuItemProps={menuItemProps}
+                onNavigateToRelease={handleNavigateToRelease}
               />
             </Flex>
           </Menu>
