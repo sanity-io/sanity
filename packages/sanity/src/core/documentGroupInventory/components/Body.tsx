@@ -40,5 +40,12 @@ export const Body = styled.div(() => {
     mask-size: 100% 100%;
     animation: fade-mask;
     animation-timeline: scroll(self y);
+
+    [data-document-group-inventory-scroll='ancestor'] & {
+      overflow-y: visible;
+      overscroll-behavior: auto;
+      mask-image: none;
+      animation: none;
+    }
   `
 })
