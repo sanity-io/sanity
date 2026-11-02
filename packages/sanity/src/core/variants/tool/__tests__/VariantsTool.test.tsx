@@ -10,7 +10,6 @@ import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {VariantsUpsellProvider} from '../../contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
-import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
 import {getVariantId} from '../util'
 import VariantsTool from '../VariantsTool'
@@ -83,13 +82,18 @@ function settledMode(mode: VariantsMode): Promise<VariantsMode> {
   return Object.assign(Promise.resolve(mode), {status: 'fulfilled' as const, value: mode})
 }
 
+function setVariants(variants: SystemVariant[]) {
+  variantsMock.data = variants
+  variantsMock.byId = new Map(variants.map((variant) => [variant._id, variant]))
+}
+
 describe('VariantsTool', () => {
   const renderTool = async (mode: VariantsMode = 'default') => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    // The tool reads the mode with `use()`; a sync `render` act drops the commit's passive effects
-    // once a render has called `use()` on a thenable, so mount inside an awaited act
+    // The overview reads the mode with `use()`; a sync `render` act drops the commit's passive
+    // effects once a render has called `use()` on a thenable, so mount inside an awaited act
     // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
     await act(async () => {
       render(
@@ -134,26 +138,9 @@ describe('VariantsTool', () => {
   })
 
   describe('when the plan lacks content variants', () => {
-    it('renders the upsell panel and keeps the create button on the overview route', async () => {
+    it('shows the upsell panel and keeps the create button when there are no definitions', async () => {
       routerState.variantId = undefined
-      variantsMock.data = [variantAlphaAudience]
-      variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
-
-      await renderTool('upsell')
-
-      expect(
-        await screen.findByRole('heading', {level: 1, name: 'Variant definitions'}),
-      ).toBeInTheDocument()
-      expect(screen.getByTestId('variants-upsell-panel')).toBeInTheDocument()
-      expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
-      expect(screen.queryByPlaceholderText('Search variant definitions…')).not.toBeInTheDocument()
-      expect(useAllVariants).not.toHaveBeenCalled()
-    })
-
-    it('renders the same upsell page on a variant detail route', async () => {
-      routerState.variantId = getVariantId(variantAlphaAudience._id)
-      variantsMock.data = [variantAlphaAudience]
-      variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
+      setVariants([])
 
       await renderTool('upsell')
 
@@ -162,13 +149,35 @@ describe('VariantsTool', () => {
         screen.getByRole('heading', {level: 1, name: 'Variant definitions'}),
       ).toBeInTheDocument()
       expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
+      expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
+    })
+
+    it('keeps listing the definitions that already exist', async () => {
+      routerState.variantId = undefined
+      setVariants([variantAlphaAudience])
+
+      await renderTool('upsell')
+
+      expect(await screen.findByText('Alpha audience')).toBeInTheDocument()
+      expect(screen.queryByTestId('variants-upsell-panel')).not.toBeInTheDocument()
+    })
+
+    it('renders the detail page of a definition that already exists', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+
+      await renderTool('upsell')
+
       expect(
-        screen.queryByRole('heading', {level: 1, name: 'Alpha audience'}),
-      ).not.toBeInTheDocument()
+        await screen.findByRole('heading', {level: 1, name: 'Alpha audience'}),
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('edit-variant-button')).toBeEnabled()
+      expect(screen.queryByTestId('variants-upsell-panel')).not.toBeInTheDocument()
     })
 
     it('opens the upsell dialog instead of the create dialog from the create button', async () => {
       routerState.variantId = undefined
+      setVariants([variantAlphaAudience])
       const user = userEvent.setup()
 
       await renderTool('upsell')
@@ -185,9 +194,9 @@ describe('VariantsTool', () => {
   })
 
   describe('when the feature check failed', () => {
-    it('shows the unavailable notice and blocks creation with an error toast', async () => {
+    it('shows the unavailable notice when there are no definitions', async () => {
       routerState.variantId = undefined
-      const user = userEvent.setup()
+      setVariants([])
 
       await renderTool(null)
 
@@ -195,6 +204,16 @@ describe('VariantsTool', () => {
         'Variants are unavailable right now. Try again later.',
       )
       expect(screen.queryByTestId('variants-upsell-panel')).not.toBeInTheDocument()
+    })
+
+    it('keeps listing existing definitions and blocks creation with an error toast', async () => {
+      routerState.variantId = undefined
+      setVariants([variantAlphaAudience])
+      const user = userEvent.setup()
+
+      await renderTool(null)
+
+      expect(await screen.findByText('Alpha audience')).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', {name: 'New variant definition'}))
 
