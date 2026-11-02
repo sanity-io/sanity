@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {type SubmissionRecord} from '../../../../../test/sync/fakeContentLake'
+import {FakeContentLake, type SubmissionRecord} from '../../../../../test/sync/fakeContentLake'
 import {describeLostEdit, lostEdits} from '../../../../../test/sync/lostEdits'
 import {expectNoLostEdits} from '../../../../../test/sync/oracles'
 import {
@@ -182,6 +182,38 @@ describe('lost edits', () => {
     expect(lostEdits({edits: [lostTitle, later], lake}).map(describeLostEdit)).toEqual([
       'A {"set":{"title":"one"}} on drafts.article-7',
     ])
+  })
+
+  test('EDIT-REJECTED-UNTRANSLATABLE: an edit whose save Content Lake cannot translate is lost to that rejection, not never sent', async () => {
+    const lake = new FakeContentLake([])
+    lake.client('A').commits = {mode: 'hold', latencyMs: 0}
+    const edit: EditRecord = {
+      client: 'A',
+      documentId: DRAFT_ID,
+      at: lake.stamp(),
+      before: null,
+      after: {...initial, title: 'one'},
+      mutations: [{patch: {id: DRAFT_ID, set: {title: 'one'}}}],
+    }
+    const save = lake.submitActions(
+      'A',
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: DRAFT_ID,
+          publishedId: PUBLISHED_ID,
+          patch: {set: {title: 'one'}},
+        },
+      ],
+      'untranslatable',
+    )
+    lake.client('A').acceptNextCommit()
+    await expect(save).rejects.toMatchObject({statusCode: 404})
+
+    const lost = lostEdits({edits: [edit], lake})
+    expect(
+      lost.map(({fateKind, rejection}) => ({fateKind, status: rejection?.statusCode})),
+    ).toEqual([{fateKind: 'rejected', status: 404}])
   })
 
   describe('an edit made while an injected 409 save is in flight', () => {
