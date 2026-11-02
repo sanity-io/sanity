@@ -35,11 +35,13 @@ async function renderDetails({
   detail,
   variantsEnabled = true,
   loading = false,
+  documentsError = false,
   releaseInView = release,
 }: {
   detail?: ReleaseDetailComponent
   variantsEnabled?: boolean
   loading?: boolean
+  documentsError?: boolean
   releaseInView?: ReleaseDocument
 }) {
   let result!: ReturnType<typeof render>
@@ -55,6 +57,7 @@ async function renderDetails({
       documents={documents}
       events={[]}
       loading={loading}
+      documentsError={documentsError}
     />
   )
 
@@ -120,6 +123,17 @@ describe('ReleaseDashboardDetails releases.detail', () => {
 
     expect(screen.getByTestId('release-detail-skeleton')).toBeInTheDocument()
     expect(screen.queryByTestId('custom-detail')).toBeNull()
+    expect(detail).not.toHaveBeenCalled()
+  })
+
+  it('renders nothing when the documents failed to load', async () => {
+    const detail = vi.fn<ReleaseDetailComponent>(() => <div data-testid="custom-detail" />)
+
+    await renderDetails({detail, documentsError: true})
+
+    expect(screen.queryByTestId('custom-detail')).toBeNull()
+    expect(screen.queryByTestId('release-detail-skeleton')).toBeNull()
+    expect(screen.queryByTestId('release-detail-error')).toBeNull()
     expect(detail).not.toHaveBeenCalled()
   })
 

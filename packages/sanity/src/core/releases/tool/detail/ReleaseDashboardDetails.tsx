@@ -190,6 +190,7 @@ export function ReleaseDashboardDetails({
   documents,
   events,
   loading = false,
+  documentsError = false,
 }: {
   release: ReleaseDocument
   documents: DocumentInRelease[]
@@ -197,6 +198,7 @@ export function ReleaseDashboardDetails({
   /** True while the release documents are still loading — skeleton the count/status instead of
    * rendering an empty ("No documents" / "0") state prematurely. */
   loading?: boolean
+  documentsError?: boolean
 }) {
   const {state} = release
 
@@ -294,7 +296,12 @@ export function ReleaseDashboardDetails({
           <Box flexBasis="0%" flexGrow={1} minWidth={RELEASE_IDENTITY_MIN_WIDTH}>
             <VStack gap={3}>
               <ReleaseDetailsEditor release={release} />
-              <ReleaseDetailSlot release={release} documents={documents} loading={loading} />
+              <ReleaseDetailSlot
+                release={release}
+                documents={documents}
+                loading={loading}
+                documentsError={documentsError}
+              />
             </VStack>
           </Box>
           <DetailPropertiesPanel

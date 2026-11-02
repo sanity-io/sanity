@@ -1251,7 +1251,7 @@ export interface Source {
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
      * Renders under the release description on the release detail page. Receives the release
-     * with its metadata and the documents in it.
+     * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
      */
     detail?: ReleaseDetailComponent
     /**
@@ -1471,8 +1471,8 @@ export type DefaultPluginsWorkspaceOptions = {
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
     /**
      * Renders under the release description on the release detail page. Receives the release
-     * with its metadata and the documents in it. The last definition across plugins and the
-     * root config wins.
+     * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
+     * The last definition across plugins and the root config wins.
      *
      * @beta
      */

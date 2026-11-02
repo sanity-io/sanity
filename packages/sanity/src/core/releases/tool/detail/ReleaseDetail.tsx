@@ -138,6 +138,7 @@ export function ReleaseDetail() {
                 documents={results}
                 events={releaseEvents.events}
                 loading={documentsLoading}
+                documentsError={Boolean(bundleDocumentsError)}
               />
               {detailContent}
             </Card>

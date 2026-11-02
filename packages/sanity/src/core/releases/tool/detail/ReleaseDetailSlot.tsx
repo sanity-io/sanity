@@ -38,14 +38,16 @@ export function ReleaseDetailSlot({
   release,
   documents,
   loading,
+  documentsError,
 }: {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   loading: boolean
+  documentsError: boolean
 }): React.JSX.Element | null {
   const Detail = useWorkspace().releases?.detail
 
-  if (typeof Detail === 'undefined') return null
+  if (typeof Detail === 'undefined' || documentsError) return null
 
   const detailRelease: ReleaseDetailProps['release'] = release
 
