@@ -29,10 +29,26 @@ describe('withReleaseReferences', () => {
     ['post', 'missing-author', false],
   ])('%s referencing %s exists: %s', async (documentId, id, expected) => {
     const getDocumentExists = withReleaseReferences({
-      documentId,
+      document: {_id: documentId},
       getDocumentExists: async (options) => documents.has(options.id),
       isUnpublished: async (options) => documents.get(options.id) === false,
     })
     await expect(getDocumentExists({id})).resolves.toBe(expected)
+  })
+
+  it.each([
+    {variants: [{_ref: '_.variants.variant-a', _key: 'variant-a'}]},
+    {variant: {_ref: '_.variants.variant-a'}},
+    {variants: [], variant: {_ref: '_.variants.variant-a'}},
+  ])('requires published references for variants with metadata %j', async (_system) => {
+    const getDocumentExists = withReleaseReferences({
+      document: {_id: 'versions.release-a.post', _system},
+      getDocumentExists: async ({id}) => documents.has(id),
+      isUnpublished: async ({id}) => documents.get(id) === false,
+    })
+
+    await expect(getDocumentExists({id: 'release-author'})).resolves.toBe(false)
+    await expect(getDocumentExists({id: 'published-author'})).resolves.toBe(true)
+    await expect(getDocumentExists({id: 'removed-author'})).resolves.toBe(true)
   })
 })

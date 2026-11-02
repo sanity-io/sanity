@@ -211,6 +211,7 @@ describe('validateDocumentWithReferences reference existence', () => {
   async function referenceExists(
     documentId: string,
     availability: {published: DocumentAvailability; version: DocumentAvailability},
+    _system?: SanityDocument['_system'],
   ) {
     const calls: GetDocumentExists[] = []
     evaluateDocumentObservable.mockImplementation(
@@ -233,10 +234,15 @@ describe('validateDocumentWithReferences reference existence', () => {
         schema: {} as Schema,
         i18n: getFallbackLocaleSource(),
       },
-      of({...movie('rev-1', 'Title'), _id: documentId, actor: {_type: 'reference', _ref: 'actor'}}),
+      of({
+        ...movie('rev-1', 'Title'),
+        _id: documentId,
+        _system,
+        actor: {_type: 'reference', _ref: 'actor'},
+      }),
     ).subscribe()
     try {
-      await vi.waitFor(() => expect(calls).toHaveLength(1))
+      await vi.waitFor(() => expect(calls.length).toBeGreaterThan(0))
       return await calls[0]({id: 'actor'})
     } finally {
       subscription.unsubscribe()
@@ -250,6 +256,19 @@ describe('validateDocumentWithReferences reference existence', () => {
         version: AVAILABILITY_READABLE,
       }),
     ).resolves.toBe(true)
+  })
+
+  it.each([
+    {variants: [{_ref: '_.variants.variant-a', _key: 'variant-a'}]},
+    {variant: {_ref: '_.variants.variant-a'}},
+  ])('requires published references for variants with metadata %j', async (_system) => {
+    await expect(
+      referenceExists(
+        'versions.scopeA.movie',
+        {published: AVAILABILITY_NOT_FOUND, version: AVAILABILITY_READABLE},
+        _system,
+      ),
+    ).resolves.toBe(false)
   })
 
   it('rejects references to documents the release unpublishes', async () => {

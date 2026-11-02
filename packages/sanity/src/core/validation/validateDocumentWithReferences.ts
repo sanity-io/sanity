@@ -40,6 +40,7 @@ import {type SourceClientOptions} from '../config/types'
 import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
 import {getVersionFromId, getVersionId} from '../util/draftUtils'
+import {getDocumentVersionVariantId} from '../util/getDocumentVersionVariant'
 import {shallowEquals} from '../util/shallowEquals'
 
 /**
@@ -145,7 +146,9 @@ export function validateDocumentWithReferences(
           listenDocumentExistence(
             ctx.observeDocumentPairAvailability,
             referenceId,
-            getVersionFromId(document?._id || ''),
+            getDocumentVersionVariantId(document)
+              ? undefined
+              : getVersionFromId(document?._id || ''),
           ),
         ),
       ),
@@ -173,9 +176,9 @@ export function validateDocumentWithReferences(
 
   // Provided to individual validation functions to support using existence of a weakly referenced document
   // as part of the validation rule (used by references in place)
-  const getDocumentExists = (documentId: string) =>
+  const getDocumentExists = (document: SanityDocument) =>
     withReleaseReferences({
-      documentId,
+      document,
       getDocumentExists: ({id}) => getDocumentExistence(id).then(({exists}) => exists),
       isUnpublished: ({id}) => getDocumentExistence(id).then(({unpublished}) => unpublished),
     })
@@ -199,7 +202,7 @@ export function validateDocumentWithReferences(
           evaluateDocumentObservable({
             document,
             getClient: ctx.getClient,
-            getDocumentExists: getDocumentExists(document._id),
+            getDocumentExists: getDocumentExists(document),
             i18n: ctx.i18n,
             schema: ctx.schema,
             environment: 'studio',

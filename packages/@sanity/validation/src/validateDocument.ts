@@ -491,7 +491,7 @@ function evaluateDocumentsInternal({
         schema,
         getDocumentExists: batchedGetDocumentExists
           ? withReleaseReferences({
-              documentId: document._id,
+              document,
               getDocumentExists: batchedGetDocumentExists,
               isUnpublished: ({id, signal: checkSignal}) =>
                 getConcurrencyLimitedClient(DEFAULT_VALIDATION_CLIENT_OPTIONS).fetch<boolean>(

@@ -64,11 +64,15 @@ function createReleaseClient(existing: string[], unpublished: string[] = []) {
   return client
 }
 
-async function validateReference(client: SanityClient, documentId: string) {
+async function validateReference(
+  client: SanityClient,
+  documentId: string,
+  _system?: SanityDocument['_system'],
+) {
   const [{markers}] = await validateDocuments({
     client,
     schema: createSchema(referenceFields),
-    documents: [document(documentId, {author: {_type: 'reference', _ref: 'author'}})],
+    documents: [document(documentId, {_system, author: {_type: 'reference', _ref: 'author'}})],
   })
   return markers.map(({code}) => code)
 }
@@ -274,6 +278,16 @@ describe('validateDocuments', () => {
   })
 
   describe('release documents', () => {
+    it.each([
+      {variants: [{_ref: '_.variants.variant-a', _key: 'variant-a'}]},
+      {variant: {_ref: '_.variants.variant-a'}},
+    ])('requires published references for variants with metadata %j', async (_system) => {
+      const client = createReleaseClient(['versions.scopeA.author'])
+      await expect(validateReference(client, 'versions.scopeA.article', _system)).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
     it('accepts references to unpublished documents in the same release', async () => {
       const client = createReleaseClient(['versions.release.author'])
       await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([])

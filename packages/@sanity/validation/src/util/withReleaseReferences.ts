@@ -1,11 +1,12 @@
 import {type DocumentId, getVersionId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
+import {type SanityDocument} from '@sanity/types'
 
 type DocumentCheck = (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
 
 /** @beta */
 export interface ReleaseReferenceOptions {
-  /** ID of the document whose references are being checked. */
-  documentId: string
+  /** The document whose references are being checked. Variants require published references. */
+  document: Pick<SanityDocument, '_id' | '_system'>
   /** Whether a document with the exact ID exists, including release unpublish markers. */
   getDocumentExists: DocumentCheck
   /** Whether the existing version document with the given ID unpublishes its document. */
@@ -20,13 +21,15 @@ export interface ReleaseReferenceOptions {
  * @beta
  */
 export function withReleaseReferences({
-  documentId,
+  document,
   getDocumentExists,
   isUnpublished,
 }: ReleaseReferenceOptions): DocumentCheck {
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- any document ID can be checked
-  const id = documentId as DocumentId
-  if (!isVersionId(id)) return getDocumentExists
+  const id = document._id as DocumentId
+  // oxlint-disable-next-line typescript/no-deprecated -- support unmigrated variant documents
+  const variant = document._system?.variants?.[0]?._ref ?? document._system?.variant?._ref
+  if (!isVersionId(id) || variant) return getDocumentExists
   const versionName = getVersionNameFromId(id)
 
   return async ({id: referenceId, signal}) => {
