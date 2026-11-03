@@ -138,7 +138,10 @@ export default defineConfig({
       // instead of collapsing them into an overflow menu (matches the old
       // Playwright "Desktop" device presets).
       viewport: {width: 1280, height: 900},
-      instances: browsers.map((browser) => ({browser})),
+      // Chromium intermittently drops a page's connections mid-run with 7 pages open on a CI runner
+      instances: browsers.map((browser) =>
+        browser === 'chromium' ? {browser, maxWorkers: 5} : {browser},
+      ),
     },
     // `idleCallback.ts` routes `requestIdleCallback` through a timer (headless
     // Chromium fires it only after a frame, so idle-gated validation can stall
