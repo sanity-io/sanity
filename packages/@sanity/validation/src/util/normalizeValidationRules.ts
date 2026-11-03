@@ -1,6 +1,7 @@
 import {markInternalValidator} from '@sanity/schema/_internal'
 import {
   isArrayOfObjectsSchemaType,
+  isImageSchemaType,
   type Rule,
   type RuleSpec,
   type RuleTypeConstraint,
@@ -15,6 +16,10 @@ import {
   type AcceptedAssetType,
   createAssetAcceptValidator,
 } from '../validators/assetAcceptValidator'
+import {
+  createImageCropValidator,
+  createImageRecommendedDimensionsValidator,
+} from '../validators/imageCropValidator'
 import {slugStructureValidator, slugUniquenessValidator} from '../validators/slugValidator'
 import {getTypeChain} from './getTypeChain'
 
@@ -127,7 +132,11 @@ export function normalizeValidationRules(
     return normalizeValidationRules({...typeDef, validation: compiled.definition}, context)
   }
 
-  return [...normalizeAuthoredRules(typeDef, context), ...inferAssetAcceptRules(typeDef)]
+  return [
+    ...normalizeAuthoredRules(typeDef, context),
+    ...inferAssetAcceptRules(typeDef),
+    ...inferImageCropRules(typeDef),
+  ]
 }
 
 function isAcceptedAssetType(name: string): name is AcceptedAssetType {
@@ -162,6 +171,37 @@ function inferAssetAcceptRules(typeDef: SchemaType): Rule[] {
         })
         .warning(),
     ]
+  }
+  return []
+}
+
+// Rule level is per rule, so the error checks and the warning check need a rule each.
+function inferImageCropRules(typeDef: SchemaType): Rule[] {
+  if (isImageSchemaType(typeDef)) {
+    const {aspectRatio, minDimensions, recommendedDimensions} = typeDef.options ?? {}
+    const errorRules =
+      aspectRatio === undefined && minDimensions === undefined
+        ? []
+        : [
+            new RuleClass(typeDef).custom(
+              markInternalValidator(createImageCropValidator({aspectRatio, minDimensions})),
+              {bypassConcurrencyLimit: true},
+            ),
+          ]
+    const warningRules =
+      recommendedDimensions === undefined
+        ? []
+        : [
+            new RuleClass(typeDef)
+              .custom(
+                markInternalValidator(
+                  createImageRecommendedDimensionsValidator(recommendedDimensions),
+                ),
+                {bypassConcurrencyLimit: true},
+              )
+              .warning(),
+          ]
+    return [...errorRules, ...warningRules]
   }
   return []
 }
