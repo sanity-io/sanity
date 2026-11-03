@@ -137,7 +137,7 @@
     "prepare": "panda codegen",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "test:browser": "vitest run -c vitest.browser.config.mts",
+    "test:browser": "VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB=1000000 vitest run -c vitest.browser.config.mts",
     "test:fuzz": "vitest run -c vitest.fuzz.config.mts",
     "watch": "tsdown --watch"
   },

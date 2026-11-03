@@ -796,6 +796,11 @@ just to reach a branch.
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+- Run the full browser suite through `pnpm --filter sanity test:browser`, not
+  `vitest -c vitest.browser.config.mts`. The script sets `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` so
+  Vitest collects garbage in Chromium after every test file; without it, a Linux run loses a page
+  to "Browser connection was closed while running tests" partway through (the comment above
+  `browser.provider` in the config explains the leak). Single files are fine either way.
 
 #### DOM prop leak guard
 
