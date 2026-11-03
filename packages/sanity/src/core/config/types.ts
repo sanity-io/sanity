@@ -1507,8 +1507,10 @@ export interface MediaLibraryConfig {
      * Use the module-federated Media Library asset source view instead of the
      * iframe-based select dialog, when the Studio runs inside the workbench
      * and the organization's Media Library app exposes an `asset_source`
-     * view. Rollout flag for the federated picker — when discovery or loading
-     * fails, the iframe dialog is used regardless of this setting.
+     * view. Defaults to `true` — an enabled Media Library picks up the
+     * federated view automatically; set `false` to force the iframe dialog.
+     * When discovery or loading fails, the iframe dialog is used regardless
+     * of this setting.
      * @internal
      * @hidden
      */

@@ -57,6 +57,7 @@ import {
 } from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
+import {variantsApiClient} from './utils/variantsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
@@ -233,12 +234,23 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
   return actions
 }
 
+function isVariantDocumentAction(action: Action): boolean {
+  return action.actionType.startsWith('sanity.action.document.variant.')
+}
+
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
     return commitMutations(client, idPair, mutationParams)
   }
 
-  return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
+  const actions = toActions(idPair, mutationParams)
+  // A variant document action needs the variants API version. That version is newer than the
+  // releases version, so a batch that also contains a plain `document.edit` stays on it.
+  const actionClient = actions.some(isVariantDocumentAction)
+    ? variantsApiClient(client)
+    : actionsApiClient(client, idPair)
+
+  return actionClient.observable.action(actions, {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })

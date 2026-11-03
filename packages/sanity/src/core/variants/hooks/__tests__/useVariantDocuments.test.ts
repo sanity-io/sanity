@@ -4,8 +4,8 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {resetBundleDocumentsCacheForTests} from '../../../releases/tool/detail/useBundleDocuments'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases/util/releasesClient'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../store/constants'
 import {useVariantDocuments} from '../useVariantDocuments'
 
 const validateDocumentWithReferencesMock = vi.hoisted(() =>
@@ -68,7 +68,7 @@ describe('useVariantDocuments', () => {
     expect(documentPreviewStoreMock.unstable_observeDocumentIdSet).toHaveBeenCalledWith(
       'sanity::partOfVariant($variantId)',
       {variantId: 'alpha-audience'},
-      {apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion},
+      {apiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion},
     )
   })
 
@@ -102,6 +102,9 @@ describe('useVariantDocuments', () => {
       expect(result.current.results).toHaveLength(1)
     })
 
+    expect(documentPreviewStoreMock.unstable_observeDocument).toHaveBeenCalledWith(document._id, {
+      apiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
     expect(validateDocumentWithReferencesMock).toHaveBeenCalled()
     expect(result.current.results[0]?.validation.hasError).toBe(true)
     expect(result.current.results[0]?.validation.validation).toEqual([

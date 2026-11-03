@@ -229,9 +229,15 @@ describe('favorite toggle', () => {
     host.publish('applications.capabilities', {favorites: true})
     host.publish('favorites.documents', [
       {
-        id: 'article-favorited',
-        type: 'article',
-        resource: {id: 'test.test', type: 'dataset', schemaName: 'default'},
+        id: 'favorite-1',
+        document: {
+          id: 'article-favorited',
+          type: 'article',
+          resource: {id: 'test.test', type: 'studio', schemaName: 'default'},
+        },
+        application: {type: 'studio', id: 'studio-1', workspaceName: 'default'},
+        createdAt: '2026-10-20T00:00:00Z',
+        updatedAt: '2026-10-20T00:00:00Z',
       },
     ])
 

@@ -7,10 +7,12 @@ import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 
 import {type PageLoadSample} from '../../runner/session/pageLoad'
 import {type SettleSessionResult} from '../../runner/session/settle'
+import {type SoftNavigationMeasurement} from '../../stats/softNav'
 import {
   collectPageLoad,
   collectRunMetadata,
   collectSettle,
+  collectSoftNav,
   collectStyleContext,
   collectStyleMetrics,
 } from '../collect'
@@ -729,5 +731,59 @@ describe('collectPageLoad style rows', () => {
         sessions: 2,
       },
     })
+  })
+})
+
+describe('collectSoftNav', () => {
+  const session = (lcp: number): SoftNavigationMeasurement[] => [
+    {
+      label: 'document-open',
+      softLcpMs: lcp,
+      lcpElement: 'h1 in [data-testid="document-panel-document-title"]',
+      lcpElementKind: 'title',
+      softFcpMs: lcp - 100,
+      softInpMs: 96,
+      softClsScore: 0,
+      clickToReadyMs: lcp + 20,
+    },
+    {
+      label: 'document-open',
+      softLcpMs: lcp + 10,
+      lcpElement: 'h1 in [data-testid="document-panel-document-title"]',
+      lcpElementKind: 'title',
+      softFcpMs: lcp - 90,
+      softInpMs: null,
+      softClsScore: 0,
+      clickToReadyMs: lcp + 30,
+    },
+  ]
+
+  it("keeps each session's per-navigation values as one bootstrap cluster", () => {
+    const report = collectSoftNav('softNav', [session(300), session(320)])
+    expect(report.mode).toBe('softnav')
+    const lcp = report.metrics.find(
+      (metric) => metric.label === 'nav:document-open / soft LCP time',
+    )
+    expect(lcp?.unit).toBe('ms')
+    expect(lcp?.experiment.sessions).toEqual([
+      [300, 310],
+      [320, 330],
+    ])
+    const inp = report.metrics.find(
+      (metric) => metric.label === 'nav:document-open / soft INP latency',
+    )
+    expect(inp?.experiment.sessions).toEqual([[96], [96]])
+    expect(
+      report.metrics.find((metric) => metric.label === 'nav:document-open / soft CLS score')?.unit,
+    ).toBe('cls')
+  })
+
+  it('drops a metric no navigation of a label has a value for', () => {
+    const withoutInp = (navigations: SoftNavigationMeasurement[]) =>
+      navigations.map((navigation) => ({...navigation, softInpMs: null}))
+    const report = collectSoftNav('softNav', [withoutInp(session(300)), withoutInp(session(320))])
+    const labels = report.metrics.map((metric) => metric.label)
+    expect(labels).not.toContain('nav:document-open / soft INP latency')
+    expect(labels).toContain('nav:document-open / soft LCP time')
   })
 })

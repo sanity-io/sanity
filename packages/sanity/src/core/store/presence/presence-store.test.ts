@@ -1,6 +1,6 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError, WebSocketError} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {BehaviorSubject, of, Subject} from 'rxjs'
+import {BehaviorSubject, defer, merge, mergeMap, of, Subject, take, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ConnectionStatus} from '../connection-status/connection-status-store'
@@ -10,6 +10,9 @@ import {type DocumentPresence, type GlobalPresence, type PresenceLocation} from 
 
 // Own location announcements are audited at this interval
 const ANNOUNCE_DELAY = 200
+
+// How long document presence keeps running after the last document stops using it
+const DOCUMENT_PRESENCE_GRACE = 5_000
 
 const CONNECTED: ConnectionStatus = {type: 'connected', lastHeartbeat: new Date(0)}
 
@@ -22,20 +25,70 @@ interface Harness {
   requests: BifurRequest[]
   connectionStatus$: BehaviorSubject<ConnectionStatus>
   getUsers: ReturnType<typeof vi.fn>
+  /** Closes the socket: open subscriptions and new requests fail until `reconnect` */
+  dropConnection: () => void
+  reconnect: () => void
+  /** Ends the presence subscription with a closed-socket error, without changing the status */
+  closeSubscription: (code?: number) => void
+  /** How many times presence subscribed to the `presence` channel */
+  presenceSubscriptions: () => number
 }
 
-function createHarness(): Harness {
+function createHarness({
+  rejectedRequests = [],
+  rejectListen = false,
+}: {
+  /** Requests the server answers with a JSON-RPC error */
+  rejectedRequests?: string[]
+  rejectListen?: boolean
+} = {}): Harness {
   const incoming$ = new Subject<unknown>()
   const requests: BifurRequest[] = []
+  const rejection = () => new RpcError('Unauthorized', ERROR_CODES.UNAUTHORIZED)
+  const closed = (code = 1000) =>
+    new WebSocketError('WebSocket connection closed', 'CONNECTION_CLOSED', code, 'closed')
+  const drop$ = new Subject<number | undefined>()
+  let connected = true
+  let presenceSubscriptions = 0
+  const listen = vi.fn(() =>
+    defer(() => {
+      presenceSubscriptions++
+      return rejectListen
+        ? throwError(rejection)
+        : merge(
+            incoming$,
+            drop$.pipe(
+              take(1),
+              mergeMap((code) => throwError(() => closed(code))),
+            ),
+          )
+    }),
+  )
   const bifur = {
-    listen: vi.fn(() => incoming$),
+    listen,
     request: vi.fn((name: string, params: unknown) => {
       requests.push({name, params})
-      return of(undefined)
+      if (!connected) return throwError(closed)
+      return rejectedRequests.includes(name) ? throwError(rejection) : of(undefined)
     }),
   } as unknown as BifurClient
 
   const connectionStatus$ = new BehaviorSubject<ConnectionStatus>(CONNECTED)
+  const dropConnection = () => {
+    connected = false
+    drop$.next(undefined)
+    connectionStatus$.next({
+      type: 'error',
+      error: closed(),
+      attemptNo: 1,
+      isOffline: false,
+      retryAt: new Date(),
+    })
+  }
+  const reconnect = () => {
+    connected = true
+    connectionStatus$.next(CONNECTED)
+  }
 
   // Users are resolved by id; the "unknown" user cannot be fetched (e.g. insufficient privileges)
   const getUsers = vi.fn(async (ids: string[]): Promise<User[]> =>
@@ -48,7 +101,17 @@ function createHarness(): Harness {
     userStore: {getUsers} as unknown as UserStore,
   })
 
-  return {store, incoming$, requests, connectionStatus$, getUsers}
+  return {
+    store,
+    incoming$,
+    requests,
+    connectionStatus$,
+    getUsers,
+    dropConnection,
+    reconnect,
+    closeSubscription: (code) => drop$.next(code),
+    presenceSubscriptions: () => presenceSubscriptions,
+  }
 }
 
 function location(documentId: string, overrides: Partial<PresenceLocation> = {}): PresenceLocation {
@@ -274,6 +337,45 @@ describe('presence-store', () => {
       expect(values.length).toBe(emissionsAfterFirst)
       subscription.unsubscribe()
     })
+
+    it('stops listening and looking up users once no document presence is subscribed', async () => {
+      // When the last form unmounts (the login screen replacing the studio after a session
+      // ends), nothing may keep presence running: every update from another session looks up
+      // users, and with a dead credential each lookup is a 401.
+      const {store, incoming$, getUsers} = createHarness()
+      const {subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(getUsers).toHaveBeenCalled()
+
+      subscription.unsubscribe()
+      getUsers.mockClear()
+      await vi.advanceTimersByTimeAsync(DOCUMENT_PRESENCE_GRACE)
+
+      expect(incoming$.observed).toBe(false)
+      incoming$.next(stateEvent('bob', 'session-bob', [location('doc-1')]))
+      await settle()
+      expect(getUsers).not.toHaveBeenCalled()
+    })
+
+    it('keeps presence running while switching from one document to another', async () => {
+      // The pane of the previous document unmounts before the next one mounts, so for a moment
+      // no document uses presence. Starting over would listen and request a roll call again, and
+      // show no one in the next document until the other sessions answer.
+      const {store, incoming$, requests} = createHarness()
+      const previous = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-2')]))
+      await settle()
+
+      previous.subscription.unsubscribe()
+      await settle()
+      const next = collect<DocumentPresence[]>(store.documentPresence('doc-2'))
+      await settle()
+
+      expect(requests.filter((r) => r.name === 'presence_rollcall')).toHaveLength(1)
+      expect(next.latest().map((p) => p.user.id)).toEqual(['alice'])
+      next.subscription.unsubscribe()
+    })
   })
 
   describe('globalPresence$', () => {
@@ -463,6 +565,85 @@ describe('presence-store', () => {
     })
   })
 
+  describe('requests the server rejects', () => {
+    it('keeps presence running when the server rejects a roll call or an announcement', async () => {
+      const {store, incoming$} = createHarness({
+        rejectedRequests: ['presence_rollcall', 'presence_announce'],
+      })
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      expect(warn).toHaveBeenCalledWith(
+        'Presence: the server returned an error: %s',
+        'Unauthorized',
+      )
+      subscription.unsubscribe()
+      warn.mockRestore()
+    })
+
+    it('does not error presence, or retry, when the server rejects the presence subscription', async () => {
+      const {store, presenceSubscriptions} = createHarness({rejectListen: true})
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const errors: unknown[] = []
+      const subscription = store.globalPresence$.subscribe({error: (err) => errors.push(err)})
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      const subscribed = presenceSubscriptions()
+      await vi.advanceTimersByTimeAsync(300_000)
+
+      expect(errors).toEqual([])
+      expect(presenceSubscriptions()).toBe(subscribed)
+      expect(warn).toHaveBeenCalledWith(
+        'Presence: the server returned an error: %s',
+        'Unauthorized',
+      )
+      subscription.unsubscribe()
+      warn.mockRestore()
+    })
+  })
+
+  describe('leaving the page', () => {
+    it('does not send a disconnect when the page is left', async () => {
+      // A goodbye sent while the page goes away rarely reaches the server, and one sent after the
+      // bifur socket was closed for the back/forward cache opens a new socket that the browser
+      // then kills. Cleaning up after a session that left is up to the server.
+      const {store, requests} = createHarness()
+      const {subscription} = collect<GlobalPresence[]>(store.globalPresence$)
+      await settle()
+
+      window.dispatchEvent(new Event('beforeunload'))
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: true}))
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: false}))
+      await settle()
+      expect(requests.map((r) => r.name)).not.toContain('presence_disconnect')
+      subscription.unsubscribe()
+    })
+
+    it('keeps presence running after beforeunload and pagehide, for a page restored from the back/forward cache', async () => {
+      const {store, incoming$} = createHarness()
+      const {latest, subscription} = collect<GlobalPresence[]>(store.globalPresence$)
+
+      // Navigating away fires both, also when the page then enters the cache
+      window.dispatchEvent(new Event('beforeunload'))
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: true}))
+      await settle()
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(latest().map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+  })
+
   describe('connection status', () => {
     it('only listens to presence while connected', async () => {
       const {store, incoming$, connectionStatus$} = createHarness()
@@ -477,6 +658,64 @@ describe('presence-store', () => {
       incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
       await settle()
 
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+
+    it('listens again when the presence subscription closes while the connection stays up', async () => {
+      // bifur-client v3 takes the status through `error` on the same close, but presence doesn't
+      // depend on that
+      const {store, incoming$, closeSubscription} = createHarness()
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await settle()
+
+      closeSubscription()
+      await vi.advanceTimersByTimeAsync(1000)
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+
+    it('does not listen again when the socket is closed for a rejected token', async () => {
+      const {store, closeSubscription, presenceSubscriptions} = createHarness()
+      const errors: unknown[] = []
+      const subscription = store.globalPresence$.subscribe({error: (err) => errors.push(err)})
+      await settle()
+      const subscribed = presenceSubscriptions()
+
+      closeSubscription(4001)
+      await vi.advanceTimersByTimeAsync(300_000)
+      expect(errors).toEqual([])
+      expect(presenceSubscriptions()).toBe(subscribed)
+      subscription.unsubscribe()
+    })
+
+    it('keeps presence running when the connection closes, and resumes it on reconnect', async () => {
+      const {store, incoming$, dropConnection, reconnect} = createHarness()
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await settle()
+
+      dropConnection()
+      store.setLocation([location('doc-1')])
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      expect(errors).toEqual([])
+
+      reconnect()
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
       expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
     })

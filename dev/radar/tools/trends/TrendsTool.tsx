@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 import {ActivityIcon} from '@sanity/icons/Activity'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {BugIcon} from '@sanity/icons/Bug'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
@@ -47,6 +48,7 @@ import {
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
+  NAVIGATION_METRICS,
   primaryLines,
   settleViews,
   soakSlopeSeries,
@@ -108,6 +110,7 @@ const RANGES = [
 /** One glanceable glyph per metric-group tab; titles stay the identifier. */
 const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   vitals: ActivityIcon,
+  navigation: ArrowRightIcon,
   responsiveness: BoltIcon,
   load: ClockIcon,
   bundle: PackageIcon,
@@ -1407,6 +1410,14 @@ export function TrendsTool() {
     () => vitalSections(series.filter((entry) => entry.group === 'vitals')),
     [series],
   )
+  const navigationGroups = useMemo(
+    () =>
+      vitalSections(
+        series.filter((entry) => entry.group === 'navigation'),
+        NAVIGATION_METRICS,
+      ),
+    [series],
+  )
 
   // Every metric group is a tab, always: a fixed layout is learnable, and a
   // group without data in the range renders a blank state saying so (see
@@ -1463,6 +1474,7 @@ export function TrendsTool() {
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
     tabs[0]
+  const metricSections = activeTab?.id === 'navigation' ? navigationGroups : vitalGroups
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
@@ -1816,18 +1828,18 @@ export function TrendsTool() {
                         chartKey={chartParam}
                         onLeaveChart={() => setChartParam('')}
                       />
-                    ) : activeTab.id === 'vitals' ? (
-                      vitalGroups.length === 0 ? (
+                    ) : activeTab.id === 'vitals' || activeTab.id === 'navigation' ? (
+                      metricSections.length === 0 ? (
                         <EmptyGroup>
-                          No Web Vitals data in this range — try a longer range.
+                          {activeTab.id === 'vitals'
+                            ? 'No Web Vitals data in this range — try a longer range.'
+                            : 'No soft-navigation data in this range — try a longer range.'}
                         </EmptyGroup>
                       ) : (
-                        // One section per vital, so the overview reads by metric
-                        // ("how is LCP doing, everywhere?") — see vitalSections.
                         // The extra top padding separates the first section
                         // header from the tab description it would otherwise hug.
                         <Flex gap={6} paddingTop={3} flexDirection="column">
-                          {vitalGroups.map((section) => (
+                          {metricSections.map((section) => (
                             <VStack key={section.vital} gap={4}>
                               <Flex alignItems="baseline" gap={2}>
                                 <Text size={1} weight="semibold" as="div" trim={true}>
