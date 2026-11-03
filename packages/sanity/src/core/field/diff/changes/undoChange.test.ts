@@ -59,18 +59,13 @@ function operations(): FieldOperationsAPI & {executed: PatchOperations[][]} {
 }
 
 /**
- * Reverts `change` on a document that went from `previous` to `current`, asserts that the
- * executed patches take the document back to `previous` when applied the way the document store
- * applies them, and returns the patches as executed (one array per `patch.execute` call).
- *
- * `applyTo` replays the patches onto a different document than `current`, for the case where the
- * document moved on after the diff was computed.
+ * Reverts `change` on a document that went from `previous` to `current` and returns the patches
+ * as executed (one array per `patch.execute` call).
  */
-function revert(
+function undo(
   previous: DocumentValue,
   current: DocumentValue,
   change: (rootDiff: ObjectDiff) => ChangeNode,
-  applyTo: DocumentValue = current,
 ): PatchOperations[][] {
   const rootDiff = diffDocument(previous, current)
   const executed: PatchOperations[][] = []
@@ -84,10 +79,32 @@ function revert(
 
   undoChange(change(rootDiff), rootDiff, documentOperations)
 
+  return executed
+}
+
+/** Applies executed patches to `document` the way the document store applies them. */
+function applyPatches(document: DocumentValue, executed: PatchOperations[][]): DocumentValue {
   const mutation = new Mutation({
     mutations: executed.flat().map((patch) => ({patch: {id: 'doc', ...patch}})),
   })
-  expect(mutation.apply({_id: 'doc', _type: 'doc', ...applyTo})).toEqual({
+  return mutation.apply({_id: 'doc', _type: 'doc', ...document}) as DocumentValue
+}
+
+/**
+ * Like `undo`, and also asserts that the executed patches take the document back to `previous`.
+ *
+ * `applyTo` replays the patches onto a different document than `current`, for the case where the
+ * document moved on after the diff was computed.
+ */
+function revert(
+  previous: DocumentValue,
+  current: DocumentValue,
+  change: (rootDiff: ObjectDiff) => ChangeNode,
+  applyTo: DocumentValue = current,
+): PatchOperations[][] {
+  const executed = undo(previous, current, change)
+
+  expect(applyPatches(applyTo, executed)).toEqual({
     _id: 'doc',
     _type: 'doc',
     ...previous,
@@ -391,6 +408,86 @@ describe('undoChange', () => {
     expect(executed).toEqual([
       [{setIfMissing: {items: []}}, {set: {'items[_key=="dotted.key"].title': 'before'}}],
     ])
+  })
+
+  it('unsets the furthest stub ancestor when reverting a nested add inside typed wrappers', () => {
+    const executed = revert(
+      {keep: 'yes'},
+      {keep: 'yes', meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}}},
+      (root) => {
+        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['meta']}]])
+  })
+
+  it('unsets a top-level stub when the document holds nothing else besides it', () => {
+    const executed = revert({}, {meta: {_type: 'meta', title: 'hello'}}, (root) =>
+      fieldChange(['meta', 'title'], (root.fields.meta as ObjectDiff).fields.title),
+    )
+
+    expect(executed).toEqual([[{unset: ['meta']}]])
+  })
+
+  it('keeps a typed wrapper that existed before the nested add', () => {
+    const executed = revert(
+      {meta: {_type: 'meta'}},
+      {meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}}},
+      (root) => {
+        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['meta.seo']}]])
+  })
+
+  it('keeps an added wrapper that still holds other added content', () => {
+    const current = {meta: {_type: 'meta', description: 'stays', seo: {_type: 'seo', title: 'hi'}}}
+    const executed = undo({}, current, (root) => {
+      const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+      return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
+    })
+
+    expect(executed).toEqual([[{unset: ['meta.seo']}]])
+    expect(applyPatches(current, executed)).toEqual({
+      _id: 'doc',
+      _type: 'doc',
+      meta: {_type: 'meta', description: 'stays'},
+    })
+  })
+
+  it('unsets a shared stub ancestor once when a group reverts several nested adds', () => {
+    const executed = revert(
+      {keep: 'yes'},
+      {keep: 'yes', meta: {_type: 'meta', seo: {_type: 'seo', title: 'a', description: 'b'}}},
+      (root) => {
+        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+        return groupChange([
+          fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title),
+          fieldChange(['meta', 'seo', 'description'], seoDiff.fields.description),
+        ])
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['meta']}]])
+  })
+
+  it('unsets an added keyed item stub but keeps the array and items that existed before', () => {
+    const kept = {_key: 'kept', _type: 'item'}
+    const executed = revert(
+      {items: [kept]},
+      {items: [kept, {_key: 'added', _type: 'item', title: 'hello'}]},
+      (root) => {
+        const itemsDiff = root.fields.items as ArrayDiff
+        const addedItem = itemsDiff.items.find((item) => item.toIndex === 1)!.diff as ObjectDiff
+        return fieldChange(['items', {_key: 'added'}, 'title'], addedItem.fields.title)
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['items[_key=="added"]']}]])
   })
 
   it('throws instead of setting undefined when a previous string cannot be resolved', () => {
