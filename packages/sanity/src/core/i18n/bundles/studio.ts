@@ -1817,6 +1817,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
   'release.navbar.filter-placeholder': 'Find a version or release',
+  /** Accessible name for the chevron that opens the releases menu */
+  'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
