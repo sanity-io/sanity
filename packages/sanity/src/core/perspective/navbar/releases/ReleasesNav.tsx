@@ -75,7 +75,7 @@ export const ReleasesNav: ComponentType<Props> = ({
       fullWidth={variantsEnabled ? fullWidth : undefined}
       menuItemProps={menuItemProps}
       selectedPerspectiveName={selectedPerspectiveName}
-      showDetailLinks={showDetailLinks}
+      showDetailLinks={variantsEnabled && showDetailLinks}
       variantsEnabled={variantsEnabled}
     />
   )

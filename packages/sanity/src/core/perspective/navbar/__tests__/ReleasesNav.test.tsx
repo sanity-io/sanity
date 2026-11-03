@@ -82,6 +82,7 @@ let currentRenderedInstance: RenderResult<any, any, any> | undefined
 const renderTest = async (
   options: {
     releasesEnabled?: boolean
+    showDetailLinks?: boolean
     variantsEnabled?: boolean
     withReleasesToolButton?: boolean
   } = {},
@@ -96,7 +97,10 @@ const renderTest = async (
     },
   })
   currentRenderedInstance = render(
-    <ReleasesNav withReleasesToolButton={options.withReleasesToolButton ?? true} />,
+    <ReleasesNav
+      showDetailLinks={options.showDetailLinks}
+      withReleasesToolButton={options.withReleasesToolButton ?? true}
+    />,
     {wrapper},
   )
 
@@ -140,6 +144,18 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('releases-tool-link')).toBeNull()
   })
 
+  it('does not show release detail links', async () => {
+    useActiveReleasesMockReturn.data = [activeScheduledRelease]
+    await renderTest({showDetailLinks: true})
+
+    await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeNull()
+    })
+
+    expect(screen.queryByTestId('release-detail-link-rActive')).toBeNull()
+  })
+
   it('links the chosen release from its label', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
     usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
@@ -154,6 +170,18 @@ describe('ReleasesNav', () => {
   })
 
   describe('when variants are enabled', () => {
+    it('shows a detail link for each release', async () => {
+      useActiveReleasesMockReturn.data = [activeScheduledRelease]
+      await renderTest({showDetailLinks: true, variantsEnabled: true})
+
+      await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
+      await waitFor(() => {
+        expect(screen.queryByTestId('spinner')).toBeNull()
+      })
+
+      expect(screen.getByTestId('release-detail-link-rActive')).toBeInTheDocument()
+    })
+
     it('shows the drafts label on the chip', async () => {
       await renderVariants()
 
