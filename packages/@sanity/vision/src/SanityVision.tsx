@@ -13,8 +13,8 @@ import {useRedesignPreference, writeRedesignPreference} from './vista/redesignPr
 
 // The redesign (XState, groq-js type evaluation, its own UI) only loads once someone opts in,
 // and a failed load can be retried from the error boundary
-const vistaGui = createRetryableLazy<ComponentProps<typeof VistaGui>>(() =>
-  import('./vista/components/VistaGui').then((module) => ({default: module.VistaGui})),
+const vistaGui = createRetryableLazy<ComponentProps<typeof VistaGui>>(
+  () => import('./vista/components/VistaGui.lazy'),
 )
 const VistaGuiLoader = vistaGui.Component
 

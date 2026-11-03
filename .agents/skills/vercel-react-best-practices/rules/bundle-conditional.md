@@ -11,6 +11,11 @@ Load large data or modules only when a feature is activated.
 
 **Example (lazy-load animation frames):**
 
+```js
+// animation-frames.lazy.js
+export {frames as default} from './animation-frames.js'
+```
+
 ```tsx
 function AnimationPlayer({
   enabled,
@@ -22,11 +27,18 @@ function AnimationPlayer({
   const [frames, setFrames] = useState<Frame[] | null>(null)
 
   useEffect(() => {
-    if (enabled && !frames && typeof window !== 'undefined') {
-      import('./animation-frames.js')
-        .then((mod) => setFrames(mod.frames))
-        .catch(() => setEnabled(false))
+    if (!enabled || frames || typeof window === 'undefined') return
+
+    async function loadFrames() {
+      try {
+        const {default: animationFrames} = await import('./animation-frames.lazy.js')
+        setFrames(animationFrames)
+      } catch {
+        setEnabled(false)
+      }
     }
+
+    void loadFrames()
   }, [enabled, frames, setEnabled])
 
   if (!frames) return <Skeleton />
