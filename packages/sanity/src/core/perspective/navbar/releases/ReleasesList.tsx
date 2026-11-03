@@ -59,7 +59,7 @@ export function ReleasesList({
   handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
-  /** Called when a release's detail link is followed. */
+  /** Called when a release's detail link is followed. Without it, releases have no link. */
   onNavigateToRelease?: () => void
   filterQuery?: string
 }): JSX.Element {

@@ -25,12 +25,18 @@ export function ReleasesMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
+  showDetailLinks = false,
 }: {
   /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * Shows a link to each release's page next to it. Only the navbar's global perspective picker
+   * does: a picker that chooses a perspective for something else must not navigate away.
+   */
+  showDetailLinks?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
@@ -127,7 +133,7 @@ export function ReleasesMenu({
                 selectedPerspectiveName={selectedPerspectiveName}
                 handleOpenBundleDialog={handleOpenBundleDialog}
                 menuItemProps={menuItemProps}
-                onNavigateToRelease={handleNavigateToRelease}
+                onNavigateToRelease={showDetailLinks ? handleNavigateToRelease : undefined}
               />
             </Flex>
           </Menu>

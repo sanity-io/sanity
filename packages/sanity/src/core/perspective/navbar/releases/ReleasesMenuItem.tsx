@@ -96,7 +96,7 @@ export function ReleasesMenuItem(
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
-    /** Called when the release's detail link is followed. */
+    /** Called when the release's detail link is followed. Without it, the release has no link. */
     onNavigateToRelease?: () => void
   } & RefAttributes<HTMLDivElement>,
 ) {
@@ -148,6 +148,8 @@ export function ReleasesMenuItem(
     if (isReleaseScheduledOrScheduling(release)) return false
     return rangePosition && ['first', 'within'].includes(rangePosition)
   }, [rangePosition, release, selectedPerspective])
+
+  const hasDetailLink = isReleaseDocument(release) && onNavigateToRelease !== undefined
 
   const menuItemContent = (
     <Flex alignItems="flex-start" gap={1}>
@@ -249,7 +251,7 @@ export function ReleasesMenuItem(
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
       $inRange={Boolean(rangePosition)}
-      data-detail-link-row={isReleaseDocument(release) ? '' : undefined}
+      data-detail-link-row={hasDetailLink ? '' : undefined}
       data-stack-line={rangePosition ? 'true' : undefined}
       ref={ref}
     >
@@ -262,9 +264,9 @@ export function ReleasesMenuItem(
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
       >
-        {isReleaseDocument(release) ? renderWithDetailLinkSpace(menuItemContent) : menuItemContent}
+        {hasDetailLink ? renderWithDetailLinkSpace(menuItemContent) : menuItemContent}
       </MenuItem>
-      {isReleaseDocument(release) && (
+      {hasDetailLink && (
         <PerspectiveDetailLink
           {...detailLinkProps}
           alignItems="flex-start"
