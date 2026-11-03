@@ -41,10 +41,11 @@ afterEach(() => {
   perspectiveContextValueMock.selectedPerspective = DRAFTS_PERSPECTIVE
 })
 
-async function renderNavbar(perspective: TargetPerspective) {
+async function renderNavbar(perspective: TargetPerspective, variantsEnabled = false) {
   perspectiveContextValueMock.selectedPerspective = perspective
   const TestProvider = await createTestProvider({
     client: createMockSanityClientAsClient({requests: {'/acl': []}}),
+    config: variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined,
   })
 
   render(
@@ -67,15 +68,27 @@ async function renderNavbar(perspective: TargetPerspective) {
 }
 
 describe('StudioNavbar', () => {
-  it('keeps the default tone when drafts are selected', async () => {
+  it('uses the default tone for drafts when variants are off', async () => {
     expect(await renderNavbar('drafts')).toHaveAttribute('data-tone', 'default')
   })
 
-  it('keeps the default tone when published is selected', async () => {
-    expect(await renderNavbar(PUBLISHED)).toHaveAttribute('data-tone', 'default')
+  it('uses the published tone when published is selected and variants are off', async () => {
+    expect(await renderNavbar(PUBLISHED)).toHaveAttribute('data-tone', 'positive')
   })
 
-  it('keeps the default tone when a release is selected', async () => {
-    expect(await renderNavbar(activeASAPRelease)).toHaveAttribute('data-tone', 'default')
+  it('uses the release tone when a release is selected and variants are off', async () => {
+    expect(await renderNavbar(activeASAPRelease)).toHaveAttribute('data-tone', 'caution')
+  })
+
+  it('keeps the default tone for drafts when variants beta is on', async () => {
+    expect(await renderNavbar('drafts', true)).toHaveAttribute('data-tone', 'default')
+  })
+
+  it('keeps the default tone for published when variants beta is on', async () => {
+    expect(await renderNavbar(PUBLISHED, true)).toHaveAttribute('data-tone', 'default')
+  })
+
+  it('keeps the default tone for a release when variants beta is on', async () => {
+    expect(await renderNavbar(activeASAPRelease, true)).toHaveAttribute('data-tone', 'default')
   })
 })
