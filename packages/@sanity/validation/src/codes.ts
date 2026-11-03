@@ -24,6 +24,7 @@ export const validationMarkerCodes = {
   objectUnknownField: 'object.unknown-field',
   referenceInvalid: 'reference.invalid',
   referenceNotPublished: 'reference.not-published',
+  referenceTargetTypeMismatch: 'reference.target-type-mismatch',
   ruleAllFailed: 'rule.all-failed',
   ruleEitherFailed: 'rule.either-failed',
   slugInvalidType: 'slug.invalid-type',

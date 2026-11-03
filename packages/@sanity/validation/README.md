@@ -37,6 +37,12 @@ const results = await validateDocuments({documents, schema, client, maxFetchConc
 
 `maxFetchConcurrency` defaults to 25. One `signal` cancels the entire batch.
 
+## Reference target types
+
+Reference targets are checked against the field's `to` types by default.
+Set `validateReferenceTypes: false` to disable these checks and their network reads.
+If a target's type cannot be checked, validation is marked incomplete.
+
 ## Cancellation
 
 ```ts

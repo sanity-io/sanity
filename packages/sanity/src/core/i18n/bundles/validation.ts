@@ -65,6 +65,9 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'object.not-reference': 'Must be a reference to a document',
   /** Object references a document which is not published */
   'object.reference-not-published': 'Referenced document must be published',
+  /** Reference target type is not among the types declared by the reference field */
+  'object.reference-target-type-mismatch':
+    'Referenced document has type "{{actualType}}"; expected one of: {{allowedTypes}}',
   /** Accessibility label for closing the validation panel */
   'panel.close-button-aria-label': 'Close validation',
   /** Message shown when the validation panel is opened but there are no errors/warnings */

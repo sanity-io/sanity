@@ -1,6 +1,7 @@
 import {type SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
+import type * as Validation from '@sanity/validation/_internal'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
-import {BehaviorSubject, Observable, of, type Subscription} from 'rxjs'
+import {BehaviorSubject, filter, firstValueFrom, Observable, of, type Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getFallbackLocaleSource} from '../i18n/fallback'
@@ -10,6 +11,7 @@ import {
   AVAILABILITY_VERSION_DELETED,
 } from '../preview/constants'
 import {type DocumentAvailability} from '../preview/types'
+import {createSchema} from '../schema/createSchema'
 import {
   validateDocumentWithReferences,
   type ValidationStatus,
@@ -19,7 +21,8 @@ const {evaluateDocumentObservable} = vi.hoisted(() => ({
   evaluateDocumentObservable: vi.fn(),
 }))
 
-vi.mock('@sanity/validation/_internal', () => ({
+vi.mock('@sanity/validation/_internal', async (importOriginal) => ({
+  ...(await importOriginal<typeof Validation>()),
   evaluateDocumentObservable,
 }))
 
@@ -206,6 +209,41 @@ describe('validateDocumentWithReferences scheduling', () => {
 })
 
 describe('validateDocumentWithReferences reference existence', () => {
+  it('validates references without adding target type requests in Studio', async () => {
+    const actual = await vi.importActual<typeof Validation>('@sanity/validation/_internal')
+    evaluateDocumentObservable.mockImplementation(actual.evaluateDocumentObservable)
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        {name: 'actor', type: 'document', fields: [{name: 'name', type: 'string'}]},
+        {
+          name: 'movie',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string'},
+            {name: 'actor', type: 'reference', to: [{type: 'actor'}]},
+          ],
+        },
+      ],
+    })
+    const result = await firstValueFrom(
+      validateDocumentWithReferences(
+        {
+          getClient: () => {
+            throw new Error('Studio should reuse reference availability')
+          },
+          observeDocumentPairAvailability: () =>
+            of({published: AVAILABILITY_READABLE, draft: AVAILABILITY_NOT_FOUND}),
+          schema,
+          i18n: getFallbackLocaleSource(),
+        },
+        of({...movie('rev', 'Title'), actor: {_type: 'reference', _ref: 'actor'}}),
+        new BehaviorSubject<ValidationScheduling>('immediate'),
+      ).pipe(filter(({isValidating}) => !isValidating)),
+    )
+    expect(result.validation).toEqual([])
+  })
+
   type GetDocumentExists = (options: {id: string}) => Promise<boolean>
 
   async function referenceExists(
