@@ -18,6 +18,7 @@ import {
 } from '../../util/generateQuery'
 import {summarizeSchema} from '../../util/schemaSummary'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import {useAiCreditsUpsell} from '../AiCreditsUpsellContext'
 import {PromptRow} from '../PromptRow'
 
 type GenerateStatus =
@@ -52,6 +53,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const [status, setStatus] = useState<GenerateStatus>({type: 'idle'})
   const controllerRef = useRef<AbortController | null>(null)
   const credits = useAiCredits(client)
+  const upsell = useAiCreditsUpsell()
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -99,7 +101,10 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
     } catch (error) {
       if (controller.signal.aborted) return
       const limit = readAiCreditsLimit(error)
-      if (limit) reportAiCreditsLimit(client, limit)
+      if (limit) {
+        reportAiCreditsLimit(client, limit)
+        upsell?.requestTurnedDown(limit)
+      }
       setStatus({
         type: 'failed',
         message: error instanceof Error ? error.message : String(error),
@@ -107,7 +112,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         limit,
       })
     }
-  }, [client, open, request, schema])
+  }, [client, open, request, schema, upsell])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined

@@ -1,5 +1,6 @@
 import {useCallback, useState} from 'react'
 
+import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
 import {type QueryRequest} from '../store/types'
 import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
 import {explainQuery, fetchQueryPlan} from '../util/explainQuery'
@@ -31,6 +32,7 @@ function toMessage(error: unknown): string {
 export function useQueryExplain(request: QueryRequest | null) {
   const [plan, setPlan] = useState<ExplainStep>(IDLE)
   const [explanation, setExplanation] = useState<ExplainStep>(IDLE)
+  const upsell = useAiCreditsUpsell()
   const url = request?.url
   const currentPlan = plan.status !== 'idle' && plan.url === url ? plan : IDLE
   const currentExplanation =
@@ -66,10 +68,13 @@ export function useQueryExplain(request: QueryRequest | null) {
       setExplanation({status: 'done', url: request.url, text})
     } catch (error) {
       const limit = readAiCreditsLimit(error)
-      if (limit) reportAiCreditsLimit(request.client, limit)
+      if (limit) {
+        reportAiCreditsLimit(request.client, limit)
+        upsell?.requestTurnedDown(limit)
+      }
       setExplanation({status: 'failed', url: request.url, message: toMessage(error), limit})
     }
-  }, [currentPlan, loadPlan, request])
+  }, [currentPlan, loadPlan, request, upsell])
 
   return {plan: currentPlan, explanation: currentExplanation, showPlan, explain}
 }

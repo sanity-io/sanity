@@ -88,6 +88,21 @@ export function readAiCreditsLimit(error: unknown): AiCredits | undefined {
   return {granted: false, reasonCode, used: optionalNumber(body.usageValue), quota}
 }
 
+/**
+ * The reason code of credits exhausted because the plan's monthly quota is used up, as opposed to
+ * a spending limit the organization set itself (`default_budget_limit_reached`)
+ */
+const PLAN_LIMIT_REACHED = 'plan_limit_reached'
+
+/**
+ * Whether more AI credits come with a bigger plan: the credits are exhausted, and what exhausted
+ * them is the plan's quota rather than a spending limit the organization chose. A limit for any
+ * other reason, or for a reason the API leaves out, is raised in Manage instead.
+ */
+export function canUpsellAiCredits(credits: AiCredits): boolean {
+  return !credits.granted && credits.reasonCode === PLAN_LIMIT_REACHED
+}
+
 /** The Sanity website the project's API host belongs to, for links into Manage */
 function websiteUrl(apiHost: string | undefined): string {
   return apiHost?.endsWith('.work') ? 'https://www.sanity.work' : 'https://www.sanity.io'

@@ -21,6 +21,7 @@ import {
 } from '../store/VistaActorContext'
 import {selectActiveTab, selectOpenDrawer, vistaMachine} from '../store/vistaMachine'
 import {loadVistaState, type VistaStorageDefaults} from '../store/vistaStorage'
+import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {VistaSidebar} from './sidebar/VistaSidebar'
 import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
@@ -93,31 +94,33 @@ export function VistaGui(props: VistaGuiProps) {
           <PendingEditsContext.Provider value={pendingEdits}>
             <SidebarBadgesContext.Provider value={sidebarBadges}>
               <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-                <Flex
-                  className={styles.root}
-                  data-testid="vista-root"
-                  data-vista-layout={layout}
-                  height="100%"
-                  overflow="hidden"
-                  ref={setRootElement}
-                >
-                  <VistaSidebar />
+                <AiCreditsUpsellProvider projectId={projectId}>
                   <Flex
-                    flexBasis="0%"
-                    flexDirection="column"
-                    flexGrow={1}
-                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                    inert={layout === 'mobile' && openDrawer !== null}
-                    minWidth="0"
+                    className={styles.root}
+                    data-testid="vista-root"
+                    data-vista-layout={layout}
+                    height="100%"
                     overflow="hidden"
+                    ref={setRootElement}
                   >
-                    <QueryTabBar />
-                    <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    <VistaSidebar />
+                    <Flex
+                      flexBasis="0%"
+                      flexDirection="column"
+                      flexGrow={1}
+                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                      inert={layout === 'mobile' && openDrawer !== null}
+                      minWidth="0"
+                      overflow="hidden"
+                    >
+                      <QueryTabBar />
+                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    </Flex>
                   </Flex>
-                </Flex>
-                <VistaDialogs />
-                <VistaUrlState tab={activeTab} />
-                <VistaWebMcp tab={activeTab} />
+                  <VistaDialogs />
+                  <VistaUrlState tab={activeTab} />
+                  <VistaWebMcp tab={activeTab} />
+                </AiCreditsUpsellProvider>
               </TabDrawerSlotContext.Provider>
             </SidebarBadgesContext.Provider>
           </PendingEditsContext.Provider>

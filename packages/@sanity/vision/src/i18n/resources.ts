@@ -248,10 +248,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Body of the out-of-credits card when the usage and the quota are unknown */
   'vista.ai-credits.limit.description-unknown':
     'Your organization has reached its AI credits spending limit, so Sanity Agent Actions are paused until next month or until the limit is raised.',
+  /** Body of the out-of-credits card where a bigger plan comes with more credits */
+  'vista.ai-credits.limit.description-upgrade':
+    'Your organization has used {{used}} of the {{quota}} AI credits its plan includes this month, so Sanity Agent Actions are paused until next month or until the plan is upgraded.',
+  /** Body of the out-of-credits card where a bigger plan comes with more credits, when the usage and the quota are unknown */
+  'vista.ai-credits.limit.description-upgrade-unknown':
+    'Your organization has used all the AI credits its plan includes this month, so Sanity Agent Actions are paused until next month or until the plan is upgraded.',
   /** Link in the out-of-credits card to the documentation of AI credits */
   'vista.ai-credits.limit.learn-more': 'How AI credits work',
   /** Button in the out-of-credits card leading to the organization's spending limits in Manage */
   'vista.ai-credits.limit.manage': 'Manage AI credits',
+  /** Button in the out-of-credits card opening the upsell dialog for a plan with more AI credits */
+  'vista.ai-credits.limit.upgrade': 'Upgrade plan',
   /** Button in the request column's action bar naming the API version requests go out with */
   'vista.api-version.button': 'API {{version}}',
   /** The API version button while queries go through the API CDN */
