@@ -1,14 +1,32 @@
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
-import {FileFieldDiff} from '../../types/file/diff/FileFieldDiff'
-import {ImageFieldDiff} from '../../types/image/diff/ImageFieldDiff'
-import {PTDiff} from '../../types/portableText/diff/PTDiff'
-import {defaultComponents} from './defaultComponents'
+const cycleEntries = [
+  {
+    name: 'block',
+    loadComponent: () =>
+      import('../../types/portableText/diff/PTDiff').then((module) => module.PTDiff),
+  },
+  {
+    name: 'image',
+    loadComponent: () =>
+      import('../../types/image/diff/ImageFieldDiff').then((module) => module.ImageFieldDiff),
+  },
+  {
+    name: 'file',
+    loadComponent: () =>
+      import('../../types/file/diff/FileFieldDiff').then((module) => module.FileFieldDiff),
+  },
+]
 
-describe('defaultComponents', () => {
-  it('exposes the registered block, image and file diff components after the ChangeList import cycle', () => {
-    expect(defaultComponents.block).toBe(PTDiff)
-    expect(defaultComponents.image).toBe(ImageFieldDiff)
-    expect(defaultComponents.file).toBe(FileFieldDiff)
-  })
+describe('getDefaultDiffComponent', () => {
+  it.each(cycleEntries)(
+    'resolves $name when its own module loads first',
+    async ({name, loadComponent}) => {
+      vi.resetModules()
+      const component = await loadComponent()
+      const {getDefaultDiffComponent} = await import('./defaultComponents')
+
+      expect(getDefaultDiffComponent(name)).toBe(component)
+    },
+  )
 })

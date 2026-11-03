@@ -9,32 +9,28 @@ import {ReferenceFieldDiff} from '../../types/reference/diff/ReferenceFieldDiff'
 import {SlugFieldDiff} from '../../types/slug/diff/SlugFieldDiff'
 import {StringFieldDiff} from '../../types/string/diff/StringFieldDiff'
 
-/**
- * `block`, `image`, and `file` are read through getters. Those components import
- * `ChangeList`, which circularly loads this module via `buildObjectChangeList` →
- * `resolveDiffComponent`. A plain property would capture `undefined` while the
- * cycle is still evaluating. The getter reads the live binding after init.
- * SAPP-4648.
- */
-export const defaultComponents: Record<
-  string,
-  DiffComponent<any> | DiffComponentOptions<any> | undefined
-> = {
-  get block() {
-    return PTDiff
-  },
-  boolean: {component: BooleanFieldDiff, showHeader: false},
-  date: DatetimeFieldDiff,
-  datetime: DatetimeFieldDiff,
-  get file() {
-    return FileFieldDiff
-  },
-  get image() {
-    return ImageFieldDiff
-  },
-  number: NumberFieldDiff,
-  reference: ReferenceFieldDiff,
-  crossDatasetReference: ReferenceFieldDiff,
-  slug: SlugFieldDiff,
-  string: StringFieldDiff,
+type DefaultDiffComponent = DiffComponent<any> | DiffComponentOptions<any> | undefined
+
+function createDefaultComponents(): Record<string, DefaultDiffComponent> {
+  return {
+    block: PTDiff,
+    boolean: {component: BooleanFieldDiff, showHeader: false},
+    date: DatetimeFieldDiff,
+    datetime: DatetimeFieldDiff,
+    file: FileFieldDiff,
+    image: ImageFieldDiff,
+    number: NumberFieldDiff,
+    reference: ReferenceFieldDiff,
+    crossDatasetReference: ReferenceFieldDiff,
+    slug: SlugFieldDiff,
+    string: StringFieldDiff,
+  }
+}
+
+// Built on first lookup: PTDiff, ImageFieldDiff and FileFieldDiff import ChangeList, which imports this module back.
+let defaultComponentsByName: Record<string, DefaultDiffComponent> | undefined
+
+export function getDefaultDiffComponent(name: string): DefaultDiffComponent {
+  defaultComponentsByName ??= createDefaultComponents()
+  return defaultComponentsByName[name]
 }
