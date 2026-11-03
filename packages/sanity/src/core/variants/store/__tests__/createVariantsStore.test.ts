@@ -109,6 +109,33 @@ describe('createVariantsStore', () => {
     expect(Array.from(lastValue.variants.values())).toEqual([updatedVariant])
   })
 
+  it('keeps the listener through a brief resubscribe and releases it once nobody is left', async () => {
+    vi.useFakeTimers()
+
+    const {client, fetch, listen, listener$} = createMockClient()
+    fetch.mockReturnValue(of([createMockVariant('a')]))
+    const store = createVariantsStore({client, enabled: true})
+
+    const first = store.state$.subscribe()
+    listener$.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
+    expect(listener$.observed).toBe(true)
+
+    // A consumer that remounts within the grace period finds the same listener
+    first.unsubscribe()
+    await vi.advanceTimersByTimeAsync(1000)
+    const second = store.state$.subscribe()
+    expect(listen).toHaveBeenCalledTimes(1)
+
+    // A workspace that was switched away from has no consumer left, so its
+    // `/listen` stream must not outlive the grace period
+    second.unsubscribe()
+    await vi.advanceTimersByTimeAsync(4999)
+    expect(listener$.observed).toBe(true)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(listener$.observed).toBe(false)
+  })
+
   it('supports removing a variant through dispatch', async () => {
     const variantA = createMockVariant('a')
     const variantB = createMockVariant('b', 1)
