@@ -1,5 +1,3 @@
-import {type FileLike} from './types'
-
 /**
  * Check if the provided file type should be accepted by the input with accept attribute.
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-accept
@@ -10,8 +8,12 @@ import {type FileLike} from './types'
  * @param file - https://developer.mozilla.org/en-US/docs/Web/API/File
  * @param acceptedFiles - List of accepted mime types (comma-separated string or array)
  * @returns True if file is accepted, false otherwise
+ * @internal
  */
-export function accepts(file: FileLike, acceptedFiles: string | string[]): boolean {
+export function accepts(
+  file: {type: string; name?: string},
+  acceptedFiles: string | string[],
+): boolean {
   if (!file || !acceptedFiles) {
     return true
   }
