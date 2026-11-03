@@ -32,6 +32,7 @@ import {
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
+import * as overlays from '../overlays.module.css'
 import {SwitchField} from '../SwitchField'
 import * as styles from '../vista.module.css'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
@@ -414,6 +415,7 @@ export function MutateTab(props: MutateTabProps) {
                     <AgentActionsTooltip title={t('vista.mutate.generate.button')}>
                       <Button
                         aria-label={t('vista.mutate.generate.button')}
+                        className={overlays.pressable}
                         data-testid="vista-mutate-generate"
                         fontSize={1}
                         icon={SparklesIcon}

@@ -9,10 +9,15 @@ vi.mock('@sanity/ui/toast', () => ({
   useToast: () => toastMocks,
 }))
 
+const results: boolean[] = []
+
 function CopyButton() {
   const copy = useCopyToClipboard()
   return (
-    <button onClick={() => void copy('the text', 'Copied')} type="button">
+    <button
+      onClick={() => void copy('the text', 'Copied').then((copied) => results.push(copied))}
+      type="button"
+    >
       Copy
     </button>
   )
@@ -23,6 +28,7 @@ describe('useCopyToClipboard', () => {
   let execCommand: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
+    results.length = 0
     // The fallback path: no async clipboard API (insecure contexts, some webviews)
     Object.defineProperty(navigator, 'clipboard', {value: undefined, configurable: true})
     execCommand = vi.fn(() => true)
@@ -59,6 +65,7 @@ describe('useCopyToClipboard', () => {
     expect(toastMocks.push).toHaveBeenCalledWith(
       expect.objectContaining({status: 'success', title: 'Copied'}),
     )
+    expect(results).toEqual([true])
   })
 
   it('reports a refused copy and still gives focus back', async () => {
@@ -79,6 +86,7 @@ describe('useCopyToClipboard', () => {
         title: 'Copying to the clipboard is not allowed here',
       }),
     )
+    expect(results).toEqual([false])
   })
 
   it('leaves focus alone when nothing was focused before', async () => {

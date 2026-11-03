@@ -32,6 +32,7 @@ import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {CollapsibleSection} from '../CollapsibleSection'
+import * as overlays from '../overlays.module.css'
 import * as styles from '../vista.module.css'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {GenerateQueryBar} from './GenerateQueryBar'
@@ -222,6 +223,7 @@ export function RequestPanel(props: RequestPanelProps) {
                     <AgentActionsTooltip title={t('vista.generate.button')}>
                       <Button
                         aria-label={t('vista.generate.button')}
+                        className={overlays.pressable}
                         data-testid="vista-generate-query"
                         fontSize={1}
                         icon={SparklesIcon}

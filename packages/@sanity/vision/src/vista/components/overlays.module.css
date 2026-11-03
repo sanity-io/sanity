@@ -1,0 +1,72 @@
+/*
+ * Motion for Vision's overlays and Agent Actions. Entering elements start from `@starting-style`,
+ * so they animate the first time they render and stay interruptible; exits are instant. Only
+ * opacity, transform and filter move, and with reduced motion only opacity does. The curve is a
+ * strong ease-out: movement starts fast, so the UI feels like it answered right away.
+ */
+
+/* The Agent Actions bar above the query or mutations editor */
+.promptBar {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Progress, the failure card and the hint swap in place as a generation moves on */
+.promptStatus {
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* An export snippet fades in when its tab is chosen */
+.snippet {
+  transition: opacity 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The copy button's icon turns into a checkmark, and back */
+.copyButton svg {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .promptBar,
+  .promptStatus,
+  .snippet,
+  .copyButton svg {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @starting-style {
+    .promptBar {
+      transform: translateY(-4px);
+    }
+
+    .promptStatus {
+      transform: translateY(-2px);
+    }
+
+    .copyButton svg {
+      transform: scale(0.5);
+      filter: blur(2px);
+    }
+  }
+
+  /* `@sanity/ui` buttons transition their colours; the press scale joins that list */
+  .pressable.pressable {
+    transition:
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      background-color 100ms,
+      border-color 100ms,
+      color 100ms;
+  }
+
+  .pressable.pressable:active:not(:disabled, [data-disabled='true']) {
+    transform: scale(0.97);
+  }
+}
