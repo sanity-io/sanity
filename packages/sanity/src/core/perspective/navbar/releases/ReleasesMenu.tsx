@@ -131,6 +131,7 @@ export function ReleasesMenu({
             <ReleasesMenuChip fullWidth={fullWidth} />
           ) : (
             <OversizedButton
+              aria-label={t('release.navbar.open-releases')}
               data-testid="global-perspective-menu-button"
               iconRight={ChevronDownIcon}
               mode="bleed"

@@ -120,7 +120,9 @@ describe('ReleasesNav', () => {
 
     screen.getByText('Drafts')
     expect(screen.getByTestId('releases-tool-link')).toHaveAttribute('href', '/')
-    screen.getByTestId('global-perspective-menu-button')
+    expect(screen.getByTestId('global-perspective-menu-button')).toHaveAccessibleName(
+      'Open releases',
+    )
     expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
   })
 
