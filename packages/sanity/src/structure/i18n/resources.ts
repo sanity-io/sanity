@@ -523,6 +523,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     "This document isn't in any release yet. Pick one below to add it.",
   /** Section header listing the releases the document has no version in */
   'document-panel-navigation.releases.section.other': 'Other releases',
+  /** Label of the scheduled drafts menu trigger in the document header when none is open */
+  'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
+  /** Section header listing the dates the scheduled drafts of the document go out */
+  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */
