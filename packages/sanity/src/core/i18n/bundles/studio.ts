@@ -1548,6 +1548,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'navbar.variant.default': 'All users',
   /** View all option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.view-all': 'View all',
+  /** Tooltip for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant': 'View audience',
+  /** Accessible label for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant-aria-label': 'View audience {{title}}',
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
