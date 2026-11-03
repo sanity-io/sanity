@@ -261,9 +261,12 @@
   overflow: auto;
 }
 
+/* Above the drawer, which comes out from under it (see `sidebar.module.css`) */
 .sidebarRail {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  transition: width 120ms ease-out;
+  background: var(--card-bg-color);
 }
 
 /* The collapsed rail's width, which `.sidebarSlot` reserves too */
