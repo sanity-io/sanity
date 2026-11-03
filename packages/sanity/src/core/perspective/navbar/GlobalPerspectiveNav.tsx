@@ -17,7 +17,7 @@ export function GlobalPerspectiveNav(props: {
   return (
     <>
       {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout fullWidth={fullWidth} />}
-      <ReleasesNav fullWidth={fullWidth} showDetailLinks />
+      <ReleasesNav fullWidth={fullWidth} showDetailLinks withReleasesToolButton />
     </>
   )
 }
