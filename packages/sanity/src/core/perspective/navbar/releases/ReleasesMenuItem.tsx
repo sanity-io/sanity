@@ -29,7 +29,7 @@ import {usePerspective} from '../../usePerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {
   PerspectiveDetailLink,
-  PerspectiveDetailLinkSpace,
+  renderWithDetailLinkSpace,
   usePerspectiveDetailLink,
 } from '../PerspectiveDetailLink'
 import {ReleasesMenuItemIndicator} from './ReleasesLayerIndicator'
@@ -149,6 +149,100 @@ export function ReleasesMenuItem(
     return rangePosition && ['first', 'within'].includes(rangePosition)
   }, [rangePosition, release, selectedPerspective])
 
+  const menuItemContent = (
+    <Flex alignItems="flex-start" gap={1}>
+      <IconWrapperBox
+        $isExcluded={isReleasePerspectiveExcluded}
+        flexBasis="auto"
+        flexGrow={0}
+        flexShrink={0}
+        data-testid="release-indicator-icon"
+        paddingX={3}
+        paddingY={2}
+      >
+        <ReleaseAvatarIcon size="small" release={release} fontSize={2} />
+      </IconWrapperBox>
+      <Flex
+        flexBasis="0%"
+        flexGrow={1}
+        paddingY={2}
+        paddingRight={2}
+        gap={2}
+        style={{
+          opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
+          maxWidth: '200px',
+        }}
+        flexDirection="column"
+      >
+        <Flex gap={3} alignItems="center">
+          {isReleaseDocument(release) ? (
+            <ReleaseTitle
+              title={release.metadata.title}
+              fallback={t('release.placeholder-untitled-release')}
+              textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+            />
+          ) : (
+            <Text
+              size={1}
+              weight="medium"
+              style={{minWidth: 0, color: 'inherit'}}
+              as="div"
+              trim={true}
+            >
+              {isDraftPerspective(release)
+                ? t('release.navbar.drafts')
+                : t('release.navbar.published')}
+            </Text>
+          )}
+          {isReleaseDocument(release) &&
+            typeof release.error !== 'undefined' &&
+            release.state === 'active' && (
+              <Box style={{margin: '-0.375rem'}}>
+                <Icon
+                  size={1}
+                  data-testid="release-error-icon"
+                  icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                />
+              </Box>
+            )}
+        </Flex>
+        {isReleaseDocument(release) &&
+          release.metadata.releaseType === 'scheduled' &&
+          (release.publishAt || release.metadata.intendedPublishAt) && (
+            <Text muted size={1} as="div" trim={true}>
+              {formatPublishDate(release)}
+            </Text>
+          )}
+      </Flex>
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+        {canReleaseBeExcluded && (
+          <Tooltip portal content={t('release.layer.hide')} placement="bottom">
+            <ToggleLayerButton
+              $visible={!isReleasePerspectiveExcluded}
+              forwardedAs="div"
+              icon={isReleasePerspectiveExcluded ? EyeClosedIcon : EyeOpenIcon}
+              mode="bleed"
+              onClick={handleToggleReleaseVisibility}
+              padding={2}
+              data-testid="release-toggle-visibility"
+            />
+          </Tooltip>
+        )}
+        {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
+          <Box padding={2}>
+            <Icon
+              size={1}
+              muted
+              data-testid="release-lock-icon"
+              icon={LockIcon}
+              style={{margin: '-0.375rem'}}
+            />
+          </Box>
+        )}
+      </Box>
+    </Flex>
+  )
+
   return (
     <ReleasesMenuItemIndicator
       $isDefaultPerspective={isDefaultPerspective}
@@ -168,98 +262,7 @@ export function ReleasesMenuItem(
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
       >
-        <Flex alignItems="flex-start" gap={1}>
-          <IconWrapperBox
-            $isExcluded={isReleasePerspectiveExcluded}
-            flexBasis="auto"
-            flexGrow={0}
-            flexShrink={0}
-            data-testid="release-indicator-icon"
-            paddingX={3}
-            paddingY={2}
-          >
-            <ReleaseAvatarIcon size="small" release={release} fontSize={2} />
-          </IconWrapperBox>
-          <Flex
-            flexBasis="0%"
-            flexGrow={1}
-            paddingY={2}
-            paddingRight={2}
-            gap={2}
-            style={{
-              opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
-              maxWidth: '200px',
-            }}
-            flexDirection="column"
-          >
-            <Flex gap={3} alignItems="center">
-              {isReleaseDocument(release) ? (
-                <ReleaseTitle
-                  title={release.metadata.title}
-                  fallback={t('release.placeholder-untitled-release')}
-                  textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
-                />
-              ) : (
-                <Text
-                  size={1}
-                  weight="medium"
-                  style={{minWidth: 0, color: 'inherit'}}
-                  as="div"
-                  trim={true}
-                >
-                  {isDraftPerspective(release)
-                    ? t('release.navbar.drafts')
-                    : t('release.navbar.published')}
-                </Text>
-              )}
-              {isReleaseDocument(release) &&
-                typeof release.error !== 'undefined' &&
-                release.state === 'active' && (
-                  <Box style={{margin: '-0.375rem'}}>
-                    <Icon
-                      size={1}
-                      data-testid="release-error-icon"
-                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
-                    />
-                  </Box>
-                )}
-            </Flex>
-            {isReleaseDocument(release) &&
-              release.metadata.releaseType === 'scheduled' &&
-              (release.publishAt || release.metadata.intendedPublishAt) && (
-                <Text muted size={1} as="div" trim={true}>
-                  {formatPublishDate(release)}
-                </Text>
-              )}
-          </Flex>
-          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-            {canReleaseBeExcluded && (
-              <Tooltip portal content={t('release.layer.hide')} placement="bottom">
-                <ToggleLayerButton
-                  $visible={!isReleasePerspectiveExcluded}
-                  forwardedAs="div"
-                  icon={isReleasePerspectiveExcluded ? EyeClosedIcon : EyeOpenIcon}
-                  mode="bleed"
-                  onClick={handleToggleReleaseVisibility}
-                  padding={2}
-                  data-testid="release-toggle-visibility"
-                />
-              </Tooltip>
-            )}
-            {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
-              <Box padding={2}>
-                <Icon
-                  size={1}
-                  muted
-                  data-testid="release-lock-icon"
-                  icon={LockIcon}
-                  style={{margin: '-0.375rem'}}
-                />
-              </Box>
-            )}
-          </Box>
-          {isReleaseDocument(release) && <PerspectiveDetailLinkSpace />}
-        </Flex>
+        {isReleaseDocument(release) ? renderWithDetailLinkSpace(menuItemContent) : menuItemContent}
       </MenuItem>
       {isReleaseDocument(release) && (
         <PerspectiveDetailLink

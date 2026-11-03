@@ -30,7 +30,7 @@ import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
 import {
   PerspectiveDetailLink,
-  PerspectiveDetailLinkSpace,
+  renderWithDetailLinkSpace,
   usePerspectiveDetailLink,
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
@@ -40,17 +40,6 @@ import {suggestIconColor} from './VariantsNav.css'
 
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
   return <RhombusIconLarge className={suggestIconColor} {...props} />
-}
-
-function renderWithDetailLinkSpace(menuItemContent: JSX.Element) {
-  return (
-    <Flex alignItems="center" gap={2}>
-      <Box flexBasis="0%" flexGrow={1} minWidth="0">
-        {menuItemContent}
-      </Box>
-      <PerspectiveDetailLinkSpace />
-    </Flex>
-  )
 }
 
 function VariantMenuItem(props: {

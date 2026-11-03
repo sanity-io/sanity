@@ -2,7 +2,7 @@ import {css} from '#styled-system/css'
 
 /**
  * Lays the link over the end of its row's menu item, which reserves that space with
- * `PerspectiveDetailLinkSpace`. The caller's padding mirrors the menu item's own, so the link
+ * `renderWithDetailLinkSpace`. The caller's padding mirrors the menu item's own, so the link
  * covers the reserved space.
  *
  * The row renders `data-detail-link-row`. The link shows while the row is hovered, and while

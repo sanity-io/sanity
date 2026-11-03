@@ -1,7 +1,14 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 // oxlint-disable-next-line no-restricted-imports -- the studio Button types its ref for a <button>, and this is an <a>
 import {Button} from '@sanity/ui'
-import {type KeyboardEvent, type RefAttributes, useCallback, useRef, useState} from 'react'
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  type RefAttributes,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
 import {type IntentParameters, useIntentLink} from 'sanity/router'
 import {Box, Flex, type PaddingProps} from 'ui5'
 
@@ -79,8 +86,8 @@ export function usePerspectiveDetailLinkTrigger() {
  *
  * Rendered next to the row's menu item rather than inside it: the menu item is a `<button>`, and
  * interactive content inside a button is invalid HTML that assistive technology never exposes.
- * The row renders `data-detail-link-row` and positions the link, and the menu item reserves the
- * link's space with `PerspectiveDetailLinkSpace`.
+ * The row renders `data-detail-link-row` and positions the link, and the menu item lays out its
+ * content with `renderWithDetailLinkSpace`, which reserves the link's space.
  */
 export function PerspectiveDetailLink(
   props: {
@@ -137,12 +144,18 @@ export function PerspectiveDetailLink(
 }
 
 /**
- * Reserves the detail link's width at the end of a menu item: the same button, hidden and inert.
+ * Lays out a menu item's content with the detail link's width reserved at its end, filled by the
+ * same button, hidden and inert. Matches the studio `MenuItem`'s `renderMenuItem`.
  */
-export function PerspectiveDetailLinkSpace() {
+export function renderWithDetailLinkSpace(menuItemContent: ReactNode) {
   return (
-    <Box className={detailLinkSpace} flexShrink={0}>
-      <Button {...LINK_BUTTON_PROPS} as="span" />
-    </Box>
+    <Flex gap={1}>
+      <Box flexBasis="0%" flexGrow={1} minWidth="0">
+        {menuItemContent}
+      </Box>
+      <Box className={detailLinkSpace} flexShrink={0}>
+        <Button {...LINK_BUTTON_PROPS} as="span" />
+      </Box>
+    </Flex>
   )
 }
