@@ -1818,7 +1818,12 @@ export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDoc
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
-export {getVariantTitle} from '../core/variants/tool/util'
+export {
+  filterVariantsForSearch,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../core/variants/tool/util'
+export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {
