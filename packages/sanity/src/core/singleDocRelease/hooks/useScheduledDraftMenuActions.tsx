@@ -16,6 +16,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {useDocumentPairPermissions} from '../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../store/user/hooks'
 import {getErrorMessage} from '../../util/getErrorMessage'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
@@ -90,8 +91,10 @@ export function useScheduledDraftMenuActions(
   })
 
   const currentUser = useCurrentUser()
+  const isScheduledDraftRelease = Boolean(release && isCardinalityOneRelease(release))
   // '*' denies without a document lookup.
-  const permissionType = release && documentType && documentId ? documentType : '*'
+  const permissionType = isScheduledDraftRelease && documentType && documentId ? documentType : '*'
+  const isGrantLookupSkipped = permissionType === '*'
   const permissionVersion = release ? getReleaseIdFromReleaseDocumentId(release._id) : undefined
 
   const [publishPermission, publishPermissionLoading] = useDocumentPairPermissions({
@@ -173,7 +176,8 @@ export function useScheduledDraftMenuActions(
         'tone': 'default' as const,
         'onClick': () => handleMenuItemClick('publish-now'),
         'disabled': baseDisabled || !canPublish,
-        'tooltipProps': canPublish ? null : insufficientPermissions('publish-document'),
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('publish-document'),
         'data-testid': 'publish-now-menu-item',
       },
       pauseToEdit: {
@@ -182,7 +186,8 @@ export function useScheduledDraftMenuActions(
         'tone': 'default' as const,
         'onClick': pauseToEdit,
         'disabled': baseDisabled || !canPublish,
-        'tooltipProps': canPublish ? null : insufficientPermissions('edit-schedules'),
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('edit-schedules'),
         'data-testid': 'pause-to-edit-menu-item',
       },
       schedulePublish: {
@@ -191,7 +196,8 @@ export function useScheduledDraftMenuActions(
         'tone': 'default' as const,
         'onClick': () => handleMenuItemClick('schedule-publish'),
         'disabled': baseDisabled || !canPublish,
-        'tooltipProps': canPublish ? null : insufficientPermissions('edit-schedules'),
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('edit-schedules'),
         'data-testid': 'schedule-publish-menu-item',
       },
       deleteSchedule: {
@@ -200,7 +206,10 @@ export function useScheduledDraftMenuActions(
         'tone': 'critical' as const,
         'onClick': () => handleMenuItemClick('delete-schedule'),
         'disabled': baseDisabled || !canDiscardVersion,
-        'tooltipProps': canDiscardVersion ? null : insufficientPermissions('delete-schedules'),
+        'tooltipProps':
+          canDiscardVersion || isGrantLookupSkipped
+            ? null
+            : insufficientPermissions('delete-schedules'),
         'data-testid': 'delete-schedule-menu-item',
       },
     }
@@ -215,6 +224,7 @@ export function useScheduledDraftMenuActions(
     discardVersionPermissionLoading,
     canPublish,
     canDiscardVersion,
+    isGrantLookupSkipped,
     currentUser,
   ])
 

@@ -6,7 +6,10 @@ import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 // Now we can safely import the hook and other dependencies
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
+import {
+  activeCardinalityOneRelease,
+  scheduledRelease,
+} from '../../releases/__fixtures__/release.fixture'
 import {
   type DocumentPermission,
   useDocumentPairPermissions,
@@ -60,8 +63,13 @@ const withholdPermission = (withheld: DocumentPermission) =>
     false,
   ])
 
+const scheduledDraftRelease = {
+  ...activeCardinalityOneRelease,
+  state: 'scheduled' as const,
+}
+
 const baseOptions = {
-  release: scheduledRelease,
+  release: scheduledDraftRelease,
   documentType: 'author',
   documentId: 'doc1',
 }
@@ -273,7 +281,7 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('confirm-publish'))
 
       await waitFor(() => {
-        expect(mockOperations.publishScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.publishScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
       })
     })
 
@@ -313,7 +321,7 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('pause-to-edit-menu-item'))
 
       await waitFor(() => {
-        expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
       })
     })
 
@@ -358,7 +366,7 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('confirm-delete'))
 
       await waitFor(() => {
-        expect(mockOperations.deleteScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.deleteScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
       })
     })
   })
@@ -435,13 +443,13 @@ describe('useScheduledDraftMenuActions', () => {
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: 'doc1',
         type: 'author',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'publish',
       })
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: 'doc1',
         type: 'author',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'discardVersion',
       })
     })
@@ -454,6 +462,34 @@ describe('useScheduledDraftMenuActions', () => {
       expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
       expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
       expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('asks for a type that denies without a lookup when the release is not a scheduled draft', () => {
+      mockUseDocumentPairPermissions.mockImplementation(({type}) => [
+        {granted: type !== '*', reason: ''},
+        false,
+      ])
+
+      renderActions({release: scheduledRelease})
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rScheduled',
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rScheduled',
+        permission: 'discardVersion',
+      })
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('pause-to-edit-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('schedule-publish-reason')).toBeEmptyDOMElement()
       expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
     })
 
@@ -480,13 +516,13 @@ describe('useScheduledDraftMenuActions', () => {
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: '',
         type: '*',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'publish',
       })
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: '',
         type: '*',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'discardVersion',
       })
     })
@@ -497,13 +533,13 @@ describe('useScheduledDraftMenuActions', () => {
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: 'doc1',
         type: '*',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'publish',
       })
       expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
         id: 'doc1',
         type: '*',
-        version: 'rScheduled',
+        version: 'rCardinalityOne',
         permission: 'discardVersion',
       })
     })
