@@ -72,31 +72,44 @@ function VariantIcon() {
   )
 }
 
-function renderDocumentStatusIcon(
-  icon: DocumentStatusIconKind,
-  selectedPerspective: TargetPerspective,
-) {
-  switch (icon) {
+/**
+ * A single document status glyph in its 15px slot. `release` is the perspective the release icon
+ * is drawn for; the other kinds ignore it.
+ *
+ * @internal
+ */
+export function DocumentStatusIcon({
+  kind,
+  release,
+}: {
+  kind: DocumentStatusIconKind
+  release?: TargetPerspective
+}) {
+  switch (kind) {
     case 'variant':
-      return <VariantIcon key="variant" />
+      return <VariantIcon />
     case 'release':
-      return (
-        <IconSlot key="release">
-          <ReleaseAvatarIcon release={selectedPerspective} size="small" fontSize={2} />
+      return release ? (
+        <IconSlot>
+          <ReleaseAvatarIcon release={release} size="small" fontSize={2} />
         </IconSlot>
-      )
+      ) : null
     case 'draft':
       return (
-        <IconSlot key="draft" status="draft">
+        <IconSlot status="draft">
           <Icon icon={RingIcon} size={2} />
         </IconSlot>
       )
     case 'published':
       return (
-        <IconSlot key="published" status="published">
+        <IconSlot status="published">
           <Icon icon={CircleSmallIcon} size={2} />
         </IconSlot>
       )
+    default: {
+      const unknownKind: never = kind
+      return unknownKind
+    }
   }
 }
 
@@ -126,7 +139,9 @@ export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStat
 
   return (
     <Flex alignItems="center">
-      {icons.map((icon) => renderDocumentStatusIcon(icon, selectedPerspective))}
+      {icons.map((icon) => (
+        <DocumentStatusIcon key={icon} kind={icon} release={selectedPerspective} />
+      ))}
     </Flex>
   )
 }
