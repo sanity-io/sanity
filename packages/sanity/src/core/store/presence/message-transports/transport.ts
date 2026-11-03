@@ -36,7 +36,7 @@ export interface RollCallEvent extends RollCallMessage {
   userId: string
 }
 
-export type TransportMessage = DisconnectMessage | StateMessage | RollCallMessage
+export type TransportMessage = StateMessage | RollCallMessage
 export type TransportEvent = StateEvent | RollCallEvent | DisconnectEvent
 
 // This is the interface a transport must implement

@@ -309,7 +309,9 @@ export function useDocumentStore(): DocumentStore {
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {bifur, bifurToken$: token$} = useSource().__internal
+  const source = useSource()
+  const {bifur} = source.__internal
+  const token$ = source.auth.token
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
