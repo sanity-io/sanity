@@ -28,8 +28,14 @@ import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/v
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {
+  PerspectiveDetailLink,
+  renderWithDetailLinkSpace,
+  usePerspectiveDetailLink,
+  usePerspectiveDetailLinkTrigger,
+} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantsMenu} from './VariantsMenu.css'
+import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
@@ -38,42 +44,64 @@ const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGS
 
 function VariantMenuItem(props: {
   isSelected: boolean
+  onNavigate: () => void
   onSelect: (variant: SystemVariant) => void
   variant: SystemVariant
 }) {
-  const {isSelected, onSelect, variant} = props
+  const {isSelected, onNavigate, onSelect, variant} = props
   const {t} = useTranslation()
   const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
+  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
+    usePerspectiveDetailLink()
+  const variantId = getVariantId(variant._id)
+  const title = getVariantTitle(variant)
 
   return (
-    <MenuItem
-      data-testid={`variant-${getVariantId(variant._id)}`}
-      icon={VariantMenuItemIcon}
-      iconRight={
-        mismatches.length > 0 ? (
-          <span data-testid="variant-condition-mismatch">
-            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-          </span>
-        ) : undefined
-      }
-      onClick={() => onSelect(variant)}
-      pressed={isSelected}
-      selected={isSelected}
-      text={getVariantTitle(variant)}
-      tooltipProps={
-        mismatchMessage
-          ? {
-              content: (
-                <Text muted size={1} as="div" trim={true}>
-                  {mismatchMessage}
-                </Text>
-              ),
-            }
-          : undefined
-      }
-    />
+    <div className={variantMenuItemRow} data-detail-link-row="">
+      <MenuItem
+        {...detailLinkMenuItemProps}
+        data-testid={`variant-${variantId}`}
+        icon={VariantMenuItemIcon}
+        iconRight={
+          mismatches.length > 0 ? (
+            <Box paddingRight={1} data-testid="variant-condition-mismatch">
+              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+            </Box>
+          ) : undefined
+        }
+        onClick={() => onSelect(variant)}
+        pressed={isSelected}
+        renderMenuItem={renderWithDetailLinkSpace}
+        selected={isSelected}
+        text={title}
+        tooltipProps={
+          mismatchMessage
+            ? {
+                content: (
+                  <Text muted size={1} as="div" trim={true}>
+                    {mismatchMessage}
+                  </Text>
+                ),
+              }
+            : undefined
+        }
+      />
+      <PerspectiveDetailLink
+        {...detailLinkProps}
+        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
+        // link, so the link centers on the item instead of mirroring its top padding
+        alignItems="center"
+        aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
+        data-testid={`variant-detail-link-${variantId}`}
+        intent={VARIANTS_INTENT}
+        onNavigate={onNavigate}
+        paddingRight={3}
+        params={{id: variantId}}
+        tooltip={t('navbar.variant.menu.view-variant')}
+      />
+    </div>
   )
 }
 
@@ -137,6 +165,8 @@ export function VariantsMenu({
     setFilterQuery('')
   }, [resetMenuWidth])
 
+  const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
+
   const isDefaultSelected = !selectedVariant
 
   const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
@@ -169,6 +199,7 @@ export function VariantsMenu({
         id={`variants-nav-menu-${typeKey}`}
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
+        ref={triggerRef}
         menu={
           <Menu
             className={variantsMenu}
@@ -221,6 +252,7 @@ export function VariantsMenu({
                       <VariantMenuItem
                         key={variant._id}
                         isSelected={selectedVariant?._id === variant._id}
+                        onNavigate={handleNavigateToVariant}
                         onSelect={handleSelectVariant}
                         variant={variant}
                       />

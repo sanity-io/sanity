@@ -1550,6 +1550,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.view-all': 'View all',
+  /** Tooltip for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant': 'View audience',
+  /** Accessible label for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant-aria-label': 'View audience {{title}}',
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
@@ -1819,6 +1823,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
+  /** Accessible label for the link that opens a release's page from the global perspective menu */
+  'release.navbar.view-release-aria-label': 'View release {{title}}',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */

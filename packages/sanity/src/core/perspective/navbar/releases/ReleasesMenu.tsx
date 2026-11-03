@@ -13,6 +13,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
 import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
@@ -24,12 +25,18 @@ export function ReleasesMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
+  showDetailLinks = false,
 }: {
   /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * Shows a link to each release's page next to it. Only the navbar's global perspective picker
+   * does: a picker that chooses a perspective for something else must not navigate away.
+   */
+  showDetailLinks?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
@@ -72,6 +79,8 @@ export function ReleasesMenu({
     setFilterQuery('')
   }, [resetMenuWidth, resetRangeVisibility])
 
+  const {triggerRef, handleNavigate: handleNavigateToRelease} = usePerspectiveDetailLinkTrigger()
+
   return (
     <>
       <MenuButton
@@ -94,6 +103,7 @@ export function ReleasesMenu({
         id="releases-menu"
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
+        ref={triggerRef}
         menu={
           <Menu
             className={globalPerspectiveMenu}
@@ -123,6 +133,7 @@ export function ReleasesMenu({
                 selectedPerspectiveName={selectedPerspectiveName}
                 handleOpenBundleDialog={handleOpenBundleDialog}
                 menuItemProps={menuItemProps}
+                onNavigateToRelease={showDetailLinks ? handleNavigateToRelease : undefined}
               />
             </Flex>
           </Menu>
