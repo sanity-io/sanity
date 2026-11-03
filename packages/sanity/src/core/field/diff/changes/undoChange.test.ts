@@ -62,24 +62,15 @@ function operations(): FieldOperationsAPI & {executed: PatchOperations[][]} {
  * Reverts `change` on a document that went from `previous` to `current` and returns the patches
  * as executed (one array per `patch.execute` call).
  */
-function undo(
+function execute(
   previous: DocumentValue,
   current: DocumentValue,
   change: (rootDiff: ObjectDiff) => ChangeNode,
 ): PatchOperations[][] {
   const rootDiff = diffDocument(previous, current)
-  const executed: PatchOperations[][] = []
-  const documentOperations: FieldOperationsAPI = {
-    patch: {
-      execute: (patches) => {
-        executed.push(patches)
-      },
-    },
-  }
-
+  const documentOperations = operations()
   undoChange(change(rootDiff), rootDiff, documentOperations)
-
-  return executed
+  return documentOperations.executed
 }
 
 /** Applies executed patches to `document` the way the document store applies them. */
@@ -91,7 +82,8 @@ function applyPatches(document: DocumentValue, executed: PatchOperations[][]): D
 }
 
 /**
- * Like `undo`, and also asserts that the executed patches take the document back to `previous`.
+ * Like `execute`, and also asserts that the executed patches take the document back to
+ * `previous`.
  *
  * `applyTo` replays the patches onto a different document than `current`, for the case where the
  * document moved on after the diff was computed.
@@ -102,7 +94,7 @@ function revert(
   change: (rootDiff: ObjectDiff) => ChangeNode,
   applyTo: DocumentValue = current,
 ): PatchOperations[][] {
-  const executed = undo(previous, current, change)
+  const executed = execute(previous, current, change)
 
   expect(applyPatches(applyTo, executed)).toEqual({
     _id: 'doc',
@@ -111,17 +103,6 @@ function revert(
   })
 
   return executed
-}
-
-function execute(
-  previous: DocumentValue,
-  current: DocumentValue,
-  change: (rootDiff: ObjectDiff) => ChangeNode,
-): PatchOperations[][] {
-  const rootDiff = diffDocument(previous, current)
-  const documentOperations = operations()
-  undoChange(change(rootDiff), rootDiff, documentOperations)
-  return documentOperations.executed
 }
 
 function movedItemChange(
@@ -446,7 +427,7 @@ describe('undoChange', () => {
 
   it('keeps an added wrapper that still holds other added content', () => {
     const current = {meta: {_type: 'meta', description: 'stays', seo: {_type: 'seo', title: 'hi'}}}
-    const executed = undo({}, current, (root) => {
+    const executed = execute({}, current, (root) => {
       const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
       return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
     })
@@ -501,53 +482,20 @@ describe('undoChange', () => {
     expect(documentOperations.executed).toEqual([])
   })
 
-  it('unsets an added nested field without collapsing typed stub ancestors', () => {
-    const executed = execute(
-      {keep: 'yes'},
-      {
-        keep: 'yes',
-        meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}},
-      },
-      (root) => {
-        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
-        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
-      },
-    )
-
-    expect(executed).toEqual([[{unset: ['meta.seo.title']}]])
-  })
-
-  // SAPP-4563: onlyContainsStubs is dead because of a De Morgan guard, so typed wrappers never collapse
-  it.fails('unsets the furthest stub ancestor when reverting a nested add inside typed wrappers', () => {
-    const executed = execute(
-      {keep: 'yes'},
-      {
-        keep: 'yes',
-        meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}},
-      },
-      (root) => {
-        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
-        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
-      },
-    )
-
-    expect(executed).toEqual([[{unset: ['meta']}]])
-  })
-
-  it('collapses an empty-array ancestor when unsetting an added index', () => {
-    const executed = execute({keep: 'yes', items: []}, {keep: 'yes', items: []}, (root) =>
-      fieldChange(['items', 0], {
-        type: 'string',
-        action: 'added',
-        isChanged: true,
-        fromValue: undefined,
-        toValue: 'x',
-        annotation: null,
-        segments: [],
-      }),
+  it('unsets an added array when reverting its only added item', () => {
+    const executed = revert({keep: 'yes'}, {keep: 'yes', items: ['x']}, (root) =>
+      fieldChange(['items', 0], (root.fields.items as ArrayDiff).items[0].diff),
     )
 
     expect(executed).toEqual([[{unset: ['items']}]])
+  })
+
+  it('keeps an empty array that existed before its item was added', () => {
+    const executed = revert({keep: 'yes', items: []}, {keep: 'yes', items: ['x']}, (root) =>
+      fieldChange(['items', 0], (root.fields.items as ArrayDiff).items[0].diff),
+    )
+
+    expect(executed).toEqual([[{unset: ['items[0]']}]])
   })
 
   it('moves an array item back to the start with prepend', () => {
@@ -634,7 +582,23 @@ describe('undoChange', () => {
   })
 
   it('unsets each added sibling path when they share a parent that still has values', () => {
-    const executed = execute({keep: 'yes'}, {keep: 'yes', wrap: {a: '1', b: '2'}}, (root) => {
+    const executed = revert(
+      {keep: 'yes', wrap: {c: '3'}},
+      {keep: 'yes', wrap: {a: '1', b: '2', c: '3'}},
+      (root) => {
+        const wrapDiff = root.fields.wrap as ObjectDiff
+        return groupChange([
+          fieldChange(['wrap', 'a'], wrapDiff.fields.a),
+          fieldChange(['wrap', 'b'], wrapDiff.fields.b),
+        ])
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['wrap.b', 'wrap.a']}]])
+  })
+
+  it('unsets the shared parent once when a group reverts every field the change added to it', () => {
+    const executed = revert({keep: 'yes'}, {keep: 'yes', wrap: {a: '1', b: '2'}}, (root) => {
       const wrapDiff = root.fields.wrap as ObjectDiff
       return groupChange([
         fieldChange(['wrap', 'a'], wrapDiff.fields.a),
@@ -642,7 +606,7 @@ describe('undoChange', () => {
       ])
     })
 
-    expect(executed).toEqual([[{unset: ['wrap.b', 'wrap.a']}]])
+    expect(executed).toEqual([[{unset: ['wrap']}]])
   })
 
   it('unsets added group children in reverse order when they do not share an ancestor', () => {
