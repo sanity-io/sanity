@@ -1,7 +1,13 @@
-import {defineField, defineType, type ImageValue, type SanityDocument} from '@sanity/types'
+import {
+  defineField,
+  defineType,
+  type ImageSchemaType,
+  type ImageValue,
+  type SanityDocument,
+} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
@@ -12,6 +18,7 @@ import {ImageToolInput} from '../ImageToolInput'
 
 const IMAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 const IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-jpg'
+const WIDE_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-2000x1000-jpg'
 const DOCUMENT: SanityDocument = {
   _id: 'image-tool-input',
   _type: 'test',
@@ -35,32 +42,80 @@ async function waitForFixtureImage() {
 }
 
 type SchemaImageInputProps = ObjectInputProps<ImageValue>
+type ImageValueOptions = NonNullable<ImageSchemaType['options']>
 
 function ImageToolSchemaInput(props: SchemaImageInputProps) {
   return <ImageToolInput {...(props as ImageInputProps)} imageUrl={IMAGE_URL} />
 }
 
-const SCHEMA = [
-  defineType({
-    type: 'document',
-    name: 'test',
-    title: 'Test',
-    fields: [
-      defineField({
-        type: 'image',
-        name: 'image',
-        title: 'Image',
-        options: {hotspot: true},
-        components: {input: ImageToolSchemaInput},
-      }),
-    ],
-  }),
-]
+function createImageSchema(options: ImageValueOptions) {
+  return [
+    defineType({
+      type: 'document',
+      name: 'test',
+      title: 'Test',
+      fields: [
+        defineField({
+          type: 'image',
+          name: 'image',
+          title: 'Image',
+          options,
+          components: {input: ImageToolSchemaInput},
+        }),
+      ],
+    }),
+  ]
+}
+
+const SCHEMA = createImageSchema({hotspot: true})
 
 function ImageToolInputHarness() {
   return (
     <TestWrapper schemaTypes={SCHEMA}>
       <TestForm document={DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
+const VECTOR_WARNING =
+  "Warning: Hotspot and crop might not be applied to this image where it's presented."
+
+const SVG_DOCUMENT: SanityDocument = {
+  ...DOCUMENT,
+  image: {
+    _type: 'image',
+    asset: {_type: 'reference', _ref: 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-svg'},
+  },
+}
+
+function SvgImageToolInputHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA}>
+      <TestForm document={SVG_DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
+const CROP_ONLY_DOCUMENT: SanityDocument = {
+  ...DOCUMENT,
+  image: {
+    _type: 'image',
+    asset: {_type: 'reference', _ref: WIDE_IMAGE_REF},
+  },
+}
+
+const CROP_FOCUS_PATH = ['image', 'crop']
+
+const CROP_ONLY_SCHEMA = createImageSchema({
+  aspectRatio: 1,
+  minDimensions: {width: 600, height: 600},
+})
+
+function CropOnlyImageToolInputHarness() {
+  return (
+    <TestWrapper schemaTypes={CROP_ONLY_SCHEMA}>
+      {/* Focused like the image input's crop dialog, so focusing the crop does not move focus */}
+      <TestForm document={CROP_ONLY_DOCUMENT} focusPath={CROP_FOCUS_PATH} />
     </TestWrapper>
   )
 }
@@ -72,6 +127,50 @@ describe('image tool input', () => {
 
     await waitForFixtureImage()
     await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  test('warns that hotspot and crop might not apply to an SVG asset', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SvgImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText(VECTOR_WARNING)).toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  test('shows no vector warning for a raster asset', async () => {
+    void render(<ImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    await expect.element(page.getByText(VECTOR_WARNING)).not.toBeInTheDocument()
+  })
+
+  test('edits the crop alone, held to its aspect ratio, when the field has no hotspot', async () => {
+    const {findBySelector, getModifierKey, settleChromaticEndState, waitForDocumentState} =
+      testHelpers()
+    void render(<CropOnlyImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Crop', {exact: true})).toBeVisible()
+    const cropRect = await findBySelector(
+      {element: () => document.body},
+      'rect[data-handle="crop"][tabindex]',
+    )
+    expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
+
+    ;(cropRect.element() as SVGRectElement).focus()
+    const modifier = getModifierKey()
+    await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
+
+    const state = await waitForDocumentState((documentState) => Boolean(documentState?.image?.crop))
+    // One step on the right edge of a 2000 × 1000 image fits the 1:1 ratio to the full height.
+    expect(state.image.crop.right).toBeCloseTo(0.5)
+    expect(state.image.crop.left).toBeCloseTo(0)
+    expect(state.image.crop.top).toBeCloseTo(0)
+    expect(state.image.crop.bottom).toBeCloseTo(0)
+    expect(state.image.hotspot).toBeUndefined()
     await settleChromaticEndState()
   })
 })

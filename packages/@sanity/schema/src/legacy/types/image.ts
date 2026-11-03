@@ -4,6 +4,7 @@ import startCase from 'lodash-es/startCase.js'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD, MEDIA_LIBRARY_ASSET_FIELD} from './image/fieldDefs'
+import {isHotspotEnabled, isImageToolEnabled} from './image/imageTool'
 import {createFieldsets} from './object'
 import {hiddenGetter, lazyGetter} from './utils'
 
@@ -25,10 +26,10 @@ export const ImageType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
-    if (!options.hotspot) {
-      hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
-    }
+    const hotspotFields = [
+      isHotspotEnabled(options) ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
+      isImageToolEnabled(options) ? CROP_FIELD : {...CROP_FIELD, hidden: true},
+    ]
 
     const fields = [
       ASSET_FIELD,
