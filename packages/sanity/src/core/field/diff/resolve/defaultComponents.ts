@@ -9,16 +9,29 @@ import {ReferenceFieldDiff} from '../../types/reference/diff/ReferenceFieldDiff'
 import {SlugFieldDiff} from '../../types/slug/diff/SlugFieldDiff'
 import {StringFieldDiff} from '../../types/string/diff/StringFieldDiff'
 
+/**
+ * `block`, `image`, and `file` are read through getters. Those components import
+ * `ChangeList`, which circularly loads this module via `buildObjectChangeList` →
+ * `resolveDiffComponent`. A plain property would capture `undefined` while the
+ * cycle is still evaluating. The getter reads the live binding after init.
+ * SAPP-4648.
+ */
 export const defaultComponents: Record<
   string,
   DiffComponent<any> | DiffComponentOptions<any> | undefined
 > = {
-  block: PTDiff,
+  get block() {
+    return PTDiff
+  },
   boolean: {component: BooleanFieldDiff, showHeader: false},
   date: DatetimeFieldDiff,
   datetime: DatetimeFieldDiff,
-  file: FileFieldDiff,
-  image: ImageFieldDiff,
+  get file() {
+    return FileFieldDiff
+  },
+  get image() {
+    return ImageFieldDiff
+  },
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
   crossDatasetReference: ReferenceFieldDiff,
