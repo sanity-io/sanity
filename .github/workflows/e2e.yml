@@ -245,10 +245,17 @@ jobs:
       contents: read
     # Only upload complete, green runs so partial results never become
     # baselines. Fork PRs skip: the Chromatic token is a repository secret.
-    # Snapshots are curated opt-in via `takeChromaticSnapshot` (see
+    # Same-repo PRs need the `trigger:chromatic` label, as in chromatic.yml.
+    # This workflow has no `labeled` trigger, so the label takes effect on the
+    # next push. Snapshots are curated opt-in via `takeChromaticSnapshot` (see
     # e2e/studio-test.ts); the check is non-gating during burn-in
     # (--exit-zero-on-changes) and merges to main auto-accept baselines.
-    if: needs.install.outputs.has_code_changes == 'true' && needs.playwright-test.result == 'success' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false)
+    if: >-
+      needs.install.outputs.has_code_changes == 'true' &&
+      needs.playwright-test.result == 'success' &&
+      (github.event_name == 'push' ||
+       (github.event.pull_request.head.repo.fork == false &&
+        contains(github.event.pull_request.labels.*.name, 'trigger:chromatic')))
     steps:
       - uses: actions/checkout@v7
         with:

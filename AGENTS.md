@@ -1166,7 +1166,8 @@ Both `chromatic.yml` jobs are label-gated on pull requests: add `trigger:chromat
 The label persists, so later pushes re-run them until it is removed, while applying an unrelated
 label neither starts a run nor cancels one in flight. Pushes to `main` are never gated — that is
 what keeps the auto-accepted baselines current for labeled PRs to diff against. The Playwright
-e2e snapshots are uploaded by `e2e.yml` and are not part of this gate.
+e2e snapshot upload in `e2e.yml` uses the same label, but that workflow does not run on label
+events, so the label takes effect from the PR's next push.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
@@ -1432,7 +1433,7 @@ gh pr ready
 | `✨ ai`              | **Required** on every AI-agent PR (`🤖 bot` is for CI automation and Renovate only)  |
 | `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
 | `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
-| `trigger:chromatic`  | Runs the Chromatic checks in `chromatic.yml` on the PR (maintainer-gated)            |
+| `trigger:chromatic`  | Runs the Chromatic checks on the PR, including the e2e upload (maintainer-gated)     |
 | `full-test-suite`    | Forces the full unit test suite to run                                               |
 
 Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
