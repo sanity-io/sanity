@@ -10,11 +10,17 @@ import {Flex, Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {TOOLTIP_DELAY_PROPS} from './constants'
+import {InteractiveTooltip} from './InteractiveTooltip'
 
 /** @internal */
 
 export type TooltipProps = Omit<UITooltipProps, 'arrow' | 'padding' | 'shadow'> & {
   hotkeys?: HotkeysProps['keys']
+  /**
+   * Lets the pointer move onto the tooltip so its text can be selected and copied. Use it for
+   * content users may need to copy, such as error messages. Ignores `hotkeys` and `delay`.
+   */
+  interactive?: boolean
 }
 
 const TOOLTIP_SHARED_PROPS: UITooltipProps = {
@@ -38,7 +44,21 @@ const TOOLTIP_SHARED_PROPS: UITooltipProps = {
  * @internal
  */
 export function Tooltip(props: TooltipProps & RefAttributes<HTMLDivElement>) {
-  const {ref, content, hotkeys, ...rest} = props
+  const {ref, content, hotkeys, interactive, ...rest} = props
+
+  if (interactive && rest.children) {
+    return (
+      <InteractiveTooltip
+        content={content}
+        disabled={rest.disabled}
+        fallbackPlacements={rest.fallbackPlacements ?? TOOLTIP_SHARED_PROPS.fallbackPlacements}
+        placement={rest.placement ?? TOOLTIP_SHARED_PROPS.placement}
+        portal={rest.portal}
+      >
+        {rest.children}
+      </InteractiveTooltip>
+    )
+  }
 
   if (typeof content === 'string') {
     return (

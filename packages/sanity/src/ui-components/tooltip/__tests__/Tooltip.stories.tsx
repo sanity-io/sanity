@@ -61,3 +61,32 @@ export const WithHotkeys: Story = {
     await waitFor(() => expect(body.getByText('Search')).toBeVisible(), {timeout: 3000})
   },
 }
+
+/**
+ * `interactive` lets the pointer move onto the tooltip so its text can be
+ * selected and copied, as validation messages are.
+ */
+export const Interactive: Story = {
+  render: () => (
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 160}}>
+      <Tooltip
+        content='Reference to non-existent document "abc123" is not allowed'
+        interactive
+        portal
+      >
+        <Button mode="ghost" text="Hover me" />
+      </Tooltip>
+    </Flex>
+  ),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement)
+    await userEvent.hover(canvas.getByRole('button', {name: 'Hover me'}))
+    const body = within(document.body)
+    await waitFor(() => expect(body.getByText(/non-existent document/)).toBeVisible(), {
+      timeout: 3000,
+    })
+    const message = body.getByText(/non-existent document/)
+    await userEvent.hover(message)
+    await expect(message).toBeVisible()
+  },
+}
