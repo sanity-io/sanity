@@ -31,7 +31,8 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     actionTimeout: 10_000,
-    trace: 'on-first-retry',
+    // Endform shows the trace of every failed attempt in its dashboard
+    trace: process.env.ENDFORM === 'true' ? 'retain-on-failure' : 'on-first-retry',
     viewport: {width: 1728, height: 1000},
     video: 'retain-on-failure',
     baseURL: `http://localhost:${PORT}`,
