@@ -9,7 +9,7 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {getVariantTitle} from '../../variants/tool/util'
+import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {line, lineIcons, lineName, root} from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
@@ -41,7 +41,7 @@ function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusIte
 export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
   const {t} = useTranslation()
   const {byId: releasesById} = useActiveReleases()
-  const {byId: variantsById} = useAllVariants()
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
@@ -56,7 +56,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     return [...allGroups.filter((group) => !group.variantId), ...audiences]
   }, [releasesById, variantsById, variantsEnabled, versions])
 
-  if (loading) {
+  if (loading || variantsLoading) {
     return (
       <Box padding={2}>
         <Text muted size={1} as="div" trim={true}>
@@ -100,6 +100,10 @@ function AudienceLine({group, showName}: {group: DocumentVersionStatusGroup; sho
   const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
   const timeAgo = useCompactTimeAgo(version._updatedAt)
   const variant = group.items[0]?.variant
+  let name = t('document-group.base-variant')
+  if (group.variantId) {
+    name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
+  }
 
   return (
     <Flex
@@ -114,7 +118,7 @@ function AudienceLine({group, showName}: {group: DocumentVersionStatusGroup; sho
       <Box className={lineName}>
         {showName && (
           <Text size={1} truncate={1}>
-            {variant ? getVariantTitle(variant) : t('document-group.base-variant')}
+            {name}
           </Text>
         )}
       </Box>

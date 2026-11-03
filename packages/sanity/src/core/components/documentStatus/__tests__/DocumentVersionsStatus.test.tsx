@@ -96,11 +96,13 @@ async function renderStatus({
   versions,
   variants = [],
   variantsEnabled = false,
+  variantsLoading = false,
   liveEdit = false,
 }: {
   versions: VersionInfoDocumentStub[]
   variants?: SystemVariant[]
   variantsEnabled?: boolean
+  variantsLoading?: boolean
   liveEdit?: boolean
 }) {
   mockUseDocumentVersions.mockReturnValue({
@@ -112,7 +114,7 @@ async function renderStatus({
   mockUseAllVariants.mockReturnValue({
     data: variants,
     byId: new Map(variants.map((variant) => [variant._id, variant])),
-    loading: false,
+    loading: variantsLoading,
     error: undefined,
   })
 
@@ -209,6 +211,32 @@ describe('DocumentVersionsStatus', () => {
       'Norwegian marketPublished 2 days ago',
     ])
     expect(lines.map(getIcons)).toEqual([['published'], ['draft'], ['published']])
+  })
+
+  it('names an audience missing from the variants by its id, not as the default', async () => {
+    await renderStatus({
+      versions: [
+        published(hoursAgo(48)),
+        published(hoursAgo(1), createMockVariant('deleted-audience')._id),
+      ],
+      variantsEnabled: true,
+    })
+
+    expect(getLines().map((line) => line.textContent)).toEqual([
+      'DefaultPublished 2 days ago',
+      'deleted-audiencePublished 1 hr ago',
+    ])
+  })
+
+  it('shows loading until the variants have loaded', async () => {
+    await renderStatus({
+      versions: [published(hoursAgo(1), variantAlphaAudience._id)],
+      variantsEnabled: true,
+      variantsLoading: true,
+    })
+
+    expect(screen.getByText('Loading')).toBeInTheDocument()
+    expect(screen.queryByTestId('document-versions-status-line')).not.toBeInTheDocument()
   })
 
   it('shows at most one release icon, before the draft and published ones', async () => {
