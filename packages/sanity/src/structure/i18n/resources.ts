@@ -482,9 +482,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text shown if a document's title via a preview value cannot be determined due to an unknown schema type */
   'doc-title.unknown-schema-type.text': 'Unknown schema type: {{schemaType}}',
 
-  /** Hint shown to help guide users to the new document group inventory */
-  'document-group-inventory.onboarding-hint': 'Where did the version buttons go?',
-
   /** Tooltip text shown for the close button of the document inspector */
   'document-inspector.close-button.tooltip': 'Close',
   /** The title shown in the dialog header, when inspecting a valid document */
@@ -542,10 +539,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.variants.versions-tooltip_one': '{{count}} version: {{bundles}}',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
   'document-panel-navigation.variants.versions-tooltip_other': '{{count}} versions: {{bundles}}',
-
-  /** Tooltip on target badges when the document does not exist in the selected perspective */
-  'document-target-badges.not-in-target.tooltip':
-    "Document doesn't exist in the selected perspective yet.",
 
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',

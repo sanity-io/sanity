@@ -1558,8 +1558,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
   'navbar.variant.filter-placeholder': 'Find audience',
-  /** Section header for non-default variants in the dropdown. */
-  'navbar.variant.other': 'Other variants',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
