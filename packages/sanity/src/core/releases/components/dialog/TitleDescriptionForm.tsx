@@ -6,6 +6,7 @@ import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
+import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 
 // Cap the description height and let it scroll internally past this point, so the dialog stays a
 // sensible size regardless of how long the description is.
@@ -118,7 +119,7 @@ export function TitleDescriptionForm({
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
           title: metadata.title,
-          description: metadata.description,
+          description: getReleaseDescriptionText(metadata.description),
         }),
         [],
       ),

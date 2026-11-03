@@ -9,6 +9,7 @@ import {ReleaseDescriptionSet} from '../../__telemetry__/releases.telemetry'
 import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
+import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 import {useCanEditRelease} from './useCanEditRelease'
 
 function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): React.JSX.Element {
@@ -82,7 +83,7 @@ function ReleaseDetailsEditorVariants({release}: {release: ReleaseDocument}): Re
       title={release.metadata.title}
       titleAs="h1"
       titlePlaceholder={t('release.placeholder-untitled-release')}
-      description={release.metadata.description}
+      description={getReleaseDescriptionText(release.metadata.description)}
       titleTestId="release-title-display"
       descriptionTestId="release-description-display"
     />

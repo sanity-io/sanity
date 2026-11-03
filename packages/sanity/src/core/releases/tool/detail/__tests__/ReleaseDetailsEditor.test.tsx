@@ -43,6 +43,26 @@ const initialRelease = {
   },
 } as ReleaseDocument
 
+const portableTextDescription = [
+  {
+    _key: 'block1',
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [
+      {_key: 'span1', _type: 'span', text: 'testing ', marks: []},
+      {_key: 'ref1', _type: 'releaseReference', releaseId: 'r0IWxZEkm'},
+      {_key: 'span2', _type: 'span', text: 'bananas', marks: ['strong']},
+    ],
+  },
+]
+
+const releaseWithPortableTextDescription = {
+  ...initialRelease,
+  metadata: {...initialRelease.metadata},
+} as ReleaseDocument
+Object.assign(releaseWithPortableTextDescription.metadata, {description: portableTextDescription})
+
 const otherRelease = {
   _id: 'release2',
   metadata: {
@@ -68,6 +88,32 @@ describe('ReleaseDetailsEditor', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('renders portable text descriptions as text and keeps the stored value on a title edit', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseWithPortableTextDescription} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-form-description')).toHaveValue('testing bananas')
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              title: 'New Title',
+              description: portableTextDescription,
+            }),
+          }),
+        )
+      })
+      vi.useRealTimers()
     })
 
     it('renders inline title and description fields', async () => {
@@ -260,6 +306,17 @@ describe('ReleaseDetailsEditor', () => {
       expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
       expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
       expect(screen.queryByTestId('release-form-title')).toBeNull()
+    })
+
+    it('renders a portable text description as text instead of throwing', async () => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+      render(<ReleaseDetailsEditor release={releaseWithPortableTextDescription} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-description-display')).toHaveTextContent('testing bananas')
+      expect(screen.queryByTestId('release-form-description')).toBeNull()
     })
   })
 

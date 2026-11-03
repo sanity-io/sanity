@@ -168,6 +168,47 @@ describe('release metadata on create and edit', () => {
     })
   })
 
+  it('shows portable text descriptions as text and does not replace them when saving other fields', async () => {
+    const description = [
+      {
+        _key: 'block1',
+        _type: 'block',
+        style: 'normal',
+        markDefs: [],
+        children: [
+          {_key: 'span1', _type: 'span', text: 'testing ', marks: []},
+          {_key: 'ref1', _type: 'releaseReference', releaseId: 'r0IWxZEkm'},
+          {_key: 'span2', _type: 'span', text: 'bananas', marks: ['strong']},
+        ],
+      },
+    ]
+    const release = releaseWithUnknownKey()
+    Object.assign(release.metadata, {description})
+    await renderDialog(<EditReleaseDialog release={release} onClose={vi.fn()} />)
+
+    expect(screen.getByTestId('release-form-description')).toHaveValue('testing bananas')
+
+    const field = await screen.findByTestId('field-reviewNote')
+    await userEvent.type(within(field).getByRole('textbox'), 'Cleared')
+
+    const save = screen.getByTestId('save-release-details-button')
+    await waitFor(() => {
+      expect(save).toBeEnabled()
+    })
+    await userEvent.click(save)
+
+    await waitFor(() => {
+      expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            description,
+            reviewNote: 'Cleared',
+          }),
+        }),
+      )
+    })
+  })
+
   it('saves the whole metadata object from the edit dialog once validation passes', async () => {
     const release = releaseWithUnknownKey()
     await renderDialog(<EditReleaseDialog release={release} onClose={vi.fn()} />)
