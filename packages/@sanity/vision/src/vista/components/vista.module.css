@@ -431,6 +431,131 @@
   min-width: 0;
   min-height: 0;
   overflow: auto;
+  /* Turning critical for a failed fetch, and back, is a color change */
+  transition: background-color 200ms ease;
+}
+
+/*
+ * A result view (tree, JSON or graph) fades in when it is switched to and when the first result
+ * arrives. A newer result replaces the shown one in place, without motion: fetches come from a
+ * shortcut and from every live update, and a result being read should not move.
+ */
+.resultView,
+.resultEnter {
+  transition-property: opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultView,
+  .resultEnter {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/*
+ * While a newer fetch is in flight the shown result stays; once the fetch has taken long enough
+ * to notice it dims, so a quick fetch never flickers. It brightens quickly when the response
+ * arrives. The paired durations and delays below line up with `transition-property` above
+ * (opacity, then transform), so a view switched to mid-fetch still lifts in on mount instead of
+ * losing that transition entirely to this rule's higher specificity. Its own `@starting-style`
+ * starts that view already dimmed rather than hidden, so it is never invisible for the 400ms
+ * meant to hold an already-visible result steady before dimming it.
+ */
+.resultContainer[data-refreshing='true'] .resultView {
+  opacity: 0.5;
+  transition-duration: 200ms, 180ms;
+  transition-delay: 400ms, 0s;
+  transition-timing-function: ease, cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultContainer[data-refreshing='true'] .resultView {
+    opacity: 0.5;
+  }
+}
+
+/* The delayed spinner fades in rather than popping up */
+.resultSpinner [data-ui='Spinner'] {
+  transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultSpinner [data-ui='Spinner'] {
+    opacity: 0;
+  }
+}
+
+/* The copy icon and the checkmark that confirms a copy, stacked and crossfaded */
+.copyGlyphs {
+  display: inline-grid;
+}
+
+.copyGlyphs > svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.copyGlyphs[data-copied='true'] > [data-glyph='copy'],
+.copyGlyphs[data-copied='false'] > [data-glyph='check'] {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(2px);
+}
+
+/* Something to press responds to the press */
+.pressable,
+.actionRail [data-ui='Button'] {
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pressable:active:not(:disabled),
+.actionRail [data-ui='Button']:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/*
+ * An unavailable action is a disabled button wrapped in a focusable stand-in, which shows the
+ * focus ring the disabled button cannot
+ */
+.actionRail [aria-disabled='true'][tabindex] {
+  border-radius: 3px;
+  outline: none;
+}
+
+.actionRail [aria-disabled='true'][tabindex]:focus-visible {
+  box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+}
+
+/* Less motion: views and confirmations still fade, nothing moves or scales */
+@media (prefers-reduced-motion: reduce) {
+  .resultView,
+  .resultEnter,
+  .copyGlyphs > svg {
+    transition-property: opacity;
+  }
+
+  .resultView,
+  .resultEnter {
+    transform: none;
+  }
+
+  @starting-style {
+    .resultView,
+    .resultEnter {
+      transform: none;
+    }
+  }
+
+  .pressable:active:not(:disabled),
+  .actionRail [data-ui='Button']:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 .codeBlock {
