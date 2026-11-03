@@ -263,6 +263,7 @@ In debug mode:
 - Flush interval drops to 1 second
 - Events are logged to `console.log` with `[telemetry]` prefix
 - No network requests are made
+- Every session reports soft navigations (production samples 10%)
 
 ## Event Categories
 
@@ -277,6 +278,8 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Performance CLS Measured`  | Cumulative Layout Shift   | v2               |
 | `Performance TTFB Measured` | Time to First Byte        | v2               |
 | `Performance INP Measured`  | Interaction to Next Paint | v1 (legacy) + v2 |
+
+`Performance Soft Navigation Measured` (v1) carries the LCP, FCP, INP and CLS of one soft navigation (a same-document URL change after a click), in Chromium only. It is sent for 10% of sessions, at most 200 times per session, once the next soft navigation has settled or the page hides. It carries `route` (tool and pane kind) and `change` (what the navigation changed), never the URL.
 
 ### Document Actions
 

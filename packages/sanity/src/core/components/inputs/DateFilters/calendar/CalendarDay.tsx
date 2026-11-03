@@ -1,7 +1,8 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback} from 'react'
+import {Flex, Icon, Text} from 'ui5'
 
 export interface CalendarDayProps {
   date: Date // clock time
@@ -65,16 +66,32 @@ export function CalendarDay(props: CalendarDayProps) {
         tone={tone}
         disabled={disabled}
       >
-        <Text
-          size={1}
-          style={{
-            opacity: !selected && !isCurrentMonth ? 0.35 : 1,
-            textAlign: 'center',
-            ...dateStyles,
-          }}
-        >
-          {selected ? <CloseIcon /> : date.getDate()}
-        </Text>
+        <Flex justifyContent="center">
+          {selected ? (
+            <Icon
+              icon={CloseIcon}
+              size={1}
+              style={{
+                margin: '-0.375rem',
+                color: 'var(--card-icon-color)',
+                ...dateStyles,
+              }}
+            />
+          ) : (
+            <Text
+              size={1}
+              style={{
+                opacity: !isCurrentMonth ? 0.35 : 1,
+                color: 'var(--card-fg-color)',
+                ...dateStyles,
+              }}
+              as="div"
+              trim={true}
+            >
+              {date.getDate()}
+            </Text>
+          )}
+        </Flex>
       </Card>
     </div>
   )

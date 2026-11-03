@@ -10,6 +10,7 @@ import {
   type EngineConfidenceDetail,
   type EngineConfidenceRunSummary,
   ENGINE_SCORE_KEY,
+  ENGINE_STUDIO_SCORE_KEY,
   worstFiles,
 } from './engineConfidence'
 import {WeeklyCard, type WeeklyVariant} from './WeeklyBars'
@@ -61,7 +62,7 @@ function NotMeasuredCard(props: {title: string; reason: string}) {
 
 function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
   const {run} = props
-  const {score, knownBugs} = run
+  const {score, studioScore, knownBugs} = run
   const targets = score.targets ?? []
   return (
     <Card border padding={3} radius={2} data-testid="engine-latest-week">
@@ -74,7 +75,8 @@ function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
             config v{run.config.version}
           </Badge>
         </Flex>
-        <Text size={1}>Score {percentLabel(score.ratio)}</Text>
+        <Text size={1}>Total engine {percentLabel(score.ratio)}</Text>
+        <Text size={1}>Core Studio engine {percentLabel(studioScore?.ratio)}</Text>
         {score.status === 'not-measured' && (
           <Text size={1} muted>
             Not measured: {score.reason ?? 'no reason recorded'}
@@ -315,6 +317,7 @@ export function EngineConfidencePanel(props: {
   }
 
   const scoreSeries = seriesFor(series, ENGINE_SCORE_KEY)
+  const studioSeries = seriesFor(series, ENGINE_STUDIO_SCORE_KEY)
   return (
     <Flex gap={6} paddingTop={3} flexDirection="column">
       <VStack gap={4}>
@@ -324,7 +327,7 @@ export function EngineConfidencePanel(props: {
         >
           {hasPoints(scoreSeries) ? (
             <WeeklyCard
-              title="Engine confidence"
+              title="Total engine confidence"
               description={scoreSeries.description}
               series={scoreSeries}
               variant={SHARE_VARIANT}
@@ -336,8 +339,26 @@ export function EngineConfidencePanel(props: {
             />
           ) : (
             <NotMeasuredCard
-              title="Engine confidence"
+              title="Total engine confidence"
               reason={latest.score.reason ?? 'no run in this range measured it'}
+            />
+          )}
+          {hasPoints(studioSeries) ? (
+            <WeeklyCard
+              title="Core Studio engine confidence"
+              description={studioSeries.description}
+              series={studioSeries}
+              variant={SHARE_VARIANT}
+              goal="higher"
+              tags={tags}
+              breaks={studioSeries.breaks}
+              domId={cardId(studioSeries.key)}
+              focused={focusedKey === studioSeries.key}
+            />
+          ) : (
+            <NotMeasuredCard
+              title="Core Studio engine confidence"
+              reason={latest.studioScore?.reason ?? 'no run in this range measured it'}
             />
           )}
           <LatestWeekSummary run={latest} />

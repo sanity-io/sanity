@@ -511,6 +511,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The title of the reconnecting toast */
   'common.reconnecting.toast.title': 'Trying to connect…',
 
+  /** Tooltip when a variant has more than one condition that is not in the configured list. */
+  'conditions.mismatch.multiple':
+    'This variant uses conditions that are no longer configured. Edit the variant to fix it.',
+  /** Tooltip when a stored condition key is not in the configured list. */
+  'conditions.mismatch.unknown-key':
+    'The condition "{{key}}" is not in the configured list. Edit the variant to fix it.',
+  /** Tooltip when a stored condition value is not in the configured list for that key. */
+  'conditions.mismatch.unknown-value':
+    'The value "{{value}}" is not valid for "{{key}}". Edit the variant to fix it.',
+
   /** --- Configuration issues --- */
 
   /** Default label text on configuration issues button */
@@ -577,22 +587,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The document inventory title (plural) */
   'document-group-inventory.title_other': '{{count}} {{subject}}',
   /** The label text that indicates an item in the document group inventory is currently being viewed */
-  'document-group-inventory.viewing-item-label': 'viewing',
+  'document-group-inventory.viewing-item-label': 'Editing',
 
   /** --- Document group --- */
 
   /** The label given to a document group's base variant */
-  'document-group.base-variant': 'All users (Default)',
+  'document-group.base-variant': 'Default',
   /** The header label for the variant creation flow before a variant definition has been selected */
-  'document-group.create-variant': 'Create variant',
+  'document-group.create-variant': 'Create version',
   /** The header label for the variant creation flow once a variant definition has been selected */
-  'document-group.create-variant.for-target': 'Create variant for {{variantDefinitionName}}',
+  'document-group.create-variant.for-target': 'Create version for {{variantDefinitionName}}',
   /** The heading for the option to create a variant as a draft */
   'document-group.create-variant.target-drafts': 'As a draft',
   /** The label for the list of releases a variant can be created in */
   'document-group.create-variant.target-releases': 'Into a release',
   /** The label for the list of existing variants that can be viewed instead of creating a new one */
-  'document-group.create-variant.view-existing-variants': 'Or view existing variants',
+  'document-group.create-variant.view-existing-variants': 'Or view existing versions',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -621,10 +631,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (singular) */
-  'document-group.delete.confirm-button.text_one': 'Delete (1)',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (plural) */
-  'document-group.delete.confirm-button.text_other': 'Delete ({{count}})',
+  /** The label given to the delete action */
+  'document-group.delete.confirm-button.text': 'Delete',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
@@ -652,6 +660,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** The label for the action that clears every selected variant in the document group inventory */
+  'document-group.deselect-all': 'Deselect all',
+  /** The number of variants currently selected in the document group inventory */
+  'document-group.selected-count': '{{count}} selected',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
@@ -1532,6 +1544,21 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
+  'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
+  /** Default option label when no variant is selected. */
+  'navbar.variant.default': 'Default',
+  /** View all option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.view-all': 'View all',
+  /** Tooltip for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant': 'View audience',
+  /** Accessible label for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant-aria-label': 'View audience {{title}}',
+  /** New audience option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.new-audience': 'New audience',
+  /** Placeholder for the variant filter input in the dropdown. */
+  'navbar.variant.filter-placeholder': 'Find audience',
+
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
@@ -1598,6 +1625,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.tooltip.other': '{{count}} people are editing this document right now',
   /** Release title used in the document preview presence tooltip when the release has no title */
   'presence.tooltip.untitled-release': 'Untitled',
+
+  /** Accessible name and tooltip for the button that clears the selected global perspective */
+  'perspective.action.clear': 'Clear selection',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',
@@ -1785,10 +1815,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.view-releases': 'View Content Releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
+  /** Placeholder for the releases perspective filter. */
+  'release.navbar.filter-placeholder': 'Find a version or release',
+  /** Accessible name for the chevron that opens the releases menu */
+  'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
+  /** Accessible label for the link that opens a release's page from the global perspective menu */
+  'release.navbar.view-release-aria-label': 'View release {{title}}',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */

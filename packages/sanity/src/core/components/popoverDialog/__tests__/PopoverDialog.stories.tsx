@@ -1,6 +1,7 @@
-import {type ResponsiveWidthProps, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {type ResponsiveWidthProps, Flex, Stack, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {useState} from 'react'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {PopoverDialog} from '../PopoverDialog'
@@ -27,7 +28,7 @@ function PopoverDialogStory(props: {width: ResponsiveWidthProps['width']}) {
         >
           <Stack gap={4}>
             <Stack gap={2}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 Title
               </Text>
               <TextInput onChange={(event) => setTitle(event.currentTarget.value)} value={title} />

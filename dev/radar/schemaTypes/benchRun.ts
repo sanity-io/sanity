@@ -194,7 +194,7 @@ const benchScenario = defineType({
     defineField({
       name: 'mode',
       type: 'string',
-      options: {list: ['interaction', 'pageload', 'soak', 'inp', 'settle']},
+      options: {list: ['interaction', 'pageload', 'soak', 'inp', 'settle', 'softnav']},
     }),
     defineField({
       name: 'settleExpectation',

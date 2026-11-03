@@ -36,7 +36,7 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
   // No `getTargetScopeId(useTargetDocumentState())` here: scheduled publishing deliberately validates the
   // explicit draft of the scheduled document, independent of the selected perspective.
   // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
-  const validationStatus = useValidationStatus(draftId, type, true)
+  const validationStatus = useValidationStatus(draftId, type)
   const {hasError} = useValidationState(validationStatus.validation)
 
   if (!hasError) {

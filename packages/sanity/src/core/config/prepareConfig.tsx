@@ -1,4 +1,3 @@
-import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -97,6 +96,7 @@ import {
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
+import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
@@ -272,7 +272,9 @@ const notifyFederatedFallbackOnce = (reason: string) => {
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
-  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: false})
+  // Default-on: an enabled Media Library automatically uses the federated
+  // view where one is brokered; the internal flag remains as an opt-out.
+  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: true})
   // Third-party brokered views have their own gate (`federatedAssetSources`),
   // decoupled from the Media Library's internal rollout flag.
   const federatedSourcesConfig = federatedAssetSourcesReducer({config, initialValue: undefined})
@@ -283,20 +285,25 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   // the workbench; on a cold start in which the workbench has not published
   // its application list yet, `[]` — either way every brokered source is
   // simply absent and the Media Library keeps its iframe select dialog, so
-  // the race can never cost the Media Library source itself.
+  // the race can never cost the Media Library source itself. Only consult
+  // the bus when a source could use the result — with `federated` defaulting
+  // on, reading it unconditionally would open a message-bus connection in
+  // every workspace, Media Library or not.
   const viewsFromBus =
-    federated || brokeredSourcesEnabled ? getCurrentFederatedAssetSourceViews() : undefined
+    (federated && enabled) || brokeredSourcesEnabled
+      ? getCurrentFederatedAssetSourceViews()
+      : undefined
   const brokeredViews = viewsFromBus ?? []
 
   // The Media Library's own view replaces the select dialog of the built-in
   // source below; views from other applications become their own sources.
   const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
 
-  if (federated && enabled && !mediaLibraryView) {
+  // Outside the workbench (`viewsFromBus === undefined`) the iframe dialog is
+  // the normal path, not a degraded one — stay quiet there.
+  if (federated && enabled && !mediaLibraryView && viewsFromBus !== undefined) {
     notifyFederatedFallbackOnce(
-      viewsFromBus === undefined
-        ? 'no workbench message bus'
-        : 'no Media Library asset_source view in the brokered application list',
+      'no Media Library asset_source view in the brokered application list',
     )
   }
   const viewFilter = federatedSourcesConfig?.filter
@@ -591,17 +598,6 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
 }
 
-function getBifurClient(client: SanityClient, auth: AuthStore) {
-  const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
-  const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
-  const urlWithTag = `${url}?tag=${requestTagPrefix}`
-
-  const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(urlWithTag, options)
-}
-
 function resolveSource({
   config,
   client,
@@ -612,7 +608,7 @@ function resolveSource({
   i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = getBifurClient(client, auth)
+  const bifur = createBifurClient(client, auth.token)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
   const getClient = (options: SourceClientOptions): SanityClient => {
@@ -1198,7 +1194,7 @@ function resolveSource({
         frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
         federatedAssetSource: mediaLibraryFederatedAssetSourceReducer({
           config,
-          initialValue: false,
+          initialValue: true,
         }),
       },
     },

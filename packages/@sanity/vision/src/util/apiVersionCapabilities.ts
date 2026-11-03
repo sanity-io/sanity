@@ -35,7 +35,6 @@ export interface ApiVersionCapabilityRequirement {
 export const API_VERSION_CAPABILITIES: readonly ApiVersionCapabilityRequirement[] = [
   {
     id: 'variants',
-    // `query.error.unsupported-variant` names the experimental API; reword it if this floor becomes dated.
     requiredApiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion,
     explanationKey: 'query.error.unsupported-variant',
     applies: ({variant}) => Boolean(variant),

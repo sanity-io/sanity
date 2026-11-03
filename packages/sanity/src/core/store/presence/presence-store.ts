@@ -1,4 +1,4 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError, WebSocketError} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
@@ -12,25 +12,26 @@ import {
   defer,
   EMPTY,
   from,
-  fromEvent,
   merge,
   NEVER,
   type Observable,
   ReplaySubject,
+  throwError,
   timer,
 } from 'rxjs'
 import {
   auditTime,
+  catchError,
   distinctUntilChanged,
   filter,
   map,
   mergeMapTo,
+  retry,
   scan,
   share,
   shareReplay,
   switchMap,
   switchMapTo,
-  takeUntil,
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -134,8 +135,28 @@ function setSessionId(id: string) {
   return id
 }
 
+/** How long document presence keeps running after the last document stops using it. */
+const DOCUMENT_PRESENCE_GRACE = 5_000
+
 /** @internal */
 export const SESSION_ID = getSessionId() || setSessionId(generate())
+
+const isBifurError = (error: unknown): error is RpcError | WebSocketError =>
+  error instanceof RpcError || error instanceof WebSocketError
+
+const warnIfRejected = (error: RpcError | WebSocketError) => {
+  // A closed socket is expected (the server dropped it, or the page is entering the back/forward
+  // cache), so only a reply the server sent is worth a warning
+  if (error instanceof RpcError)
+    console.warn('Presence: the server returned an error: %s', error.message)
+}
+
+/** Presence requests are fire-and-forget: a failed one must not end presence */
+const dropBifurError = (error: unknown) => {
+  if (!isBifurError(error)) return throwError(() => error)
+  warnIfRejected(error)
+  return EMPTY
+}
 
 /** @internal */
 export function createPresenceStore(context: {
@@ -145,7 +166,24 @@ export function createPresenceStore(context: {
 }): PresenceStore {
   const {bifur, connectionStatusStore, userStore} = context
 
-  const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+  const [transportEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+
+  // A closed socket ends the presence subscription. In bifur-client v3 the same close also takes
+  // the connection status through `error`, and the presence store subscribes again on reconnect.
+  // Listening again after a delay as well is defensive, so presence doesn't depend on that. Not
+  // after a rejected token, which the connection status store stops retrying, and not after a
+  // subscription the server rejects, which would be rejected again: both wait for a reconnect.
+  const presenceEvents$ = transportEvents$.pipe(
+    retry({
+      delay: (error: unknown, retryCount) =>
+        error instanceof WebSocketError && error.code !== ERROR_CODES.UNAUTHORIZED
+          ? timer(Math.min(1000 * 2 ** (retryCount - 1), 60_000))
+          : throwError(() => error),
+      resetOnSuccess: true,
+    }),
+    catchError(dropBifurError),
+    share(),
+  )
 
   const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
   const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
@@ -156,10 +194,12 @@ export function createPresenceStore(context: {
   }
 
   // export
+  // A request that fails is dropped: the next announcement, at most REPORT_MIN_INTERVAL later,
+  // sends the same state again.
   const reportLocations = (locations: PresenceLocation[]) =>
-    sendMessage({type: 'state', locations: locations})
+    sendMessage({type: 'state', locations: locations}).pipe(catchError(dropBifurError))
 
-  const requestRollCall = () => sendMessage({type: 'rollCall'})
+  const requestRollCall = () => sendMessage({type: 'rollCall'}).pipe(catchError(dropBifurError))
 
   const rollCallRequests$ = presenceEvents$.pipe(
     filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall'),
@@ -298,9 +338,6 @@ export function createPresenceStore(context: {
         ),
       )
     }),
-    takeUntil(
-      fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'}))),
-    ),
     shareReplay({refCount: true, bufferSize: 1}),
   )
 
@@ -367,7 +404,13 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
     ),
-    shareReplay(1),
+    // Presence stops once no document has used it for a while, as when the login screen replaces
+    // the studio after a session ends. The delay keeps it running while switching documents, when
+    // the previous pane unmounts before the next one mounts.
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(DOCUMENT_PRESENCE_GRACE),
+    }),
   )
 
   /**

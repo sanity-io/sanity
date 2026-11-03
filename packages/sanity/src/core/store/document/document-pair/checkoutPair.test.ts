@@ -3,6 +3,7 @@ import {merge, NEVER, of, type Observable, Subject, throwError} from 'rxjs'
 import {delay} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
 import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = vi.fn(() => of({}))
@@ -2736,6 +2737,7 @@ describe('checkoutPair -- version documents', () => {
         transactionId: expect.any(String),
       },
     )
+    expect(versionClient.withConfig).not.toHaveBeenCalledWith(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
     sub.unsubscribe()
   })
@@ -2812,6 +2814,7 @@ describe('checkoutPair -- version documents', () => {
         transactionId: expect.any(String),
       },
     )
+    expect(versionClient.withConfig).toHaveBeenCalledWith(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
     sub.unsubscribe()
   })
@@ -2871,6 +2874,7 @@ describe('checkoutPair -- version documents', () => {
         transactionId: expect.any(String),
       },
     )
+    expect(versionClient.withConfig).toHaveBeenCalledWith(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
     sub.unsubscribe()
   })

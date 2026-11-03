@@ -11,7 +11,7 @@ const theme = buildTheme()
 
 const sanityMocks = vi.hoisted(() => ({
   releasesApiVersion: 'v2099-01-01',
-  variantsApiVersion: 'X',
+  variantsApiVersion: 'v2025-08-18',
 }))
 
 vi.mock('sanity', () => ({

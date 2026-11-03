@@ -1,6 +1,6 @@
-import {Text} from '@sanity/ui'
 import {useId} from 'react'
 import {useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -37,7 +37,7 @@ export function ConfirmDiscardDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <Text size={1}>
+      <Text size={1} as="div" trim={true}>
         {publishedExists
           ? t('action.discard-changes.confirm-dialog.confirm-discard-changes')
           : t('action.discard-changes.confirm-dialog.confirm-discard-changes-draft')}

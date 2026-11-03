@@ -20,7 +20,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "rimraf": "catalog:",
-    "vite": "catalog:"
+    "rimraf": "catalog:"
   }
 }

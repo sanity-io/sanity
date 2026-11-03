@@ -57,7 +57,11 @@ export function CurrentGlobalPerspectiveLabel({
 
   return (
     <AnimatedTextWidth
-      text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
+      text={
+        isReleaseDocument(selectedPerspective)
+          ? selectedPerspective.metadata.title || selectedPerspective._id
+          : selectedPerspective
+      }
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
@@ -74,7 +78,7 @@ export function CurrentGlobalPerspectiveLabel({
           <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
             {isAgentBundleName(selectedPerspective)
               ? t(
-                  bundles.some((b) => b.id === selectedPerspective)
+                  bundles.some((bundle) => bundle.id === selectedPerspective)
                     ? 'version.agent-bundle.proposed-changes'
                     : 'version.agent-bundle.agent-changes',
                 )

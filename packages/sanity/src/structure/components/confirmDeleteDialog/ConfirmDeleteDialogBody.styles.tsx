@@ -1,8 +1,8 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Inline, rem, Text} from '@sanity/ui'
+import {Inline, rem} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'
@@ -61,7 +61,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   return (
     <Box padding={2}>
       <Inline gap={2}>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
         </Text>
 
@@ -70,9 +70,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           placement="top"
           content={t('confirm-delete-dialog.other-reference-count.tooltip')}
         >
-          <Text size={1} muted>
-            <InfoOutlineIcon />
-          </Text>
+          <Icon size={1} icon={InfoOutlineIcon} style={{margin: '-0.375rem'}} />
         </Tooltip>
       </Inline>
     </Box>

@@ -5,9 +5,10 @@ import {PublishIcon} from '@sanity/icons/Publish'
 import {StarIcon} from '@sanity/icons/Star'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../ui-components/button/Button'
@@ -108,7 +109,7 @@ export const Widths: Story = {
     <Stack gap={4}>
       {WIDTHS.map((width) => (
         <Stack gap={2} key={width}>
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             {width}px
           </Text>
           <Card border padding={1} radius={2} style={{width}}>
