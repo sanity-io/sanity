@@ -73,7 +73,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   return (
     <div className={root} data-testid="document-versions-status">
       {groups.slice(0, MAX_LINES).map((group) => (
-        <AudienceLine group={group} key={group.variantId ?? 'default'} showName={variantsEnabled} />
+        <AudienceLine group={group} key={group.variantId ?? 'default'} />
       ))}
       {hiddenVersionCount > 0 && (
         <Flex
@@ -93,7 +93,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function AudienceLine({group, showName}: {group: DocumentVersionStatusGroup; showName: boolean}) {
+function AudienceLine({group}: {group: DocumentVersionStatusGroup}) {
   const {t} = useTranslation()
   const schema = useSchema()
   const {version} = latestEdit(group)
@@ -116,11 +116,9 @@ function AudienceLine({group, showName}: {group: DocumentVersionStatusGroup; sho
       paddingRight={2}
     >
       <Box className={lineName}>
-        {showName && (
-          <Text size={1} truncate={1}>
-            {name}
-          </Text>
-        )}
+        <Text size={1} truncate={1}>
+          {name}
+        </Text>
       </Box>
       <Box flexShrink={0}>
         <Text muted size={1}>

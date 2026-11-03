@@ -173,7 +173,7 @@ describe('DocumentVersionsStatus', () => {
     vi.useRealTimers()
   })
 
-  it('shows one line with no name and no release names when variants are disabled', async () => {
+  it('shows one Default line with no release names when variants are disabled', async () => {
     await renderStatus({
       versions: [
         published(hoursAgo(48)),
@@ -188,7 +188,7 @@ describe('DocumentVersionsStatus', () => {
     expect(getLines()).toHaveLength(1)
     expect(within(line).getByText('Edited 3 hr ago')).toBeInTheDocument()
     expect(getIcons(line)).toEqual(['release', 'draft', 'published'])
-    expect(screen.queryByText('Default')).not.toBeInTheDocument()
+    expect(line).toHaveTextContent('DefaultEdited 3 hr ago')
     expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
     expect(screen.queryByText(activeASAPRelease.metadata.title)).not.toBeInTheDocument()
   })
