@@ -144,6 +144,7 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
 
     [data-ui='Text'] {
       --card-fg-color: ${color.default.enabled.placeholder};
+      --text-color: ${color.default.enabled.placeholder};
     }
   `
 })

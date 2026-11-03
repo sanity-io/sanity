@@ -52,6 +52,11 @@ const CustomCard = styled(Card)<SelectableStyleProps>`
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
+
+      [data-ui='Text'] {
+        --text-color: var(--card-bg-color);
+        --text-color-muted: var(--card-bg-color);
+      }
     `}
 `
 
@@ -86,6 +91,11 @@ const RowButton = styled(Button)<SelectableStyleProps>`
 
       &:before {
         background-color: var(--card-focus-ring-color);
+      }
+
+      [data-ui='Text'] {
+        --text-color: var(--card-bg-color);
+        --text-color-muted: var(--card-bg-color);
       }
 
       ${CardIconWrapper} {
@@ -265,6 +275,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             onClick={onClick}
             paddingY={1}
             radius={2}
+            $isSelected={isSelected}
           >
             <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
