@@ -83,7 +83,7 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
   const titleText = title ?? t('document-view.form-view.form-title-fallback')
 
   return (
-    <TitleContainer marginBottom={6} gap={4}>
+    <TitleContainer data-skip-initial-focus="" marginBottom={6} gap={4}>
       {!isSingleton && (
         <Inline gap={1}>
           <Text muted size={1} as="div" trim={true}>

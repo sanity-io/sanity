@@ -142,7 +142,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             groups={groups}
             inputId={id}
             onClick={onFieldGroupSelect}
-            // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
+            // autofocus is taken care of either by focusPath or the initial focus of the document form
             shouldAutoFocus={false}
           />
         </FieldGroupTabsWrapper>
