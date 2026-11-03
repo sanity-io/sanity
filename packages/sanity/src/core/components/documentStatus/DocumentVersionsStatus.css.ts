@@ -6,14 +6,6 @@ export const root = css({
   width: 'max-content',
 })
 
-export const line = css({
-  'minHeight': '33px',
-  '& + &': {
-    borderTop: '1px solid var(--card-border-color)',
-    minHeight: '34px',
-  },
-})
-
 export const lineName = css({
   flex: '1 1 auto',
   minWidth: '96px',

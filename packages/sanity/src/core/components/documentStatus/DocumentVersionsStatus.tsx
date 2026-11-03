@@ -11,7 +11,7 @@ import {readVersionType} from '../../util/versionsUtils'
 import {useAllVariants} from '../../variants/store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
-import {line, lineIcons, lineName, root} from './DocumentVersionsStatus.css'
+import {lineIcons, lineName, root} from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {
   type DocumentVersionStatusGroup,
@@ -72,17 +72,17 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 
   return (
     <div className={root} data-testid="document-versions-status">
-      {groups.slice(0, MAX_LINES).map((group) => (
-        <AudienceLine group={group} key={group.variantId ?? 'default'} />
+      {groups.slice(0, MAX_LINES).map((group, index) => (
+        <AudienceLine group={group} key={group.variantId ?? 'default'} index={index} />
       ))}
       {hiddenVersionCount > 0 && (
         <Flex
           alignItems="center"
-          className={line}
           data-testid="document-versions-status-more"
-          paddingY={2}
+          paddingY={1}
           paddingLeft={3}
           paddingRight={2}
+          borderTop
         >
           <Text muted size={1}>
             {t('document-group.status.more', {count: hiddenVersionCount})}
@@ -93,7 +93,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function AudienceLine({group}: {group: DocumentVersionStatusGroup}) {
+function AudienceLine({group, index}: {group: DocumentVersionStatusGroup; index: number}) {
   const {t} = useTranslation()
   const schema = useSchema()
   const {version} = latestEdit(group)
@@ -108,12 +108,12 @@ function AudienceLine({group}: {group: DocumentVersionStatusGroup}) {
   return (
     <Flex
       alignItems="center"
-      className={line}
       data-testid="document-versions-status-line"
       gap={2}
       paddingY={1}
       paddingLeft={3}
       paddingRight={2}
+      borderTop={index > 0}
     >
       <Box className={lineName}>
         <Text size={1} truncate={1}>
