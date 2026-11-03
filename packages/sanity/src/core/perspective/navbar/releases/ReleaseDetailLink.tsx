@@ -47,11 +47,12 @@ export function ReleaseDetailLink(
           data-testid={`release-detail-link-${releaseId}`}
           href={href}
           icon={LaunchIcon}
-          mode="bleed"
+          mode="ghost"
           onClick={onClick}
           onKeyDown={onKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
+          fontSize={1}
           padding={2}
           ref={ref}
           // Menu items leave the tab order to the menu; the right arrow key reaches the link
