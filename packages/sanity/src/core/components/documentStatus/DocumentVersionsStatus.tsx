@@ -79,14 +79,16 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
         <Flex
           alignItems="center"
           data-testid="document-versions-status-more"
-          paddingY={1}
+          paddingY={2}
           paddingLeft={3}
           paddingRight={2}
           borderTop
         >
-          <Text muted size={1}>
-            {t('document-group.status.more', {count: hiddenVersionCount})}
-          </Text>
+          <Box paddingY={1}>
+            <Text muted size={1} trim>
+              {t('document-group.status.more', {count: hiddenVersionCount})}
+            </Text>
+          </Box>
         </Flex>
       )}
     </div>

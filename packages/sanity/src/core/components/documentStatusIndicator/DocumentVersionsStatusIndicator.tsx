@@ -5,7 +5,7 @@ import {Flex, Icon} from 'ui5'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
@@ -91,7 +91,7 @@ export function DocumentStatusIcon({
     case 'release':
       return release ? (
         <IconSlot>
-          <ReleaseAvatarIcon release={release} size="small" fontSize={2} />
+          <ReleaseAvatar release={release} size="small" padding={2} />
         </IconSlot>
       ) : null
     case 'draft':
