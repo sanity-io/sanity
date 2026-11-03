@@ -62,7 +62,7 @@ export interface EffectiveRequestOptions {
  * source map as it did, through the API CDN or not as it was. A saved URL is the request the tab
  * sent, so the tab is compared through the request it would send now, not through its options: a
  * tab on the `global` perspective saved `perspective=drafts` while the navbar was on drafts, and
- * a tab with a navbar variant selected saved `vX` and `variant=…` whatever its own API version.
+ * a tab with a navbar variant selected saved the variants API version and `variant=…` whatever its own API version.
  */
 export function tabMatchesParsedQuery(
   tab: VistaTab,

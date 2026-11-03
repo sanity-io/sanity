@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
+import {BehaviorSubject, lastValueFrom} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
@@ -81,7 +81,7 @@ function createMockClient() {
   const client = {
     fetch: vi.fn(async (): Promise<unknown> => null),
     getDataUrl: vi.fn(() => '/doc'),
-    observable: {request: vi.fn(() => of({omitted: []}))},
+    request: vi.fn(async () => ({omitted: []})),
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
   return client
@@ -155,6 +155,22 @@ describe('validation scheduling', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.resetModules()
+  })
+
+  it('does not wait for browser idle time in the public promise API', async () => {
+    const page = createStalledPage()
+    vi.stubGlobal('window', page)
+    vi.resetModules()
+    const {validateDocument} = await import('./index')
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument(20),
+      schema: createSchema(),
+    })
+
+    expect(result.complete).toBe(false)
+    expect(page.requestIdleCallback).not.toHaveBeenCalled()
   })
 
   it('waits for idle callbacks by default and cancels them on unsubscribe', async () => {
@@ -390,7 +406,7 @@ describe('validation scheduling', () => {
           },
         ],
       })
-      // Enough items with rules to fill the 40-wide `mergeMap` window, then a run that completes synchronously
+      // Enough items with rules to fill the 40-worker pool, then a run that completes synchronously
       const items = [
         ...Array.from({length: 45}, (_, index) => ({
           _type: 'item',

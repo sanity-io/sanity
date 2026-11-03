@@ -51,6 +51,12 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'number.minimum': 'Must be greater than or equal to {{minNumber}}',
   /** Number is not an integer ("whole number") */
   'number.non-integer': 'Must be an integer',
+  /** Asset's file type does not match the `accept` option of its field */
+  'object.asset-not-accepted': 'File type "{{mimeType}}" is not accepted',
+  /** File asset's file type does not match the `accept` option of its field */
+  'object.asset-not-accepted_file': 'File type "{{mimeType}}" is not accepted',
+  /** Image asset's file type does not match the `accept` option of its field */
+  'object.asset-not-accepted_image': 'Image type "{{mimeType}}" is not accepted',
   /** Object is missing a reference to an asset document in its `asset` field */
   'object.asset-required': 'Asset is required',
   /** Object is missing a reference to a file asset document in its `asset` field */

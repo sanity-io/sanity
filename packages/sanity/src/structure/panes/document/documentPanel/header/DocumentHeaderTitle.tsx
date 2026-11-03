@@ -124,7 +124,7 @@ function TitleFieldButton(props: {focus: () => void; children: ReactNode}) {
       >
         {/* A button is an atomic inline box, so the header's own ellipsis cannot reach into
         it. `trim` keeps the line box as short as the header's own trimmed title text. */}
-        <Text as="span" size={1} trim truncate={1} weight="semibold">
+        <Text as="span" size={1} truncate={1} weight="semibold">
           {children}
         </Text>
       </PressArea>

@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Text} from '@sanity/ui'
+import {Card, Container} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon, Link} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 
@@ -15,25 +15,30 @@ export function NoDocumentTypesScreen() {
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
               <Box>
-                <Text size={1}>
-                  <WarningOutlineIcon />
-                </Text>
+                <Icon
+                  size={1}
+                  muted
+                  icon={WarningOutlineIcon}
+                  style={{margin: '-0.375rem'}}
+                  tone="caution"
+                />
               </Box>
               <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
-                <Text as="h1" size={1} weight="medium">
+                <Text as="h1" size={1} weight="medium" trim={true} tone="caution">
                   {t('no-document-types-screen.title')}
                 </Text>
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true} tone="caution">
                   {t('no-document-types-screen.subtitle')}
                 </Text>
-                <Text as="p" muted size={1}>
-                  <a
+                <Text as="p" muted size={1} trim={true} tone="caution">
+                  <Link
                     href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio"
-                    target="_blank"
-                    rel="noreferrer"
+                    openInNewTab
+                    underlined={false}
+                    style={{color: 'var(--card-link-fg-color)'}}
                   >
                     {t('no-document-types-screen.link-text')}
-                  </a>
+                  </Link>
                 </Text>
               </Flex>
             </Flex>

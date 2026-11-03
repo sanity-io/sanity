@@ -3,14 +3,15 @@ import {expect, userEvent, waitFor, within} from 'storybook/test'
 import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {GlobalPerspectiveMenu} from '../GlobalPerspectiveMenu'
+import {ReleasesMenu} from '../releases/ReleasesMenu'
 
 /**
- * The navbar's perspective menu: the chevron trigger and, once opened, the
- * releases menu with its sticky system perspectives (Published, Drafts) at the
- * top and the releases-tool actions at the bottom. Chromatic sentinel for the
- * menu's zero-gap override on the `@sanity/ui` Menu stack, which is what keeps
- * the sticky cards flush against the scrollable release sections.
+ * The navbar's perspective menu. The default trigger is the classic chevron;
+ * `variantsEnabled` swaps it for the labelled chip. Once opened, the menu keeps
+ * its sticky system perspectives (Published, Drafts) at the top and the
+ * releases-tool actions at the bottom. Chromatic sentinel for the menu's
+ * zero-gap override on the `@sanity/ui` Menu stack, which is what keeps the
+ * sticky cards flush against the scrollable release sections.
  *
  * Rendered inside `TestWrapper`: the releases store settles to an empty,
  * loaded list against the mock client, so no release sections render and the
@@ -18,7 +19,7 @@ import {GlobalPerspectiveMenu} from '../GlobalPerspectiveMenu'
  */
 const meta = {
   title: 'Perspective/Global Perspective Menu',
-  component: GlobalPerspectiveMenu,
+  component: ReleasesMenu,
   decorators: [
     (Story) => (
       <TestWrapper schemaTypes={[]}>
@@ -28,7 +29,7 @@ const meta = {
       </TestWrapper>
     ),
   ],
-} satisfies Meta<typeof GlobalPerspectiveMenu>
+} satisfies Meta<typeof ReleasesMenu>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -38,6 +39,7 @@ export const Open: Story = {
   args: {
     selectedPerspectiveName: undefined,
     areReleasesEnabled: true,
+    variantsEnabled: false,
   },
   parameters: {chromatic: {delay: 300}},
   play: async ({canvasElement}) => {

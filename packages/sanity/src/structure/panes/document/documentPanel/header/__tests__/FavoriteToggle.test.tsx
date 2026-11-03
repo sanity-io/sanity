@@ -1,5 +1,10 @@
 import {ResourceProvider} from '@sanity/sdk-react'
-import {type MessageBusMessage, type PayloadOf, type ReplyOf} from '@sanity/sdk/dashboard'
+import {
+  type FavoriteDocument,
+  type MessageBusMessage,
+  type PayloadOf,
+  type ReplyOf,
+} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {type ComponentType, type ReactNode} from 'react'
 import {beforeAll, expect, it, onTestFinished, vi} from 'vitest'
@@ -16,10 +21,16 @@ type FavoritesUpdate = MessageBusMessage<
 >
 
 // The resource is the mock workspace's project, dataset and name.
-const FAVORITE: FavoritesUpdate['payload']['document'] = {
-  id: 'book-1',
-  type: 'book',
-  resource: {id: 'mock-project-id.mock-data-set', type: 'dataset', schemaName: 'default'},
+const FAVORITE: FavoriteDocument = {
+  id: 'favorite-1',
+  document: {
+    id: 'book-1',
+    type: 'book',
+    resource: {id: 'mock-project-id.mock-data-set', type: 'studio', schemaName: 'default'},
+  },
+  application: {type: 'studio', id: 'studio-1', workspaceName: 'default'},
+  createdAt: '2026-10-20T00:00:00Z',
+  updatedAt: '2026-10-20T00:00:00Z',
 }
 
 let TestProvider: ComponentType<{children?: ReactNode}>
@@ -28,7 +39,7 @@ beforeAll(async () => {
   TestProvider = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
 
-function stubFavoritesHost(favorites: FavoritesUpdate['payload']['document'][]) {
+function stubFavoritesHost(favorites: FavoriteDocument[]) {
   const host = stubMessageBusHost()
   host.publish('applications.capabilities', {favorites: true})
   host.publish('favorites.documents', favorites)
@@ -86,7 +97,7 @@ it.each([
     act(() => button.click())
 
     expect(button).toHaveAccessibleName(name)
-    expect(updates.map(({payload}) => payload)).toEqual([{document: FAVORITE, favorited}])
+    expect(updates.map(({payload}) => payload)).toEqual([{document: FAVORITE.document, favorited}])
 
     act(() => host.publish('favorites.documents', favorited ? [FAVORITE] : []))
     await act(async () => updates[0].reply())

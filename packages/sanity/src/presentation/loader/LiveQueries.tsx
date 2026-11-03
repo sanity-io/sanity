@@ -130,7 +130,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
   }, [controller, dataset, liveQueriesDispatch, onDocumentsOnPage, onLoadersConnection, projectId])
 
   const studioClient = useClient(
-    // Fetching with a variant requires the `vX` API version for now
+    // Fetching with a variant requires the variants API version
     activeVariant
       ? VARIANTS_STUDIO_CLIENT_OPTIONS
       : isReleasePerspective(activePerspective)

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type BadgeTone, Text} from '@sanity/ui'
+import {type BadgeTone} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -19,6 +19,7 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
+import {Text} from 'ui5'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -108,7 +109,7 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
         layout="default"
         status={
           badgeProps ? (
-            <Text size={0}>
+            <Text size={0} as="div" trim={true}>
               {badgeProps.kind === 'release' ? (
                 <ReleaseTitle title={badgeProps.releaseTitle} fallback={badgeProps.releaseFallback}>
                   {({displayTitle}) => (

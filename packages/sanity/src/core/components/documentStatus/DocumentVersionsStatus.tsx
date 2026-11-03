@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {useDocumentVersionTitle} from '../../hooks/useDocumentVersionTitle'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
@@ -44,7 +44,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   if (loading) {
     return (
       <Box padding={2}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('common.loading')}
         </Text>
       </Box>
@@ -87,10 +87,16 @@ function VersionStatus({version}: DocumentVersionStatusItem) {
     <Box className={versionStatusItem}>
       <Flex gap={2} justifyContent="space-between" paddingY={2}>
         <VStack className={titleStack} gap={2}>
-          <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
+          <Text
+            size={1}
+            title={isTruncated ? fullTitle : undefined}
+            weight="medium"
+            as="div"
+            trim={true}
+          >
             {title}
           </Text>
-          <Text className={updatedAtText} muted size={1}>
+          <Text className={updatedAtText} muted size={1} as="div" trim={true}>
             {timestampLabel}
           </Text>
         </VStack>

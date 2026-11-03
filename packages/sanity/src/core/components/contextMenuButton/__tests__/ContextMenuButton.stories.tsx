@@ -2,10 +2,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {type ButtonTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Flex, Stack} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -68,7 +69,7 @@ export const AllVariants: Story = {
         {TONES.map((tone) => (
           <Stack gap={3} key={tone}>
             <ContextMenuButton tone={tone} />
-            <Text align="center" muted size={0}>
+            <Text align="center" muted size={0} as="div" trim={true}>
               {tone}
             </Text>
           </Stack>
@@ -77,13 +78,13 @@ export const AllVariants: Story = {
       <Stack gap={4}>
         {SIZES.map((size) => (
           <Flex align="center" gap={3} key={size}>
-            <Text muted size={0} style={{width: 48}}>
+            <Text muted size={0} style={{width: 48}} as="div" trim={true}>
               {size}
             </Text>
             {MODES.map((mode) => (
               <Stack gap={3} key={mode}>
                 <ContextMenuButton mode={mode} size={size} />
-                <Text align="center" muted size={0}>
+                <Text align="center" muted size={0} as="div" trim={true}>
                   {mode}
                 </Text>
               </Stack>
@@ -97,7 +98,7 @@ export const AllVariants: Story = {
             <Card border padding={1} radius={2}>
               <ContextMenuButton {...props} />
             </Card>
-            <Text align="center" muted size={0}>
+            <Text align="center" muted size={0} as="div" trim={true}>
               {label}
             </Text>
           </Stack>
@@ -118,10 +119,10 @@ export const Open: Story = {
       <Card padding={2} radius={2} shadow={1} style={{width: 360}}>
         <Flex align="center" gap={3} paddingLeft={2}>
           <Stack flex={1} gap={2}>
-            <Text size={1} textOverflow="ellipsis" weight="medium">
+            <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
               Leo Tolstoy
             </Text>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               Author
             </Text>
           </Stack>

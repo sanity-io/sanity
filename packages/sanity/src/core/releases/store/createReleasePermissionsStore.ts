@@ -1,18 +1,21 @@
 import {type SingleActionResult} from '@sanity/client'
 
-import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
+import {isInsufficientPermissionsError} from '../../variants/store/variantActionErrors'
 import {type useReleasePermissionsValue} from './useReleasePermissions'
 
-type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
+const DRY_RUN_OPTIONS = {dryRun: true, skipCrossDatasetReferenceValidation: true}
 
-/**
- * Checks if the error is a permission error
- *
- * @param error - the error to check
- * @returns true if the error is a permission error
- */
-const isReleasePermissionError = (error: unknown): error is ReleasePermissionError =>
-  isErrorWithDetails(error) && error.details?.type === 'insufficientPermissionsError'
+async function dryRun(
+  action: (...args: any[]) => Promise<void | SingleActionResult>,
+  args: unknown[],
+): Promise<boolean> {
+  try {
+    await action(...args, DRY_RUN_OPTIONS)
+    return true
+  } catch (error) {
+    return !isInsufficientPermissionsError(error)
+  }
+}
 
 /**
  * Store that contains if the user has permissions to perform a release action
@@ -20,23 +23,25 @@ const isReleasePermissionError = (error: unknown): error is ReleasePermissionErr
  *
  * @returns an object with the following properties:
  * * checkWithPermissionGuard - a function that checks if the user has permissions to perform a release action by adding dryRun properties
- * * permissions - an object with the permissions for each action
+ * * permissions - an object with the permissions for each action, filled in as the checks settle
  *
  * @internal
  */
 export function createReleasePermissionsStore(
   isContentReleasesEnabled: boolean,
 ): useReleasePermissionsValue {
-  let permissions: {[key: string]: boolean} = {}
+  const permissions: {[key: string]: boolean} = {}
+  const checks = new Map<string, Promise<boolean>>()
 
   /**
-   * Checks if a release action can be performed by running a dry run of the given action
+   * Checks if a release action can be performed by running a dry run of the given action.
+   * Only a permission error resolves false, so any other error surfaces from the real request.
    *
    * @param action - any of the actions from the {@link ReleaseOperationStore}, e.g. publishRelease should send in also the needed props
    * @param args - the arguments to pass to the action (release id, etc)
    * @returns true or false depending if the user can perform the action
    */
-  const checkWithPermissionGuard = async <
+  const checkWithPermissionGuard = <
     T extends (...args: any[]) => Promise<void | SingleActionResult>,
   >(
     action: T,
@@ -47,29 +52,23 @@ export function createReleasePermissionsStore(
        * When content releases feature flag is disabled
        * assume allowed permissions to provide upsell
        */
-      return true
+      return Promise.resolve(true)
     }
 
-    if (permissions[action.name] === undefined) {
-      try {
-        await action(...args, {
-          dryRun: true,
-          skipCrossDatasetReferenceValidation: true,
-        })
-        permissions = {...permissions, [action.name]: true}
+    const cached = checks.get(action.name)
+    if (cached) return cached
 
-        return true
-      } catch (e) {
-        permissions = {...permissions, [action.name]: false}
+    const check = dryRun(action, args).then((allowed) => {
+      permissions[action.name] = allowed
+      return allowed
+    })
+    checks.set(action.name, check)
 
-        return !isReleasePermissionError(e)
-      }
-    } else {
-      return permissions[action.name]
-    }
+    return check
   }
+
   return {
-    checkWithPermissionGuard: checkWithPermissionGuard,
+    checkWithPermissionGuard,
     permissions,
   }
 }

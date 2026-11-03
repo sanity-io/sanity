@@ -3,6 +3,7 @@ import {type PropsWithChildren} from 'react'
 
 import {CapabilityGate} from '../../components/CapabilityGate'
 import {useMeasurePerformanceTelemetry} from './useMeasurePerformanceTelemetry'
+import {useSoftNavigationTelemetry} from './useSoftNavigationTelemetry'
 import {useWebVitalsTelemetry} from './useWebVitalsTelemetry'
 
 /**
@@ -11,6 +12,7 @@ import {useWebVitalsTelemetry} from './useWebVitalsTelemetry'
  * Metrics tracked:
  * - INP v1 (legacy, via useMeasurePerformanceTelemetry)
  * - Core Web Vitals (LCP, FCP, CLS, TTFB, INP v2 via useWebVitalsTelemetry)
+ * - Soft-navigation vitals, one event per soft navigation (via useSoftNavigationTelemetry)
  *
  * @internal
  */
@@ -32,6 +34,8 @@ function PagePerformanceTelemetry(): null {
 
   // Core Web Vitals via web-vitals library
   useWebVitalsTelemetry()
+
+  useSoftNavigationTelemetry()
 
   return null
 }
