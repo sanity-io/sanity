@@ -34,3 +34,8 @@ export const variantsMenu = css({
     overflow: 'hidden',
   },
 })
+
+/** Positions a variant's detail link over its menu item. */
+export const variantMenuItemRow = css({
+  position: 'relative',
+})
