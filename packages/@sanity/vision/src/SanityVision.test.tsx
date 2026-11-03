@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
-import {act, cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {act, cleanup, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -12,6 +12,8 @@ import {type VisionConfig} from './types'
 import {writeRedesignPreference} from './vista/redesignPreference'
 
 const theme = buildTheme()
+
+const loadedModules = vi.hoisted(() => new Set<string>())
 
 // @sanity/ui's ToastProvider reads media queries, which jsdom does not implement
 vi.stubGlobal(
@@ -54,13 +56,17 @@ vi.mock('./components/VisionGui', () => ({
   ),
 }))
 
-vi.mock('./vista/components/VistaGui', () => ({
-  VistaGui: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
-    <button data-testid="vista" onClick={onSwitchToClassic} type="button">
-      vista
-    </button>
-  ),
-}))
+// The factories only run when something imports the module, so they record whether the
+// redesign or its WebAssembly dependency was loaded
+vi.mock('./vista/components/VistaGui', () => {
+  loadedModules.add('VistaGui')
+  return {VistaGui: () => <div data-testid="vista" />}
+})
+
+vi.mock('@sanity-labs/groq-wasm', () => {
+  loadedModules.add('@sanity-labs/groq-wasm')
+  return {}
+})
 
 function renderTool(options: Partial<VisionConfig>) {
   const tool = {name: 'vision', title: 'Vision', options} as unknown as Tool<VisionConfig>
@@ -75,7 +81,7 @@ function renderTool(options: Partial<VisionConfig>) {
   )
 }
 
-describe('SanityVision experience switch', () => {
+describe('SanityVision with the redesign switched off', () => {
   beforeEach(() => {
     localStorage.clear()
     // The preference module caches per project; start every test from a known state
@@ -93,82 +99,30 @@ describe('SanityVision experience switch', () => {
     expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
   })
 
-  it('renders the classic tool even for a stored opt-in when the beta flag is off', () => {
+  it('renders the classic tool without an invitation when the beta flag is on', async () => {
+    await act(async () => {
+      renderTool({beta: {redesign: {enabled: true}}})
+    })
+    expect(screen.getByTestId('classic-vision')).toBeTruthy()
+    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
+    expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
+  })
+
+  it('renders the classic tool for a project that opted in before the switch-off', async () => {
     writeRedesignPreference('switch-project', {optedIn: true})
-    renderTool({beta: {redesign: {enabled: false}}})
+    await act(async () => {
+      renderTool({beta: {redesign: {enabled: true}}})
+    })
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
     expect(screen.queryByTestId('vista')).toBeNull()
   })
 
-  it('invites through a toast and switches to the redesign when accepted', async () => {
-    renderTool({beta: {redesign: {enabled: true}}})
-    expect(screen.getByTestId('classic-vision')).toBeTruthy()
-
-    const accept = await screen.findByTestId('vision-redesign-accept')
-    await act(async () => {
-      fireEvent.click(accept)
-    })
-
-    await waitFor(() => expect(screen.getByTestId('vista')).toBeTruthy())
-    expect(screen.queryByTestId('classic-vision')).toBeNull()
-    // The toast animates out, so it leaves the DOM a moment later
-    await waitFor(() => expect(screen.queryByText('vista.redesign.toast.title')).toBeNull())
-    expect(
-      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
-    ).toEqual({
-      optedIn: true,
-      dismissed: false,
-    })
-  })
-
-  it('remembers a dismissed invitation', async () => {
-    renderTool({beta: {redesign: {enabled: true}}})
-    const dismiss = await screen.findByTestId('vision-redesign-dismiss')
-    await act(async () => {
-      fireEvent.click(dismiss)
-    })
-
-    await waitFor(() => expect(screen.queryByText('vista.redesign.toast.title')).toBeNull())
-    expect(screen.getByTestId('classic-vision')).toBeTruthy()
-
-    cleanup()
-    renderTool({beta: {redesign: {enabled: true}}})
-    expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
-  })
-
-  it('keeps the redesign one click away in the classic tool after the invitation is dismissed', async () => {
-    writeRedesignPreference('switch-project', {dismissed: true})
-    renderTool({beta: {redesign: {enabled: true}}})
-    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
-
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('classic-try-redesign'))
-    })
-    await waitFor(() => expect(screen.getByTestId('vista')).toBeTruthy())
-    expect(
-      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
-    ).toEqual({optedIn: true, dismissed: false})
-
-    // Back in the classic tool, the invitation shows again
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('vista'))
-    })
-    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
-    expect(screen.getByTestId('classic-try-redesign')).toBeTruthy()
-  })
-
-  it('opens the redesign directly for an opted-in project and can switch back', async () => {
+  it('never loads the redesign or groq-wasm', async () => {
     writeRedesignPreference('switch-project', {optedIn: true})
-    renderTool({beta: {redesign: {enabled: true}}})
-    const vista = await screen.findByTestId('vista')
-
     await act(async () => {
-      fireEvent.click(vista)
+      renderTool({beta: {redesign: {enabled: true}}})
     })
-
-    await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())
-    // The invitation shows again so the redesign stays one click away
-    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+    await vi.dynamicImportSettled()
+    expect([...loadedModules]).toEqual([])
   })
 })
