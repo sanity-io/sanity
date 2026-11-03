@@ -66,9 +66,9 @@ function VariantMenuItem(props: {
         icon={VariantMenuItemIcon}
         iconRight={
           mismatches.length > 0 ? (
-            <span data-testid="variant-condition-mismatch">
+            <Box paddingRight={1} data-testid="variant-condition-mismatch">
               <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </span>
+            </Box>
           ) : undefined
         }
         onClick={() => onSelect(variant)}
