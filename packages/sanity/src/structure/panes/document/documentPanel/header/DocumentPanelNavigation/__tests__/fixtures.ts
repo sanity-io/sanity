@@ -67,8 +67,15 @@ export function createVariant(name: string, title: string, type?: string): Syste
   }
 }
 
-/** An active release, as `useActiveReleases` returns it. */
-export function createRelease(releaseId: string, title: string): ReleaseDocument {
+/**
+ * An active release, as `useActiveReleases` returns it. An ASAP release unless `metadata` says
+ * otherwise; `cardinality: 'one'` makes it a scheduled draft.
+ */
+export function createRelease(
+  releaseId: string,
+  title: string,
+  metadata: Partial<ReleaseDocument['metadata']> = {},
+): ReleaseDocument {
   return {
     _id: `_.releases.${releaseId}`,
     _type: 'system.release',
@@ -77,7 +84,7 @@ export function createRelease(releaseId: string, title: string): ReleaseDocument
     _updatedAt: '2026-01-01T00:00:00Z',
     name: releaseId,
     state: 'active',
-    metadata: {title, releaseType: 'asap'},
+    metadata: {title, releaseType: 'asap', ...metadata},
   }
 }
 

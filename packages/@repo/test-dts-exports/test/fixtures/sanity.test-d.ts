@@ -1746,6 +1746,7 @@ import type {
   useReferringDocuments,
   useRelativeTime,
   useReleasesIds,
+  useReleasesToolAvailable,
   useRenderingContextStore,
   useReportParseError,
   useResolveInitialValueForType,
@@ -7138,6 +7139,9 @@ describe('sanity', () => {
   })
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
+  })
+  test('useReleasesToolAvailable', () => {
+    expectTypeOf<typeof useReleasesToolAvailable>().toBeFunction()
   })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()

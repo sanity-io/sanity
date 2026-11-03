@@ -2,7 +2,6 @@ import {renderHook} from '@testing-library/react'
 import {
   getVersionFromId,
   type ObjectSchemaType,
-  useActiveReleases,
   useAgentVersionDisplay,
   useDocumentVersions,
   usePerspective,
@@ -14,18 +13,11 @@ import {createTestProvider} from '../../../../../../../../../test/testUtils/Test
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
-import {
-  createPerspective,
-  createRelease,
-  createVariant,
-  createVersion,
-  GROUP_ID,
-} from '../../__tests__/fixtures'
+import {createPerspective, createVariant, createVersion, GROUP_ID} from '../../__tests__/fixtures'
 import {useNavigationBadges} from '../useNavigationBadges'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useAgentVersionDisplay: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
@@ -34,7 +26,6 @@ vi.mock('sanity', async (importOriginal) => ({
 vi.mock('../../../../../useDocumentPane')
 vi.mock('../../../../../../../hooks/usePerspectiveNavigator')
 
-const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseAgentVersionDisplay = useAgentVersionDisplay as Mock<typeof useAgentVersionDisplay>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
@@ -44,9 +35,6 @@ const mockUsePerspectiveNavigator = usePerspectiveNavigator as Mock<typeof usePe
 const OWN_AGENT_BUNDLE = 'agent-mine'
 
 const variantA = createVariant('variantA', 'Variant A')
-const releaseA = createRelease('rA', 'Release A')
-const releaseB = createRelease('rB', 'Release B')
-const releaseC = createRelease('rC', 'Release C')
 
 const versions = [
   createVersion({bundle: 'published'}),
@@ -77,10 +65,6 @@ function mockSchemaType(liveEdit: boolean) {
   })
 }
 
-function releaseIds(result: ReturnType<typeof useNavigationBadges>) {
-  return result.releases.map(({release}) => release.name)
-}
-
 beforeAll(async () => {
   wrapper = await createTestProvider()
 })
@@ -91,13 +75,6 @@ describe('useNavigationBadges', () => {
     mockVersions(versions)
     mockUsePerspective.mockReturnValue(createPerspective())
     mockUsePerspectiveNavigator.mockReturnValue({navigate})
-    const activeReleases = [releaseA, releaseB, releaseC]
-    mockUseActiveReleases.mockReturnValue({
-      data: activeReleases,
-      byId: new Map(activeReleases.map((release) => [release._id, release])),
-      loading: false,
-      dispatch: vi.fn(),
-    })
     // Only the current user's agent bundle survives, the way `useAgentVersionDisplay` filters.
     mockUseAgentVersionDisplay.mockImplementation((versionIds) => ({
       filteredVersionIds: versionIds.filter((id) => getVersionFromId(id) === OWN_AGENT_BUNDLE),
@@ -117,7 +94,6 @@ describe('useNavigationBadges', () => {
 
     expect(result.current.published.active).toBe(true)
     expect(result.current.draft?.active).toBe(true)
-    expect(releaseIds(result.current)).toEqual(['rA', 'rC'])
   })
 
   it('shows the bundles of the selected variant', () => {
@@ -127,7 +103,6 @@ describe('useNavigationBadges', () => {
 
     expect(result.current.published.active).toBe(true)
     expect(result.current.draft?.active).toBe(false)
-    expect(releaseIds(result.current)).toEqual(['rA', 'rB'])
   })
 
   it('selects the badge of the global perspective, also while a variant is selected', () => {
@@ -154,11 +129,8 @@ describe('useNavigationBadges', () => {
     )
     rerender()
 
+    expect(result.current.published.selected).toBe(false)
     expect(result.current.draft?.selected).toBe(false)
-    expect(result.current.releases.map(({release, selected}) => [release.name, selected])).toEqual([
-      ['rA', false],
-      ['rB', true],
-    ])
   })
 
   it('selects Published for a live-edit document in the drafts perspective', () => {

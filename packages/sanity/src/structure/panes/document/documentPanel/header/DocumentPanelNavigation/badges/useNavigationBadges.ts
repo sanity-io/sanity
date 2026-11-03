@@ -1,15 +1,12 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {
   type AgentVersionDisplay,
   DEFAULT_VARIANT_TYPE_KEY,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   getVersionId,
   isPublishedPerspective,
   type TargetPerspective,
-  useActiveReleases,
   useAgentVersionDisplay,
   useDocumentVersions,
   usePerspective,
@@ -35,8 +32,6 @@ export interface NavigationBadges {
   published: NavigationBadgeState
   /** `undefined` when the workspace has no draft model. */
   draft: NavigationBadgeState | undefined
-  /** One per active release the selected variant has a version in. */
-  releases: {release: ReleaseDocument; selected: boolean}[]
   /** The current user's agent bundle, when the selected variant has a version in it. */
   agent: {bundleId: string; display: AgentVersionDisplay; selected: boolean} | undefined
   /** Changes the global perspective. The selected variant stays as it is. */
@@ -52,12 +47,11 @@ export interface NavigationBadges {
  */
 export function useNavigationBadges(): NavigationBadges {
   const {documentId, schemaType} = useDocumentPane()
-  const {selectedPerspectiveName, selectedReleaseId} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const {document} = useWorkspace()
   const selectedVariant = useSelectedVariant(DEFAULT_VARIANT_TYPE_KEY)
   const groupId = getPublishedId(documentId)
   const {versions} = useDocumentVersions({documentId: groupId})
-  const {data: activeReleases} = useActiveReleases()
   const {navigate} = usePerspectiveNavigator()
 
   const variantId = selectedVariant?._id
@@ -77,19 +71,6 @@ export function useNavigationBadges(): NavigationBadges {
   const isLiveEdit = isLiveEditEnabled(schemaType)
   const isDraftModelEnabled = document.drafts.enabled
   const isDraftsPerspective = selectedPerspectiveName === undefined
-
-  const releases = useMemo(
-    () =>
-      activeReleases
-        .filter((release) =>
-          state.releaseIds.includes(getReleaseIdFromReleaseDocumentId(release._id)),
-        )
-        .map((release) => ({
-          release,
-          selected: getReleaseIdFromReleaseDocumentId(release._id) === selectedReleaseId,
-        })),
-    [activeReleases, selectedReleaseId, state.releaseIds],
-  )
 
   const agent = useMemo(() => {
     const versionId = filteredVersionIds[0]
@@ -111,7 +92,6 @@ export function useNavigationBadges(): NavigationBadges {
       isDraftModelEnabled || (isLiveEdit && state.hasDraft)
         ? {active: state.hasDraft, selected: isDraftsPerspective && !isLiveEdit}
         : undefined,
-    releases,
     agent,
     navigate,
   }

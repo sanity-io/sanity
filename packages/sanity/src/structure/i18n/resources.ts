@@ -510,6 +510,19 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Placeholder of the filter input in the variants and releases menus of the document header */
   'document-panel-navigation.filter-placeholder': 'Find',
+  /** Label of the releases menu trigger in the document header when no release is selected */
+  'document-panel-navigation.releases.button.text': 'Releases',
+  /** A scheduled release in the releases menu of the document header: its title and publish date */
+  'document-panel-navigation.releases.item.title-with-date': '{{title}} · {{date}}',
+  /** Section header listing the releases the document has a version in */
+  'document-panel-navigation.releases.section.in-releases_one': 'In {{count}} release',
+  /** Section header listing the releases the document has a version in */
+  'document-panel-navigation.releases.section.in-releases_other': 'In {{count}} releases',
+  /** Tooltip on the "In 0 releases" section header of the releases menu in the document header */
+  'document-panel-navigation.releases.section.no-releases-tooltip':
+    "This document isn't in any release yet. Pick one below to add it.",
+  /** Section header listing the releases the document has no version in */
+  'document-panel-navigation.releases.section.other': 'Other releases',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */

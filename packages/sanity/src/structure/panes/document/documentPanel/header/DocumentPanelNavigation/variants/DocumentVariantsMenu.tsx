@@ -4,20 +4,26 @@ import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 
 import {
   DEFAULT_VARIANT_TYPE_KEY,
   filterVariantsForSearch,
+  getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVariantTitle,
   getVariantType,
+  getVersionFromId,
+  getVersionId,
   isAgentBundleName,
   isDefaultVariant,
   LATEST,
   PUBLISHED,
   type SystemVariant,
   useActiveReleases,
+  useAgentVersionDisplay,
   useAllVariants,
   useDocumentVersions,
   useListFormat,
+  usePerspective,
   useSetVariant,
   useTranslation,
+  type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
 
@@ -98,6 +104,31 @@ function VariantMenuItem(props: {
 }
 
 /**
+ * Version ids for the agent bundles on this document, one per bundle name, in version order.
+ * Variant versions have opaque ids, so each id is the one that bundle would have outside a
+ * variant. `useAgentVersionDisplay` reads the bundle name from it.
+ */
+function agentBundleVersionIds(versions: VersionInfoDocumentStub[], groupId: string): string[] {
+  const seen = new Set<string>()
+  const versionIds: string[] = []
+  for (const version of versions) {
+    const bundleId = version._system.bundleId
+    if (!bundleId || !isAgentBundleName(bundleId) || seen.has(bundleId)) continue
+    seen.add(bundleId)
+    versionIds.push(getVersionId(groupId, bundleId))
+  }
+  return versionIds
+}
+
+/** Drops every agent bundle except the one `useAgentVersionDisplay` kept. */
+function withoutOtherAgentBundles(
+  bundles: string[],
+  visibleAgentBundleId: string | undefined,
+): string[] {
+  return bundles.filter((bundle) => !isAgentBundleName(bundle) || bundle === visibleAgentBundleId)
+}
+
+/**
  * Picks the variant of the default type the studio is working in. Lists Default, the variants the
  * document has versions in, with a count of those versions, and the other variants. Picking one
  * only changes the global variant selection.
@@ -111,9 +142,11 @@ export function DocumentVariantsMenu() {
   const {data: variants} = useAllVariants()
   const {versions} = useDocumentVersions({documentId})
   const {data: activeReleases} = useActiveReleases()
+  const {selectedPerspectiveName} = usePerspective()
   const selectedVariant = useSelectedVariant(DEFAULT_VARIANT_TYPE_KEY)
   const setVariant = useSetVariant()
   const [filterQuery, setFilterQuery] = useState('')
+  const groupId = getPublishedId(documentId)
 
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === DEFAULT_VARIANT_TYPE_KEY),
@@ -123,9 +156,32 @@ export function DocumentVariantsMenu() {
     () => getDocumentVariantBundles(versions),
     [versions],
   )
+  const agentVersionIds = useMemo(
+    () => agentBundleVersionIds(versions, groupId),
+    [groupId, versions],
+  )
+  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(
+    agentVersionIds,
+    selectedPerspectiveName,
+  )
+  const visibleAgentBundleId = filteredVersionIds[0]
+    ? getVersionFromId(filteredVersionIds[0])
+    : undefined
+  const visibleDefaultBundles = useMemo(
+    () => withoutOtherAgentBundles(defaultBundles, visibleAgentBundleId),
+    [defaultBundles, visibleAgentBundleId],
+  )
+  const visibleVariantBundles = useMemo(() => {
+    const visible = new Map<string, string[]>()
+    for (const [variantId, bundles] of variantBundles) {
+      const kept = withoutOtherAgentBundles(bundles, visibleAgentBundleId)
+      if (kept.length > 0) visible.set(variantId, kept)
+    }
+    return visible
+  }, [variantBundles, visibleAgentBundleId])
   const documentVariantCount = useMemo(
-    () => typeVariants.filter((variant) => variantBundles.has(variant._id)).length,
-    [typeVariants, variantBundles],
+    () => typeVariants.filter((variant) => visibleVariantBundles.has(variant._id)).length,
+    [typeVariants, visibleVariantBundles],
   )
 
   const releaseTitles = useMemo(
@@ -143,14 +199,19 @@ export function DocumentVariantsMenu() {
       bundles.map((bundle) => {
         if (bundle === PUBLISHED) return tStudio('release.chip.published')
         if (bundle === LATEST) return tStudio('release.chip.draft')
-        if (isAgentBundleName(bundle)) return tStudio('version.agent-bundle.agent-changes')
+        if (isAgentBundleName(bundle)) {
+          return (
+            getVersionDisplay(getVersionId(groupId, bundle))?.displayName ??
+            tStudio('version.agent-bundle.proposed-changes')
+          )
+        }
         return releaseTitles.get(bundle) ?? bundle
       }),
-    [releaseTitles, tStudio],
+    [getVersionDisplay, groupId, releaseTitles, tStudio],
   )
   const defaultBundleTitles = useMemo(
-    () => getBundleTitles(defaultBundles),
-    [defaultBundles, getBundleTitles],
+    () => getBundleTitles(visibleDefaultBundles),
+    [getBundleTitles, visibleDefaultBundles],
   )
 
   const defaultLabel = tStudio('navbar.variant.default')
@@ -164,14 +225,14 @@ export function DocumentVariantsMenu() {
     const others: SystemVariant[] = []
     for (const variant of filteredVariants) {
       if (isDefaultVariant(variant)) continue
-      if (variantBundles.has(variant._id)) {
+      if (visibleVariantBundles.has(variant._id)) {
         inDocument.push(variant)
       } else {
         others.push(variant)
       }
     }
     return {documentVariants: inDocument, otherVariants: others}
-  }, [filteredVariants, variantBundles])
+  }, [filteredVariants, visibleVariantBundles])
 
   const handleSelectDefault = useCallback(() => {
     setVariant({type: DEFAULT_VARIANT_TYPE_KEY, variantId: undefined})
@@ -192,7 +253,7 @@ export function DocumentVariantsMenu() {
 
   const isDefaultSelected = !selectedVariant
   const renderVariantItem = (variant: SystemVariant) => {
-    const bundles = variantBundles.get(variant._id)
+    const bundles = visibleVariantBundles.get(variant._id)
     return (
       <VariantMenuItem
         bundleTitles={bundles ? getBundleTitles(bundles) : undefined}

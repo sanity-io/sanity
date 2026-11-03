@@ -1,8 +1,11 @@
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
+  getVersionFromId,
+  isAgentBundleName,
   type SystemVariant,
   useActiveReleases,
+  useAgentVersionDisplay,
   useAllVariants,
   useDocumentVersions,
   usePerspective,
@@ -27,6 +30,7 @@ import {DocumentVariantsMenu} from '../DocumentVariantsMenu'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn(),
+  useAgentVersionDisplay: vi.fn(),
   useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
@@ -36,11 +40,15 @@ vi.mock('sanity', async (importOriginal) => ({
 vi.mock('../../../../../useDocumentPane')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+const mockUseAgentVersionDisplay = useAgentVersionDisplay as Mock<typeof useAgentVersionDisplay>
 const mockUseAllVariants = useAllVariants as Mock<typeof useAllVariants>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseSetVariant = useSetVariant as Mock<typeof useSetVariant>
 const mockUseDocumentPane = useDocumentPane as Mock<() => Partial<DocumentPaneContextValue>>
+
+/** The only agent bundle `useAgentVersionDisplay` keeps in these tests. */
+const OWN_AGENT_BUNDLE = 'agent-mine'
 
 const firstTime = createVariant('firstTime', 'First-time visitors')
 const lapsed = createVariant('lapsed', 'Lapsed customers')
@@ -88,6 +96,18 @@ describe('DocumentVariantsMenu', () => {
     })
     mockVariants([firstTime, lapsed, language])
     mockVersions([createVersion({bundle: 'published'})])
+    // Non-agent versions pass through. Other users' agent bundles are removed, and the current
+    // user's is labeled "Proposed changes", the way `useAgentVersionDisplay` filters.
+    mockUseAgentVersionDisplay.mockImplementation((versionIds) => ({
+      filteredVersionIds: versionIds.filter((id) => {
+        const name = getVersionFromId(id)
+        return !isAgentBundleName(name) || name === OWN_AGENT_BUNDLE
+      }),
+      getVersionDisplay: (id) =>
+        getVersionFromId(id) === OWN_AGENT_BUNDLE
+          ? {displayName: 'Proposed changes', tone: 'suggest'}
+          : null,
+    }))
   })
 
   afterEach(() => {
@@ -200,6 +220,34 @@ describe('DocumentVariantsMenu', () => {
     const firstTimeItem = within(menu).getByTestId(`document-variant-${firstTime._id}`)
     await userEvent.hover(within(firstTimeItem).getByTestId('variant-version-count'))
     expect(await screen.findByText('2 versions: Draft, Summer sale')).toBeInTheDocument()
+  })
+
+  it("counts only the current user's agent bundle and names it Proposed changes", async () => {
+    mockVersions([
+      createVersion({bundle: 'published'}),
+      createVersion({bundle: {agent: OWN_AGENT_BUNDLE}}),
+      createVersion({bundle: {agent: 'agent-someone-else'}}),
+      createVersion({bundle: {agent: 'agent-someone-else'}, variant: 'firstTime'}),
+      createVersion({bundle: {agent: OWN_AGENT_BUNDLE}, variant: 'lapsed'}),
+    ])
+    render(<DocumentVariantsMenu />, {wrapper})
+
+    const menu = await openMenu()
+
+    const defaultItem = within(menu).getByTestId('document-variant-default')
+    expect(within(defaultItem).getByTestId('variant-version-count')).toHaveTextContent('2')
+    await userEvent.hover(within(defaultItem).getByTestId('variant-version-count'))
+    expect(await screen.findByText('2 versions: Published, Proposed changes')).toBeInTheDocument()
+
+    const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
+    expect(documentSection).toHaveTextContent('Has 1 variant')
+    expect(within(documentSection).queryByTestId(`document-variant-${firstTime._id}`)).toBeNull()
+    const lapsedItem = within(documentSection).getByTestId(`document-variant-${lapsed._id}`)
+    expect(within(lapsedItem).getByTestId('variant-version-count')).toHaveTextContent('1')
+
+    const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
+    const firstTimeItem = within(otherSection).getByTestId(`document-variant-${firstTime._id}`)
+    expect(within(firstTimeItem).queryByTestId('variant-version-count')).toBeNull()
   })
 
   it('selects a variant of the default type', async () => {
