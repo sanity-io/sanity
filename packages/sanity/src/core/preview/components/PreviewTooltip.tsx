@@ -1,13 +1,5 @@
 import {PortalProvider} from '@sanity/ui'
-import {
-  type FocusEvent,
-  type MouseEvent,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import {type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
 import {TOOLTIP_DELAY_PROPS} from '../../../ui-components/tooltip/constants'
@@ -49,14 +41,14 @@ export function PreviewTooltipAnchor({children}: {children: ReactNode}) {
 
 /**
  * Hover tooltip for preview rows (e.g. the document status tooltip in
- * reference pickers, document lists and search results). Hovering or focusing
- * any part of the row opens it, placed against the row's `PreviewTooltipAnchor`
- * if it has one. It is read only: the pointer cannot interact with it.
+ * reference pickers, document lists and search results). Hovering any part of
+ * the row opens it, placed against the row's `PreviewTooltipAnchor` if it has
+ * one. It is read only: the pointer cannot interact with it.
  *
  * Preview rows live inside scrollable — sometimes virtualized — lists.
- * Scrolling such a list under a stationary pointer does not leave the row, so
- * the tooltip would stay open, detached from the row it was anchored to (or
- * anchored to a recycled row that now shows another document). Instead,
+ * Scrolling such a list under a stationary pointer fires no mouseleave, so a
+ * plain tooltip would stay open, detached from the row it was anchored to
+ * (or anchored to a recycled row that now shows another document). Instead,
  * force-close the tooltip on any ancestor scroll while the row is hovered;
  * it can open again once the pointer re-enters a row.
  *
@@ -74,33 +66,27 @@ export function PreviewTooltip(props: {
 }) {
   const {children, content, placement = 'below'} = props
   const rowRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const [suspended, setSuspended] = useState(false)
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
 
-  const handleEnter = useCallback(() => {
-    setActive(true)
+  const handleMouseOver = useCallback(() => {
+    setHovered(true)
   }, [])
 
-  const handleLeave = useCallback(
-    (event: MouseEvent<HTMLDivElement> | FocusEvent<HTMLDivElement>) => {
-      // Focus moving between descendants of the row also fires blur; only
-      // reset when focus actually leaves the row.
-      if (
-        event.relatedTarget instanceof Node &&
-        event.currentTarget.contains(event.relatedTarget)
-      ) {
-        return
-      }
-      setActive(false)
-      setSuspended(false)
-      setAnchor(null)
-    },
-    [],
-  )
+  const handleMouseOut = useCallback((event: MouseEvent<HTMLDivElement>) => {
+    // Moving between descendants of the row also fires mouseout; only reset
+    // when the pointer actually leaves the row.
+    if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) {
+      return
+    }
+    setHovered(false)
+    setSuspended(false)
+    setAnchor(null)
+  }, [])
 
   useEffect(() => {
-    if (!active) {
+    if (!hovered) {
       return undefined
     }
     const openTimeout = setTimeout(() => {
@@ -114,17 +100,12 @@ export function PreviewTooltip(props: {
       clearTimeout(openTimeout)
       window.removeEventListener('scroll', handleScroll, {capture: true})
     }
-  }, [active])
+  }, [hovered])
 
   return (
     <>
-      <div
-        onBlur={handleLeave}
-        onFocus={handleEnter}
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
-        ref={rowRef}
-      >
+      {/* oxlint-disable-next-line jsx-a11y/mouse-events-have-key-events -- keyboard focus lands on the row's link or card, an ancestor of this element, so focus handlers here would never run */}
+      <div onMouseOut={handleMouseOut} onMouseOver={handleMouseOver} ref={rowRef}>
         {children}
       </div>
       {anchor && !suspended && (
