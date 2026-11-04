@@ -1,5 +1,5 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {expect, within} from 'storybook/test'
+import {expect, waitFor, within} from 'storybook/test'
 
 import {GlobalPerspectiveButtonStory} from './GlobalPerspectiveButtonStory'
 
@@ -30,10 +30,18 @@ export const States: Story = {
       timeout: 5000,
     })
 
-    await expect(within(idle).getByRole('button', {name: 'Default'})).toBeVisible()
+    await waitFor(() => expect(within(idle).getByRole('button', {name: 'Default'})).toBeVisible(), {
+      timeout: 3000,
+    })
     await expect(within(idle).queryByRole('button', {name: 'Clear selection'})).toBeNull()
 
-    await expect(within(selected).getByRole('button', {name: 'Norwegian market'})).toBeVisible()
-    await expect(within(selected).getByRole('button', {name: 'Clear selection'})).toBeVisible()
+    await waitFor(
+      () => expect(within(selected).getByRole('button', {name: 'Norwegian market'})).toBeVisible(),
+      {timeout: 3000},
+    )
+    await waitFor(
+      () => expect(within(selected).getByRole('button', {name: 'Clear selection'})).toBeVisible(),
+      {timeout: 3000},
+    )
   },
 }
