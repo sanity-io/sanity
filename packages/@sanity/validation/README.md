@@ -24,6 +24,7 @@ if (!complete) {
 - `status` is deprecated; use `complete` and inspect marker levels and codes. It treats any marker as `failed`.
 - Built-in codes: `validationMarkerCodes`. Custom validators can return namespaced codes such as `custom.seo-title`.
 - Omit `client` for local checks without custom callbacks or network checks. Skipped checks make `complete` false. Use `customValidation: false` to skip custom callbacks while keeping network checks.
+- Pass `i18n: workspace.i18n` to `validateDocument`/`validateDocuments` to preserve the workspace's locale and translation resources, including those used by custom validators through `context.i18n`.
 - Precompiled rules retain their original package version's behavior; recompile with the current version for current callback-skipping and concurrency semantics.
 
 ## Batch validation

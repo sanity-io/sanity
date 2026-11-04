@@ -21,7 +21,7 @@ import {map} from 'rxjs/operators'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
-import {type LocaleSource} from './i18n/types'
+import {type LocaleSource, type ValidationLocaleSource} from './i18n/types'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
@@ -138,6 +138,13 @@ interface ValidateDocumentBaseOptions {
   document: SanityDocument
   /** The compiled schema to validate against. */
   schema: ValidationSchema
+
+  /**
+   * Translation resources and locale used by built-in and custom validators.
+   * Pass a resolved workspace's `i18n` to preserve its translations.
+   * Defaults to the built-in English resources when omitted.
+   */
+  i18n?: ValidationLocaleSource
 
   /** Signal used to cancel validation and any work it starts. */
   signal?: AbortSignal
@@ -277,7 +284,7 @@ export interface ValidationSource {
  */
 export interface ValidateDocumentWorkspaceOptions extends Omit<
   ValidateDocumentBaseOptions,
-  'schema'
+  'schema' | 'i18n'
 > {
   /** The resolved Studio workspace or source used for validation. */
   workspace: ValidationSource
@@ -364,6 +371,7 @@ function normalizeValidationOptions(
     client,
     customValidation = Boolean(options.client),
     getDocumentExists,
+    i18n,
     schema,
     ...internalOptions
   } = options
@@ -376,7 +384,8 @@ function normalizeValidationOptions(
         ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient
       : throwClientUnavailable,
     getDocumentExists: getDocumentExists || (client ? undefined : throwClientUnavailable),
-    i18n: getFallbackLocaleSource(),
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- translation sources may use another compatible i18next version
+    i18n: (i18n ?? getFallbackLocaleSource()) as LocaleSource,
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
     schema: schema as Schema,
   }
