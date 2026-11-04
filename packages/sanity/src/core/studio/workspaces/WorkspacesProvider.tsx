@@ -25,6 +25,12 @@ import {useEffectEvent} from 'use-effect-event'
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
+import {SANITY_VERSION} from '../../version'
+import {studioRequestActivity} from '../diagnostics/requestActivity'
+import {
+  createStudioTabActivity,
+  startStudioTabsCensusResponder,
+} from '../diagnostics/studioTabsCensus'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -195,6 +201,15 @@ export function WorkspacesProvider({
         },
       }),
     [corsRetry, requestErrorChannel, requestFailureDiagnostics],
+  )
+
+  // Lets the diagnostics panel in other tabs count this tab's open listeners and waiting requests
+  useEffect(
+    () =>
+      startStudioTabsCensusResponder(() =>
+        createStudioTabActivity(studioRequestActivity.getSnapshot(), SANITY_VERSION),
+      ),
+    [],
   )
 
   const workspaces = useDeferredValue(
