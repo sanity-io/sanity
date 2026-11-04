@@ -87,6 +87,68 @@ describe('parseStudioDiagnostics', () => {
     ).toThrow('not a supported Studio diagnostics report')
   })
 
+  it('accepts connection activity, findings and skipped tests', () => {
+    const extended: StudioDiagnostics = {
+      ...report,
+      findings: [
+        {
+          detail: '3 Studio tabs in this browser have 97 open listeners.',
+          id: 'request-limit-reached',
+          severity: 'critical',
+          title: "The browser's connection to Sanity is full",
+        },
+      ],
+      maxDurationMs: 20_000,
+      network: {
+        ...report.network,
+        connections: {
+          currentTab: {longestPending: [], openStreams: 6, pendingRequests: 0, totalStarted: 20},
+          tabs: {
+            status: 'success',
+            tabs: [],
+            totals: {openStreams: 97, pendingRequests: 0, tabs: 3},
+            waitedMs: 1000,
+          },
+        },
+        listen: {
+          first: {...listen, status: 'timeout', timedOut: true},
+          secondWhileFirstOpen: {
+            ...listen,
+            skipReason: 'first-connection-failed',
+            status: 'skipped',
+          },
+        },
+        requests: [
+          {
+            durationMs: 0,
+            path: '/ping',
+            skipReason: 'time-limit',
+            status: 'skipped',
+            timedOut: false,
+          },
+        ],
+        stalled: true,
+      },
+    }
+
+    expect(parse(extended)).toEqual(extended)
+  })
+
+  it('rejects findings with an unknown severity', () => {
+    expect(() =>
+      parse({...report, findings: [{detail: 'x', id: 'x', severity: 'fatal', title: 'x'}]}),
+    ).toThrow('not a supported Studio diagnostics report')
+  })
+
+  it('rejects malformed connection activity', () => {
+    expect(() =>
+      parse({
+        ...report,
+        network: {...report.network, connections: {currentTab: {openStreams: 'many'}}},
+      }),
+    ).toThrow('not a supported Studio diagnostics report')
+  })
+
   it('rejects a non-boolean auto-updates flag', () => {
     expect(() => parse({...report, studio: {...report.studio, autoUpdates: 'yes'}})).toThrow(
       'not a supported Studio diagnostics report',

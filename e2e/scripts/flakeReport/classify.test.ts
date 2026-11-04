@@ -121,6 +121,23 @@ describe('classifyAttempt', () => {
     expect(classifyAttempt(studioCapture(report)).verdict).toBe('healthy')
   })
 
+  it('does not treat skipped probes as evidence', () => {
+    const report = diagnostics({
+      listen: {
+        first: {durationMs: 120, openMs: 118, status: 'success', welcomeMs: 120},
+        secondWhileFirstOpen: {durationMs: 0, skipReason: 'time-limit', status: 'skipped'},
+      },
+      requests: [
+        {durationMs: 40, path: '/ping', status: 'success'},
+        {durationMs: 0, path: '/geoip/country', skipReason: 'time-limit', status: 'skipped'},
+      ],
+    })
+
+    const analysis = classifyAttempt(studioCapture(report))
+    expect(analysis.verdict).toBe('healthy')
+    expect(analysis.evidence[0]).toContain('probes 40 ms–40 ms')
+  })
+
   it('flags probe timeouts and slow probes', () => {
     const timedOut = diagnostics({
       requests: [{durationMs: 4000, error: undefined, path: '/ping', status: 'timeout'}],

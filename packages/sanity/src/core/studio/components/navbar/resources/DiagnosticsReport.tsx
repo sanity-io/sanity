@@ -1,22 +1,41 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {DownloadIcon} from '@sanity/icons/Download'
-import {Badge, type BadgeTone, Box, Card, Heading, Switch} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Card, type CardTone, Heading, Switch} from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
 import {Text, Flex, Grid, type GapProps, type TextProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {
+  type DiagnosticsFinding,
+  type DiagnosticsProbeStatus,
+  type DiagnosticsSkipReason,
+  type StudioConnectionsDiagnostics,
+  type StudioDiagnostics,
+} from '../../../diagnostics/gatherStudioDiagnostics'
+import {getDiagnosticsFindings} from '../../../diagnostics/getDiagnosticsFindings'
 import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
 import {codeValue} from './DiagnosticsReport.css'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
-type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
+type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status'] | DiagnosticsProbeStatus
 
 const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
   error: 'Error',
+  skipped: 'Skipped',
   success: 'Success',
   timeout: 'Timed out',
   unsupported: 'Unsupported',
+}
+
+const SKIP_REASON_LABELS: Record<DiagnosticsSkipReason, string> = {
+  'first-connection-failed': 'Skipped because the first connection did not succeed',
+  'time-limit': 'Skipped to stay within the diagnostics time limit',
+}
+
+const FINDING_TONES: Record<DiagnosticsFinding['severity'], CardTone> = {
+  critical: 'critical',
+  info: 'primary',
+  warning: 'caution',
 }
 
 const BYTE_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
@@ -38,6 +57,8 @@ export function DiagnosticsReport({
 }: DiagnosticsReportProps) {
   const [useUtc, setUseUtc] = useState(true)
   const {browser, network, schema, studio, styles, user} = diagnostics
+  // Reports from older studios have no findings of their own, so derive them
+  const findings = diagnostics.findings ?? getDiagnosticsFindings(diagnostics)
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
   const localStorageResult = browser.localStorage
@@ -108,6 +129,8 @@ export function DiagnosticsReport({
         </Flex>
       </Card>
 
+      {findings.length > 0 ? <FindingsReport findings={findings} /> : null}
+
       <Grid
         gap={3}
         gridTemplateColumns={[
@@ -175,6 +198,8 @@ export function DiagnosticsReport({
 
         <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
 
+        {network.connections ? <ConnectionsReport connections={network.connections} /> : null}
+
         {styles && styles.styledComponents.length > 0 ? (
           <StyledComponentsReport sheets={styles.styledComponents} />
         ) : null}
@@ -230,9 +255,11 @@ export function DiagnosticsReport({
                     <Text size={1} weight="semibold" as="div" trim={true}>
                       <span className={codeValue}>{request.path}</span>
                     </Text>
-                    {request.detail || request.error ? (
+                    {request.detail || request.error || request.skipReason ? (
                       <Text muted size={1} as="div" trim={true}>
-                        {request.detail || request.error}
+                        {request.detail ||
+                          request.error ||
+                          (request.skipReason && SKIP_REASON_LABELS[request.skipReason])}
                       </Text>
                     ) : null}
                   </Flex>
@@ -249,6 +276,73 @@ export function DiagnosticsReport({
         </VStack>
       </VStack>
     </VStack>
+  )
+}
+
+function FindingsReport({findings}: {findings: DiagnosticsFinding[]}) {
+  return (
+    <VStack data-testid="diagnostics-findings" gap={2}>
+      {findings.map((finding) => (
+        <Card
+          border
+          data-testid={`diagnostics-finding-${finding.id}`}
+          key={finding.id}
+          padding={4}
+          radius={2}
+          tone={FINDING_TONES[finding.severity]}
+        >
+          <VStack gap={3}>
+            <Text size={1} weight="semibold" as="div" trim={true}>
+              {finding.title}
+            </Text>
+            <Text size={1} as="div" trim={true}>
+              {finding.detail}
+            </Text>
+          </VStack>
+        </Card>
+      ))}
+    </VStack>
+  )
+}
+
+// Browsers allow about 100 requests in flight per connection, shared by every tab. These numbers
+// show how much of that budget this tab, and the other Studio tabs that answered, are using.
+function ConnectionsReport({connections}: {connections: StudioConnectionsDiagnostics}) {
+  const {currentTab, tabs} = connections
+
+  return (
+    <ReportSection testId="diagnostics-connections" title="Connections">
+      <DetailRow
+        label="Open listeners in this tab"
+        value={currentTab.openStreams.toLocaleString()}
+      />
+      <DetailRow
+        label="Waiting requests in this tab"
+        value={currentTab.pendingRequests.toLocaleString()}
+      />
+      {currentTab.oldestPendingMs === undefined ? null : (
+        <DetailRow
+          label="Longest wait in this tab"
+          value={formatMilliseconds(currentTab.oldestPendingMs)}
+        />
+      )}
+      <DetailRow
+        label="Studio tabs counted"
+        value={tabs?.status === 'unsupported' ? 'Unsupported' : tabs?.totals.tabs.toLocaleString()}
+      />
+      {tabs?.status === 'success' ? (
+        <>
+          <DetailRow
+            label="Open listeners in all tabs"
+            value={tabs.totals.openStreams.toLocaleString()}
+          />
+          <DetailRow
+            label="Waiting requests in all tabs"
+            value={tabs.totals.pendingRequests.toLocaleString()}
+          />
+        </>
+      ) : null}
+    </ReportSection>
   )
 }
 
@@ -391,7 +485,11 @@ function NetworkReport({
         label="Session requests"
         value={requestHistory.sessionSummary.totalRequests.toLocaleString()}
       />
+      <DetailRow label="Ping duration" value={formatMilliseconds(protocol.durationMs)} />
       <DetailRow label="Ping TTFB" value={formatMilliseconds(timing?.requestToFirstByteMs)} />
+      {timing?.stalledMs !== undefined && timing.stalledMs >= 1 ? (
+        <DetailRow label="Ping waited in browser" value={formatMilliseconds(timing.stalledMs)} />
+      ) : null}
       <DetailRow label="Shard" monospace value={shard} />
       <DetailRow label="GeoIP country" monospace value={geoIpCountry ?? undefined} />
       <DetailRow label="Tracking started" value={formatHeaderTime(trackingStartedAt, useUtc)} />
@@ -449,9 +547,9 @@ function ListenReport({
           },
         ]}
       />
-      {result.error ? (
+      {result.error || result.skipReason ? (
         <Text muted size={1} as="div" trim={true}>
-          {result.error}
+          {result.error || (result.skipReason && SKIP_REASON_LABELS[result.skipReason])}
         </Text>
       ) : null}
     </VStack>

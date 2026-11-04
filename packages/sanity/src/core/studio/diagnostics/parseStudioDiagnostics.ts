@@ -38,12 +38,15 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     typeof value.durationMs !== 'number' ||
     typeof value.generatedAt !== 'string' ||
     typeof value.startedAt !== 'string' ||
-    (styles !== undefined && !isStylesDiagnostics(styles))
+    (styles !== undefined && !isStylesDiagnostics(styles)) ||
+    (value.maxDurationMs !== undefined && typeof value.maxDurationMs !== 'number') ||
+    (value.findings !== undefined &&
+      (!Array.isArray(value.findings) || !value.findings.every(isFinding)))
   ) {
     return false
   }
 
-  const {listen, protocol, requestHistory, requests} = network
+  const {connections, listen, protocol, requestHistory, requests, stalled} = network
   if (
     !isRecord(listen) ||
     !isListenDiagnostic(listen.first) ||
@@ -51,7 +54,9 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     !isProtocolDiagnostic(protocol) ||
     !isRequestHistory(requestHistory) ||
     !Array.isArray(requests) ||
-    !requests.every(isRequestDiagnostic)
+    !requests.every(isRequestDiagnostic) ||
+    (connections !== undefined && !isConnections(connections)) ||
+    (stalled !== undefined && typeof stalled !== 'boolean')
   ) {
     return false
   }
@@ -79,7 +84,7 @@ function isListenDiagnostic(value: unknown): boolean {
     isRecord(value) &&
     typeof value.durationMs === 'number' &&
     typeof value.path === 'string' &&
-    isStatus(value.status) &&
+    isProbeStatus(value.status) &&
     typeof value.timedOut === 'boolean'
   )
 }
@@ -99,8 +104,45 @@ function isRequestDiagnostic(value: unknown): boolean {
     isRecord(value) &&
     typeof value.durationMs === 'number' &&
     typeof value.path === 'string' &&
-    isStatus(value.status) &&
+    isProbeStatus(value.status) &&
     typeof value.timedOut === 'boolean'
+  )
+}
+
+function isFinding(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.title === 'string' &&
+    typeof value.detail === 'string' &&
+    (value.severity === 'critical' || value.severity === 'warning' || value.severity === 'info')
+  )
+}
+
+function isConnections(value: unknown): boolean {
+  if (!isRecord(value) || !isRequestActivity(value.currentTab)) return false
+  if (value.tabs === undefined) return true
+
+  const {tabs} = value
+  return (
+    isRecord(tabs) &&
+    (tabs.status === 'success' || tabs.status === 'unsupported') &&
+    Array.isArray(tabs.tabs) &&
+    typeof tabs.waitedMs === 'number' &&
+    isRecord(tabs.totals) &&
+    typeof tabs.totals.openStreams === 'number' &&
+    typeof tabs.totals.pendingRequests === 'number' &&
+    typeof tabs.totals.tabs === 'number'
+  )
+}
+
+function isRequestActivity(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.openStreams === 'number' &&
+    typeof value.pendingRequests === 'number' &&
+    typeof value.totalStarted === 'number' &&
+    Array.isArray(value.longestPending)
   )
 }
 
@@ -162,6 +204,10 @@ function isStylesDiagnostics(value: unknown): boolean {
 
 function isStatus(value: unknown): value is 'success' | 'timeout' | 'error' {
   return value === 'success' || value === 'timeout' || value === 'error'
+}
+
+function isProbeStatus(value: unknown): value is 'success' | 'timeout' | 'error' | 'skipped' {
+  return isStatus(value) || value === 'skipped'
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

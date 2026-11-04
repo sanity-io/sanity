@@ -328,3 +328,88 @@ describe('isUsingLegacyHttp', () => {
     })
   })
 })
+
+function stubTimingEntry(timing: (startTime: number) => Record<string, number>) {
+  // oxlint-disable-next-line typescript/no-extraneous-class
+  const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
+  vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
+  vi.stubGlobal(
+    'PerformanceObserver',
+    class {
+      callback: (list: {getEntries: () => unknown[]}) => void
+      constructor(callback: (list: {getEntries: () => unknown[]}) => void) {
+        this.callback = callback
+      }
+      observe() {
+        setTimeout(() => {
+          const startTime = performance.now()
+          const entry = Object.assign(Object.create(FakePerformanceResourceTiming.prototype), {
+            connectEnd: 0,
+            connectStart: 0,
+            decodedBodySize: 4,
+            domainLookupEnd: 0,
+            domainLookupStart: 0,
+            encodedBodySize: 4,
+            initiatorType: 'fetch',
+            name: 'https://test.api.sanity.io/v2025-02-19/ping?tag=sanity.studio.protocol-check',
+            nextHopProtocol: 'h3',
+            redirectEnd: 0,
+            redirectStart: 0,
+            secureConnectionStart: 0,
+            serverTiming: [],
+            startTime,
+            transferSize: 304,
+            ...timing(startTime),
+          })
+          this.callback({getEntries: () => [entry]})
+        }, 0)
+      }
+      disconnect() {
+        // Nothing to clean up
+      }
+    },
+  )
+}
+
+describe('getApiNetworkDiagnostic stall timing', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const client = {
+    getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+  } as unknown as SanityClient
+
+  it('reports how long the ping waited in the browser before it was sent', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('pong')))
+    stubTimingEntry((startTime) => ({
+      duration: 1840,
+      requestStart: startTime + 1800,
+      responseEnd: startTime + 1840,
+      responseStart: startTime + 1838,
+    }))
+
+    const result = await firstValueFrom(getApiNetworkDiagnostic(client))
+
+    expect(result.resourceTiming).toMatchObject({requestToFirstByteMs: 38, stalledMs: 1800})
+  })
+
+  it('does not count DNS and connection setup as stalling', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('pong')))
+    stubTimingEntry((startTime) => ({
+      connectEnd: startTime + 300,
+      connectStart: startTime + 100,
+      domainLookupEnd: startTime + 100,
+      domainLookupStart: startTime + 20,
+      duration: 340,
+      requestStart: startTime + 300,
+      responseEnd: startTime + 340,
+      responseStart: startTime + 338,
+    }))
+
+    const result = await firstValueFrom(getApiNetworkDiagnostic(client))
+
+    expect(result.resourceTiming?.stalledMs).toBe(20)
+  })
+})

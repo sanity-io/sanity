@@ -28,7 +28,9 @@ import {
   getSchemaDiagnostics,
   getUniqueTargetCount,
 } from '../../../diagnostics/getStudioConfigurationDiagnostics'
+import {studioRequestActivity} from '../../../diagnostics/requestActivity'
 import {studioRequestPerformance} from '../../../diagnostics/requestPerformance'
+import {requestStudioTabsCensus} from '../../../diagnostics/studioTabsCensus'
 import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
 import {useWorkspace} from '../../../workspace'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
@@ -55,7 +57,9 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const diagnosticsOptions = useMemo<StudioDiagnosticsOptions>(
     () => ({
       client,
+      getRequestActivity: studioRequestActivity.getSnapshot,
       getRequestHistory: studioRequestPerformance.getSnapshot,
+      requestTabsCensus: requestStudioTabsCensus,
       schema: getSchemaDiagnostics(workspace.schema),
       studio: {
         basePath: workspace.basePath,

@@ -55,7 +55,8 @@ export interface ListenProbe {
   durationMs: number
   error?: string
   openMs?: number
-  status: 'success' | 'timeout' | 'error'
+  skipReason?: string
+  status: 'success' | 'timeout' | 'error' | 'skipped'
   welcomeMs?: number
 }
 
@@ -65,7 +66,8 @@ export interface RequestProbe {
   error?: string
   path: string
   shard?: string
-  status: 'success' | 'timeout' | 'error'
+  skipReason?: string
+  status: 'success' | 'timeout' | 'error' | 'skipped'
 }
 
 export interface HistoryEntry {

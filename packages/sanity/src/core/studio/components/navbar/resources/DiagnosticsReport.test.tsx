@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {SATURATED_DIAGNOSTICS_FIXTURE} from './__tests__/diagnosticsFixture'
 import {DiagnosticsReport} from './DiagnosticsReport'
 
 const diagnostics: StudioDiagnostics = {
@@ -467,6 +468,63 @@ describe('DiagnosticsReport', () => {
     const schema = within(screen.getByTestId('diagnostics-schema'))
     await userInteraction.click(schema.getByRole('button', {name: 'Download schema'}))
     expect(onDownloadSchema).toHaveBeenCalledTimes(1)
+  })
+
+  it('explains a saturated connection with findings, connection counts and skipped tests', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport diagnostics={SATURATED_DIAGNOSTICS_FIXTURE} onRunAgain={vi.fn()} />
+      </ThemeProvider>,
+    )
+
+    // The fixture carries no findings of its own, so the report derives them
+    const findings = within(screen.getByTestId('diagnostics-findings'))
+    expect(findings.getByText("The browser's connection to Sanity is full")).toBeInTheDocument()
+    expect(findings.getByText('Requests to Sanity are stalling')).toBeInTheDocument()
+    expect(findings.getByText('Some tests were skipped')).toBeInTheDocument()
+
+    const connections = within(screen.getByTestId('diagnostics-connections'))
+    expect(connections.getByText('Open listeners in all tabs')).toBeInTheDocument()
+    expect(connections.getByText('97')).toBeInTheDocument()
+    expect(connections.getByText('Studio tabs counted')).toBeInTheDocument()
+    expect(connections.getByText('14,200 ms')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('Skipped because the first connection did not succeed'),
+    ).toBeInTheDocument()
+    expect(screen.getAllByText('Skipped to stay within the diagnostics time limit')).toHaveLength(2)
+    expect(screen.getAllByText('Skipped').length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('shows the findings stored in a report instead of deriving new ones', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...SATURATED_DIAGNOSTICS_FIXTURE,
+            findings: [
+              {detail: 'Stored detail', id: 'stored', severity: 'warning', title: 'Stored finding'},
+            ],
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const findings = within(screen.getByTestId('diagnostics-findings'))
+    expect(findings.getByText('Stored finding')).toBeInTheDocument()
+    expect(findings.queryByText('Requests to Sanity are stalling')).not.toBeInTheDocument()
+  })
+
+  it('shows no findings or connections for a healthy report from an older studio', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport diagnostics={diagnostics} onRunAgain={vi.fn()} />
+      </ThemeProvider>,
+    )
+
+    expect(screen.queryByTestId('diagnostics-findings')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('diagnostics-connections')).not.toBeInTheDocument()
   })
 })
 

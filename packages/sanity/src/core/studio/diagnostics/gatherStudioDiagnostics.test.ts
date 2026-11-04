@@ -248,9 +248,11 @@ describe('gatherStudioDiagnostics', () => {
       status: 'timeout',
       timedOut: true,
     })
+    // Without a working first connection, the second test is skipped instead of waiting again
     expect(diagnostics.network.listen.secondWhileFirstOpen).toMatchObject({
-      status: 'timeout',
-      timedOut: true,
+      skipReason: 'first-connection-failed',
+      status: 'skipped',
+      timedOut: false,
     })
     expect(diagnostics.network.requests[0]).toMatchObject({
       path: '/ping',
@@ -263,6 +265,102 @@ describe('gatherStudioDiagnostics', () => {
       expect.objectContaining({status: 'success'}),
       expect.objectContaining({status: 'success'}),
     ])
+  })
+
+  it('stops starting tests once the run reaches its time limit', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => undefined)),
+    )
+    const {client} = createClient({emitListenEvents: false, hangRequests: true})
+
+    const diagnostics = await gatherStudioDiagnostics({
+      ...createOptions(client),
+      maxDurationMs: 400,
+      requestTimeout: 10_000,
+    })
+
+    expect(diagnostics.durationMs).toBeLessThan(2_000)
+    expect(diagnostics.maxDurationMs).toBe(400)
+    expect(diagnostics.network.listen.first).toMatchObject({status: 'timeout'})
+    expect(diagnostics.network.requests).toEqual(
+      diagnostics.network.requests.map((request) =>
+        expect.objectContaining({path: request.path, skipReason: 'time-limit', status: 'skipped'}),
+      ),
+    )
+    expect(diagnostics.findings).toContainEqual(expect.objectContaining({id: 'time-limit'}))
+  })
+
+  it('shortens timeouts and runs request tests side by side when the ping stalls', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(
+      of({durationMs: 2500, protocol: 'unknown', status: 'timeout', timedOut: true}),
+    )
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => undefined)),
+    )
+    const {client} = createClient({emitListenEvents: false, hangRequests: true})
+
+    const diagnostics = await gatherStudioDiagnostics({
+      ...createOptions(client),
+      requestTimeout: 200,
+    })
+
+    expect(diagnostics.network.stalled).toBe(true)
+    expect(diagnostics.network.requests.map((request) => request.status)).toEqual([
+      'timeout',
+      'timeout',
+      'timeout',
+      'timeout',
+      'timeout',
+    ])
+    // One listen timeout plus one shared request timeout, instead of six timeouts in a row
+    expect(diagnostics.durationMs).toBeLessThan(900)
+    expect(diagnostics.findings).toContainEqual(expect.objectContaining({id: 'ping-timeout'}))
+  })
+
+  it('reports open and waiting requests across studio tabs', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const {client} = createClient()
+    const currentTab = {
+      longestPending: [],
+      openStreams: 6,
+      pendingRequests: 0,
+      totalStarted: 20,
+    }
+    const requestTabsCensus = vi.fn(async () => ({
+      status: 'success' as const,
+      tabs: [],
+      totals: {oldestPendingMs: 12_000, openStreams: 97, pendingRequests: 9, tabs: 3},
+      waitedMs: 1000,
+    }))
+
+    const diagnostics = await gatherStudioDiagnostics({
+      ...createOptions(client),
+      getRequestActivity: () => currentTab,
+      requestTabsCensus,
+    })
+
+    expect(requestTabsCensus).toHaveBeenCalledWith({
+      currentTab: expect.objectContaining({
+        requests: {
+          oldestPendingMs: undefined,
+          openStreams: 6,
+          pendingRequests: 0,
+          totalStarted: 20,
+        },
+        studioVersion: '4.0.0',
+      }),
+      timeoutMs: 1000,
+    })
+    expect(diagnostics.network.connections).toMatchObject({
+      currentTab,
+      tabs: {totals: {openStreams: 97, pendingRequests: 9, tabs: 3}},
+    })
+    expect(diagnostics.findings).toContainEqual(
+      expect.objectContaining({id: 'request-limit-reached', severity: 'critical'}),
+    )
   })
 
   it('keeps an unresolved GeoIP country as null', async () => {
@@ -342,6 +440,10 @@ describe('gatherStudioDiagnostics', () => {
   })
 })
 
+function hang(): Promise<never> {
+  return new Promise(() => undefined)
+}
+
 function createOptions(client: SanityClient): StudioDiagnosticsOptions {
   return {
     client,
@@ -388,6 +490,8 @@ function createClient(
   options: {
     emitListenEvents?: boolean
     geoIpCountry?: string | null
+    /** Every request probe hangs, as when requests are stuck in the browser */
+    hangRequests?: boolean
     requireCredentiallessPublicRequests?: boolean
     resolvePing?: boolean
   } = {},
@@ -395,6 +499,7 @@ function createClient(
   const {
     emitListenEvents = true,
     geoIpCountry = 'US',
+    hangRequests = false,
     requireCredentiallessPublicRequests = false,
     resolvePing = true,
   } = options
@@ -402,6 +507,7 @@ function createClient(
   let maximumActiveListeners = 0
 
   const resolvePublicRequest = ({url}: {url: string}) => {
+    if (hangRequests) return hang()
     if (url === '/geoip/country') return Promise.resolve({isoCode: geoIpCountry})
     return resolvePing ? Promise.resolve('pong') : new Promise(() => undefined)
   }
@@ -417,9 +523,11 @@ function createClient(
       projectId: 'project-id',
       requestTagPrefix: 'sanity.studio',
     }),
-    fetch: vi.fn(async (query: string) => (query === '1' ? 1 : 'document-id')),
+    fetch: vi.fn((query: string) =>
+      hangRequests ? hang() : Promise.resolve(query === '1' ? 1 : 'document-id'),
+    ),
     getDataUrl: vi.fn((operation: string) => `/data/${operation}/production`),
-    getDocument: vi.fn(async () => undefined),
+    getDocument: vi.fn(() => (hangRequests ? hang() : Promise.resolve(undefined))),
     getUrl: vi.fn((path: string) => `https://api.sanity.test/v2025-02-19${path}`),
     listen: vi.fn(
       () =>
