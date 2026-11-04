@@ -104,7 +104,6 @@ describe('useValidationStatus', () => {
 
   it.each([
     {name: 'no options', options: undefined, listener: 'document'},
-    {name: 'the deprecated boolean', options: false, listener: 'document'},
     {name: 'the document listener', options: {listener: 'document'}, listener: 'document'},
     {name: 'the global listener', options: {listener: 'global'}, listener: 'global'},
   ] as const)('validates through the $listener listener given $name', ({options, listener}) => {
@@ -119,6 +118,22 @@ describe('useValidationStatus', () => {
       'author',
       false,
       {listener},
+    )
+  })
+
+  it('still accepts the deprecated boolean, and validates through the document listener', () => {
+    function Probe() {
+      // oxlint-disable-next-line no-deprecated -- the deprecated signature is what this test covers
+      useValidationStatus('doc-1', 'author', true)
+      return null
+    }
+    render(<Probe />)
+
+    expect(mockDocumentStore.pair.validation).toHaveBeenCalledExactlyOnceWith(
+      'doc-1',
+      'author',
+      false,
+      {listener: 'document'},
     )
   })
 })
