@@ -863,7 +863,7 @@ describe('validation', () => {
       }
     })
 
-    it('stops retrying a global document load after three failures and errors the validation', async () => {
+    it('reports a document the global listener cannot load, then validates it once the load succeeds', async () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
       try {
         const client = getMockClient()
@@ -872,21 +872,38 @@ describe('validation', () => {
         const observeDocument = () =>
           defer(() => {
             attempts += 1
-            return throwError(() => new Error('503 Service Unavailable'))
+            return attempts < 5
+              ? throwError(() => new Error('503 Service Unavailable'))
+              : of({...movie, _id: `drafts.${documentId}`, _rev: 'globalRev1', title: 5})
           })
 
-        const {subscription, closeSubscription} = createSubscription(client, () => EMPTY, {
+        const {closeSubscription, waitFor} = createSubscription(client, () => EMPTY, {
           documentId,
           listener: 'global',
           observeDocument,
         })
+
+        const failed = waitFor((status) => Boolean(status.error))
         // one attempt plus three retries, delayed 1s + 2s + 3s
         await vi.advanceTimersByTimeAsync(6_000)
-        closeSubscription()
-
-        await expect(subscription).rejects.toThrow('503 Service Unavailable')
+        expect(await failed).toEqual({
+          isValidating: true,
+          validation: [],
+          error: {message: '503 Service Unavailable'},
+        })
         expect(attempts).toBe(4)
         expect(mockEditState).not.toHaveBeenCalled()
+
+        const recovered = waitFor((status) => !status.isValidating && !status.error)
+        await vi.advanceTimersByTimeAsync(30_000)
+        closeSubscription()
+
+        expect(await recovered).toMatchObject({
+          isValidating: false,
+          validation: [{item: {message: 'Expected type "String", got "Number"'}}],
+          revision: 'globalRev1',
+        })
+        expect(attempts).toBe(5)
       } finally {
         vi.useRealTimers()
       }

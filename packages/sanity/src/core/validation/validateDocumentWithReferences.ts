@@ -50,6 +50,12 @@ export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
   revision?: string
+  /**
+   * Set when the document could not be loaded, so it was not validated. This is not a validation
+   * result for the document. `isValidating` stays true, so an empty `validation` list is not a
+   * finished, valid result.
+   */
+  error?: {message: string}
 }
 
 const INITIAL_VALIDATION_STATUS: ValidationStatus = {

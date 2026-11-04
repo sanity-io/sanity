@@ -86,7 +86,9 @@ function ValidationRunner({id, schemaName, updateValidation, listener}: Validati
   const validationStatus = useValidationStatus(draftId, schemaName, {listener})
 
   useEffect(() => {
-    if (!validationStatus.isValidating) {
+    // A load error keeps `isValidating` true so it is not a finished, valid result, and the row
+    // still needs to show it.
+    if (!validationStatus.isValidating || validationStatus.error) {
       updateValidation(validationStatus)
     }
   }, [updateValidation, validationStatus])

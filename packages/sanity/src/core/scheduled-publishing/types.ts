@@ -32,4 +32,8 @@ export interface ScheduleFormData {
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
+  /**
+   * Set when the document could not be loaded, so it was not validated. `isValidating` stays true.
+   */
+  error?: {message: string}
 }
