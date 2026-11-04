@@ -1,6 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
-import {Card, type CardProps, Stack, Text} from '@sanity/ui'
+import {Card, type CardProps, Stack} from '@sanity/ui'
 import {type ComponentType} from 'react'
+import {Text} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -46,7 +47,7 @@ function ImageUploadTargetInput(props: ObjectInputProps) {
       radius={2}
       padding={5}
     >
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         Drag an image here
       </Text>
     </ImageUploadTarget>

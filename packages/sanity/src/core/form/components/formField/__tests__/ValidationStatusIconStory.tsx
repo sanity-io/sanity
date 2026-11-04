@@ -18,7 +18,7 @@ export function ValidationStatusIconStory() {
         <VStack gap={4}>
           {STATUSES.map((status) => (
             <Flex alignItems="center" gap={3} key={status}>
-              <StatusIcon status={status} />
+              <StatusIcon status={status} size={0} />
               <Text size={1} as="div" trim={true}>
                 {status}
               </Text>
