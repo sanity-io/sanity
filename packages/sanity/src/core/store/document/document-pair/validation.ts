@@ -121,8 +121,10 @@ const validationStreams = memoize(
         // the run reports that document's revision as it starts. Until then the document counts
         // as validating, or a changed document (a remote change, or any change the global
         // listener reports) would read for that tick as the previous result under its new
-        // revision, which a consumer comparing revisions takes as final. `documentToValidate$` is
-        // subscribed to before `documentRevision$`, so it sees a new document first.
+        // revision, which a consumer comparing revisions takes as final. A document without a
+        // `_type` (deleted, or not created yet) is never pending: its run reports no revision,
+        // so it would read as validating for good. `documentToValidate$` is subscribed to before
+        // `documentRevision$`, so it sees a new document first.
         const isPending =
           Boolean(documentToValidate?._type) &&
           validationStatus.revision !== documentToValidate?._rev

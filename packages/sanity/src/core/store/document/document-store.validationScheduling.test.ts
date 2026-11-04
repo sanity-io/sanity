@@ -122,7 +122,11 @@ describe('documentStore.pair.validation immediate scheduling', () => {
 })
 
 describe('documentStore.pair.validation listener', () => {
-  it('follows the document through the preview store with the global listener, and checks out the pair otherwise', () => {
+  /**
+   * A document store, the preview store's `unstable_observeDocument` it reads global listener
+   * documents from, and a draft of its own to validate.
+   */
+  function setupListener() {
     const draftId = `drafts.doc-${testId}`
     testId += 1
     const client = createMockSanityClientAsClient()
@@ -136,13 +140,31 @@ describe('documentStore.pair.validation listener', () => {
       schema: createSchema({name: 'test', types: []}),
       i18n: getFallbackLocaleSource(),
     })
+    return {draftId, store, observeDocument}
+  }
+
+  it('follows the document through the preview store with the global listener', () => {
+    const {draftId, store, observeDocument} = setupListener()
 
     store.pair.validation(draftId, 'movie', false, {listener: 'global'})
+
     expect(observeDocument).toHaveBeenCalledExactlyOnceWith(draftId)
     expect(editState).not.toHaveBeenCalled()
+  })
 
-    store.pair.validation(draftId, 'movie', false)
-    expect(editState).toHaveBeenCalledOnce()
-    expect(observeDocument).toHaveBeenCalledOnce()
+  it.each([
+    {name: 'the document listener', options: {listener: 'document' as const}},
+    {name: 'no listener option', options: undefined},
+  ])('checks out the document pair with $name', ({options}) => {
+    const {draftId, store, observeDocument} = setupListener()
+
+    store.pair.validation(draftId, 'movie', false, options)
+
+    expect(editState).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      expect.objectContaining({draftId}),
+      'movie',
+    )
+    expect(observeDocument).not.toHaveBeenCalled()
   })
 })

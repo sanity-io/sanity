@@ -21,7 +21,6 @@ import {
   type DraftsModelDocumentAvailability,
 } from '../../../preview/types'
 import {createSchema} from '../../../schema/createSchema'
-import {getPublishedId} from '../../../util/draftUtils'
 import {type ValidationStatus} from '../../../validation'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
@@ -133,13 +132,13 @@ function createSubscription(
   }
 }
 
-// The edit state the document pair reports for a draft
-function draftEditState(draft: SanityDocument): EditStateFor {
+// The edit state the document pair reports for the draft of a movie, deleted when `undefined`
+function draftEditState(publishedId: string, draft: SanityDocument | undefined): EditStateFor {
   return {
-    id: getPublishedId(draft._id),
-    type: draft._type,
+    id: publishedId,
+    type: 'movie',
     transactionSyncLock: null,
-    draft,
+    draft: draft ?? null,
     published: null,
     version: null,
     liveEdit: false,
@@ -833,7 +832,9 @@ describe('validation', () => {
         const documentId = `movie-${Math.random().toString(36).slice(2)}`
         const draftId = `drafts.${documentId}`
         const document$ = new Subject<SanityDocument>()
-        mockEditState.mockImplementation(() => document$.pipe(map(draftEditState)))
+        mockEditState.mockImplementation(() =>
+          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        )
 
         const {subscription, closeSubscription, doneValidating, waitFor} = createSubscription(
           client,
@@ -860,6 +861,35 @@ describe('validation', () => {
           validation: [],
           revision: 'rev2',
         })
+        document$.complete()
+      },
+    )
+
+    it.each(['document', 'global'] as const)(
+      'reads a deleted document as done validating (%s listener)',
+      async (listener) => {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        const document$ = new Subject<SanityDocument | undefined>()
+        mockEditState.mockImplementation(() =>
+          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        )
+
+        const {closeSubscription, doneValidating, waitFor} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener, observeDocument: () => document$.asObservable()},
+        )
+
+        document$.next({...movie, _id: `drafts.${documentId}`, _rev: 'rev1', title: 5})
+        await doneValidating()
+
+        // the run for a document without a `_type` reports no revision
+        document$.next(undefined)
+        const status = await waitFor((next) => next.validation.length === 0)
+        closeSubscription()
+
+        expect(status).toEqual({isValidating: false, validation: [], revision: undefined})
         document$.complete()
       },
     )
