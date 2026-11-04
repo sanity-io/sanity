@@ -664,6 +664,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
+  /** Last line of the document versions popover, counting the versions it does not list (singular) */
+  'document-group.status.more_one': 'and {{count}} more version',
+  /** Last line of the document versions popover, counting the versions it does not list (plural) */
+  'document-group.status.more_other': 'and {{count}} more versions',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
@@ -1636,6 +1640,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 
+  /** Compact relative time in the past, in days, eg "3 days ago" (singular) */
+  'relative-time.compact.days-ago_one': '{{count}} day ago',
+  /** Compact relative time in the past, in days, eg "3 days ago" (plural) */
+  'relative-time.compact.days-ago_other': '{{count}} days ago',
+  /** Compact relative time in the past, in hours, eg "3 hr ago" */
+  'relative-time.compact.hours-ago': '{{count}} hr ago',
+  /** Compact relative time in the past, in minutes, eg "5 min ago" */
+  'relative-time.compact.minutes-ago': '{{count}} min ago',
+  /** Compact relative time in the past, in months, eg "2 mo ago" */
+  'relative-time.compact.months-ago': '{{count}} mo ago',
+  /** Compact relative time in the past, in weeks, eg "2 wk ago" */
+  'relative-time.compact.weeks-ago': '{{count}} wk ago',
+  /** Compact relative time in the past, in years, eg "1 yr ago" */
+  'relative-time.compact.years-ago': '{{count}} yr ago',
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
 
