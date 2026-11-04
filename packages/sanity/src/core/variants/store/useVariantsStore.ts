@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
+import {useDocumentPreviewStore} from '../../store/datastores'
 import {useResourceCache} from '../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from './constants'
@@ -12,6 +13,7 @@ export function useVariantsStore(): VariantStore {
   const variantsEnabled = Boolean(workspace.beta?.variants?.enabled)
   const resourceCache = useResourceCache()
   const studioClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
+  const previewStore = useDocumentPreviewStore()
 
   return useMemo(() => {
     const variantStore =
@@ -21,6 +23,7 @@ export function useVariantsStore(): VariantStore {
       }) ||
       createVariantsStore({
         client: studioClient,
+        previewStore,
         enabled: variantsEnabled,
       })
 
@@ -31,5 +34,5 @@ export function useVariantsStore(): VariantStore {
     })
 
     return variantStore
-  }, [variantsEnabled, resourceCache, workspace, studioClient])
+  }, [variantsEnabled, resourceCache, workspace, studioClient, previewStore])
 }

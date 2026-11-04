@@ -97,15 +97,19 @@ const PREVIEWS: Record<string, {title: string; subtitle?: string}> = {
 /**
  * The mock studio's client answers every query with `null`, which the real preview store cannot
  * turn into documents, so the document set, the documents and their previews are served from the
- * fixtures above instead. Only the methods `useBundleDocuments` and the preview column call.
+ * fixtures above instead. Only the members `useBundleDocuments`, the preview column and the
+ * releases store use.
  */
 const STUB_PREVIEW_STORE: Pick<
   DocumentPreviewStore,
   | 'observeForPreview'
+  | 'unstable_invalidationChannel'
   | 'unstable_observeDocument'
   | 'unstable_observeDocumentIdSet'
   | 'unstable_observeDocumentPairAvailability'
 > = {
+  // Connects once, so the releases store fetches its (empty) list once.
+  unstable_invalidationChannel: of({type: 'connected' as const}),
   observeForPreview: (value, type) =>
     of({type, snapshot: ('_id' in value && PREVIEWS[value._id]) || null}),
   unstable_observeDocument: (id) => of(DOCUMENTS_BY_ID.get(id)),
