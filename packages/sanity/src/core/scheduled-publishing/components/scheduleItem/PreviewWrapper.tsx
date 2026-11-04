@@ -18,7 +18,10 @@ import {
 import {type Schedule} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validationUtils'
-import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
+import {
+  type ScheduleValidationListener,
+  ValidateScheduleDoc,
+} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import {statusDotPlaceholder} from './PreviewWrapper.css'
@@ -35,6 +38,7 @@ interface Props<TLink extends ElementType | undefined = undefined> {
   schedule: Schedule
   schemaType?: SchemaType
   useElementQueries?: boolean
+  validationListener: ScheduleValidationListener
 }
 
 function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
@@ -48,6 +52,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
     schedule,
     schemaType,
     useElementQueries,
+    validationListener,
   } = props
   const modePromise = use(ScheduledPublishingModePromiseContext)
   const mode = modePromise ? use(modePromise) : null
@@ -181,7 +186,11 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
           {/* Validation status (only displayed on upcoming schedules) */}
           {schedule.state === 'scheduled' && (
             <Box>
-              <ValidateScheduleDoc schedule={schedule} updateValidation={setValidationStatus} />
+              <ValidateScheduleDoc
+                schedule={schedule}
+                updateValidation={setValidationStatus}
+                listener={validationListener}
+              />
               <ValidationInfo
                 markers={validation}
                 type={schemaType}

@@ -3,12 +3,14 @@ import {type SanityDocument} from '@sanity/types'
 import {
   concat,
   type ConnectableObservable,
+  defer,
   EMPTY,
   firstValueFrom,
   lastValueFrom,
   type Observable,
   of,
   Subject,
+  throwError,
   timer,
 } from 'rxjs'
 import {buffer, filter, map, publish, takeWhile} from 'rxjs/operators'
@@ -823,6 +825,42 @@ describe('validation', () => {
       expect(observeDocument).toHaveBeenCalledWith(`drafts.${documentId}`)
       expect(mockEditState).not.toHaveBeenCalled()
       document$.complete()
+    })
+
+    it('retries a failed `observeDocument` instead of erroring the validation', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      try {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        let attempts = 0
+        const observeDocument = () =>
+          defer(() => {
+            attempts += 1
+            return attempts === 1
+              ? throwError(() => new Error('503 Service Unavailable'))
+              : of({...movie, _id: `drafts.${documentId}`, _rev: 'globalRev1', title: 5})
+          })
+
+        const {subscription, closeSubscription, doneValidating} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener: 'global', observeDocument},
+        )
+        const done = doneValidating()
+        await vi.advanceTimersByTimeAsync(1000)
+        const status = await done
+        closeSubscription()
+
+        expect(attempts).toBe(2)
+        expect(status).toMatchObject({
+          isValidating: false,
+          validation: [{item: {message: 'Expected type "String", got "Number"'}}],
+          revision: 'globalRev1',
+        })
+        await expect(subscription).resolves.toBeDefined()
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it.each(['document', 'global'] as const)(

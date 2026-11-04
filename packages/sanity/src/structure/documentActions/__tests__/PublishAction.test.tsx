@@ -41,7 +41,7 @@ const mockUseDocumentPairPermissions = useDocumentPairPermissions as Mock<
 const mockUseEditState = useEditState as Mock<typeof useEditState>
 const mockUseSyncState = useSyncState as Mock<typeof useSyncState>
 // oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
-const mockUseValidationStatus = useValidationStatus as unknown as Mock<typeof useValidationStatus>
+const mockUseValidationStatus = vi.mocked(useValidationStatus)
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 
 const ID = 'author-1'
