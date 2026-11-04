@@ -14,8 +14,7 @@ const CHANNEL_NAME = 'sanity-studio-diagnostics'
 const CENSUS_REQUEST = 'sanity.studio.diagnostics.census-request'
 const CENSUS_RESPONSE = 'sanity.studio.diagnostics.census-response'
 
-/** @internal */
-export const DEFAULT_TABS_CENSUS_TIMEOUT = 1000
+const DEFAULT_TABS_CENSUS_TIMEOUT = 1000
 
 /** @internal */
 export interface StudioTabActivity {
