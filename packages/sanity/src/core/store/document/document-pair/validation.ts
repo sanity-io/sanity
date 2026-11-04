@@ -74,7 +74,11 @@ const validationStreams = memoize(
               return published
             }),
           )
-    const document$ = target$.pipe(throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}))
+    // shared, so the document to validate and the revision below come from the same emission
+    const document$ = target$.pipe(
+      throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+      shareLatestWithRefCount(),
+    )
 
     const documentToValidate$ = document$.pipe(
       distinctUntilChanged((prev, next) => {
@@ -108,11 +112,25 @@ const validationStreams = memoize(
 
     const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
     const status$ = combineLatest([
-      documentRevision$,
       validateDocumentWithReferences(ctx, documentToValidate$, scheduling),
+      documentToValidate$,
+      documentRevision$,
     ]).pipe(
-      map(([revision, validationStatus]) => {
-        return {...validationStatus, revision}
+      map(([validationStatus, documentToValidate, revision]) => {
+        // `exhaustMapWithTrailing` starts a run a tick after the document that triggers it, and
+        // the run reports that document's revision as it starts. Until then the document counts
+        // as validating, or a changed document (a remote change, or any change the global
+        // listener reports) would read for that tick as the previous result under its new
+        // revision, which a consumer comparing revisions takes as final. `documentToValidate$` is
+        // subscribed to before `documentRevision$`, so it sees a new document first.
+        const isPending =
+          Boolean(documentToValidate?._type) &&
+          validationStatus.revision !== documentToValidate?._rev
+        return {
+          ...validationStatus,
+          isValidating: validationStatus.isValidating || isPending,
+          revision,
+        }
       }),
     )
     // shared: the first subscriber switches to `immediate`, the last one to leave switches back
