@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
 import {
   concat,
   type ConnectableObservable,
@@ -72,10 +73,22 @@ const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
 function createSubscription(
   client: SanityClient,
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
-  options: {typeName?: string; currentUser?: {id: string} | null; documentId?: string} = {},
+  options: {
+    typeName?: string
+    currentUser?: {id: string} | null
+    documentId?: string
+    listener?: 'document' | 'global'
+    observeDocument?: (id: string) => Observable<SanityDocument | undefined>
+  } = {},
 ) {
   const getClient = () => client
-  const {typeName = 'movie', currentUser, documentId = 'example-id'} = options
+  const {
+    typeName = 'movie',
+    currentUser,
+    documentId = 'example-id',
+    listener,
+    observeDocument = () => EMPTY,
+  } = options
 
   const stream = validation(
     {
@@ -83,6 +96,7 @@ function createSubscription(
       getClient,
       schema,
       observeDocumentPairAvailability,
+      observeDocument,
       i18n: getFallbackLocaleSource(),
       // @ts-expect-error -- pre-existing, fix later
       currentUser,
@@ -90,6 +104,9 @@ function createSubscription(
     {publishedId: documentId, draftId: `drafts.${documentId}`},
     typeName,
     'draft',
+    undefined,
+    undefined,
+    listener,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
@@ -126,6 +143,7 @@ function createVersionSubscription(
       getClient,
       schema,
       observeDocumentPairAvailability,
+      observeDocument: () => EMPTY,
       i18n: getFallbackLocaleSource(),
     },
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
@@ -374,6 +392,7 @@ describe('validation', () => {
           schema,
           getClient: () => client,
           observeDocumentPairAvailability: vi.fn(() => EMPTY),
+          observeDocument: () => EMPTY,
           i18n: getFallbackLocaleSource(),
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -663,6 +682,7 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
       }
 
@@ -696,6 +716,7 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
         currentUser: {id: 'user-c'},
       }
@@ -720,6 +741,7 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
       }
 
@@ -738,6 +760,84 @@ describe('validation', () => {
       )
 
       expect(observableWithUser).not.toBe(observableWithoutUser)
+    })
+  })
+
+  describe('global listener', () => {
+    const movie = {
+      _createdAt: '2021-09-07T16:23:52.256Z',
+      _type: 'movie',
+      _updatedAt: '2021-09-07T16:23:52.256Z',
+    }
+
+    it('validates the document `observeDocument` reports, without checking out the document pair', async () => {
+      const client = getMockClient()
+      const documentId = `movie-${Math.random().toString(36).slice(2)}`
+      const document$ = new Subject<SanityDocument>()
+      const observeDocument = vi.fn((_id: string) => document$.asObservable())
+
+      const {subscription, closeSubscription, doneValidating} = createSubscription(
+        client,
+        () => EMPTY,
+        {documentId, listener: 'global', observeDocument},
+      )
+
+      document$.next({...movie, _id: `drafts.${documentId}`, _rev: 'globalRev1', title: 5})
+      await doneValidating()
+      closeSubscription()
+
+      await expect(subscription).resolves.toMatchObject([
+        {isValidating: true, validation: [], revision: 'globalRev1'},
+        {
+          isValidating: false,
+          validation: [
+            {
+              item: {message: 'Expected type "String", got "Number"'},
+              level: 'error',
+              path: ['title'],
+            },
+          ],
+          revision: 'globalRev1',
+        },
+      ])
+      expect(observeDocument).toHaveBeenCalledWith(`drafts.${documentId}`)
+      expect(mockEditState).not.toHaveBeenCalled()
+      document$.complete()
+    })
+
+    it('keeps the document pair and the global listener in separate cache entries', () => {
+      const client = getMockClient()
+      mockEditState.mockImplementation(() => EMPTY)
+      const publishedId = `movie-${Math.random().toString(36).slice(2)}`
+      const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+      const ctx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
+        i18n: getFallbackLocaleSource(),
+        currentUser: null,
+      }
+
+      const pairValidation = validation(ctx, idPair, 'movie', 'draft')
+      const globalValidation = validation(
+        ctx,
+        idPair,
+        'movie',
+        'draft',
+        undefined,
+        undefined,
+        'global',
+      )
+
+      expect(globalValidation).not.toBe(pairValidation)
+      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'document')).toBe(
+        pairValidation,
+      )
+      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'global')).toBe(
+        globalValidation,
+      )
     })
   })
 })

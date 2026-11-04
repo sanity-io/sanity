@@ -67,7 +67,9 @@ function ValidationRunner({id, schemaName, updateValidation}: ValidationRunnerPr
   // No `getTargetScopeId(useTargetDocumentState())` here: scheduled publishing deliberately validates the
   // explicit draft of the scheduled document, independent of the selected perspective.
   // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
-  const validationStatus = useValidationStatus(draftId, schemaName)
+  // Every schedule row validates its document and none of them edits it, so follow the shared
+  // global listener rather than opening a listener per row.
+  const validationStatus = useValidationStatus(draftId, schemaName, {listener: 'global'})
 
   useEffect(() => {
     if (!validationStatus.isValidating) {

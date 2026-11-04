@@ -8,6 +8,7 @@ import {createDocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {createSchema} from '../../schema/createSchema'
 import {validateDocumentWithReferences} from '../../validation'
 import {createHistoryStore} from '../history/createHistoryStore'
+import {editState} from './document-pair/editState'
 import {createDocumentStore} from './document-store'
 
 vi.mock('./document-pair/editState', () => ({editState: vi.fn(() => NEVER)}))
@@ -117,5 +118,31 @@ describe('documentStore.pair.validation immediate scheduling', () => {
 
     secondSubscription.unsubscribe()
     expect(second.scheduling.getValue()).toBe('idle')
+  })
+})
+
+describe('documentStore.pair.validation listener', () => {
+  it('follows the document through the preview store with the global listener, and checks out the pair otherwise', () => {
+    const draftId = `drafts.doc-${testId}`
+    testId += 1
+    const client = createMockSanityClientAsClient()
+    const documentPreviewStore = createDocumentPreviewStore({client})
+    const observeDocument = vi.spyOn(documentPreviewStore, 'unstable_observeDocument')
+    const store = createDocumentStore({
+      getClient: () => client,
+      documentPreviewStore,
+      historyStore: createHistoryStore({client}),
+      initialValueTemplates: [],
+      schema: createSchema({name: 'test', types: []}),
+      i18n: getFallbackLocaleSource(),
+    })
+
+    store.pair.validation(draftId, 'movie', false, {listener: 'global'})
+    expect(observeDocument).toHaveBeenCalledExactlyOnceWith(draftId)
+    expect(editState).not.toHaveBeenCalled()
+
+    store.pair.validation(draftId, 'movie', false)
+    expect(editState).toHaveBeenCalledOnce()
+    expect(observeDocument).toHaveBeenCalledOnce()
   })
 })
