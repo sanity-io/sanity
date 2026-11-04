@@ -6,17 +6,6 @@ import {type ValidationStatus} from '../validation'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
-/**
- * @internal
- * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
- * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
- */
-export function useValidationStatus(
-  validationTargetId: string,
-  docTypeName: string,
-  requirePublishedReferences: boolean,
-): ValidationStatus
-
 /** @internal */
 export function useValidationStatus(
   validationTargetId: string,
@@ -30,6 +19,17 @@ export function useValidationStatus(
      */
     listener?: 'document' | 'global'
   },
+): ValidationStatus
+
+/**
+ * @internal
+ * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
+ * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
+ */
+export function useValidationStatus(
+  validationTargetId: string,
+  docTypeName: string,
+  requirePublishedReferences: boolean,
 ): ValidationStatus
 
 /** @internal */
