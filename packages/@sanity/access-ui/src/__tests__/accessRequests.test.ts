@@ -138,7 +138,7 @@ describe('fetchAccessRequestStatus', () => {
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({url: '/access/project/project-a/requests/state'}),
     )
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2026-10-24'})
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
   })
 
   it('returns the saml-required verdict with its SSO login URL', async () => {

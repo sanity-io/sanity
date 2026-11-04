@@ -15,7 +15,6 @@ import {
 export const MAX_ACCESS_REQUEST_NOTE_LENGTH = 150
 
 const ACCESS_API_VERSION = '2024-07-01'
-const ACCESS_REQUEST_STATE_API_VERSION = '2026-10-24'
 
 /**
  * Structured 403 code thrown by the Access API when the target organization
@@ -81,13 +80,11 @@ export async function fetchAccessRequestStatus(options: {
 }): Promise<AccessRequestEligibilityState> {
   const {client, resourceType, resourceId, origin} = options
   try {
-    const status = await client
-      .withConfig({apiVersion: ACCESS_REQUEST_STATE_API_VERSION})
-      .request<unknown>({
-        url: `/access/${resourceType}/${resourceId}/requests/state`,
-        tag: 'access-ui.request-state',
-        query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
-      })
+    const status = await withAccessApiVersion(client).request<unknown>({
+      url: `/access/${resourceType}/${resourceId}/requests/state`,
+      tag: 'access-ui.request-state',
+      query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
+    })
     return isAccessRequestEligibilityState(status) ? status : {state: 'temporarily-unavailable'}
   } catch {
     return {state: 'temporarily-unavailable'}
