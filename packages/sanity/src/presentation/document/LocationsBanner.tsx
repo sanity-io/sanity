@@ -74,7 +74,7 @@ export function LocationsBanner(props: {
           <Flex alignItems="flex-start" gap={3} padding={3}>
             {tone && ToneIcon && (
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Icon size={1} icon={ToneIcon} tone={tone} style={{margin: '-0.375rem'}} />
+                <Icon size={1} muted icon={ToneIcon} tone={tone} style={{margin: '-0.375rem'}} />
               </Box>
             )}
             <Box flexBasis="0%" flexGrow={1}>

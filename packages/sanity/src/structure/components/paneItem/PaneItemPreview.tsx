@@ -111,6 +111,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       layout={layout}
       status={status}
       tooltip={tooltip}
+      tooltipPlacement="beside"
     />
   )
 }

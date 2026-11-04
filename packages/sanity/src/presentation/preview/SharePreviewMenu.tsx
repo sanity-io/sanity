@@ -299,6 +299,8 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                           initial={{opacity: 0}}
                           animate={{opacity: 1}}
                           exit={{opacity: 0}}
+                          trim
+                          as="div"
                         >
                           {t('share-preview-menu.qr-code.placeholder')}
                         </MotionText>

@@ -92,7 +92,11 @@ export function MenuItem<E extends ElementType = 'button'>({
             <Icon
               size={FONT_SIZE}
               icon={IconComponent as IconProps['icon']}
-              style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
+              style={{
+                marginInline: '-0.375rem',
+                marginBlock: '-0.5rem',
+                color: 'var(--card-icon-color)',
+              }}
             />
           </Box>
         )}
