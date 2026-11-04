@@ -7,11 +7,11 @@ import {StarIcon} from '@sanity/icons/Star'
 import {ThListIcon} from '@sanity/icons/ThList'
 import {Schema} from '@sanity/schema'
 import {type SchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {InsertMenu, type InsertMenuProps} from '../InsertMenu'
 
@@ -82,7 +82,7 @@ export const Views: Story = {
     <Card padding={4}>
       <Flex alignItems="flex-start" gap={5}>
         <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             list
           </Text>
           <Card radius={2} shadow={2} style={MENU_STYLE}>
@@ -90,7 +90,7 @@ export const Views: Story = {
           </Card>
         </Stack>
         <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             list with search and groups
           </Text>
           <Card radius={2} shadow={2} style={MENU_STYLE}>
@@ -98,7 +98,7 @@ export const Views: Story = {
           </Card>
         </Stack>
         <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             grid with search and groups
           </Text>
           <Card radius={2} shadow={2} style={MENU_STYLE}>

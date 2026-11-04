@@ -48,7 +48,7 @@ function ReleaseMenuItem(props: {
   return (
     <MenuItem
       data-testid={`document-release-${getReleaseIdFromReleaseDocumentId(release._id)}`}
-      icon={<ReleaseAvatar padding={2} release={release} />}
+      icon={<ReleaseAvatar padding={0} release={release} />}
       onClick={handleClick}
       pressed={isSelected}
       selected={isSelected}
