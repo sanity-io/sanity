@@ -17,7 +17,8 @@ import {useDocumentStore} from '../store/datastores'
  * `useValidationStatus`: every `useValidationStatus` of that document gets the results sooner,
  * and validation stays immediate until every caller has disabled it or unmounted. It reports no
  * errors itself: if the document's validation fails, the hold ends, and `useValidationStatus`
- * reports the failure.
+ * reports the failure. It holds the validation of the document pair, the default `listener` of
+ * `useValidationStatus`; a `useValidationStatus` with `listener: 'global'` is not affected.
  *
  * @beta
  */

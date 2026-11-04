@@ -11,15 +11,22 @@ export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
   /**
-   * @deprecated Ignored. Whether references must be published is decided by `validationTargetId`.
+   * `listener: 'global'` follows the document through the document preview store's shared global
+   * listener instead of checking out the document pair, which opens a listener for every document
+   * validated. Changes are then validated only once the server has them, so use it where nobody
+   * edits the document, like a list or a board of documents.
+   *
+   * A boolean is the deprecated `requirePublishedReferences` argument, and is ignored: whether
+   * references must be published is decided by `validationTargetId`.
    */
-  _requirePublishedReferences?: boolean,
+  options?: {listener?: 'document' | 'global'} | boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
+  const listener = typeof options === 'object' ? (options.listener ?? 'document') : 'document'
 
   const observable = useMemo(
-    () => documentStore.pair.validation(validationTargetId, docTypeName, false),
-    [docTypeName, documentStore.pair, validationTargetId],
+    () => documentStore.pair.validation(validationTargetId, docTypeName, false, {listener}),
+    [docTypeName, documentStore.pair, listener, validationTargetId],
   )
 
   // Kept synchronous: consumers use this as a write-side gate, not just for

@@ -136,6 +136,15 @@ export interface DocumentStore {
          * too.
          */
         scheduling?: ValidationScheduling
+        /**
+         * Where the validated document comes from. `document`, the default, checks out the
+         * document pair: that opens a listener for the document, and validates local edits as
+         * they are made. `global` follows the document through the document preview store's
+         * shared global listener instead, so it opens no listener of its own, but validates a
+         * change only once the server has it. Use it where nobody edits the document, like a list
+         * or a board of documents.
+         */
+        listener?: 'document' | 'global'
       },
     ) => Observable<ValidationStatus>
   }
@@ -191,6 +200,7 @@ export function createDocumentStore({
     client,
     getClient,
     observeDocumentPairAvailability,
+    observeDocument: documentPreviewStore.unstable_observeDocument,
     historyStore,
     schema,
     i18n,
@@ -312,7 +322,15 @@ export function createDocumentStore({
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, undefined, options?.scheduling)
+        return validation(
+          ctx,
+          idPair,
+          type,
+          validationTarget,
+          undefined,
+          options?.scheduling,
+          options?.listener,
+        )
       },
     },
   }
