@@ -4,7 +4,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Spinner, Text} from '@sanity/ui'
-import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
+import {type ComponentType, type ReactNode, useCallback, use, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
@@ -51,7 +51,7 @@ export function LocationsBanner(props: {
   const locationsCount = locations?.length || 0
 
   const {t} = useTranslation(presentationLocaleNamespace)
-  const presentation = useContext(PresentationContext)
+  const presentation = use(PresentationContext)
   const presentationName = presentation?.name
   const [expanded, setExpanded] = useState(false)
   const toggle = useCallback(() => {
@@ -159,7 +159,7 @@ function LocationItem(props: {
   toolName: string
 }) {
   const {documentId, documentType, node, active, toolName} = props
-  const presentation = useContext(PresentationContext)
+  const presentation = use(PresentationContext)
   const currentPresentationToolName = useCurrentPresentationToolName()
   const isCurrentTool = toolName === currentPresentationToolName
   const navigate = presentation?.navigate

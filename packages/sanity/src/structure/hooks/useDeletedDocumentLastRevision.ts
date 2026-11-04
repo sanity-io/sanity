@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {EventsContext} from 'sanity/_singletons'
 
 /**
@@ -14,7 +14,7 @@ const EventsContextFallback = {
  * It will only work in case the document is deleted or was published to avoid over-fetching the document history endpoint
  */
 export const useDeletedDocumentLastRevision = () => {
-  const {revision} = useContext(EventsContext) || EventsContextFallback
+  const {revision} = use(EventsContext) || EventsContextFallback
 
   return {
     lastRevisionDocument: revision?.document || null,

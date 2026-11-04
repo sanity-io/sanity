@@ -3,7 +3,7 @@ import {
   ErrorBoundary as UIErrorBoundary,
   type ErrorBoundaryProps as UIErrorBoundaryProps,
 } from '@sanity/ui'
-import {useCallback, useContext} from 'react'
+import {useCallback, use} from 'react'
 import {SourceContext} from 'sanity/_singletons'
 
 export type ErrorBoundaryProps = UIErrorBoundaryProps
@@ -14,7 +14,7 @@ export type ErrorBoundaryProps = UIErrorBoundaryProps
  */
 export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): React.JSX.Element {
   // Use context, because source could be undefined and we don't want to throw in that case
-  const source = useContext(SourceContext)
+  const source = use(SourceContext)
 
   const handleCatch = useCallback(
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {

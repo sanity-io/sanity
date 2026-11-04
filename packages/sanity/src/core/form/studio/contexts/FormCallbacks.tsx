@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {memo, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef} from 'react'
+import {memo, type ReactNode, useCallback, use, useEffect, useMemo, useRef} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type PatchEvent} from '../../patch/PatchEvent'
@@ -89,7 +89,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
 
 /** @internal */
 export function useFormCallbacks(): FormCallbacksValue {
-  const ctx = useContext(FormCallbacksContext)
+  const ctx = use(FormCallbacksContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }

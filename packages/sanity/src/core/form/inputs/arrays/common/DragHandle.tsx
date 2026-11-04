@@ -1,6 +1,6 @@
 import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
-import {useContext} from 'react'
+import {use} from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -34,7 +34,7 @@ interface DragHandleProps {
 }
 
 export const DragHandle = function DragHandle(props: DragHandleProps) {
-  const id = useContext(SortableItemIdContext)!
+  const id = use(SortableItemIdContext)!
   const {mode = 'bleed', readOnly, ...rest} = props
   const {listeners, attributes} = useSortable({id, disabled: readOnly})
   const {t} = useTranslation()

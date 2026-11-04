@@ -2,7 +2,7 @@ import {
   type FunctionComponent,
   type MouseEvent as ReactMouseEvent,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -70,7 +70,7 @@ export const PanelResizer: FunctionComponent<{
 }> = function ({id: propId, order, disabled = false, hidden = false}) {
   const el = useRef<HTMLDivElement>(null)
 
-  const context = useContext(PresentationPanelsContext)
+  const context = use(PresentationPanelsContext)
 
   if (context === null) {
     throw Error(`Panel components must be rendered within a PanelGroup container`)

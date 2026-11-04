@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type ReactNode,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useRef,
@@ -107,8 +107,8 @@ function AnnnotationWithDiff({
   path,
   ...restProps
 }: AnnnotationWithDiffProps) {
-  const {onSetFocus} = useContext(ReviewChangesContext)
-  const {path: fullPath} = useContext(DiffContext)
+  const {onSetFocus} = use(ReviewChangesContext)
+  const {path: fullPath} = use(DiffContext)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])

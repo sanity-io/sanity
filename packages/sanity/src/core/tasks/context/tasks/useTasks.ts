@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {TasksContext} from 'sanity/_singletons'
 
 import {type TasksContextValue} from './types'
@@ -7,7 +7,7 @@ import {type TasksContextValue} from './types'
  * @internal
  */
 export function useTasks(): TasksContextValue {
-  const context = useContext(TasksContext)
+  const context = use(TasksContext)
   if (!context) {
     // Providers are not mounted when tasks enabled is disabled, but we still need to provide a
     // default value for the context to avoid runtime errors in `TasksFooterAction` and `TaskCreateAction`

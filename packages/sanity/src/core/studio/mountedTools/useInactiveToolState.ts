@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {MountedToolsContext} from 'sanity/_singletons'
 import {type RouterState} from 'sanity/router'
 
@@ -10,5 +10,5 @@ import {type RouterState} from 'sanity/router'
  * @internal
  */
 export function useInactiveToolState(toolName: string): RouterState | undefined {
-  return useContext(MountedToolsContext).inactiveToolStates.get(toolName)
+  return use(MountedToolsContext).inactiveToolStates.get(toolName)
 }

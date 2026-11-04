@@ -5,7 +5,7 @@ import {
   type MouseEvent,
   type ReactNode,
   useCallback,
-  useContext,
+  use,
   useMemo,
   useState,
 } from 'react'
@@ -49,7 +49,7 @@ const FILTER_TABS_STYLE: CSSProperties = {
 }
 
 function useDocumentTableSelection(): DocumentTableSelectionContextValue {
-  const value = useContext(DocumentTableSelectionContext)
+  const value = use(DocumentTableSelectionContext)
   if (!value) {
     throw new Error('DocumentTable: missing selection context')
   }

@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {FullscreenPTEContext} from 'sanity/_singletons'
 
 /**
@@ -6,5 +6,5 @@ import {FullscreenPTEContext} from 'sanity/_singletons'
  * @internal
  */
 export function useFullscreenPTE() {
-  return useContext(FullscreenPTEContext)
+  return use(FullscreenPTEContext)
 }

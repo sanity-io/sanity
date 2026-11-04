@@ -1,5 +1,5 @@
 import {render} from '@testing-library/react'
-import {useContext, useEffect} from 'react'
+import {use, useEffect} from 'react'
 import {PaneLayoutContext, PaneRouterContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -37,7 +37,7 @@ function paneLayout(paneCount: number, flex: number): PaneLayoutContextValue {
 }
 
 function RouterContextLog({log}: {log: PaneRouterContextValue[]}) {
-  const value = useContext(PaneRouterContext)
+  const value = use(PaneRouterContext)
   useEffect(() => {
     log.push(value)
   }, [log, value])

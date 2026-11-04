@@ -1,4 +1,4 @@
-import {useContext, type RefAttributes} from 'react'
+import {use, type RefAttributes} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
 
@@ -9,7 +9,7 @@ import {type ChildLinkProps} from './types'
  */
 export function ChildLink(props: ChildLinkProps & RefAttributes<HTMLAnchorElement>) {
   const {ref, childId, childPayload, childParameters, ...rest} = props
-  const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
+  const {routerPanesState, groupIndex} = use(PaneRouterContext)
 
   return (
     <StateLink

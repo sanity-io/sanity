@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {EventsContext} from 'sanity/_singletons'
 
 import {type EventsStore} from './types'
@@ -18,7 +18,7 @@ export function EventsProvider({value, children}: EventsProviderProps) {
  * @internal
  */
 export function useEvents(): EventsStore {
-  const context = useContext(EventsContext)
+  const context = use(EventsContext)
   if (context === null) {
     throw new Error('useEvents must be used within a EventsProvider')
   }

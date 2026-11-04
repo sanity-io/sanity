@@ -1,4 +1,4 @@
-import {Suspense, useContext} from 'react'
+import {Suspense, use} from 'react'
 import {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
@@ -27,6 +27,6 @@ export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode
 }
 
 export function useSingleDocReleaseUpsell(): SingleDocReleaseUpsellContextValue {
-  const context = useContext(SingleDocReleaseUpsellContext)
+  const context = use(SingleDocReleaseUpsellContext)
   return context
 }

@@ -1,6 +1,6 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ComponentType, type ReactNode, Suspense, useContext, useEffect} from 'react'
+import {type ComponentType, type ReactNode, Suspense, use, useEffect} from 'react'
 import {isLazy} from 'react-is'
 import {FormValueContext} from 'sanity/_singletons'
 
@@ -49,7 +49,7 @@ export function FormNodeSuspense(props: FormNodeSuspenseProps): React.JSX.Elemen
 function SuspendedFormNodeWarning(props: Omit<FormNodeSuspenseProps, 'fallback' | 'children'>) {
   const {schemaType, path, components} = props
   // Read without `useFormValue`, which throws outside a provider: a fallback must not crash
-  const documentType = useContext(FormValueContext)?.value?._type
+  const documentType = use(FormValueContext)?.value?._type
 
   // An effect, not render: only a fallback React actually commits means the node suspended.
   useEffect(() => {

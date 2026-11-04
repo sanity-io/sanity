@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useLayoutEffect, useMemo, useState} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -11,7 +11,7 @@ export function PresentationDocumentProvider(props: {
   options: PresentationPluginOptions
 }): React.JSX.Element {
   const {children, options} = props
-  const parent = useContext(PresentationDocumentContext)
+  const parent = use(PresentationDocumentContext)
   const parentRegister = parent?.register
 
   // Options registered by nested providers (further presentation plugin instances wrapping the

@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
 import {type PerspectiveContextValue} from './types'
@@ -21,7 +21,7 @@ import {type PerspectiveContextValue} from './types'
  * ```
  */
 export function usePerspective(): PerspectiveContextValue {
-  const context = useContext(PerspectiveContext)
+  const context = use(PerspectiveContext)
   if (!context) {
     throw new Error('usePerspective must be used within a PerspectiveProvider')
   }

@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {format} from 'date-fns/format'
-import {useContext} from 'react'
+import {use} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
@@ -22,7 +22,7 @@ export function RevisionStatusLine(): React.JSX.Element {
   const {displayed, revisionNotFound} = useDocumentPane()
   // Using the context instead of  `useEvents` because the context could not exist if the document pane is not using the events store and is instead
   // using the legacy timeline store.
-  const events = useContext(EventsContext)
+  const events = use(EventsContext)
   const revision = events?.revision
   const revisionEvent = events?.events.find((ev) => ev.id === revision?.revisionId)
 

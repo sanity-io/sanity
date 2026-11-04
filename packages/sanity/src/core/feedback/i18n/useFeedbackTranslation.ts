@@ -1,5 +1,5 @@
 /* oxlint-disable @sanity/i18n/no-i18next-import */
-import {useCallback, useContext} from 'react'
+import {useCallback, use} from 'react'
 import {I18nContext} from 'react-i18next'
 
 /**
@@ -39,7 +39,7 @@ const FEEDBACK_STRINGS: Record<string, string> = {
  * @internal
  */
 export function useFeedbackTranslation(): {t: (key: string) => string} {
-  const i18nContext = useContext(I18nContext)
+  const i18nContext = use(I18nContext)
   const i18n = i18nContext?.i18n
 
   const t = useCallback(

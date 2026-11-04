@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type ComponentType, type HTMLProps, type ReactNode, useContext, useMemo} from 'react'
+import {type ComponentType, type HTMLProps, type ReactNode, use, useMemo} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
 import {type ReleaseId} from '../../../perspective/types'
@@ -65,7 +65,7 @@ export interface ReferenceInputOptions {
  * @internal
  */
 export function useReferenceInputOptions() {
-  return useContext(ReferenceInputOptionsContext)
+  return use(ReferenceInputOptionsContext)
 }
 
 /**

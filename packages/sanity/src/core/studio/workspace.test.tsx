@@ -1,6 +1,6 @@
 import {SDKStudioContext} from '@sanity/sdk-react'
 import {renderHook} from '@testing-library/react'
-import {type ReactNode, useContext} from 'react'
+import {type ReactNode, use} from 'react'
 import {describe, expect, it} from 'vitest'
 
 import {type Workspace} from '../config/types'
@@ -24,7 +24,7 @@ describe('WorkspaceProvider', () => {
   })
 
   it('provides the same workspace to SDKStudioContext so the SDK works with zero config', () => {
-    const {result} = renderHook(() => useContext(SDKStudioContext), {wrapper})
+    const {result} = renderHook(() => use(SDKStudioContext), {wrapper})
 
     expect(result.current).toBe(mockWorkspace)
   })

@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type ReactNode, useCallback, useContext, useEffect, useRef} from 'react'
+import {type ReactNode, useCallback, use, useEffect, useRef} from 'react'
 import {GetFormValueContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field/paths/helpers'
@@ -48,7 +48,7 @@ export function GetFormValueProvider(props: {
  */
 
 export function useGetFormValue() {
-  const ctx = useContext(GetFormValueContext)
+  const ctx = use(GetFormValueContext)
   if (!ctx) {
     throw new Error('useGetFormValue must be used within a GetFormValueProvider')
   }

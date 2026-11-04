@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 const EMPTY_ARRAY: never[] = []
@@ -19,7 +19,7 @@ export interface PresenceScopeProps {
 /** @internal */
 export function PresenceScope(props: PresenceScopeProps) {
   const {readOnly, path, children} = props
-  const contextPresence = useContext(FormFieldPresenceContext)
+  const contextPresence = use(FormFieldPresenceContext)
 
   const childPresence = useMemo(() => {
     return readOnly

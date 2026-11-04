@@ -1,5 +1,5 @@
 import {act, render} from '@testing-library/react'
-import {Activity, useContext} from 'react'
+import {Activity, use} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
@@ -11,7 +11,7 @@ const nestedOptions: PresentationPluginOptions = {name: 'nested', previewUrl: '/
 
 /** Records the option names the context exposes on every render. */
 function Recorder({renders}: {renders: string[][]}) {
-  const context = useContext(PresentationDocumentContext)
+  const context = use(PresentationDocumentContext)
   renders.push((context?.options ?? []).map((o) => o.name ?? ''))
   return null
 }

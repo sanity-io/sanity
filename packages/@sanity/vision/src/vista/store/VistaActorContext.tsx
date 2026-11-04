@@ -1,5 +1,5 @@
 import {useSelector} from '@xstate/react'
-import {createContext, useContext, useLayoutEffect} from 'react'
+import {createContext, use, useLayoutEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
@@ -12,7 +12,7 @@ const PERSIST_DEBOUNCE_MS = 200
 export const VistaActorContext = createContext<VistaActorRef | null>(null)
 
 export function useVistaActor(): VistaActorRef {
-  const actorRef = useContext(VistaActorContext)
+  const actorRef = use(VistaActorContext)
   if (!actorRef) {
     throw new Error('useVistaActor must be used within a VistaActorContext provider')
   }
@@ -41,7 +41,7 @@ export interface VistaExperience {
 export const VistaExperienceContext = createContext<VistaExperience | null>(null)
 
 export function useVistaExperience(): VistaExperience {
-  const experience = useContext(VistaExperienceContext)
+  const experience = use(VistaExperienceContext)
   if (!experience) {
     throw new Error('useVistaExperience must be used within a VistaExperienceContext provider')
   }
@@ -79,7 +79,7 @@ export function createPendingEdits(): PendingEdits {
 export const PendingEditsContext = createContext<PendingEdits | null>(null)
 
 export function usePendingEdits(): PendingEdits {
-  const pendingEdits = useContext(PendingEditsContext)
+  const pendingEdits = use(PendingEditsContext)
   if (!pendingEdits) {
     throw new Error('usePendingEdits must be used within a PendingEditsContext provider')
   }
@@ -92,7 +92,7 @@ export type SavedQueriesApi = ReturnType<typeof useSavedQueries>
 export const SavedQueriesContext = createContext<SavedQueriesApi | null>(null)
 
 export function useSavedQueriesApi(): SavedQueriesApi {
-  const api = useContext(SavedQueriesContext)
+  const api = use(SavedQueriesContext)
   if (!api) {
     throw new Error('useSavedQueriesApi must be used within a SavedQueriesContext provider')
   }
@@ -111,7 +111,7 @@ export interface TabDrawerSlot {
 export const TabDrawerSlotContext = createContext<TabDrawerSlot | null>(null)
 
 export function useTabDrawerSlot(): TabDrawerSlot {
-  const slot = useContext(TabDrawerSlotContext)
+  const slot = use(TabDrawerSlotContext)
   if (!slot) {
     throw new Error('useTabDrawerSlot must be used within a TabDrawerSlotContext provider')
   }
@@ -161,7 +161,7 @@ export function createSidebarBadges(): SidebarBadges {
 export const SidebarBadgesContext = createContext<SidebarBadges | null>(null)
 
 export function useSidebarBadges(): SidebarBadges {
-  const badges = useContext(SidebarBadgesContext)
+  const badges = use(SidebarBadgesContext)
   if (!badges) {
     throw new Error('useSidebarBadges must be used within a SidebarBadgesContext provider')
   }

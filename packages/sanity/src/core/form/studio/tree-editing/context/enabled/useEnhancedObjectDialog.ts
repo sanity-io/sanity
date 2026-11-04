@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {EnhancedObjectDialogContext} from 'sanity/_singletons'
 
 /**
@@ -21,5 +21,5 @@ export interface EnhancedObjectDialogContextValue {
  */
 export function useEnhancedObjectDialog(): EnhancedObjectDialogContextValue {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  return useContext(EnhancedObjectDialogContext)
+  return use(EnhancedObjectDialogContext)
 }

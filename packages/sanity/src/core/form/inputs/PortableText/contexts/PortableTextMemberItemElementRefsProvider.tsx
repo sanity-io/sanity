@@ -1,4 +1,4 @@
-import {useCallback, useContext} from 'react'
+import {useCallback, use} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
   type PortableTextEditorElement,
@@ -19,7 +19,7 @@ export function usePortableTextMemberItemElementRefs(): Record<
   PortableTextMemberItem['key'],
   PortableTextEditorElement | null | undefined
 > {
-  const behaviorSubject = useContext(PortableTextMemberItemElementRefsContext)
+  const behaviorSubject = use(PortableTextMemberItemElementRefsContext)
 
   // Kept synchronous: these are live DOM refs read imperatively (annotation
   // popover reference elements, focus/scroll tracking in layout effects) — a
@@ -28,7 +28,7 @@ export function usePortableTextMemberItemElementRefs(): Record<
 }
 
 export function useSetPortableTextMemberItemElementRef(): SetPortableTextMemberItemElementRef {
-  const behaviorSubject = useContext(PortableTextMemberItemElementRefsContext)
+  const behaviorSubject = use(PortableTextMemberItemElementRefsContext)
 
   return useCallback<SetPortableTextMemberItemElementRef>(
     ({key, elementRef}) => {

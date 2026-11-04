@@ -1,6 +1,6 @@
 import {type PortableTextEditor} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {createContext, useContext, useMemo} from 'react'
+import {createContext, use, useMemo} from 'react'
 import {type EditorChange, type InputProps, type PortableTextInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -19,7 +19,7 @@ interface InputHarnessProps {
 const InputHarnessContext = createContext<InputHarnessProps>({})
 
 function PTInputWithEditorRef(inputProps: InputProps) {
-  const {editorRef, ptInputProps} = useContext(InputHarnessContext)
+  const {editorRef, ptInputProps} = use(InputHarnessContext)
   const editorProps = {
     ...inputProps,
     ...ptInputProps,

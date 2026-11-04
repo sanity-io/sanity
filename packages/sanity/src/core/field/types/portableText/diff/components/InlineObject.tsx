@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import {Card, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {type MouseEvent, useCallback, use, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Text, Flex, Icon} from 'ui5'
@@ -85,8 +85,8 @@ function InlineObjectWithDiff({
   schemaType,
   ...restProps
 }: InlineObjectWithDiffProps) {
-  const {path: fullPath} = useContext(DiffContext)
-  const {onSetFocus} = useContext(ReviewChangesContext)
+  const {path: fullPath} = use(DiffContext)
+  const {onSetFocus} = use(ReviewChangesContext)
   const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(

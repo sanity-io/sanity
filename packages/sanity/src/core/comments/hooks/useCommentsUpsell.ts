@@ -1,10 +1,10 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {CommentsUpsellContext} from 'sanity/_singletons'
 
 import {type CommentsUpsellContextValue} from '../context/upsell/types'
 
 export function useCommentsUpsell(): CommentsUpsellContextValue {
-  const value = useContext(CommentsUpsellContext)
+  const value = use(CommentsUpsellContext)
 
   if (!value) {
     // Instead of throwing, we return a dummy value to avoid breaking the CommentsField implementation, given the context is optional.

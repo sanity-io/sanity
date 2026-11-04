@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useState} from 'react'
+import {type ReactNode, use, useState} from 'react'
 import {ResourceCacheContext} from 'sanity/_singletons'
 
 import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
@@ -54,7 +54,7 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
 
 /** @internal */
 export function useResourceCache(): ResourceCache {
-  const cache = useContext(ResourceCacheContext)
+  const cache = use(ResourceCacheContext)
   if (!cache) throw new Error('Could not find `cache` context')
   return cache
 }

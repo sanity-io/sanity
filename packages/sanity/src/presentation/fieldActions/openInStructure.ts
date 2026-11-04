@@ -1,5 +1,5 @@
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {
   defineDocumentFieldAction,
   type DocumentFieldActionGroup,
@@ -21,7 +21,7 @@ function useOpenInStructureAction(
   const {documentId, documentType, path} = props
   const workspace = useWorkspace()
   const {navigateIntent} = useRouter()
-  const presentation = useContext(PresentationContext)
+  const presentation = use(PresentationContext)
 
   const defaultStructureTool = useMemo(
     () =>
