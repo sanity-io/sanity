@@ -4,15 +4,15 @@ import {config, defer, ReplaySubject} from 'rxjs'
 import {finalize} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type ValidationListener} from '../../store/document/document-pair/validation'
 import {type ValidationStatus} from '../../validation'
 import {useSetImmediateValidation} from '../useSetImmediateValidation'
 import {useValidationStatus} from '../useValidationStatus'
 
 // the store replays the latest status to every new subscriber
 let validationSubject: ReplaySubject<ValidationStatus>
-type Listener = 'document' | 'global'
 const immediateHolds = new Map<string, number>()
-const holds = (validationTargetId: string, listener: Listener = 'document') =>
+const holds = (validationTargetId: string, listener: ValidationListener = 'document') =>
   immediateHolds.get(`${validationTargetId}:${listener}`) ?? 0
 
 // Referentially stable, like the real store: the hooks memoize on `documentStore.pair`.
@@ -22,7 +22,7 @@ const mockDocumentStore = {
       validationTargetId: string,
       _type: string,
       _validatePublishedReferences: boolean,
-      options?: {scheduling?: ValidationScheduling; listener?: Listener},
+      options?: {scheduling?: ValidationScheduling; listener?: ValidationListener},
     ) => {
       if (options?.scheduling !== 'immediate') return validationSubject.asObservable()
       const listener = options.listener ?? 'document'
@@ -56,7 +56,7 @@ function Probe({id, enabled}: {id: string; enabled: boolean}) {
   return null
 }
 
-function Hold({enabled, listener}: {enabled: boolean; listener?: Listener}) {
+function Hold({enabled, listener}: {enabled: boolean; listener?: ValidationListener}) {
   useSetImmediateValidation('doc-1', 'author', false, {enabled, listener})
   return null
 }

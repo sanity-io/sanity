@@ -1,21 +1,16 @@
 import {useEffect, useState} from 'react'
 
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
+import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {getDraftId} from '../../../util/draftUtils'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule, type ValidationStatus} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
 
-/**
- * The `listener` of `useValidationStatus`: `global` where many documents' schedules are listed,
- * `document` where the document's pane has its pair checked out already.
- */
-export type ScheduleValidationListener = 'document' | 'global'
-
 interface Props {
   schedule: Schedule
   updateValidation: (status: ValidationStatus) => void
-  listener: ScheduleValidationListener
+  listener: ValidationListener
 }
 
 // Duration to wait before validating (after this component has mounted)
@@ -48,7 +43,7 @@ interface ValidationRunnerProps {
   id: string
   schemaName: string
   updateValidation: (status: ValidationStatus) => void
-  listener: ScheduleValidationListener
+  listener: ValidationListener
 }
 
 function DelayedValidationRunner({

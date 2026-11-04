@@ -37,7 +37,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validation} from './document-pair/validation'
+import {validation, type ValidationListener} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -145,7 +145,7 @@ export interface DocumentStore {
          * change only once the server has it. Use it where nobody edits the document, like a list
          * or a board of documents.
          */
-        listener?: 'document' | 'global'
+        listener?: ValidationListener
       },
     ) => Observable<ValidationStatus>
   }

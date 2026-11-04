@@ -9,6 +9,7 @@ import {createSchema} from '../../schema/createSchema'
 import {validateDocumentWithReferences} from '../../validation'
 import {createHistoryStore} from '../history/createHistoryStore'
 import {editState} from './document-pair/editState'
+import {type ValidationListener} from './document-pair/validation'
 import {createDocumentStore} from './document-store'
 
 vi.mock('./document-pair/editState', () => ({editState: vi.fn(() => NEVER)}))
@@ -173,7 +174,7 @@ describe('documentStore.pair.validation listener', () => {
     (listener) => {
       const {draftId, store, observeDocument} = setupListener()
       observeDocument.mockReturnValue(NEVER)
-      const schedulingOf = (validationListener: 'document' | 'global') => {
+      const schedulingOf = (validationListener: ValidationListener) => {
         store.pair.validation(draftId, 'movie', false, {listener: validationListener})
         const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
         if (!(scheduling instanceof BehaviorSubject)) {
