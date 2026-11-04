@@ -77,6 +77,7 @@ export function UnknownFields(props: Props) {
         marginTop={4}
         open={isDev}
         title={t('inputs.object.unknown-fields.warning.details.title')}
+        tone="caution"
       >
         <Box marginBottom={3}>
           <Text as="p" muted size={1} trim={true} tone="caution">
