@@ -17,6 +17,7 @@ import {ReviewSwitch, rememberStock} from './review/E9Review'
 import {schemaTypesFor} from './schemas'
 import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignSlotsTool'
 import {presentationGridTool} from './spike/PresentationGrid'
+import {withDocTabs} from './tabs/DocTabsTool'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
@@ -31,7 +32,11 @@ const variants2Options = definePlugin({
   // C15: core's base-document strings, as the chosen option names it (read at load).
   i18n: {bundles: baseNameBundles},
   // SPIKE: SANITY_STUDIO_GRID=1 adds the separate "Presentation grid" tool (not part of the designs).
-  tools: [
+  // Document tabs (docTabs b and c): the Structure tool gets a tab bar above it; with the switch off it renders as it is.
+  tools: (prev) => [
+    ...prev.map((tool) =>
+      tool.name === 'structure' ? {...tool, component: withDocTabs(tool.component)} : tool,
+    ),
     inventoryTool,
     designSlotsTool,
     ...(process.env.SANITY_STUDIO_GRID ? [presentationGridTool] : []),

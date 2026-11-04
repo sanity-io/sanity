@@ -16,6 +16,7 @@ import {
   type OptionStatus,
 } from '../design-options/types'
 import diagrams from './diagrams.json'
+import {DOC_TABS} from './docTabs'
 import {DRAWINGS} from './drawings'
 import {
   E9_COMPONENTS,
@@ -479,6 +480,7 @@ COMPONENTS.push(
   LOCALIZATION,
   MARK_SELECTED,
   INSPECTOR_SWITCHER,
+  DOC_TABS,
   ADDRESS_PICKER,
   VARIANT_DETAIL_HEADER,
   VERSION_SORTING,
@@ -662,7 +664,7 @@ defineDesignOptions({
     },
     {
       label: 'Other explorations',
-      ids: ['inspectorSwitcher', ...LOCALIZATION_GROUP.ids, ...ICONOGRAPHY_GROUP.ids],
+      ids: ['inspectorSwitcher', 'docTabs', ...LOCALIZATION_GROUP.ids, ...ICONOGRAPHY_GROUP.ids],
       collapsed: true,
     },
   ],
