@@ -111,7 +111,7 @@ export function createReleaseStore(context: {
       listenQueryOnGlobalListener<ReleaseDocument[]>(client, QUERY, {
         invalidationChannel: previewStore.unstable_invalidationChannel,
         shouldRefetch: ({documentId}) => isReleaseDocumentId(documentId),
-        tag: 'releases.listen',
+        fetchTag: 'releases.store.fetch',
       }).pipe(
         tap(() => fetchPending$.next(false)),
         map((releases) => ({response: releases})),

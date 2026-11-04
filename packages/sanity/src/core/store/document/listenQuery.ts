@@ -164,16 +164,16 @@ export function listenQueryOnGlobalListener<Result>(
      * has to be cheap.
      */
     shouldRefetch: (event: Extract<InvalidationChannelEvent, {type: 'mutation'}>) => boolean
-    tag?: string
+    fetchTag?: string
     perspective?: ClientPerspective
   },
 ): Observable<Result> {
-  const {invalidationChannel, shouldRefetch, tag, perspective} = options
+  const {invalidationChannel, shouldRefetch, fetchTag, perspective} = options
 
   return fetchOnEvents(
     invalidationChannel.pipe(filter((event) => event.type === 'connected')),
     invalidationChannel.pipe(filter((event) => event.type === 'mutation' && shouldRefetch(event))),
-    () => fetch(client, query, {}, {tag, perspective}),
+    () => fetch(client, query, {}, {tag: fetchTag, perspective}),
     DEFAULT_THROTTLE_TIME,
   )
 }
