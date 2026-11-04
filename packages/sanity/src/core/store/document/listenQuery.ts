@@ -3,6 +3,7 @@ import {asyncScheduler, defer, merge, type Observable, of, partition, throwError
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
 
+import {type InvalidationChannelEvent} from '../../preview/types'
 import {versionedClient} from '../../studioClient'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
@@ -63,6 +64,37 @@ function isWelcomeEvent(
   return event.type === 'welcome'
 }
 
+const DEFAULT_THROTTLE_TIME = 1000
+
+type FetchTrigger = WelcomeEvent | ReconnectEvent | MutationEvent | InvalidationChannelEvent
+
+/**
+ * Fetches on every `immediate$` event, and on `throttled$` events at most once per `throttleMs`
+ * (leading and trailing). One fetch runs at a time: events that arrive during a fetch queue one
+ * more after it.
+ */
+function fetchOnEvents<Result>(
+  immediate$: Observable<FetchTrigger>,
+  throttled$: Observable<FetchTrigger>,
+  doFetch: () => Observable<Result>,
+  throttleMs: number,
+): Observable<Result> {
+  return merge(
+    immediate$,
+    throttled$.pipe(throttleTime(throttleMs, asyncScheduler, {leading: true, trailing: true})),
+  ).pipe(
+    exhaustMapWithTrailing((event) => {
+      if (event.type === 'mutation' && event.visibility !== 'query') {
+        // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
+        // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
+        // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
+        return timer(1200).pipe(mergeMap(doFetch))
+      }
+      return doFetch()
+    }),
+  )
+}
+
 /** @internal */
 export function listenQuery(
   client: SanityClient,
@@ -102,23 +134,46 @@ export function listenQuery(
     return options.transitions.includes(event.transition)
   }
 
-  const doFetch = () => fetch(client, fetchQuery, params, options)
-
-  return merge(
+  return fetchOnEvents(
     welcome$.pipe(take(1)),
-    mutationAndReconnect$.pipe(
-      filter(isRelevantEvent),
-      throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true}),
-    ),
-  ).pipe(
-    exhaustMapWithTrailing((event) => {
-      if (event.type === 'mutation' && event.visibility !== 'query') {
-        // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
-        // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
-        // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
-        return timer(1200).pipe(mergeMap(doFetch))
-      }
-      return doFetch()
-    }),
+    mutationAndReconnect$.pipe(filter(isRelevantEvent)),
+    () => fetch(client, fetchQuery, params, options),
+    options.throttleTime || DEFAULT_THROTTLE_TIME,
+  )
+}
+
+/**
+ * Like {@link listenQuery}, but it opens no listener of its own: it follows the document preview
+ * store's shared global listener, and fetches `query` once that listener has connected (right
+ * away when it already has), again after every reconnect, and again after the changes
+ * `shouldRefetch` accepts.
+ *
+ * The global listener reports every change in the dataset with the changed document's id but not
+ * its content, so `shouldRefetch` has to recognise the documents the query reads by their ids.
+ *
+ * @internal
+ */
+export function listenQueryOnGlobalListener<Result>(
+  client: SanityClient,
+  query: string,
+  options: {
+    /** The document preview store's `unstable_invalidationChannel` */
+    invalidationChannel: Observable<InvalidationChannelEvent>
+    /**
+     * Whether a change can affect the query result. Called for every change in the dataset, so it
+     * has to be cheap.
+     */
+    shouldRefetch: (event: Extract<InvalidationChannelEvent, {type: 'mutation'}>) => boolean
+    tag?: string
+    perspective?: ClientPerspective
+  },
+): Observable<Result> {
+  const {invalidationChannel, shouldRefetch, tag, perspective} = options
+
+  return fetchOnEvents(
+    invalidationChannel.pipe(filter((event) => event.type === 'connected')),
+    invalidationChannel.pipe(filter((event) => event.type === 'mutation' && shouldRefetch(event))),
+    () => fetch(client, query, {}, {tag, perspective}),
+    DEFAULT_THROTTLE_TIME,
   )
 }

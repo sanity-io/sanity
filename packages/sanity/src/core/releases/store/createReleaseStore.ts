@@ -21,7 +21,8 @@ import {
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {isReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -74,7 +75,8 @@ export const INITIAL_RELEASES_STATE: ReleasesReducerState = {
 
 /**
  * The releases store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of releases and create a listener to keep the locally held state fresh.
+ * fetch a list of releases, and fetch it again whenever the preview store's shared global
+ * listener reports a change to a release document.
  *
  * The store is not disposed of when all subscriptions are closed. After it has been initialised,
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
@@ -84,7 +86,7 @@ export function createReleaseStore(context: {
   previewStore: DocumentPreviewStore
   client: SanityClient
 }): ReleaseStore {
-  const {client} = context
+  const {client, previewStore} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -106,7 +108,11 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
+      listenQueryOnGlobalListener<ReleaseDocument[]>(client, QUERY, {
+        invalidationChannel: previewStore.unstable_invalidationChannel,
+        shouldRefetch: ({documentId}) => isReleaseDocumentId(documentId),
+        tag: 'releases.listen',
+      }).pipe(
         tap(() => fetchPending$.next(false)),
         map((releases) => ({response: releases})),
       ),
