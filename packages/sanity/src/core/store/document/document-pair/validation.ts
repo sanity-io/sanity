@@ -119,17 +119,13 @@ const validationStreams = memoize(
     const status$ = combineLatest([
       validateDocumentWithReferences(ctx, documentToValidate$, scheduling),
       documentToValidate$,
+      // keep last: a new document must reach `documentToValidate` before its revision does
       documentRevision$,
     ]).pipe(
       map(([validationStatus, documentToValidate, revision]) => {
-        // `exhaustMapWithTrailing` starts a run a tick after the document that triggers it, and
-        // the run reports that document's revision as it starts. Until then the document counts
-        // as validating, or a changed document (a remote change, or any change the global
-        // listener reports) would read for that tick as the previous result under its new
-        // revision, which a consumer comparing revisions takes as final. A document without a
-        // `_type` (deleted, or not created yet) is never pending: its run reports no revision,
-        // so it would read as validating for good. `documentToValidate$` is subscribed to before
-        // `documentRevision$`, so it sees a new document first.
+        // A run starts a tick after its document and reports the document's revision as it
+        // starts; until then the previous result would read as final. A document without a
+        // `_type` gets a run that reports no revision, so it's never pending.
         const isPending =
           Boolean(documentToValidate?._type) &&
           validationStatus.revision !== documentToValidate?._rev
