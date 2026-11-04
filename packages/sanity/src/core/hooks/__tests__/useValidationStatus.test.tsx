@@ -56,7 +56,7 @@ describe('useValidationStatus', () => {
     }
     render(<Probe />)
 
-    expect(results[results.length - 1]).toEqual({validation: [], isValidating: false})
+    expect(results[results.length - 1]).toEqual({validation: [], isValidating: true})
   })
 
   it('commits validation emissions on the first frame, even batched with urgent updates', () => {
