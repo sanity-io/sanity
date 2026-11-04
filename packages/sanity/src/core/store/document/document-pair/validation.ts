@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SanityDocument, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, share, shareReplay, throttleTime} from 'rxjs/operators'
+import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of, timer} from 'rxjs'
+import {distinctUntilChanged, map, retry, share, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -63,7 +63,12 @@ const validationStreams = memoize(
     const target$: Observable<SanityDocument | null | undefined> =
       listener === 'global'
         ? documentId
-          ? ctx.observeDocument(documentId)
+          ? ctx.observeDocument(documentId).pipe(
+              // A failed fetch or a dropped global listener would error the validation, which
+              // `useValidationStatus` rethrows during render. Retry with the backoff the preview
+              // store's own fetches use instead, and keep the last status meanwhile.
+              retry({delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000))}),
+            )
           : of(undefined)
         : editState(ctx, idPair, typeName).pipe(
             map((state) => {
