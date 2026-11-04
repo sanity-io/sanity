@@ -10,13 +10,18 @@ import {
   type StudioDiagnosticsOptions,
 } from './gatherStudioDiagnostics'
 import {getSchemaDiagnostics, getUniqueTargetCount} from './getStudioConfigurationDiagnostics'
+import {studioRequestActivity} from './requestActivity'
 import {studioRequestPerformance} from './requestPerformance'
+import {requestStudioTabsCensus} from './studioTabsCensus'
 
 const DIAGNOSTICS_API_VERSION = '2025-02-19'
 
 /** @internal */
 export interface StudioDiagnosticsBridgeApi {
-  gather: (options?: {requestTimeout?: number}) => Promise<StudioDiagnostics>
+  gather: (options?: {
+    maxDurationMs?: number
+    requestTimeout?: number
+  }) => Promise<StudioDiagnostics>
 }
 
 /**
@@ -46,7 +51,9 @@ export function StudioDiagnosticsBridge(): null {
   const gather = useMemo(() => {
     const options: StudioDiagnosticsOptions = {
       client,
+      getRequestActivity: studioRequestActivity.getSnapshot,
       getRequestHistory: studioRequestPerformance.getSnapshot,
+      requestTabsCensus: requestStudioTabsCensus,
       schema: getSchemaDiagnostics(schema),
       studio: {
         basePath,
@@ -62,8 +69,12 @@ export function StudioDiagnosticsBridge(): null {
       user: currentUser,
     }
 
-    return (overrides?: {requestTimeout?: number}) =>
-      gatherStudioDiagnostics({...options, requestTimeout: overrides?.requestTimeout})
+    return (overrides?: {maxDurationMs?: number; requestTimeout?: number}) =>
+      gatherStudioDiagnostics({
+        ...options,
+        maxDurationMs: overrides?.maxDurationMs,
+        requestTimeout: overrides?.requestTimeout,
+      })
   }, [basePath, client, currentUser, dataset, name, projectId, schema, title, workspaces])
 
   useEffect(() => {

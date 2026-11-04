@@ -93,6 +93,8 @@ function classifyStudioCapture(
   }
 
   for (const probe of network.requests) {
+    // Skipped probes never ran (the run hit its time limit), so they say nothing on their own
+    if (probe.status === 'skipped') continue
     if (probe.status !== 'success') {
       flag(`probe ${probe.path} ${probe.status}${probe.error ? ` (${probe.error})` : ''}`)
     } else if (probe.durationMs > thresholds.slowProbeMs) {
@@ -105,6 +107,7 @@ function classifyStudioCapture(
     ['second listen', network.listen.secondWhileFirstOpen],
   ]
   for (const [label, probe] of listenProbes) {
+    if (probe.status === 'skipped') continue
     if (probe.status !== 'success') {
       flag(`${label} ${probe.status}${probe.error ? ` (${probe.error})` : ''}`)
     }
@@ -144,14 +147,18 @@ function classifyStudioCapture(
     const queryDurations = entries
       .filter((entry) => entry.bucket === 'query' && entry.status === 'success')
       .map((entry) => entry.durationMs)
-    const probeDurations = network.requests.map((probe) => probe.durationMs)
+    const probeDurations = network.requests
+      .filter((probe) => probe.status !== 'skipped')
+      .map((probe) => probe.durationMs)
     const summary =
       queryDurations.length > 0
         ? `query median ${ms(percentile(queryDurations, 0.5))}, p95 ${ms(percentile(queryDurations, 0.95))} over ${queryDurations.length} requests`
         : `${entries.length} recorded requests`
-    evidence.unshift(
-      `API healthy: ${summary}; probes ${ms(Math.min(...probeDurations))}–${ms(Math.max(...probeDurations))}`,
-    )
+    const probes =
+      probeDurations.length > 0
+        ? `probes ${ms(Math.min(...probeDurations))}–${ms(Math.max(...probeDurations))}`
+        : 'no probes ran'
+    evidence.unshift(`API healthy: ${summary}; ${probes}`)
   }
 
   return {evidence, verdict: degraded ? 'degraded' : 'healthy'}

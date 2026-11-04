@@ -31,6 +31,12 @@ export interface ApiNetworkResourceTiming {
   responseTransferMs: number
   secureConnectionMs: number
   serverTiming: {description: string; durationMs: number; name: string}[]
+  /**
+   * Time between the request starting and the browser sending it, excluding redirects, DNS and
+   * connection setup. A high value means the request waited in the browser, typically for a free
+   * slot on a busy connection. Missing from reports made by older studios.
+   */
+  stalledMs?: number
   startTimeMs: number
   transferSizeBytes: number
 }
@@ -215,9 +221,22 @@ function toResourceTiming(entry: PerformanceResourceTiming): ApiNetworkResourceT
       durationMs: round(duration),
       name,
     })),
+    stalledMs: getStalledMs(entry),
     startTimeMs: round(entry.startTime),
     transferSizeBytes: entry.transferSize,
   }
+}
+
+function getStalledMs(entry: PerformanceResourceTiming): number {
+  // Without `timing-allow-origin` the detailed timestamps are zero and nothing can be derived
+  if (entry.requestStart <= 0) return 0
+
+  const setupMs =
+    durationBetween(entry.redirectStart, entry.redirectEnd) +
+    durationBetween(entry.domainLookupStart, entry.domainLookupEnd) +
+    durationBetween(entry.connectStart, entry.connectEnd)
+
+  return round(Math.max(0, entry.requestStart - entry.startTime - setupMs))
 }
 
 function durationBetween(start: number, end: number): number {
