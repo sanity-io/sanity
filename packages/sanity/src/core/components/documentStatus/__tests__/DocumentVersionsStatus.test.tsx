@@ -5,6 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
+  activeScheduledRelease,
   activeUndecidedRelease,
 } from '../../../releases/__fixtures__/release.fixture'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
@@ -37,7 +38,7 @@ const mockUseAllVariants = useAllVariants as Mock<typeof useAllVariants>
 
 const GROUP_ID = 'article-1'
 const NOW = new Date('2026-10-22T12:00:00Z')
-const RELEASES = [activeASAPRelease, activeUndecidedRelease]
+const RELEASES = [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease]
 
 function hoursAgo(hours: number): string {
   return new Date(NOW.getTime() - hours * 60 * 60 * 1000).toISOString()
@@ -251,6 +252,31 @@ describe('DocumentVersionsStatus', () => {
 
     expect(getIcons(getLines()[0])).toEqual(['release', 'draft', 'published'])
   })
+
+  it.each([
+    {
+      shown: 'undecided',
+      over: 'scheduled and ASAP',
+      releases: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      testId: 'release-avatar-neutral',
+    },
+    {
+      shown: 'scheduled',
+      over: 'ASAP',
+      releases: [activeASAPRelease, activeScheduledRelease],
+      testId: 'release-avatar-suggest',
+    },
+  ])(
+    'shows the $shown release icon over $over ones, in the order of the releases menu',
+    async ({releases, testId}) => {
+      await renderStatus({
+        versions: [published(hoursAgo(48)), ...releases.map((release) => inRelease(release))],
+      })
+
+      const releaseIcons = getLines()[0].querySelectorAll('[data-testid^="release-avatar-"]')
+      expect(Array.from(releaseIcons, (icon) => icon.getAttribute('data-testid'))).toEqual([testId])
+    },
+  )
 
   it('says Edited for the published version of a live-edit type', async () => {
     await renderStatus({versions: [published(hoursAgo(2))], liveEdit: true})
