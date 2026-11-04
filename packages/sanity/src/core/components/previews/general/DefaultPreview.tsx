@@ -160,7 +160,15 @@ export function DefaultPreview(props: DefaultPreviewProps) {
               </Text>
 
               {subtitle && (
-                <Text muted size={1} truncate={1} className={styles?.subtitle} as="div" trim={true}>
+                <Text
+                  muted
+                  size={1}
+                  truncate={1}
+                  className={styles?.subtitle}
+                  as="div"
+                  trim={true}
+                  style={{color: 'var(--card-muted-fg-color)'}}
+                >
                   {renderPreviewNode(subtitle, 'default')}
                 </Text>
               )}

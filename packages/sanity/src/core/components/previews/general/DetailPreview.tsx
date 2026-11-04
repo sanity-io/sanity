@@ -114,7 +114,14 @@ export function DetailPreview(props: DetailPreviewProps) {
             </Text>
 
             {subtitle && (
-              <Text muted size={1} truncate={1} as="div" trim={true}>
+              <Text
+                muted
+                size={1}
+                truncate={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {renderPreviewNode(subtitle, 'detail')}
               </Text>
             )}
