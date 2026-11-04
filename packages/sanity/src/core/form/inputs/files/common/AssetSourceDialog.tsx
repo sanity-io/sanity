@@ -6,6 +6,7 @@ import {
   type AssetSourceUploader,
   type FileSchemaType,
   type ImageSchemaType,
+  type Path,
   type Reference,
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
@@ -43,6 +44,8 @@ export interface AssetSourceDialogProps<
   onChangeAction: (action: AssetSourceComponentAction) => void
   onSelect: (assets: AssetFromSource[]) => void
   openInSourceAsset?: TAsset | null
+  /** Path of the field the dialog was opened for; forwarded to the asset source component. */
+  path?: Path
   schemaType?: TSchemaType
   selectedAssetSource: AssetSource
   accept?: string
@@ -74,6 +77,7 @@ export function AssetSourceDialog<
     onChangeAction,
     onSelect,
     openInSourceAsset,
+    path,
     schemaType,
     selectedAssetSource,
     value,
@@ -110,6 +114,7 @@ export function AssetSourceDialog<
       onChangeAction,
       onClose,
       onSelect,
+      path,
       schemaType,
       selectionType: 'single' as const,
       uploader,
@@ -124,6 +129,7 @@ export function AssetSourceDialog<
       onChangeAction,
       onClose,
       onSelect,
+      path,
       schemaType,
       uploader,
     ],

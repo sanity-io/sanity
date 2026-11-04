@@ -1,6 +1,7 @@
 import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents/types'
+import {type Path} from '../paths/types'
 import {type Reference} from '../reference/types'
 import {type FileSchemaType, type ImageSchemaType, type SchemaType} from '../schema/types'
 
@@ -159,6 +160,14 @@ export interface AssetSourceComponentProps {
   onSelect: (assetFromSource: AssetFromSource[]) => void
   onChangeAction?: (action: AssetSourceComponentAction) => void
   schemaType?: ImageSchemaType | FileSchemaType
+  /**
+   * Path of the field the asset source was opened for, so sources can resolve field-relative
+   * context (for example the parent value). Optional for backwards compatibility with hosts
+   * that do not provide it.
+   *
+   * @beta
+   */
+  path?: Path
   /**
    * The uploader instance for tracking upload progress.
    *

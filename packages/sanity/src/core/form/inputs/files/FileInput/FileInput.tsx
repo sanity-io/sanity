@@ -250,6 +250,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           onChangeAction={handleAssetSourceChangeAction}
           onSelect={handleSelectAssets}
           openInSourceAsset={openInSourceAsset}
+          path={props.path}
           schemaType={props.schemaType}
           selectedAssetSource={selectedAssetSource}
           uploader={assetSourceUploader?.uploader}

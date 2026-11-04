@@ -421,6 +421,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         onChangeAction={handleAssetSourceChangeAction}
         onSelect={handleSelectAssetFromSource}
         openInSourceAsset={openInSourceAsset}
+        path={path}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
         uploader={assetSourceUploader?.uploader}
@@ -435,6 +436,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectAssetFromSource,
     observeAsset,
     openInSourceAsset,
+    path,
     schemaType,
     selectedAssetSource,
     value,

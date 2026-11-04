@@ -244,6 +244,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
           onChangeAction={handleAssetSourceChangeAction}
           onSelect={handleSelectAssets}
           openInSourceAsset={openInSourceAsset}
+          path={props.path}
           schemaType={props.schemaType}
           selectedAssetSource={selectedAssetSource}
           uploader={assetSourceUploader?.uploader}

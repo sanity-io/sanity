@@ -253,6 +253,8 @@ export {
   type FileValue,
   type MediaLibraryFilter,
   type MediaLibraryOptions,
+  type MediaLibraryResolver,
+  type MediaLibraryResolverContext,
 } from './schema/definition/type/file'
 export {
   type GeopointDefinition,
