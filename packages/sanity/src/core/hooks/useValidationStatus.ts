@@ -33,7 +33,7 @@ export function useValidationStatus(
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
-  requirePublishedReferences: boolean,
+  requirePublishedReferences?: boolean,
 ): ValidationStatus
 
 /** @internal */
