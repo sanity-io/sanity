@@ -18,7 +18,7 @@ export function useVariantsStore(): VariantStore {
   return useMemo(() => {
     const variantStore =
       resourceCache.get<VariantStore>({
-        dependencies: [workspace],
+        dependencies: [workspace, previewStore],
         namespace: 'VariantsStore',
       }) ||
       createVariantsStore({
@@ -28,7 +28,7 @@ export function useVariantsStore(): VariantStore {
       })
 
     resourceCache.set({
-      dependencies: [workspace],
+      dependencies: [workspace, previewStore],
       namespace: 'VariantsStore',
       value: variantStore,
     })
