@@ -167,4 +167,31 @@ describe('documentStore.pair.validation listener', () => {
     )
     expect(observeDocument).not.toHaveBeenCalled()
   })
+
+  it.each(['document', 'global'] as const)(
+    'switches only the validation of the %s listener to immediate',
+    (listener) => {
+      const {draftId, store, observeDocument} = setupListener()
+      observeDocument.mockReturnValue(NEVER)
+      const schedulingOf = (validationListener: 'document' | 'global') => {
+        store.pair.validation(draftId, 'movie', false, {listener: validationListener})
+        const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
+        if (!(scheduling instanceof BehaviorSubject)) {
+          throw new Error('validation was not handed a scheduling that runs can follow')
+        }
+        return scheduling
+      }
+      const scheduling = {document: schedulingOf('document'), global: schedulingOf('global')}
+      const other = listener === 'document' ? 'global' : 'document'
+
+      const hold = store.pair
+        .validation(draftId, 'movie', false, {scheduling: 'immediate', listener})
+        .subscribe()
+      expect(scheduling[listener].getValue()).toBe('immediate')
+      expect(scheduling[other].getValue()).toBe('idle')
+
+      hold.unsubscribe()
+      expect(scheduling[listener].getValue()).toBe('idle')
+    },
+  )
 })

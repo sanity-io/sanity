@@ -10,8 +10,10 @@ import {useValidationStatus} from '../useValidationStatus'
 
 // the store replays the latest status to every new subscriber
 let validationSubject: ReplaySubject<ValidationStatus>
+type Listener = 'document' | 'global'
 const immediateHolds = new Map<string, number>()
-const holds = (validationTargetId: string) => immediateHolds.get(validationTargetId) ?? 0
+const holds = (validationTargetId: string, listener: Listener = 'document') =>
+  immediateHolds.get(`${validationTargetId}:${listener}`) ?? 0
 
 // Referentially stable, like the real store: the hooks memoize on `documentStore.pair`.
 const mockDocumentStore = {
@@ -20,14 +22,21 @@ const mockDocumentStore = {
       validationTargetId: string,
       _type: string,
       _validatePublishedReferences: boolean,
-      options?: {scheduling?: ValidationScheduling},
+      options?: {scheduling?: ValidationScheduling; listener?: Listener},
     ) => {
       if (options?.scheduling !== 'immediate') return validationSubject.asObservable()
+      const listener = options.listener ?? 'document'
       return defer(() => {
-        immediateHolds.set(validationTargetId, holds(validationTargetId) + 1)
+        immediateHolds.set(
+          `${validationTargetId}:${listener}`,
+          holds(validationTargetId, listener) + 1,
+        )
         return validationSubject.pipe(
           finalize(() => {
-            immediateHolds.set(validationTargetId, holds(validationTargetId) - 1)
+            immediateHolds.set(
+              `${validationTargetId}:${listener}`,
+              holds(validationTargetId, listener) - 1,
+            )
           }),
         )
       })
@@ -47,8 +56,8 @@ function Probe({id, enabled}: {id: string; enabled: boolean}) {
   return null
 }
 
-function Hold({enabled}: {enabled: boolean}) {
-  useSetImmediateValidation('doc-1', 'author', false, {enabled})
+function Hold({enabled, listener}: {enabled: boolean; listener?: Listener}) {
+  useSetImmediateValidation('doc-1', 'author', false, {enabled, listener})
   return null
 }
 
@@ -81,6 +90,17 @@ describe('useSetImmediateValidation', () => {
     expect([holds('doc-1'), holds('doc-2')]).toEqual([0, 1])
 
     unmount()
+  })
+
+  it('holds the validation of the listener it is given, the document pair by default', () => {
+    const {rerender, unmount} = render(<Hold enabled />)
+    expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([1, 0])
+
+    rerender(<Hold enabled listener="global" />)
+    expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([0, 1])
+
+    unmount()
+    expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([0, 0])
   })
 
   it('leaves the status read beside it untouched when it is enabled', () => {
