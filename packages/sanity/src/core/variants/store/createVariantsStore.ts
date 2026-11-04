@@ -90,7 +90,7 @@ export function createVariantsStore(context: {
       listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
         invalidationChannel: previewStore.unstable_invalidationChannel,
         shouldRefetch: ({documentId}) => isVariantId(documentId),
-        tag: 'variants.listen',
+        fetchTag: 'variants.store.fetch',
       }).pipe(
         map((variants): VariantStoreAction => ({type: 'FETCH_SUCCEEDED', payload: variants})),
       ),

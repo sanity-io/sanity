@@ -366,7 +366,7 @@ describe('listenQueryOnGlobalListener', () => {
     return listenQueryOnGlobalListener(client, '*[_id in path("_.releases.*")]', {
       invalidationChannel,
       shouldRefetch,
-      tag: 'releases.listen',
+      fetchTag: 'releases.fetch',
     }).subscribe()
   }
 

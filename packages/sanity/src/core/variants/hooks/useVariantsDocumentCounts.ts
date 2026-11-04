@@ -71,7 +71,7 @@ function listenVariantsDocumentCounts(
       // A variant document's id holds an opaque scope id instead of its variant, so a change to
       // any version document can change the counts.
       shouldRefetch: ({documentId}) => isVersionId(documentId),
-      tag: 'variants-doc-counts.listen',
+      fetchTag: 'variants-doc-counts.fetch',
       // Variant-scoped documents are version documents, which are only visible to queries
       // using the raw perspective.
       perspective: 'raw',
