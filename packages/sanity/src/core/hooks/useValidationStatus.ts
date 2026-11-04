@@ -6,19 +6,36 @@ import {type ValidationStatus} from '../validation'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
+/**
+ * @internal
+ * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
+ * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
+ */
+export function useValidationStatus(
+  validationTargetId: string,
+  docTypeName: string,
+  requirePublishedReferences: boolean,
+): ValidationStatus
+
 /** @internal */
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
-  /**
-   * `listener: 'global'` follows the document through the document preview store's shared global
-   * listener instead of checking out the document pair, which opens a listener for every document
-   * validated. Changes are then validated only once the server has them, so use it where nobody
-   * edits the document, like a list or a board of documents.
-   *
-   * A boolean is the deprecated `requirePublishedReferences` argument, and is ignored: whether
-   * references must be published is decided by `validationTargetId`.
-   */
+  options?: {
+    /**
+     * `global` follows the document through the document preview store's shared global listener
+     * instead of checking out the document pair, which opens a listener for every document
+     * validated. Changes are then validated only once the server has them, so use it where nobody
+     * edits the document, like a list or a board of documents. Defaults to `document`.
+     */
+    listener?: 'document' | 'global'
+  },
+): ValidationStatus
+
+/** @internal */
+export function useValidationStatus(
+  validationTargetId: string,
+  docTypeName: string,
   options?: {listener?: 'document' | 'global'} | boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
