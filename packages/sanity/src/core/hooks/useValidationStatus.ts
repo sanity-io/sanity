@@ -16,6 +16,9 @@ export function useValidationStatus(
      * instead of checking out the document pair, which opens a listener for every document
      * validated. Changes are then validated only once the server has them, so use it where nobody
      * edits the document, like a list or a board of documents. Defaults to `document`.
+     *
+     * Each listener validates the document on its own: to have it validated without waiting for
+     * idle time, pass the same `listener` to `useSetImmediateValidation`.
      */
     listener?: 'document' | 'global'
   },

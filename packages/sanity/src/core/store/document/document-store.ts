@@ -131,9 +131,10 @@ export interface DocumentStore {
         /**
          * `immediate` validates without waiting for idle callbacks while a user waits on the
          * result, and speeds up a run already in flight rather than starting it over.
-         * Scheduling is shared per document: it stays `immediate` until the last immediate
-         * subscription unsubscribes, and idle subscribers on the same stream get those results
-         * too.
+         * Scheduling is shared per document and `listener`: it stays `immediate` until the last
+         * immediate subscription with that listener unsubscribes, and idle subscribers on the
+         * same stream get those results too. Subscribers with the other listener keep
+         * validating in idle time.
          */
         scheduling?: ValidationScheduling
         /**
