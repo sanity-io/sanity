@@ -10,6 +10,7 @@ import {DocumentVersionsStatusIndicator} from '../../../components/documentStatu
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
+import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
@@ -18,10 +19,7 @@ import {
 import {type Schedule} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validationUtils'
-import {
-  type ScheduleValidationListener,
-  ValidateScheduleDoc,
-} from '../validation/SchedulesValidation'
+import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import {statusDotPlaceholder} from './PreviewWrapper.css'
@@ -38,7 +36,7 @@ interface Props<TLink extends ElementType | undefined = undefined> {
   schedule: Schedule
   schemaType?: SchemaType
   useElementQueries?: boolean
-  validationListener: ScheduleValidationListener
+  validationListener: ValidationListener
 }
 
 function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
