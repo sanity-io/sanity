@@ -381,7 +381,7 @@ describe('listenQueryOnGlobalListener', () => {
     expect(fetch).toHaveBeenCalledWith(
       '*[_id in path("_.releases.*")]',
       {},
-      expect.objectContaining({tag: 'releases.listen', filterResponse: true}),
+      expect.objectContaining({tag: 'releases.fetch', filterResponse: true}),
     )
 
     // Changes may have been missed while the listener was reconnecting

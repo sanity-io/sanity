@@ -65,7 +65,7 @@ describe('createReleaseStore', () => {
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('_id in path("_.releases.*")'),
       {},
-      expect.objectContaining({filterResponse: true, tag: 'releases.listen'}),
+      expect.objectContaining({filterResponse: true, tag: 'releases.store.fetch'}),
     )
     expect(states.at(-1)?.state).toBe('loaded')
     expect(Array.from(states.at(-1)!.releases.values())).toEqual([activeASAPRelease])

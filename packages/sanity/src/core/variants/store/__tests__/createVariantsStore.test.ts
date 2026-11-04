@@ -82,7 +82,7 @@ describe('createVariantsStore', () => {
     expect(fetch).toHaveBeenCalledWith(
       fetchQuery,
       {},
-      expect.objectContaining({filterResponse: true, tag: 'variants.listen'}),
+      expect.objectContaining({filterResponse: true, tag: 'variants.store.fetch'}),
     )
     expect(values[0]).toMatchObject({state: 'initialising'})
     expect(values[1]).toMatchObject({state: 'loading'})

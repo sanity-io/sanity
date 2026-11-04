@@ -127,7 +127,7 @@ describe('getVariantsDocumentCounts', () => {
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('count(array::unique('),
       {},
-      expect.objectContaining({tag: 'variants-doc-counts.listen', perspective: 'raw'}),
+      expect.objectContaining({tag: 'variants-doc-counts.fetch', perspective: 'raw'}),
     )
     expect(values[0]).toEqual({data: null, loading: true, error: null})
     expect(values[1]).toEqual({
