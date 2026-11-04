@@ -21,8 +21,17 @@ import {
 import {isValidElementType} from 'react-is'
 import {Flex} from 'ui5'
 
+import {
+  isVideoAssetSource,
+  type VideoAssetSource,
+} from '../../../media-library/plugin/preview/isVideoAssetSource'
+import {VideoThumbnail} from '../../../media-library/plugin/preview/VideoThumbnail'
 import {resolveBlockImageDimensions} from '../../components/previews/helpers'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
+import {
+  type PreviewLayoutKey,
+  type PreviewMediaDimensions,
+  type PreviewProps,
+} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks/useClient'
@@ -33,6 +42,36 @@ import {PreviewTooltip} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
+}
+
+// Stable per asset-ref media component. Preview prepare() recreates media objects on
+// every title keystroke; a new function identity remounts VideoThumbnail and refetches.
+type VideoMediaPreviewComponent = ComponentType<{
+  dimensions: PreviewMediaDimensions
+  layout: PreviewLayoutKey
+}>
+const videoMediaPreviewByAssetRef = new Map<string, VideoMediaPreviewComponent>()
+const videoValueByAssetRef = new Map<string, VideoAssetSource>()
+
+function getVideoMediaPreview(value: VideoAssetSource): VideoMediaPreviewComponent {
+  const assetRef = value.asset._ref
+  videoValueByAssetRef.set(assetRef, value)
+
+  const existing = videoMediaPreviewByAssetRef.get(assetRef)
+  if (existing) return existing
+
+  function VideoMediaPreview({
+    dimensions,
+  }: {
+    dimensions: PreviewMediaDimensions
+    layout: PreviewLayoutKey
+  }) {
+    const current = videoValueByAssetRef.get(assetRef)
+    return current ? <VideoThumbnail value={current} dimensions={dimensions} /> : null
+  }
+
+  videoMediaPreviewByAssetRef.set(assetRef, VideoMediaPreview)
+  return VideoMediaPreview
 }
 
 /** @internal */
@@ -164,6 +203,10 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
     if (isImageSource(mediaProp)) {
       return renderMedia
+    }
+
+    if (isVideoAssetSource(mediaProp)) {
+      return getVideoMediaPreview(mediaProp)
     }
 
     if (isValidElementType(mediaProp)) {
