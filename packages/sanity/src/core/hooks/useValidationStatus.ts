@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
+import {type ValidationListener} from '../store/document/document-pair/validation'
 import {type ValidationStatus} from '../validation'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
@@ -21,7 +22,7 @@ export function useValidationStatus(
      *  Use it only if you are already listening to the document pair while editing the document.
      *
      */
-    listener?: 'document' | 'global'
+    listener?: ValidationListener
   },
 ): ValidationStatus
 
@@ -40,7 +41,7 @@ export function useValidationStatus(
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
-  options?: {listener?: 'document' | 'global'} | boolean,
+  options?: {listener?: ValidationListener} | boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
   const listener = typeof options === 'object' ? (options.listener ?? 'document') : 'document'

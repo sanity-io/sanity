@@ -29,7 +29,7 @@ function shareLatestWithRefCount<T>() {
  * listener for it, and `global` follows the document through the document preview store's shared
  * global listener.
  */
-type ValidationListener = 'document' | 'global'
+export type ValidationListener = 'document' | 'global'
 
 function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariantType) {
   if (validationTarget === 'draft') return idPair.draftId

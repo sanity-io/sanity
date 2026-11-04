@@ -2,9 +2,9 @@ import {red} from '@sanity/color'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {type Schedule} from '../../types'
 import {FallbackContextMenu} from '../scheduleContextMenu/FallbackContextMenu'
-import {type ScheduleValidationListener} from '../validation/SchedulesValidation'
 import PreviewWrapper from './PreviewWrapper'
 
 const NoSchemaItem = ({
@@ -12,7 +12,7 @@ const NoSchemaItem = ({
   validationListener,
 }: {
   schedule: Schedule
-  validationListener: ScheduleValidationListener
+  validationListener: ValidationListener
 }) => {
   return (
     <PreviewWrapper

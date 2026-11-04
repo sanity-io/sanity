@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 
 import {useDocumentStore} from '../store/datastores'
+import {type ValidationListener} from '../store/document/document-pair/validation'
 
 /**
  * Validates a document without waiting for idle time, for as long as `enabled` is true, including
@@ -42,7 +43,7 @@ export function useSetImmediateValidation(
     /**
      * The `listener` of the `useValidationStatus` to speed up. Defaults to `document`.
      */
-    listener?: 'document' | 'global'
+    listener?: ValidationListener
   },
 ): void {
   const documentStore = useDocumentStore()
