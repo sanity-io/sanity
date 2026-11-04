@@ -112,7 +112,8 @@ describe('useSetImmediateValidation', () => {
 
     rerender(<Probe id="doc-1" enabled />)
 
-    // A frame of the initial status here would tell a publish gate that validation is done.
+    // A finished frame here would tell a publish gate that validation is done before this read has
+    // caught up.
     expect(frames.length).toBeGreaterThan(framesBeforeEnabling)
     expect(frames.slice(framesBeforeEnabling).filter((frame) => !frame.isValidating)).toEqual([])
   })

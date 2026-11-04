@@ -5,7 +5,9 @@ import {useDocumentStore} from '../store/datastores'
 import {type ValidationListener} from '../store/document/document-pair/validation'
 import {type ValidationStatus} from '../validation'
 
-const INITIAL: ValidationStatus = {validation: [], isValidating: false}
+// The validation stream has not emitted yet. `isValidating: false` with no markers would read as a
+// finished, valid result to a consumer that does not also check `revision`.
+const INITIAL: ValidationStatus = {validation: [], isValidating: true}
 
 /** @internal */
 export function useValidationStatus(
