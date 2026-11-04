@@ -11,7 +11,7 @@ import {
   Subject,
   timer,
 } from 'rxjs'
-import {buffer, publish, takeWhile} from 'rxjs/operators'
+import {buffer, filter, map, publish, takeWhile} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -21,6 +21,8 @@ import {
   type DraftsModelDocumentAvailability,
 } from '../../../preview/types'
 import {createSchema} from '../../../schema/createSchema'
+import {getPublishedId} from '../../../util/draftUtils'
+import {type ValidationStatus} from '../../../validation'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
@@ -126,6 +128,25 @@ function createSubscription(
     doneValidating: () => {
       return lastValueFrom(stream.pipe(takeWhile((e) => e.isValidating, true)))
     },
+    waitFor: (predicate: (status: ValidationStatus) => boolean) =>
+      firstValueFrom(stream.pipe(filter(predicate))),
+  }
+}
+
+// The edit state the document pair reports for a draft
+function draftEditState(draft: SanityDocument): EditStateFor {
+  return {
+    id: getPublishedId(draft._id),
+    type: draft._type,
+    transactionSyncLock: null,
+    draft,
+    published: null,
+    version: null,
+    liveEdit: false,
+    liveEditSchemaType: false,
+    ready: true,
+    release: undefined,
+    scopeId: undefined,
   }
 }
 
@@ -804,6 +825,44 @@ describe('validation', () => {
       expect(mockEditState).not.toHaveBeenCalled()
       document$.complete()
     })
+
+    it.each(['document', 'global'] as const)(
+      'reads a changed document as validating until its own result arrives (%s listener)',
+      async (listener) => {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        const draftId = `drafts.${documentId}`
+        const document$ = new Subject<SanityDocument>()
+        mockEditState.mockImplementation(() => document$.pipe(map(draftEditState)))
+
+        const {subscription, closeSubscription, doneValidating, waitFor} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener, observeDocument: () => document$.asObservable()},
+        )
+
+        document$.next({...movie, _id: draftId, _rev: 'rev1', title: 5})
+        await doneValidating()
+
+        // a change that arrives from the server changes the content and the revision at once
+        document$.next({...movie, _id: draftId, _rev: 'rev2', title: 'A valid title'})
+        await waitFor((status) => !status.isValidating && status.validation.length === 0)
+        closeSubscription()
+
+        const statuses = await subscription
+        const afterChange = statuses.slice(statuses.findIndex((status) => !status.isValidating) + 1)
+        expect(afterChange.slice(0, -1).filter((status) => !status.isValidating)).toEqual([])
+        expect(afterChange).toContainEqual(
+          expect.objectContaining({isValidating: true, revision: 'rev2'}),
+        )
+        expect(afterChange[afterChange.length - 1]).toMatchObject({
+          isValidating: false,
+          validation: [],
+          revision: 'rev2',
+        })
+        document$.complete()
+      },
+    )
 
     it('keeps the document pair and the global listener in separate cache entries', () => {
       const client = getMockClient()
