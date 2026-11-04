@@ -39,13 +39,23 @@ function readPath(pathname: string = window.location.pathname) {
   return {list: groups[0], docs: groups.slice(1)}
 }
 
+/**
+ * The group a tab opens as: its own document and params, with the panel (`inspect=`) of the document on screen. A panel stays open across a switch
+ * (K4), and a panel opened after the tab was made is not lost to the group saved with it.
+ */
+function carryPanel(tabGroup: string, currentGroup: string | undefined) {
+  const own = tabGroup.split(',').filter((part) => !part.startsWith('inspect='))
+  const panel = currentGroup?.split(',').find((part) => part.startsWith('inspect='))
+  return [...own, ...(panel ? [panel] : [])].join(',')
+}
+
 function docTab(list: string, group: string): Tab {
   const type =
     group
       .split(',')
       .find((p) => p.startsWith('type='))
       ?.slice(5) ?? list
-  return {id: idOf(group), type, group}
+  return {id: idOf(group), type, group: carryPanel(group, undefined)}
 }
 
 function useTitle(tab: Tab) {
@@ -256,7 +266,9 @@ function DocTabsFrame({
       const at = all.findIndex((t) => t.id === idOf(now.docs[0]))
       const step = event.code === 'BracketRight' ? 1 : -1
       const next = all[(at + step + all.length) % all.length]
-      router.navigateUrl({path: pathOf([now.list, next.group]) + window.location.search})
+      router.navigateUrl({
+        path: pathOf([now.list, carryPanel(next.group, now.docs[0])]) + window.location.search,
+      })
       say(`Switched to tab ${all.indexOf(next) + 1} of ${all.length}`)
     }
     window.addEventListener('keydown', onKey)
@@ -281,7 +293,7 @@ function DocTabsFrame({
     const tab = tabs.find((t) => t.id === id)
     if (!tab || !list) return
     const keepSplit = split && split !== id ? [tabs.find((t) => t.id === split)?.group ?? ''] : []
-    go([list, tab.group, ...keepSplit.filter(Boolean)])
+    go([list, carryPanel(tab.group, docs[0]), ...keepSplit.filter(Boolean)])
     say(`Switched to ${label(id)}, tab ${tabs.indexOf(tab) + 1} of ${tabs.length}`)
   }
 
@@ -293,7 +305,7 @@ function DocTabsFrame({
     removeTab(id)
     if (id === activeId) {
       const next = rest[Math.min(at, rest.length - 1)]
-      go(next ? [list, next.group] : [list])
+      go(next ? [list, carryPanel(next.group, docs[0])] : [list])
       setFocusId(next?.id ?? null)
       focusLater(next?.id)
       say(
@@ -316,7 +328,7 @@ function DocTabsFrame({
     const active = tabs.find((t) => t.id === activeId)
     if (!tab || !active || !list || id === activeId) return
     setSplit(id)
-    go([list, active.group, tab.group])
+    go([list, docs[0] ?? active.group, tab.group])
     say(`${label(id)} split beside ${label(active.id)}`)
   }
 
