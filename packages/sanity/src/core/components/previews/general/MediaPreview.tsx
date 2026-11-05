@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -57,13 +56,13 @@ export function MediaPreview(props: MediaPreviewProps) {
     return (
       <TooltipContentStack>
         {title && (
-          <Text align="center" size={1} weight="medium">
+          <Text align="center" size={1} weight="medium" as="div" trim={true}>
             {renderPreviewNode(title, 'media')}
           </Text>
         )}
 
         {subtitle && (
-          <Text align="center" muted size={1}>
+          <Text align="center" muted size={1} as="div" trim={true}>
             {renderPreviewNode(subtitle, 'media')}
           </Text>
         )}
