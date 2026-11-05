@@ -55,8 +55,9 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
   const modePromise = use(ScheduledPublishingModePromiseContext)
   const mode = modePromise ? use(modePromise) : null
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
-  const {validation} = validationStatus
+  const {validation, error} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
+  const rowTone = error ? 'critical' : validationTone
   const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
 
   const executeDate = getLastExecuteDate(schedule)
@@ -67,7 +68,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
       padding={1}
       radius={2}
       shadow={1}
-      tone={validationTone}
+      tone={rowTone}
       style={mode === 'upsell' && schedule.state === 'scheduled' ? {opacity: 0.7} : undefined}
     >
       <Flex alignItems="center" gap={1} justifyContent="space-between">
@@ -91,7 +92,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
             padding={1}
             radius={2}
             tabIndex={0}
-            tone={validationTone}
+            tone={rowTone}
           >
             <Flex
               alignItems="center"
@@ -191,6 +192,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
               />
               <ValidationInfo
                 markers={validation}
+                errorMessage={error?.message}
                 type={schemaType}
                 documentId={publishedDocumentId}
                 menuHeader={

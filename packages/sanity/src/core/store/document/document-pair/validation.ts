@@ -2,8 +2,28 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SanityDocument, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of, timer} from 'rxjs'
-import {distinctUntilChanged, map, retry, share, shareReplay, throttleTime} from 'rxjs/operators'
+import {
+  asyncScheduler,
+  BehaviorSubject,
+  combineLatest,
+  concat,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+  timer,
+} from 'rxjs'
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  retry,
+  share,
+  shareReplay,
+  throttleTime,
+} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -20,9 +40,25 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
 
-// Same limit as the preview store's document-count fetch. An unbounded retry would never surface
-// the failure.
+// Same limit as the preview store's document-count fetch. After that the load is reported, then
+// tried again. The same delay is the pause before that next try.
 const MAX_GLOBAL_DOCUMENT_LOAD_RETRIES = 3
+const GLOBAL_DOCUMENT_LOAD_RETRY_MS = 30_000
+
+type GlobalDocumentLoad = {document: SanityDocument | null} | {error: {message: string}}
+
+function isGlobalDocumentLoadError(load: GlobalDocumentLoad): load is {error: {message: string}} {
+  return 'error' in load
+}
+
+function documentLoadError(error: unknown): {message: string} {
+  return {
+    message:
+      error instanceof Error && error.message
+        ? error.message
+        : 'Could not load the document to validate it',
+  }
+}
 
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
@@ -64,19 +100,35 @@ const validationStreams = memoize(
     listener: ValidationListener,
   ) => {
     const documentId = getValidationTargetId(idPair, validationTarget)
-    const target$: Observable<SanityDocument | null | undefined> =
-      listener === 'global'
-        ? documentId
-          ? ctx.observeDocument(documentId).pipe(
-              // A failed fetch or a dropped global listener would error the validation, which
-              // `useValidationStatus` rethrows during render. Retry three times, the same limit as
-              // the preview store's document-count fetch, then let that error through.
-              retry({
-                count: MAX_GLOBAL_DOCUMENT_LOAD_RETRIES,
-                delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
-              }),
-            )
-          : of(undefined)
+    // Shared, so the document and its load error come from one subscription. A failed load is
+    // retried, then reported as `error` with `isValidating` still true, and tried again later.
+    const globalDocument$ =
+      listener === 'global' && documentId
+        ? ctx.observeDocument(documentId).pipe(
+            retry({
+              count: MAX_GLOBAL_DOCUMENT_LOAD_RETRIES,
+              delay: (_error: unknown, attempt) =>
+                timer(Math.min(GLOBAL_DOCUMENT_LOAD_RETRY_MS, attempt * 1000)),
+            }),
+            map((document): GlobalDocumentLoad => ({document: document ?? null})),
+            catchError((error: unknown, caught$) =>
+              concat(
+                of<GlobalDocumentLoad>({error: documentLoadError(error)}),
+                timer(GLOBAL_DOCUMENT_LOAD_RETRY_MS).pipe(mergeMap(() => caught$)),
+              ),
+            ),
+            shareLatestWithRefCount(),
+          )
+        : undefined
+    const target$: Observable<SanityDocument | null | undefined> = globalDocument$
+      ? globalDocument$.pipe(
+          filter(
+            (load): load is {document: SanityDocument | null} => !isGlobalDocumentLoadError(load),
+          ),
+          map((load) => load.document),
+        )
+      : listener === 'global'
+        ? of(undefined)
         : editState(ctx, idPair, typeName).pipe(
             map((state) => {
               const {version, draft, published} = state
@@ -86,6 +138,16 @@ const validationStreams = memoize(
               return published
             }),
           )
+    const loadError$ = globalDocument$
+      ? globalDocument$.pipe(
+          filter(isGlobalDocumentLoadError),
+          map((load): ValidationStatus => ({
+            isValidating: true,
+            validation: [],
+            error: load.error,
+          })),
+        )
+      : EMPTY
     // shared, so the document to validate and the revision below come from the same emission
     const document$ = target$.pipe(
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
@@ -123,7 +185,7 @@ const validationStreams = memoize(
     const documentRevision$ = document$.pipe(map((document) => document?._rev))
 
     const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
-    const status$ = combineLatest([
+    const validated$ = combineLatest([
       validateDocumentWithReferences(ctx, documentToValidate$, scheduling),
       documentToValidate$,
       // keep last: a new document must reach `documentToValidate` before its revision does
@@ -143,6 +205,7 @@ const validationStreams = memoize(
         }
       }),
     )
+    const status$ = merge(loadError$, validated$)
     // shared: the first subscriber switches to `immediate`, the last one to leave switches back
     const holdImmediate$ = new Observable<never>(() => {
       scheduling.next('immediate')

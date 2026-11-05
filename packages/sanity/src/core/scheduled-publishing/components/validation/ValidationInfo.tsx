@@ -11,7 +11,7 @@ import {Menu} from '@sanity/ui/menu'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'
-import {Container, VStack} from 'ui5'
+import {Container, Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -24,6 +24,10 @@ interface ValidationProps {
   markers: ValidationMarker[]
   type?: SchemaType
   menuHeader?: ReactNode
+  /**
+   * The document could not be loaded, so it was not validated. Shown instead of the marker list.
+   */
+  errorMessage?: string
 }
 
 const POPOVER_PROPS = {
@@ -36,11 +40,12 @@ const POPOVER_PROPS = {
 } as const
 
 export function ValidationInfo(props: ValidationProps) {
-  const {type, markers, menuHeader, documentId} = props
+  const {type, markers, menuHeader, documentId, errorMessage} = props
   const router = useRouter()
   const {hasError, hasWarning} = useValidationState(markers)
+  const unavailable = Boolean(errorMessage)
   // use visibility so we can occupy the space equally for all states
-  const visibility = hasError || hasWarning ? 'visible' : 'hidden'
+  const visibility = hasError || hasWarning || unavailable ? 'visible' : 'hidden'
   const id = useId() || ''
   const publishId = usePublishedId(documentId)
 
@@ -65,9 +70,9 @@ export function ValidationInfo(props: ValidationProps) {
           tooltipProps={{content: 'Show validation issues'}}
           mode="bleed"
           data-testid="schedule-validation-list-button"
-          icon={hasError ? ErrorOutlineIcon : WarningOutlineIcon}
+          icon={hasError || unavailable ? ErrorOutlineIcon : WarningOutlineIcon}
           style={{visibility}}
-          tone={hasError ? 'critical' : 'default'}
+          tone={hasError || unavailable ? 'critical' : 'default'}
         />
       }
       menu={
@@ -75,11 +80,17 @@ export function ValidationInfo(props: ValidationProps) {
           <Container size={0}>
             <VStack gap={1}>
               {menuHeader ?? null}
-              <ValidationList
-                documentType={type as ObjectSchemaType}
-                validation={markers}
-                onFocus={onFocus}
-              />
+              {errorMessage ? (
+                <Text size={1} as="div">
+                  {errorMessage}
+                </Text>
+              ) : (
+                <ValidationList
+                  documentType={type as ObjectSchemaType}
+                  validation={markers}
+                  onFocus={onFocus}
+                />
+              )}
             </VStack>
           </Container>
         </Menu>
