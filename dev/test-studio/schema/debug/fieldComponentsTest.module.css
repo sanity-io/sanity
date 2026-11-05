@@ -1,0 +1,22 @@
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+.customBox {
+  animation: 3s linear 0s infinite normal none spin;
+  background: white;
+  border: 1px solid black;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+}
+
+.customBox:hover {
+  background: red;
+}
