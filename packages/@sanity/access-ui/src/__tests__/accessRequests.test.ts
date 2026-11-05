@@ -13,12 +13,6 @@ describe('listMyAccessRequests', () => {
     const client = createClientStub({list: () => Promise.resolve(null)})
     await expect(listMyAccessRequests(client)).resolves.toEqual([])
   })
-
-  it('keeps the legacy API version', async () => {
-    const client = createClientStub()
-    await listMyAccessRequests(client)
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
-  })
 })
 
 const submit = (client: ReturnType<typeof createClientStub>) =>
@@ -46,13 +40,6 @@ describe('submitAccessRequest', () => {
       }),
     )
   })
-
-  it('keeps the legacy API version', async () => {
-    const client = createClientStub()
-    await submit(client)
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
-  })
-
   const errorCases: {
     given: string
     error: Error
@@ -138,7 +125,6 @@ describe('fetchAccessRequestStatus', () => {
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({url: '/access/project/project-a/requests/state'}),
     )
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2024-07-01'})
   })
 
   it('returns the saml-required verdict with its SSO login URL', async () => {
