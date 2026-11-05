@@ -277,7 +277,7 @@ describe('RequestAccessForm', () => {
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 
-  it('shows conditional SSO role guidance over pending history without an SSO action', async () => {
+  it('shows conditional SSO role guidance over pending history without a redirect URL', async () => {
     const client = createClientStub({
       status: () => Promise.resolve({state: 'saml-roles-managed'}),
       list: () => Promise.resolve([createAccessRequest()]),
@@ -296,6 +296,23 @@ describe('RequestAccessForm', () => {
     expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', {name: 'Sign in with SSO'})).not.toBeInTheDocument()
+  })
+
+  it('shows the SSO sign-in action for managed roles when a redirect URL exists', async () => {
+    const redirectUrl = 'https://www.sanity.io/login/sso/confirm?provider=acme'
+    const client = createClientStub({
+      status: () => Promise.resolve({state: 'saml-roles-managed', redirectUrl}),
+    })
+    await renderForm({client})
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/Signing in through SSO again may reapply mapped roles/)
+    expect(alert).toHaveTextContent(/does not guarantee access/)
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      redirectUrl,
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 
   it('keeps the form when the server says eligible', async () => {

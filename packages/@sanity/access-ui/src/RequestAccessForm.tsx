@@ -178,6 +178,7 @@ function deriveServerViewState(
         title: labels.samlRolesManagedTitle,
         description: null,
         message: labels.samlRolesManagedMessage(),
+        redirectUrl: status.redirectUrl,
       }
     case 'temporarily-unavailable':
       return unavailableState(labels)

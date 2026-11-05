@@ -91,7 +91,7 @@ export type AccessRequestEligibilityState =
   | {state: 'pending'}
   | {state: 'recently-declined'}
   | {state: 'requests-disabled'}
-  | {state: 'saml-roles-managed'}
+  | {state: 'saml-roles-managed'; redirectUrl?: string}
   | {state: 'temporarily-unavailable'}
 
 /**

@@ -151,6 +151,16 @@ describe('fetchAccessRequestStatus', () => {
     await expect(fetchStatus(client)).resolves.toEqual(verdict)
   })
 
+  it('returns the saml-roles-managed verdict with its SSO login URL', async () => {
+    const verdict = {
+      state: 'saml-roles-managed',
+      redirectUrl: 'https://www.sanity.io/login/sso/confirm?provider=acme',
+    }
+    const client = createClientStub({status: () => Promise.resolve(verdict)})
+
+    await expect(fetchStatus(client)).resolves.toEqual(verdict)
+  })
+
   it('packs the origin into returnQuery so the user returns after SSO', async () => {
     const client = createClientStub()
 
@@ -183,7 +193,14 @@ describe('fetchAccessRequestStatus', () => {
   it.each([
     {given: 'a null body', value: null},
     {given: 'an unknown state', value: {state: 'future-state'}},
-    {given: 'a malformed redirect URL', value: {state: 'saml-required', redirectUrl: 42}},
+    {
+      given: 'a malformed saml-required redirect URL',
+      value: {state: 'saml-required', redirectUrl: 42},
+    },
+    {
+      given: 'a malformed saml-roles-managed redirect URL',
+      value: {state: 'saml-roles-managed', redirectUrl: 42},
+    },
   ])('fails closed for $given', async ({value}) => {
     const client = createClientStub({status: () => Promise.resolve(null)})
 
