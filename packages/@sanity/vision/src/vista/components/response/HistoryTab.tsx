@@ -1,10 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Stack} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
 import {type ReactNode, Suspense, use, useId, useMemo, useState} from 'react'
 import {type TFunction, useDateTimeFormat, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -81,7 +81,7 @@ function DiffSection(props: {
   return (
     <Stack data-testid={testId} gap={2}>
       <Flex alignItems="center" flexWrap="wrap" gap={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {label}
         </Text>
         {actions}
@@ -101,7 +101,7 @@ function QueryDiff(props: {texts: Promise<QueryDiffTexts>}) {
   const {previous, next} = use(props.texts)
   if (previous === next) {
     return (
-      <Text data-testid="vista-history-query-formatting-only" muted size={1}>
+      <Text data-testid="vista-history-query-formatting-only" muted size={1} as="div" trim={true}>
         {t('vista.history.diff.query-formatting-only')}
       </Text>
     )
@@ -181,10 +181,10 @@ function HistoryEntry(props: {
       tone={entry.status === 'error' ? 'critical' : 'default'}
     >
       <Flex alignItems="center" flexWrap="wrap" gap={2}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {formatTime.format(new Date(entry.requestedAt))}
         </Text>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {describeFetchReason(entry.reason, t)}
         </Text>
         {entry.reason.type === 'live' &&
@@ -194,7 +194,7 @@ function HistoryEntry(props: {
             </Badge>
           ))}
         {status && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {status}
           </Text>
         )}
@@ -226,21 +226,21 @@ function HistoryEntry(props: {
             {t('vista.history.failed')}
           </Badge>
         ) : (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : `${entry.ms}ms`} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : `${entry.e2eMs}ms`}`}
           </Text>
         )}
       </Flex>
       {entry.errorMessage && (
         <Box paddingTop={2}>
-          <Text muted size={1} textOverflow="ellipsis">
+          <Text muted size={1} truncate={1} as="div" trim={true}>
             {entry.errorMessage}
           </Text>
         </Box>
       )}
       {comparable && expanded && previous && (
         <Stack data-testid="vista-history-changes" gap={3} id={changesId} paddingTop={2}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('vista.history.compared-with', {
               time: formatTime.format(new Date(previous.requestedAt)),
             })}
@@ -248,7 +248,7 @@ function HistoryEntry(props: {
           <DiffBoundary
             renderFallback={(retry) => (
               <Flex alignItems="center" gap={2}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('vista.history.changes-failed')}
                 </Text>
                 <Button
@@ -288,7 +288,13 @@ function HistoryEntry(props: {
                       shown &&
                       !onlyHiddenChanged && (
                         <>
-                          <Text data-testid="vista-history-hidden-fields" muted size={1}>
+                          <Text
+                            data-testid="vista-history-hidden-fields"
+                            muted
+                            size={1}
+                            as="div"
+                            trim={true}
+                          >
                             {t(
                               showHidden ? 'vista.history.showing-hidden' : 'vista.history.hiding',
                               {fields: hiddenFields.join(', ')},
@@ -351,7 +357,7 @@ export function HistoryTab(props: {
   if (history.length === 0) {
     return (
       <Box padding={3}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.history.empty')}
         </Text>
       </Box>

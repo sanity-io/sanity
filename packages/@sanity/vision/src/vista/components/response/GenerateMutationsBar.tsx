@@ -1,7 +1,7 @@
-import {Button, Card, Stack, Text} from '@sanity/ui'
+import {Button, Card, Stack} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
@@ -128,12 +128,12 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
           value={request}
         />
         {status.type === 'idle' && !atLimit && (
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             {t('vista.mutate.generate.description')}
           </Text>
         )}
         {status.type === 'generating' && (
-          <Text data-testid="vista-mutate-generate-progress" muted size={1}>
+          <Text data-testid="vista-mutate-generate-progress" muted size={1} as="div" trim={true}>
             {status.attempt > 1
               ? t('vista.mutate.generate.progress-retry', {
                   attempt: status.attempt,
@@ -145,10 +145,12 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
         {status.type === 'failed' && !atLimit && (
           <Card data-testid="vista-mutate-generate-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('vista.mutate.generate.failed')}
               </Text>
-              <Text size={1}>{status.message}</Text>
+              <Text size={1} as="div" trim={true}>
+                {status.message}
+              </Text>
               {lastAttempt && (
                 <Flex>
                   <Button

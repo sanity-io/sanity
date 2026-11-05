@@ -2,11 +2,11 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
+import {Button, Hotkeys, Label, Tab, TabList} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -277,7 +277,7 @@ export function RequestPanel(props: RequestPanelProps) {
           }
           icon={
             params.valid ? undefined : (
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ErrorOutlineIcon />
               </Text>
             )
@@ -345,7 +345,9 @@ export function RequestPanel(props: RequestPanelProps) {
           animate
           content={
             <Flex alignItems="center" gap={2} padding={1}>
-              <Text size={1}>{runDescription}</Text>
+              <Text size={1} as="div" trim={true}>
+                {runDescription}
+              </Text>
               {!isFetching && <Hotkeys fontSize={0} keys={VISTA_SHORTCUTS.fetch.keys} />}
             </Flex>
           }

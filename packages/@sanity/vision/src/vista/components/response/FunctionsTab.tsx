@@ -1,10 +1,10 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Button, Card, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaSavedFunction} from '../../store/types'
@@ -158,7 +158,11 @@ function LibraryFunction(props: {
         {action}
         <Tooltip
           animate
-          content={<Text size={1}>{t('vista.functions.remove')}</Text>}
+          content={
+            <Text size={1} as="div" trim={true}>
+              {t('vista.functions.remove')}
+            </Text>
+          }
           placement="top"
           portal
         >
@@ -203,7 +207,7 @@ export function FunctionsTab(props: FunctionsTabProps) {
           </Label>
           {declarations.length === 0 ? (
             <Stack gap={3}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('vista.functions.query.empty', {
                   shortcut: EXTRACT_FUNCTION_SHORTCUT.keys.join('+'),
                 })}
@@ -226,7 +230,7 @@ export function FunctionsTab(props: FunctionsTabProps) {
           <Label muted size={0}>
             {t('vista.functions.library.title')}
           </Label>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {library.length === 0
               ? t('vista.functions.library.empty')
               : t('vista.functions.library.description')}

@@ -9,11 +9,11 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button, Text} from '@sanity/ui'
+import {Badge, Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ComponentType, type MouseEvent, useCallback, useRef, useSyncExternalStore} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
@@ -75,7 +75,16 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
 
   return (
     <div className={styles.sidebarItem}>
-      <Tooltip animate content={<Text size={1}>{name}</Text>} placement="right" portal>
+      <Tooltip
+        animate
+        content={
+          <Text size={1} as="div" trim={true}>
+            {name}
+          </Text>
+        }
+        placement="right"
+        portal
+      >
         <Button
           aria-label={name}
           data-testid={testId}

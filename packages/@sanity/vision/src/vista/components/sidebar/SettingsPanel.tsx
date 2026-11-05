@@ -1,11 +1,11 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Stack, Text, TextArea} from '@sanity/ui'
+import {Button, Card, Stack, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
@@ -52,10 +52,16 @@ function HiddenDiffFieldsSetting() {
   return (
     <Stack gap={3}>
       <Stack gap={2}>
-        <Text as="label" htmlFor="vista-settings-hidden-diff-fields" size={1} weight="medium">
+        <Text
+          as="label"
+          htmlFor="vista-settings-hidden-diff-fields"
+          size={1}
+          weight="medium"
+          trim={true}
+        >
           {t('vista.settings.history-diff.title')}
         </Text>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.settings.history-diff.description')}
         </Text>
       </Stack>
@@ -139,7 +145,7 @@ export function SettingsPanel() {
   return (
     <Box data-testid="vista-settings" padding={4}>
       <Stack gap={5}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.settings.description')}
         </Text>
 
@@ -194,10 +200,10 @@ export function SettingsPanel() {
 
         <Card border padding={3} radius={2}>
           <Stack gap={3}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {t('vista.redesign.settings.title')}
             </Text>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('vista.redesign.settings.description')}
             </Text>
             <Flex>
@@ -214,7 +220,7 @@ export function SettingsPanel() {
 
         <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
           <Stack gap={3}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('vista.settings.clear-storage.description')}
             </Text>
             <Flex gap={2}>

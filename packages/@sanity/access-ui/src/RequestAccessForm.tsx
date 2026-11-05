@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Button, Card, Spinner, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Spinner, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -12,7 +12,7 @@ import {
 } from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {catchError, combineLatest, defer, of} from 'rxjs'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {
   fetchAccessRequestStatus,
@@ -340,12 +340,12 @@ function RequestAccessFormContent(
           </Flex>
         ) : null}
 
-        <Text as="h1" id={titleId} size={2} weight="semibold">
+        <Text as="h1" id={titleId} size={2} weight="semibold" trim={true}>
           {state.title}
         </Text>
 
         {state.description !== null ? (
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true}>
             {state.description}
           </Text>
         ) : null}
@@ -353,7 +353,7 @@ function RequestAccessFormContent(
         {state.view === 'blocked' || state.view === 'sso-enforced' ? (
           <VStack gap={4}>
             <Card border padding={3} radius={2} role="alert" tone="caution">
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true}>
                 {state.message}
               </Text>
             </Card>
@@ -372,7 +372,7 @@ function RequestAccessFormContent(
 
         {state.view === 'form' ? (
           <VStack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
-            <Text as="p" size={1}>
+            <Text as="p" size={1} trim={true}>
               {state.expired
                 ? labels.expiredMessage
                 : resourceType === 'organization'
@@ -390,13 +390,13 @@ function RequestAccessFormContent(
                 rows={3}
                 value={note}
               />
-              <Text align="right" muted size={0}>
+              <Text align="right" muted size={0} as="div" trim={true}>
                 {`${note.length}/${MAX_ACCESS_REQUEST_NOTE_LENGTH}`}
               </Text>
             </VStack>
             {submitFailed ? (
               <Card border padding={3} radius={2} role="alert" tone="critical">
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true}>
                   {labels.submitFailedMessage}
                 </Text>
               </Card>
@@ -420,7 +420,7 @@ function RequestAccessFormContent(
             <Flex alignItems="center" gap={2} justifyContent="center">
               <Avatar initials={getInitials(currentUser)} size={0} src={currentUser.profileImage} />
               <Box>
-                <Text muted size={1} textOverflow="ellipsis">
+                <Text muted size={1} truncate={1} as="div" trim={true}>
                   {currentUser.email ?? currentUser.name}
                   {providerTitle ? ` · ${providerTitle}` : ''}
                 </Text>
@@ -434,7 +434,7 @@ function RequestAccessFormContent(
                 padding={2}
                 textWeight="regular"
               >
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {labels.wrongAccount} <strong>{labels.signOut}</strong>
                 </Text>
               </Button>

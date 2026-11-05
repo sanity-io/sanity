@@ -1,9 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {Button, Card, Stack, Text} from '@sanity/ui'
+import {Button, Card, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
@@ -130,12 +130,12 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           value={request}
         />
         {status.type === 'idle' && !atLimit && (
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             {t('vista.generate.description')}
           </Text>
         )}
         {status.type === 'generating' && (
-          <Text data-testid="vista-generate-progress" muted size={1}>
+          <Text data-testid="vista-generate-progress" muted size={1} as="div" trim={true}>
             {status.attempt > 1
               ? t('vista.generate.progress-retry', {
                   attempt: status.attempt,
@@ -147,10 +147,12 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         {status.type === 'failed' && !atLimit && (
           <Card data-testid="vista-generate-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('vista.generate.failed')}
               </Text>
-              <Text size={1}>{status.message}</Text>
+              <Text size={1} as="div" trim={true}>
+                {status.message}
+              </Text>
               {lastAttempt && (
                 <>
                   <Code size={1}>{lastAttempt.query}</Code>

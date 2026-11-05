@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {type KeyboardEvent, type ReactNode, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaDrawer} from '../../store/types'
@@ -129,7 +129,7 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
           paddingRight={2}
           paddingY={2}
         >
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {title}
           </Text>
           <Button

@@ -1,6 +1,6 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
-import {Button, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Select, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, useCallback, useId} from 'react'
 import {
@@ -11,7 +11,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Box, Flex, VisuallyHidden} from 'ui5'
+import {Text, Box, Flex, VisuallyHidden} from 'ui5'
 
 import {API_VERSIONS, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
@@ -27,7 +27,7 @@ import {SwitchField} from '../SwitchField'
 
 function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
   return (
-    <Text as="label" htmlFor={htmlFor} muted size={1} weight="medium">
+    <Text as="label" htmlFor={htmlFor} muted size={1} weight="medium" trim={true}>
       {children}
     </Text>
   )
@@ -87,7 +87,16 @@ export function DatasetField({
             ))}
           </Select>
         </Box>
-        <Tooltip animate content={<Text size={1}>{toggleLabel}</Text>} placement="bottom" portal>
+        <Tooltip
+          animate
+          content={
+            <Text size={1} as="div" trim={true}>
+              {toggleLabel}
+            </Text>
+          }
+          placement="bottom"
+          portal
+        >
           <Button
             aria-label={toggleLabel}
             aria-pressed={!following}
@@ -106,7 +115,7 @@ export function DatasetField({
           />
         </Tooltip>
       </Flex>
-      <Text muted size={0}>
+      <Text muted size={0} as="div" trim={true}>
         {following
           ? t('vista.options.dataset.follows-workspace')
           : t('vista.options.dataset.pinned')}
@@ -145,7 +154,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
       <Tooltip
         animate
         content={
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
           </Text>
         }
@@ -303,7 +312,7 @@ export function UseCdnField({testId, checked, onChange, notes = []}: UseCdnField
       title={t('vista.options.use-cdn')}
     >
       {notes.map((note) => (
-        <Text data-testid={`${testId}-note`} key={note} size={1}>
+        <Text data-testid={`${testId}-note`} key={note} size={1} as="div" trim={true}>
           {note}
         </Text>
       ))}

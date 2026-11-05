@@ -1,13 +1,13 @@
 import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Button, Card, Label, Tab, TabList, Text} from '@sanity/ui'
+import {Badge, Button, Card, Label, Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useEffect, useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
@@ -390,7 +390,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   </TabList>
                   <Tooltip
                     animate
-                    content={<Text size={1}>{t('vista.result.copy')}</Text>}
+                    content={
+                      <Text size={1} as="div" trim={true}>
+                        {t('vista.result.copy')}
+                      </Text>
+                    }
                     placement="bottom"
                     portal
                   >
@@ -437,7 +441,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
               )}
               {status === 'idle' && (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('vista.result.empty')}
                 </Text>
               )}

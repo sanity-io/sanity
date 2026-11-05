@@ -4,7 +4,7 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {Button, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Button, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type CSSProperties,
@@ -18,6 +18,7 @@ import {
   useState,
 } from 'react'
 import {type TFunction, useTranslation} from 'sanity'
+import {Text} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {type ResultViewCopy} from '../../../components/ResultView'
@@ -440,7 +441,7 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
       )}
       {leftOut && (
         <div className={styles.graphNotice} data-testid="vista-graph-left-out">
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {leftOut}
           </Text>
         </div>
@@ -449,7 +450,11 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
         {controls.map(({action, label, icon, onClick}) => (
           <Tooltip
             animate
-            content={<Text size={1}>{label}</Text>}
+            content={
+              <Text size={1} as="div" trim={true}>
+                {label}
+              </Text>
+            }
             key={action}
             placement="top"
             portal

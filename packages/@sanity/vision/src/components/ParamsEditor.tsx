@@ -1,10 +1,10 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {paramsExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -41,9 +41,18 @@ export function ParamsEditor(props: ParamsEditorProps) {
         <Flex>
           <StyledLabel muted>{t('params.label')}</StyledLabel>
           {paramsError && (
-            <Tooltip animate placement="top" portal content={<Text size={1}>{paramsError}</Text>}>
+            <Tooltip
+              animate
+              placement="top"
+              portal
+              content={
+                <Text size={1} as="div" trim={true}>
+                  {paramsError}
+                </Text>
+              }
+            >
               <Box padding={1} marginX={2}>
-                <Text>
+                <Text as="div" trim={true}>
                   <ErrorOutlineIcon />
                 </Text>
               </Box>

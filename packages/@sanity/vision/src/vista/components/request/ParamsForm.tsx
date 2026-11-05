@@ -1,11 +1,11 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 import {useId, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -322,10 +322,16 @@ function ParamField(props: {
   return (
     <Stack data-testid={`vista-params-form-${param.name}`} gap={2}>
       <Flex alignItems="center" flexWrap="wrap" gap={2}>
-        <Text as="label" htmlFor={inputId} size={1} weight="medium">
+        <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <code>{`$${param.name}`}</code>
         </Text>
-        <Text data-testid={`vista-params-form-${param.name}-type`} muted size={1}>
+        <Text
+          data-testid={`vista-params-form-${param.name}-type`}
+          muted
+          size={1}
+          as="div"
+          trim={true}
+        >
           {describeType(type, t)}
         </Text>
       </Flex>
@@ -344,16 +350,18 @@ function ParamField(props: {
           radius={2}
           tone="caution"
         >
-          <Text size={1}>{problem}</Text>
+          <Text size={1} as="div" trim={true}>
+            {problem}
+          </Text>
         </Card>
       )}
       {!isSet && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.params-form.missing')}
         </Text>
       )}
       {param.usages.length > 0 && (
-        <Text muted size={0}>
+        <Text muted size={0} as="div" trim={true}>
           {t('vista.params-form.used-in')}{' '}
           {param.usages.map((usage, index) => (
             <span key={usage}>
@@ -392,16 +400,18 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
     <Stack data-testid="vista-params-form" gap={4} padding={3}>
       {disabled && (
         <Card padding={3} radius={2} tone="caution">
-          <Text size={1}>{t('vista.params-form.invalid-json')}</Text>
+          <Text size={1} as="div" trim={true}>
+            {t('vista.params-form.invalid-json')}
+          </Text>
         </Card>
       )}
       {inference.syntaxError && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.params-form.syntax-error')}
         </Text>
       )}
       {inference.params.length === 0 && unused.length === 0 && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.params-form.empty')}
         </Text>
       )}
@@ -417,16 +427,16 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
       ))}
       {unused.length > 0 && (
         <Stack data-testid="vista-params-form-unused" gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             {t('vista.params-form.unused')}
           </Text>
           {unused.map((name) => (
             <Flex alignItems="center" gap={2} key={name}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <code>{`$${name}`}</code>
               </Text>
               <Box flexBasis="0%" flexGrow={1} minWidth="0">
-                <Text muted size={1} textOverflow="ellipsis">
+                <Text muted size={1} truncate={1} as="div" trim={true}>
                   {preview(values[name])}
                 </Text>
               </Box>
@@ -442,7 +452,7 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
         </Stack>
       )}
       {inference.params.length > 0 && inference.schemaUnavailable && (
-        <Text muted size={0}>
+        <Text muted size={0} as="div" trim={true}>
           {t('vista.params-form.no-schema')}
         </Text>
       )}

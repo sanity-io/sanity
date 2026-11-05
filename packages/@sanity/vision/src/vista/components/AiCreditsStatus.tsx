@@ -1,9 +1,9 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Card, Stack, Text} from '@sanity/ui'
+import {Button, Card, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useNumberFormat, useProjectStore, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {
@@ -57,7 +57,7 @@ function AiCreditsNote({used, quota, apiHost, size}: AiCreditsNoteProps) {
   }
 
   return (
-    <Text data-testid="vista-ai-credits" muted size={size}>
+    <Text data-testid="vista-ai-credits" muted size={size} as="div" trim={true}>
       {note}{' '}
       <a href={aiUsageUrl(apiHost, organizationId)} rel="noreferrer" target="_blank">
         {t('vista.ai-credits.usage')}
@@ -84,10 +84,10 @@ function AiCreditsLimitCard({credits, apiHost}: AiCreditsLimitCardProps) {
   return (
     <Card border data-testid="vista-ai-credits-limit" padding={3} radius={2}>
       <Stack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('vista.ai-credits.limit.title')}
         </Text>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {used === undefined || quota === undefined
             ? t('vista.ai-credits.limit.description-unknown')
             : t('vista.ai-credits.limit.description', {

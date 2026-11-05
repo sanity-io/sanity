@@ -1,5 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type RefObject} from 'react'
+import {Text} from 'ui5'
 
 import {paramsExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -18,7 +19,9 @@ export function ParamsPanel({value, params, editorRef, onChange}: ParamsPanelPro
     <div data-testid="vista-params-editor">
       {params.error && (
         <Card borderBottom padding={3} tone="critical">
-          <Text size={1}>{params.error}</Text>
+          <Text size={1} as="div" trim={true}>
+            {params.error}
+          </Text>
         </Card>
       )}
       <VisionCodeMirror

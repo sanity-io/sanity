@@ -1,9 +1,9 @@
 import {SparklesIcon} from '@sanity/icons/Sparkles'
-import {Button, Card, Label, Stack, Text} from '@sanity/ui'
+import {Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useAiCredits} from '../../hooks/useAiCredits'
@@ -68,7 +68,7 @@ export function ExplainTab(props: ExplainTabProps) {
   return (
     <Box data-testid="vista-explain" padding={3}>
       <Stack gap={4}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.explain.description')}
         </Text>
         <Flex flexWrap="wrap" gap={2}>
@@ -98,7 +98,7 @@ export function ExplainTab(props: ExplainTabProps) {
         </Flex>
         <AiCreditsStatus apiHost={client.config().apiHost} credits={limit ?? credits} />
         {!canExplain && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('vista.explain.empty')}
           </Text>
         )}
@@ -109,7 +109,7 @@ export function ExplainTab(props: ExplainTabProps) {
                 .split(/\n+/)
                 .filter((paragraph) => paragraph.trim())
                 .map((paragraph, index) => (
-                  <Text key={index} size={1}>
+                  <Text key={index} size={1} as="div" trim={true}>
                     {splitMessage(paragraph.trim()).map((segment, segmentIndex) =>
                       segment.code ? <code key={segmentIndex}>{segment.text}</code> : segment.text,
                     )}
@@ -119,12 +119,12 @@ export function ExplainTab(props: ExplainTabProps) {
           </Card>
         )}
         {explanation.status === 'failed' && !limit && (
-          <Text data-testid="vista-explain-error" size={1}>
+          <Text data-testid="vista-explain-error" size={1} as="div" trim={true}>
             {t('vista.explain.failed', {message: explanation.message})}
           </Text>
         )}
         {plan.status === 'failed' && (
-          <Text data-testid="vista-explain-error" size={1}>
+          <Text data-testid="vista-explain-error" size={1} as="div" trim={true}>
             {t('vista.explain.plan-failed', {message: plan.message})}
           </Text>
         )}
@@ -143,7 +143,9 @@ export function ExplainTab(props: ExplainTabProps) {
                 tone={insight.tone}
               >
                 <Stack gap={3}>
-                  <Text size={1}>{describeInsight(insight, t)}</Text>
+                  <Text size={1} as="div" trim={true}>
+                    {describeInsight(insight, t)}
+                  </Text>
                   {insight.kind === 'filter-in-memory' && (
                     <Code size={1}>{insight.expression}</Code>
                   )}
@@ -151,7 +153,7 @@ export function ExplainTab(props: ExplainTabProps) {
               </Card>
             ))}
             {insights.some((insight) => insight.tone === 'caution') && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <a href={HIGH_PERFORMANCE_GROQ_URL} rel="noreferrer" target="_blank">
                   {t('vista.explain.insights.guide')}
                 </a>

@@ -1,8 +1,8 @@
-import {Button, Stack, Text} from '@sanity/ui'
+import {Button, Stack} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {visionLocaleNamespace} from '../../i18n'
@@ -25,7 +25,9 @@ function RedesignToastActions(props: RedesignToastActionsProps) {
   const {description, acceptLabel, dismissLabel, onAccept, onDismiss} = props
   return (
     <Stack gap={3} paddingTop={1}>
-      <Text size={1}>{description}</Text>
+      <Text size={1} as="div" trim={true}>
+        {description}
+      </Text>
       <Flex gap={2}>
         <Button
           data-testid="vision-redesign-accept"

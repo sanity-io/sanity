@@ -1,6 +1,6 @@
-import {Stack, Switch, Text} from '@sanity/ui'
+import {Stack, Switch} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 export interface SwitchFieldProps {
   checked: boolean
@@ -27,10 +27,10 @@ export function SwitchField(props: SwitchFieldProps) {
         />
       </Box>
       <Stack gap={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {title}
         </Text>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {description}
         </Text>
         {children}

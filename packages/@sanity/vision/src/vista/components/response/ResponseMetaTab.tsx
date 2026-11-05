@@ -1,9 +1,9 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Badge, Button, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Button, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
@@ -14,7 +14,7 @@ import {sortSyncTags} from '../../util/syncTags'
 function MetaRow({label, children}: {label: string; children: ReactNode}) {
   return (
     <>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {label}
       </Text>
       <Box>{children}</Box>
@@ -35,7 +35,7 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
   if (!meta && !url) {
     return (
       <Box padding={3}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.response.empty')}
         </Text>
       </Box>
@@ -47,17 +47,17 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
       <Stack gap={4}>
         <Grid gap={3} gridTemplateColumns="max-content minmax(0, 1fr)">
           <MetaRow label={t('result.execution-time-label')}>
-            <Text data-testid="vista-meta-execution" size={1}>
+            <Text data-testid="vista-meta-execution" size={1} as="div" trim={true}>
               {meta ? `${meta.ms}ms` : notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('result.end-to-end-time-label')}>
-            <Text data-testid="vista-meta-e2e" size={1}>
+            <Text data-testid="vista-meta-e2e" size={1} as="div" trim={true}>
               {meta ? `${meta.e2eMs}ms` : notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('vista.response.payload-size')}>
-            <Text data-testid="vista-meta-payload" size={1}>
+            <Text data-testid="vista-meta-payload" size={1} as="div" trim={true}>
               {meta ? formatBytes(meta.payloadBytes) : notApplicable}
             </Text>
           </MetaRow>
@@ -71,7 +71,7 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
                 ))}
               </Flex>
             ) : (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {meta ? t('vista.response.sync-tags.none') : notApplicable}
               </Text>
             )}
@@ -80,7 +80,7 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
 
         {url && (
           <Stack gap={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('query.url')}
             </Text>
             <Flex gap={1}>
@@ -97,7 +97,11 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
               </Box>
               <Tooltip
                 animate
-                content={<Text size={1}>{t('action.copy-url-to-clipboard')}</Text>}
+                content={
+                  <Text size={1} as="div" trim={true}>
+                    {t('action.copy-url-to-clipboard')}
+                  </Text>
+                }
                 portal
               >
                 <Button

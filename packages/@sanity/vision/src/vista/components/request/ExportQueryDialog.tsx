@@ -1,9 +1,9 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Dialog, Stack, Tab, TabList, TabPanel, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Stack, Tab, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
@@ -57,7 +57,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
     >
       <Box padding={4}>
         <Stack gap={4}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('vista.export-query.description')}
           </Text>
           <TabList gap={1}>
@@ -91,7 +91,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
             </Card>
           </TabPanel>
           <Flex alignItems="center" gap={3} justifyContent="space-between">
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {active.id === 'curl' ? t('vista.export-query.token-note') : ''}
             </Text>
             <Button
