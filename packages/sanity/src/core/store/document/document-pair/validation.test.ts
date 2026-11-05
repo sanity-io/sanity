@@ -863,6 +863,35 @@ describe('validation', () => {
       }
     })
 
+    it('stops retrying a global document load after three failures and errors the validation', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      try {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        let attempts = 0
+        const observeDocument = () =>
+          defer(() => {
+            attempts += 1
+            return throwError(() => new Error('503 Service Unavailable'))
+          })
+
+        const {subscription, closeSubscription} = createSubscription(client, () => EMPTY, {
+          documentId,
+          listener: 'global',
+          observeDocument,
+        })
+        // one attempt plus three retries, delayed 1s + 2s + 3s
+        await vi.advanceTimersByTimeAsync(6_000)
+        closeSubscription()
+
+        await expect(subscription).rejects.toThrow('503 Service Unavailable')
+        expect(attempts).toBe(4)
+        expect(mockEditState).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
     it.each(['document', 'global'] as const)(
       'reads a changed document as validating until its own result arrives (%s listener)',
       async (listener) => {
