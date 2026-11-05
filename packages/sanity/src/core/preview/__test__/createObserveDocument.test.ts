@@ -256,6 +256,7 @@ describe(createObserveDocument.name, () => {
       documentId: '1c32390c',
       previousRev: 'a8403810-81f7-49e6-8860-e52cb9111431',
       resultRev: 'b3e7ebce-2bdd-4ab7-9056-b525773bd17a',
+      transition: 'update',
       effects: {
         apply: [11, 3, 23, 0, 18, 22, '8', 23, 19, 20, 15, 17, 'foos', 'name'],
       },
@@ -479,14 +480,7 @@ describe(createObserveDocument.name, () => {
     })
   })
 
-  /**
-   * BUG(SAPP-4824): a mutation event that does not continue from the document's revision is
-   * skipped with a warning, so once one goes missing or arrives early, the document stays out of
-   * sync until the global listener reconnects. The `it` tests pin that behavior, and the
-   * `it.fails` tests describe what #15760 makes it do instead. When it lands, delete the former
-   * and drop `.fails` from the latter.
-   */
-  describe('BUG(SAPP-4824): mutations that do not continue from the revision of the document', () => {
+  describe('mutations that do not continue from the revision of the document', () => {
     beforeEach(() => {
       vi.useFakeTimers()
     })
@@ -494,32 +488,7 @@ describe(createObserveDocument.name, () => {
       vi.useRealTimers()
     })
 
-    it('stays at its revision when a mutation event goes missing, skipping every later mutation with a warning, until the listener reconnects', async () => {
-      const {dataset, listener, fetch, warn, observe} = observeThroughGlobalListener()
-      dataset.save('movie', 'r1')
-      const movie = observe('movie')
-      listener.welcome()
-      await fetchBatch()
-
-      // its event is never delivered
-      dataset.save('movie', 'r2')
-      listener.deliver(dataset.save('movie', 'r3'), dataset.save('movie', 'r4'))
-      expect(movie.emitted).toEqual([documentAt('r1'), documentAt('r1'), documentAt('r1')])
-      expect(warn).toHaveBeenCalledTimes(2)
-      expect(warn).toHaveBeenCalledWith('Document out of sync, skipping mutation')
-
-      await vi.advanceTimersByTimeAsync(60_000)
-      expect(fetch).toHaveBeenCalledOnce()
-
-      listener.reconnect()
-      listener.welcome()
-      await fetchBatch()
-      listener.deliver(dataset.save('movie', 'r5'))
-      expect(fetch).toHaveBeenCalledTimes(2)
-      expect(movie.emitted.slice(3)).toEqual([documentAt('r4'), documentAt('r5')])
-    })
-
-    it.fails('FIXME(#15760): fetches the document again when a mutation event goes missing, and applies later mutations to it', async () => {
+    it('fetches the document again when a mutation event goes missing, and applies later mutations to it', async () => {
       const {dataset, listener, fetch, observe} = observeThroughGlobalListener()
       dataset.save('movie', 'r1')
       const movie = observe('movie')
@@ -536,30 +505,7 @@ describe(createObserveDocument.name, () => {
       expect(movie.emitted).toEqual([documentAt('r1'), documentAt('r3'), documentAt('r4')])
     })
 
-    it('falls behind for good when mutation events arrive out of order', async () => {
-      const {dataset, listener, fetch, warn, observe} = observeThroughGlobalListener()
-      dataset.save('movie', 'r1')
-      const movie = observe('movie')
-      listener.welcome()
-      await fetchBatch()
-
-      const toR2 = dataset.save('movie', 'r2')
-      const toR3 = dataset.save('movie', 'r3')
-      listener.deliver(toR3, toR2, dataset.save('movie', 'r4'))
-      expect(movie.emitted).toEqual([
-        documentAt('r1'),
-        documentAt('r1'),
-        documentAt('r2'),
-        documentAt('r2'),
-      ])
-      expect(warn).toHaveBeenCalledTimes(2)
-
-      await vi.advanceTimersByTimeAsync(60_000)
-      expect(fetch).toHaveBeenCalledOnce()
-      expect(movie.emitted.at(-1)).toEqual(documentAt('r2'))
-    })
-
-    it.fails('FIXME(#15760): applies mutation events that arrive out of order in the order of their revisions', async () => {
+    it('applies mutation events that arrive out of order in the order of their revisions', async () => {
       const {dataset, listener, observe} = observeThroughGlobalListener()
       dataset.save('movie', 'r1')
       const movie = observe('movie')
@@ -577,20 +523,7 @@ describe(createObserveDocument.name, () => {
       ])
     })
 
-    it('emits the fetched document again, with a warning, for a mutation the fetch already includes', async () => {
-      const {dataset, listener, warn, observe} = observeThroughGlobalListener()
-      dataset.save('movie', 'r1')
-      const movie = observe('movie')
-      listener.welcome()
-      listener.deliver(dataset.save('movie', 'r2'))
-      await fetchBatch()
-
-      listener.deliver(dataset.save('movie', 'r3'))
-      expect(movie.emitted).toEqual([documentAt('r2'), documentAt('r2'), documentAt('r3')])
-      expect(warn).toHaveBeenCalledExactlyOnceWith('Document out of sync, skipping mutation')
-    })
-
-    it.fails('FIXME(#15760): skips a mutation the fetch already includes without emitting the document again or warning', async () => {
+    it('skips a mutation the fetch already includes without emitting the document again or warning', async () => {
       const {dataset, listener, warn, observe} = observeThroughGlobalListener()
       dataset.save('movie', 'r1')
       const movie = observe('movie')
