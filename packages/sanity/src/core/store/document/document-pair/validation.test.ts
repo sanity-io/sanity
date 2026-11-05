@@ -880,11 +880,14 @@ describe('validation', () => {
           listener: 'global',
           observeDocument,
         })
+        // Attach before the retries elapse. The stream rejects during the timer
+        // flush, and a handler attached afterwards is already too late.
+        const rejected = expect(subscription).rejects.toThrow('503 Service Unavailable')
         // one attempt plus three retries, delayed 1s + 2s + 3s
         await vi.advanceTimersByTimeAsync(6_000)
         closeSubscription()
 
-        await expect(subscription).rejects.toThrow('503 Service Unavailable')
+        await rejected
         expect(attempts).toBe(4)
         expect(mockEditState).not.toHaveBeenCalled()
       } finally {
