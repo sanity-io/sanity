@@ -362,37 +362,45 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
+  const titleDocument = useMemo(
+    () => ({_id: documentId, _type: documentType}),
+    [documentId, documentType],
+  )
+
+  const sets = useSelector(inventoryRef, ({context}) => context.sets)
+
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
-        {(isVariantCreationActive || isVariantCreationPending) && (
-          <CreateVariant variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
+        {isVariantCreationActive || isVariantCreationPending ? (
+          <CreateVariant
+            variantCreationRef={variantCreationRef}
+            sets={sets}
+            documentTitle={components && <components.DocTitle document={titleDocument} />}
+          />
+        ) : (
+          !readOnly && (
+            <InventoryHeader
+              selectionRef={selectionRef}
+              deletionRef={deletionRef}
+              variantCreationRef={variantCreationRef}
+              components={components}
+            />
+          )
         )}
-        {!isVariantCreationActive && (
-          <>
-            {!readOnly && (
-              <InventoryHeader
-                selectionRef={selectionRef}
-                deletionRef={deletionRef}
-                variantCreationRef={variantCreationRef}
-                components={components}
-              />
-            )}
-            <Body>
-              {schema && (
-                <Select
-                  machine={selectionRef}
-                  inventoryRef={inventoryRef}
-                  selectedId={selectedId}
-                  documentType={documentType}
-                  readOnly={readOnly}
-                  perspectiveList={perspectiveList}
-                  onSelect={onSelect}
-                />
-              )}
-            </Body>
-          </>
-        )}
+        <Body>
+          {schema && (
+            <Select
+              machine={selectionRef}
+              inventoryRef={inventoryRef}
+              selectedId={selectedId}
+              documentType={documentType}
+              readOnly={readOnly}
+              perspectiveList={perspectiveList}
+              onSelect={onSelect}
+            />
+          )}
+        </Body>
       </Container>
       {isDeletionActive &&
         typeof portalElementName !== 'undefined' &&

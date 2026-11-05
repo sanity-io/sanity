@@ -2,12 +2,20 @@ import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {type ComponentType, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
-import {type ActorRefFromLogic, createActor, forwardTo, fromObservable, sendTo, setup} from 'xstate'
+import {
+  type ActorRefFromLogic,
+  createActor,
+  forwardTo,
+  fromObservable,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
@@ -20,13 +28,14 @@ import {type ReleasesReducerState} from '../../../releases/store/reducer'
 import {type VariantStoreState} from '../../../variants/store/reducer'
 import {type SystemVariant} from '../../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../../machines/deletionMachine'
+import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
+import {Body} from '../Body'
 import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {Container} from '../Container'
-import {SelectBundle} from '../CreateVariant/SelectBundle'
-import {SelectVariantDefinition} from '../CreateVariant/SelectVariantDefinition'
+import {CreateVariant} from '../CreateVariant/CreateVariant'
 import {InventoryHeader} from '../InventoryHeader'
 
 const PUBLISHED_ID = 'panels-document'
@@ -102,8 +111,8 @@ function variant(
 
 const PUBLISHED = variant(PUBLISHED_ID, 'Published')
 const DRAFT = variant(`drafts.${PUBLISHED_ID}`, 'Draft', {bundleId: 'drafts'})
-// The "Summer sale" variant already exists in the ASAP release, so `SelectBundle`
-// lists that release under "view existing versions" instead of as a target.
+// The "Summer sale" variant already exists in the ASAP release, so `CreateVariant`
+// does not offer that release as a target for it.
 const SUMMER_SALE_IN_ASAP = variant(
   `versions.${activeASAPRelease.name}.${PUBLISHED_ID}`,
   'Summer sale',
@@ -114,6 +123,29 @@ const SUMMER_SALE_IN_ASAP = variant(
   },
 )
 const VARIANTS = [PUBLISHED, DRAFT, SUMMER_SALE_IN_ASAP]
+
+// The versions as the inventory groups them while Content Variants is switched on: a set per
+// bundle, its versions named after their variant.
+const VERSION_SETS: VariantSet[] = [
+  {
+    key: 'published',
+    name: 'Published',
+    bundle: {type: 'perspective', perspective: 'published'},
+    variants: [{...PUBLISHED, name: 'Default'}],
+  },
+  {
+    key: 'drafts',
+    name: 'Draft',
+    bundle: {type: 'perspective', perspective: 'drafts'},
+    variants: [{...DRAFT, name: 'Default'}],
+  },
+  {
+    key: activeASAPRelease._id,
+    name: activeASAPRelease.metadata.title,
+    bundle: {type: 'perspective', perspective: activeASAPRelease},
+    variants: [SUMMER_SALE_IN_ASAP],
+  },
+]
 
 const REFERRING_DOCUMENTS: ReferringDocuments = {
   isLoading: false,
@@ -190,6 +222,8 @@ const harnessMachine = setup({
         actors: {
           variants: fromObservable(() => new BehaviorSubject(VARIANT_DEFINITIONS)),
           releases: fromObservable(() => new BehaviorSubject(RELEASES)),
+          // Never settles, so a confirmed creation stays in `active.creating`.
+          createVariant: fromPromise(() => new Promise<void>(() => {})),
         },
       }),
       {input: {enabled: true}},
@@ -261,59 +295,202 @@ function ConfirmDeleteDialogHarness({
   )
 }
 
-describe('DocumentGroupInventory create-variant panels', () => {
-  it('lists the variant definitions to create from', async () => {
+const CREATE_VARIANT_TITLE_DOCUMENT = {_id: PUBLISHED_ID, _type: DOCUMENT_TYPE}
+
+/**
+ * Renders the form above the inventory's scrolling body, in place of the inventory header, as
+ * `DocumentGroupInventory` does while a variant is being created. The frame gets an
+ * inspector-like size, so the pickers' popovers have room to open.
+ */
+const CreateVariantHarness: ComponentType<{
+  variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
+}> = ({variantCreationRef}) => {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <Card border radius={3} style={{display: 'flex', width: 360, height: 480}}>
+        <Container>
+          <CreateVariant
+            variantCreationRef={variantCreationRef}
+            sets={VERSION_SETS}
+            documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
+          />
+          <Body />
+        </Container>
+      </Card>
+    </TestWrapper>
+  )
+}
+
+const $variantTrigger = page.getByTestId('create-variant-variant-menu-button')
+const $targetTrigger = page.getByTestId('create-variant-target-menu-button')
+const $variantMenu = page.getByTestId('create-variant-variant-menu')
+const $targetMenu = page.getByTestId('create-variant-target-menu')
+
+describe('CreateVariant', () => {
+  it('shows the first variant and target, and creates nothing until confirmed', async () => {
+    // Confirming swaps the button for a spinner, so archive the form before the click.
+    configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
     const {variantCreationRef} = startHarness()
     variantCreationRef.send({type: 'createVariant.request'})
 
-    void render(
-      <PanelFrame>
-        <SelectVariantDefinition variantCreationRef={variantCreationRef} />
-      </PanelFrame>,
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await expect.element(page.getByRole('heading', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByText('A new version of Ursula K. Le Guin')).toBeVisible()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    await expect.element(page.getByText('Who sees this version')).toBeVisible()
+    await expect.element($variantTrigger).toMatchTextContent('Summer sale')
+    await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
+    await expect.element(page.getByText('Where it lives')).toBeVisible()
+    await expect.element($targetTrigger).toMatchTextContent('Drafts')
+    await expect.element(page.getByRole('button', {name: 'Cancel'})).toBeEnabled()
+
+    const $create = page.getByRole('button', {name: 'Create version'})
+    await expect.element($create).toBeEnabled()
+    expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
+
+    await settleChromaticEndState()
+
+    await takeSnapshot('defaults')
+
+    await userEvent.click($create)
+    const snapshot = variantCreationRef.getSnapshot()
+    expect(snapshot.matches({active: 'creating'})).toBe(true)
+    expect(snapshot.context.selectedVariantId).toBe(SUMMER_SALE._id)
+    expect(snapshot.context.selectedBundle).toEqual({type: 'drafts'})
+  })
+
+  it('offers the open releases not holding the variant, and falls back when one does', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click($targetTrigger)
+    await expect.element($targetMenu).toBeVisible()
+    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: activeScheduledRelease.metadata.title}))
+      .toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .toBeVisible()
+    // Already holds a "Summer sale" variant.
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}))
+      .not.toBeInTheDocument()
+    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+
+    // "vip-users" exists in no release yet, so the ASAP release can be picked for it.
+    await userEvent.click($variantTrigger)
+    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'vip-users'}))
+    await expect.element($variantTrigger).toMatchTextContent('vip-users')
+    await userEvent.click($targetTrigger)
+    await userEvent.click(
+      $targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}),
     )
+    await expect.element($targetTrigger).toMatchTextContent(activeASAPRelease.metadata.title)
+    expect(variantCreationRef.getSnapshot().context.selectedBundle).toEqual({
+      type: 'release',
+      releaseId: activeASAPRelease._id,
+    })
 
-    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'Summer sale'})).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'vip-users'})).toBeVisible()
+    // Switching back to "Summer sale" falls back to the first target.
+    await userEvent.click($variantTrigger)
+    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'Summer sale'}))
+    await expect.element($targetTrigger).toMatchTextContent('Drafts')
+    expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
-    await userEvent.click(page.getByRole('button', {name: 'Summer sale'}))
-    expect(variantCreationRef.getSnapshot().context.selectedVariantId).toBe(SUMMER_SALE._id)
+    // The menu animates out after a pick; settling while it is still visible would wait for it.
+    await expect.element($variantMenu).not.toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  it('narrows the options with the filter, and clears it when the menu closes', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click($targetTrigger)
+    const $filter = $targetMenu.getByPlaceholder('Find')
+    await expect.element($filter).toBeVisible()
+
+    await userEvent.type($filter, 'undecided')
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+      .not.toBeInTheDocument()
+
+    await userEvent.clear($filter)
+    await userEvent.type($filter, 'zzz')
+    await expect
+      .element($targetMenu.getByTestId('create-variant-target-menu-no-matches'))
+      .toHaveTextContent('Nothing matches "zzz"')
+
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+    await userEvent.click($targetTrigger)
+    await expect.element($targetMenu.getByPlaceholder('Find')).toHaveValue('')
+    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+
+    // The filter only narrows the list; the current option is unchanged.
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+    await expect.element($targetTrigger).toMatchTextContent('Drafts')
 
     await settleChromaticEndState()
   })
 
-  it('offers drafts and open releases as targets, and links to existing variants', async () => {
-    const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, variantCreationRef} = startHarness()
+  it('focuses the filter each time the menu opens, by pointer or keyboard', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
     variantCreationRef.send({type: 'createVariant.request'})
-    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: SUMMER_SALE._id})
 
-    void render(
-      <PanelFrame>
-        <SelectBundle variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
-      </PanelFrame>,
-    )
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    await expect
-      .element(page.getByRole('button', {name: 'Create version for Summer sale'}))
-      .toBeVisible()
-    await expect.element(page.getByText('As a draft')).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'Drafts'})).toBeEnabled()
-    await expect.element(page.getByText('Into a release')).toBeVisible()
-    await expect
-      .element(page.getByRole('button', {name: activeScheduledRelease.metadata.title}))
-      .toBeEnabled()
-    await expect
-      .element(page.getByRole('button', {name: activeUndecidedRelease.metadata.title}))
-      .toBeEnabled()
-    // Already holds a "Summer sale" variant, so it is offered for viewing, not as a target.
-    await expect.element(page.getByText('Or view existing versions')).toBeVisible()
-    await expect
-      .element(page.getByRole('button', {name: activeASAPRelease.metadata.title}))
-      .toBeEnabled()
+    const $filter = $targetMenu.getByPlaceholder('Find')
 
-    await settleChromaticEndState()
+    await userEvent.click($targetTrigger)
+    await expect.element($filter).toHaveFocus()
+
+    // The arrow keys still move from the filter into the options.
+    await userEvent.keyboard('{ArrowDown}')
+    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toHaveFocus()
+
+    // The menu stays mounted while closed, so the filter is focused again on the next open.
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+    // Keep the pointer off the options, which take focus when hovered.
+    await userEvent.hover(page.getByRole('heading', {name: 'Create version'}))
+
+    const openFromKeyboard = async (key: string) => {
+      await expect.element($targetTrigger).toHaveFocus()
+      await userEvent.keyboard(key)
+      await expect.element($filter).toHaveFocus()
+      await userEvent.keyboard('{Escape}')
+      await expect.element($targetMenu).not.toBeVisible()
+    }
+
+    await openFromKeyboard('{Enter}')
+    await openFromKeyboard('{ArrowDown}')
+    await openFromKeyboard('{ArrowUp}')
+  })
+
+  it('cancels the creation', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click(page.getByRole('button', {name: 'Cancel'}))
+    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
   })
 })
 
