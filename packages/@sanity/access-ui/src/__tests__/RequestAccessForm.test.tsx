@@ -259,14 +259,6 @@ describe('RequestAccessForm', () => {
       state: 'temporarily-unavailable',
       message: /couldn’t check whether access can be requested.*try again later/i,
     },
-    {
-      state: 'request-limit-reached',
-      message: /reached the limit for access requests.*contact an administrator/i,
-    },
-    {
-      state: 'email-domain-blocked',
-      message: /email domain can’t request access.*contact an administrator/i,
-    },
   ] as const)('shows no form for the $state state', async ({state, message}) => {
     const client = createClientStub({status: () => Promise.resolve({state})})
     await renderForm({client})

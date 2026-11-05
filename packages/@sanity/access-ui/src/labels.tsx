@@ -32,10 +32,6 @@ export interface RequestAccessLabels {
   alreadyMemberMessage?: ReactNode
   requestsDisabledTitle?: ReactNode
   requestsDisabledMessage?: ReactNode
-  requestLimitReachedTitle?: ReactNode
-  requestLimitReachedMessage?: ReactNode
-  emailDomainBlockedTitle?: ReactNode
-  emailDomainBlockedMessage?: ReactNode
   temporarilyUnavailableTitle?: ReactNode
   temporarilyUnavailableMessage?: ReactNode
   retry?: ReactNode
@@ -55,10 +51,6 @@ export type ResolvedRequestAccessLabels = RequestAccessLabels &
       | 'alreadyMemberMessage'
       | 'requestsDisabledTitle'
       | 'requestsDisabledMessage'
-      | 'requestLimitReachedTitle'
-      | 'requestLimitReachedMessage'
-      | 'emailDomainBlockedTitle'
-      | 'emailDomainBlockedMessage'
       | 'temporarilyUnavailableTitle'
       | 'temporarilyUnavailableMessage'
       | 'retry'
@@ -107,12 +99,6 @@ export const defaultLabels: ResolvedRequestAccessLabels = {
   requestsDisabledTitle: 'Access requests are disabled',
   requestsDisabledMessage:
     'This organization does not accept access requests. Contact an administrator for help.',
-  requestLimitReachedTitle: 'Access request limit reached',
-  requestLimitReachedMessage:
-    'You’ve reached the limit for access requests. Please wait before trying again, or contact an administrator.',
-  emailDomainBlockedTitle: 'Access can’t be requested',
-  emailDomainBlockedMessage:
-    'Accounts with this email domain can’t request access. Contact an administrator for help.',
   temporarilyUnavailableTitle: 'Access request unavailable',
   temporarilyUnavailableMessage:
     'We couldn’t check whether access can be requested. Please try again later.',

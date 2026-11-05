@@ -93,8 +93,6 @@ export type AccessRequestEligibilityState =
   | {state: 'requests-disabled'}
   | {state: 'saml-roles-managed'}
   | {state: 'temporarily-unavailable'}
-  | {state: 'request-limit-reached'}
-  | {state: 'email-domain-blocked'}
 
 /**
  * The current user rendered in the request-access screen. A structural subset of

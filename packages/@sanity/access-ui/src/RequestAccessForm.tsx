@@ -181,10 +181,6 @@ function deriveServerViewState(
       }
     case 'temporarily-unavailable':
       return unavailableState(labels)
-    case 'request-limit-reached':
-      return blockedState(labels.requestLimitReachedTitle, labels.requestLimitReachedMessage)
-    case 'email-domain-blocked':
-      return blockedState(labels.emailDomainBlockedTitle, labels.emailDomainBlockedMessage)
     case 'eligible':
       return null
     default:

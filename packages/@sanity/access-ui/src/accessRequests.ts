@@ -39,9 +39,7 @@ function isAccessRequestEligibilityState(value: unknown): value is AccessRequest
     state === 'recently-declined' ||
     state === 'requests-disabled' ||
     state === 'saml-roles-managed' ||
-    state === 'temporarily-unavailable' ||
-    state === 'request-limit-reached' ||
-    state === 'email-domain-blocked'
+    state === 'temporarily-unavailable'
   )
 }
 
