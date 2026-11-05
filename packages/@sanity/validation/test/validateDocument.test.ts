@@ -1408,6 +1408,7 @@ describe('validateDocument', () => {
 
     await expect(
       validateMarkers({
+        validateReferenceTypes: false,
         client,
         document: createDocument({
           _type: 'article',

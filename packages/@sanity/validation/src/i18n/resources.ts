@@ -29,6 +29,8 @@ export const validationLocaleStrings = {
   'object.not-media-library-asset': 'Must be a reference to a Media Library asset',
   'object.not-reference': 'Must be a reference to a document',
   'object.reference-not-published': 'Referenced document must be published',
+  'object.reference-target-type-mismatch':
+    'Referenced document has type "{{actualType}}"; expected one of: {{allowedTypes}}',
   'slug.missing-current': 'Slug must have a value',
   'slug.not-object': 'Slug must be an object',
   'slug.not-unique': 'Slug is already in use',

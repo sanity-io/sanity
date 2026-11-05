@@ -32,6 +32,7 @@ export type {ValidationContext} from '@sanity/types'
 
 export interface InternalValidationContext extends BaseValidationContext {
   __internal?: {
+    getDocumentType?: (id: string) => Promise<string | undefined>
     customValidation?: boolean
     customValidationConcurrencyLimiter?: {
       ready: (signal?: AbortSignal) => Promise<void>

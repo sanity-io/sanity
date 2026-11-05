@@ -35,6 +35,7 @@ function validateDocument({
   return validateDocumentInternal({
     ...options,
     environment: 'studio',
+    validateReferenceTypes: false,
     getClient: (clientOptions) => documentClient.withConfig(clientOptions),
     i18n: getFallbackLocaleSource(),
   })
