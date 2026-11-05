@@ -535,5 +535,22 @@ describe(createObserveDocument.name, () => {
       expect(movie.emitted).toEqual([documentAt('r2'), documentAt('r3')])
       expect(warn).not.toHaveBeenCalled()
     })
+
+    it('fetches the document again when it is created again before its deletion arrives', async () => {
+      const {dataset, listener, fetch, observe} = observeThroughGlobalListener()
+      dataset.save('movie', 'r1')
+      const movie = observe('movie')
+      listener.welcome()
+      await fetchBatch()
+
+      const deletion = dataset.delete('movie', 'r2')
+      // the creation comes without a `previousRev`, so it can't be put in sequence after the deletion
+      listener.deliver(dataset.save('movie', 'r3'), deletion)
+      expect(movie.emitted).toEqual([documentAt('r1'), undefined])
+
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(movie.emitted).toEqual([documentAt('r1'), undefined, documentAt('r3')])
+    })
   })
 })
