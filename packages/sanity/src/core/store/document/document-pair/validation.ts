@@ -20,6 +20,10 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
 
+// Same limit as the preview store's document-count fetch. An unbounded retry would never surface
+// the failure.
+const MAX_GLOBAL_DOCUMENT_LOAD_RETRIES = 3
+
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
@@ -65,9 +69,12 @@ const validationStreams = memoize(
         ? documentId
           ? ctx.observeDocument(documentId).pipe(
               // A failed fetch or a dropped global listener would error the validation, which
-              // `useValidationStatus` rethrows during render. Retry with the backoff the preview
-              // store's own fetches use instead, and keep the last status meanwhile.
-              retry({delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000))}),
+              // `useValidationStatus` rethrows during render. Retry three times, the same limit as
+              // the preview store's document-count fetch, then let that error through.
+              retry({
+                count: MAX_GLOBAL_DOCUMENT_LOAD_RETRIES,
+                delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
+              }),
             )
           : of(undefined)
         : editState(ctx, idPair, typeName).pipe(
