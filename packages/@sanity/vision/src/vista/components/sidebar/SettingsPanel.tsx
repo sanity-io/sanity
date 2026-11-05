@@ -220,7 +220,7 @@ export function SettingsPanel() {
 
         <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
           <Stack gap={3}>
-            <Text muted size={1} as="div" trim={true}>
+            <Text muted size={1} as="div" trim={true} tone={confirmClear ? 'critical' : undefined}>
               {t('vista.settings.clear-storage.description')}
             </Text>
             <Flex gap={2}>

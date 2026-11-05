@@ -411,7 +411,7 @@ function DeltaResult(props: {
           radius={2}
           tone={evaluation.value ? 'positive' : 'caution'}
         >
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone={evaluation.value ? 'positive' : 'caution'}>
             {evaluation.value ? t('vista.delta.matches') : t('vista.delta.no-match')}
           </Text>
         </Card>

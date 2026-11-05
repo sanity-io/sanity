@@ -510,16 +510,22 @@ export function MutateTab(props: MutateTabProps) {
                   tone="critical"
                 >
                   <Stack gap={3}>
-                    <Text size={1} weight="medium" as="div" trim={true}>
+                    <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                       {state.failure.action === 'preview'
                         ? t('vista.mutate.preview-failed')
                         : t('vista.mutate.apply-failed')}
                     </Text>
-                    <Text size={1} as="div" trim={true}>
+                    <Text size={1} as="div" trim={true} tone="critical">
                       {state.failure.failure.message}
                     </Text>
                     {state.failure.failure.items.map((item) => (
-                      <Text key={`${item.index}:${item.message}`} size={1} as="div" trim={true}>
+                      <Text
+                        key={`${item.index}:${item.message}`}
+                        size={1}
+                        as="div"
+                        trim={true}
+                        tone="critical"
+                      >
                         {t('vista.mutate.failure-item', {
                           index: item.index,
                           message: item.message,
@@ -537,7 +543,7 @@ export function MutateTab(props: MutateTabProps) {
                   radius={2}
                   tone="positive"
                 >
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} as="div" trim={true} tone="positive">
                     {t('vista.mutate.applied', {
                       dataset: state.applied.dataset,
                       transactionId: state.applied.transactionId,

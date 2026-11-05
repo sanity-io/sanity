@@ -100,7 +100,13 @@ export function ExportTypesDialog({
           </Text>
           {output.schemaError && (
             <Card border padding={3} radius={2} tone="caution">
-              <Text data-testid="vista-export-types-schema-error" size={1} as="div" trim={true}>
+              <Text
+                data-testid="vista-export-types-schema-error"
+                size={1}
+                as="div"
+                trim={true}
+                tone="caution"
+              >
                 {t('vista.export-types.schema-error', {message: output.schemaError.message})}
               </Text>
             </Card>

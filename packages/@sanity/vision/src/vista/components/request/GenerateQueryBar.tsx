@@ -147,10 +147,10 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         {status.type === 'failed' && !atLimit && (
           <Card data-testid="vista-generate-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>
-              <Text size={1} weight="medium" as="div" trim={true}>
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('vista.generate.failed')}
               </Text>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 {status.message}
               </Text>
               {lastAttempt && (

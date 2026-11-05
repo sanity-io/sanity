@@ -143,7 +143,7 @@ export function ExplainTab(props: ExplainTabProps) {
                 tone={insight.tone}
               >
                 <Stack gap={3}>
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} as="div" trim={true} tone={insight.tone}>
                     {describeInsight(insight, t)}
                   </Text>
                   {insight.kind === 'filter-in-memory' && (

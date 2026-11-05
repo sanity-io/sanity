@@ -19,7 +19,7 @@ export function ParamsPanel({value, params, editorRef, onChange}: ParamsPanelPro
     <div data-testid="vista-params-editor">
       {params.error && (
         <Card borderBottom padding={3} tone="critical">
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="critical">
             {params.error}
           </Text>
         </Card>

@@ -4,7 +4,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {paramsExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -52,9 +52,12 @@ export function ParamsEditor(props: ParamsEditorProps) {
               }
             >
               <Box padding={1} marginX={2}>
-                <Text as="div" trim={true}>
-                  <ErrorOutlineIcon />
-                </Text>
+                <Icon
+                  icon={ErrorOutlineIcon}
+                  muted
+                  style={{margin: '-0.4375rem'}}
+                  tone={hasValidParams ? undefined : 'critical'}
+                />
               </Box>
             </Tooltip>
           )}

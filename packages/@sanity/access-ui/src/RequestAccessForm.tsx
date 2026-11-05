@@ -353,7 +353,7 @@ function RequestAccessFormContent(
         {state.view === 'blocked' || state.view === 'sso-enforced' ? (
           <VStack gap={4}>
             <Card border padding={3} radius={2} role="alert" tone="caution">
-              <Text as="p" muted size={1} trim={true}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 {state.message}
               </Text>
             </Card>
@@ -396,7 +396,7 @@ function RequestAccessFormContent(
             </VStack>
             {submitFailed ? (
               <Card border padding={3} radius={2} role="alert" tone="critical">
-                <Text as="p" muted size={1} trim={true}>
+                <Text as="p" muted size={1} trim={true} tone="critical">
                   {labels.submitFailedMessage}
                 </Text>
               </Card>

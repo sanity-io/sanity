@@ -350,7 +350,7 @@ function ParamField(props: {
           radius={2}
           tone="caution"
         >
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="caution">
             {problem}
           </Text>
         </Card>
@@ -400,7 +400,7 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
     <Stack data-testid="vista-params-form" gap={4} padding={3}>
       {disabled && (
         <Card padding={3} radius={2} tone="caution">
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="caution">
             {t('vista.params-form.invalid-json')}
           </Text>
         </Card>

@@ -181,10 +181,22 @@ function HistoryEntry(props: {
       tone={entry.status === 'error' ? 'critical' : 'default'}
     >
       <Flex alignItems="center" flexWrap="wrap" gap={2}>
-        <Text muted size={1} as="div" trim={true}>
+        <Text
+          muted
+          size={1}
+          as="div"
+          trim={true}
+          tone={entry.status === 'error' ? 'critical' : undefined}
+        >
           {formatTime.format(new Date(entry.requestedAt))}
         </Text>
-        <Text size={1} weight="medium" as="div" trim={true}>
+        <Text
+          size={1}
+          weight="medium"
+          as="div"
+          trim={true}
+          tone={entry.status === 'error' ? 'critical' : undefined}
+        >
           {describeFetchReason(entry.reason, t)}
         </Text>
         {entry.reason.type === 'live' &&
@@ -194,7 +206,13 @@ function HistoryEntry(props: {
             </Badge>
           ))}
         {status && (
-          <Text muted size={1} as="div" trim={true}>
+          <Text
+            muted
+            size={1}
+            as="div"
+            trim={true}
+            tone={entry.status === 'error' ? 'critical' : undefined}
+          >
             {status}
           </Text>
         )}
@@ -233,14 +251,27 @@ function HistoryEntry(props: {
       </Flex>
       {entry.errorMessage && (
         <Box paddingTop={2}>
-          <Text muted size={1} truncate={1} as="div" trim={true}>
+          <Text
+            muted
+            size={1}
+            truncate={1}
+            as="div"
+            trim={true}
+            tone={entry.status === 'error' ? 'critical' : undefined}
+          >
             {entry.errorMessage}
           </Text>
         </Box>
       )}
       {comparable && expanded && previous && (
         <Stack data-testid="vista-history-changes" gap={3} id={changesId} paddingTop={2}>
-          <Text muted size={1} as="div" trim={true}>
+          <Text
+            muted
+            size={1}
+            as="div"
+            trim={true}
+            tone={entry.status === 'error' ? 'critical' : undefined}
+          >
             {t('vista.history.compared-with', {
               time: formatTime.format(new Date(previous.requestedAt)),
             })}
@@ -248,7 +279,13 @@ function HistoryEntry(props: {
           <DiffBoundary
             renderFallback={(retry) => (
               <Flex alignItems="center" gap={2}>
-                <Text muted size={1} as="div" trim={true}>
+                <Text
+                  muted
+                  size={1}
+                  as="div"
+                  trim={true}
+                  tone={entry.status === 'error' ? 'critical' : undefined}
+                >
                   {t('vista.history.changes-failed')}
                 </Text>
                 <Button
@@ -294,6 +331,7 @@ function HistoryEntry(props: {
                             size={1}
                             as="div"
                             trim={true}
+                            tone={entry.status === 'error' ? 'critical' : undefined}
                           >
                             {t(
                               showHidden ? 'vista.history.showing-hidden' : 'vista.history.hiding',
