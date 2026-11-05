@@ -32,12 +32,12 @@ import {
   type TypedObject,
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
+import {accepts} from '@sanity/validation/_internal'
 import last from 'lodash-es/last.js'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {type FIXME} from '../../FIXME'
 import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
-import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
 import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'

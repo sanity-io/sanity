@@ -35,11 +35,11 @@ export interface ResolvedRequest {
    * `global` where the workspace does not offer scheduled drafts
    */
   tabPerspective: VistaPerspective
-  /** The API version requests are sent with, `vX` while a variant is selected */
+  /** The API version requests are sent with, `VARIANTS_API_VERSION` while a variant is selected */
   apiVersion: string
   /** Whether the tab's API version is usable (the "Other" input may hold an unfinished one) */
   isValidApiVersion: boolean
-  /** The API version is forced to `vX` because the navbar has a variant selected */
+  /** The API version is forced to `VARIANTS_API_VERSION` because the navbar has a variant selected */
   isApiVersionLocked: boolean
   perspective: ClientPerspective | undefined
   variant: string | undefined
@@ -147,7 +147,7 @@ export function useRequestEnvironment(): RequestEnvironment {
 /**
  * Resolves a tab's options against the studio state: a followed workspace dataset, the `global`
  * and `scheduledDrafts` perspectives becoming real perspective stacks, and the navbar variant,
- * which locks the API version to the experimental one (where the workspace has variants at all).
+ * which locks the API version to the one variants need (where the workspace has variants at all).
  */
 export function resolveRequestOptions(
   options: VistaTabOptions,

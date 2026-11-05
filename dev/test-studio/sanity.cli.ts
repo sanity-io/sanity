@@ -56,6 +56,9 @@ export default defineCliConfig({
       plugins: command === 'serve' ? studioPandaCss() : [],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
+      // One upfront stylesheet, the way a studio that installs `sanity` from npm loads its
+      // `bundle.css`, instead of a sheet per lazy chunk. Needs @sanity/cli-build >= 7.0.1 to link it
+      build: {cssCodeSplit: false},
     })
 
     if (isViteDevToolsEnabled) {

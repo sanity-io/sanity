@@ -1,20 +1,20 @@
+import {type SanityDocument} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {validateDocuments} from '@sanity/validation'
 import {inferFromSchema} from '@sanity/validation/_internal'
-import {type SanityDocument} from 'sanity'
 import {test} from 'vitest'
 
 import {article} from './scenarios/article'
 import {synthetic, syntheticLarge} from './scenarios/synthetic'
-import {articleWorkspace} from './studio/schemas/article'
-import {syntheticWorkspace} from './studio/schemas/synthetic'
+import {articleSchemaTypes} from './studio/schemas/articleSchemaTypes'
+import {syntheticSchemaTypes} from './studio/schemas/syntheticSchemaTypes'
 
-for (const [scenario, workspace, documentCount] of [
-  [article, articleWorkspace, 1],
-  [synthetic, syntheticWorkspace, 1],
-  [syntheticLarge, syntheticWorkspace, 1],
-  [synthetic, syntheticWorkspace, 13],
+for (const [scenario, schemaTypes, documentCount] of [
+  [article, articleSchemaTypes, 1],
+  [synthetic, syntheticSchemaTypes, 1],
+  [syntheticLarge, syntheticSchemaTypes, 1],
+  [synthetic, syntheticSchemaTypes, 13],
 ] as const) {
   const name = documentCount === 1 ? scenario.name : `${scenario.name}-batch`
   test(name, {timeout: 60_000}, async ({bench}) => {
@@ -23,7 +23,7 @@ for (const [scenario, workspace, documentCount] of [
     const schema = SchemaBuilder.compile({
       name: scenario.name,
       parent,
-      types: workspace.schema.types,
+      types: schemaTypes,
     })
     inferFromSchema(schema)
     const fixtures = scenario.fixture?.() ?? []

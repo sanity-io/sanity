@@ -2,7 +2,7 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Select, Text} from '@sanity/ui'
+import {Select} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -25,7 +25,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {Flex, Grid, Box, type PaddingProps} from 'ui5'
+import {Text, Flex, Grid, Box, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -283,7 +283,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
           <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
             <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
               {/* oxlint-disable react/purity -- the header falls back to the current month when nothing is focused */}
-              <Text weight="medium" size={1}>
+              <Text weight="medium" size={1} as="div" trim={true}>
                 {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
                 {(focusedDate || new Date())?.getFullYear()}
               </Text>

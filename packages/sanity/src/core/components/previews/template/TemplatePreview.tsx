@@ -1,8 +1,8 @@
-import {rem, Text, TextSkeleton} from '@sanity/ui'
+import {rem, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'
@@ -86,19 +86,23 @@ export function TemplatePreview(props: TemplatePreviewProps) {
       <HeaderFlex>
         <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
           {isValidElementType(Title) && (
-            <Text textOverflow="ellipsis">
+            <Text truncate={1} as="div" trim={true}>
               <Title layout="default" />
             </Text>
           )}
-          {isValidElement(Title) && <Text textOverflow="ellipsis">{Title}</Text>}
+          {isValidElement(Title) && (
+            <Text truncate={1} as="div" trim={true}>
+              {Title}
+            </Text>
+          )}
 
           {isValidElementType(Subtitle) && (
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true}>
               <Subtitle layout="default" />
             </Text>
           )}
           {isValidElement(Subtitle) && (
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true}>
               {Subtitle}
             </Text>
           )}
@@ -113,7 +117,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
 
       {description && (
         <Box marginTop={3}>
-          <Text muted size={1} style={{whiteSpace: 'break-spaces'}}>
+          <Text muted size={1} style={{whiteSpace: 'break-spaces'}} as="div" trim={true}>
             {description}
           </Text>
         </Box>

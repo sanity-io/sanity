@@ -1,6 +1,7 @@
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {getMessageBusConnection} from '../../../store/messageBus/getMessageBusConnection'
 import {loadFederatedAssetSourceModule} from './loadModule'
 import {
   type FederatedAssetSourceModule,
@@ -8,6 +9,11 @@ import {
   type FederatedAssetSourceViewHandle,
   type FederatedAssetSourceViewProps,
 } from './types'
+
+// Every call passes them: the CLI wrapper reuses the latest ones when a hot update remounts the view.
+function renderOptionsFor(moduleId: string) {
+  return {moduleId, parentKey: getMessageBusConnection()?.key}
+}
 
 /**
  * Loads a brokered federated view module and mounts it. The artifact owns a
@@ -63,7 +69,11 @@ export function FederatedViewMount(props: {
   useEffect(() => {
     if (!module || !mountElement) return undefined
     try {
-      handleRef.current = module.render(mountElement, viewPropsRef.current)
+      handleRef.current = module.render(
+        mountElement,
+        viewPropsRef.current,
+        renderOptionsFor(view.moduleId),
+      )
     } catch (error) {
       fail(error)
       return undefined
@@ -78,18 +88,18 @@ export function FederatedViewMount(props: {
       }
       handleRef.current = null
     }
-  }, [module, mountElement, fail])
+  }, [module, mountElement, fail, view.moduleId])
 
   // Re-apply changed props to the mounted view.
   useEffect(() => {
     if (module && mountElement && handleRef.current) {
       try {
-        module.render(mountElement, viewProps)
+        module.render(mountElement, viewProps, renderOptionsFor(view.moduleId))
       } catch (error) {
         fail(error)
       }
     }
-  }, [module, mountElement, viewProps, fail])
+  }, [module, mountElement, viewProps, fail, view.moduleId])
 
   return (
     <>

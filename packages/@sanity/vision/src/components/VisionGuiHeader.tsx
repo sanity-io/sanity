@@ -20,7 +20,7 @@ import {
 } from 'sanity'
 import {Box, Flex, Grid, VStack} from 'ui5'
 
-import {API_VERSIONS} from '../apiVersions'
+import {API_VERSIONS, VARIANTS_API_VERSION} from '../apiVersions'
 import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../i18n'
 import {
@@ -152,7 +152,11 @@ export function VisionGuiHeader({
             </Card>
             <Tooltip
               animate
-              content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
+              content={
+                <Text size={1}>
+                  {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
+                </Text>
+              }
               disabled={!isApiVersionLocked}
               placement="bottom"
               portal

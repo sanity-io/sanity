@@ -115,7 +115,12 @@ export function createSearchQuery(
   // Note: Computing this is unnecessary when `!isScored`.
   const groupedSpecs = groupBy(flattenedSpecs, (entry) => [entry.path, entry.weight].join(':'))
 
-  const baseMatch = '([@, _id] match text::query($__query) || references($__rawQuery))'
+  // If the search query is path-like, match any id that appears as a path
+  // segment. This allows users to find a document using a URL or path
+  // containing its id.
+  const idPathLikeMatch = '_id in string::split($__rawQuery, "/")'
+
+  const baseMatch = `([@, _id] match text::query($__query) || ${idPathLikeMatch} || references($__rawQuery))`
 
   // `references()` is index-accelerated and accepted by `score()`, unlike `->`.
   const referenceBoost = hasReferenceIds ? [`boost(references($__refIds), ${referenceWeight})`] : []

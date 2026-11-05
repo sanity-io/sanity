@@ -80,7 +80,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   }, [items, search])
 
   // A saved URL is the request its tab sent, so tabs are matched through the request they would
-  // send now (the navbar's perspective for `global`, `vX` while a variant is selected)
+  // send now (the navbar's perspective for `global`, the variants API version while a variant is selected)
   const findTabShowing = useCallback(
     (parsed: ParsedQueryUrl) =>
       tabs.find((tab: VistaTab) =>

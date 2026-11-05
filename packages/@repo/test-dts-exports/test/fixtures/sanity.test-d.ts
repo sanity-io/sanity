@@ -272,6 +272,7 @@ import type {
   ConnectionStatusStore,
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
   CopyOptions,
@@ -357,6 +358,7 @@ import type {
   DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DEFAULT_VARIANT_TYPE_KEY,
   defaultLocale,
   DefaultPluginsWorkspaceOptions,
   DefaultPreview,
@@ -627,6 +629,7 @@ import type {
   FileSchemaType,
   FileValue,
   Filters,
+  filterVariantsForSearch,
   findIndex,
   FIXME,
   flattenConfig,
@@ -749,6 +752,7 @@ import type {
   getValueError,
   getVariantPublishedSibling,
   getVariantTitle,
+  getVariantType,
   getVersionFromId,
   getVersionId,
   getVersionInlineBadge,
@@ -884,6 +888,7 @@ import type {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
+  isDefaultVariant,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isDeleteMutation,
@@ -916,6 +921,7 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
+  isNonSelectableTerminalEvent,
   isNumberInputProps,
   isNumberSchemaType,
   isObjectInputProps,
@@ -1741,6 +1747,7 @@ import type {
   useReferringDocuments,
   useRelativeTime,
   useReleasesIds,
+  useReleasesToolAvailable,
   useRenderingContextStore,
   useReportParseError,
   useResolveInitialValueForType,
@@ -1783,6 +1790,7 @@ import type {
   useTimeAgo,
   useTimelineSelector,
   useTimelineStore,
+  useTimeZone,
   useTools,
   useTrackerStore,
   useTrackerStoreReporter,
@@ -2690,6 +2698,9 @@ describe('sanity', () => {
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
+  test('CONTENT_RELEASES_TIME_ZONE_SCOPE', () => {
+    expectTypeOf<typeof CONTENT_RELEASES_TIME_ZONE_SCOPE>().not.toBeNever()
+  })
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
@@ -2948,6 +2959,9 @@ describe('sanity', () => {
   })
   test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('DEFAULT_VARIANT_TYPE_KEY', () => {
+    expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
   })
   test('defaultLocale', () => {
     expectTypeOf<typeof defaultLocale>().not.toBeNever()
@@ -3763,6 +3777,9 @@ describe('sanity', () => {
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
+  test('filterVariantsForSearch', () => {
+    expectTypeOf<typeof filterVariantsForSearch>().toBeFunction()
+  })
   test('findIndex', () => {
     expectTypeOf<typeof findIndex>().toBeFunction()
   })
@@ -4130,6 +4147,9 @@ describe('sanity', () => {
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
+  })
+  test('getVariantType', () => {
+    expectTypeOf<typeof getVariantType>().toBeFunction()
   })
   test('getVersionFromId', () => {
     expectTypeOf<typeof getVersionFromId>().toBeFunction()
@@ -4537,6 +4557,9 @@ describe('sanity', () => {
   test('isDateTimeSchemaType', () => {
     expectTypeOf<typeof isDateTimeSchemaType>().toBeFunction()
   })
+  test('isDefaultVariant', () => {
+    expectTypeOf<typeof isDefaultVariant>().toBeFunction()
+  })
   test('isDeleteDocumentGroupEvent', () => {
     expectTypeOf<typeof isDeleteDocumentGroupEvent>().not.toBeNever()
   })
@@ -4632,6 +4655,9 @@ describe('sanity', () => {
   })
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
+  })
+  test('isNonSelectableTerminalEvent', () => {
+    expectTypeOf<typeof isNonSelectableTerminalEvent>().not.toBeNever()
   })
   test('isNumberInputProps', () => {
     expectTypeOf<typeof isNumberInputProps>().toBeFunction()
@@ -7119,6 +7145,9 @@ describe('sanity', () => {
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
   })
+  test('useReleasesToolAvailable', () => {
+    expectTypeOf<typeof useReleasesToolAvailable>().toBeFunction()
+  })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
   })
@@ -7245,6 +7274,9 @@ describe('sanity', () => {
   })
   test('useTimelineStore', () => {
     expectTypeOf<typeof useTimelineStore>().toBeFunction()
+  })
+  test('useTimeZone', () => {
+    expectTypeOf<typeof useTimeZone>().not.toBeNever()
   })
   test('useTools', () => {
     expectTypeOf<typeof useTools>().toBeFunction()

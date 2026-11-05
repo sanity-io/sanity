@@ -1,6 +1,7 @@
 import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import noop from 'lodash-es/noop.js'
+import {type ObservablePromise} from 'react-rx'
 import {WorkspacesContext} from 'sanity/_singletons'
 import {SemVer} from 'semver'
 import {describe, expect, test} from 'vitest'
@@ -56,6 +57,14 @@ const RESOURCES: ResourcesResponse = {
   },
 }
 
+const RESOURCES_PROMISE: ObservablePromise<ResourcesResponse | undefined> = Object.assign(
+  Promise.resolve(RESOURCES),
+  {
+    status: 'fulfilled' as const,
+    value: RESOURCES,
+  },
+)
+
 const WORKSPACES = createWorkspaceSummaries([
   {name: 'default', title: 'Test Studio', projectId: 'test', dataset: 'test'},
 ])
@@ -68,11 +77,9 @@ function ResourcesMenuItemsHarness(props: {latestTaggedVersion?: SemVer}) {
           <Menu>
             <ResourcesMenuItems
               currentVersion={new SemVer('5.0.0')}
-              error={null}
-              isLoading={false}
               latestTaggedVersion={props.latestTaggedVersion}
               onOpenStudioVersionDialog={noop}
-              value={RESOURCES}
+              resourcesPromise={RESOURCES_PROMISE}
             />
           </Menu>
         </Card>

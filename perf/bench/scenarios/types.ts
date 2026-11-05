@@ -127,6 +127,13 @@ export interface BenchScenario {
    * presence socket parked.
    */
   soak?: SoakPlan
+  softNav?: SoftNavPlan
+}
+
+export interface SoftNavPlan {
+  steps: ScenarioStep[]
+  /** Navigate labels whose soft LCP must land on document content after the ready check. */
+  documentOpens: string[]
 }
 
 /**

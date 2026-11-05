@@ -469,7 +469,7 @@ describe('observeFields', () => {
         perspective: ['drafts'],
         variant: 'alpha',
       })
-      expect(harness.apiVersions).toContain('X')
+      expect(harness.apiVersions).toContain('v2025-08-18')
       sub.unsubscribe()
     })
 

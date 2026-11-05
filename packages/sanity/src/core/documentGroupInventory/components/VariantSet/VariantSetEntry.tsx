@@ -5,24 +5,23 @@ export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
 
   return css`
+    display: grid;
     position: relative;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
     padding: ${space[3]}px;
     word-break: break-all;
-    justify-content: space-between;
+    align-items: center;
 
     * + & {
       border-block-start: 1px solid ${color.border};
     }
 
-    &,
     .atom {
       display: flex;
+      justify-content: space-between;
       gap: ${space[3]}px;
       align-items: center;
-    }
-
-    .inert {
-      pointer-events: none;
     }
 
     .primary-action {

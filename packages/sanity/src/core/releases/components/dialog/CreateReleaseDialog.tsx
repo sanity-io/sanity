@@ -17,6 +17,7 @@ import {
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useWorkspaceReleaseLimitGuard} from '../../hooks/useWorkspaceReleaseLimit'
 import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -53,12 +54,19 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   }, [])
 
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
 
   const handleOnSubmit = useCallback(
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
       if (!metadataValid) return
+
+      if (blockAtWorkspaceReleaseLimit()) {
+        onCancel()
+        clearReleaseDataFromStorage()
+        return
+      }
 
       setIsSubmitting(true)
       const inQuota = await releasePromise
@@ -106,6 +114,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       clearReleaseDataFromStorage()
     },
     [
+      blockAtWorkspaceReleaseLimit,
       releasePromise,
       createReleaseMetadata,
       release,

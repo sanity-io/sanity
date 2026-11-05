@@ -1,6 +1,5 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {setHours} from 'date-fns/setHours'
@@ -15,7 +14,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -182,7 +181,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
         }}
       >
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
-          <Text weight="medium" size={1}>
+          <Text weight="medium" size={1} as="div" trim={true}>
             {DEFAULT_MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
           </Text>
           <Flex paddingRight={3} gap={2}>

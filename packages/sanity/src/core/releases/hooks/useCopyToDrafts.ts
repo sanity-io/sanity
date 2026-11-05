@@ -8,6 +8,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {getTargetDocument} from '../../util/getTargetDocument'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {getVariantId} from '../../variants/tool/util'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useDocumentVersions} from './useDocumentVersions'
@@ -30,6 +31,7 @@ export interface UseCopyToDraftsReturn {
 export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraftsReturn {
   const {onNavigate, onConfirmationRequest, documentVersionInfoStub, documentGroupId} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const variantsClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {t} = useTranslation()
 
@@ -104,7 +106,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
           })
         }
 
-        await client.action(actions, {
+        const actionClient = variantRef ? variantsClient : client
+        await actionClient.action(actions, {
           tag: 'document.copy-to-drafts',
         })
 
@@ -123,6 +126,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
     },
     [
       client,
+      variantsClient,
       documentVersionInfoStub,
       hasDraftVersion,
       documentGroupId,

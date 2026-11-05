@@ -415,13 +415,17 @@ pnpm bench:unit                                    # mock-contract + stats unit 
 pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
 ```
 
+The validation microbenchmark externalizes the built package. After switching branches or commits,
+run `pnpm --filter @sanity/validation build` before `pnpm --filter @sanity/validation bench` so it
+does not measure stale output from the previous checkout.
+
 See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
 
 ### Engine confidence score (No Auth Required locally)
 
-The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). It is Stryker's mutation score across two mutation runs, stored as `score.ratio`. It is one field, so reporting that reads the dataset directly needs no understanding of how it is computed. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
+The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). Each weekly run stores two Stryker mutation scores: `score.ratio`, the total engine score over both mutation runs (`sanity` and `@sanity/mutator`), and `studioScore.ratio`, the core Studio engine score over the `sanity` target alone. Reporting that reads the dataset directly reads those two fields and needs no understanding of how they are computed. `studioScore` is derived from the per-file results of the same run, so it needs no extra Stryker run and no `config.version` change. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
 
 ```bash
 pnpm engine-confidence stryker --target mutator --full   # also: --target sanity; omit --full for an incremental run
@@ -792,6 +796,11 @@ just to reach a branch.
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+- Run the full browser suite through `pnpm --filter sanity test:browser`, not
+  `vitest -c vitest.browser.config.mts`. The script sets `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` so
+  Vitest collects garbage in Chromium after every test file; without it, a Linux run loses a page
+  to "Browser connection was closed while running tests" partway through (the comment above
+  `browser.provider` in the config explains the leak). Single files are fine either way.
 
 #### DOM prop leak guard
 
@@ -1159,6 +1168,13 @@ label neither starts a run nor cancels one in flight. Pushes to `main` are never
 what keeps the auto-accepted baselines current for labeled PRs to diff against. The Playwright
 e2e snapshots are uploaded by `e2e.yml` and are not part of this gate.
 
+A Playwright archive captures the DOM as it is at the `takeChromaticSnapshot` call, so wait for
+every region it will show, not just the one the spec is about: the navbar settles long before the
+tool below it, whose panes lazy-load behind a `LoadingPane` spinner. `takeChromaticSnapshot` waits
+out visible `LoadingBlock`s as a backstop. Content that cannot settle under the archive fixture at
+all — document previews, whose listener the fixture's CDP instrumentation breaks — belongs in
+`test.use({ignoreSelectors: [...]})` rather than in a wait that would time out.
+
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
@@ -1386,7 +1402,7 @@ added new feature                       # missing type and scope
 
 ### 1. Create as Draft PR First
 
-**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team. This applies to every way of opening a PR, not only `gh`: an agent PR tool must be called with its draft option set (`draft: true`).
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
@@ -1518,6 +1534,10 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
 ### Git branch naming
 
 When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
+
+### Pull requests
+
+Always open pull requests as drafts. Cloud agents create PRs with the agent's PR tool rather than `gh` (which is read-only in the VM), so pass `draft: true` on every create call. Never open a PR ready for review: the prompter marks it ready after reviewing it (see [Pull Request Workflow](#pull-request-workflow)).
 
 ### Services
 

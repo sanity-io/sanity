@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TemplatePreview} from '../TemplatePreview'
 
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>
 function Labelled({label, children}: {label: string; children: React.ReactNode}) {
   return (
     <VStack gap={2}>
-      <Text muted size={1} weight="medium">
+      <Text muted size={1} weight="medium" as="div" trim={true}>
         {label}
       </Text>
       <Card border padding={2} radius={2} tone="inherit">

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/access-ui",
-  "version": "6.20.0",
+  "version": "6.22.0",
   "description": "Shared request-access screen and access-request logic for Sanity applications",
   "keywords": [
     "access",
@@ -57,7 +57,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "@storybook/react-vite": "^10.6.3",
+    "@storybook/react-vite": "^10.6.5",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",

@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider, Text} from '@sanity/ui'
@@ -26,6 +27,7 @@ import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {Container} from '../Container'
 import {SelectBundle} from '../CreateVariant/SelectBundle'
 import {SelectVariantDefinition} from '../CreateVariant/SelectVariantDefinition'
+import {InventoryHeader} from '../InventoryHeader'
 
 const PUBLISHED_ID = 'panels-document'
 const DOCUMENT_TYPE = 'author'
@@ -101,7 +103,7 @@ function variant(
 const PUBLISHED = variant(PUBLISHED_ID, 'Published')
 const DRAFT = variant(`drafts.${PUBLISHED_ID}`, 'Draft', {bundleId: 'drafts'})
 // The "Summer sale" variant already exists in the ASAP release, so `SelectBundle`
-// lists that release under "view existing variants" instead of as a target.
+// lists that release under "view existing versions" instead of as a target.
 const SUMMER_SALE_IN_ASAP = variant(
   `versions.${activeASAPRelease.name}.${PUBLISHED_ID}`,
   'Summer sale',
@@ -142,6 +144,11 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
   VersionsPreviewList: ({documentVersions}) => (
     <Card padding={3} radius={2} border data-testid="versions-preview-list">
       <Text size={1}>{documentVersions.join(', ')}</Text>
+    </Card>
+  ),
+  CompareVersionsAction: () => (
+    <Card padding={2} radius={2} border data-testid="compare-versions-action">
+      <Text size={1}>Compare versions</Text>
     </Card>
   ),
 }
@@ -266,7 +273,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
       </PanelFrame>,
     )
 
-    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Summer sale'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'vip-users'})).toBeVisible()
 
@@ -289,7 +296,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
     )
 
     await expect
-      .element(page.getByRole('button', {name: 'Create variant for Summer sale'}))
+      .element(page.getByRole('button', {name: 'Create version for Summer sale'}))
       .toBeVisible()
     await expect.element(page.getByText('As a draft')).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Drafts'})).toBeEnabled()
@@ -301,7 +308,7 @@ describe('DocumentGroupInventory create-variant panels', () => {
       .element(page.getByRole('button', {name: activeUndecidedRelease.metadata.title}))
       .toBeEnabled()
     // Already holds a "Summer sale" variant, so it is offered for viewing, not as a target.
-    await expect.element(page.getByText('Or view existing variants')).toBeVisible()
+    await expect.element(page.getByText('Or view existing versions')).toBeVisible()
     await expect
       .element(page.getByRole('button', {name: activeASAPRelease.metadata.title}))
       .toBeEnabled()
@@ -340,7 +347,7 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($crossDataset).toBeVisible()
     await expect.element($crossDataset).toMatchTextContent('1 document in another dataset')
     await expect.element($crossDataset).toMatchTextContent('Dataset: production')
-    await expect.element($dialog.getByRole('button', {name: 'Delete (2)'})).toBeEnabled()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
 
     await settleChromaticEndState()
   })
@@ -360,7 +367,104 @@ describe('ConfirmDeleteDialog', () => {
     await userEvent.click($dialog.getByText('Dataset: production'))
     await expect.element($dialog.getByText('Project ID')).toBeVisible()
     await expect.element($dialog.getByText('remote-doc')).toBeVisible()
-    await expect.element($dialog.getByRole('button', {name: 'Delete (1)'})).toBeEnabled()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+})
+
+function InventoryHeaderHarness(
+  props: ReturnType<typeof startHarness> & {
+    components: DocumentGroupInventoryComponents | undefined
+  },
+) {
+  return (
+    <PanelFrame>
+      <InventoryHeader {...props} />
+    </PanelFrame>
+  )
+}
+
+describe('InventoryHeader', () => {
+  it('starts variant creation from the header', async () => {
+    // Starting creation empties the header, so archive it before the click.
+    configure({disableAutoSnapshot: true})
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+    const {variantCreationRef} = refs
+
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $createVariant = page.getByRole('button', {name: 'Create version'})
+    await expect.element($createVariant).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
+    await settleChromaticEndState()
+    await takeSnapshot('nothing-selected')
+
+    await userEvent.click($createVariant)
+    expect(variantCreationRef.getSnapshot().matches('active')).toBe(true)
+    await expect.element($createVariant).not.toBeInTheDocument()
+  })
+
+  it('counts the selection and offers deletion from the header once a version is selected', async () => {
+    configure({disableAutoSnapshot: true})
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+    const {selectionRef, deletionRef} = refs
+
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Delete'})).not.toBeInTheDocument()
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+
+    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+
+    const $delete = page.getByRole('button', {name: 'Delete', exact: true})
+    await expect.element($delete).toBeVisible()
+    await expect.element(page.getByText('1 selected', {exact: true})).toBeVisible()
+
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+    await expect.element(page.getByText('2 selected', {exact: true})).toBeVisible()
+    await settleChromaticEndState()
+    await takeSnapshot('two-selected')
+
+    await userEvent.click($delete)
+    expect(deletionRef.getSnapshot().matches('active')).toBe(true)
+  })
+
+  it('swaps the group actions for deselect all while versions are selected', async () => {
+    // The selected header is archived by the test above, and this one ends
+    // back on the empty header.
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness()
+    const {selectionRef} = refs
+    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $deselectAll = page.getByRole('button', {name: 'Deselect all'})
+    await expect.element($deselectAll).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create version'})).not.toBeInTheDocument()
+    await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
+
+    await userEvent.click($deselectAll)
+
+    expect(selectionRef.getSnapshot().context.selectedIds.size).toBe(0)
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+  })
+
+  it('renders no compare versions action without the consumer components of manage mode', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+
+    void render(<InventoryHeaderHarness {...refs} components={undefined} />)
+
+    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
 
     await settleChromaticEndState()
   })
