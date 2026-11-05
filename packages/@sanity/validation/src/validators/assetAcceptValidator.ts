@@ -29,7 +29,12 @@ function isUnknownFileType(fileType: AssetFileType): boolean {
  * @internal
  */
 export function assetMatchesAccept(fileType: AssetFileType, accept: string): boolean {
-  return accepts({type: fileType.mimeType ?? '', name: getAssetFilename(fileType)}, accept)
+  const type = fileType.mimeType ?? ''
+  return (
+    accepts({type, name: getAssetFilename(fileType)}, accept) ||
+    // Linked assets can have an original filename without the stored extension.
+    Boolean(fileType.extension && accepts({type, name: `asset.${fileType.extension}`}, accept))
+  )
 }
 
 function getAssetFilename(fileType: AssetFileType): string | undefined {
