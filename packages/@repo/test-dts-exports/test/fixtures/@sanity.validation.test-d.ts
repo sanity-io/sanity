@@ -14,6 +14,7 @@ import type {
   validateDocumentWithWorkspace,
   ValidateDocumentWorkspaceOptions,
   ValidationClient,
+  ValidationLocaleSource,
   ValidationMarkerCode,
   validationMarkerCodes,
   ValidationSchema,
@@ -55,6 +56,9 @@ describe('@sanity/validation', () => {
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
+  })
+  test('ValidationLocaleSource', () => {
+    expectTypeOf<ValidationLocaleSource>().toBeObject()
   })
   test('ValidationMarkerCode', () => {
     expectTypeOf<ValidationMarkerCode>().not.toBeNever()
