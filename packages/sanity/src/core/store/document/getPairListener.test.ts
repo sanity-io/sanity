@@ -5,7 +5,7 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
-import {OutOfSyncError} from './utils/sequentializeListenerEvents'
+import {DeadlineExceededError, OutOfSyncError} from './utils/sequentializeListenerEvents'
 
 function createMutationEvent(
   overrides: Partial<MutationEvent> & Pick<MutationEvent, 'documentId'>,
@@ -78,6 +78,22 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
 }
 
 const nextTick = () => Promise.resolve()
+
+function mutationsOf(events: ListenerEvent[], documentId: string) {
+  return events.flatMap((event) =>
+    event.type === 'mutation' && event.documentId === documentId
+      ? [`${event.previousRev ?? 'create'} -> ${event.resultRev}`]
+      : [],
+  )
+}
+
+function snapshotsOf(events: ListenerEvent[], documentId: string) {
+  return events.flatMap((event) =>
+    event.type === 'snapshot' && event.documentId === documentId
+      ? [event.document?._rev ?? null]
+      : [],
+  )
+}
 
 describe('getPairListener', () => {
   let listener$: Subject<ListenerEvent>
@@ -519,6 +535,179 @@ describe('getPairListener', () => {
       expect(errors).toEqual([])
       expect(delegated).toEqual([serverError])
       expect(getDocuments).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('putting the events of each document in sequence', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      // `messageReceivedAt` is stamped with whole seconds, the deadline counts from it
+      vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    test('emits the mutations of a document that arrive out of order in the order of their revisions', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-3',
+          previousRev: 'draft-rev-2',
+          resultRev: 'draft-rev-3',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: PUBLISHED_ID,
+          transactionId: 'tx-pub',
+          previousRev: 'pub-rev',
+          resultRev: 'pub-rev-2',
+        }),
+      )
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([])
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([
+        'draft-rev -> draft-rev-2',
+        'draft-rev-2 -> draft-rev-3',
+      ])
+      // the mutations held back for the draft don't hold back those of the published document
+      expect(mutationsOf(events, PUBLISHED_ID)).toEqual(['pub-rev -> pub-rev-2'])
+
+      sub.unsubscribe()
+    })
+
+    test('drops a mutation that the fetched snapshot already includes', async () => {
+      const onSyncErrorRecovery = vi.fn()
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {onSyncErrorRecovery}).subscribe((e) =>
+        events.push(e),
+      )
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-1',
+          previousRev: 'draft-rev-0',
+          resultRev: 'draft-rev',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(mutationsOf(events, DRAFT_ID)).toEqual(['draft-rev -> draft-rev-2'])
+      expect(onSyncErrorRecovery).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
+
+    test('continues from a snapshot of a missing document with the mutation that creates it', async () => {
+      vi.spyOn(client.observable, 'getDocuments').mockReturnValueOnce(of([publishedDoc, null]))
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-create',
+          // the listener sends no `previousRev` for the mutation that creates a document
+          previousRev: undefined,
+          resultRev: 'draft-rev-1',
+          transition: 'appear',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev-1',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+
+      expect(snapshotsOf(events, DRAFT_ID)).toEqual([null])
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([
+        'create -> draft-rev-1',
+        'draft-rev-1 -> draft-rev-2',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches the snapshots again when a missing mutation does not arrive within 30 seconds', async () => {
+      const onSyncErrorRecovery = vi.fn()
+      const listen = vi.spyOn(client.observable, 'listen')
+      const getDocuments = vi.spyOn(client.observable, 'getDocuments')
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {onSyncErrorRecovery}).subscribe((e) =>
+        events.push(e),
+      )
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // draft-rev -> draft-rev-2 never arrives
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-3',
+          previousRev: 'draft-rev-2',
+          resultRev: 'draft-rev-3',
+        }),
+      )
+      await vi.advanceTimersByTimeAsync(29_999)
+      expect(onSyncErrorRecovery).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(onSyncErrorRecovery).toHaveBeenCalledExactlyOnceWith(expect.any(DeadlineExceededError))
+      expect(listen).toHaveBeenCalledTimes(2)
+
+      // the welcome of the new listener connection fetches the snapshots again
+      getDocuments.mockReturnValueOnce(of([publishedDoc, {...draftDoc, _rev: 'draft-rev-3'}]))
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-4',
+          previousRev: 'draft-rev-3',
+          resultRev: 'draft-rev-4',
+        }),
+      )
+
+      expect(getDocuments).toHaveBeenCalledTimes(2)
+      expect(snapshotsOf(events, DRAFT_ID)).toEqual(['draft-rev', 'draft-rev-3'])
+      expect(mutationsOf(events, DRAFT_ID)).toEqual(['draft-rev-3 -> draft-rev-4'])
 
       sub.unsubscribe()
     })
