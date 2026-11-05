@@ -505,6 +505,25 @@ describe(createObserveDocument.name, () => {
       expect(movie.emitted).toEqual([documentAt('r1'), documentAt('r3'), documentAt('r4')])
     })
 
+    it('fetches the document again as soon as it holds back 20 mutation events, without waiting for the deadline', async () => {
+      const {dataset, listener, fetch, observe} = observeThroughGlobalListener()
+      dataset.save('movie', 'r1')
+      const movie = observe('movie')
+      listener.welcome()
+      await fetchBatch()
+
+      // its event is never delivered, so none of the 20 after it continue from the revision fetched
+      dataset.save('movie', 'r2')
+      listener.deliver(
+        ...Array.from({length: 20}, (_, index) => dataset.save('movie', `r${index + 3}`)),
+      )
+      await fetchBatch()
+      expect(fetch).toHaveBeenCalledTimes(2)
+
+      listener.deliver(dataset.save('movie', 'r23'))
+      expect(movie.emitted).toEqual([documentAt('r1'), documentAt('r22'), documentAt('r23')])
+    })
+
     it('applies mutation events that arrive out of order in the order of their revisions', async () => {
       const {dataset, listener, observe} = observeThroughGlobalListener()
       dataset.save('movie', 'r1')
