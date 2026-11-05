@@ -1,5 +1,10 @@
 import {type ClientPerspective} from '@sanity/client'
 
+import {
+  type QueryRequestMethod,
+  queryRequestMethod,
+  splitQuerySearchParams,
+} from '../../util/queryRequestMethod'
 import {deriveTabTitle} from './tabTitle'
 
 export type ExportSnippetId = 'curl' | 'client' | 'next-sanity'
@@ -9,6 +14,12 @@ export interface ExportSnippet {
   title: string
   language: 'bash' | 'typescript'
   code: string
+  /**
+   * How the curl snippet sends the query: in the URL, or as a JSON body once the query and
+   * params are too long for one, as `@sanity/client` (which the other snippets call) does on
+   * its own. The other snippets leave it unset.
+   */
+  method?: QueryRequestMethod
 }
 
 export interface ExportSnippetInput {
@@ -32,6 +43,22 @@ function toTemplateLiteral(value: string): string {
 
 function toSingleQuoted(value: string): string {
   return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+}
+
+/** A shell word in single quotes, where only a quote needs escaping, as `'\''` */
+function toShellQuoted(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`
+}
+
+/**
+ * The URL a `POST` of the query goes to: the request URL without the query and its params,
+ * which travel in the body, keeping the options (perspective, variant, source map) in it as
+ * `@sanity/client` keeps them
+ */
+export function toPostQueryUrl(url: string): string {
+  const parsed = new URL(url)
+  parsed.search = splitQuerySearchParams(parsed.searchParams).options.toString()
+  return parsed.href
 }
 
 /**
@@ -74,10 +101,18 @@ export function buildExportSnippets(input: ExportSnippetInput): ExportSnippet[] 
   const apiVersion = input.apiVersion.replace(/^v/, '')
   const constantName = toQueryConstantName(input.query)
 
-  const curl = [
-    `curl ${toSingleQuoted(input.url)} \\`,
-    `  -H "Authorization: Bearer $SANITY_API_TOKEN"`,
-  ]
+  // The client's own rule: a query and params too long for a URL go in a JSON body, and the
+  // options stay in the URL. `@sanity/client` applies it inside `fetch`, so only curl spells it out
+  const method = queryRequestMethod(input.query, input.params)
+  const curl =
+    method === 'GET'
+      ? [`curl ${toShellQuoted(input.url)} \\`, `  -H "Authorization: Bearer $SANITY_API_TOKEN"`]
+      : [
+          `curl ${toShellQuoted(toPostQueryUrl(input.url))} \\`,
+          `  -H "Authorization: Bearer $SANITY_API_TOKEN" \\`,
+          `  -H 'Content-Type: application/json' \\`,
+          `  --data-raw ${toShellQuoted(JSON.stringify({query: input.query, params: input.params}))}`,
+        ]
 
   const clientConfig = [
     `  projectId: ${toSingleQuoted(input.projectId)},`,
@@ -136,7 +171,7 @@ export function buildExportSnippets(input: ExportSnippetInput): ExportSnippet[] 
   ]
 
   return [
-    {id: 'curl', title: 'curl', language: 'bash', code: curl.join('\n')},
+    {id: 'curl', title: 'curl', language: 'bash', code: curl.join('\n'), method},
     {id: 'client', title: '@sanity/client', language: 'typescript', code: client.join('\n')},
     {id: 'next-sanity', title: 'next-sanity', language: 'typescript', code: nextSanity.join('\n')},
   ]

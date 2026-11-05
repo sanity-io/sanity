@@ -5,6 +5,7 @@ import {Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {isApiCdnHost} from '../../../util/parseQueryUrl'
+import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VistaResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
@@ -90,6 +91,23 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 <Text data-testid="vista-network-endpoint" size={1} weight="medium">
                   {viaCdn ? t('vista.network.endpoint.cdn') : t('vista.network.endpoint.api')}
                 </Text>
+              </Row>
+              <Row label={t('vista.network.method')}>
+                <Stack gap={2}>
+                  <Text data-testid="vista-network-method" size={1}>
+                    {meta.method === 'POST'
+                      ? t('vista.network.method.post')
+                      : t('vista.network.method.get')}
+                  </Text>
+                  {meta.method === 'POST' && (
+                    <Text data-testid="vista-network-method-explained" muted size={0}>
+                      {t('vista.network.method.post-explained', {
+                        size: encodedQuerySizeOfUrl(meta.url),
+                        limit: QUERY_URL_SIZE_LIMIT,
+                      })}
+                    </Text>
+                  )}
+                </Stack>
               </Row>
               <Row label={t('vista.network.cache')}>
                 <Stack gap={2}>

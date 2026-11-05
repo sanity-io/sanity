@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRequest, type VistaTab} from '../../store/types'
@@ -91,9 +92,21 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
             </Card>
           </TabPanel>
           <Flex alignItems="center" gap={3} justifyContent="space-between">
-            <Text muted size={1}>
-              {active.id === 'curl' ? t('vista.export-query.token-note') : ''}
-            </Text>
+            <Stack gap={2}>
+              {active.id === 'curl' && (
+                <Text muted size={1}>
+                  {t('vista.export-query.token-note')}
+                </Text>
+              )}
+              {active.method === 'POST' && (
+                <Text data-testid="vista-export-post-note" muted size={1}>
+                  {t('vista.export-query.post-body-note', {
+                    size: encodedQuerySize(request.query, request.params),
+                    limit: QUERY_URL_SIZE_LIMIT,
+                  })}
+                </Text>
+              )}
+            </Stack>
             <Button
               icon={CopyIcon}
               mode="ghost"

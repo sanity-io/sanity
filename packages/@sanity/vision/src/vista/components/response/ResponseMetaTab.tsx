@@ -109,6 +109,11 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
                 />
               </Tooltip>
             </Flex>
+            {meta?.method === 'POST' && (
+              <Text data-testid="vista-query-url-posted" muted size={1}>
+                {t('vista.response.url.sent-as-post')}
+              </Text>
+            )}
           </Stack>
         )}
       </Stack>
