@@ -497,6 +497,22 @@ describe('putting events in sequence', () => {
       expect(summarize(emitted)).toEqual(['snapshot r1', 'r1 -> r2'])
       expect(errors).toEqual([])
     })
+
+    test('holds back a mutation that the snapshot already includes when it arrives after the next one, until the deadline', () => {
+      const {push, emitted, errors} = sequence({resolveChainDeadline: 1_000})
+
+      push(snapshot('r3'))
+      push(mutationEvent({previousRev: 'r2', resultRev: 'r3'}))
+      // it leads up to r2 rather than to the revision reached, like a mutation with a gap before it
+      push(mutationEvent({previousRev: 'r1', resultRev: 'r2'}))
+      push(mutationEvent({previousRev: 'r3', resultRev: 'r4'}))
+      expect(summarize(emitted)).toEqual(['snapshot r3', 'r3 -> r4'])
+
+      vi.advanceTimersByTime(999)
+      expect(errors).toEqual([])
+      vi.advanceTimersByTime(1)
+      expect(errors).toEqual([expect.any(DeadlineExceededError)])
+    })
   })
 
   describe('giving up on mutations that do not chain', () => {
