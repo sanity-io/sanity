@@ -1138,6 +1138,12 @@ importers:
 
   engine-confidence:
     dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.112.3
+        version: 0.112.5(zod@4.6.7)
+      '@repo/content-lake-model':
+        specifier: workspace:*
+        version: link:../packages/@repo/content-lake-model
       '@repo/utils':
         specifier: workspace:*
         version: link:../packages/@repo/utils
