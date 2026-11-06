@@ -150,6 +150,17 @@ export class BufferedDocumentTester {
     return this
   }
 
+  commitCancelled(): this {
+    if (!this.pendingCommit) {
+      throw new Error('`pendingCommit` not set')
+    }
+
+    this.resetState()
+    this.pendingCommit.cancel(new Error('Commit cancelled'))
+    this.pendingCommit = null
+    return this
+  }
+
   assertLOCAL(path: string, value: unknown): this {
     expect(extract(path, this.doc.LOCAL)[0]).toEqual(value)
     return this
