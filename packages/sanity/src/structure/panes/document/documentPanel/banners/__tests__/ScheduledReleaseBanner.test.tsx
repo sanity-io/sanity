@@ -1,6 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ReleaseDocument, usePauseToEditScheduledDraft} from 'sanity'
+import {
+  type DocumentPermission,
+  type ReleaseDocument,
+  useDocumentPairPermissions,
+  usePauseToEditScheduledDraft,
+} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -15,12 +20,23 @@ vi.mock('sanity', async () => {
   return {
     ...actual,
     usePauseToEditScheduledDraft: vi.fn(),
+    useDocumentPairPermissions: vi.fn(),
   }
 })
 
 const mockUsePauseToEditScheduledDraft = usePauseToEditScheduledDraft as Mock<
   typeof usePauseToEditScheduledDraft
 >
+
+const mockUseDocumentPairPermissions = useDocumentPairPermissions as Mock<
+  typeof useDocumentPairPermissions
+>
+
+const withholdPermission = (withheld?: DocumentPermission) =>
+  mockUseDocumentPairPermissions.mockImplementation(({permission}) => [
+    {granted: permission !== withheld, reason: ''},
+    false,
+  ])
 
 const pauseToEdit = vi.fn()
 
@@ -53,7 +69,14 @@ const scheduledCardinalityOneRelease: ReleaseDocument = {
 
 async function renderBanner(currentRelease: ReleaseDocument) {
   const wrapper = await createTestProvider()
-  return render(<ScheduledReleaseBanner currentRelease={currentRelease} />, {wrapper})
+  return render(
+    <ScheduledReleaseBanner
+      currentRelease={currentRelease}
+      documentId="doc1"
+      documentType="author"
+    />,
+    {wrapper},
+  )
 }
 
 describe('ScheduledReleaseBanner', () => {
@@ -63,6 +86,7 @@ describe('ScheduledReleaseBanner', () => {
       pauseToEdit,
       isPausing: false,
     })
+    withholdPermission()
   })
 
   it('shows a Pause to edit button for a cardinality-one scheduled release', async () => {
@@ -94,5 +118,51 @@ describe('ScheduledReleaseBanner', () => {
     await userEvent.click(screen.getByRole('button', {name: 'Pause to edit'}))
 
     expect(pauseToEdit).toHaveBeenCalled()
+  })
+
+  describe('grants', () => {
+    it('looks up the publish grant against the scheduled draft version', async () => {
+      await renderBanner(scheduledCardinalityOneRelease)
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: 'author',
+        version: 'rScheduled',
+        permission: 'publish',
+      })
+    })
+
+    it('skips the document lookup for a multi-doc scheduled release', async () => {
+      await renderBanner(scheduledRelease)
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith(
+        expect.objectContaining({type: '*'}),
+      )
+    })
+
+    it('enables Pause to edit with no explanation when the publish grant is present', async () => {
+      await renderBanner(scheduledCardinalityOneRelease)
+
+      expect(screen.getByRole('button', {name: 'Pause to edit'})).toBeEnabled()
+      expect(screen.queryByText('Insufficient permissions')).not.toBeInTheDocument()
+    })
+
+    it('disables Pause to edit with an explanation when the publish grant is absent', async () => {
+      withholdPermission('publish')
+
+      await renderBanner(scheduledCardinalityOneRelease)
+
+      expect(screen.getByRole('button', {name: 'Pause to edit'})).toBeDisabled()
+      expect(screen.getByText('You do not have permission to edit schedules.')).toBeInTheDocument()
+    })
+
+    it('disables Pause to edit with no explanation while the grant is loading', async () => {
+      mockUseDocumentPairPermissions.mockReturnValue([undefined, true])
+
+      await renderBanner(scheduledCardinalityOneRelease)
+
+      expect(screen.getByRole('button', {name: 'Pause to edit'})).toBeDisabled()
+      expect(screen.queryByText('Insufficient permissions')).not.toBeInTheDocument()
+    })
   })
 })

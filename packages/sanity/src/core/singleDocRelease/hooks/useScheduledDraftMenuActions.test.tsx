@@ -6,7 +6,14 @@ import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 // Now we can safely import the hook and other dependencies
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
+import {
+  activeCardinalityOneRelease,
+  scheduledRelease,
+} from '../../releases/__fixtures__/release.fixture'
+import {
+  type DocumentPermission,
+  useDocumentPairPermissions,
+} from '../../store/grants/documentPairPermissions'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
@@ -38,6 +45,34 @@ vi.mock('./useScheduledDraftDocument', () => ({
     firstDocument: null,
   }),
 }))
+
+vi.mock('../../store/grants/documentPairPermissions', () => ({
+  useDocumentPairPermissions: vi.fn(),
+}))
+
+const mockUseDocumentPairPermissions = useDocumentPairPermissions as MockedFunction<
+  typeof useDocumentPairPermissions
+>
+
+const grantEveryPermission = () =>
+  mockUseDocumentPairPermissions.mockImplementation(() => [{granted: true, reason: ''}, false])
+
+const withholdPermission = (withheld: DocumentPermission) =>
+  mockUseDocumentPairPermissions.mockImplementation(({permission}) => [
+    {granted: permission !== withheld, reason: ''},
+    false,
+  ])
+
+const scheduledDraftRelease = {
+  ...activeCardinalityOneRelease,
+  state: 'scheduled' as const,
+}
+
+const baseOptions = {
+  release: scheduledDraftRelease,
+  documentType: 'author',
+  documentId: 'doc1',
+}
 
 // Mock operations that will be used by the hook
 const mockOperations = {
@@ -94,16 +129,29 @@ function TestComponent({options}: TestComponentProps) {
         <div data-testid="publish-now-props">
           <span data-testid="publish-now-text">{actions.publishNow.text}</span>
           <span data-testid="publish-now-disabled">{String(actions.publishNow.disabled)}</span>
+          <div data-testid="publish-now-reason">{actions.publishNow.tooltipProps?.content}</div>
         </div>
         <div data-testid="pause-to-edit-props">
           <span data-testid="pause-to-edit-text">{actions.pauseToEdit.text}</span>
           <span data-testid="pause-to-edit-disabled">{String(actions.pauseToEdit.disabled)}</span>
+          <div data-testid="pause-to-edit-reason">{actions.pauseToEdit.tooltipProps?.content}</div>
+        </div>
+        <div data-testid="schedule-publish-props">
+          <span data-testid="schedule-publish-disabled">
+            {String(actions.schedulePublish.disabled)}
+          </span>
+          <div data-testid="schedule-publish-reason">
+            {actions.schedulePublish.tooltipProps?.content}
+          </div>
         </div>
         <div data-testid="delete-schedule-props">
           <span data-testid="delete-schedule-text">{actions.deleteSchedule.text}</span>
           <span data-testid="delete-schedule-disabled">
             {String(actions.deleteSchedule.disabled)}
           </span>
+          <div data-testid="delete-schedule-reason">
+            {actions.deleteSchedule.tooltipProps?.content}
+          </div>
         </div>
       </div>
       <div data-testid="dialogs">{dialogs}</div>
@@ -116,6 +164,8 @@ describe('useScheduledDraftMenuActions', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+
+    grantEveryPermission()
 
     // Setup mock implementations
     mockUseScheduleDraftOperations.mockReturnValue(mockOperations)
@@ -182,7 +232,7 @@ describe('useScheduledDraftMenuActions', () => {
   it('should render all three menu items in the correct order', () => {
     render(
       <TestProvider>
-        <TestComponent options={{release: scheduledRelease}} />
+        <TestComponent options={baseOptions} />
       </TestProvider>,
     )
 
@@ -206,7 +256,7 @@ describe('useScheduledDraftMenuActions', () => {
   it('should provide menu item props with correct values', () => {
     render(
       <TestProvider>
-        <TestComponent options={{release: scheduledRelease}} />
+        <TestComponent options={baseOptions} />
       </TestProvider>,
     )
 
@@ -219,7 +269,7 @@ describe('useScheduledDraftMenuActions', () => {
     it('should open dialog and call operation on success', async () => {
       render(
         <TestProvider>
-          <TestComponent options={{release: scheduledRelease}} />
+          <TestComponent options={baseOptions} />
         </TestProvider>,
       )
 
@@ -231,7 +281,7 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('confirm-publish'))
 
       await waitFor(() => {
-        expect(mockOperations.publishScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.publishScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
       })
     })
 
@@ -241,7 +291,7 @@ describe('useScheduledDraftMenuActions', () => {
 
       render(
         <TestProvider>
-          <TestComponent options={{release: scheduledRelease}} />
+          <TestComponent options={baseOptions} />
         </TestProvider>,
       )
 
@@ -263,7 +313,7 @@ describe('useScheduledDraftMenuActions', () => {
     it('should call pauseScheduledDraft operation on success', async () => {
       render(
         <TestProvider>
-          <TestComponent options={{release: scheduledRelease}} />
+          <TestComponent options={baseOptions} />
         </TestProvider>,
       )
 
@@ -271,7 +321,7 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('pause-to-edit-menu-item'))
 
       await waitFor(() => {
-        expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
       })
     })
 
@@ -282,7 +332,7 @@ describe('useScheduledDraftMenuActions', () => {
 
       render(
         <TestProvider>
-          <TestComponent options={{release: scheduledRelease}} />
+          <TestComponent options={baseOptions} />
         </TestProvider>,
       )
 
@@ -304,7 +354,7 @@ describe('useScheduledDraftMenuActions', () => {
     it('should open dialog and call operation on success', async () => {
       render(
         <TestProvider>
-          <TestComponent options={{release: scheduledRelease}} />
+          <TestComponent options={baseOptions} />
         </TestProvider>,
       )
 
@@ -316,7 +366,181 @@ describe('useScheduledDraftMenuActions', () => {
       await userEvent.click(screen.getByTestId('confirm-delete'))
 
       await waitFor(() => {
-        expect(mockOperations.deleteScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
+        expect(mockOperations.deleteScheduledDraft).toHaveBeenCalledWith(scheduledDraftRelease)
+      })
+    })
+  })
+  describe('grants', () => {
+    const renderActions = (optionsOverride: Partial<UseScheduledDraftMenuActionsOptions> = {}) =>
+      render(
+        <TestProvider>
+          <TestComponent options={{...baseOptions, ...optionsOverride}} />
+        </TestProvider>,
+      )
+
+    it('enables every action when both grants are present', () => {
+      renderActions()
+
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('false')
+      expect(screen.getByTestId('pause-to-edit-disabled')).toHaveTextContent('false')
+      expect(screen.getByTestId('schedule-publish-disabled')).toHaveTextContent('false')
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('false')
+
+      expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('pause-to-edit-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('schedule-publish-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('disables the publish grant actions with an explanation when publish is withheld', () => {
+      withholdPermission('publish')
+
+      renderActions()
+
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('publish-now-reason')).toHaveTextContent('Insufficient permissions')
+      expect(screen.getByTestId('publish-now-reason')).toHaveTextContent(
+        'You do not have permission to publish this document.',
+      )
+
+      expect(screen.getByTestId('pause-to-edit-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('pause-to-edit-reason')).toHaveTextContent(
+        'You do not have permission to edit schedules.',
+      )
+
+      expect(screen.getByTestId('schedule-publish-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('schedule-publish-reason')).toHaveTextContent(
+        'You do not have permission to edit schedules.',
+      )
+    })
+
+    it('keeps delete schedule available when only publish is withheld', () => {
+      withholdPermission('publish')
+
+      renderActions()
+
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('false')
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('disables delete schedule with an explanation when discardVersion is withheld', () => {
+      withholdPermission('discardVersion')
+
+      renderActions()
+
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('delete-schedule-reason')).toHaveTextContent(
+        'You do not have permission to delete schedules.',
+      )
+
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('false')
+      expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+    })
+
+    it('checks the grants against the scheduled draft version of the document', () => {
+      renderActions()
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: 'author',
+        version: 'rCardinalityOne',
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: 'author',
+        version: 'rCardinalityOne',
+        permission: 'discardVersion',
+      })
+    })
+
+    it('does not offer an action while the grant is still loading', () => {
+      mockUseDocumentPairPermissions.mockImplementation(() => [undefined, true])
+
+      renderActions()
+
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('asks for a type that denies without a lookup when the release is not a scheduled draft', () => {
+      mockUseDocumentPairPermissions.mockImplementation(({type}) => [
+        {granted: type !== '*', reason: ''},
+        false,
+      ])
+
+      renderActions({release: scheduledRelease})
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rScheduled',
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rScheduled',
+        permission: 'discardVersion',
+      })
+      expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
+      expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('pause-to-edit-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('schedule-publish-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('asks for a type that denies without a lookup until the release resolves', () => {
+      renderActions({release: undefined})
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: undefined,
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: undefined,
+        permission: 'discardVersion',
+      })
+    })
+
+    it('asks for a type that denies without a lookup when the document id is missing', () => {
+      renderActions({documentId: undefined})
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: '',
+        type: '*',
+        version: 'rCardinalityOne',
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: '',
+        type: '*',
+        version: 'rCardinalityOne',
+        permission: 'discardVersion',
+      })
+    })
+
+    it('asks for a type that denies without a lookup when the document type is missing', () => {
+      renderActions({documentType: undefined})
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rCardinalityOne',
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: 'rCardinalityOne',
+        permission: 'discardVersion',
       })
     })
   })
