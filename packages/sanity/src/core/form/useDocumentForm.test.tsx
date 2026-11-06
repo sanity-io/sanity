@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it} from 'vitest'
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {defineConfig} from '../config/defineConfig'
+import {useValidationStatus} from '../hooks/useValidationStatus'
 import {administrator} from '../store/grants/debug/exampleGrants'
 import {useDocumentForm} from './useDocumentForm'
 
@@ -26,21 +27,26 @@ const schemaTypes = [
 const BLOCK_PATH: Path = ['body', {_key: 'block-a'}]
 const OTHER_BLOCK_PATH: Path = ['body', {_key: 'block-b'}]
 
-async function renderDocumentForm() {
-  const client = createMockSanityClient({
+async function createDocumentFormProvider() {
+  const mockClient = createMockSanityClient({
     requests: {
       // The permission checks behind the form's `readOnly` state read the dataset ACL.
       '/acl': administrator,
     },
-  }) as unknown as SanityClient
+  })
   const wrapper = await createTestProvider({
-    client,
+    client: mockClient as unknown as SanityClient,
     config: defineConfig({
       projectId: 'test',
       dataset: 'test',
       schema: {types: schemaTypes},
     }),
   })
+  return {mockClient, wrapper}
+}
+
+async function renderDocumentForm() {
+  const {wrapper} = await createDocumentFormProvider()
 
   const {result} = renderHook(
     () => useDocumentForm({documentId: 'article-1', documentType: 'article'}),
@@ -116,5 +122,29 @@ describe('useDocumentForm', () => {
 
     act(() => result.current.onBlur(['title']))
     await waitFor(() => expect(result.current.focusPath).toEqual([]))
+  })
+})
+
+describe('useDocumentForm validation', () => {
+  it('validates the document through the pair the form checks out, not the global listener', async () => {
+    const {mockClient, wrapper} = await createDocumentFormProvider()
+    // the ids the document preview store's global listener has fetched documents for
+    const fetchedGlobally = () =>
+      mockClient.$log.observable.fetch
+        .filter(({query}) => query === '*[_id in $ids]')
+        .flatMap(({params}) => params.ids)
+
+    const {result} = renderHook(
+      () => useDocumentForm({documentId: 'article-1', documentType: 'article'}),
+      {wrapper},
+    )
+    await waitFor(() => expect(result.current.formState).not.toBeNull())
+    // A document no form has open validates through the global listener. Validated after the
+    // form's, its fetch goes out after any the form's validation would have made.
+    renderHook(() => useValidationStatus('drafts.article-2', 'article'), {wrapper})
+    await waitFor(() => expect(fetchedGlobally()).toContain('drafts.article-2'))
+
+    expect(fetchedGlobally()).not.toContain('article-1')
+    expect(fetchedGlobally()).not.toContain('drafts.article-1')
   })
 })
