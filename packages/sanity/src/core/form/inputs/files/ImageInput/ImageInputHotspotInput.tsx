@@ -1,3 +1,4 @@
+import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -16,7 +17,7 @@ export function ImageInputHotspotInput(props: {
 }) {
   const {handleCloseDialog, inputProps, imageInputProps, isImageToolEnabled} = props
   const {t} = useTranslation()
-  const {changed, id, imageUrlBuilder, value} = imageInputProps
+  const {changed, id, imageUrlBuilder, schemaType, value} = imageInputProps
 
   const withImageTool = isImageToolEnabled && value && value.asset
   const imageUrl = value?.asset ? imageUrlBuilder.image(value.asset).url() : ''
@@ -24,7 +25,11 @@ export function ImageInputHotspotInput(props: {
   return (
     <Dialog
       __unstable_autoFocus={false}
-      header={t('inputs.image.hotspot-dialog.title')}
+      header={
+        isHotspotEnabled(schemaType.options)
+          ? t('inputs.image.hotspot-dialog.title')
+          : t('inputs.image.crop-dialog.title')
+      }
       id={`${id}_dialog`}
       onClickOutside={handleCloseDialog}
       onClose={handleCloseDialog}

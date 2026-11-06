@@ -4,10 +4,12 @@ import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {ImageLoader} from './ImageLoader'
 import {ResizeSVG} from './Resize'
 import {ToolSVG} from './ToolSVG'
-import {type ToolSVGProps} from './types'
+import {type Size, type ToolSVGProps} from './types'
 
-export interface ImageToolProps extends Omit<ToolSVGProps, 'image' | 'size'> {
+export interface ImageToolProps extends Omit<ToolSVGProps, 'image' | 'size' | 'sourceSize'> {
   src: string
+  /** Defaults to the loaded image's natural size. */
+  sourceSize?: Size
 }
 
 export function ImageTool(props: ImageToolProps) {
@@ -57,7 +59,16 @@ export function ImageTool(props: ImageToolProps) {
             if (image) {
               return (
                 <ResizeSVG image={image} maxHeight={containerHeight} maxWidth={containerWidth}>
-                  {(size) => <ToolSVG {...props} image={image} size={size} />}
+                  {(size) => (
+                    <ToolSVG
+                      {...props}
+                      image={image}
+                      size={size}
+                      sourceSize={
+                        props.sourceSize ?? {width: image.naturalWidth, height: image.naturalHeight}
+                      }
+                    />
+                  )}
                 </ResizeSVG>
               )
             }
