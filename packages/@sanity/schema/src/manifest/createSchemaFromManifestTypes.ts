@@ -8,6 +8,7 @@ import {
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
+import {RELEASE_DOCUMENT_TYPE_NAME, resolveReleaseTypes} from '../sanity/builtinTypes/releaseTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
@@ -42,12 +43,27 @@ export interface CreateSchemaFromManifestTypesOptions {
   validate?: boolean
 }
 
+/**
+ * Manifests carry the release types the Studio compiled. The release document
+ * type is replaced by the built-in definition, because serialization drops
+ * properties such as `liveEdit`. A serialized `sanity.releaseMetadata` is kept.
+ */
+function withReleaseTypes(types: unknown[]): unknown[] {
+  return resolveReleaseTypes(
+    types.filter(
+      (type) => !isObject(type) || !('name' in type) || type.name !== RELEASE_DOCUMENT_TYPE_NAME,
+    ),
+  )
+}
+
 export function createSchemaFromManifestTypes(
   schemaDef: {name: string; types: unknown[]},
   options: CreateSchemaFromManifestTypesOptions = {},
 ) {
   if (options.validate !== false) {
-    const validated = validateSchema(schemaDef.types, {parentTypes: builtinTypes}).getTypes()
+    const validated = validateSchema(withReleaseTypes(schemaDef.types), {
+      parentTypes: builtinTypes,
+    }).getTypes()
     const validation = groupProblems(validated)
     const problems = validation.filter((group) =>
       group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),
@@ -60,9 +76,9 @@ export function createSchemaFromManifestTypes(
 
   return Schema.compile({
     name: schemaDef.name,
-    types: schemaDef.types
-      .map((type) => coerceType(type, options.cloneTypes !== false))
-      .filter(Boolean),
+    types: withReleaseTypes(
+      schemaDef.types.map((type) => coerceType(type, options.cloneTypes !== false)).filter(Boolean),
+    ),
     parent: builtinSchema,
   })
 }

@@ -1,4 +1,5 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DocumentIcon} from '@sanity/icons/Document'
@@ -564,6 +565,7 @@ export const structure: StructureResolver = (
       S.divider(),
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
       S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),
+      S.documentTypeListItem('system.release').title('Releases').icon(CalendarIcon),
     ])
 }
 

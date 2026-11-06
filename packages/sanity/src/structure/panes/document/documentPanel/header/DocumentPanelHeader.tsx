@@ -18,6 +18,7 @@ import {
 import {
   FieldPresenceInner,
   type DocumentActionDescription,
+  isVersionableDocumentType,
   useDocumentPresence,
   useFieldActions,
   useTranslation,
@@ -132,7 +133,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
   const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
+  const hasDocumentGroupInventory =
+    beta?.documentGroupInventory?.enabled === true && isVersionableDocumentType(schemaType?.name)
 
   const {collapsed, isLast} = usePane()
   // Prevent focus if this is the last (non-collapsed) pane.

@@ -447,6 +447,7 @@ import type {
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
   isVariantId,
+  isVersionableDocumentType,
   ItemDiff,
   joinPath,
   KeyValueStore,
@@ -2240,6 +2241,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isVariantId', () => {
     expectTypeOf<typeof isVariantId>().toBeFunction()
+  })
+  test('isVersionableDocumentType', () => {
+    expectTypeOf<typeof isVersionableDocumentType>().toBeFunction()
   })
   test('ItemDiff', () => {
     expectTypeOf<ItemDiff>().not.toBeNever()

@@ -36,6 +36,7 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isVersionableDocumentType} from '../../releases/util/isVersionableDocumentType'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
@@ -149,7 +150,7 @@ export function DocumentGroupInventory(
   const components = props.mode === 'readOnly' ? undefined : props.components
 
   const {beta} = useWorkspace()
-  const variantsEnabled = beta?.variants?.enabled
+  const variantsEnabled = beta?.variants?.enabled && isVersionableDocumentType(documentType)
   const {t} = useTranslation(studioLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
@@ -608,7 +609,10 @@ const ManagedVariantRow: ComponentType<{
     onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
-  const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
+  const contextMenuHandler =
+    isLocked || !releasesToolAvailable || !isVersionableDocumentType(documentType)
+      ? undefined
+      : handleContextMenu
 
   return (
     <>
