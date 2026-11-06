@@ -45,6 +45,7 @@ import {
 import {type DocumentInspector} from './document/inspector'
 import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
+import {type ReleaseDetailComponent} from './releases/detail'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
 
 /**
@@ -1247,6 +1248,11 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
+     * Renders under the release description on the release detail page. Receives the release
+     * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
+     */
+    detail?: ReleaseDetailComponent
+    /**
      * Extra metadata fields, compiled as a private object schema and edited with the studio form.
      * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
      * Empty when no workspace or plugin configured any.
@@ -1461,6 +1467,14 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+    /**
+     * Renders under the release description on the release detail page. Receives the release
+     * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
+     * The last definition across plugins and the root config wins.
+     *
+     * @beta
+     */
+    detail?: ReleaseDetailComponent
     /**
      * Field definitions stored on release metadata. The same `defineField` definitions used in
      * Structure. Studio renders them on create and in the edit-release dialog while

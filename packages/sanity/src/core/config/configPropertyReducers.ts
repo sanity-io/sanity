@@ -21,6 +21,7 @@ import {type DocumentBadgeComponent} from './document/badges'
 import {type DocumentInspector} from './document/inspector'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
+import {type ReleaseDetailComponent} from './releases/detail'
 import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
@@ -274,6 +275,27 @@ export const releaseActionsReducer: ConfigPropertyReducer<
       releaseActions,
     )}`,
   )
+}
+
+export const releaseDetailReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: ReleaseDetailComponent | undefined
+}): ReleaseDetailComponent | undefined => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<ReleaseDetailComponent | undefined>((current, entry) => {
+    const detail = entry.config.releases?.detail
+
+    if (typeof detail === 'function') return detail
+    if (typeof detail === 'undefined') return current
+
+    throw new Error(
+      `Expected \`releases.detail\` to be a function, but received ${getPrintableType(detail)}`,
+    )
+  }, initialValue)
 }
 
 export const newDocumentOptionsResolver: ConfigPropertyReducer<
