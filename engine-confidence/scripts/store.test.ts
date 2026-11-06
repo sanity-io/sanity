@@ -11,10 +11,11 @@ import {parseRunDocument} from './store'
 const validDocument = {
   _id: 'engine-confidence-run-2026-w42',
   _type: 'engineConfidenceRun',
-  schemaVersion: 1,
+  schemaVersion: 2,
   isoWeek: '2026-W42',
   startedAt: '2026-10-15T03:00:00.000Z',
   score: {status: 'not-measured', reason: 'No Stryker reports were found'},
+  studioScore: {status: 'not-measured', reason: 'No Stryker reports were found'},
   knownBugs: {status: 'not-measured', reason: 'No catalogue results were found'},
 }
 
@@ -27,12 +28,12 @@ describe('runDocumentProblems', () => {
     const problems = runDocumentProblems({
       ...validDocument,
       _type: 'benchRun',
-      schemaVersion: 2,
+      schemaVersion: 1,
     } as never)
 
     expect(problems).toEqual([
       '_type must be engineConfidenceRun, got benchRun',
-      'schemaVersion must be 1',
+      'schemaVersion must be 2',
     ])
   })
 
@@ -61,7 +62,7 @@ describe('parseRunDocument', () => {
 
   test('throws with every problem listed', () => {
     expect(() => parseRunDocument(JSON.stringify({...validDocument, schemaVersion: 9}))).toThrow(
-      /schemaVersion must be 1/,
+      /schemaVersion must be 2/,
     )
   })
 })

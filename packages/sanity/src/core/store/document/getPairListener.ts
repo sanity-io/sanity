@@ -75,6 +75,37 @@ export interface DocumentRebaseTelemetryEvent {
 }
 
 /** @internal */
+export interface CommitCancelledTelemetryEvent {
+  /** The terminal HTTP status the commit failed with */
+  statusCode: number
+  /** The error type from the response body, e.g. `documentRevisionIDDoesNotMatchError` */
+  errorType: string | undefined
+}
+
+/** @internal */
+export interface CommitRetriesEndedTelemetryEvent {
+  /** Time from the first failed attempt until the retries stopped being tracked */
+  durationMs: number
+  /** Failed attempts that were retried */
+  failedAttempts: number
+  /** Status code of the last failed attempt, undefined for network errors */
+  lastStatusCode: number | undefined
+  /**
+   * - `succeeded`: a retry was accepted
+   * - `cancelled`: a later attempt failed with a terminal status
+   * - `reset`: a fresh snapshot returned the pair to a consistent state
+   * - `torn-down`: the pair was torn down while still retrying
+   */
+  outcome: 'succeeded' | 'cancelled' | 'reset' | 'torn-down'
+}
+
+/** @internal */
+export interface SyncErrorRecoveryTelemetryInfo {
+  /** Whether local mutations were pending when the pair desynced */
+  hadPendingMutations: boolean
+}
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -91,8 +122,10 @@ export interface DocumentStoreExtraOptions {
    * Called when we recover from sync error
    * Meant for error tracking / telemetry purposes
    * @param error - the {@link OutOfSyncError} recovered from
+   * @param info - whether local mutations were pending at that moment, passed when the listener
+   * belongs to a checked out pair
    */
-  onSyncErrorRecovery?(error: OutOfSyncError): void
+  onSyncErrorRecovery?(error: OutOfSyncError, info?: SyncErrorRecoveryTelemetryInfo): void
   /**
    * Called when saved changes weren't echoed by the listener in time and the
    * listener is restarted. Meant for error tracking / telemetry purposes
@@ -103,6 +136,12 @@ export interface DocumentStoreExtraOptions {
   onDocumentPairLoaded?: (event: DocumentPairLoadedEvent) => void
   onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
   onDocumentRebase?: (event: DocumentRebaseTelemetryEvent) => void
+  /** Called when a commit fails with a terminal status and its buffered mutations are reset */
+  onCommitCancelled?: (event: CommitCancelledTelemetryEvent) => void
+  /** Called once when a commit that was being retried with backoff stops being tracked */
+  onCommitRetriesEnded?: (event: CommitRetriesEndedTelemetryEvent) => void
+  /** Called when a pair is torn down while local mutations are pending */
+  onPairTornDownWithPendingMutations?: () => void
 }
 
 /** @internal */

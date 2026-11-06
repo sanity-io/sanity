@@ -10,6 +10,7 @@ import {useEffect, useReducer} from 'react'
 import {useCurrentLocale} from '../i18n/hooks/useLocale'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {intlCache} from '../i18n/intlCache'
+import {type TFunction} from '../i18n/types'
 
 interface TimeSpec {
   timestamp: string
@@ -47,7 +48,28 @@ export interface RelativeTimeOptions {
 
 /** @internal */
 export function useRelativeTime(time: Date | string, options: RelativeTimeOptions = {}): string {
-  const [now, updateNow] = useReducer(
+  const [now, updateNow] = useNow()
+  const resolved = useFormatRelativeTime(time, options.relativeTo || now, options)
+  useRefreshEvery(resolved.refreshInterval, updateNow)
+  return resolved.timestamp
+}
+
+/**
+ * A short relative time in the past, such as "5 min ago", "3 days ago" or "2 wk ago". Unlike
+ * `useRelativeTime`, it never reads "yesterday" and never falls back to a date.
+ *
+ * @internal
+ */
+export function useCompactTimeAgo(time: Date | string): string {
+  const {t} = useTranslation()
+  const [now, updateNow] = useNow()
+  const resolved = formatCompactTimeAgo(time instanceof Date ? time : new Date(time), now, t)
+  useRefreshEvery(resolved.refreshInterval, updateNow)
+  return resolved.timestamp
+}
+
+function useNow() {
+  return useReducer(
     // We don't care about the action input, every update should use the current time as the new state
     () => Date.now(),
     // Since we use the third argument of `useReducer`, this `null` doesn't end up anywhere
@@ -55,22 +77,23 @@ export function useRelativeTime(time: Date | string, options: RelativeTimeOption
     // By using the lazy init we ensure that `Date.now()` is only called once during init, and then only when `updateNow` is called, instead of on every render
     () => Date.now(),
   )
-  const resolved = useFormatRelativeTime(time, options.relativeTo || now, options)
+}
 
+function useRefreshEvery(refreshInterval: number | null, refresh: () => void) {
   useEffect(() => {
     let timerId: number | null
 
     function tick(interval: number) {
       timerId = window.setTimeout(() => {
-        updateNow()
+        refresh()
         // avoid pile-up of setInterval callbacks,
         // e.g. schedule the next update at `refreshInterval` *after* the previous one finishes
         timerId = window.setTimeout(() => tick(interval), interval)
       }, interval)
     }
 
-    if (resolved.refreshInterval !== null) {
-      tick(resolved.refreshInterval)
+    if (refreshInterval !== null) {
+      tick(refreshInterval)
     }
 
     return () => {
@@ -78,9 +101,61 @@ export function useRelativeTime(time: Date | string, options: RelativeTimeOption
         clearTimeout(timerId)
       }
     }
-  }, [resolved.refreshInterval])
+  }, [refreshInterval, refresh])
+}
 
-  return resolved.timestamp
+function formatCompactTimeAgo(date: Date, now: number, t: TFunction): TimeSpec {
+  if (!date.getTime()) {
+    return {timestamp: '', refreshInterval: null}
+  }
+
+  const minutes = differenceInMinutes(now, date)
+  if (minutes < 1) {
+    return {timestamp: t('relative-time.just-now'), refreshInterval: TWENTY_SECONDS}
+  }
+  if (minutes < 60) {
+    return {
+      timestamp: t('relative-time.compact.minutes-ago', {count: minutes}),
+      refreshInterval: ONE_MINUTE,
+    }
+  }
+
+  const hours = differenceInHours(now, date)
+  if (hours < 24) {
+    return {
+      timestamp: t('relative-time.compact.hours-ago', {count: hours}),
+      refreshInterval: ONE_MINUTE,
+    }
+  }
+
+  const days = differenceInDays(now, date)
+  if (days < 7) {
+    return {
+      timestamp: t('relative-time.compact.days-ago', {count: days}),
+      refreshInterval: ONE_HOUR,
+    }
+  }
+  if (days < 30) {
+    return {
+      timestamp: t('relative-time.compact.weeks-ago', {count: differenceInWeeks(now, date)}),
+      refreshInterval: ONE_HOUR,
+    }
+  }
+
+  const years = differenceInYears(now, date)
+  if (years < 1) {
+    return {
+      // 30 days can still be "0 months" (a 31-day month), so the count starts at one
+      timestamp: t('relative-time.compact.months-ago', {
+        count: Math.max(1, differenceInMonths(now, date)),
+      }),
+      refreshInterval: ONE_HOUR,
+    }
+  }
+  return {
+    timestamp: t('relative-time.compact.years-ago', {count: years}),
+    refreshInterval: ONE_HOUR,
+  }
 }
 
 function useFormatRelativeTime(

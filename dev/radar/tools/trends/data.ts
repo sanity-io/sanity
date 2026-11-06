@@ -340,6 +340,7 @@ export function availableBranches(runs: TrendRun[]): string[] {
 
 export type TrendGroup =
   | 'vitals'
+  | 'navigation'
   | 'responsiveness'
   | 'load'
   | 'bundle'
@@ -442,6 +443,15 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'Google Core Web Vitals and supporting load metrics; lower is better on all of them. Measured in a canned environment (local API mock, no external network), so vitals that would only measure that setup are left out. TTFB, for example, would just time the mock.',
   },
   {
+    id: 'navigation',
+    title: 'Soft navigations',
+    description:
+      'In-app navigations never trigger a full page load - opening a document, switching panes ' +
+      "or tools - but still report the browser's own soft-navigation vitals, bucketed per " +
+      'navigation. Soft LCP is diagnostic only for pane-open and tool-switch, which can land ' +
+      'on the pane header before content arrives.',
+  },
+  {
     id: 'responsiveness',
     title: 'Editing responsiveness',
     description: 'Per-keystroke latency (keydown → paint) while typing into each scenario.',
@@ -515,6 +525,59 @@ function describeSeries(
   const styleMetric = styleMetricFor(label)
   if (styleMetric) {
     return {group: 'styles', description: styleMetric.description, goal: styleMetric.goal}
+  }
+  // Before any substring check, so a nav label like "tool visible" never lands in Load.
+  if (label.startsWith('nav:')) {
+    if (label.includes('soft LCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
+          'became visible. Element size and text are unreliable on soft navs, so only the ' +
+          'timing is charted. Diagnostic only for pane-open and tool-switch, which can land ' +
+          'on the pane header before content arrives.',
+        goal: 'lower',
+        goodThreshold: 2500,
+      }
+    }
+    if (label.includes('soft FCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation First Contentful Paint: first pixels drawn after the navigation started.',
+        goal: 'lower',
+        goodThreshold: 1800,
+      }
+    }
+    if (label.includes('soft INP latency')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Interaction to Next Paint, bucketed to this navigation by navigationId ' +
+          '(per-nav, not the page-load percentile rule).',
+        goal: 'lower',
+        goodThreshold: 200,
+      }
+    }
+    if (label.includes('soft CLS score')) {
+      return {
+        group: 'navigation',
+        description: 'Soft-navigation Cumulative Layout Shift, bucketed to this navigation.',
+        goal: 'lower',
+        goodThreshold: 0.1,
+      }
+    }
+    if (label.includes('click to ready')) {
+      return {
+        group: 'navigation',
+        description:
+          "From the bench's trusted click that started the navigation until its readiness " +
+          'selector matched.',
+        goal: 'lower',
+      }
+    }
+    // A new nav metric must never silently vanish from the dashboard
+    return {group: 'navigation', description: label, goal: 'lower'}
   }
   if (mode === 'settle') {
     if (label === 'sessions not settled') {
@@ -1523,19 +1586,31 @@ export interface VitalSection {
 
 const byTitle = (a: TrendSeries, b: TrendSeries) => a.title.localeCompare(b.title)
 
-export function vitalSections(list: TrendSeries[]): VitalSection[] {
+/** Nav titles end with their full metric phrase, so `NAVIGATION_METRICS` matches the same way. */
+export function vitalSections(
+  list: TrendSeries[],
+  metrics: readonly {vital: string; name?: string}[] = VITALS,
+): VitalSection[] {
   const matched = new Set<TrendSeries>()
-  const sections: VitalSection[] = VITALS.map(({vital, name}) => {
+  const sections: VitalSection[] = metrics.map(({vital, name}) => {
     const series = list.filter((entry) => entry.title.endsWith(vital)).sort(byTitle)
     for (const entry of series) matched.add(entry)
     return {vital, name, series}
   })
-  // Anything in the vitals group that isn't a known vital still renders —
+  // Anything that isn't a known metric still renders —
   // a new metric must never silently vanish from the dashboard
   const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
   if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
   return sections.filter((section) => section.series.length > 0)
 }
+
+export const NAVIGATION_METRICS = [
+  {vital: 'soft LCP time', name: 'Largest Contentful Paint'},
+  {vital: 'soft FCP time', name: 'First Contentful Paint'},
+  {vital: 'soft INP latency', name: 'Interaction to Next Paint'},
+  {vital: 'soft CLS score', name: 'Cumulative Layout Shift'},
+  {vital: 'click to ready', name: 'Click to ready'},
+] as const
 
 export interface SettleView {
   id: 'tripwire' | 'time' | 'activity' | 'renders' | 'other'

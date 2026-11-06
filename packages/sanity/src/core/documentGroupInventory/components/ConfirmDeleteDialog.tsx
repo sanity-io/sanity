@@ -122,7 +122,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           text: t('document-group.delete.cancel-button.text'),
         },
         confirmButton: {
-          text: t('document-group.delete.confirm-button.text', {count: subjectCount}),
+          text: t('document-group.delete.confirm-button.text'),
           onClick: () => deletionRef.send({type: 'delete.confirm'}),
           disabled: !canConfirmDeletion,
         },

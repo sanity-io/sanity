@@ -1,7 +1,13 @@
 import {type DocumentId, getPublishedId} from '@sanity/id-utils'
-import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
+import {
+  type CustomValidatorResult,
+  isReference,
+  isReferenceSchemaType,
+  type Validators,
+} from '@sanity/types'
 
 import {validationMarkerCodes} from '../codes'
+import {type InternalValidationContext} from '../types'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {typeString} from '../util/typeString'
@@ -53,7 +59,9 @@ export const objectValidators: Validators = {
       throw new Error(`\`type\` was not provided in validation context`)
     }
 
-    if ('weak' in type && type.weak) {
+    const getDocumentType = (context as InternalValidationContext).__internal?.getDocumentType
+    const weak = 'weak' in type && type.weak
+    if (weak && !getDocumentType) {
       return true
     }
 
@@ -61,17 +69,33 @@ export const objectValidators: Validators = {
       throw new Error(`\`getDocumentExists\` was not provided in validation context`)
     }
 
-    const documentId = document?._id
-    if (documentId && value._ref == getPublishedId(documentId as DocumentId)) {
-      // a document should be able to reference itself without first being published
-      return true
-    }
-    const exists = await getDocumentExists({id: value._ref, signal: context.signal})
-    if (!exists) {
+    const selfReference = document?._id && value._ref === getPublishedId(document._id as DocumentId)
+    // A self-reference needs no lookup, even if the document is not published yet.
+    const exists =
+      selfReference || (await getDocumentExists({id: value._ref, signal: context.signal}))
+    if (!exists && !weak) {
       return {
         code: validationMarkerCodes.referenceNotPublished,
         details: {referenceId: value._ref},
         message: i18n.t('validation:object.reference-not-published', {documentId: value._ref}),
+      }
+    }
+
+    if (exists && getDocumentType && isReferenceSchemaType(type)) {
+      const actualType = selfReference ? document?._type : await getDocumentType(value._ref)
+      if (!actualType) {
+        throw new Error(`Could not read the type of referenced document "${value._ref}"`)
+      }
+      const allowedTypes = type.to.map((target) => target.name)
+      if (!allowedTypes.includes(actualType)) {
+        return {
+          code: validationMarkerCodes.referenceTargetTypeMismatch,
+          details: {referenceId: value._ref, actualType, allowedTypes},
+          message: i18n.t('validation:object.reference-target-type-mismatch', {
+            actualType,
+            allowedTypes: allowedTypes.join(', '),
+          }),
+        }
       }
     }
 

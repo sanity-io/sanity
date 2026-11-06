@@ -42,8 +42,9 @@ const statusFields = [
 
 const score = defineField({
   name: 'score',
+  title: 'Total engine score',
   description:
-    'The engine confidence score: Stryker mutation score of the engine files, the share of generated bugs a test fails on. Reporting should read score.ratio.',
+    'Total engine score: Stryker mutation score over the Studio engine files and @sanity/mutator, the share of generated bugs a test fails on. Reporting reads score.ratio.',
   type: 'object',
   fields: [
     ...statusFields,
@@ -99,6 +100,24 @@ const score = defineField({
         }),
       ],
     }),
+  ],
+})
+
+const studioScore = defineField({
+  name: 'studioScore',
+  title: 'Core Studio engine score',
+  description:
+    'Stryker score over the Studio engine files only (document store and form patch code in packages/sanity), leaving out @sanity/mutator. Reporting reads studioScore.ratio.',
+  type: 'object',
+  fields: [
+    ...statusFields,
+    defineField({name: 'ratio', description: 'Fraction in [0, 1]', type: 'number'}),
+    defineField({
+      name: 'coveredRatio',
+      description: 'Same score leaving out mutants no test reaches',
+      type: 'number',
+    }),
+    defineField({name: 'counts', type: 'object', fields: mutantCountsFields}),
   ],
 })
 
@@ -163,6 +182,10 @@ const knownBugs = defineField({
     }),
   ],
 })
+
+function percentLabel(ratio: unknown): string {
+  return typeof ratio === 'number' ? `${(ratio * 100).toFixed(1)}%` : 'not measured'
+}
 
 const engineConfidenceRun = defineType({
   name: ENGINE_CONFIDENCE_RUN_TYPE,
@@ -240,14 +263,21 @@ const engineConfidenceRun = defineType({
       ],
     }),
     score,
+    studioScore,
     knownBugs,
   ],
   preview: {
-    select: {isoWeek: 'isoWeek', ratio: 'score.ratio', sha: 'git.sha'},
-    prepare: ({isoWeek, ratio, sha}) => ({
+    select: {
+      isoWeek: 'isoWeek',
+      ratio: 'score.ratio',
+      studioRatio: 'studioScore.ratio',
+      sha: 'git.sha',
+    },
+    prepare: ({isoWeek, ratio, studioRatio, sha}) => ({
       title: isoWeek ?? 'Engine confidence run',
       subtitle: [
-        typeof ratio === 'number' ? `${(ratio * 100).toFixed(1)}%` : 'not measured',
+        `${percentLabel(ratio)} total`,
+        `${percentLabel(studioRatio)} Studio`,
         typeof sha === 'string' ? sha.slice(0, 10) : undefined,
       ]
         .filter(Boolean)

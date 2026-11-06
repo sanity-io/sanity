@@ -3,7 +3,6 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
-import {VariantsStudioNavbarLayout} from './components/VariantsStudioNavbarLayout'
 
 const VariantsTool = lazy(() => import('../tool/VariantsTool'))
 
@@ -24,11 +23,6 @@ const VARIANTS_TOOL_NAME = 'variants'
  */
 export const variants = definePlugin({
   name: VARIANTS_NAME,
-  studio: {
-    components: {
-      navbar: VariantsStudioNavbarLayout,
-    },
-  },
   tools: [
     {
       name: VARIANTS_TOOL_NAME,
@@ -38,10 +32,11 @@ export const variants = definePlugin({
       __internalApplicationType: VARIANTS_NAME,
       canHandleIntent: (intent) => intent === VARIANTS_INTENT,
       getIntentState(intent, params) {
-        if (intent === VARIANTS_INTENT) {
+        // No id opens the tool root, the variants overview. An id opens that variant.
+        if (intent === VARIANTS_INTENT && typeof params.id === 'string') {
           return {variantId: params.id}
         }
-        return null
+        return {}
       },
     },
   ],

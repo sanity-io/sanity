@@ -105,7 +105,7 @@ const buildBundleDocumentsObservable = ({
     // scheduledYield is used to provide some control over the main thread
     return from(schedulerYield(() => Promise.resolve())).pipe(
       switchMap(() =>
-        validateDocumentWithReferences(ctx, of(document), false).pipe(
+        validateDocumentWithReferences(ctx, of(document)).pipe(
           map((validationStatus) => ({
             ...validationStatus,
             hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),

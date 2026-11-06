@@ -84,7 +84,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
         document: {...document, related: {_type: 'reference', _ref: 'missing'}},
       }),
     ).resolves.toMatchObject({complete: true, markers: []})
-    expect(getDocumentExists).not.toHaveBeenCalled()
+    expect(getDocumentExists).toHaveBeenCalledWith({id: 'missing', signal: undefined})
   })
 
   it.each(['image', 'file'])('keeps inherited %s asset requirements', async (type) => {

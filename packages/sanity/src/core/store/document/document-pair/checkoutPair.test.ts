@@ -27,6 +27,14 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
+// The shard ping is memoized for the life of the page, so a test that needs its
+// own request uses a URL no other test has subscribed to.
+let shardPingSequence = 0
+function freshShardPingUrl(): string {
+  shardPingSequence += 1
+  return `/data/ping/${shardPingSequence}`
+}
+
 describe('checkoutPair -- server actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
@@ -1248,12 +1256,45 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     sub.unsubscribe()
   })
 
+  test('fetches shard info once when two documents are checked out', async () => {
+    const pingUrl = freshShardPingUrl()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => of({type: 'welcome'}).pipe(delay(0)),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: () => pingUrl,
+    }
+
+    const first = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency: vi.fn(),
+    })
+    const second = checkoutPair(
+      testClient as any as SanityClient,
+      {publishedId: 'otherId', draftId: 'drafts.otherId'},
+      of(false),
+      {onReportLatency: vi.fn()},
+    )
+
+    const subA = merge(first.draft.events, first.published.events).subscribe()
+    const subB = merge(second.draft.events, second.published.events).subscribe()
+
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(global.fetch).toHaveBeenCalledWith(pingUrl, expect.any(Object))
+
+    subA.unsubscribe()
+    subB.unsubscribe()
+  })
+
   test('reports shard as undefined when fetch fails', async () => {
     vi.spyOn(global, 'fetch').mockRejectedValue(new Error('network error'))
 
     const onReportLatency = vi.fn()
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -1264,7 +1305,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
@@ -1480,6 +1521,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     const onReportLatency = vi.fn()
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -1490,7 +1532,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
@@ -2233,6 +2275,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
     const onReportLatency = vi.fn()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -2243,7 +2286,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
@@ -3010,6 +3053,793 @@ describe('checkoutPair -- version documents', () => {
     vi.useRealTimers()
     vi.restoreAllMocks()
     sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- commit cancelled telemetry', () => {
+  // A terminal commit status cancels the commit: the mutator rejects it and
+  // resets the buffer to server HEAD, dropping the buffered edits. The
+  // telemetry callback reports that moment.
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // `clearAllMocks` keeps implementations set by earlier tests
+    mockedActionRequest.mockImplementation(() => of({}))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function revisionMismatchError() {
+    return new ClientError({
+      statusCode: 409,
+      headers: {},
+      body: {
+        error: {
+          type: 'documentRevisionIDDoesNotMatchError',
+          description: 'The document revision does not match',
+        },
+      },
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+  }
+
+  test('reports the status code and the error type from the response body', async () => {
+    const onCommitCancelled = vi.fn()
+    const conflictError = revisionMismatchError()
+    mockedActionRequest.mockImplementation(() => throwError(() => conflictError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitCancelled,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'first'}}]))
+    draft.mutate(draft.patch([{set: {subtitle: 'second'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onCommitCancelled).toHaveBeenCalledTimes(1)
+    expect(onCommitCancelled).toHaveBeenCalledWith({
+      statusCode: 409,
+      errorType: 'documentRevisionIDDoesNotMatchError',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('reports an undefined error type when the response body carries none', async () => {
+    const onCommitCancelled = vi.fn()
+    const badRequest = Object.assign(new Error('Bad Request'), {statusCode: 400})
+    mockedActionRequest.mockImplementation(() => throwError(() => badRequest) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitCancelled,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'bad request'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onCommitCancelled).toHaveBeenCalledWith({
+      statusCode: 400,
+      errorType: undefined,
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('is not called for a retryable failure or a session-expiry 401', async () => {
+    const onCommitCancelled = vi.fn()
+    const serverError = Object.assign(new Error('Internal Server Error'), {statusCode: 500})
+    const sessionExpiredError = new ClientError({
+      statusCode: 401,
+      headers: {},
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+    mockedActionRequest
+      .mockImplementationOnce(() => throwError(() => serverError) as any)
+      .mockImplementationOnce(() => throwError(() => sessionExpiredError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitCancelled,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'retried'}}]))
+    draft.commit()
+    // First attempt (500), retry after 1s (401 session expiry), retry after
+    // 2s more (succeeds with the default mock).
+    await vi.advanceTimersByTimeAsync(3000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(3)
+    expect(onCommitCancelled).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('the commit is still cancelled when the callback throws', async () => {
+    const onCommitCancelled = vi.fn(() => {
+      throw new Error('telemetry callback error')
+    })
+    const conflictError = revisionMismatchError()
+    mockedActionRequest.mockImplementation(() => throwError(() => conflictError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitCancelled,
+    })
+    let streamErrored = false
+    const sub = merge(draft.events, published.events).subscribe({
+      error: () => (streamErrored = true),
+    })
+    const consistency: boolean[] = []
+    const consistencySub = draft.consistency$.subscribe((v) => consistency.push(v))
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'conflict'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onCommitCancelled).toHaveBeenCalledTimes(1)
+    // The cancel still reached the mutator: reset to server HEAD, no retry.
+    expect(consistency.at(-1)).toBe(true)
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    expect(streamErrored).toBe(false)
+
+    consistencySub.unsubscribe()
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- commit retries telemetry', () => {
+  // A non-terminal failure starts tracked retries: the mutator keeps the
+  // buffered mutations and retries with backoff (`tries * 1000`ms). One event
+  // is reported when tracking ends.
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // `clearAllMocks` keeps implementations set by earlier tests
+    mockedActionRequest.mockImplementation(() => of({}))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function serverError(statusCode: number) {
+    return Object.assign(new Error('Server Error'), {statusCode})
+  }
+
+  test('reports succeeded retries with their duration, failed attempts and last status code', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest
+      .mockImplementationOnce(() => throwError(() => serverError(500)) as any)
+      .mockImplementationOnce(() => throwError(() => serverError(503)) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'retried'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Still failing: the retries have not ended yet.
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(onCommitRetriesEnded).not.toHaveBeenCalled()
+
+    // Second retry (after 2s more) succeeds.
+    await vi.advanceTimersByTimeAsync(2000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(3)
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 3000,
+      failedAttempts: 2,
+      lastStatusCode: 503,
+      outcome: 'succeeded',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('reports a network failure without a status code', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    const networkError = Object.assign(new Error('Request error'), {isNetworkError: true})
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => networkError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'offline'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 1000,
+      failedAttempts: 1,
+      lastStatusCode: undefined,
+      outcome: 'succeeded',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('reports cancelled retries when a later attempt fails terminally', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest
+      .mockImplementationOnce(() => throwError(() => serverError(500)) as any)
+      .mockImplementationOnce(() => throwError(() => serverError(409)) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'conflict later'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 1000,
+      failedAttempts: 1,
+      lastStatusCode: 409,
+      outcome: 'cancelled',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('reports reset retries when a fresh snapshot returns the pair to consistency', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest.mockImplementation(() => throwError(() => serverError(500)) as any)
+
+    const listenerSubject = new Subject()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+
+    const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'reset by snapshot'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // The listener reconnects before the first retry. The fresh snapshots
+    // replace the buffered documents and the pair is consistent again.
+    await vi.advanceTimersByTimeAsync(400)
+    listenerSubject.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 400,
+      failedAttempts: 1,
+      lastStatusCode: 500,
+      outcome: 'reset',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('reports torn down retries when the pair is unsubscribed while still failing', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest.mockImplementation(() => throwError(() => serverError(502)) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'still failing'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(onCommitRetriesEnded).not.toHaveBeenCalled()
+    sub.unsubscribe()
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 500,
+      failedAttempts: 1,
+      lastStatusCode: 502,
+      outcome: 'torn-down',
+    })
+  })
+
+  test('is not called when commits succeed or the first failure is terminal', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest
+      .mockImplementationOnce(() => of({}) as any)
+      .mockImplementationOnce(() => throwError(() => serverError(400)) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'ok'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+    draft.mutate(draft.patch([{set: {title: 'rejected'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    sub.unsubscribe()
+    expect(onCommitRetriesEnded).not.toHaveBeenCalled()
+  })
+
+  test('the retry still happens when the callback throws', async () => {
+    const onCommitRetriesEnded = vi.fn(() => {
+      throw new Error('telemetry callback error')
+    })
+    mockedActionRequest
+      .mockImplementationOnce(() => throwError(() => serverError(500)) as any)
+      .mockImplementationOnce(() => throwError(() => serverError(409)) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onCommitRetriesEnded,
+    })
+    let streamErrored = false
+    const sub = merge(draft.events, published.events).subscribe({
+      error: () => (streamErrored = true),
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // The first retries end cancelled (callback throws), the second ones succeed.
+    draft.mutate(draft.patch([{set: {title: 'first'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(1000)
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => serverError(500)) as any)
+    draft.mutate(draft.patch([{set: {title: 'second'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(2)
+    expect(mockedActionRequest).toHaveBeenCalledTimes(4)
+    expect(streamErrored).toBe(false)
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- pending mutations at teardown telemetry', () => {
+  // When the pair is torn down (its last subscriber leaves) while it holds
+  // pending local mutations, those edits may be lost. A commit stops being
+  // pending when the server accepts it, not on its echo.
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // `clearAllMocks` keeps implementations set by earlier tests
+    mockedActionRequest.mockImplementation(() => of({}))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  test('reports a teardown while local mutations are pending', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+    // The commit never resolves: the first edit is in flight, the second is
+    // still buffered locally.
+    const commitSubject = new Subject()
+    mockedActionRequest.mockImplementation(() => commitSubject as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onPairTornDownWithPendingMutations,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'in flight'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+    draft.mutate(draft.patch([{set: {title: 'buffered'}}]))
+
+    expect(onPairTornDownWithPendingMutations).not.toHaveBeenCalled()
+    sub.unsubscribe()
+
+    expect(onPairTornDownWithPendingMutations).toHaveBeenCalledTimes(1)
+    expect(onPairTornDownWithPendingMutations).toHaveBeenCalledWith()
+  })
+
+  test('is not called when no local mutations are pending at teardown', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onPairTornDownWithPendingMutations,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'saved'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    sub.unsubscribe()
+    expect(onPairTornDownWithPendingMutations).not.toHaveBeenCalled()
+  })
+
+  test('is not called after a cancelled commit already dropped the edits', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+    const conflictError = Object.assign(new Error('Conflict'), {statusCode: 409})
+    mockedActionRequest.mockImplementation(() => throwError(() => conflictError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onPairTornDownWithPendingMutations,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'dropped'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    sub.unsubscribe()
+    expect(onPairTornDownWithPendingMutations).not.toHaveBeenCalled()
+  })
+})
+
+describe('checkoutPair -- document desynced telemetry', () => {
+  // `onSyncErrorRecovery` fires when the pair listener detects a gap in its
+  // events and resubscribes. It also reports whether local mutations were
+  // pending at that moment.
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // `clearAllMocks` keeps implementations set by earlier tests
+    mockedActionRequest.mockImplementation(() => of({}))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function setup() {
+    const onSyncErrorRecovery = vi.fn()
+    // Each listener connection gets its own subject, so events sent to the
+    // connection that desynced never reach the one that replaces it.
+    const connections: Subject<unknown>[] = []
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => {
+          const connection = new Subject()
+          connections.push(connection)
+          return merge(of({type: 'welcome'}).pipe(delay(0)), connection)
+        },
+      },
+    }
+    const pair = checkoutPair(testClient as any as SanityClient, idPair, of(true), {
+      onSyncErrorRecovery,
+    })
+    const sub = merge(pair.draft.events, pair.published.events).subscribe()
+
+    // As many unchainable mutations as the listener's buffer accepts (20)
+    // make it give up and resync with an OutOfSyncError.
+    function desync() {
+      const connection = connections.at(-1)!
+      for (let i = 0; i < 20; i++) {
+        connection.next(
+          createMutationEvent(`orphan-tx-${i}`, 'draftId', `orphan-prev-${i}`, `orphan-res-${i}`),
+        )
+      }
+    }
+
+    return {pair, sub, onSyncErrorRecovery, desync}
+  }
+
+  test('reports pending mutations when the listener desyncs while local mutations are pending', async () => {
+    const commitSubject = new Subject()
+    mockedActionRequest.mockImplementation(() => commitSubject as any)
+    const {pair, sub, onSyncErrorRecovery, desync} = setup()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'not accepted yet'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    desync()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onSyncErrorRecovery).toHaveBeenCalled()
+    expect(onSyncErrorRecovery.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(onSyncErrorRecovery.mock.calls[0][1]).toEqual({hadPendingMutations: true})
+
+    sub.unsubscribe()
+  })
+
+  test('reports no pending mutations when the pair was in sync', async () => {
+    const {sub, onSyncErrorRecovery, desync} = setup()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    desync()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onSyncErrorRecovery).toHaveBeenCalled()
+    expect(onSyncErrorRecovery.mock.calls[0][1]).toEqual({hadPendingMutations: false})
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- telemetry per buffered document', () => {
+  // A pair holds a buffered document per variant (draft, published, version),
+  // and a fresh snapshot replaces a buffered document while the old one may
+  // still be retrying its commits. Telemetry is attributed to the buffered
+  // document that owns each commit request.
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // `clearAllMocks` keeps implementations, and unconsumed
+    // `mockImplementationOnce` queues, from earlier tests
+    mockedActionRequest.mockReset().mockImplementation(() => of({}))
+    mockedDataRequest.mockReset().mockImplementation(() => of({}))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function serverError(statusCode: number) {
+    return Object.assign(new Error('Server Error'), {statusCode})
+  }
+
+  function setup(options: Parameters<typeof checkoutPair>[3]) {
+    const listenerSubject = new Subject()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+    const pair = checkoutPair(testClient as any as SanityClient, idPair, of(true), options)
+    const sub = merge(pair.draft.events, pair.published.events).subscribe()
+    return {pair, sub, listenerSubject}
+  }
+
+  test('a remote delete that discards the local edits reports no teardown', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+    const {pair, sub, listenerSubject} = setup({onPairTornDownWithPendingMutations})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // A buffered edit, not committed yet
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'about to be deleted'}}]))
+
+    // Another client deletes the draft, and the mutator throws the local edit away
+    listenerSubject.next({
+      ...createMutationEvent('remote-delete', 'draftId', 'any', 'deleted-rev'),
+      mutations: [{delete: {id: 'draftId'}}],
+      transition: 'disappear',
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    sub.unsubscribe()
+    expect(onPairTornDownWithPendingMutations).not.toHaveBeenCalled()
+  })
+
+  test('a success in one document does not end the retries of another document', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    // Draft commits go through the actions API and fail, published (live
+    // edit) commits go through the mutation API and succeed
+    mockedActionRequest.mockImplementation(() => throwError(() => serverError(500)) as any)
+    const {pair, sub} = setup({onCommitRetriesEnded})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'failing draft'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.published.mutate(pair.published.patch([{set: {title: 'live edit'}}]))
+    pair.published.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedDataRequest).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).not.toHaveBeenCalled()
+
+    // The draft's own retry finally succeeds
+    mockedActionRequest.mockImplementation(() => of({}) as any)
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded).toHaveBeenCalledWith({
+      durationMs: 1000,
+      failedAttempts: 1,
+      lastStatusCode: 500,
+      outcome: 'succeeded',
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('a replaced buffered document reports reset once and nothing for its later retries', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest.mockImplementation(() => throwError(() => serverError(500)) as any)
+    const {pair, sub, listenerSubject} = setup({onCommitRetriesEnded})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'old buffer edit'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // A fresh snapshot replaces the buffered document, and its retries stop
+    // being tracked
+    listenerSubject.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded.mock.calls[0][0]).toMatchObject({outcome: 'reset'})
+
+    // The old buffered document keeps retrying on its own timers. Those
+    // failures and the eventual success are not reported
+    await vi.advanceTimersByTimeAsync(3000)
+    mockedActionRequest.mockImplementation(() => of({}) as any)
+    await vi.advanceTimersByTimeAsync(10_000)
+
+    expect(mockedActionRequest.mock.calls.length).toBeGreaterThanOrEqual(3)
+    sub.unsubscribe()
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+  })
+
+  test('a remote delete reports no teardown when a buffered local delete already emptied the document', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+    const {pair, sub, listenerSubject} = setup({onPairTornDownWithPendingMutations})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // A local delete, buffered and not committed: the local view is empty
+    pair.draft.mutate([pair.draft.delete()])
+
+    // Another client deletes the draft too. The mutator drops its buffer, but
+    // the local view does not change, so no rebase is announced.
+    listenerSubject.next({
+      ...createMutationEvent('remote-delete', 'draftId', 'any', 'deleted-rev'),
+      mutations: [{delete: {id: 'draftId'}}],
+      transition: 'disappear',
+    })
+    await vi.advanceTimersByTimeAsync(0)
+
+    sub.unsubscribe()
+    expect(onPairTornDownWithPendingMutations).not.toHaveBeenCalled()
+  })
+
+  test('a replaced buffered document still reports its cancel', async () => {
+    const onCommitCancelled = vi.fn()
+    const onCommitRetriesEnded = vi.fn()
+    mockedActionRequest
+      .mockImplementationOnce(() => throwError(() => serverError(500)) as any)
+      .mockImplementationOnce(() => throwError(() => serverError(409)) as any)
+    const {pair, sub, listenerSubject} = setup({onCommitCancelled, onCommitRetriesEnded})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'old buffer edit'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    // A fresh snapshot replaces the buffered document, and its retries stop
+    // being tracked
+    listenerSubject.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+    expect(onCommitRetriesEnded.mock.calls[0][0]).toMatchObject({outcome: 'reset'})
+
+    // An edit in the replacement, still waiting for the server
+    const pendingCommit = new Subject()
+    mockedActionRequest.mockImplementationOnce(() => pendingCommit as any)
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'new buffer edit'}}]))
+
+    // The old document's retry fails terminally: its edit really is dropped
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(onCommitCancelled).toHaveBeenCalledTimes(1)
+    expect(onCommitCancelled).toHaveBeenCalledWith({
+      statusCode: 409,
+      errorType: undefined,
+    })
+    // No second retries event for the replaced document
+    expect(onCommitRetriesEnded).toHaveBeenCalledTimes(1)
+
+    sub.unsubscribe()
+  })
+
+  test('a replaced buffered document tracks no retries for a first failure after replacement', async () => {
+    const onCommitRetriesEnded = vi.fn()
+    // The old document's commit is still in flight when it is replaced, so it
+    // has no retries yet. It fails afterwards
+    const oldCommit = new Subject()
+    mockedActionRequest.mockImplementationOnce(() => oldCommit as any)
+    const {pair, sub, listenerSubject} = setup({onCommitRetriesEnded})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'old buffer edit'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
+
+    // First failure, after replacement
+    oldCommit.error(serverError(500))
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Teardown would end any tracked retries as `torn-down`
+    sub.unsubscribe()
+    expect(onCommitRetriesEnded).not.toHaveBeenCalled()
+  })
+
+  test('a pair reports pending local mutations at teardown at most once', async () => {
+    const onPairTornDownWithPendingMutations = vi.fn()
+    const commitSubject = new Subject()
+    mockedActionRequest.mockImplementation(() => commitSubject as any)
+    const {pair, sub} = setup({onPairTornDownWithPendingMutations})
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'unsaved'}}]))
+    pair.draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    sub.unsubscribe()
+    expect(onPairTornDownWithPendingMutations).toHaveBeenCalledTimes(1)
+
+    // The same pair instance is subscribed to again (a fresh snapshot
+    // replaces its buffered documents), edited and torn down again
+    const sub2 = merge(pair.draft.events, pair.published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+    pair.draft.mutate(pair.draft.patch([{set: {title: 'unsaved again'}}]))
+    sub2.unsubscribe()
+
+    expect(onPairTornDownWithPendingMutations).toHaveBeenCalledTimes(1)
   })
 })
 

@@ -21,6 +21,9 @@ export interface VisionBetaConfig {
      * When `true`, the classic tool shows a dismissible toast inviting users to try the redesign,
      * and users who opt in get the redesigned tool (remembered per project in the browser). They
      * can switch back from the redesigned tool's sidebar or settings. Defaults to `false`.
+     *
+     * Currently ignored: the redesign is switched off for everyone and the classic tool is
+     * always shown.
      */
     enabled?: boolean
   }
