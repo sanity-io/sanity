@@ -1,4 +1,4 @@
-import {firstValueFrom, of, Subject} from 'rxjs'
+import {firstValueFrom, of, ReplaySubject, Subject} from 'rxjs'
 import {take, tap} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -262,6 +262,77 @@ describe('observeFields', () => {
       .subscribe()
       .unsubscribe()
     expect(syncValue).toBe(null)
+  })
+
+  describe('subscriber swaps', () => {
+    const SETTLE_TIME = 200
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function setup() {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      // The real channel replays the listener's `connected` event to every new subscriber
+      const channel = new ReplaySubject<InvalidationChannelEvent>(1)
+      channel.next({type: 'connected'})
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+      return {
+        get fetchCount() {
+          return fetchCount
+        },
+        observe,
+      }
+    }
+
+    it('does not refetch when a subscriber is replaced right away', async () => {
+      const harness = setup()
+      const values: unknown[] = []
+
+      const first = harness.observe('foo', ['title']).subscribe((value) => values.push(value))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      expect(harness.fetchCount).toBe(1)
+
+      // e.g. a preview pipeline torn down and rebuilt for a new document value
+      first.unsubscribe()
+      const second = harness.observe('foo', ['title']).subscribe((value) => values.push(value))
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(1)
+      expect(values).toHaveLength(2)
+      second.unsubscribe()
+    })
+
+    it('refetches for a subscriber that arrives after the grace period', async () => {
+      const harness = setup()
+
+      const first = harness.observe('foo', ['title']).subscribe(() => {})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      first.unsubscribe()
+      await vi.advanceTimersByTimeAsync(2_000)
+
+      const second = harness.observe('foo', ['title']).subscribe(() => {})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(2)
+      second.unsubscribe()
+    })
   })
 
   describe('invalidation filter with perspective', () => {
