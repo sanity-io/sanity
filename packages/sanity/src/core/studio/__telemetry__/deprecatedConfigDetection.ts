@@ -181,8 +181,14 @@ export function detectDeprecatedThemeOptions(theme: unknown): Partial<Deprecated
  *
  * @internal
  */
-export function detectDeprecatedSchemaOptions(schema: Schema): Partial<DeprecatedConfigFlags> {
+export function detectDeprecatedSchemaOptions(
+  schema: Schema | undefined | null,
+): Partial<DeprecatedConfigFlags> {
   const flags: Partial<DeprecatedConfigFlags> = {}
+
+  if (!schema || typeof schema.getTypeNames !== 'function' || typeof schema.get !== 'function') {
+    return flags
+  }
 
   for (const typeName of schema.getTypeNames()) {
     const schemaType = schema.get(typeName)

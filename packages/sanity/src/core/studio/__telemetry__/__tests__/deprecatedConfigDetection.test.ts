@@ -423,5 +423,22 @@ describe('deprecatedConfigDetection', () => {
       const flags = detectDeprecatedSchemaOptions(mockSchema)
       expect(Object.keys(flags).length).toBe(0)
     })
+
+    it('handles undefined schema', () => {
+      const flags = detectDeprecatedSchemaOptions(undefined)
+      expect(Object.keys(flags).length).toBe(0)
+    })
+
+    it('handles null schema', () => {
+      const flags = detectDeprecatedSchemaOptions(null)
+      expect(Object.keys(flags).length).toBe(0)
+    })
+
+    it('handles schema without required methods', () => {
+      const flags = detectDeprecatedSchemaOptions(
+        {} as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0],
+      )
+      expect(Object.keys(flags).length).toBe(0)
+    })
   })
 })
