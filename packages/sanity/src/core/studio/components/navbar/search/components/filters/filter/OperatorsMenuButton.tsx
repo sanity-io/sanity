@@ -7,7 +7,8 @@ import {Button} from '../../../../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition, type SearchOperatorDefinition} from '../../../definitions/operators'
 import {type SearchFilter} from '../../../types'
@@ -45,18 +46,19 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   const menuButtonId = useId()
 
   const {t} = useTranslation()
-  const {dispatch, state} = useSearchState()
-  const operatorItems = getFilterDefinition(state.definitions.filters, filter.filterName)?.operators
+  const {searchActorRef} = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
+  const operatorItems = getFilterDefinition(definitions.filters, filter.filterName)?.operators
 
   const handleClick = useCallback(
     (operatorType: string) => {
-      dispatch({
+      searchActorRef.send({
         filterKey: getFilterKey(filter),
         operatorType,
         type: 'TERMS_FILTERS_SET_OPERATOR',
       })
     },
-    [dispatch, filter],
+    [filter, searchActorRef],
   )
 
   if (!operator || !operatorItems || operatorItems.length <= 1) {
@@ -72,7 +74,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
           <Menu>
             {operatorItems.map((item, index) => {
               if (item.type === 'item') {
-                const menuOperator = getOperatorDefinition(state.definitions.operators, item.name)
+                const menuOperator = getOperatorDefinition(definitions.operators, item.name)
                 if (!menuOperator) {
                   return null
                 }

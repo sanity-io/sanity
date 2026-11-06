@@ -7,7 +7,8 @@ import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../../i18n/Translate'
 import {type TFunction} from '../../../../../../i18n/types'
 import {isRecord} from '../../../../../../util/isRecord'
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../contexts/search/useSearchState'
 import {getOperatorDefinition, type SearchOperatorDefinition} from '../../definitions/operators'
 import {type SearchFilter, type SearchFilterValues} from '../../types'
 import {FilterTitle} from './FilterTitle'
@@ -72,9 +73,8 @@ function Value({
 
 export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
   const {t} = useTranslation()
-  const {
-    state: {definitions, fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
 
   const operator = getOperatorDefinition(definitions.operators, filter.operatorType)
 
