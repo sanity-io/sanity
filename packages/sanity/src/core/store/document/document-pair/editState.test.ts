@@ -6,7 +6,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../schema/createSchema'
 import {type PendingMutationsEvent} from '../types'
-import {editState, type EditStateFor} from './editState'
+import {checkedOutEditState, editState, type EditStateFor} from './editState'
 import {snapshotPair} from './snapshotPair'
 
 vi.mock('./snapshotPair', () => ({snapshotPair: vi.fn()}))
@@ -264,6 +264,100 @@ describe('editState — subscriber churn', () => {
     expect(second.at(-1)).toMatchObject({ready: true, draft: draftDoc})
 
     secondSub.unsubscribe()
+  })
+})
+
+describe('checkedOutEditState', () => {
+  beforeEach(() => {
+    mockedSnapshotPair.mockReset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function setup() {
+    const draft$ = new Subject<SanityDocument | null>()
+    const published$ = new Subject<SanityDocument | null>()
+
+    mockedSnapshotPair.mockReturnValue(
+      of({
+        draft: {snapshots$: draft$.asObservable()},
+        published: {snapshots$: published$.asObservable()},
+        transactionsPendingEvents$: new Subject<PendingMutationsEvent>(),
+      }) as any,
+    )
+
+    const ctx = createCtx()
+    const publishedId = `book-${Math.random().toString(36).slice(2)}`
+    const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+    const draftDoc: SanityDocument = {
+      _id: idPair.draftId,
+      _type: 'book',
+      _rev: 'r1',
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+    }
+
+    const states: (EditStateFor | null)[] = []
+    const watching = checkedOutEditState(ctx.client, idPair, 'book').subscribe((state) =>
+      states.push(state),
+    )
+
+    return {ctx, idPair, draft$, published$, draftDoc, states, watching}
+  }
+
+  it('reports null, and checks nothing out, while nothing subscribes to the edit state', () => {
+    const {states, watching} = setup()
+
+    expect(states).toEqual([null])
+    expect(mockedSnapshotPair).not.toHaveBeenCalled()
+
+    watching.unsubscribe()
+  })
+
+  it('reports the edit state while it is checked out, the grace period included', () => {
+    vi.useFakeTimers()
+    const {ctx, idPair, draft$, published$, draftDoc, states, watching} = setup()
+
+    const subscription = editState(ctx, idPair, 'book').subscribe()
+    draft$.next(draftDoc)
+    published$.next(null)
+
+    expect(states.at(-1)).toMatchObject({ready: true, draft: draftDoc})
+
+    subscription.unsubscribe()
+    vi.advanceTimersByTime(500)
+    expect(states.at(-1)).toMatchObject({ready: true, draft: draftDoc})
+
+    watching.unsubscribe()
+  })
+
+  it('reports null once the edit state is torn down', () => {
+    vi.useFakeTimers()
+    const {ctx, idPair, draft$, published$, draftDoc, states, watching} = setup()
+
+    const subscription = editState(ctx, idPair, 'book').subscribe()
+    draft$.next(draftDoc)
+    published$.next(null)
+    subscription.unsubscribe()
+    vi.advanceTimersByTime(2_000)
+
+    expect(states.at(-1)).toBeNull()
+
+    watching.unsubscribe()
+  })
+
+  it('reports nothing for another pair of the same document', () => {
+    const {ctx, idPair, states, watching} = setup()
+
+    const versionPair = {...idPair, versionId: `versions.rABC.${idPair.publishedId}`}
+    const subscription = editState(ctx, versionPair, 'book').subscribe()
+
+    expect(states).toEqual([null])
+
+    subscription.unsubscribe()
+    watching.unsubscribe()
   })
 })
 

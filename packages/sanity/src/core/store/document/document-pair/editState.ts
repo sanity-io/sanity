@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
-import {map, share, startWith, switchMap} from 'rxjs/operators'
+import {BehaviorSubject, combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
+import {finalize, map, share, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getVersionFromId} from '../../../util/draftUtils'
@@ -128,6 +128,33 @@ export function getInitialEditState(
 // warm, healthy document pair must never surface as `ready: false`.
 const TEARDOWN_GRACE_PERIOD = 1_000
 
+// The latest edit state of every pair whose `editState` pipeline is connected, and `null` for one
+// that isn't. Keyed like the `editState` memo, so it never outlives a credential either.
+const checkedOutEditStates = new Map<string, BehaviorSubject<EditStateFor | null>>()
+
+function getCheckedOutEditState(key: string): BehaviorSubject<EditStateFor | null> {
+  let subject = checkedOutEditStates.get(key)
+  if (!subject) {
+    subject = new BehaviorSubject<EditStateFor | null>(null)
+    checkedOutEditStates.set(key, subject)
+  }
+  return subject
+}
+
+/**
+ * The pair's edit state while another subscriber has `editState` checked out, and `null` while
+ * nothing does. Watching it never checks out the pair, so it can't keep the pair's listener open.
+ *
+ * @internal
+ */
+export function checkedOutEditState(
+  client: SanityClient,
+  idPair: IdPair,
+  typeName: string,
+): Observable<EditStateFor | null> {
+  return getCheckedOutEditState(memoizeKeyGen(client, idPair, typeName)).asObservable()
+}
+
 /** @internal */
 export const editState = memoize(
   (
@@ -146,6 +173,7 @@ export const editState = memoize(
   ): Observable<EditStateFor> => {
     const initialState = getInitialEditState(ctx.schema, idPair, typeName)
     const {liveEdit, liveEditSchemaType, scopeId} = initialState
+    const checkedOut = getCheckedOutEditState(memoizeKeyGen(ctx.client, idPair, typeName))
 
     return snapshotPair(ctx.client, idPair, typeName, undefined, ctx.extraOptions).pipe(
       switchMap((versions) =>
@@ -197,6 +225,10 @@ export const editState = memoize(
         }),
       ),
       startWith(initialState),
+      // Before `share`, so both run once per connection: the state reaches `checkedOutEditState`
+      // for as long as the pipeline is connected, the grace period included.
+      tap((state) => checkedOut.next(state)),
+      finalize(() => checkedOut.next(null)),
       // Unlike `publishReplay(1) + refCount()`, this resets the replay subject
       // when the pipeline is torn down, so a later cold subscriber won't get a
       // stale `ready: true` replayed before the cold-start emissions (and an
