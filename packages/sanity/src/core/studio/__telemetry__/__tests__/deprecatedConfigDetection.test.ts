@@ -310,6 +310,16 @@ describe('deprecatedConfigDetection', () => {
       const flags = detectDeprecatedPresentationOptions(tools)
       expect(Object.keys(flags).length).toBe(0)
     })
+
+    it('handles undefined tools', () => {
+      const flags = detectDeprecatedPresentationOptions(undefined)
+      expect(Object.keys(flags).length).toBe(0)
+    })
+
+    it('handles non-array tools', () => {
+      const flags = detectDeprecatedPresentationOptions(null as unknown as undefined)
+      expect(Object.keys(flags).length).toBe(0)
+    })
   })
 
   describe('detectDeprecatedSchemaOptions', () => {

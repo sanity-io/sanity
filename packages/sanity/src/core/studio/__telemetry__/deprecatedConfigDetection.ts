@@ -272,9 +272,13 @@ function checkCrossDatasetReferenceForDeprecatedOptions(
  * @internal
  */
 export function detectDeprecatedPresentationOptions(
-  tools: Array<{name: string; options?: unknown}>,
+  tools: Array<{name: string; options?: unknown}> | undefined,
 ): Partial<DeprecatedConfigFlags> {
   const flags: Partial<DeprecatedConfigFlags> = {}
+
+  if (!tools || !Array.isArray(tools)) {
+    return flags
+  }
 
   for (const tool of tools) {
     const options = tool.options as {
