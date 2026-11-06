@@ -4,8 +4,8 @@ import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 import {useId, useState} from 'react'
-import {type TFunction, useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {InlineCode, type TFunction, useTranslation} from 'sanity'
+import {Text, Box, Flex, Code} from 'ui5'
 
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -323,7 +323,7 @@ function ParamField(props: {
     <Stack data-testid={`vista-params-form-${param.name}`} gap={2}>
       <Flex alignItems="center" flexWrap="wrap" gap={2}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
-          <code>{`$${param.name}`}</code>
+          <InlineCode>{`$${param.name}`}</InlineCode>
         </Text>
         <Text
           data-testid={`vista-params-form-${param.name}-type`}
@@ -366,7 +366,7 @@ function ParamField(props: {
           {param.usages.map((usage, index) => (
             <span key={usage}>
               {index > 0 && ', '}
-              <code>{usage}</code>
+              <InlineCode>{usage}</InlineCode>
             </span>
           ))}
         </Text>
@@ -433,7 +433,7 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
           {unused.map((name) => (
             <Flex alignItems="center" gap={2} key={name}>
               <Text size={1} as="div" trim={true}>
-                <code>{`$${name}`}</code>
+                <InlineCode>{`$${name}`}</InlineCode>
               </Text>
               <Box flexBasis="0%" flexGrow={1} minWidth="0">
                 <Text muted size={1} truncate={1} as="div" trim={true}>

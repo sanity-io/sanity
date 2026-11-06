@@ -1,5 +1,5 @@
 import {Badge, Card, Stack} from '@sanity/ui'
-import {type TFunction, useTranslation} from 'sanity'
+import {InlineCode, type TFunction, useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
@@ -84,7 +84,7 @@ export function LintTab({findings, onReveal}: LintTabProps) {
               <Text size={1} as="div" trim={true}>
                 {splitMessage(finding.message).map((segment, index) =>
                   segment.code ? (
-                    <code key={index}>{segment.text}</code>
+                    <InlineCode key={index}>{segment.text}</InlineCode>
                   ) : (
                     <span key={index}>{segment.text}</span>
                   ),

@@ -2,7 +2,7 @@ import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
-import {type TFunction, useTranslation} from 'sanity'
+import {InlineCode, type TFunction, useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
@@ -111,7 +111,11 @@ export function ExplainTab(props: ExplainTabProps) {
                 .map((paragraph, index) => (
                   <Text key={index} size={1} as="div" trim={true}>
                     {splitMessage(paragraph.trim()).map((segment, segmentIndex) =>
-                      segment.code ? <code key={segmentIndex}>{segment.text}</code> : segment.text,
+                      segment.code ? (
+                        <InlineCode key={segmentIndex}>{segment.text}</InlineCode>
+                      ) : (
+                        segment.text
+                      ),
                     )}
                   </Text>
                 ))}

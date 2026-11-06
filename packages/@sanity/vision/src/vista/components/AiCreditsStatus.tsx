@@ -3,7 +3,7 @@ import {Button, Card, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useNumberFormat, useProjectStore, useTranslation} from 'sanity'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Link} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {
@@ -59,9 +59,14 @@ function AiCreditsNote({used, quota, apiHost, size}: AiCreditsNoteProps) {
   return (
     <Text data-testid="vista-ai-credits" muted size={size} as="div" trim={true}>
       {note}{' '}
-      <a href={aiUsageUrl(apiHost, organizationId)} rel="noreferrer" target="_blank">
+      <Link
+        href={aiUsageUrl(apiHost, organizationId)}
+        openInNewTab
+        underlined={false}
+        style={{color: 'var(--card-link-color)'}}
+      >
         {t('vista.ai-credits.usage')}
-      </a>
+      </Link>
     </Text>
   )
 }
