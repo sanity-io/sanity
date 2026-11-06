@@ -145,6 +145,18 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   // The instance receiving local mutations, read synchronously for telemetry
   let latestBufferedDocument: BufferedDocument | undefined
 
+  const cancelledCommitErrors = new WeakSet<Error>()
+
+  // Cancelled commits already surface through their commit request; anything else must stay unhandled
+  function ignoreCancelledCommitError(error: unknown): void {
+    if (error instanceof Error && cancelledCommitErrors.has(error)) return
+    throw error
+  }
+
+  function requestCommit(bufferedDocument: BufferedDocument): void {
+    bufferedDocument.commit().catch(ignoreCancelledCommitError)
+  }
+
   const createInitialBufferedDocument = (initialSnapshot: SanityDocument | null) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
     latestBufferedDocument = bufferedDocument
@@ -197,7 +209,15 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       // Reset so the next commit batch doesn't reuse a stale timestamp
       // from a previous batch when the document stays inconsistent
       firstMutationReceivedAt = undefined
-      commitRequests.next({...commitArg, firstMutationReceivedAt: captured, owner})
+      commitRequests.next({
+        ...commitArg,
+        cancel: (error: Error) => {
+          cancelledCommitErrors.add(error)
+          commitArg.cancel(error)
+        },
+        firstMutationReceivedAt: captured,
+        owner,
+      })
     }
 
     return bufferedDocument
@@ -211,7 +231,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
           replacedBufferedDocuments.add(bufferedDocument)
-          void bufferedDocument.commit()
+          requestCommit(bufferedDocument)
         }
         // mark as consistent when a new snapshot is received
         firstMutationReceivedAt = undefined
@@ -257,7 +277,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        void bufferedDocument.commit()
+        requestCommit(bufferedDocument)
       }
     }),
     // We subscribe to this only for the side effects
@@ -272,12 +292,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
   const commit = () => {
-    currentBufferedDocument$
-      .pipe(
-        take(1),
-        tap((bufferedDocument) => bufferedDocument.commit()),
-      )
-      .subscribe()
+    currentBufferedDocument$.pipe(take(1), tap(requestCommit)).subscribe()
   }
 
   // A stream of this document's snapshot
