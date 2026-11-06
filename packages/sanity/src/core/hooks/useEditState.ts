@@ -4,6 +4,7 @@ import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, t
 
 import {useDocumentStore} from '../store/datastores'
 import {type EditStateFor, getInitialEditState} from '../store/document/document-pair/editState'
+import {useKeepAliveWhileHidden} from '../studio/mountedTools/useKeepAliveWhileHidden'
 import {getIdPair} from '../util/draftUtils'
 import {useSchema} from './useSchema'
 
@@ -51,6 +52,9 @@ export function useEditState(
     )
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
 
+  // A cold start of the pair replays the cached snapshots as `ready: false` (see `editState`),
+  // which would make the form read-only every time a hidden tool is shown again.
+  useKeepAliveWhileHidden(observable)
   const editState = useSyncObservable(observable, undefined)
   return useMemo(() => {
     if (editState) return editState

@@ -4,6 +4,7 @@
 
 import type {
   ActiveWorkspaceMatcherContext,
+  ActivityKeepAliveContext,
   AddonDatasetContext,
   AnnotationEntry,
   AppIdCacheContext,
@@ -166,6 +167,9 @@ import {describe, expectTypeOf, test} from 'vitest'
 describe('sanity/_singletons', () => {
   test('ActiveWorkspaceMatcherContext', () => {
     expectTypeOf<typeof ActiveWorkspaceMatcherContext>().not.toBeNever()
+  })
+  test('ActivityKeepAliveContext', () => {
+    expectTypeOf<typeof ActivityKeepAliveContext>().not.toBeNever()
   })
   test('AddonDatasetContext', () => {
     expectTypeOf<typeof AddonDatasetContext>().not.toBeNever()
