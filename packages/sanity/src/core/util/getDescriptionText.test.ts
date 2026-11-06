@@ -1,13 +1,13 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {getReleaseDescriptionText} from '../getReleaseDescriptionText'
+import {getDescriptionText} from './getDescriptionText'
 
-describe('getReleaseDescriptionText', () => {
+describe('getDescriptionText', () => {
   test('returns string as-is when description is a string', () => {
-    expect(getReleaseDescriptionText('Hello world')).toBe('Hello world')
-    expect(getReleaseDescriptionText('')).toBe('')
-    expect(getReleaseDescriptionText('  trimmed text  ')).toBe('  trimmed text  ')
+    expect(getDescriptionText('Hello world')).toBe('Hello world')
+    expect(getDescriptionText('')).toBe('')
+    expect(getDescriptionText('  trimmed text  ')).toBe('  trimmed text  ')
   })
 
   test('converts Portable Text blocks to plain text', () => {
@@ -28,28 +28,28 @@ describe('getReleaseDescriptionText', () => {
       },
     ]
 
-    expect(getReleaseDescriptionText(portableTextBlocks)).toBe('Hello \n\nWorld')
+    expect(getDescriptionText(portableTextBlocks)).toBe('Hello \n\nWorld')
   })
 
   test('returns empty string for empty Portable Text array', () => {
-    expect(getReleaseDescriptionText([])).toBe('')
+    expect(getDescriptionText([])).toBe('')
   })
 
   test('returns empty string for undefined', () => {
-    expect(getReleaseDescriptionText(undefined)).toBe('')
+    expect(getDescriptionText(undefined)).toBe('')
   })
 
   test('returns empty string for null', () => {
-    expect(getReleaseDescriptionText(null)).toBe('')
+    expect(getDescriptionText(null)).toBe('')
   })
 
   test('returns empty string for numbers', () => {
-    expect(getReleaseDescriptionText(123)).toBe('')
+    expect(getDescriptionText(123)).toBe('')
   })
 
   test('returns empty string for objects that are not Portable Text blocks', () => {
-    expect(getReleaseDescriptionText({foo: 'bar'})).toBe('')
-    expect(getReleaseDescriptionText([{foo: 'bar'}])).toBe('')
+    expect(getDescriptionText({foo: 'bar'})).toBe('')
+    expect(getDescriptionText([{foo: 'bar'}])).toBe('')
   })
 
   test('returns empty string for mixed arrays with non-Portable Text items', () => {
@@ -64,6 +64,6 @@ describe('getReleaseDescriptionText', () => {
       {notABlock: true},
     ]
 
-    expect(getReleaseDescriptionText(mixedArray)).toBe('')
+    expect(getDescriptionText(mixedArray)).toBe('')
   })
 })

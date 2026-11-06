@@ -7,6 +7,7 @@ import {Text, Flex, VStack} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDescriptionText} from '../../../util/getDescriptionText'
 import {
   asReleaseMetadata,
   toReleaseMetadataRecord,
@@ -15,7 +16,6 @@ import {
 import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useCanEditRelease} from '../../tool/detail/useCanEditRelease'
-import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 
 /**
@@ -127,7 +127,7 @@ export function EditReleaseDialog({
                 setMetadata((current) => ({...current, description}))
               }}
               rows={6}
-              value={getReleaseDescriptionText(metadata.description)}
+              value={getDescriptionText(metadata.description)}
             />
           </VStack>
           {metadataFieldsEnabled ? (

@@ -5,8 +5,8 @@ import {css, styled} from 'styled-components'
 import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDescriptionText} from '../../../util/getDescriptionText'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
-import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 
 // Cap the description height and let it scroll internally past this point, so the dialog stays a
 // sensible size regardless of how long the description is.
@@ -119,7 +119,7 @@ export function TitleDescriptionForm({
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
           title: metadata.title,
-          description: metadata.description,
+          description: getDescriptionText(metadata.description),
         }),
         [],
       ),
@@ -172,8 +172,7 @@ export function TitleDescriptionForm({
     [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const descriptionText = getReleaseDescriptionText(localData.description)
-  const shouldShowDescription = isReleaseOpen || descriptionText
+  const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
     <VStack gap={3}>
@@ -192,7 +191,7 @@ export function TitleDescriptionForm({
         <DescriptionTextArea
           ref={descriptionRef}
           autoFocus={!localData.title}
-          value={descriptionText}
+          value={localData.description}
           placeholder={t('release.form.placeholder-describe-release')}
           onChange={handleDescriptionChange}
           onFocus={createFocusHandler('description')}
