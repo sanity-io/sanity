@@ -1,3 +1,12 @@
+import {
+  actionsToMutations,
+  type CommitResult,
+  commitTransaction,
+  type ContentLakeAction,
+  ContentLakeError,
+  type DocumentIndex,
+  type MutationEventPayload,
+} from '@repo/content-lake-model'
 import {type Action, ClientError} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
@@ -10,7 +19,6 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../../src/core/store/document/types'
-import {applyMutations, type DocumentIndex} from './referenceApplier'
 
 export type RawListenerEvent =
   | WelcomeEvent
@@ -77,15 +85,14 @@ function httpError(statusCode: number, description: string): ClientError {
   })
 }
 
-function targetIdOf(mutation: MutationPayload): string {
-  const id =
-    mutation.patch?.id ??
-    mutation.delete?.id ??
-    mutation.create?._id ??
-    mutation.createIfNotExists?._id ??
-    mutation.createOrReplace?._id
-  if (typeof id === 'string') return id
-  throw httpError(400, `Cannot determine target document of ${JSON.stringify(mutation)}`)
+function toClientError(error: unknown): ClientError {
+  if (error instanceof ClientError) return error
+  if (error instanceof ContentLakeError) return httpError(error.statusCode, error.message)
+  return httpError(400, String(error))
+}
+
+function toListenerEvent(event: MutationEventPayload): MutationEvent {
+  return {type: 'mutation', ...event, messageReceivedAt: event.timestamp} as MutationEvent
 }
 
 function stripSystemFields(
@@ -93,18 +100,6 @@ function stripSystemFields(
 ): Omit<SanityDocument, '_rev' | '_updatedAt' | '_createdAt'> {
   const {_rev, _updatedAt, _createdAt, ...rest} = document
   return rest
-}
-
-function revisionConflicts(expected: string | undefined, actual: string | undefined): boolean {
-  return expected !== undefined && actual !== expected
-}
-
-function transitionOf(
-  previous: SanityDocument | undefined,
-  next: SanityDocument | undefined,
-): MutationEvent['transition'] {
-  if (previous && next) return 'update'
-  return next ? 'appear' : 'disappear'
 }
 
 export class FakeContentLake {
@@ -130,7 +125,7 @@ export class FakeContentLake {
   }
 
   get(id: string): SanityDocument | null {
-    return this.documents[id] ?? null
+    return (this.documents[id] as SanityDocument | undefined) ?? null
   }
 
   content(id: string): ReturnType<typeof stripSystemFields> | null {
@@ -165,7 +160,9 @@ export class FakeContentLake {
   }
 
   submitActions(clientId: string, actions: Action[], transactionId: string): Promise<unknown> {
-    return this.submit(clientId, transactionId, () => this.actionsToMutations(actions))
+    return this.submit(clientId, transactionId, () =>
+      actionsToMutations(this.documents, actions as ContentLakeAction[]),
+    )
   }
 
   submitMutations(
@@ -227,7 +224,7 @@ export class FakeContentLake {
       try {
         pending.mutations = toMutations()
       } catch (error) {
-        reject(error)
+        reject(toClientError(error))
         return
       }
       this.pendingFor(clientId).push(pending)
@@ -264,13 +261,14 @@ export class FakeContentLake {
       return
     }
     try {
-      const record = this.applyTransaction(pending.mutations, pending.transactionId, clientId)
-      pending.resolve({
-        transactionId: record.transactionId,
-        results: record.events.map((event) => ({id: event.documentId, operation: 'update'})),
-      })
+      const {transactionId, results} = this.applyTransaction(
+        pending.mutations,
+        pending.transactionId,
+        clientId,
+      )
+      pending.resolve({transactionId, results})
     } catch (error) {
-      const failure = error instanceof ClientError ? error : httpError(400, String(error))
+      const failure = toClientError(error)
       this.rejectedCommits.push({
         clientId,
         transactionId: pending.transactionId,
@@ -280,81 +278,23 @@ export class FakeContentLake {
     }
   }
 
-  private actionsToMutations(actions: Action[]): MutationPayload[] {
-    return actions.flatMap((action): MutationPayload[] => {
-      if (action.actionType === 'sanity.action.document.edit') {
-        const draft = this.get(action.draftId)
-        const published = this.get(action.publishedId)
-        if (draft === null && published === null) {
-          throw httpError(404, `Neither ${action.draftId} nor ${action.publishedId} exists`)
-        }
-        const materialise: MutationPayload[] =
-          draft === null && published
-            ? [{createIfNotExists: {...stripSystemFields(published), _id: action.draftId}}]
-            : []
-        return [...materialise, {patch: {id: action.draftId, ...action.patch}}]
-      }
-      throw httpError(400, `Unsupported action type ${action.actionType}`)
-    })
-  }
-
   private applyTransaction(
     mutations: MutationPayload[],
     transactionId: string,
     identity: string,
-  ): TransactionRecord {
-    const timestamp = new Date().toISOString()
-    mutations.forEach(({patch}) => {
-      if (patch && revisionConflicts(patch.ifRevisionID, this.get(patch.id)?._rev)) {
-        throw httpError(409, `Revision mismatch for ${patch.id}`)
-      }
+  ): Omit<CommitResult, 'events'> {
+    const {index, events, results} = commitTransaction({
+      index: this.documents,
+      mutations,
+      transactionId,
+      identity,
+      timestamp: new Date().toISOString(),
     })
-    const before = this.documents
-    const after = applyMutations(before, mutations)
-    const touched = [...new Set(mutations.map(targetIdOf))]
-    const affected = touched.filter(
-      (id) => JSON.stringify(before[id] ?? null) !== JSON.stringify(after[id] ?? null),
-    )
-    const events = affected.map((id, index): MutationEvent => {
-      const previous = before[id]
-      const next = after[id]
-      return {
-        type: 'mutation',
-        documentId: id,
-        transactionId,
-        mutations: mutations.filter((mutation) => targetIdOf(mutation) === id),
-        effects: {apply: [0, next ?? null], revert: [0, previous ?? null]},
-        previousRev: previous?._rev as string,
-        resultRev: transactionId,
-        transactionTotalEvents: affected.length,
-        transactionCurrentEvent: index + 1,
-        messageReceivedAt: timestamp,
-        visibility: 'transaction',
-        transition: transitionOf(previous, next),
-        timestamp,
-        identity,
-      } as MutationEvent
-    })
-    const affectedIds = new Set(affected)
-    this.documents = Object.fromEntries(
-      Object.entries(after).flatMap(([id, document]) => {
-        if (document === undefined || document === null) return []
-        const stamped = affectedIds.has(id)
-          ? {
-              ...document,
-              _id: id,
-              _rev: transactionId,
-              _updatedAt: timestamp,
-              _createdAt: document._createdAt ?? timestamp,
-            }
-          : document
-        return [[id, stamped]]
-      }),
-    )
-    const record = {transactionId, identity, mutations, events}
+    this.documents = index
+    const record = {transactionId, identity, mutations, events: events.map(toListenerEvent)}
     this.transactions.push(record)
-    this.broadcast(events)
-    return record
+    this.broadcast(record.events)
+    return {transactionId, results}
   }
 
   private broadcast(events: MutationEvent[]): void {
