@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-06)
+
+### Features
+
+* **core:** add telemetry for cancelled and retried commits ([8e213a0](https://github.com/sanity-io/sanity/commit/8e213a06227d65917a57294ff2c4cd52414ef3db))
+* **core:** show a compact versions popover on document list rows ([#15749](https://github.com/sanity-io/sanity/issues/15749)) ([057171e](https://github.com/sanity-io/sanity/commit/057171ee7ed7bd7afd0636122d1c1a6e22e3aa04))
+* **form:** expose changed state to PTE previews and annotations ([#12988](https://github.com/sanity-io/sanity/issues/12988)) ([6e7e3a1](https://github.com/sanity-io/sanity/commit/6e7e3a1fe137f2bb357b20b57d8d81bad0a8b99d))
+* **sanity:** add served version status to document group inventory ([fc8ccc2](https://github.com/sanity-io/sanity/commit/fc8ccc2ec7ebc82340c2b0a8c35b6853128f23d4))
+* **sanity:** expand id matching to segments in path-like query strings ([918328d](https://github.com/sanity-io/sanity/commit/918328d5c1e10c86b94576eec3b010545df1fbf6))
+
+### Bug Fixes
+
+* **core:** share the shard ping across document checkouts ([#15774](https://github.com/sanity-io/sanity/issues/15774)) ([003a7a2](https://github.com/sanity-io/sanity/commit/003a7a288529221b9eef4e4fda260169970ae23b))
+* **deps:** update portabletext ([44bc779](https://github.com/sanity-io/sanity/commit/44bc77950547c55edad9c869e87843dfa1c2fd8f))
+* **deps:** update portabletext ([#15757](https://github.com/sanity-io/sanity/issues/15757)) ([0110e57](https://github.com/sanity-io/sanity/commit/0110e5782db35e656a38b8a384ab03b479474370))
+* **form:** quote unsupported string patch type once ([#14933](https://github.com/sanity-io/sanity/issues/14933)) ([bedfaaf](https://github.com/sanity-io/sanity/commit/bedfaaf2a9b09a337b2d88af91b332f7ce5a2c5a))
+* **releases:** render releases whose description is not a string ([#15725](https://github.com/sanity-io/sanity/issues/15725)) ([e2ef7b4](https://github.com/sanity-io/sanity/commit/e2ef7b4be7af0c794708c2ee957ccfd47fccc0f3))
+* **studio:** keep the navbar color the same in every perspective ([#15657](https://github.com/sanity-io/sanity/issues/15657)) ([642b41b](https://github.com/sanity-io/sanity/commit/642b41b391147658c71db3aa5d410b511a2cc878))
+* **validation:** validate reference target types ([#15736](https://github.com/sanity-io/sanity/issues/15736)) ([5b45e57](https://github.com/sanity-io/sanity/commit/5b45e570d8aa1f94d1cac13a8cdbccbcf1a4a005))
 ## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
 
 ### Features
