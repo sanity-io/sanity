@@ -160,7 +160,7 @@ export class Mutation {
         }
 
         const patch = new Patcher(mutation.patch)
-        operations.push((doc) => patch.apply(doc) as Doc | null)
+        operations.push((doc) => (doc ? (patch.apply(doc) as Doc) : doc))
         return
       }
 
