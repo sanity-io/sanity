@@ -61,12 +61,10 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
+import {getShardInfo$} from './getShardInfo'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 import {variantsApiClient} from './utils/variantsApiClient'
-
-/** Timeout on request that fetches shard name before reporting latency */
-const FETCH_SHARD_TIMEOUT = 20_000
 
 /** TTL for unmatched entries in the latency tracking pending array */
 const PENDING_ENTRY_TTL = 60_000
@@ -768,24 +766,7 @@ function reportLatency(options: {
   onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
 }) {
   const {client, commits$, listenerEvents$, onReportLatency, onReportMutationPerformance} = options
-  // Note: this request happens once and the result is then cached indefinitely
-  let shardInfo: Promise<string | undefined>
-  try {
-    shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
-      signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
-    })
-      .then(async (response) => {
-        const shard = response.headers.get('X-Sanity-Shard') || undefined
-
-        // The ping response is tiny; consuming it lets the browser finish the
-        // H2/H3 stream cleanly and avoids long pending receive/cancel timing.
-        await response.arrayBuffer().catch(() => undefined)
-        return shard
-      })
-      .catch(() => undefined)
-  } catch {
-    shardInfo = Promise.resolve(undefined)
-  }
+  const shardInfo$ = getShardInfo$(client)
 
   const submittedMutations = commits$.pipe(
     map((ev): LatencyTrackingEntry => ({
@@ -854,7 +835,7 @@ function reportLatency(options: {
     ),
     map((state) => state.event),
     filter((event) => !!event),
-    withLatestFrom(from(shardInfo).pipe(startWith(undefined))),
+    withLatestFrom(shardInfo$),
     tap(([event, shard]) => {
       try {
         onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId})

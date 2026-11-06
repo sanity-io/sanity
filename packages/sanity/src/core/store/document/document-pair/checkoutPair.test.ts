@@ -27,6 +27,14 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
+// The shard ping is memoized for the life of the page, so a test that needs its
+// own request uses a URL no other test has subscribed to.
+let shardPingSequence = 0
+function freshShardPingUrl(): string {
+  shardPingSequence += 1
+  return `/data/ping/${shardPingSequence}`
+}
+
 describe('checkoutPair -- server actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
@@ -1248,12 +1256,45 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     sub.unsubscribe()
   })
 
+  test('fetches shard info once when two documents are checked out', async () => {
+    const pingUrl = freshShardPingUrl()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => of({type: 'welcome'}).pipe(delay(0)),
+      },
+      getUrl: (url: string) => url,
+      getDataUrl: () => pingUrl,
+    }
+
+    const first = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
+      onReportLatency: vi.fn(),
+    })
+    const second = checkoutPair(
+      testClient as any as SanityClient,
+      {publishedId: 'otherId', draftId: 'drafts.otherId'},
+      of(false),
+      {onReportLatency: vi.fn()},
+    )
+
+    const subA = merge(first.draft.events, first.published.events).subscribe()
+    const subB = merge(second.draft.events, second.published.events).subscribe()
+
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(global.fetch).toHaveBeenCalledWith(pingUrl, expect.any(Object))
+
+    subA.unsubscribe()
+    subB.unsubscribe()
+  })
+
   test('reports shard as undefined when fetch fails', async () => {
     vi.spyOn(global, 'fetch').mockRejectedValue(new Error('network error'))
 
     const onReportLatency = vi.fn()
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -1264,7 +1305,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
@@ -1480,6 +1521,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     const onReportLatency = vi.fn()
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -1490,7 +1532,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
@@ -2233,6 +2275,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
     const listenerSubject = new Subject()
     const commitSubject = new Subject()
     const onReportLatency = vi.fn()
+    const pingUrl = freshShardPingUrl()
 
     const testClient = {
       ...client,
@@ -2243,7 +2286,7 @@ describe('checkoutPair -- latency and mutation performance reporting', () => {
         action: vi.fn(() => commitSubject),
       },
       getUrl: (url: string) => url,
-      getDataUrl: (path: string) => `/data/${path}`,
+      getDataUrl: () => pingUrl,
     }
 
     const {draft, published} = checkoutPair(testClient as any as SanityClient, idPair, of(false), {
