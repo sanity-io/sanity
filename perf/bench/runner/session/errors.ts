@@ -14,6 +14,7 @@ export type SessionFailureReason =
   | 'readback-mismatch'
   | 'unexpected-endpoint'
   | 'soak-excursion'
+  | 'paint-attribution'
   | 'stall-precondition'
 
 export class SessionError extends Error {

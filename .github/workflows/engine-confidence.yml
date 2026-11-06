@@ -1,13 +1,14 @@
 name: Engine confidence
 permissions: {}
 
-# Weekly Engine confidence score: how well the tests guard the document
-# engine (mutator, document store, form patching, Portable Text sync). The
-# score is Stryker's mutation score alone, from two mutation runs. The
-# known-bug catalogue is stored in the same engineConfidenceRun document as
-# supporting detail and never feeds the score, so a catalogue failure still
-# stores the score. The document lands in the Studio Radar dataset and shows on
-# the Radar "Engine confidence" tab.
+# Weekly Engine confidence scores: how well the tests guard the document
+# engine (mutator, document store, form patching, Portable Text sync). Both
+# are Stryker's mutation score alone: the total over the two mutation runs and
+# the core Studio score over the sanity run. The known-bug catalogue is stored
+# in the same engineConfidenceRun document as supporting detail and never
+# feeds either score, so a catalogue failure still stores the scores. The
+# document lands in the Studio Radar dataset and shows on the Radar "Engine
+# confidence" tab.
 #
 # Thursdays on main only, never pull_request: the store job holds the dataset
 # write token, which must never run PR-authored code (same stance as

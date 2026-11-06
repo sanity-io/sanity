@@ -1,12 +1,16 @@
 import {ImageIcon} from '@sanity/icons/Image'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {BlockImagePreview} from '../BlockImagePreview'
 import {BlockPreview} from '../BlockPreview'
 
-const STATUS = <Text size={0}>Draft</Text>
+const STATUS = (
+  <Text size={0} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+    Draft
+  </Text>
+)
 
 // Deterministic stand-in for an image asset: an inline data URI, so no network
 // and no dpr-dependent CDN URL. Rendered as `<img>` because `Media` sizes an
@@ -45,7 +49,14 @@ type Story = StoryObj<typeof meta>
 function Labelled({label, children}: {label: string; children: React.ReactNode}) {
   return (
     <VStack gap={2}>
-      <Text muted size={1} weight="medium">
+      <Text
+        muted
+        size={1}
+        weight="medium"
+        as="div"
+        trim={true}
+        style={{color: 'var(--card-muted-fg-color)'}}
+      >
         {label}
       </Text>
       <Card border radius={2} tone="inherit">

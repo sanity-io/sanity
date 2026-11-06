@@ -21,18 +21,24 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
+import {DocumentCommitCancelled} from './document/__telemetry__/commitCancelled.telemetry'
+import {DocumentCommitRetriesEnded} from './document/__telemetry__/commitRetries.telemetry'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {DocumentListenerStalled} from './document/__telemetry__/listenerStall.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
+import {DocumentPairTornDownWithPendingMutations} from './document/__telemetry__/pendingMutations.telemetry'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
 import {
+  type CommitCancelledTelemetryEvent,
+  type CommitRetriesEndedTelemetryEvent,
   type DocumentPairLoadedEvent,
   type DocumentRebaseTelemetryEvent,
   type LatencyReportEvent,
   type MutationPerformanceEvent,
+  type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {getListenerStalledToastParams} from './document/utils/listenerStalledToast'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
@@ -182,8 +188,11 @@ export function useDocumentStore(): DocumentStore {
   const errorHandler = useStudioErrorHandler()
 
   const handleSyncErrorRecovery = useCallback(
-    (error: OutOfSyncError) => {
-      telemetry.log(DocumentDesynced, {errorName: error.name})
+    (error: OutOfSyncError, info?: SyncErrorRecoveryTelemetryInfo) => {
+      telemetry.log(DocumentDesynced, {
+        errorName: error.name,
+        hadPendingMutations: info?.hadPendingMutations,
+      })
     },
     [telemetry],
   )
@@ -247,6 +256,24 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleCommitCancelled = useCallback(
+    (event: CommitCancelledTelemetryEvent) => {
+      telemetry.log(DocumentCommitCancelled, event)
+    },
+    [telemetry],
+  )
+
+  const handleCommitRetriesEnded = useCallback(
+    (event: CommitRetriesEndedTelemetryEvent) => {
+      telemetry.log(DocumentCommitRetriesEnded, event)
+    },
+    [telemetry],
+  )
+
+  const handlePairTornDownWithPendingMutations = useCallback(() => {
+    telemetry.log(DocumentPairTornDownWithPendingMutations)
+  }, [telemetry])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -278,6 +305,9 @@ export function useDocumentStore(): DocumentStore {
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
           onDocumentRebase: handleDocumentRebase,
+          onCommitCancelled: handleCommitCancelled,
+          onCommitRetriesEnded: handleCommitRetriesEnded,
+          onPairTornDownWithPendingMutations: handlePairTornDownWithPendingMutations,
           snapshotFetchErrorHandler: errorHandler,
         },
       })
@@ -315,6 +345,9 @@ export function useDocumentStore(): DocumentStore {
     handleDocumentPairLoaded,
     handleReportMutationPerformance,
     handleDocumentRebase,
+    handleCommitCancelled,
+    handleCommitRetriesEnded,
+    handlePairTornDownWithPendingMutations,
     errorHandler,
   ])
 }
@@ -322,24 +355,26 @@ export function useDocumentStore(): DocumentStore {
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {bifur} = useSource().__internal
+  const source = useSource()
+  const {bifur} = source.__internal
+  const token$ = source.auth.token
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const connectionStatusStore =
       resourceCache.get<ConnectionStatusStore>({
         namespace: 'connectionStatusStore',
-        dependencies: [bifur],
-      }) || createConnectionStatusStore({bifur})
+        dependencies: [bifur, token$ ?? null],
+      }) || createConnectionStatusStore({bifur, token$})
 
     resourceCache.set({
       namespace: 'connectionStatusStore',
-      dependencies: [bifur],
+      dependencies: [bifur, token$ ?? null],
       value: connectionStatusStore,
     })
 
     return connectionStatusStore
-  }, [bifur, resourceCache])
+  }, [bifur, token$, resourceCache])
 }
 
 /**

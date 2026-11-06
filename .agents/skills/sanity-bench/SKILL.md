@@ -17,10 +17,11 @@ full reference; this skill is the operating card. Stored results are read throug
 ```bash
 pnpm build:bench                                              # required first: packages + bench studio
 pnpm bench help                                               # commands; `pnpm bench run --help` for flags
-pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge, loginReady, loginToTool, toolReady, emptyToolReady, loginToEmptyTool (+ customization scenarios)
+pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge, loginReady, loginToTool, toolReady, emptyToolReady, loginToEmptyTool, softNav (+ customization scenarios)
 pnpm bench run --scenario singleString --sessions 4           # absolute interaction run
 pnpm bench run --mode pageload --scenario singleString        # load vitals + bundle size
 pnpm bench run --mode inp --scenario singleString --sessions 3
+pnpm bench run --mode softnav --scenario softNav --sessions 4   # soft navigations: per-navigation soft LCP/FCP/INP/CLS
 pnpm bench run --mode soak --scenario singleString --minutes 5
 pnpm bench run --mode soak --scenario article --minutes 2       # long-session soak smoke (PTE body, menus, doc switches, live presence)
 pnpm bench run --mode stall --scenario article --sessions 3     # listener stall recovery (~31.5s healthy, 90s cap)
@@ -41,7 +42,7 @@ CLI cannot open its IPC pipe (`listen EPERM … tsx-*/…pipe`), run the CLI dir
 | Trigger                                                | What runs                                                                                                                             | Result lands in                                                                                              |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Label a PR `trigger:perf-bench` (maintainers)          | PR head vs merge-base A/B, one shard per scenario. The label persists: every later push re-runs the suite until the label is removed. | Sticky PR comment `bench-report`; absolute side stored under the branch (`?branches=main,<branch>` in Radar) |
-| Cron 05:00 UTC daily                                   | Absolute suite on main + soaks (`singleString`, `article`) + INP + settle                                                             | `benchRun` `mode: "absolute"` in Radar (Trends)                                                              |
+| Cron 05:00 UTC daily                                   | Absolute suite on main + soaks (`singleString`, `article`) + INP + soft navigations + settle                                          | `benchRun` `mode: "absolute"` in Radar (Trends)                                                              |
 | Cron Monday 06:00 UTC                                  | Self-test (build vs itself, `--fail-on-verdict`)                                                                                      | Red job = harness drift                                                                                      |
 | `-f run_suite=true`                                    | Same as the daily cron, on demand                                                                                                     | Radar                                                                                                        |
 | `-f run_suite=true -f backfill_sha=<40-char sha>`      | Replay a historical main commit, store under that sha and its commit date                                                             | Radar (fills a hole in the series)                                                                           |

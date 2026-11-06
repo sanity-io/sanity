@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
@@ -10,7 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {StateLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {presentationLocaleNamespace} from '../i18n'
 import {
@@ -80,7 +80,7 @@ export function ContentEditor(props: {
         schemaType={schemaType}
         status={
           <Card padding={1} radius={2} shadow={1}>
-            <Text muted size={0} weight="medium">
+            <Text muted size={0} weight="medium" as="div" trim={true}>
               {t('main-document.label')}
             </Text>
           </Card>
@@ -123,12 +123,20 @@ export function ContentEditor(props: {
             <Card padding={2} radius={2} tone="inherit">
               <Flex gap={3}>
                 <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                  <Text size={1}>
-                    <WarningOutlineIcon />
-                  </Text>
+                  <Icon
+                    size={1}
+                    icon={WarningOutlineIcon}
+                    tone={mainDocumentState.document ? undefined : 'caution'}
+                    style={{margin: '-0.375rem'}}
+                  />
                 </Box>
                 <Box flexBasis="0%" flexGrow={1}>
-                  <Text size={1}>
+                  <Text
+                    size={1}
+                    as="div"
+                    trim={true}
+                    tone={mainDocumentState.document ? undefined : 'caution'}
+                  >
                     <Translate
                       t={t}
                       i18nKey="main-document.missing.text"

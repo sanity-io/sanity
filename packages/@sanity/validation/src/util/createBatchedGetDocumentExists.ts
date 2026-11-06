@@ -23,6 +23,13 @@ interface PendingCheck {
 
 type Batch = Map<string, PendingCheck[]>
 
+function hasPendingChecks(batch: Batch): boolean {
+  for (const checks of batch.values()) {
+    if (checks.some((check) => !check.settled)) return true
+  }
+  return false
+}
+
 function settleCheck(check: PendingCheck, result: {exists: boolean} | {error: unknown}): void {
   if (check.settled) return
   check.settled = true
@@ -41,6 +48,7 @@ export function createBatchedGetDocumentExists(
   const queuedBatches: Batch[] = []
   let bufferTimer: ReturnType<typeof setTimeout> | undefined
   let draining = false
+  let activeRequest: {batch: Batch; controller: AbortController} | undefined
 
   const rejectBatch = (batch: Batch, reason: unknown) => {
     for (const checks of batch.values()) {
@@ -87,13 +95,18 @@ export function createBatchedGetDocumentExists(
           .map(([id]) => id)
         if (ids.length === 0) continue
 
+        const controller = new AbortController()
+        const abortRequest = () => controller.abort(defaultSignal?.reason)
+        defaultSignal?.addEventListener('abort', abortRequest, {once: true})
+        activeRequest = {batch, controller}
+
         try {
           // The endpoint is intentionally limited to one request at a time.
           // oxlint-disable-next-line no-await-in-loop
           const availability = await client.request<AvailabilityResponse>({
             url: client.getDataUrl('doc', ids.join(',')),
             query: {excludeContent: 'true'},
-            signal: defaultSignal,
+            signal: controller.signal,
             tag: 'documents-availability',
           })
           const missingIds = new Set(
@@ -105,9 +118,16 @@ export function createBatchedGetDocumentExists(
             }
           }
         } catch (error) {
+          if (controller.signal.aborted && !defaultSignal?.aborted && !hasPendingChecks(batch)) {
+            // Every caller left this batch, so its cancellation must not fail later batches.
+            continue
+          }
           rejectBatch(batch, error)
           rejectPending(error)
           return
+        } finally {
+          defaultSignal?.removeEventListener('abort', abortRequest)
+          activeRequest = undefined
         }
       }
     } catch (error) {
@@ -124,7 +144,12 @@ export function createBatchedGetDocumentExists(
     return new Promise<boolean>((resolve, reject) => {
       const check: PendingCheck = {reject, resolve, settled: false, signal}
       if (signal) {
-        check.onAbort = () => settleCheck(check, {error: signal.reason})
+        check.onAbort = () => {
+          settleCheck(check, {error: signal.reason})
+          if (activeRequest && !hasPendingChecks(activeRequest.batch)) {
+            activeRequest.controller.abort(signal.reason)
+          }
+        }
         signal.addEventListener('abort', check.onAbort, {once: true})
       }
 

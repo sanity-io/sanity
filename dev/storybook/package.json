@@ -13,8 +13,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sanity/icons": "^5.2.3",
-    "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -25,13 +23,13 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.6.0",
     "@repo/pandacss": "workspace:*",
-    "@storybook/addon-vitest": "^10.6.3",
-    "@storybook/react-vite": "^10.6.3",
+    "@storybook/addon-vitest": "^10.6.5",
+    "@storybook/react-vite": "^10.6.5",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "chromatic": "^18.13.1",
+    "chromatic": "^18.13.6",
     "oxc-transform-react": "catalog:",
     "playwright": "catalog:",
     "rimraf": "catalog:",

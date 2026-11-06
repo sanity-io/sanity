@@ -1,4 +1,3 @@
-import {TrashIcon} from '@sanity/icons/Trash'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -18,10 +17,8 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Text, VStack} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
-import {Button} from '../../../ui-components/button/Button'
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
 import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
@@ -29,6 +26,7 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {usePerspective} from '../../perspective/usePerspective'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -46,7 +44,6 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
-import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
@@ -56,17 +53,15 @@ import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
-import {DocumentGroupFilter} from './DocumentGroupFilter'
 import {DocumentGroupSet} from './DocumentGroupSet'
-import {Footer} from './Footer'
-import {Header} from './Header'
+import {InventoryHeader} from './InventoryHeader'
 import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
-import {TextButton} from './TextButton'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -356,8 +351,6 @@ export function DocumentGroupInventory(
 
   useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
-  const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
-  const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
@@ -369,14 +362,6 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
-  const canRequestDeletion = useSelector(deletionRef, (machine) =>
-    machine.can({type: 'delete.request'}),
-  )
-
-  const canCreateVariant = useSelector(variantCreationRef, (machine) =>
-    machine.can({type: 'createVariant.request'}),
-  )
-
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
@@ -385,12 +370,14 @@ export function DocumentGroupInventory(
         )}
         {!isVariantCreationActive && (
           <>
-            <Header>
-              <DocumentGroupFilter
-                readOnly={isLocked}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
+            {!readOnly && (
+              <InventoryHeader
+                selectionRef={selectionRef}
+                deletionRef={deletionRef}
+                variantCreationRef={variantCreationRef}
+                components={components}
               />
-            </Header>
+            )}
             <Body>
               {schema && (
                 <Select
@@ -404,26 +391,6 @@ export function DocumentGroupInventory(
                 />
               )}
             </Body>
-            {!readOnly && (
-              <Footer>
-                {canCreateVariant && (
-                  <Button
-                    text={t('document-group.create-variant')}
-                    tone="suggest"
-                    icon={CreateVariantIcon}
-                    onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
-                  />
-                )}
-                {canRequestDeletion && (
-                  <Button
-                    text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-                    onClick={() => deletionRef.send({type: 'delete.request'})}
-                    tone="critical"
-                    icon={TrashIcon}
-                  />
-                )}
-              </Footer>
-            )}
           </>
         )}
       </Container>
@@ -463,6 +430,19 @@ const Select: ComponentType<{
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
+  const perspective = usePerspective()
+
+  const servedVersion = readOnly
+    ? undefined
+    : resolveServedVersion({
+        perspective,
+        variantsEnabled: variantsEnabled ?? false,
+        versions: sets.flatMap((set) => set.variants.map(({document}) => document)),
+      })
+
+  const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
+  const isLocked = useSelector(machine, (snapshot) => snapshot.matches('locked'))
 
   const hasFilterString = useSelector(
     machine,
@@ -474,60 +454,60 @@ const Select: ComponentType<{
     ({context}) => context.filterMatchingVariantIds,
   )
 
-  // Selection is refused outright in read-only mode; while a deletion is in
-  // flight the selection is only frozen, so the checkboxes stay rendered.
-  const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
-
   return (
-    <VStack gap={5}>
-      {sets.map((set) => (
-        <DocumentGroupSet
-          key={set.key}
-          name={set.name}
-          headerActions={
-            isSelectable ? (
-              <TextButton
-                onClick={() => {
-                  set.variants.forEach((variant) =>
-                    machine.send({type: 'selection.add', variantId: variant.id}),
-                  )
-                }}
-              >
-                {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-                <Text size={1} as="div" trim={true}>{`Select all ${set.variants.length}`}</Text>
-              </TextButton>
-            ) : undefined
-          }
-        >
-          {set.variants
-            .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
-            // The version context menu is a hook, so the two rows have to be
-            // separate components rather than one row that skips the actions.
-            .map((variant) =>
-              readOnly ? (
-                <ReadOnlyVariantRow
-                  key={variant.id}
-                  variant={variant}
-                  inventoryRef={inventoryRef}
-                  onSelect={onSelect}
-                  isSelected={selectedId === variant.id}
-                />
-              ) : (
-                <ManagedVariantRow
-                  key={variant.id}
-                  variant={variant}
-                  machine={machine}
-                  inventoryRef={inventoryRef}
-                  documentType={documentType}
-                  onSelect={onSelect}
-                  isSelected={selectedId === variant.id}
-                  perspectiveList={perspectiveList}
-                />
-              ),
-            )}
-        </DocumentGroupSet>
-      ))}
-    </VStack>
+    <>
+      {sets.map((set) => {
+        const variantIds = set.variants.map(({id}) => id)
+
+        return (
+          <DocumentGroupSet
+            key={set.key}
+            name={set.name}
+            bundle={set.bundle}
+            readOnly={readOnly}
+            locked={isLocked}
+            selectedIds={selectedIds}
+            checked={variantIds.length !== 0 && variantIds.every((id) => selectedIds.has(id))}
+            onCheckedChange={(checked) =>
+              machine.send({
+                type: checked ? 'selection.addMany' : 'selection.removeMany',
+                variantIds,
+              })
+            }
+          >
+            {set.variants
+              .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
+              // The version context menu is a hook, so the two rows have to be
+              // separate components rather than one row that skips the actions.
+              .map((variant) =>
+                readOnly ? (
+                  <ReadOnlyVariantRow
+                    key={variant.id}
+                    variant={variant}
+                    inventoryRef={inventoryRef}
+                    onSelect={onSelect}
+                    isSelected={selectedId === variant.id}
+                  />
+                ) : (
+                  <ManagedVariantRow
+                    key={variant.id}
+                    variant={variant}
+                    machine={machine}
+                    inventoryRef={inventoryRef}
+                    documentType={documentType}
+                    onSelect={onSelect}
+                    isSelected={selectedId === variant.id}
+                    servedStatus={
+                      servedVersion?.id === variant.id ? servedVersion.status : undefined
+                    }
+                    perspectiveList={perspectiveList}
+                  />
+                ),
+              )}
+          </DocumentGroupSet>
+        )
+      })}
+    </>
   )
 }
 
@@ -560,12 +540,22 @@ const ManagedVariantRow: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
+  servedStatus: ServedStatus | undefined
   /**
    * Always supplied by manage mode, where this row is rendered. Optional only
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
+}> = ({
+  variant,
+  machine,
+  inventoryRef,
+  documentType,
+  onSelect,
+  isSelected,
+  servedStatus,
+  perspectiveList,
+}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -626,11 +616,13 @@ const ManagedVariantRow: ComponentType<{
         variant={variant}
         releases={releases}
         isSelected={isSelected}
+        servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}
         leading={
           <VariantCheckbox
+            data-visible={selectedIds.size !== 0}
             checked={selectedIds.has(variant.id)}
             readOnly={isLocked}
             onChange={() => {

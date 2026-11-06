@@ -17,6 +17,7 @@ import {
   collectRunMetadata,
   collectSettle,
   collectStall,
+  collectSoftNav,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
@@ -42,6 +43,7 @@ import {
 } from '../../runner/session/pageLoad'
 import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
 import {runSoakSession} from '../../runner/session/soak'
+import {runSoftNavSession} from '../../runner/session/softNav'
 import {runStallSession, type StallSessionResult} from '../../runner/session/stall'
 import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
@@ -50,6 +52,7 @@ import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
 import {settleMismatch} from '../../stats/settle'
+import {type SoftNavigationMeasurement} from '../../stats/softNav'
 import {sparkline} from '../../stats/sparkline'
 import {resolveFromInvocation} from '../benchRoot'
 import {type RunArgs} from './run'
@@ -154,8 +157,19 @@ export async function runBench(argv: RunArgs): Promise<void> {
       )
       return false
     }
+    if (argv.mode === 'softnav') {
+      if (scenario.softNav === undefined) {
+        console.log(chalk.yellow(`skipping ${scenario.name}: no soft-navigation plan`))
+        return false
+      }
+      return true
+    }
     if (argv.mode === 'stall' && scenario.stall === undefined) {
       console.log(chalk.yellow(`skipping ${scenario.name}: no stall plan`))
+      return false
+    }
+    if (scenario.softNav !== undefined) {
+      console.log(chalk.yellow(`skipping ${scenario.name}: softnav-only scenario`))
       return false
     }
     if (
@@ -179,6 +193,11 @@ export async function runBench(argv: RunArgs): Promise<void> {
   })
 
   const referenceDist = argv.referenceDist ? resolveFromInvocation(argv.referenceDist) : undefined
+  if (referenceDist && argv.mode === 'softnav') {
+    // The two A/B sides diverge 5-10% on identical builds in this mode
+    console.error('softnav mode runs absolute only: drop --reference-dist')
+    process.exit(1)
+  }
   if (referenceDist && !fs.existsSync(path.join(referenceDist, 'index.html'))) {
     console.error(`No studio build at ${referenceDist}`)
     process.exit(1)
@@ -353,6 +372,35 @@ export async function runBench(argv: RunArgs): Promise<void> {
           chalk.red(`\nsettle expectation mismatch:\n  ${expectationMismatches.join('\n  ')}`),
         )
         process.exitCode = 1
+      }
+    } else if (argv.mode === 'softnav') {
+      for (const scenario of scenarios) {
+        console.log(
+          `\n${chalk.cyan(scenario.name)} — soft navigations, ${argv.sessions} session(s)`,
+        )
+        const sessions: SoftNavigationMeasurement[][] = []
+        for (let sessionIndex = 0; sessionIndex < argv.sessions; sessionIndex++) {
+          const navigations = await withSessionRetries(scenario.name, () =>
+            runSoftNavSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          sessions.push(navigations)
+          console.log(
+            `  session ${sessionIndex + 1}/${argv.sessions}: ${navigations.length} soft navigations`,
+          )
+        }
+        const report = collectSoftNav(scenario.name, sessions, scenario.sourceFile)
+        for (const metric of report.metrics) {
+          console.log(
+            `  ${chalk.bold(metric.label)}: p50 ${metric.experiment.summary.median.toFixed(metric.unit === 'cls' ? 3 : 0)}`,
+          )
+        }
+        scenarioReports.push(report)
       }
     } else if (argv.mode === 'stall') {
       for (const scenario of scenarios) {

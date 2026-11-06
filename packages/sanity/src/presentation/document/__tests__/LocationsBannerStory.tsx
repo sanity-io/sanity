@@ -1,8 +1,9 @@
 import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {isObjectSchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {useSchema} from 'sanity'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
@@ -55,7 +56,7 @@ function Banners() {
     <Stack gap={5}>
       {STATES.map(({label, state, showPresentationTitle}) => (
         <Stack key={label} gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             {label}
           </Text>
           <LocationsBanner

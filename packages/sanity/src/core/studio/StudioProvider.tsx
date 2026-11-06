@@ -55,6 +55,7 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
+  unstable_importMapUrl: importMapUrl,
 }: StudioProviderProps) {
   // Run in an effect to keep render pure; both calls are idempotent and buffer/guard
   // their own work, so StrictMode's double mount is safe.
@@ -81,7 +82,7 @@ export function StudioProvider({
             ConfigErrorsComponent={ConfigErrorsScreen}
           >
             <LocaleProvider>
-              <PackageVersionStatusProvider>
+              <PackageVersionStatusProvider importMapUrl={importMapUrl}>
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
@@ -106,7 +107,7 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children],
+    [children, importMapUrl],
   )
 
   return (

@@ -49,6 +49,11 @@ export interface PreviewMediaDimensions {
  */
 export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  /**
+   * Whether the previewed value has changes compared to the published version.
+   * Currently only populated for Portable Text block and inline-block previews.
+   */
+  changed?: boolean
   children?: ReactNode
   description?: ReactNode | ComponentType<{layout: TLayoutKey}>
   error?: Error | null

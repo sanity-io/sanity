@@ -139,7 +139,12 @@ export interface FederatedAssetSourceModule {
   render: (
     rootElement: HTMLElement,
     props: FederatedAssetSourceViewProps,
-    renderOptions?: {reactStrictMode?: boolean},
+    renderOptions?: {
+      reactStrictMode?: boolean
+      moduleId?: string
+      /** The Dashboard hears the view only while it hears this connection, the Studio's. */
+      parentKey?: string
+    },
   ) => FederatedAssetSourceViewHandle
   version: number
 }

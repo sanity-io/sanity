@@ -94,7 +94,12 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
         {t('inputs.invalid-value.description')}
       </Text>
 
-      <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
+      <Details
+        marginTop={4}
+        open={isDev}
+        title={t('inputs.invalid-value.details.title')}
+        tone="critical"
+      >
         <VStack gap={3}>
           {validTypes.length === 1 && (
             <Text as="p" muted size={1} trim={true} tone="critical">

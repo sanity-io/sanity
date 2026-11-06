@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "6.21.0",
+  "version": "6.22.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -75,10 +75,10 @@
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.15",
     "@lezer/highlight": "^1.2.3",
-    "@pierre/diffs": "^1.6.1",
+    "@pierre/diffs": "1.6.2",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
-    "@sanity-labs/groq-wasm": "^1.1.0",
+    "@sanity-labs/groq-wasm": "^1.1.1",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.9",
     "@sanity/icons": "^5.2.3",
@@ -90,7 +90,7 @@
     "@xstate/react": "^6.1.0",
     "cobe": "catalog:",
     "dequal": "catalog:",
-    "groq-js": "^2.0.0",
+    "groq-js": "^2.0.1",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.9",
     "json5": "^2.2.3",
@@ -102,7 +102,7 @@
     "rxjs": "^7.8.2",
     "ui5": "catalog:",
     "use-effect-event": "^2.0.4",
-    "xstate": "^5.33.2"
+    "xstate": "^5.33.3"
   },
   "devDependencies": {
     "@repo/css-modules-kit": "workspace:*",
