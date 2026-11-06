@@ -43,6 +43,7 @@ describe('getTransactionsLogs', () => {
     expect(getJsonStream).toHaveBeenCalledWith(
       'https://mock.sanity.api/data/history/mockDataset/transactions/doc1?tag=sanity.studio.transactions-log&excludeContent=true&limit=50&includeIdentifiedDocumentsOnly=true',
       'mockToken',
+      undefined,
     )
     expect(result).toEqual([])
   })
@@ -59,6 +60,7 @@ describe('getTransactionsLogs', () => {
     expect(getJsonStream).toHaveBeenCalledWith(
       'https://mock.sanity.api/data/history/mockDataset/transactions/doc1,doc2?tag=sanity.studio.transactions-log&excludeContent=true&limit=50&includeIdentifiedDocumentsOnly=true',
       'mockToken',
+      undefined,
     )
   })
 
@@ -114,5 +116,26 @@ describe('getTransactionsLogs', () => {
     const result = await getTransactionsLogs(mockClient as any, documentId, {})
 
     expect(result).toEqual([{id: 'txn1'}, {id: 'txn2'}, {id: 'txn3'}])
+  })
+
+  it('forwards the studio request handler so an invalid session can reach the login screen', async () => {
+    const requestHandler = vi.fn()
+    const client = {
+      config: vi.fn(() => ({
+        dataset: 'mockDataset',
+        token: 'mockToken',
+        requestHandler,
+      })),
+      getUrl: vi.fn((path: string) => `https://mock.sanity.api${path}`),
+    } as unknown as SanityClient
+    getJsonStreamMock.mockResolvedValueOnce(mockStream)
+
+    await getTransactionsLogs(client, 'doc1', {})
+
+    expect(getJsonStream).toHaveBeenCalledWith(
+      'https://mock.sanity.api/data/history/mockDataset/transactions/doc1?tag=sanity.studio.transactions-log&excludeContent=true&limit=50&includeIdentifiedDocumentsOnly=true',
+      'mockToken',
+      requestHandler,
+    )
   })
 })

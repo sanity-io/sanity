@@ -1,4 +1,4 @@
-import {type SanityClient, createClient} from '@sanity/client'
+import {ClientError, type SanityClient, createClient} from '@sanity/client'
 import {
   type TransactionLogEventWithEffects,
   type TransactionLogEventWithMutations,
@@ -90,6 +90,59 @@ describe('readMostRecentSharedTransaction', () => {
     )
 
     expect(a).toBeUndefined()
+  })
+
+  it('completes without emitting when history fails with an invalid session the studio will log out for', async () => {
+    const requestHandler = () => new Promise<never>(() => {})
+    const studioClient = createClient({
+      ...DEFAULT_STUDIO_CLIENT_OPTIONS,
+      projectId: 'x',
+      useCdn: false,
+      requestHandler,
+    })
+    const values = await firstValueFrom(
+      readMostRecentSharedTransaction({
+        a: 'unauthenticated-a',
+        b: 'unauthenticated-b',
+        client: studioClient,
+        getTransactionsLogs: async () => {
+          throw new ClientError({
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
+            headers: {},
+            body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
+            url: 'https://x.api.sanity.io/v2025-02-19/data/history/x/transactions/unauthenticated-a',
+            method: 'GET',
+          })
+        },
+      }).pipe(toArray()),
+    )
+
+    expect(values).toEqual([])
+  })
+
+  it('still errors the stream for an invalid session when no studio handler is attached', async ({
+    client,
+  }) => {
+    await expect(
+      firstValueFrom(
+        readMostRecentSharedTransaction({
+          a: 'unauthenticated-no-handler-a',
+          b: 'unauthenticated-no-handler-b',
+          client,
+          getTransactionsLogs: async () => {
+            throw new ClientError({
+              statusCode: 401,
+              statusMessage: 'Unauthorized',
+              headers: {},
+              body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
+              url: 'https://x.api.sanity.io/v2025-02-19/data/history/x/transactions/unauthenticated-no-handler-a',
+              method: 'GET',
+            })
+          },
+        }),
+      ),
+    ).rejects.toThrow('Authentication required')
   })
 })
 

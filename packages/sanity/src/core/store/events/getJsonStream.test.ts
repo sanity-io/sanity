@@ -1,6 +1,7 @@
 import {ClientError, isHttpError, ServerError} from '@sanity/client'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {isInvalidSessionError} from '../../util/apiErrors'
 import {getJsonStream} from './getJsonStream'
 
 const URL = 'https://test.api.sanity.test/v1/data/history/test/transactions/doc1'
@@ -69,5 +70,27 @@ describe('getJsonStream', () => {
     expect(isHttpError(error)).toBe(true)
     expect(error.statusCode).toBe(503)
     expect(error.message).toContain('HTTP 503')
+  })
+
+  it('hands a no-credentials 401 to the studio request handler, then still rejects', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: {description: 'Authentication required', type: 'unauthenticatedError'},
+          }),
+          {status: 401, headers: {'content-type': 'application/json'}},
+        ),
+      ),
+    )
+    const requestHandler = vi.fn(() => new Promise(() => {}))
+
+    const error = await getJsonStream(URL, undefined, requestHandler).catch((err) => err)
+
+    expect(error).toBeInstanceOf(ClientError)
+    expect(isInvalidSessionError(error)).toBe(true)
+    expect(error.message).toBe('Authentication required')
+    expect(requestHandler).toHaveBeenCalledWith({url: URL, method: 'GET'}, expect.any(Function))
   })
 })
