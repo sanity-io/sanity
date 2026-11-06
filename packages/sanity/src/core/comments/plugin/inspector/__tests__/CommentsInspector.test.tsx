@@ -141,12 +141,12 @@ describe('CommentsInspector', () => {
     await renderInspector(modePromise)
 
     expect(screen.getByTestId('inspector-pending')).toBeInTheDocument()
-    expect(screen.queryByText('Comments are unavailable right now. Try again later.')).toBeNull()
+    expect(screen.queryByText('Comments could not be loaded. Please try again.')).toBeNull()
 
     await act(async () => settle(null))
 
     expect(
-      await screen.findByText('Comments are unavailable right now. Try again later.'),
+      await screen.findByText('Comments could not be loaded. Please try again.'),
     ).toBeInTheDocument()
     expect(screen.queryByTestId('inspector-pending')).toBeNull()
   })
@@ -157,7 +157,7 @@ describe('CommentsInspector', () => {
     await renderInspector(Promise.resolve<CommentsMode>(null))
 
     expect(
-      await screen.findByText('Comments are unavailable right now. Try again later.'),
+      await screen.findByText('Comments could not be loaded. Please try again.'),
     ).toBeInTheDocument()
     expect(screen.getByRole('heading', {name: 'Comments'})).toBeInTheDocument()
 

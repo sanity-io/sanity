@@ -24,8 +24,7 @@ export const Unavailable: Story = {
     // The sidebar card mounts at opacity 0 once the mode has settled and fades in, so the
     // message exists before it counts as visible
     await waitFor(
-      () =>
-        expect(canvas.getByText('Tasks are unavailable right now. Try again later.')).toBeVisible(),
+      () => expect(canvas.getByText('Tasks could not be loaded. Please try again.')).toBeVisible(),
       {timeout: 3000},
     )
     await expect(canvas.getByRole('button', {name: 'New task'})).toBeDisabled()
