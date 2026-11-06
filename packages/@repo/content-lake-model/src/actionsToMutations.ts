@@ -1,56 +1,114 @@
-import {ContentLakeError} from './contentLakeError'
+import {ContentLakeError, documentNotFound} from './contentLakeError'
 import {
   type ContentLakeAction,
-  type ContentLakeDocument,
+  type CreateAction,
   type DocumentIndex,
   type EditAction,
   type MutationPayload,
 } from './types'
 
-const UNKNOWN_TYPE = 'contentLakeModel.unknown'
+const VERSION_ID_PREFIXES = ['drafts.', 'versions.']
 
-function withoutSystemFields(document: ContentLakeDocument): ContentLakeDocument {
-  const {_rev, _createdAt, _updatedAt, ...rest} = document
-  return rest
+type Exists = (id: string) => boolean
+
+interface Translation {
+  written: ReadonlySet<string>
+  mutations: MutationPayload[]
 }
 
-// A first edit of a brand-new document carries its type in `set`; the fallback type fails readback loudly.
-function typeFromPatch(action: EditAction): string {
-  const set = action.patch.set as Record<string, unknown> | undefined
-  return typeof set?._type === 'string' ? set._type : UNKNOWN_TYPE
+function isVersionId(id: string): boolean {
+  return VERSION_ID_PREFIXES.some((prefix) => id.startsWith(prefix))
 }
 
-function draftBase(index: DocumentIndex, action: EditAction): ContentLakeDocument {
+function assertDecodable(action: ContentLakeAction, position: number): void {
+  switch (action.actionType) {
+    case 'sanity.action.document.edit':
+      if ('ifRevisionID' in action.patch) {
+        throw new ContentLakeError(400, {
+          bodyTruncated: false,
+          description: 'json: unknown field "ifRevisionID"',
+          type: 'httpInvalidRequestBody',
+        })
+      }
+      return
+    case 'sanity.action.document.create':
+      if (isVersionId(action.attributes._id)) return
+      throw new ContentLakeError(400, {
+        description: `action index ${position}: "attributes._id" must be prefixed with either "drafts." or "versions.{bundleId}"`,
+        type: 'httpBadRequest',
+      })
+    default:
+      throw new ContentLakeError(400, {
+        description: `Unsupported action type: ${(action as {actionType: string}).actionType}`,
+        type: 'httpBadRequest',
+      })
+  }
+}
+
+function systemBasePatch(draftId: string, path: string, value: unknown): MutationPayload {
+  return {patch: {id: draftId, set: {[path]: value}, unsetIsEmpty: false}}
+}
+
+function editMutations(
+  index: DocumentIndex,
+  action: EditAction,
+  exists: Exists,
+): MutationPayload[] {
+  const patch: MutationPayload = {patch: {id: action.draftId, ...action.patch, unsetIsEmpty: false}}
+  if (exists(action.draftId)) return [patch]
   const published = index[action.publishedId]
-  return published
-    ? {...withoutSystemFields(published), _id: action.draftId}
-    : {_id: action.draftId, _type: typeFromPatch(action)}
+  if (published === undefined) {
+    throw new ContentLakeError(404, documentNotFound(action.publishedId))
+  }
+  return [
+    {create: {...published, _id: action.draftId}},
+    systemBasePatch(action.draftId, '_system.base.id', action.publishedId),
+    systemBasePatch(action.draftId, '_system.base.rev', published._rev),
+    patch,
+  ]
 }
 
-function editMutations(index: DocumentIndex, action: EditAction): MutationPayload[] {
-  const patch: MutationPayload = {patch: {id: action.draftId, ...action.patch}}
-  return action.draftId in index ? [patch] : [{createIfNotExists: draftBase(index, action)}, patch]
+function createMutations(action: CreateAction, exists: Exists): MutationPayload[] {
+  const existingId = [
+    action.attributes._id,
+    `drafts.${action.publishedId}`,
+    action.publishedId,
+  ].find(exists)
+  if (existingId === undefined) return [{createOrReplace: action.attributes}]
+  if (action.ifExists === 'ignore') return []
+  throw new ContentLakeError(409, {
+    description: `there is already a version of a document for published ID "${action.publishedId}"`,
+    id: existingId,
+    type: 'documentAlreadyExistsError',
+  })
 }
 
+function createdIdOf(mutation: MutationPayload): string[] {
+  const id = mutation.create?._id ?? mutation.createOrReplace?._id
+  return id === undefined ? [] : [id]
+}
+
+/**
+ * Translates actions into the mutations Content Lake reports for them on the listener. Each action
+ * sees the documents written by the actions before it in the same request.
+ */
 export function actionsToMutations(
   index: DocumentIndex,
   actions: ContentLakeAction[],
 ): MutationPayload[] {
-  return actions.flatMap((action): MutationPayload[] => {
-    switch (action.actionType) {
-      case 'sanity.action.document.create': {
-        if (action.ifExists === 'fail' && action.attributes._id in index) {
-          throw new ContentLakeError(409, `Document "${action.attributes._id}" already exists`)
-        }
-        return [{createIfNotExists: action.attributes}]
+  actions.forEach(assertDecodable)
+  return actions.reduce<Translation>(
+    ({written, mutations}, action) => {
+      const exists: Exists = (id) => id in index || written.has(id)
+      const next =
+        action.actionType === 'sanity.action.document.edit'
+          ? editMutations(index, action, exists)
+          : createMutations(action, exists)
+      return {
+        written: new Set([...written, ...next.flatMap(createdIdOf)]),
+        mutations: [...mutations, ...next],
       }
-      case 'sanity.action.document.edit':
-        return editMutations(index, action)
-      default:
-        throw new ContentLakeError(
-          400,
-          `Unsupported action type: ${(action as {actionType: string}).actionType}`,
-        )
-    }
-  })
+    },
+    {written: new Set(), mutations: []},
+  ).mutations
 }
