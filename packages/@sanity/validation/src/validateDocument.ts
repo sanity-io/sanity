@@ -21,13 +21,15 @@ import {map} from 'rxjs/operators'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
-import {type LocaleSource} from './i18n/types'
+import {type LocaleSource, type ValidationLocaleSource} from './i18n/types'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
+import {createBatchedGetDocumentType} from './util/createBatchedGetDocumentType'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import {createPace, createUnpacedPace, type Pace, type ValidationScheduling} from './util/pace'
 import {typeString} from './util/typeString'
+import {createReferenceResolver} from './util/withReleaseReferences'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
@@ -138,6 +140,13 @@ interface ValidateDocumentBaseOptions {
   /** The compiled schema to validate against. */
   schema: ValidationSchema
 
+  /**
+   * Translation resources and locale used by built-in and custom validators.
+   * Pass a resolved workspace's `i18n` to preserve its translations.
+   * Defaults to the built-in English resources when omitted.
+   */
+  i18n?: ValidationLocaleSource
+
   /** Signal used to cancel validation and any work it starts. */
   signal?: AbortSignal
 
@@ -151,6 +160,15 @@ interface ValidateDocumentBaseOptions {
    * call the `doc` endpoint to check for document existence.
    */
   getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
+
+  /**
+   * Check referenced document types against the reference field's `to` types.
+   * Defaults to `true` (`false` in Studio's `validateDocument`).
+   * Uses batched network reads, including for weak references.
+   * Without a client, checks that need a target lookup make validation incomplete.
+   * Set to `false` to perform only the existing reference shape and existence checks.
+   */
+  validateReferenceTypes?: boolean
 
   /**
    * The maximum amount of custom validation functions to be running
@@ -276,7 +294,7 @@ export interface ValidationSource {
  */
 export interface ValidateDocumentWorkspaceOptions extends Omit<
   ValidateDocumentBaseOptions,
-  'schema'
+  'schema' | 'i18n'
 > {
   /** The resolved Studio workspace or source used for validation. */
   workspace: ValidationSource
@@ -312,6 +330,7 @@ export function validateDocumentWithWorkspace({
   currentUser,
   customValidation,
   signal,
+  validateReferenceTypes = true,
 }: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
@@ -325,6 +344,7 @@ export function validateDocumentWithWorkspace({
     maxFetchConcurrency,
     schema: workspace.schema,
     signal,
+    validateReferenceTypes,
   })
 }
 
@@ -363,6 +383,7 @@ function normalizeValidationOptions(
     client,
     customValidation = Boolean(options.client),
     getDocumentExists,
+    i18n,
     schema,
     ...internalOptions
   } = options
@@ -375,7 +396,8 @@ function normalizeValidationOptions(
         ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient
       : throwClientUnavailable,
     getDocumentExists: getDocumentExists || (client ? undefined : throwClientUnavailable),
-    i18n: getFallbackLocaleSource(),
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- translation sources may use another compatible i18next version
+    i18n: (i18n ?? getFallbackLocaleSource()) as LocaleSource,
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
     schema: schema as Schema,
   }
@@ -387,6 +409,7 @@ export interface ValidateDocumentInternalOptions {
   schema: Schema
   getClient: (clientOptions: {apiVersion: string}) => SanityClient
   getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
+  validateReferenceTypes?: boolean
   i18n?: LocaleSource
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
@@ -465,6 +488,7 @@ function evaluateDocumentsInternal({
   currentUser,
   customValidation = true,
   signal,
+  validateReferenceTypes = true,
 }: Omit<ValidateDocumentInternalOptions, 'document'> & {
   documents: SanityDocument[]
 }): Promise<DocumentValidationResult[]> {
@@ -477,26 +501,56 @@ function evaluateDocumentsInternal({
   )
   const getConcurrencyLimitedClient = (clientOptions: {apiVersion: string}) =>
     limitConcurrency(getClient(clientOptions))
-  const sharedGetDocumentExists =
-    getDocumentExists ||
-    createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal)
+  const batchedGetDocumentExists = getDocumentExists
+    ? undefined
+    : createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal)
+  const batchedGetDocumentType = validateReferenceTypes
+    ? createBatchedGetDocumentType(
+        () => getConcurrencyLimitedClient(DEFAULT_VALIDATION_CLIENT_OPTIONS),
+        signal,
+      )
+    : undefined
 
   return Promise.all(
-    documents.map((document) =>
-      evaluateDocument({
+    documents.map((document) => {
+      const resolveReference = batchedGetDocumentExists
+        ? createReferenceResolver({
+            document,
+            getDocumentExists: batchedGetDocumentExists,
+            isUnpublished: ({id, signal: checkSignal}) =>
+              getConcurrencyLimitedClient(DEFAULT_VALIDATION_CLIENT_OPTIONS).fetch<boolean>(
+                '*[_id == $id][0]._system.delete == true',
+                {id},
+                {perspective: 'raw', signal: checkSignal, tag: 'validation.release-reference'},
+              ),
+          })
+        : async (options: {id: string; signal?: AbortSignal}) =>
+            (await getDocumentExists!(options)) ? options.id : undefined
+      const resolvedReferences = new Map<string, string>()
+      return evaluateDocument({
         document,
         getClient: getConcurrencyLimitedClient,
         i18n,
         schema,
-        getDocumentExists: sharedGetDocumentExists,
+        getDocumentExists: async (options) => {
+          const resolvedId = await resolveReference(options)
+          if (batchedGetDocumentType && resolvedId) resolvedReferences.set(options.id, resolvedId)
+          return resolvedId !== undefined
+        },
+        getDocumentType: batchedGetDocumentType
+          ? async (id) => {
+              const resolvedId = resolvedReferences.get(id)
+              return resolvedId ? batchedGetDocumentType(resolvedId) : undefined
+            }
+          : undefined,
         environment,
         maxCustomValidationConcurrency,
         currentUser,
         customValidation,
         signal,
         pace: createUnpacedPace(),
-      }),
-    ),
+      })
+    }),
   )
 }
 
@@ -509,6 +563,8 @@ export interface ValidateDocumentObservableOptions extends Pick<
   ValidationContext,
   'getDocumentExists' | 'i18n' | 'signal' | 'currentUser'
 > {
+  /** Lookup for resolved target types. Omit to disable type checks. */
+  getDocumentType?: (id: string) => Promise<string | undefined>
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
@@ -586,6 +642,7 @@ async function evaluateDocumentWithoutCancellation({
   i18n = getFallbackLocaleSource(),
   schema,
   getDocumentExists,
+  getDocumentType,
   environment,
   maxCustomValidationConcurrency,
   currentUser,
@@ -649,6 +706,7 @@ async function evaluateDocumentWithoutCancellation({
       customValidation,
       signal,
       __internal: {
+        getDocumentType,
         markIncomplete: () => {
           complete = false
         },

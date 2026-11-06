@@ -16,6 +16,7 @@ import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
+import {useWorkspaceReleaseLimitGuard} from '../../../hooks/useWorkspaceReleaseLimit'
 import {useReleaseMetadataFieldsEnabled} from '../../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -69,6 +70,7 @@ export function CopyToNewReleaseDialog(props: {
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
 
   const displayTitle = title || t('release.placeholder-untitled-release')
 
@@ -91,6 +93,12 @@ export function CopyToNewReleaseDialog(props: {
       return // do not submit if date is in past
     }
     if (!metadataValid) return
+
+    if (blockAtWorkspaceReleaseLimit()) {
+      onClose()
+      clearReleaseDataFromStorage()
+      return
+    }
 
     setIsSubmitting(true)
     const inQuota = await releasePromise

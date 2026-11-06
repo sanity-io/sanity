@@ -9,6 +9,7 @@ import {
   formatTick,
   formatValue,
   lineName,
+  NAVIGATION_METRICS,
   primaryLines,
   settleViews,
   styleLabel,
@@ -330,6 +331,83 @@ test('unknown vitals fall into a catch-all section', () => {
   const sections = vitalSections([vitalStub('singleString · somethingNew')])
   expect(sections).toEqual([
     {vital: 'Other', series: [expect.objectContaining({title: 'singleString · somethingNew'})]},
+  ])
+})
+
+/** A run carrying one soft-navigation metric, as the `softnav` bench mode reports them. */
+function navRun(options: {
+  id: string
+  sha: string
+  day: number
+  label: string
+  unit?: 'ms' | 'cls'
+}): TrendRun {
+  const {id, sha, day, label, unit = 'ms'} = options
+  const value = unit === 'cls' ? 0.05 : 300
+  return {
+    _id: id,
+    startedAt: new Date(START + day * DAY).toISOString(),
+    mode: 'absolute',
+    git: {sha, branch: 'main', committedAt: new Date(START + day * DAY).toISOString()},
+    runner: {calibrationMs: 8, runId: id, runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      {
+        scenario: 'softNav',
+        kind: 'pageload',
+        mode: 'softnav',
+        metrics: [{label, unit, experiment: {summary: {median: value, p75: value, p90: value}}}],
+      },
+    ],
+  }
+}
+
+// The last two labels cover the unrecognized-label fallback and a load-step wording clash.
+test('soft-navigation metrics classify into the navigation group, never vitals', () => {
+  const labels = [
+    'nav:document-open / soft LCP time',
+    'nav:pane-open / soft LCP time',
+    'nav:document-open / soft FCP time',
+    'nav:document-open / soft INP latency',
+    'nav:document-open / soft CLS score',
+    'nav:document-open / click to ready',
+    'nav:document-open / something new',
+    'nav:tool-switch / tool visible',
+  ]
+  const series = buildSeries(
+    labels.map((label, index) =>
+      navRun({
+        id: `n${index}`,
+        sha: `sha-${index}`,
+        day: index,
+        label,
+        unit: label.includes('CLS') ? 'cls' : 'ms',
+      }),
+    ),
+  )
+  expect(series.every((entry) => entry.group === 'navigation')).toBe(true)
+  expect(vitalSections(series.filter((entry) => entry.group === 'vitals'))).toEqual([])
+})
+
+const navStub = (title: string) => ({title}) as TrendSeries
+
+test('navigation series reuse vitalSections, grouped by the metric phrase', () => {
+  const sections = vitalSections(
+    [
+      navStub('softNav · nav:pane-open / soft LCP time'),
+      navStub('softNav · nav:document-open / soft LCP time'),
+      navStub('softNav · nav:document-open / soft INP latency'),
+    ],
+    NAVIGATION_METRICS,
+  )
+  expect(
+    sections.map((section) => [section.vital, section.series.map((entry) => entry.title)]),
+  ).toEqual([
+    [
+      'soft LCP time',
+      ['softNav · nav:document-open / soft LCP time', 'softNav · nav:pane-open / soft LCP time'],
+    ],
+    ['soft INP latency', ['softNav · nav:document-open / soft INP latency']],
   ])
 })
 

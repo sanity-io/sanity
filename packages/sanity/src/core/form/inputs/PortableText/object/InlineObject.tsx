@@ -252,6 +252,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
     __unstable_referenceElement: referenceElement,
+    changed,
     children,
     focused,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -305,6 +306,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
       >
         <PreviewSpan>
           {renderPreview({
+            changed,
             layout: 'inline',
             schemaType,
             skipVisibilityCheck: true,

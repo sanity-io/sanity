@@ -162,10 +162,12 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           : this._message
 
         try {
-          // Composite rules must carry run state into their child rules. Custom
+          // Built-in reference and composite rules need run state. Custom
           // callbacks still receive only the public validation context.
           const validatorContext =
-            curr.flag === 'all' || curr.flag === 'either' ? {...context, __internal} : context
+            curr.flag === 'reference' || curr.flag === 'all' || curr.flag === 'either'
+              ? {...context, __internal}
+              : context
           const result = await validator(specConstraint, value, message, validatorContext)
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),

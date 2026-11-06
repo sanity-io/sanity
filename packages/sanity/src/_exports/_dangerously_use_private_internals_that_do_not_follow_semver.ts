@@ -505,6 +505,7 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -524,7 +525,7 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
-export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
@@ -621,6 +622,7 @@ export {
 export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
+export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
 export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
@@ -860,6 +862,7 @@ export {
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {
@@ -914,6 +917,11 @@ export {
 } from '../core/studio/studioAnnouncements/utils'
 export {type NavbarContextValue} from '../core/studio/StudioLayout'
 export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
+export {
+  recordStructurePaneKind,
+  recordStructureTool,
+  type StructurePaneKind,
+} from '../core/studio/telemetry/paneKindRegistry'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
   UpsellDialogDismissed,
@@ -1068,8 +1076,13 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
-export {getVariantTitle} from '../core/variants/tool/util'
+export {
+  filterVariantsForSearch,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../core/variants/tool/util'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
+export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {isVariantId} from '../core/variants/types'
 
 // From `sanity/structure`

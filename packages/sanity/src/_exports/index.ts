@@ -972,6 +972,7 @@ export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTarg
 export {useTemplates} from '../core/hooks/useTemplates'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useTools} from '../core/hooks/useTools'
 export {
   type FormattableMeasurementUnit,
@@ -1032,7 +1033,7 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
-export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
@@ -1164,6 +1165,7 @@ export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
+export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
 export {createSchema} from '../core/schema/createSchema'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
@@ -1556,6 +1558,7 @@ export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   type BaseOptions,
@@ -1818,7 +1821,12 @@ export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDoc
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
-export {getVariantTitle} from '../core/variants/tool/util'
+export {
+  filterVariantsForSearch,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../core/variants/tool/util'
+export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {

@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Button, Inline, Text, useElementSize} from '@sanity/ui'
+import {Badge, Button, Inline, useElementSize} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {Menu, MenuItem} from '@sanity/ui/menu'
 import {isEqual} from '@sanity/util/paths'
@@ -14,7 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {EnhancedObjectDialogScrollContext} from 'sanity/_singletons'
-import {Box, Flex, PressArea} from 'ui5'
+import {Text, Box, Flex, PressArea} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useFormValue} from '../../contexts/FormValue'
@@ -67,7 +67,7 @@ function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>)
 
   return (
     <Box ref={ref}>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {children}
       </Text>
     </Box>
@@ -132,8 +132,10 @@ function BreadcrumbButton({
                 muted={!isSelected}
                 size={1}
                 weight={isSelected ? 'bold' : 'medium'}
-                textOverflow="ellipsis"
+                truncate={1}
                 style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
+                as="div"
+                trim={true}
               >
                 {title}
               </Text>
@@ -183,9 +185,11 @@ function BreadcrumbMenuItem({
         >
           <Text
             size={1}
-            textOverflow="ellipsis"
+            truncate={1}
             style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
             title={title}
+            as="div"
+            trim={true}
           >
             {title}
           </Text>
@@ -319,9 +323,11 @@ export function DialogBreadcrumbs({
                   <Text
                     size={1}
                     weight="medium"
-                    textOverflow="ellipsis"
+                    truncate={1}
                     style={overflowTextStyle}
                     aria-label="More breadcrumb items"
+                    as="div"
+                    trim={true}
                   >
                     ...
                   </Text>

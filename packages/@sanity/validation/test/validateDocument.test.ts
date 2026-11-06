@@ -361,7 +361,7 @@ describe('validateDocument', () => {
       signal: controller.signal,
     })
     await vi.waitFor(() => expect(request).toHaveBeenCalledOnce())
-    expect(request).toHaveBeenCalledWith(expect.objectContaining({signal: controller.signal}))
+    expect(request).toHaveBeenCalledWith(expect.objectContaining({signal: expect.any(AbortSignal)}))
     controller.abort(reason)
 
     await expect(validation).rejects.toBe(reason)
@@ -1408,6 +1408,7 @@ describe('validateDocument', () => {
 
     await expect(
       validateMarkers({
+        validateReferenceTypes: false,
         client,
         document: createDocument({
           _type: 'article',

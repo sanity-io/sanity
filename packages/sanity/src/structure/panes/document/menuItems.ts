@@ -63,7 +63,10 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
   }
 }
 
-function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
+export function getCompareVersionsItem({
+  documentIdStack,
+  t,
+}: Pick<GetMenuItemsParams, 'documentIdStack' | 't'>): PaneMenuItem {
   const disabled = typeof documentIdStack?.previousId === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
   }

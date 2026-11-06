@@ -1,6 +1,7 @@
-import {Card, Label, Stack, Text} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import noop from 'lodash-es/noop.js'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
@@ -35,7 +36,7 @@ export function ErrorCardStory() {
       <Card padding={4}>
         <Stack gap={5}>
           <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               message only
             </Text>
             <div style={FRAME_STYLE}>
@@ -43,7 +44,7 @@ export function ErrorCardStory() {
             </div>
           </Stack>
           <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               retry
             </Text>
             <div style={FRAME_STYLE}>
@@ -51,7 +52,7 @@ export function ErrorCardStory() {
             </div>
           </Stack>
           <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               continue anyway
             </Text>
             <div style={FRAME_STYLE}>
@@ -59,7 +60,7 @@ export function ErrorCardStory() {
             </div>
           </Stack>
           <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               retry and continue
             </Text>
             <div style={FRAME_STYLE}>
@@ -67,7 +68,7 @@ export function ErrorCardStory() {
             </div>
           </Stack>
           <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               retry with dev-mode details (editor panes)
             </Text>
             <div style={{height: 280}}>

@@ -40,7 +40,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   // explicit draft of the document, independent of the selected perspective. This is safe because
   // the action is disabled while a variant is selected (see `isVariantSelected` below).
   // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
-  const validationStatus = useValidationStatus(getDraftId(id), type, true)
+  const validationStatus = useValidationStatus(getDraftId(id), type)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if document has versions in cardinality one releases

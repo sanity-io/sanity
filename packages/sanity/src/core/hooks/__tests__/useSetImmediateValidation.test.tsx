@@ -42,7 +42,7 @@ vi.mock('../../store/datastores', () => ({
 let frames: ValidationStatus[] = []
 
 function Probe({id, enabled}: {id: string; enabled: boolean}) {
-  frames.push(useValidationStatus(id, 'author', false))
+  frames.push(useValidationStatus(id, 'author'))
   useSetImmediateValidation(id, 'author', false, {enabled})
   return null
 }

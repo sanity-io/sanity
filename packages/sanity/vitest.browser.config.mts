@@ -125,6 +125,15 @@ export default defineConfig({
     expect: {poll: {timeout: 10_000}},
     browser: {
       enabled: true,
+      // On Linux, Chromium keeps a shared-memory file descriptor open for every module
+      // revalidated with a `304`, and only a garbage collection releases them. Each test file
+      // loads the module graph into a fresh iframe, so a page that goes a few files without a
+      // collection reaches ~16k descriptors and its renderer exits, which Vitest reports as
+      // "Browser connection was closed". Vitest collects garbage after a file only when the
+      // temp directory has less free space than `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB`, and the
+      // files are sparse, so the `test:browser` script sets the threshold high enough for it to
+      // collect after every file (https://issues.chromium.org/issues/530892387). Running
+      // `vitest -c vitest.browser.config.mts` directly skips it.
       provider: playwright(),
       headless: true,
       commands: {holdRequests, readFileAsBase64, releaseRequests},
