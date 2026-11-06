@@ -32,7 +32,7 @@ afterEach(() => {
 })
 
 describe('lost edits', () => {
-  test.fails('EDIT-LOST-DMP-AFTER-UNSET (SAPP-4792): an edit made while someone else unsets the field still reaches the server', async () => {
+  test('EDIT-LOST-DMP-AFTER-UNSET (SAPP-4792): an edit made while someone else unsets the field still reaches the server', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'EDIT-LOST-DMP-AFTER-UNSET',
       title: 'A sets the title, an outside edit unsets it, then A commits',
@@ -45,6 +45,33 @@ describe('lost edits', () => {
         {do: 'outside', mutations: [{patch: {id: DRAFT_ID, unset: ['title']}}]},
         {client: 'A', do: 'commit'},
         {do: 'advance', ms: 5_000},
+      ],
+    }
+    const unhandled = captureUnhandledRejections()
+    world = await runSyncTest(syncTest).finally(unhandled.stop)
+
+    expectNoLostEdits(world)
+    expect(world.lake.get(DRAFT_ID)?.title).toBe('one')
+    expect(unhandled.reasons).toEqual([])
+  })
+
+  test('EDIT-LOST-DMP-ON-REMOVED-FIELD: an edit saved after someone else removed the field still reaches the server', async () => {
+    const syncTest: SyncTestDefinition = {
+      id: 'EDIT-LOST-DMP-ON-REMOVED-FIELD',
+      title: 'B sets the title, A unsets it and saves, then B saves before seeing the unset',
+      seam: 'pair',
+      initial: [initial],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'B', do: 'listener', mode: 'hold'},
+        {client: 'B', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'one'}}]},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{unset: ['title']}]},
+        {client: 'A', do: 'commit'},
+        {client: 'B', do: 'commit'},
+        {client: 'B', do: 'listener', mode: 'auto'},
+        {client: 'B', do: 'releaseEvents'},
+        {do: 'settle'},
       ],
     }
     const unhandled = captureUnhandledRejections()
