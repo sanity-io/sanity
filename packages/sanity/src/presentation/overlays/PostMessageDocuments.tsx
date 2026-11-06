@@ -5,7 +5,7 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type FunctionComponent, memo, useEffect} from 'react'
-import {filter, first, merge, shareReplay} from 'rxjs'
+import {filter, firstValueFrom, merge, shareReplay} from 'rxjs'
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
@@ -35,6 +35,9 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
   )
 
   useEffect(() => {
+    let listenSubscription: {unsubscribe: () => void}
+    let unsubscribeSnapshotWelcome: (() => void) | undefined
+
     const listener = client
       .listen(
         '*[!(_id in path("_.**"))]',
@@ -63,12 +66,8 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
 
     // When new contexts initialize, they need to explicitly request the welcome
     // event, as we can't rely on emitting it into the void
-    const unsubscribe = comlink.on('visual-editing/snapshot-welcome', async () => {
-      const event = await new Promise<WelcomeEvent>((resolve) => {
-        welcome.pipe(first()).subscribe((event) => {
-          resolve(event)
-        })
-      })
+    unsubscribeSnapshotWelcome = comlink.on('visual-editing/snapshot-welcome', async () => {
+      const event = await firstValueFrom(welcome)
       return {event}
     })
 
@@ -80,7 +79,7 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
       filter((event): event is MutationEvent => event.type === 'mutation'),
     )
 
-    const events = merge(
+    listenSubscription = merge(
       /**
        * @deprecated remove 'welcome' here and switch to explict welcome message fetching at next major
        */
@@ -92,28 +91,34 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
     })
 
     return () => {
-      unsubscribe()
-      events.unsubscribe()
+      unsubscribeSnapshotWelcome?.()
+      listenSubscription.unsubscribe()
     }
   }, [client, comlink])
 
   useEffect(() => {
-    return comlink.on('visual-editing/fetch-snapshot', async (data) => {
+    const unsubscribe = comlink.on('visual-editing/fetch-snapshot', async (data) => {
       const snapshot = await client.getDocument(data.documentId, {
         tag: 'document.snapshots',
       })
       return {snapshot}
     })
+    return () => {
+      unsubscribe()
+    }
   }, [client, comlink])
 
   useEffect(() => {
-    return comlink.on('visual-editing/mutate', async (data) => {
+    const unsubscribe = comlink.on('visual-editing/mutate', async (data) => {
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       return client.dataRequest('mutate', data, {
         visibility: 'async',
         returnDocuments: true,
       })
     })
+    return () => {
+      unsubscribe()
+    }
   }, [client, comlink])
 
   return null

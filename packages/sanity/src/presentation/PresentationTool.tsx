@@ -234,7 +234,7 @@ export default function PresentationTool(props: {
       }),
     )
 
-    comlink.on('visual-editing/focus', (data) => {
+    const unsubscribeFocus = comlink.on('visual-editing/focus', (data) => {
       if (!('id' in data)) return
       handleNavigate({
         state: {
@@ -245,7 +245,7 @@ export default function PresentationTool(props: {
       })
     })
 
-    comlink.on('visual-editing/navigate', (data) => {
+    const unsubscribeNavigate = comlink.on('visual-editing/navigate', (data) => {
       const {title} = data
       let url = data.url
       /**
@@ -282,15 +282,15 @@ export default function PresentationTool(props: {
       frameStateRef.current = {title, url}
     })
 
-    comlink.on('visual-editing/meta', (data) => {
+    const unsubscribeMeta = comlink.on('visual-editing/meta', (data) => {
       frameStateRef.current.title = data.title
     })
 
-    comlink.on('visual-editing/toggle', (data) => {
+    const unsubscribeToggle = comlink.on('visual-editing/toggle', (data) => {
       presentationRef.send({type: 'toggle visual editing overlays', enabled: data.enabled})
     })
 
-    comlink.on('visual-editing/documents', (data) => {
+    const unsubscribeDocuments = comlink.on('visual-editing/documents', (data) => {
       setDocumentsOnPage(
         'visual-editing',
         // oxlint-disable-next-line no-explicit-any
@@ -300,7 +300,7 @@ export default function PresentationTool(props: {
     })
 
     // @todo This won't work for multiple window contexts?
-    comlink.on('visual-editing/refreshing', (data) => {
+    const unsubscribeRefreshing = comlink.on('visual-editing/refreshing', (data) => {
       if (data.source === 'manual') {
         clearTimeout(refreshRef.current)
       } else if (data.source === 'mutation') {
@@ -308,7 +308,7 @@ export default function PresentationTool(props: {
       }
     })
 
-    comlink.on('visual-editing/refreshed', () => {
+    const unsubscribeRefreshed = comlink.on('visual-editing/refreshed', () => {
       presentationRef.send({type: 'iframe loaded'})
     })
 
@@ -320,6 +320,13 @@ export default function PresentationTool(props: {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setVisualEditingComlink(comlink)
     return () => {
+      unsubscribeFocus()
+      unsubscribeNavigate()
+      unsubscribeMeta()
+      unsubscribeToggle()
+      unsubscribeDocuments()
+      unsubscribeRefreshing()
+      unsubscribeRefreshed()
       stop()
       setVisualEditingComlink(null)
     }
@@ -341,7 +348,7 @@ export default function PresentationTool(props: {
 
     comlink.onStatus(setPreviewKitConnection)
 
-    comlink.on('preview-kit/documents', (data) => {
+    const unsubscribeDocuments = comlink.on('preview-kit/documents', (data) => {
       if (data.projectId === projectId && data.dataset === dataset) {
         setDocumentsOnPage(
           'preview-kit',
@@ -352,7 +359,11 @@ export default function PresentationTool(props: {
       }
     })
 
-    return comlink.start()
+    const stop = comlink.start()
+    return () => {
+      unsubscribeDocuments()
+      stop()
+    }
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
