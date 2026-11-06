@@ -42,6 +42,12 @@ describe('PopoverDialog', () => {
     expect(wrapper).not.toBeNull()
     await expect.poll(() => wrapper.getBoundingClientRect().height).toBeGreaterThan(0)
     expect(getComputedStyle(wrapper).position).toBe('relative')
+
+    const stickyLayer = document.querySelector<HTMLElement>(
+      '[data-testid="popover-dialog"] [data-ui="Layer"]',
+    )!
+    expect(getComputedStyle(stickyLayer).position).toBe('sticky')
+
     // Content-box capture height was flipping by 2px between identical-code
     // builds; wait until the wrapper box stops moving.
     const boxSig = () => {
