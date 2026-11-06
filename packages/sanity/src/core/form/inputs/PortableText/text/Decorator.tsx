@@ -1,31 +1,30 @@
 import {type DecoratorRenderProps, useEditor} from '@portabletext/editor'
 import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path} from '@sanity/types'
-import {type Theme} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
-import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {type ElementType, type ReactNode, useCallback, useMemo} from 'react'
 
 import {type BlockDecoratorProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {warnOnce} from '../warnOnce'
 import {TEXT_DECORATOR_TAGS} from './constants'
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Root = styled.span(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const isDark = theme.sanity.color.dark
-
-  return css`
-    /* Make sure the annotation styling is visible */
-    &[data-mark='code'] {
-      color: inherit;
-      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
-    }
-  `
-})
+import {root} from './Decorator.css'
 
 type DecoratorProps = DecoratorRenderProps & {portableTextPath: Path}
+
+// Reads the scheme where it renders: a custom decorator can wrap `renderDefault()` in a `Card`
+// with a different scheme, and the mark styling has to follow that one
+function DecoratorRoot(props: {as: ElementType; children: ReactNode; decorator: string}) {
+  const {as: Tag, children, decorator} = props
+  const {color} = useThemeV2()
+
+  return (
+    <Tag className={root[color._dark ? 'dark' : 'light']} data-mark={decorator}>
+      {children}
+    </Tag>
+  )
+}
 
 export function Decorator(props: DecoratorProps) {
   const {decorator, focused, selected, children, path, portableTextPath} = props
@@ -39,17 +38,18 @@ export function Decorator(props: DecoratorProps) {
     editor.getSnapshot().context.value,
     path,
   ).decorators.find((type) => type.value === decorator)
-  const tag = TEXT_DECORATOR_TAGS[decorator]
+  // Custom decorators have no tag in the map and render as a `span`
+  const Tag: ElementType = TEXT_DECORATOR_TAGS[decorator] ?? 'span'
   const CustomComponent = sanitySchemaType?.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={decorator}>
+        <DecoratorRoot as={Tag} decorator={decorator}>
           {defaultComponentProps.children}
-        </Root>
+        </DecoratorRoot>
       )
     },
-    [tag, decorator],
+    [Tag, decorator],
   )
   return useMemo(() => {
     if (!sanitySchemaType) {
