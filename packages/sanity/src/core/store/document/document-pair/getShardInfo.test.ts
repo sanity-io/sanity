@@ -66,16 +66,23 @@ describe('getShardInfo$', () => {
     expect(global.fetch).toHaveBeenNthCalledWith(2, secondUrl, expect.any(Object))
   })
 
-  test('emits undefined when the ping fails and does not retry', async () => {
+  test('emits undefined when the ping fails and retries on the next subscription', async () => {
     const url = pingUrl()
-    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('network error'))
+    vi.spyOn(global, 'fetch')
+      .mockRejectedValueOnce(new Error('network error'))
+      .mockResolvedValueOnce(shardResponse('shard-retry'))
+
+    const first = firstValueFrom(getShardInfo$(clientFor(url)).pipe(take(2), toArray()))
+    const second = firstValueFrom(getShardInfo$(clientFor(url)).pipe(take(2), toArray()))
+
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    await expect(first).resolves.toEqual([undefined, undefined])
+    await expect(second).resolves.toEqual([undefined, undefined])
 
     await expect(
       firstValueFrom(getShardInfo$(clientFor(url)).pipe(take(2), toArray())),
-    ).resolves.toEqual([undefined, undefined])
-
-    await expect(firstValueFrom(getShardInfo$(clientFor(url)))).resolves.toBeUndefined()
-    expect(global.fetch).toHaveBeenCalledTimes(1)
+    ).resolves.toEqual([undefined, 'shard-retry'])
+    expect(global.fetch).toHaveBeenCalledTimes(2)
   })
 
   test('emits undefined without fetching when the client cannot build the ping URL', async () => {

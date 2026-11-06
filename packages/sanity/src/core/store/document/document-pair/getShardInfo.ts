@@ -20,14 +20,16 @@ function readShard(url: string): Promise<string | undefined> {
 
 // One shared ping per URL for the life of the page. Memoizing the observable
 // (not the settled value) means a second checkout joins the in-flight request.
-// `refCount: false` keeps that execution after the first subscribers leave, and
-// a failed ping completes as `undefined` so it is not retried per document.
+// `refCount: false` keeps a successful execution after the first subscribers
+// leave. A failed ping errors that execution: `shareReplay` drops it
+// (`resetOnError` defaults to true), and `catchError` reports `undefined` to
+// whoever was waiting so the next checkout starts a new request.
 const shardInfoForUrl$ = memoize(
   function shardInfoForUrl$(url: string): Observable<string | undefined> {
     return defer(() => readShard(url)).pipe(
-      catchError(() => of(undefined)),
       startWith(undefined),
       shareReplay({bufferSize: 1, refCount: false}),
+      catchError(() => of(undefined)),
     )
   },
   (url) => url,
