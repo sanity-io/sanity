@@ -22,7 +22,7 @@ test.describe('Portable Text Input - navigating away after typing', () => {
   // Fits every pane on the way to the document, so the document list is never collapsed
   test.use({viewport: {width: 2560, height: 1000}})
 
-  test.fail(
+  test(
     'saves text typed into a new block when navigating to another document right away',
     {annotation: {type: 'issue', description: 'https://github.com/sanity-io/sanity/issues/15261'}},
     async ({page, sanityClient, _testContext}) => {
