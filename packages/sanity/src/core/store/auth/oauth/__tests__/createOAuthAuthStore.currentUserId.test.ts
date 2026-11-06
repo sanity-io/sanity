@@ -5,8 +5,9 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import type * as AuthIdProbeModule from '../../utils/createAuthIdProbe'
 import {createAuthIdProbe} from '../../utils/createAuthIdProbe'
 import {getOAuthTokensStorageKey} from '../constants'
-import {_createOAuthAuthStore, type OAuthAuthStoreEnvironment} from '../createOAuthAuthStore'
+import {_createOAuthAuthStore} from '../createOAuthAuthStore'
 import {type OAuthEndpoints} from '../oauthEndpoints'
+import {createEnvironment, PROJECT_ID} from './fixtures'
 
 vi.mock('../../../../util/supportsLocalStorage', () => ({supportsLocalStorage: true}))
 vi.mock('../../utils/createAuthIdProbe', async (importActual) => {
@@ -14,18 +15,9 @@ vi.mock('../../utils/createAuthIdProbe', async (importActual) => {
   return {...actual, createAuthIdProbe: vi.fn(actual.createAuthIdProbe)}
 })
 
-const PROJECT_ID = 'test-project'
 let testCount = 0
 
 function createStore(clientId: string) {
-  const location = {origin: 'http://localhost:3333', pathname: '/', search: ''}
-  const environment = {
-    getLocation: () => location,
-    navigate: vi.fn(),
-    replaceUrl: vi.fn(),
-    withLock: ((_name, task) => task()) satisfies OAuthAuthStoreEnvironment['withLock'],
-    locksAvailable: false,
-  }
   const endpoints: OAuthEndpoints = {
     authorizeUrl: () => 'https://api.sanity.io/v1/auth/oauth/authorize',
     exchangeCode: vi.fn(),
@@ -38,7 +30,7 @@ function createStore(clientId: string) {
     clientId,
     clientFactory: (config: SanityClientConfig) => ({config: () => config}) as SanityClient,
     endpoints,
-    ...environment,
+    ...createEnvironment(),
   })
 }
 
