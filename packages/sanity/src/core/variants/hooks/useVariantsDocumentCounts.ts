@@ -5,30 +5,18 @@ import {type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
-import {listenQuery} from '../../store/document/listenQuery'
+import {type InvalidationChannelEvent} from '../../preview/types'
+import {useDocumentPreviewStore} from '../../store/datastores'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {isVersionId} from '../../util/draftUtils'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {type VariantStoreState} from '../store/reducer'
 import {useVariantsStore} from '../store/useVariantsStore'
 import {getVariantId} from '../tool/util'
 
 /**
- * The fetch and listen GROQ queries used to keep per-variant document counts fresh.
- *
- * @internal
- */
-export interface VariantsDocumentCountsQuery {
-  /**
-   * Aggregate object query returning one count per variant, keyed by variant definition
-   * document id (`_.variants.*`).
-   */
-  fetch: string
-  /** Filter matching every document in any of the variants, used for the single listener. */
-  listen: string
-}
-
-/**
- * Builds a single aggregate fetch query that counts the documents in each variant, and a
- * single listen filter covering all of them.
+ * Builds a single aggregate query that counts the documents in each variant, returning one count
+ * per variant keyed by variant definition document id (`_.variants.*`).
  *
  * Documents are counted per document group (`_system.group._ref`), so the count matches the
  * number of rows in the variant detail table, where versions of the same document are grouped.
@@ -38,25 +26,13 @@ export interface VariantsDocumentCountsQuery {
  *
  * @internal
  */
-export function buildVariantsDocumentCountsQuery(
-  variantDocumentIds: string[],
-): VariantsDocumentCountsQuery {
-  const projections: string[] = []
-  const filters: string[] = []
-
-  for (const variantDocumentId of variantDocumentIds) {
+export function buildVariantsDocumentCountsQuery(variantDocumentIds: string[]): string {
+  const projections = variantDocumentIds.map((variantDocumentId) => {
     const membership = `sanity::partOfVariant(${JSON.stringify(getVariantId(variantDocumentId))})`
+    return `${JSON.stringify(variantDocumentId)}: count(array::unique(*[${membership}]._system.group._ref))`
+  })
 
-    projections.push(
-      `${JSON.stringify(variantDocumentId)}: count(array::unique(*[${membership}]._system.group._ref))`,
-    )
-    filters.push(membership)
-  }
-
-  return {
-    fetch: `{${projections.join(',')}}`,
-    listen: `*[${filters.join(' || ')}]`,
-  }
+  return `{${projections.join(',')}}`
 }
 
 /** @internal */
@@ -74,29 +50,34 @@ const INITIAL_STATE: VariantsDocumentCountsState = {data: null, loading: true, e
 const EMPTY_STATE: VariantsDocumentCountsState = {data: {}, loading: false, error: null}
 
 /**
- * Fetches the document counts for one set of variants and keeps them fresh: a single listener
- * (one OR-chained `sanity::partOfVariant()` filter covering all the variants) triggers a
- * throttled refetch of one aggregate count query, via {@link listenQuery}.
+ * Fetches the document counts for one set of variants with one aggregate count query, and fetches
+ * them again on changes reported by the preview store's shared global listener, via
+ * {@link listenQueryOnGlobalListener}.
  */
 function listenVariantsDocumentCounts(
   client: SanityClient,
+  invalidationChannel: Observable<InvalidationChannelEvent>,
   variantDocumentIds: string[],
 ): Observable<VariantsDocumentCountsState> {
   if (variantDocumentIds.length === 0) {
     return of(EMPTY_STATE)
   }
 
-  const {fetch, listen} = buildVariantsDocumentCountsQuery(variantDocumentIds)
-
-  return listenQuery(
+  return listenQueryOnGlobalListener<Record<string, number>>(
     client,
-    {fetch, listen},
-    {},
-    // Variant-scoped documents are version documents, which are only visible to queries
-    // using the raw perspective.
-    {tag: 'variants-doc-counts.listen', perspective: 'raw'},
+    buildVariantsDocumentCountsQuery(variantDocumentIds),
+    {
+      invalidationChannel,
+      // A variant document's id holds an opaque scope id instead of its variant, so a change to
+      // any version document can change the counts.
+      shouldRefetch: ({documentId}) => isVersionId(documentId),
+      fetchTag: 'variants-doc-counts.fetch',
+      // Variant-scoped documents are version documents, which are only visible to queries
+      // using the raw perspective.
+      perspective: 'raw',
+    },
   ).pipe(
-    map((response: Record<string, number>): VariantsDocumentCountsState => ({
+    map((response): VariantsDocumentCountsState => ({
       data: Object.fromEntries(
         variantDocumentIds.map((variantDocumentId) => [
           variantDocumentId,
@@ -118,15 +99,16 @@ function listenVariantsDocumentCounts(
  * variants store.
  *
  * The variant ids are derived from the store's `state$`, so the returned observable never
- * needs to be recreated: when the set of variants changes, the current listener is closed
- * and a new fetch + listener is started inside the same stream (`switchMap`) — there is
- * never more than one active listener. Previously fetched counts are carried across the
- * switch (`scan`), so existing rows don't flash back to a loading state.
+ * needs to be recreated: when the set of variants changes, the counts of the new set are
+ * fetched inside the same stream (`switchMap`), right away when the global listener is
+ * connected. Previously fetched counts are carried across the switch (`scan`), so existing rows
+ * don't flash back to a loading state.
  *
  * @internal
  */
 export function getVariantsDocumentCounts(
   client: SanityClient,
+  invalidationChannel: Observable<InvalidationChannelEvent>,
   variantsState$: Observable<VariantStoreState>,
 ): Observable<VariantsDocumentCountsState> {
   return variantsState$.pipe(
@@ -135,7 +117,9 @@ export function getVariantsDocumentCounts(
     // edits) that don't change the set of variants.
     map((state) => Array.from(state.variants.keys()).toSorted().join(',')),
     distinctUntilChanged(),
-    switchMap((idsKey) => listenVariantsDocumentCounts(client, idsKey ? idsKey.split(',') : [])),
+    switchMap((idsKey) =>
+      listenVariantsDocumentCounts(client, invalidationChannel, idsKey ? idsKey.split(',') : []),
+    ),
     scan(
       (previous, next): VariantsDocumentCountsState => ({
         // Keep the previous counts while the next fetch is loading (or errored), so counts
@@ -150,16 +134,21 @@ export function getVariantsDocumentCounts(
 }
 
 /**
- * Keeps a live count of the documents in each variant, using a single listener and a single
- * aggregate count query (see {@link getVariantsDocumentCounts}).
+ * Keeps a live count of the documents in each variant, using a single aggregate count query
+ * refetched on changes reported by the preview store's shared global listener (see
+ * {@link getVariantsDocumentCounts}).
  *
  * @internal
  */
 export function useVariantsDocumentCounts(): VariantsDocumentCountsState {
   const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
+  const previewStore = useDocumentPreviewStore()
   const {state$} = useVariantsStore()
 
-  const observable = useMemo(() => getVariantsDocumentCounts(client, state$), [client, state$])
+  const observable = useMemo(
+    () => getVariantsDocumentCounts(client, previewStore.unstable_invalidationChannel, state$),
+    [client, previewStore, state$],
+  )
 
   return useObservable(observable, INITIAL_STATE)
 }

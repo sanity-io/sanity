@@ -6,6 +6,7 @@ import {Flex} from 'ui5'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {
@@ -32,17 +33,18 @@ const SEEDED_VARIANTS_STORE: VariantStore = {
 }
 
 /**
- * `useVariantsStore` keeps one store per workspace in the resource cache and
- * only creates a fresh one on a miss, so seeding the cache before the menu
- * mounts is how the fixture variants reach it without a client that can answer
- * the variants query. Runs once per mount, before the children render.
+ * `useVariantsStore` keeps one store per workspace and preview store in the resource cache and
+ * only creates a fresh one on a miss, so seeding the cache before the menu mounts is how the
+ * fixture variants reach it without a client that can answer the variants query. Runs once per
+ * mount, before the children render.
  */
 function SeedVariantsStore({children}: {children: ReactNode}) {
   const workspace = useWorkspace()
+  const previewStore = useDocumentPreviewStore()
   const resourceCache = useResourceCache()
   useState(() => {
     resourceCache.set({
-      dependencies: [workspace],
+      dependencies: [workspace, previewStore],
       namespace: 'VariantsStore',
       value: SEEDED_VARIANTS_STORE,
     })

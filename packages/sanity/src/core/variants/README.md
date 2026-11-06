@@ -32,7 +32,7 @@ A variant document currently contains:
 Read state lives in `store/createVariantsStore.ts`.
 
 - The store is lazily initialized on first subscription.
-- It uses `listenQuery` to fetch and keep all variants fresh.
+- It uses `listenQueryOnGlobalListener` to fetch all variants, and refetch them when the document preview store's shared global listener reports a change to a variant definition, so it opens no listener of its own.
 - The state is shared through `useVariantsStore` and consumed by `useAllVariants`.
 - The query filters by `VARIANT_DOCUMENT_TYPE` and `VARIANT_DOCUMENTS_PATH`.
 

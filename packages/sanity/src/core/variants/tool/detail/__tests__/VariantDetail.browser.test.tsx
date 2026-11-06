@@ -12,6 +12,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useClient} from '../../../../hooks/useClient'
 import {LocaleProvider} from '../../../../i18n/components/LocaleProvider'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {ResourceCacheProvider, useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -97,15 +98,19 @@ const PREVIEWS: Record<string, {title: string; subtitle?: string}> = {
 /**
  * The mock studio's client answers every query with `null`, which the real preview store cannot
  * turn into documents, so the document set, the documents and their previews are served from the
- * fixtures above instead. Only the methods `useBundleDocuments` and the preview column call.
+ * fixtures above instead. Only the members `useBundleDocuments`, the preview column and the
+ * releases store use.
  */
 const STUB_PREVIEW_STORE: Pick<
   DocumentPreviewStore,
   | 'observeForPreview'
+  | 'unstable_invalidationChannel'
   | 'unstable_observeDocument'
   | 'unstable_observeDocumentIdSet'
   | 'unstable_observeDocumentPairAvailability'
 > = {
+  // Connects once, so the releases store fetches its (empty) list once.
+  unstable_invalidationChannel: of({type: 'connected' as const}),
   observeForPreview: (value, type) =>
     of({type, snapshot: ('_id' in value && PREVIEWS[value._id]) || null}),
   unstable_observeDocument: (id) => of(DOCUMENTS_BY_ID.get(id)),
@@ -142,18 +147,23 @@ function SeededStores(props: {children: ReactNode}) {
   const workspace = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
-  // Seeded during the first render so `useVariantsStore` and `useDocumentPreviewStore` in the
-  // children find the stubs instead of creating the real stores.
+  // The preview stub has to be cached before `useDocumentPreviewStore` below, so the variants
+  // store is keyed on that same stub. `useVariantsStore` includes the preview store in its cache
+  // key, and seeding against a different instance makes the children build a real store.
   useState(() => {
-    resourceCache.set({
-      namespace: 'VariantsStore',
-      dependencies: [workspace],
-      value: VARIANTS_STORE,
-    })
     resourceCache.set({
       namespace: 'documentPreviewStore',
       dependencies: [client],
       value: STUB_PREVIEW_STORE,
+    })
+    return null
+  })
+  const previewStore = useDocumentPreviewStore()
+  useState(() => {
+    resourceCache.set({
+      namespace: 'VariantsStore',
+      dependencies: [workspace, previewStore],
+      value: VARIANTS_STORE,
     })
     return null
   })

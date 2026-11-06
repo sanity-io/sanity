@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rxjs'
+import {defer, filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../constants'
 import {createVariantsStore} from '../createVariantsStore'
@@ -9,17 +10,32 @@ import {createVariantsStore} from '../createVariantsStore'
 function createMockClient() {
   const listener$ = new Subject<{
     type: 'welcome' | 'mutation'
+    documentId?: string
     transition?: 'update'
     visibility?: 'query'
   }>()
+  /** The query of every listener connection opened, in order */
+  const connections: string[] = []
   const fetch = vi.fn()
-  const listen = vi.fn(() => listener$)
   const client = {
-    listen,
+    listen: (query: string) =>
+      defer(() => {
+        connections.push(query)
+        return listener$
+      }),
+    withConfig: () => client,
     observable: {fetch},
   } as unknown as SanityClient
 
-  return {client, fetch, listen, listener$}
+  return {client, fetch, connections, listener$}
+}
+
+function createStore(client: SanityClient, enabled: boolean) {
+  return createVariantsStore({
+    client,
+    previewStore: createDocumentPreviewStore({client}),
+    enabled,
+  })
 }
 
 describe('createVariantsStore', () => {
@@ -32,22 +48,22 @@ describe('createVariantsStore', () => {
   })
 
   it('does not fetch or listen when disabled', async () => {
-    const {client, fetch, listen} = createMockClient()
+    const {client, fetch, connections} = createMockClient()
 
-    const store = createVariantsStore({client, enabled: false})
+    const store = createStore(client, false)
     const value = await firstValueFrom(store.state$)
 
     expect(value).toMatchObject({state: 'loaded'})
     expect(fetch).not.toHaveBeenCalled()
-    expect(listen).not.toHaveBeenCalled()
+    expect(connections).toEqual([])
   })
 
   it('loads variants from the variants system document path', async () => {
     const variant = createMockVariant('a')
-    const {client, fetch, listen, listener$} = createMockClient()
+    const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(of([variant]))
 
-    const store = createVariantsStore({client, enabled: true})
+    const store = createStore(client, true)
     const valuesPromise = firstValueFrom(store.state$.pipe(take(3), toArray()))
 
     listener$.next({type: 'welcome'})
@@ -66,17 +82,7 @@ describe('createVariantsStore', () => {
     expect(fetch).toHaveBeenCalledWith(
       fetchQuery,
       {},
-      expect.objectContaining({filterResponse: true, tag: 'variants.listen'}),
-    )
-    expect(listen).toHaveBeenCalledWith(
-      fetchQuery,
-      {},
-      expect.objectContaining({
-        events: ['welcome', 'mutation', 'reconnect'],
-        includeAllVersions: true,
-        tag: 'variants.listen',
-        visibility: 'query',
-      }),
+      expect.objectContaining({filterResponse: true, tag: 'variants.store.fetch'}),
     )
     expect(values[0]).toMatchObject({state: 'initialising'})
     expect(values[1]).toMatchObject({state: 'loading'})
@@ -84,7 +90,20 @@ describe('createVariantsStore', () => {
     expect(Array.from(values[2].variants.values())).toEqual([variant])
   })
 
-  it('keeps variants updated when the listener refetches', async () => {
+  it("follows the preview store's global listener instead of opening its own", async () => {
+    const {client, fetch, connections, listener$} = createMockClient()
+    fetch.mockReturnValue(of([]))
+
+    const store = createStore(client, true)
+    const loadedPromise = firstValueFrom(store.state$.pipe(filter(({state}) => state === 'loaded')))
+
+    listener$.next({type: 'welcome'})
+    await loadedPromise
+
+    expect(connections).toEqual(['*'])
+  })
+
+  it('keeps variants updated when a variant definition changes', async () => {
     vi.useFakeTimers()
 
     const firstVariant = createMockVariant('a')
@@ -92,12 +111,17 @@ describe('createVariantsStore', () => {
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValueOnce(of([firstVariant])).mockReturnValueOnce(of([updatedVariant]))
 
-    const store = createVariantsStore({client, enabled: true})
+    const store = createStore(client, true)
     const valuesPromise = firstValueFrom(store.state$.pipe(take(4), toArray()))
 
     listener$.next({type: 'welcome'})
     await vi.advanceTimersByTimeAsync(0)
-    listener$.next({type: 'mutation', transition: 'update', visibility: 'query'})
+    listener$.next({
+      type: 'mutation',
+      documentId: updatedVariant._id,
+      transition: 'update',
+      visibility: 'query',
+    })
     await vi.advanceTimersByTimeAsync(1000)
 
     const values = await valuesPromise
@@ -115,7 +139,7 @@ describe('createVariantsStore', () => {
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(of([variantA, variantB]))
 
-    const store = createVariantsStore({client, enabled: true})
+    const store = createStore(client, true)
     const loadedPromise = firstValueFrom(
       store.state$.pipe(
         filter(({state, variants}) => state === 'loaded' && variants.size === 2),
@@ -145,7 +169,7 @@ describe('createVariantsStore', () => {
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(throwError(() => error))
 
-    const store = createVariantsStore({client, enabled: true})
+    const store = createStore(client, true)
     const valuesPromise = firstValueFrom(store.state$.pipe(take(3), toArray()))
 
     listener$.next({type: 'welcome'})

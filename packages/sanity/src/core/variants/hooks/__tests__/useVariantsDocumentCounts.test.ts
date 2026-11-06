@@ -1,9 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {renderHook, waitFor} from '@testing-library/react'
-import {firstValueFrom, of, Subject, take, toArray} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {defer, firstValueFrom, type Observable, of, Subject, take, toArray} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {type VariantStoreState} from '../../store/reducer'
 import {type SystemVariant} from '../../types'
@@ -26,27 +27,46 @@ vi.mock('../../store/useVariantsStore', () => ({
   useVariantsStore: useVariantsStoreMock,
 }))
 
-type ListenerEvent = {
-  type: 'welcome' | 'mutation'
-  transition?: 'update'
-  visibility?: 'query'
-}
+type ListenerEvent =
+  | {type: 'welcome'}
+  | {type: 'mutation'; documentId: string; transition: 'update'; visibility: 'query'}
 
 function createMockClient() {
-  const listeners: Subject<ListenerEvent>[] = []
+  const listener$ = new Subject<ListenerEvent>()
+  /** The query of every listener connection opened, in order */
+  const connections: string[] = []
   const fetch = vi.fn()
-  const listen = vi.fn(() => {
-    const listener$ = new Subject<ListenerEvent>()
-    listeners.push(listener$)
-    return listener$
-  })
   const client = {
-    listen,
+    listen: (query: string) =>
+      defer(() => {
+        connections.push(query)
+        return listener$
+      }),
     observable: {fetch},
-    withConfig: vi.fn(() => client),
+    withConfig: () => client,
   } as unknown as SanityClient
 
-  return {client, fetch, listen, listeners}
+  return {client, fetch, connections, listener$}
+}
+
+function mutation(documentId: string): ListenerEvent {
+  return {type: 'mutation', documentId, transition: 'update', visibility: 'query'}
+}
+
+/** The counts of the variants in `variantsState$`, following a real preview store's global listener */
+function observeCounts(client: SanityClient, variantsState$: Observable<VariantStoreState>) {
+  const previewStore = createDocumentPreviewStore({client})
+  return getVariantsDocumentCounts(
+    client,
+    previewStore.unstable_invalidationChannel,
+    variantsState$,
+  )
+}
+
+async function flushScheduled() {
+  // exhaustMapWithTrailing schedules work on RxJS asyncScheduler (setInterval(0)).
+  // Fake timers only flush that work once the clock moves.
+  await vi.advanceTimersByTimeAsync(1)
 }
 
 function makeVariantsState(variants: SystemVariant[]): VariantStoreState {
@@ -57,20 +77,14 @@ function makeVariantsState(variants: SystemVariant[]): VariantStoreState {
 }
 
 describe('buildVariantsDocumentCountsQuery', () => {
-  it('builds one aggregate fetch query and one listen filter covering all variants', () => {
-    const {fetch, listen} = buildVariantsDocumentCountsQuery([
-      variantAlphaAudience._id,
-      variantNorwegianMarket._id,
-    ])
-
-    expect(fetch).toBe(
+  it('builds one aggregate count query covering all variants', () => {
+    expect(
+      buildVariantsDocumentCountsQuery([variantAlphaAudience._id, variantNorwegianMarket._id]),
+    ).toBe(
       '{' +
         '"_.variants.alpha-audience": count(array::unique(*[sanity::partOfVariant("alpha-audience")]._system.group._ref)),' +
         '"_.variants.norwegian-market": count(array::unique(*[sanity::partOfVariant("norwegian-market")]._system.group._ref))' +
         '}',
-    )
-    expect(listen).toBe(
-      '*[sanity::partOfVariant("alpha-audience") || sanity::partOfVariant("norwegian-market")]',
     )
   })
 })
@@ -80,47 +94,40 @@ describe('getVariantsDocumentCounts', () => {
     vi.clearAllMocks()
   })
 
-  it('emits empty data without fetching or listening when there are no variants', async () => {
-    const {client, fetch, listen} = createMockClient()
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
-    const value = await firstValueFrom(getVariantsDocumentCounts(client, of(makeVariantsState([]))))
+  it('emits empty data without fetching or listening when there are no variants', async () => {
+    const {client, fetch, connections} = createMockClient()
+
+    const value = await firstValueFrom(observeCounts(client, of(makeVariantsState([]))))
 
     expect(value).toEqual({data: {}, loading: false, error: null})
     expect(fetch).not.toHaveBeenCalled()
-    expect(listen).not.toHaveBeenCalled()
+    expect(connections).toEqual([])
   })
 
-  it('opens a single listener and maps the aggregate response to counts per variant id', async () => {
-    const {client, fetch, listen, listeners} = createMockClient()
+  it('fetches once the global listener connects, and maps the aggregate response to counts per variant id', async () => {
+    const {client, fetch, connections, listener$} = createMockClient()
     fetch.mockReturnValue(of({[variantAlphaAudience._id]: 2, [variantNorwegianMarket._id]: 0}))
 
     const valuesPromise = firstValueFrom(
-      getVariantsDocumentCounts(
+      observeCounts(
         client,
         of(makeVariantsState([variantAlphaAudience, variantNorwegianMarket])),
       ).pipe(take(2), toArray()),
     )
 
-    listeners[0]!.next({type: 'welcome'})
+    listener$.next({type: 'welcome'})
 
     const values = await valuesPromise
 
-    expect(listen).toHaveBeenCalledTimes(1)
-    expect(listen).toHaveBeenCalledWith(
-      '*[sanity::partOfVariant("alpha-audience") || sanity::partOfVariant("norwegian-market")]',
-      {},
-      expect.objectContaining({
-        events: ['welcome', 'mutation', 'reconnect'],
-        includeAllVersions: true,
-        includeResult: false,
-        visibility: 'query',
-        tag: 'variants-doc-counts.listen',
-      }),
-    )
+    expect(connections).toEqual(['*'])
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('count(array::unique('),
       {},
-      expect.objectContaining({tag: 'variants-doc-counts.listen', perspective: 'raw'}),
+      expect.objectContaining({tag: 'variants-doc-counts.fetch', perspective: 'raw'}),
     )
     expect(values[0]).toEqual({data: null, loading: true, error: null})
     expect(values[1]).toEqual({
@@ -133,39 +140,46 @@ describe('getVariantsDocumentCounts', () => {
     })
   })
 
-  it('refetches counts when the listener emits a mutation', async () => {
+  it('refetches the counts when a version document changes, and ignores other documents', async () => {
     vi.useFakeTimers()
 
-    const {client, fetch, listeners} = createMockClient()
+    const {client, fetch, listener$} = createMockClient()
     fetch
       .mockReturnValueOnce(of({[variantAlphaAudience._id]: 1}))
       .mockReturnValueOnce(of({[variantAlphaAudience._id]: 2}))
 
-    const valuesPromise = firstValueFrom(
-      getVariantsDocumentCounts(client, of(makeVariantsState([variantAlphaAudience]))).pipe(
-        take(3),
-        toArray(),
-      ),
-    )
+    const emissions: VariantsDocumentCountsState[] = []
+    const subscription = observeCounts(
+      client,
+      of(makeVariantsState([variantAlphaAudience])),
+    ).subscribe((value) => emissions.push(value))
 
-    listeners[0]!.next({type: 'welcome'})
-    await vi.advanceTimersByTimeAsync(0)
-    listeners[0]!.next({type: 'mutation', transition: 'update', visibility: 'query'})
-    await vi.advanceTimersByTimeAsync(1000)
+    listener$.next({type: 'welcome'})
+    await flushScheduled()
+    expect(fetch).toHaveBeenCalledTimes(1)
 
-    const values = await valuesPromise
-    vi.useRealTimers()
+    // Published documents, drafts and variant definitions are never in a variant
+    listener$.next(mutation('article'))
+    listener$.next(mutation('drafts.article'))
+    listener$.next(mutation(variantAlphaAudience._id))
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(fetch).toHaveBeenCalledTimes(1)
+
+    listener$.next(mutation('versions.scope-alpha.article'))
+    await flushScheduled()
 
     expect(fetch).toHaveBeenCalledTimes(2)
-    expect(values.at(-1)).toEqual({
+    expect(emissions.at(-1)).toEqual({
       data: {[variantAlphaAudience._id]: 2},
       loading: false,
       error: null,
     })
+
+    subscription.unsubscribe()
   })
 
-  it('switches to a new listener and preserves counts when the variant set changes', async () => {
-    const {client, fetch, listen, listeners} = createMockClient()
+  it('fetches the counts of a new variant set on the same connection, and preserves the counts meanwhile', async () => {
+    const {client, fetch, connections, listener$} = createMockClient()
     const variantsState$ = new Subject<VariantStoreState>()
 
     fetch
@@ -173,12 +187,12 @@ describe('getVariantsDocumentCounts', () => {
       .mockReturnValueOnce(of({[variantAlphaAudience._id]: 1, [variantNorwegianMarket._id]: 4}))
 
     const emissions: VariantsDocumentCountsState[] = []
-    const subscription = getVariantsDocumentCounts(client, variantsState$).subscribe((value) =>
+    const subscription = observeCounts(client, variantsState$).subscribe((value) =>
       emissions.push(value),
     )
 
     variantsState$.next(makeVariantsState([variantAlphaAudience]))
-    listeners[0]!.next({type: 'welcome'})
+    listener$.next({type: 'welcome'})
 
     await vi.waitFor(() => {
       expect(emissions.at(-1)).toEqual({
@@ -188,17 +202,7 @@ describe('getVariantsDocumentCounts', () => {
       })
     })
 
-    // Adding a variant closes the previous listener and opens a new one covering both
-    // variants, inside the same outer subscription.
     variantsState$.next(makeVariantsState([variantAlphaAudience, variantNorwegianMarket]))
-
-    expect(listen).toHaveBeenCalledTimes(2)
-    expect(listeners[0]!.observed).toBe(false)
-    expect(listen).toHaveBeenLastCalledWith(
-      '*[sanity::partOfVariant("alpha-audience") || sanity::partOfVariant("norwegian-market")]',
-      {},
-      expect.anything(),
-    )
 
     // While the new fetch is pending, the previously fetched counts are preserved.
     expect(emissions.at(-1)).toEqual({
@@ -207,8 +211,8 @@ describe('getVariantsDocumentCounts', () => {
       error: null,
     })
 
-    listeners[1]!.next({type: 'welcome'})
-
+    // The global listener is still connected, so the counts of the new set are fetched without
+    // waiting for it to connect again.
     await vi.waitFor(() => {
       expect(emissions.at(-1)).toEqual({
         data: {
@@ -219,30 +223,39 @@ describe('getVariantsDocumentCounts', () => {
         error: null,
       })
     })
+    expect(fetch).toHaveBeenLastCalledWith(
+      buildVariantsDocumentCountsQuery([variantAlphaAudience._id, variantNorwegianMarket._id]),
+      {},
+      expect.anything(),
+    )
+    expect(connections).toEqual(['*'])
 
     subscription.unsubscribe()
   })
 
-  it('ignores store emissions that do not change the variant set', () => {
-    const {client, fetch, listen, listeners} = createMockClient()
+  it('ignores store emissions that do not change the variant set', async () => {
+    vi.useFakeTimers()
+
+    const {client, fetch, listener$} = createMockClient()
     const variantsState$ = new Subject<VariantStoreState>()
 
     fetch.mockReturnValue(of({[variantAlphaAudience._id]: 1}))
 
-    const subscription = getVariantsDocumentCounts(client, variantsState$).subscribe()
+    const subscription = observeCounts(client, variantsState$).subscribe()
 
     variantsState$.next(makeVariantsState([variantAlphaAudience]))
-    listeners[0]!.next({type: 'welcome'})
+    listener$.next({type: 'welcome'})
+    await flushScheduled()
     variantsState$.next(makeVariantsState([{...variantAlphaAudience, priority: 9}]))
+    await vi.advanceTimersByTimeAsync(2000)
 
-    expect(listen).toHaveBeenCalledTimes(1)
-    expect(listeners[0]!.observed).toBe(true)
+    expect(fetch).toHaveBeenCalledTimes(1)
 
     subscription.unsubscribe()
   })
 
   it('exposes fetch errors and keeps reacting to variant set changes', async () => {
-    const {client, fetch, listeners} = createMockClient()
+    const {client, fetch, listener$} = createMockClient()
     const variantsState$ = new Subject<VariantStoreState>()
     const error = new Error('Failed to fetch counts')
 
@@ -253,20 +266,19 @@ describe('getVariantsDocumentCounts', () => {
       .mockReturnValueOnce(of({[variantNorwegianMarket._id]: 4}))
 
     const emissions: VariantsDocumentCountsState[] = []
-    const subscription = getVariantsDocumentCounts(client, variantsState$).subscribe((value) =>
+    const subscription = observeCounts(client, variantsState$).subscribe((value) =>
       emissions.push(value),
     )
 
     variantsState$.next(makeVariantsState([variantAlphaAudience]))
-    listeners[0]!.next({type: 'welcome'})
+    listener$.next({type: 'welcome'})
 
     await vi.waitFor(() => {
       expect(emissions.at(-1)).toEqual({data: null, loading: false, error})
     })
 
-    // The outer stream survives the error: a variant set change starts a new listener.
+    // The outer stream survives the error: a variant set change fetches the counts of the new set.
     variantsState$.next(makeVariantsState([variantNorwegianMarket]))
-    listeners[1]!.next({type: 'welcome'})
 
     await vi.waitFor(() => {
       expect(emissions.at(-1)).toEqual({
@@ -286,7 +298,7 @@ describe('useVariantsDocumentCounts', () => {
   })
 
   it('returns live counts for the variants held by the variants store', async () => {
-    const {client, fetch, listeners} = createMockClient()
+    const {client, fetch, listener$} = createMockClient()
     useClientMock.mockReturnValue(client)
     useVariantsStoreMock.mockReturnValue({
       state$: of(makeVariantsState([variantAlphaAudience])),
@@ -299,7 +311,7 @@ describe('useVariantsDocumentCounts', () => {
 
     expect(result.current).toEqual({data: null, loading: true, error: null})
 
-    listeners[0]!.next({type: 'welcome'})
+    listener$.next({type: 'welcome'})
 
     await waitFor(() => {
       expect(result.current).toEqual({
@@ -311,7 +323,7 @@ describe('useVariantsDocumentCounts', () => {
   })
 
   it('returns empty data without a listener when there are no variants', async () => {
-    const {client, fetch, listen} = createMockClient()
+    const {client, fetch, connections} = createMockClient()
     useClientMock.mockReturnValue(client)
     useVariantsStoreMock.mockReturnValue({
       state$: of(makeVariantsState([])),
@@ -323,6 +335,6 @@ describe('useVariantsDocumentCounts', () => {
 
     expect(result.current).toEqual({data: {}, loading: false, error: null})
     expect(fetch).not.toHaveBeenCalled()
-    expect(listen).not.toHaveBeenCalled()
+    expect(connections).toEqual([])
   })
 })
