@@ -19,20 +19,21 @@ function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): R
   const livePreviewEnabled =
     previewKitConnection === 'connected' || loadersConnection === 'connected'
 
-  if ((ready && draft) || published) {
-    return (
-      <PostMessageRefreshMutationsInner
-        key={id}
-        comlink={comlink}
-        draft={draft}
-        livePreviewEnabled={livePreviewEnabled}
-        published={published}
-        version={version}
-      />
-    )
+  if (!ready) {
+    return null
   }
 
-  return null
+  return (
+    <PostMessageRefreshMutationsInner
+      // Keyed on release too, so switching perspective isn't read as a mutation
+      key={`${id}:${selectedReleaseId ?? ''}`}
+      comlink={comlink}
+      draft={draft}
+      livePreviewEnabled={livePreviewEnabled}
+      published={published}
+      version={version}
+    />
+  )
 }
 
 interface PostMessageRefreshMutationsInnerProps extends Pick<
@@ -51,47 +52,42 @@ function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInne
   const [prevVersion, setPrevVersion] = useState(version)
 
   useEffect(() => {
-    if (prevVersion?._rev !== version?._rev) {
-      startTransition(() => setPrevVersion(version))
-      if (version) {
-        comlink?.post('presentation/refresh', {
-          source: 'mutation',
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          livePreviewEnabled,
-          document: parseDocument(version),
-        })
+    const changed: SanityDocument[] = []
+    const removed: SanityDocument[] = []
+    const pairs = [
+      [prevVersion, version, setPrevVersion],
+      [prevDraft, draft, setPrevDraft],
+      [prevPublished, published, setPrevPublished],
+    ] as const
+    for (const [prev, next, setPrev] of pairs) {
+      if (prev?._rev === next?._rev) continue
+      startTransition(() => setPrev(next))
+      if (next) {
+        changed.push(next)
+      } else if (prev) {
+        removed.push(prev)
       }
     }
-    if (prevDraft?._rev !== draft?._rev) {
-      startTransition(() => setPrevDraft(draft))
-      if (draft) {
-        comlink?.post('presentation/refresh', {
-          source: 'mutation',
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          livePreviewEnabled,
-          document: parseDocument(draft),
-        })
-      }
-    }
-    if (prevPublished?._rev !== published?._rev) {
-      startTransition(() => setPrevPublished(published))
-      if (published) {
-        comlink?.post('presentation/refresh', {
-          source: 'mutation',
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          livePreviewEnabled,
-          document: parseDocument(published),
-        })
-      }
+
+    // A removed document has no new revision, so refresh with its last state. Publish and delete
+    // also remove documents, so only refresh for a removal when nothing else changed
+    const documents = changed.length > 0 ? changed : removed.slice(0, 1)
+    for (const document of documents) {
+      comlink?.post('presentation/refresh', {
+        source: 'mutation',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        livePreviewEnabled,
+        document: parseDocument(document),
+      })
     }
   }, [
     comlink,
     draft,
     livePreviewEnabled,
-    prevDraft?._rev,
-    prevPublished?._rev,
+    prevDraft,
+    prevPublished,
     published,
-    prevVersion?._rev,
+    prevVersion,
     version,
   ])
 
