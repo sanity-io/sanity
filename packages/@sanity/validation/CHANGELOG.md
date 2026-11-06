@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-06)
+
+### Features
+
+* **validation:** support workspace i18n configs in validation ([#15754](https://github.com/sanity-io/sanity/issues/15754)) ([437c370](https://github.com/sanity-io/sanity/commit/437c370fface201bbbf20ca2763ee5fc3b942f09))
+
+### Bug Fixes
+
+* **validation:** validate reference target types ([#15736](https://github.com/sanity-io/sanity/issues/15736)) ([5b45e57](https://github.com/sanity-io/sanity/commit/5b45e570d8aa1f94d1cac13a8cdbccbcf1a4a005))
 ## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
 
 ### Features
