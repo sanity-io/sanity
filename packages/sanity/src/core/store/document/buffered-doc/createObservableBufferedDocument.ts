@@ -50,6 +50,22 @@ export interface CommitRequest {
   cancel: (error: Error) => void
   /** Timestamp (Date.now()) when the first local mutation in this commit batch was received */
   firstMutationReceivedAt?: number
+  /**
+   * The buffered document instance that issued this request, for telemetry.
+   * A fresh snapshot replaces the instance while the old one may still be
+   * retrying, so this tells the requests of each instance apart.
+   */
+  owner?: CommitRequestOwner
+}
+
+/**
+ * Identifies the buffered document instance behind a commit request.
+ *
+ * @internal
+ */
+export interface CommitRequestOwner {
+  /** False once a fresh snapshot has replaced this buffered document instance */
+  isCurrent: () => boolean
 }
 
 // BufferedDocument.LOCAL never updates its revision due to its internal consistency checks
@@ -71,6 +87,26 @@ const getUpdatedSnapshot = (bufferedDocument: BufferedDocument) => {
     _rev: (HEAD || LOCAL)._rev,
     _updatedAt: new Date().toISOString(),
   }
+}
+
+/**
+ * Whether the mutator holds pending local mutations, read from its public
+ * state only:
+ * - `buffer.hasChanges()`: mutations not committed yet
+ * - `document.pending`: the commit being sent, staged on the inner document
+ *   until the server answers (a commit the server accepted moves on to
+ *   `submitted` until its echo arrives, and is no longer pending)
+ * - `committerRunning`: commits waiting in the mutator's private queue,
+ *   including one waiting for a retry with nothing in flight. Queuing a
+ *   commit always starts the committer, which only stops once the queue is
+ *   empty or a cancel cleared it.
+ */
+function hasPendingMutations(bufferedDocument: BufferedDocument): boolean {
+  return (
+    bufferedDocument.buffer.hasChanges() ||
+    bufferedDocument.document.pending.length > 0 ||
+    bufferedDocument.committerRunning
+  )
 }
 
 const toSnapshotEvent = (document: any): SnapshotEvent => ({type: 'snapshot', document})
@@ -102,8 +138,19 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
 
   const commitRequests = new Subject<CommitRequest>()
 
+  // Instances a fresh snapshot has replaced. Marked before the consistency
+  // flip that the replacement causes, so telemetry reacting to that flip
+  // already sees the old instance as replaced.
+  const replacedBufferedDocuments = new WeakSet<BufferedDocument>()
+  // The instance receiving local mutations, read synchronously for telemetry
+  let latestBufferedDocument: BufferedDocument | undefined
+
   const createInitialBufferedDocument = (initialSnapshot: SanityDocument | null) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
+    latestBufferedDocument = bufferedDocument
+    const owner: CommitRequestOwner = {
+      isCurrent: () => !replacedBufferedDocuments.has(bufferedDocument),
+    }
     bufferedDocument.onMutation = ({mutation, remote}: any) => {
       // this is called after either when:
       // 1) local mutations has been added, optimistically applied and queued for sending
@@ -150,7 +197,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       // Reset so the next commit batch doesn't reuse a stale timestamp
       // from a previous batch when the document stays inconsistent
       firstMutationReceivedAt = undefined
-      commitRequests.next({...commitArg, firstMutationReceivedAt: captured})
+      commitRequests.next({...commitArg, firstMutationReceivedAt: captured, owner})
     }
 
     return bufferedDocument
@@ -163,6 +210,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         if (bufferedDocument) {
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
+          replacedBufferedDocuments.add(bufferedDocument)
           void bufferedDocument.commit()
         }
         // mark as consistent when a new snapshot is received
@@ -259,5 +307,8 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     addMutation,
     addMutations,
     commit,
+    /** Whether local mutations are pending (telemetry only) */
+    hasPendingMutations: () =>
+      latestBufferedDocument ? hasPendingMutations(latestBufferedDocument) : false,
   }
 }

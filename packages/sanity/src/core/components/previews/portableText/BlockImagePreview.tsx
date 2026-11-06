@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'
@@ -51,13 +50,27 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
         <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
           <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
             {(title || fallbackTitle) && (
-              <Text size={1} textOverflow="ellipsis" weight="medium">
+              <Text
+                size={1}
+                truncate={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-fg-color)'}}
+              >
                 {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}
               </Text>
             )}
 
             {subtitle && (
-              <Text muted size={1} textOverflow="ellipsis">
+              <Text
+                muted
+                size={1}
+                truncate={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {renderPreviewNode(subtitle as any, 'block')}
               </Text>
             )}
@@ -95,7 +108,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
 
       {description && (
         <Box paddingX={2} paddingY={3}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
             {renderPreviewNode(description as any, 'block')}
           </Text>
         </Box>

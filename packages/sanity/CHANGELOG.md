@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
+
+### Features
+
+* **core:** add soft-navigation change classifier ([#15536](https://github.com/sanity-io/sanity/issues/15536)) ([d4b8f0e](https://github.com/sanity-io/sanity/commit/d4b8f0ef6b9cb9f5253cd2ce1ffd3861d0eeb4e7))
+* **core:** name the studio as the parent of federated asset sources ([#15722](https://github.com/sanity-io/sanity/issues/15722)) ([9ab54e2](https://github.com/sanity-io/sanity/commit/9ab54e2080e627ccb9d183334b7bc9c927ca02f9))
+* **core:** report soft-navigation web vitals from studio ([#15534](https://github.com/sanity-io/sanity/issues/15534)) ([245a0c0](https://github.com/sanity-io/sanity/commit/245a0c0783a5a5c1d49ded626fa937250926e33b))
+* **core:** support auto-updating studios in workbench ([#15553](https://github.com/sanity-io/sanity/issues/15553)) ([6fe51da](https://github.com/sanity-io/sanity/commit/6fe51da95c8c73d6c631403bbdd70f9ab079ce85))
+* **sanity:** add soft-navigation route descriptor util ([#15532](https://github.com/sanity-io/sanity/issues/15532)) ([8c4cd64](https://github.com/sanity-io/sanity/commit/8c4cd643a25ce2fe2adaa49a9e8ce454bdd6f306))
+* **sanity:** refine document group inventory ([#15713](https://github.com/sanity-io/sanity/issues/15713)) ([945d0bd](https://github.com/sanity-io/sanity/commit/945d0bd4d2342a839dce58549db6e0c573d833d1))
+* **structure:** add document panel navigation with a variants menu ([#15706](https://github.com/sanity-io/sanity/issues/15706)) ([5975502](https://github.com/sanity-io/sanity/commit/59755025d52fb01bdba311d9749046ae4f042c5a))
+* **structure:** open the document right away while intent links resolve ([#15683](https://github.com/sanity-io/sanity/issues/15683)) ([890ddaf](https://github.com/sanity-io/sanity/commit/890ddaf88843e9481bc26d805f47388682ebd70f))
+* **validation:** warn when an asset does not match its field's accept option ([#15673](https://github.com/sanity-io/sanity/issues/15673)) ([20d67d5](https://github.com/sanity-io/sanity/commit/20d67d5eaae15ee6384984bfbecea5af7bfb5f67))
+
+### Bug Fixes
+
+* **core:** keep auth secrets out of the url when the studio fails to boot ([#15337](https://github.com/sanity-io/sanity/issues/15337)) ([c77bdc3](https://github.com/sanity-io/sanity/commit/c77bdc3f23a4a171b610358e9add8b60d9695ec7))
+* **core:** move perspective pickers into the nav drawer on mobile ([#15659](https://github.com/sanity-io/sanity/issues/15659)) ([5162998](https://github.com/sanity-io/sanity/commit/5162998566c33794d4a5150dd53a8e717dfec086))
+* **core:** restore the releases classic navbar pill when variants are off ([#15745](https://github.com/sanity-io/sanity/issues/15745)) ([b42942c](https://github.com/sanity-io/sanity/commit/b42942c8a30835118926166f74293bdc6e77f487))
+* **core:** stop studio reloads from reloading workbench ([#15443](https://github.com/sanity-io/sanity/issues/15443)) ([a2b8c4c](https://github.com/sanity-io/sanity/commit/a2b8c4cec09c16b854f4e868bd815b622d012fdb))
+* **deps:** update dependency @sanity/cli to ^8.25.0 ([#15648](https://github.com/sanity-io/sanity/issues/15648)) ([eab12de](https://github.com/sanity-io/sanity/commit/eab12debc16c782f904cc9c154ad7806e7b7e474))
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
+* **deps:** update dependency xstate to ^5.33.3 ([#15591](https://github.com/sanity-io/sanity/issues/15591)) ([2990658](https://github.com/sanity-io/sanity/commit/2990658c3552a564387a5d75b678eae4d1b596b2))
+* **deps:** update portabletext ([#15646](https://github.com/sanity-io/sanity/issues/15646)) ([c0a0e7f](https://github.com/sanity-io/sanity/commit/c0a0e7f31cd9a0c762172875beb5523f2e0cae2e))
+* **deps:** update portabletext ([#15719](https://github.com/sanity-io/sanity/issues/15719)) ([fce4307](https://github.com/sanity-io/sanity/commit/fce43078ac7f37799c5065babc68499172451190))
+* **deps:** update sanity-sdk to ^3.10.0 ([#15647](https://github.com/sanity-io/sanity/issues/15647)) ([9f0a730](https://github.com/sanity-io/sanity/commit/9f0a7307dae1181923bf29862f6fd409f2acd71d))
+* **deps:** upgrade `@sanity/bifur-client` to v3 ([#15734](https://github.com/sanity-io/sanity/issues/15734)) ([f89e9bc](https://github.com/sanity-io/sanity/commit/f89e9bce299cc6cb204f5b95a95031965804f06a))
+* **form:** render relative-only url fields as text inputs ([#15692](https://github.com/sanity-io/sanity/issues/15692)) ([c47a3e5](https://github.com/sanity-io/sanity/commit/c47a3e58cc79aca6f52bcb282d5e0d75049bcfee))
+* **presence:** stop reconnecting after authorization rejection ([#15702](https://github.com/sanity-io/sanity/issues/15702)) ([80fc682](https://github.com/sanity-io/sanity/commit/80fc682956d39501d218c353b1606b8f8c4e2ef3))
+* **releases:** apply the workspace release limit wherever a release can be created ([#15603](https://github.com/sanity-io/sanity/issues/15603)) ([e23edf1](https://github.com/sanity-io/sanity/commit/e23edf1a2d0e6bfb5abfae17bb476e4095a33894))
+* **releases:** hold the workspace release limit while releases load and on dialog submit ([#15687](https://github.com/sanity-io/sanity/issues/15687)) ([f26142a](https://github.com/sanity-io/sanity/commit/f26142a124dc4ccf49b0eaa0dde7bc98ec15dc1a))
+* **releases:** report release permissions correctly from the dry run ([#15606](https://github.com/sanity-io/sanity/issues/15606)) ([4dffc69](https://github.com/sanity-io/sanity/commit/4dffc69acdca01ce5e41eda670e970efae49fb0f))
+* remove trim from nested text ([#15701](https://github.com/sanity-io/sanity/issues/15701)) ([9fd9464](https://github.com/sanity-io/sanity/commit/9fd9464a8a4c2b39b66778552abe2ec13ed267ce))
+* **router:** accept intent links without params ([#15639](https://github.com/sanity-io/sanity/issues/15639)) ([4e7479b](https://github.com/sanity-io/sanity/commit/4e7479bf1b0f8ae23c0921b3324784b5994cb77c))
+* **sanity:** document inventory group overflow with scrolling ancestor ([1e0c803](https://github.com/sanity-io/sanity/commit/1e0c803deed119eb153b381c5209c4a024d27a06))
+* **structure:** promote custom first action as primary for live-edit documents ([#15686](https://github.com/sanity-io/sanity/issues/15686)) ([1124da6](https://github.com/sanity-io/sanity/commit/1124da6dfbb1eaa4b0174b350bde344c4c30be5d))
+* **test:** collect chromium garbage after every browser test file ([#15730](https://github.com/sanity-io/sanity/issues/15730)) ([2d3f570](https://github.com/sanity-io/sanity/commit/2d3f570d3dea52c2174730d23629ddd163b69151))
+* **validation:** allow release documents to reference documents in the same release ([#15703](https://github.com/sanity-io/sanity/issues/15703)) ([0e387ce](https://github.com/sanity-io/sanity/commit/0e387ce57b385bed90e14970fe6bb4749597c403))
+* **variants:** use dated api version instead of vX ([#15568](https://github.com/sanity-io/sanity/issues/15568)) ([1ada254](https://github.com/sanity-io/sanity/commit/1ada2542e6260e6df781c7054b198f6dac0ca469))
+
+### Performance Improvements
+
+* **structure:** open intent links without resolving the whole structure ([#15661](https://github.com/sanity-io/sanity/issues/15661)) ([f3659de](https://github.com/sanity-io/sanity/commit/f3659dea975d294f3454a3c450bb63e63927c276))
+* **structure:** preload the document so it is ready when its pane opens ([#15675](https://github.com/sanity-io/sanity/issues/15675)) ([9964a63](https://github.com/sanity-io/sanity/commit/9964a6383b575bc2d7b2208668f1c99a94f8b702))
+* **structure:** search the structure without waiting for the document type ([#15674](https://github.com/sanity-io/sanity/issues/15674)) ([6730c94](https://github.com/sanity-io/sanity/commit/6730c94871820b4fe5ef4ebb5f3f35d779bb4c83))
 ## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
 
 ### Features

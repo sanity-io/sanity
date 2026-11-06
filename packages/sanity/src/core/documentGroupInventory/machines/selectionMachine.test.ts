@@ -105,6 +105,28 @@ describe('selectionMachine', () => {
     expect(selection.getSnapshot().matches('error')).toBe(true)
   })
 
+  it('adds every given variant to the selection, keeping those already selected', () => {
+    const selection = createSelectionActor()
+
+    selection.send({type: 'selection.add', variantId: 'drafts.foo'})
+    selection.send({type: 'selection.addMany', variantIds: ['drafts.foo', 'foo']})
+
+    expect([...selection.getSnapshot().context.selectedIds]).toEqual(['drafts.foo', 'foo'])
+  })
+
+  it('removes every given variant from the selection, even when only some are selected', () => {
+    const selection = createSelectionActor({
+      variants: [...DEFAULT_VARIANTS, variant('drafts.bar', 'Other draft')],
+    })
+
+    selection.send({type: 'selection.add', variantId: 'drafts.bar'})
+    selection.send({type: 'selection.add', variantId: 'foo'})
+    selection.send({type: 'selection.removeMany', variantIds: ['drafts.foo', 'foo']})
+
+    // Ids outside the removed group keep their selection.
+    expect([...selection.getSnapshot().context.selectedIds]).toEqual(['drafts.bar'])
+  })
+
   it('toggles selection on and off', () => {
     const selection = createSelectionActor()
 

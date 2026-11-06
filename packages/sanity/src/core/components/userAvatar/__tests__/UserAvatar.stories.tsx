@@ -1,8 +1,9 @@
 import {type User} from '@sanity/types'
-import {type AvatarSize, type AvatarStatus, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type AvatarSize, type AvatarStatus, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {UserAvatar} from '../UserAvatar'
@@ -29,7 +30,7 @@ function Labelled(props: {label: string; children: ReactNode}) {
   return (
     <Stack gap={2} style={{textAlign: 'center'}}>
       <Flex justify="center">{props.children}</Flex>
-      <Text muted size={0}>
+      <Text muted size={0} as="div" trim={true}>
         {props.label}
       </Text>
     </Stack>
@@ -110,10 +111,10 @@ export const AllVariants: Story = {
       <Card padding={3} radius={2} shadow={1} style={{maxWidth: 420}}>
         <Flex align="center" gap={4} justify="space-between">
           <Stack gap={2}>
-            <Text muted size={0} weight="medium">
+            <Text muted size={0} weight="medium" as="div" trim={true}>
               Book
             </Text>
-            <Text size={2} weight="semibold">
+            <Text size={2} weight="semibold" as="div" trim={true}>
               Anna Karenina
             </Text>
           </Stack>

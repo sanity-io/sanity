@@ -1,20 +1,30 @@
-export const consumeHashToken = (): string | undefined => {
-  if (typeof window === 'undefined' || typeof window.location !== 'object') {
-    return undefined
-  }
+import {takeHashParam, takeStashedAuthHashParam} from './authHashParams'
 
-  // Token pattern used for extracting tokens from URL hash
-  const tokenPattern = /token=([^&]{32,})&?/
-  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
-  if (!tokenParam) {
-    return undefined
-  }
+const isValidToken = (value: string | undefined): value is string =>
+  value !== undefined && value.length >= 32
 
-  // Remove the token from URL for security
-  const newHash = window.location.hash.replace(tokenPattern, '')
-  const newUrl = new URL(window.location.href)
-  newUrl.hash = newHash.length > 1 ? newHash : ''
-  history.replaceState(null, '', newUrl)
+function readAndRemoveHashToken(): string | undefined {
+  // Always removed from the URL, even when the studio HTML already stashed one.
+  const fromHash = takeHashParam('token')
+  const token = takeStashedAuthHashParam('token') ?? fromHash
+  return isValidToken(token) ? token : undefined
+}
 
-  return tokenParam
+// Taken at load, so a studio that fails to boot never leaves the token in the URL.
+let pendingToken = readAndRemoveHashToken()
+
+/**
+ * Removes the token from the URL again, since a host may restore the hash after load, and holds it
+ * for a store that can use it.
+ */
+export function removeHashTokenFromUrl(): void {
+  const fromHash = readAndRemoveHashToken()
+  pendingToken = pendingToken ?? fromHash
+}
+
+export function consumeHashToken(): string | undefined {
+  removeHashTokenFromUrl()
+  const token = pendingToken
+  pendingToken = undefined
+  return token
 }

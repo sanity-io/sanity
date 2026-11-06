@@ -20,7 +20,7 @@ import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
-import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {GlobalPerspectiveNav} from '../../../perspective/navbar/GlobalPerspectiveNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
@@ -80,8 +80,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack, selectedVariantNames} = usePerspective()
+  const {perspectiveStack, selectedPerspective, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
+  // Variants beta keeps one navbar color. Otherwise the bar follows the release tone.
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const ToolMenu = useToolMenuComponent()
 
@@ -112,6 +114,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
+      perspectivesInDrawer: mediaIndex <= 1,
     }),
     [mediaIndex],
   )
@@ -186,7 +189,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
           className={navbar}
-          tone={getReleaseTone(selectedPerspective)}
+          tone={variantsEnabled ? 'default' : getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -271,7 +274,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
+                {!shouldRender.perspectivesInDrawer && <GlobalPerspectiveNav />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
@@ -301,6 +304,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             activeToolName={activeToolName}
             isOpen={drawerOpen}
             onClose={handleCloseDrawer}
+            showPerspectives={shouldRender.perspectivesInDrawer}
             tools={tools}
           />
         )}

@@ -24,6 +24,7 @@ export interface DocumentGroupInventoryComponents {
   DocTitle: ComponentType<{document: SanityDocumentLike}>
   ReferencePreviewLink: ComponentType<DocumentGroupInventoryReferencePreviewLinkProps>
   VersionsPreviewList: ComponentType<{documentType: string; documentVersions: string[]}>
+  CompareVersionsAction: ComponentType
 }
 
 /**

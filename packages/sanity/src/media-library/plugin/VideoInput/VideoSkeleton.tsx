@@ -1,6 +1,6 @@
 import {ResetIcon} from '@sanity/icons/Reset'
-import {Skeleton, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Skeleton} from '@sanity/ui'
+import {Text, Flex} from 'ui5'
 
 import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {Button} from '../../../ui-components/button/Button'
@@ -32,7 +32,7 @@ export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
           style={{position: 'absolute', inset: 0}}
           padding={4}
         >
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true} tone={error ? 'critical' : undefined}>
             {error.message || t('video-error.description')}
           </Text>
           {retry && (

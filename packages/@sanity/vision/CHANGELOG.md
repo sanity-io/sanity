@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
+* **deps:** update dependency xstate to ^5.33.3 ([#15591](https://github.com/sanity-io/sanity/issues/15591)) ([2990658](https://github.com/sanity-io/sanity/commit/2990658c3552a564387a5d75b678eae4d1b596b2))
+* **variants:** use dated api version instead of vX ([#15568](https://github.com/sanity-io/sanity/issues/15568)) ([1ada254](https://github.com/sanity-io/sanity/commit/1ada2542e6260e6df781c7054b198f6dac0ca469))
+* **vision:** temporarily remove Vista imports ([128cce1](https://github.com/sanity-io/sanity/commit/128cce1e6878ff69602dcc7d60fcf942446a5afe))
 ## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
 
 ### Features

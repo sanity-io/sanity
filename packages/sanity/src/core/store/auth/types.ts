@@ -30,7 +30,9 @@ export interface AuthStore {
   state: Observable<AuthState>
 
   /**
-   * Emits auth tokens, or `null` if not configured to use them or they do not exist
+   * Emits auth tokens, or `null` if not configured to use them or they do not exist. Must replay
+   * its latest value to new subscribers, like a `BehaviorSubject`: the realtime connection
+   * subscribes again for every socket it opens.
    */
   token?: Observable<string | null>
   /**

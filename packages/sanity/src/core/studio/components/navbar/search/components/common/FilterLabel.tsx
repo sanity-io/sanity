@@ -1,6 +1,6 @@
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, type TextProps} from 'ui5'
 
 import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
@@ -14,7 +14,7 @@ import {FilterTitle} from './FilterTitle'
 
 interface FilterLabelProps {
   filter: SearchFilter
-  fontSize?: number
+  fontSize?: TextProps['size']
   showContent?: boolean
 }
 
@@ -27,7 +27,7 @@ interface FilterLabelComponentProps {
   buttonValueComponent?: SearchOperatorDefinition['buttonValueComponent']
   filter: SearchFilter
   filterValue?: SearchFilter['value']
-  fontSize: number
+  fontSize: TextProps['size']
   fullscreen?: boolean
   showContent?: boolean
 }
@@ -35,7 +35,7 @@ interface FilterLabelComponentProps {
 function Field({filter, fontSize, fullscreen}: FilterLabelComponentProps) {
   return (
     <CustomBox $flexShrink={fullscreen ? 1 : 0}>
-      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+      <TextWithTone tone="default" size={fontSize} truncate={1} weight="medium">
         <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
       </TextWithTone>
     </CustomBox>
@@ -46,7 +46,7 @@ function Operator({children, fontSize, showContent}: FilterLabelComponentProps) 
   if (!showContent) return null
   return (
     <CustomBox $flexShrink={0}>
-      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
+      <TextWithTone tone="default" size={fontSize} truncate={1} weight="regular">
         {children}
       </TextWithTone>
     </CustomBox>
@@ -63,7 +63,7 @@ function Value({
   if (!showContent) return null
   return (
     <CustomBox $flexShrink={1}>
-      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+      <TextWithTone tone="default" size={fontSize} truncate={1} weight="medium">
         {ButtonValue ? <ButtonValue value={filterValue} /> : children}
       </TextWithTone>
     </CustomBox>

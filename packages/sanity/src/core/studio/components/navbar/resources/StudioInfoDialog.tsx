@@ -19,6 +19,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
+import {reloadStudio} from '../../../reloadStudio'
 import {useWorkspace} from '../../../workspace'
 
 interface StudioInfoDialogProps {
@@ -32,10 +33,6 @@ const MonogramContainer = styled(Card).attrs({
   height: ${75}px;
   width: ${75}px;
 `
-
-function reload() {
-  window.location.reload()
-}
 
 function getVersionType(ver: SemVer): 'development' | 'prerelease' | 'default' {
   if (ver.prerelease.length === 0) {
@@ -277,7 +274,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   {autoUpdatingVersion && ensureVersionPrefix(autoUpdatingVersion?.version)}
                 </Badge>
                 <Button
-                  onClick={reload}
+                  onClick={reloadStudio}
                   mode="bleed"
                   tone="primary"
                   text={

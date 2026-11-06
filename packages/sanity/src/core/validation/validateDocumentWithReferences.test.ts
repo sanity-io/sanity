@@ -1,9 +1,17 @@
 import {type SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
+import type * as Validation from '@sanity/validation/_internal'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
-import {BehaviorSubject, Observable, type Subscription} from 'rxjs'
+import {BehaviorSubject, filter, firstValueFrom, Observable, of, type Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getFallbackLocaleSource} from '../i18n/fallback'
+import {
+  AVAILABILITY_NOT_FOUND,
+  AVAILABILITY_READABLE,
+  AVAILABILITY_VERSION_DELETED,
+} from '../preview/constants'
+import {type DocumentAvailability} from '../preview/types'
+import {createSchema} from '../schema/createSchema'
 import {
   validateDocumentWithReferences,
   type ValidationStatus,
@@ -13,7 +21,8 @@ const {evaluateDocumentObservable} = vi.hoisted(() => ({
   evaluateDocumentObservable: vi.fn(),
 }))
 
-vi.mock('@sanity/validation/_internal', () => ({
+vi.mock('@sanity/validation/_internal', async (importOriginal) => ({
+  ...(await importOriginal<typeof Validation>()),
   evaluateDocumentObservable,
 }))
 
@@ -111,7 +120,6 @@ describe('validateDocumentWithReferences scheduling', () => {
         i18n: getFallbackLocaleSource(),
       },
       document$,
-      false,
       scheduling,
     )
     const first: ValidationStatus[] = []
@@ -197,5 +205,134 @@ describe('validateDocumentWithReferences scheduling', () => {
       validation: [titleRequired],
     })
     expect(second.at(-1)).toEqual(first.at(-1))
+  })
+})
+
+describe('validateDocumentWithReferences reference existence', () => {
+  it('validates references without adding target type requests in Studio', async () => {
+    const actual = await vi.importActual<typeof Validation>('@sanity/validation/_internal')
+    evaluateDocumentObservable.mockImplementation(actual.evaluateDocumentObservable)
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        {name: 'actor', type: 'document', fields: [{name: 'name', type: 'string'}]},
+        {
+          name: 'movie',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string'},
+            {name: 'actor', type: 'reference', to: [{type: 'actor'}]},
+          ],
+        },
+      ],
+    })
+    const result = await firstValueFrom(
+      validateDocumentWithReferences(
+        {
+          getClient: () => {
+            throw new Error('Studio should reuse reference availability')
+          },
+          observeDocumentPairAvailability: () =>
+            of({published: AVAILABILITY_READABLE, draft: AVAILABILITY_NOT_FOUND}),
+          schema,
+          i18n: getFallbackLocaleSource(),
+        },
+        of({...movie('rev', 'Title'), actor: {_type: 'reference', _ref: 'actor'}}),
+        new BehaviorSubject<ValidationScheduling>('immediate'),
+      ).pipe(filter(({isValidating}) => !isValidating)),
+    )
+    expect(result.validation).toEqual([])
+  })
+
+  type GetDocumentExists = (options: {id: string}) => Promise<boolean>
+
+  async function referenceExists(
+    documentId: string,
+    availability: {published: DocumentAvailability; version: DocumentAvailability},
+    _system?: SanityDocument['_system'],
+  ) {
+    const calls: GetDocumentExists[] = []
+    evaluateDocumentObservable.mockImplementation(
+      (options: {getDocumentExists: GetDocumentExists}) => {
+        calls.push(options.getDocumentExists)
+        return of({markers: []})
+      },
+    )
+    const subscription = validateDocumentWithReferences(
+      {
+        getClient: () => {
+          throw new Error('reference validation should not fetch')
+        },
+        observeDocumentPairAvailability: (_id, options) =>
+          of({
+            published: availability.published,
+            draft: AVAILABILITY_NOT_FOUND,
+            version: options?.version ? availability.version : undefined,
+          }),
+        schema: {} as Schema,
+        i18n: getFallbackLocaleSource(),
+      },
+      of({
+        ...movie('rev-1', 'Title'),
+        _id: documentId,
+        _system,
+        actor: {_type: 'reference', _ref: 'actor'},
+      }),
+    ).subscribe()
+    try {
+      await vi.waitFor(() => expect(calls.length).toBeGreaterThan(0))
+      return await calls[0]({id: 'actor'})
+    } finally {
+      subscription.unsubscribe()
+    }
+  }
+
+  it('accepts references to unpublished documents in the same release', async () => {
+    await expect(
+      referenceExists('versions.release.movie', {
+        published: AVAILABILITY_NOT_FOUND,
+        version: AVAILABILITY_READABLE,
+      }),
+    ).resolves.toBe(true)
+  })
+
+  it.each([
+    {variants: [{_ref: '_.variants.variant-a', _key: 'variant-a'}]},
+    {variant: {_ref: '_.variants.variant-a'}},
+  ])('requires published references for variants with metadata %j', async (_system) => {
+    await expect(
+      referenceExists(
+        'versions.scopeA.movie',
+        {published: AVAILABILITY_NOT_FOUND, version: AVAILABILITY_READABLE},
+        _system,
+      ),
+    ).resolves.toBe(false)
+  })
+
+  it('rejects references to documents the release unpublishes', async () => {
+    await expect(
+      referenceExists('versions.release.movie', {
+        published: AVAILABILITY_READABLE,
+        version: AVAILABILITY_VERSION_DELETED,
+      }),
+    ).resolves.toBe(false)
+  })
+
+  it('accepts published references from release documents', async () => {
+    await expect(
+      referenceExists('versions.release.movie', {
+        published: AVAILABILITY_READABLE,
+        version: AVAILABILITY_NOT_FOUND,
+      }),
+    ).resolves.toBe(true)
+  })
+
+  it('requires drafts to reference published documents', async () => {
+    await expect(
+      referenceExists('drafts.movie', {
+        published: AVAILABILITY_NOT_FOUND,
+        version: AVAILABILITY_READABLE,
+      }),
+    ).resolves.toBe(false)
   })
 })

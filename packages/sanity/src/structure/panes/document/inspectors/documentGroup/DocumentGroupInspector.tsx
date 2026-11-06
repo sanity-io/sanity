@@ -1,4 +1,3 @@
-import {Card} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -23,17 +22,20 @@ import {ReferencePreviewLink} from '../../../../components/confirmDeleteDialog/R
 import {referringDocuments} from '../../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../../components/DocTitle'
+import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../../constants'
 import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspectiveList'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
+import {CompareVersionsAction} from './CompareVersionsAction'
 import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
   ReferencePreviewLink,
   VersionsPreviewList,
+  CompareVersionsAction,
 }
 
 export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX.Element {
@@ -41,6 +43,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const {t} = useTranslation()
   const {t: structureT} = useTranslation(structureLocaleNamespace)
   const {displayed, editState} = useDocumentPane()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const perspectiveList = useDocumentPerspectiveList()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -97,7 +100,11 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         onClose={onClose}
         title={t('document-group-inventory.action.manage-versions')}
       />
-      <Card className={documentGroupInventoryContainer} flex={1}>
+      <div
+        className={documentGroupInventoryContainer}
+        data-testid="document-group-inspector-content"
+        data-document-group-inventory-scroll={layoutCollapsed ? 'ancestor' : undefined}
+      >
         {typeof targetDocumentId !== 'undefined' && (
           <DocumentGroupInventory
             // The inventory's machines read their input once, so they must be recreated when the
@@ -114,7 +121,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             onSelect={selectDocumentGroupVariant}
           />
         )}
-      </Card>
+      </div>
     </Flex>
   )
 }

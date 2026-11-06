@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {Box} from 'ui5'
 
@@ -11,7 +10,6 @@ import {
 import {type Variant} from '../../machines/selectionMachine'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
 import {DocumentGroupSet} from '../DocumentGroupSet'
-import {TextButton} from '../TextButton'
 import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
 
 const NOOP = () => undefined
@@ -68,7 +66,7 @@ const RELEASES = new Map<string, ReleaseDocument>([
  * Chromatic sentinel for the shared document group set chrome
  * (`DocumentGroupSet`) and the per-version row (`DocumentGroupEntry`) that the
  * inventory and the version picker both render: the published, draft, release
- * and agent avatars, the "viewing" badge and the optional leading selection
+ * and agent avatars, the "editing" badge and the optional leading selection
  * control.
  */
 const meta = {
@@ -83,7 +81,13 @@ const meta = {
       </TestWrapper>
     ),
   ],
-  args: {name: 'All users (Default)', children: null},
+  args: {
+    name: 'Default',
+    children: null,
+    selectedIds: new Set(),
+    checked: false,
+    onCheckedChange: NOOP,
+  },
 } satisfies Meta<typeof DocumentGroupSet>
 
 export default meta
@@ -92,6 +96,7 @@ type Story = StoryObj<typeof meta>
 
 export const Picker: Story = {
   args: {
+    readOnly: true,
     children: (
       <>
         <DocumentGroupEntry variant={PUBLISHED} releases={RELEASES} onPrimaryAction={NOOP} />
@@ -108,36 +113,50 @@ export const Picker: Story = {
   },
 }
 
+const SELECTABLE_VARIANTS = [PUBLISHED, DRAFT, IN_ASAP_RELEASE]
+
+/**
+ * The rows the inventory renders for {@link SELECTABLE_VARIANTS}, mirroring
+ * `ManagedVariantRow`: every checkbox is revealed once anything is selected.
+ */
+function selectableRows(selectedIds: ReadonlySet<string>) {
+  return SELECTABLE_VARIANTS.map((entry) => (
+    <DocumentGroupEntry
+      key={entry.id}
+      variant={entry}
+      releases={RELEASES}
+      isSelected={entry === DRAFT}
+      leading={
+        <VariantCheckbox
+          data-visible={selectedIds.size !== 0}
+          checked={selectedIds.has(entry.id)}
+          onChange={NOOP}
+        />
+      }
+      onPrimaryAction={NOOP}
+    />
+  ))
+}
+
+const NOTHING_SELECTED = new Set<string>()
+const PUBLISHED_SELECTED = new Set([PUBLISHED.id])
+
+/** Nothing selected: the checkboxes stay hidden and the set shows its release avatar. */
 export const Selectable: Story = {
   args: {
-    name: 'Summer sale',
-    headerActions: (
-      <TextButton onClick={NOOP}>
-        <Text size={1}>Select all 3</Text>
-      </TextButton>
-    ),
-    children: (
-      <>
-        <DocumentGroupEntry
-          variant={PUBLISHED}
-          releases={RELEASES}
-          leading={<VariantCheckbox checked readOnly />}
-          onPrimaryAction={NOOP}
-        />
-        <DocumentGroupEntry
-          variant={DRAFT}
-          releases={RELEASES}
-          isSelected
-          leading={<VariantCheckbox checked={false} readOnly />}
-          onPrimaryAction={NOOP}
-        />
-        <DocumentGroupEntry
-          variant={IN_ASAP_RELEASE}
-          releases={RELEASES}
-          leading={<VariantCheckbox checked={false} readOnly />}
-          onPrimaryAction={NOOP}
-        />
-      </>
-    ),
+    name: activeASAPRelease.metadata.title,
+    bundle: {type: 'perspective', perspective: activeASAPRelease},
+    selectedIds: NOTHING_SELECTED,
+    children: selectableRows(NOTHING_SELECTED),
+  },
+}
+
+/** Part of the set selected: every checkbox, the set's included, is revealed. */
+export const PartiallySelected: Story = {
+  args: {
+    name: activeASAPRelease.metadata.title,
+    bundle: {type: 'perspective', perspective: activeASAPRelease},
+    selectedIds: PUBLISHED_SELECTED,
+    children: selectableRows(PUBLISHED_SELECTED),
   },
 }
