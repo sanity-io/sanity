@@ -2,7 +2,7 @@ import {render} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type BlockProps} from '../../../types'
+import {type BlockProps} from '../../../types/blockProps'
 import {DefaultBlockObjectComponent} from './BlockObject'
 import {DefaultInlineObjectComponent} from './InlineObject'
 
