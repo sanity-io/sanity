@@ -1,6 +1,6 @@
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {BehaviorSubject, NEVER} from 'rxjs'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../i18n/fallback'
@@ -8,14 +8,35 @@ import {createDocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {createSchema} from '../../schema/createSchema'
 import {validateDocumentWithReferences} from '../../validation'
 import {createHistoryStore} from '../history/createHistoryStore'
-import {editState} from './document-pair/editState'
+import {checkedOutEditState, editState, type EditStateFor} from './document-pair/editState'
 import {type ValidationListener} from './document-pair/validation'
 import {createDocumentStore} from './document-store'
 
-vi.mock('./document-pair/editState', () => ({editState: vi.fn(() => NEVER)}))
+vi.mock('./document-pair/editState', () => ({
+  editState: vi.fn(() => NEVER),
+  checkedOutEditState: vi.fn(),
+}))
 vi.mock('../../validation', () => ({
   validateDocumentWithReferences: vi.fn(() => NEVER),
 }))
+
+// What `checkedOutEditState` reports for each published id: whether a pane has the pair checked out
+const checkedOutStates = new Map<string, BehaviorSubject<EditStateFor | null>>()
+
+function checkedOutStatesOf(publishedId: string) {
+  let states = checkedOutStates.get(publishedId)
+  if (!states) {
+    states = new BehaviorSubject<EditStateFor | null>(null)
+    checkedOutStates.set(publishedId, states)
+  }
+  return states
+}
+
+beforeEach(() => {
+  vi.mocked(checkedOutEditState).mockImplementation((_client, idPair) =>
+    checkedOutStatesOf(idPair.publishedId).asObservable(),
+  )
+})
 
 let testId = 0
 
@@ -35,10 +56,13 @@ function setup() {
     schema: createSchema({name: 'test', types: []}),
     i18n: getFallbackLocaleSource(),
   })
+  // `document` builds its run as it is asked for, so the run's scheduling can be read right away
   const validate = (scheduling?: ValidationScheduling) =>
-    store.pair.validation(documentId, 'movie', false, {scheduling}).subscribe()
+    store.pair
+      .validation(documentId, 'movie', false, {scheduling, listener: 'document'})
+      .subscribe()
 
-  store.pair.validation(documentId, 'movie', false)
+  store.pair.validation(documentId, 'movie', false, {listener: 'document'})
   const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
   if (!(scheduling instanceof BehaviorSubject)) {
     throw new Error('validation was not handed a scheduling that runs can follow')
@@ -141,8 +165,29 @@ describe('documentStore.pair.validation listener', () => {
       schema: createSchema({name: 'test', types: []}),
       i18n: getFallbackLocaleSource(),
     })
-    return {draftId, store, observeDocument}
+    return {draftId, publishedId: draftId.slice('drafts.'.length), store, observeDocument}
   }
+
+  /** Reports the pair as checked out, the way a document pane's `editState` does. */
+  function checkOutPair(publishedId: string) {
+    checkedOutStatesOf(publishedId).next({
+      id: publishedId,
+      type: 'movie',
+      transactionSyncLock: null,
+      draft: null,
+      published: null,
+      version: null,
+      liveEdit: false,
+      liveEditSchemaType: false,
+      ready: true,
+      release: undefined,
+      scopeId: undefined,
+    })
+  }
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
   it('follows the document through the preview store with the global listener', () => {
     const {draftId, store, observeDocument} = setupListener()
@@ -153,13 +198,10 @@ describe('documentStore.pair.validation listener', () => {
     expect(editState).not.toHaveBeenCalled()
   })
 
-  it.each([
-    {name: 'the document listener', options: {listener: 'document' as const}},
-    {name: 'no listener option', options: undefined},
-  ])('checks out the document pair with $name', ({options}) => {
+  it('checks out the document pair with the document listener', () => {
     const {draftId, store, observeDocument} = setupListener()
 
-    store.pair.validation(draftId, 'movie', false, options)
+    store.pair.validation(draftId, 'movie', false, {listener: 'document'})
 
     expect(editState).toHaveBeenCalledExactlyOnceWith(
       expect.anything(),
@@ -167,6 +209,77 @@ describe('documentStore.pair.validation listener', () => {
       'movie',
     )
     expect(observeDocument).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    {name: 'no listener option', options: undefined},
+    {name: 'the auto listener', options: {listener: 'auto' as const}},
+  ])(
+    'follows the global listener while nothing has the pair checked out, with $name',
+    ({options}) => {
+      vi.useFakeTimers()
+      const {draftId, store, observeDocument} = setupListener()
+      observeDocument.mockReturnValue(NEVER)
+
+      const subscription = store.pair.validation(draftId, 'movie', false, options).subscribe()
+      // the pair gets a tick to be checked out first
+      expect(observeDocument).not.toHaveBeenCalled()
+      vi.advanceTimersByTime(0)
+
+      expect(observeDocument).toHaveBeenCalledExactlyOnceWith(draftId)
+      expect(editState).not.toHaveBeenCalled()
+      subscription.unsubscribe()
+    },
+  )
+
+  it('reads a pair another subscriber has checked out, without checking it out itself', () => {
+    vi.useFakeTimers()
+    const {draftId, publishedId, store, observeDocument} = setupListener()
+    observeDocument.mockReturnValue(NEVER)
+    checkOutPair(publishedId)
+
+    const subscription = store.pair.validation(draftId, 'movie', false).subscribe()
+    vi.advanceTimersByTime(1_000)
+
+    expect(checkedOutEditState).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({draftId}),
+      'movie',
+    )
+    expect(observeDocument).not.toHaveBeenCalled()
+    expect(editState).not.toHaveBeenCalled()
+    subscription.unsubscribe()
+  })
+
+  it('switches the scheduling of the run the auto listener reads to immediate', () => {
+    vi.useFakeTimers()
+    const {draftId, publishedId, store, observeDocument} = setupListener()
+    observeDocument.mockReturnValue(NEVER)
+    const schedulingOf = (validationListener: ValidationListener) => {
+      store.pair.validation(draftId, 'movie', false, {listener: validationListener})
+      const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
+      if (!(scheduling instanceof BehaviorSubject)) {
+        throw new Error('validation was not handed a scheduling that runs can follow')
+      }
+      return scheduling
+    }
+    const pair = schedulingOf('document')
+    const global = schedulingOf('global')
+
+    const hold = store.pair
+      .validation(draftId, 'movie', false, {scheduling: 'immediate'})
+      .subscribe()
+    vi.advanceTimersByTime(0)
+    expect(global.getValue()).toBe('immediate')
+    expect(pair.getValue()).toBe('idle')
+
+    checkOutPair(publishedId)
+    expect(pair.getValue()).toBe('immediate')
+    expect(global.getValue()).toBe('idle')
+
+    hold.unsubscribe()
+    expect(pair.getValue()).toBe('idle')
+    expect(global.getValue()).toBe('idle')
   })
 
   it.each(['document', 'global'] as const)(

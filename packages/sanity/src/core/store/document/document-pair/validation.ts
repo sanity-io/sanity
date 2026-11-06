@@ -3,7 +3,17 @@ import {type CurrentUser, type SanityDocument, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
 import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of, timer} from 'rxjs'
-import {distinctUntilChanged, map, retry, share, shareReplay, throttleTime} from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  filter,
+  ignoreElements,
+  map,
+  retry,
+  share,
+  shareReplay,
+  switchMap,
+  throttleTime,
+} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -14,7 +24,7 @@ import {validateDocumentWithReferences, type ValidationStatus} from '../../../va
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {editState} from './editState'
+import {checkedOutEditState, editState, type EditStateFor} from './editState'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
@@ -29,11 +39,42 @@ function shareLatestWithRefCount<T>() {
 }
 
 /**
- * Where the validated document comes from: `document` checks out the document pair, which opens a
- * listener for it, and `global` follows the document through the document preview store's shared
- * global listener.
+ * Where the validated document comes from:
+ *
+ * - `auto` validates from the document pair while another subscriber has it checked out, like a
+ *   document pane, and follows the document through the document preview store's shared global
+ *   listener otherwise. It never checks out the pair itself.
+ * - `document` checks out the document pair, which opens a listener for it.
+ * - `global` always follows the document through the shared global listener.
  */
-export type ValidationListener = 'document' | 'global'
+export type ValidationListener = 'auto' | 'document' | 'global'
+
+/**
+ * The document a validation run reads: the checked out pair's, or the global listener's. Every
+ * listener that resolves to the same source shares its run.
+ */
+type ValidationSource = 'pair' | 'global'
+
+type ValidationContext = {
+  client: SanityClient
+  getClient: (options: SourceClientOptions) => SanityClient
+  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
+  observeDocument: (id: string) => Observable<SanityDocument | undefined>
+  schema: Schema
+  i18n: LocaleSource
+  /**
+   * @deprecated Does nothing. Preserved to avoid breaking changes.
+   * Will be removed in the next major version.
+   */
+  serverActionsEnabled?: Observable<boolean>
+  pairListenerOptions?: DocumentStoreExtraOptions
+  currentUser?: Omit<CurrentUser, 'role'> | null
+}
+
+type ValidationStreams = {
+  status$: Observable<ValidationStatus>
+  immediate$: Observable<ValidationStatus>
+}
 
 function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariantType) {
   if (validationTarget === 'draft') return idPair.draftId
@@ -41,31 +82,38 @@ function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariant
   return idPair.publishedId
 }
 
-const validationStreams = memoize(
+function getValidationTarget(state: EditStateFor, validationTarget: DocumentVariantType) {
+  if (validationTarget === 'draft') return state.draft
+  if (validationTarget === 'version') return state.version
+  return state.published
+}
+
+function getValidationKey(
+  ctx: ValidationContext,
+  idPair: IdPair,
+  typeName: string,
+  validationTarget: DocumentVariantType,
+) {
+  // Use the actual document ID being validated in the cache key for explicitness
+  const documentId = getValidationTargetId(idPair, validationTarget)
+  // Include the user id so an in-place user switch gets its own cache entry;
+  // the module-level memo cache is never cleared, so without this a new user
+  // would replay the previous user's validation result.
+  const userId = ctx.currentUser?.id ?? ''
+  return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${userId}`
+}
+
+const validationRuns = memoize(
   (
-    ctx: {
-      client: SanityClient
-      getClient: (options: SourceClientOptions) => SanityClient
-      observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
-      observeDocument: (id: string) => Observable<SanityDocument | undefined>
-      schema: Schema
-      i18n: LocaleSource
-      /**
-       * @deprecated Does nothing. Preserved to avoid breaking changes.
-       * Will be removed in the next major version.
-       */
-      serverActionsEnabled?: Observable<boolean>
-      pairListenerOptions?: DocumentStoreExtraOptions
-      currentUser?: Omit<CurrentUser, 'role'> | null
-    },
+    ctx: ValidationContext,
     idPair: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
-    listener: ValidationListener,
-  ) => {
+    source: ValidationSource,
+  ): ValidationStreams => {
     const documentId = getValidationTargetId(idPair, validationTarget)
     const target$: Observable<SanityDocument | null | undefined> =
-      listener === 'global'
+      source === 'global'
         ? documentId
           ? ctx.observeDocument(documentId).pipe(
               // A failed fetch or a dropped global listener would error the validation, which
@@ -77,14 +125,11 @@ const validationStreams = memoize(
               }),
             )
           : of(undefined)
-        : editState(ctx, idPair, typeName).pipe(
-            map((state) => {
-              const {version, draft, published} = state
-
-              if (validationTarget === 'draft') return draft
-              if (validationTarget === 'version') return version
-              return published
-            }),
+        : // Never checks out the pair: `document` holds it, and `auto` reads this run only while
+          // something else does. Its placeholder and cached states aren't the document yet.
+          checkedOutEditState(ctx.client, idPair, typeName).pipe(
+            filter((state): state is EditStateFor => Boolean(state?.ready)),
+            map((state) => getValidationTarget(state, validationTarget)),
           )
     // shared, so the document to validate and the revision below come from the same emission
     const document$ = target$.pipe(
@@ -151,25 +196,70 @@ const validationStreams = memoize(
 
     return {status$, immediate$: merge(holdImmediate$, status$)}
   },
-  (ctx, idPair, typeName, validationTarget, listener) => {
-    // Use the actual document ID being validated in the cache key for explicitness
-    const documentId = getValidationTargetId(idPair, validationTarget)
-    // Include the user id so an in-place user switch gets its own cache entry;
-    // the module-level memo cache is never cleared, so without this a new user
-    // would replay the previous user's validation result.
-    const userId = ctx.currentUser?.id ?? ''
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${userId}-${listener}`
+  (ctx, idPair, typeName, validationTarget, source) =>
+    `${getValidationKey(ctx, idPair, typeName, validationTarget)}-${source}`,
+)
+
+const validationStreams = memoize(
+  (
+    ctx: ValidationContext,
+    idPair: IdPair,
+    typeName: string,
+    validationTarget: DocumentVariantType,
+    listener: ValidationListener,
+  ): ValidationStreams => {
+    const run = (source: ValidationSource) =>
+      validationRuns(ctx, idPair, typeName, validationTarget, source)
+
+    switch (listener) {
+      case 'global':
+        return run('global')
+      case 'document': {
+        // subscribed first, so the pair run finds the pair checked out
+        const checkOut$ = editState(ctx, idPair, typeName).pipe(ignoreElements())
+        const pairRun = run('pair')
+        return {
+          status$: merge(checkOut$, pairRun.status$),
+          immediate$: merge(checkOut$, pairRun.immediate$),
+        }
+      }
+      case 'auto': {
+        const source$ = checkedOutEditState(ctx.client, idPair, typeName).pipe(
+          map((state) => state !== null),
+          distinctUntilChanged(),
+          // Passive effects run child first, so a document action can subscribe a moment before
+          // its pane checks the pair out. Use the pair at once, but give it a tick before
+          // falling back to the global listener.
+          switchMap((checkedOut) => (checkedOut ? of(true) : timer(0).pipe(map(() => false)))),
+          distinctUntilChanged(),
+          map((checkedOut): ValidationSource => (checkedOut ? 'pair' : 'global')),
+        )
+        // The previous run's status stays until the next run emits, so a switch never reads as
+        // an empty result.
+        return {
+          status$: source$.pipe(switchMap((source) => run(source).status$)),
+          immediate$: source$.pipe(switchMap((source) => run(source).immediate$)),
+        }
+      }
+      default: {
+        const unknownListener: never = listener
+        throw new Error(`Unknown validation listener: ${String(unknownListener)}`)
+      }
+    }
   },
+  (ctx, idPair, typeName, validationTarget, listener) =>
+    `${getValidationKey(ctx, idPair, typeName, validationTarget)}-${listener}`,
 )
 
 /**
- * The document's validation status. Every subscriber shares one validation of the document, which
- * runs without waiting for idle time while any subscription made with `immediate` scheduling lasts.
+ * The document's validation status. Every subscriber whose `listener` reads the same source shares
+ * one validation of the document, which runs without waiting for idle time while any subscription
+ * made with `immediate` scheduling lasts.
  *
  * @internal
  */
 export function validation(
-  ctx: Parameters<typeof validationStreams>[0],
+  ctx: ValidationContext,
   idPair: IdPair,
   typeName: string,
   validationTarget: DocumentVariantType,
@@ -178,7 +268,7 @@ export function validation(
    */
   _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
-  listener: ValidationListener = 'document',
+  listener: ValidationListener = 'auto',
 ): Observable<ValidationStatus> {
   const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget, listener)
   return scheduling === 'immediate' ? immediate$ : status$

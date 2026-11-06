@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {type SanityDocument} from '@sanity/types'
+import {defineField, defineType, type SanityDocument} from '@sanity/types'
 import {
+  BehaviorSubject,
   concat,
   type ConnectableObservable,
   defer,
@@ -9,11 +10,22 @@ import {
   lastValueFrom,
   type Observable,
   of,
+  ReplaySubject,
   Subject,
   throwError,
   timer,
 } from 'rxjs'
-import {buffer, filter, map, publish, takeWhile} from 'rxjs/operators'
+import {
+  buffer,
+  filter,
+  finalize,
+  map,
+  publish,
+  share,
+  startWith,
+  takeWhile,
+  tap,
+} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -24,12 +36,44 @@ import {
 } from '../../../preview/types'
 import {createSchema} from '../../../schema/createSchema'
 import {type ValidationStatus} from '../../../validation'
-import {editState, type EditStateFor} from './editState'
+import {type IdPair} from '../types'
+import {checkedOutEditState, editState, type EditStateFor} from './editState'
 import {validation, type ValidationListener} from './validation'
 
 // Mock `./editState`
 const mockEditState = editState as Mock<typeof editState>
-vi.mock('./editState', () => ({editState: vi.fn()}))
+const mockCheckedOutEditState = checkedOutEditState as Mock<typeof checkedOutEditState>
+vi.mock('./editState', () => ({editState: vi.fn(), checkedOutEditState: vi.fn()}))
+
+// What `checkedOutEditState` reports for each pair, like the registry `editState` fills
+const checkedOutStates = new Map<string, BehaviorSubject<EditStateFor | null>>()
+
+function getCheckedOutStates(idPair: IdPair) {
+  const key = `${idPair.publishedId}-${idPair.versionId}`
+  let states = checkedOutStates.get(key)
+  if (!states) {
+    states = new BehaviorSubject<EditStateFor | null>(null)
+    checkedOutStates.set(key, states)
+  }
+  return states
+}
+
+/**
+ * The pair's `editState` with `states$` as its snapshots: while subscribed, it reports a placeholder
+ * and then every state to `checkedOutEditState`, and it reports `null` once unsubscribed.
+ */
+function checkedOutPair(idPair: IdPair, states$: Observable<EditStateFor>) {
+  const checkedOut = getCheckedOutStates(idPair)
+  return states$.pipe(
+    startWith({...draftEditState(idPair.publishedId, undefined), ready: false}),
+    tap((state) => checkedOut.next(state)),
+    finalize(() => checkedOut.next(null)),
+    share(),
+  )
+}
+
+// counts the validation runs of `countedMovie` documents
+let countedValidations = 0
 
 const schema = createSchema({
   name: 'default',
@@ -65,6 +109,22 @@ const schema = createSchema({
         },
       ],
     },
+    defineType({
+      name: 'countedMovie',
+      title: 'Counted Movie',
+      type: 'document',
+      fields: [
+        defineField({
+          name: 'title',
+          type: 'string',
+          validation: (rule) =>
+            rule.custom(() => {
+              countedValidations += 1
+              return true
+            }),
+        }),
+      ],
+    }),
   ],
 })
 
@@ -89,7 +149,8 @@ function createSubscription(
     typeName = 'movie',
     currentUser,
     documentId = 'example-id',
-    listener,
+    // most tests drive the document through the pair's `editState`, which `document` checks out
+    listener = 'document',
     observeDocument = () => EMPTY,
   } = options
 
@@ -171,6 +232,9 @@ function createVersionSubscription(
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
     'movie',
     'version',
+    undefined,
+    undefined,
+    'document',
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
@@ -205,13 +269,16 @@ function getMockClient() {
 describe('validation', () => {
   beforeEach(() => {
     mockEditState.mockReset()
+    mockCheckedOutEditState.mockImplementation((_client, idPair) =>
+      getCheckedOutStates(idPair).asObservable(),
+    )
   })
 
   it('runs `editState` through `validateDocument` to create a stream of validation statuses', async () => {
     const client = getMockClient()
     const mockEditStateSubject = new Subject<EditStateFor>()
 
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const {subscription, closeSubscription, doneValidating} = createSubscription(
       client,
@@ -263,7 +330,7 @@ describe('validation', () => {
     const client = getMockClient()
     const mockEditStateSubject = new Subject<EditStateFor>()
 
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const {subscription, closeSubscription, doneValidating} = createSubscription(
       client,
@@ -333,7 +400,7 @@ describe('validation', () => {
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const observeDocumentPairAvailability = (
       id: string,
@@ -405,7 +472,7 @@ describe('validation', () => {
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const subscription = lastValueFrom(
       validation(
@@ -488,7 +555,7 @@ describe('validation', () => {
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const {subscription, closeSubscription, doneValidating} = createSubscription(
       client,
@@ -520,9 +587,9 @@ describe('validation', () => {
 
     mockEditState.mockImplementation((_ctx, idPair) => {
       if (idPair.versionId === 'versions.summer.example-id') {
-        return summerEditStateSubject.asObservable()
+        return checkedOutPair(idPair, summerEditStateSubject)
       }
-      return winterEditStateSubject.asObservable()
+      return checkedOutPair(idPair, winterEditStateSubject)
     })
 
     const {
@@ -614,7 +681,7 @@ describe('validation', () => {
     const client = getMockClient()
     const mockEditStateSubject = new Subject<EditStateFor>()
 
-    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+    mockEditState.mockImplementation((_ctx, idPair) => checkedOutPair(idPair, mockEditStateSubject))
 
     const adminSubscription = createSubscription(client, () => EMPTY, {
       typeName: 'adminMovie',
@@ -694,7 +761,9 @@ describe('validation', () => {
     it('returns DISTINCT observables for different currentUser ids', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
-      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+      mockEditState.mockImplementation((_ctx, idPair) =>
+        checkedOutPair(idPair, mockEditStateSubject),
+      )
 
       // Use a random published id to avoid collisions with the module-level cache from other tests
       const publishedId = `movie-${Math.random().toString(36).slice(2)}`
@@ -729,7 +798,9 @@ describe('validation', () => {
     it('returns the SAME observable for the same currentUser id regardless of the deprecated reference flag', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
-      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+      mockEditState.mockImplementation((_ctx, idPair) =>
+        checkedOutPair(idPair, mockEditStateSubject),
+      )
 
       const publishedId = `movie-${Math.random().toString(36).slice(2)}`
       const idPair = {publishedId, draftId: `drafts.${publishedId}`}
@@ -754,7 +825,9 @@ describe('validation', () => {
     it('returns DISTINCT observables for null vs defined currentUser', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
-      mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+      mockEditState.mockImplementation((_ctx, idPair) =>
+        checkedOutPair(idPair, mockEditStateSubject),
+      )
 
       const publishedId = `movie-${Math.random().toString(36).slice(2)}`
       const idPair = {publishedId, draftId: `drafts.${publishedId}`}
@@ -902,8 +975,8 @@ describe('validation', () => {
         const documentId = `movie-${Math.random().toString(36).slice(2)}`
         const draftId = `drafts.${documentId}`
         const document$ = new Subject<SanityDocument>()
-        mockEditState.mockImplementation(() =>
-          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        mockEditState.mockImplementation((_ctx, idPair) =>
+          checkedOutPair(idPair, document$.pipe(map((draft) => draftEditState(documentId, draft)))),
         )
 
         const {subscription, closeSubscription, doneValidating, waitFor} = createSubscription(
@@ -941,8 +1014,8 @@ describe('validation', () => {
         const client = getMockClient()
         const documentId = `movie-${Math.random().toString(36).slice(2)}`
         const document$ = new Subject<SanityDocument | undefined>()
-        mockEditState.mockImplementation(() =>
-          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        mockEditState.mockImplementation((_ctx, idPair) =>
+          checkedOutPair(idPair, document$.pipe(map((draft) => draftEditState(documentId, draft)))),
         )
 
         const {closeSubscription, doneValidating, waitFor} = createSubscription(
@@ -964,7 +1037,7 @@ describe('validation', () => {
       },
     )
 
-    it('keeps the document pair and the global listener in separate cache entries', () => {
+    it('caches one stream per listener, with `auto` as the default', () => {
       const client = getMockClient()
       mockEditState.mockImplementation(() => EMPTY)
       const publishedId = `movie-${Math.random().toString(36).slice(2)}`
@@ -978,25 +1051,224 @@ describe('validation', () => {
         i18n: getFallbackLocaleSource(),
         currentUser: null,
       }
+      const forListener = (listener?: ValidationListener) =>
+        validation(ctx, idPair, 'movie', 'draft', undefined, undefined, listener)
 
-      const pairValidation = validation(ctx, idPair, 'movie', 'draft')
-      const globalValidation = validation(
-        ctx,
+      const autoValidation = forListener()
+      const pairValidation = forListener('document')
+      const globalValidation = forListener('global')
+
+      expect(forListener('auto')).toBe(autoValidation)
+      expect(forListener('document')).toBe(pairValidation)
+      expect(forListener('global')).toBe(globalValidation)
+      expect(new Set([autoValidation, pairValidation, globalValidation]).size).toBe(3)
+    })
+  })
+
+  describe('auto listener', () => {
+    const movie = {
+      _createdAt: '2021-09-07T16:23:52.256Z',
+      _type: 'movie',
+      _updatedAt: '2021-09-07T16:23:52.256Z',
+    }
+    const invalidTitle = {item: {message: 'Expected type "String", got "Number"'}}
+
+    function setup() {
+      const documentId = `movie-${Math.random().toString(36).slice(2)}`
+      const draftId = `drafts.${documentId}`
+      const idPair = {publishedId: documentId, draftId}
+      // the snapshots of the pair, replayed to whoever checks it out
+      const pairDraft$ = new ReplaySubject<SanityDocument>(1)
+      const pair$ = checkedOutPair(
         idPair,
-        'movie',
-        'draft',
-        undefined,
-        undefined,
-        'global',
+        pairDraft$.pipe(map((draft) => draftEditState(documentId, draft))),
+      )
+      // what a document pane would do
+      const checkOutPair = () => pair$.subscribe()
+      return {documentId, draftId, pairDraft$, checkOutPair}
+    }
+
+    it('validates the checked out pair without reading the global listener', async () => {
+      const {documentId, draftId, pairDraft$, checkOutPair} = setup()
+      const observeDocument = vi.fn(() => EMPTY)
+      pairDraft$.next({...movie, _id: draftId, _rev: 'pairRev1', title: 5})
+      const pane = checkOutPair()
+
+      const {closeSubscription, doneValidating} = createSubscription(getMockClient(), () => EMPTY, {
+        documentId,
+        listener: 'auto',
+        observeDocument,
+      })
+      const status = await doneValidating()
+      closeSubscription()
+
+      expect(status).toMatchObject({validation: [invalidTitle], revision: 'pairRev1'})
+      expect(observeDocument).not.toHaveBeenCalled()
+      expect(mockEditState).not.toHaveBeenCalled()
+      pane.unsubscribe()
+    })
+
+    it('validates through the global listener while no pair is checked out', async () => {
+      const {documentId, draftId} = setup()
+      const observeDocument = vi.fn((_id: string) =>
+        of({...movie, _id: draftId, _rev: 'globalRev1', title: 5}),
       )
 
-      expect(globalValidation).not.toBe(pairValidation)
-      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'document')).toBe(
-        pairValidation,
+      const {closeSubscription, doneValidating} = createSubscription(getMockClient(), () => EMPTY, {
+        documentId,
+        listener: 'auto',
+        observeDocument,
+      })
+      const status = await doneValidating()
+      closeSubscription()
+
+      expect(status).toMatchObject({validation: [invalidTitle], revision: 'globalRev1'})
+      expect(observeDocument).toHaveBeenCalledWith(draftId)
+      expect(mockEditState).not.toHaveBeenCalled()
+    })
+
+    it('uses a pair checked out in the same tick as the subscription', async () => {
+      const {documentId, draftId, pairDraft$, checkOutPair} = setup()
+      const observeDocument = vi.fn(() => EMPTY)
+      pairDraft$.next({...movie, _id: draftId, _rev: 'pairRev1', title: 5})
+
+      const {closeSubscription, doneValidating} = createSubscription(getMockClient(), () => EMPTY, {
+        documentId,
+        listener: 'auto',
+        observeDocument,
+      })
+      // a document action subscribes a moment before its pane checks the pair out
+      const pane = checkOutPair()
+      const status = await doneValidating()
+      closeSubscription()
+
+      expect(status).toMatchObject({validation: [invalidTitle], revision: 'pairRev1'})
+      expect(observeDocument).not.toHaveBeenCalled()
+      pane.unsubscribe()
+    })
+
+    it('switches to a pair checked out later, without validating its placeholder', async () => {
+      const {documentId, draftId, pairDraft$, checkOutPair} = setup()
+      const observeDocument = () => of({...movie, _id: draftId, _rev: 'globalRev1', title: 5})
+
+      const {subscription, closeSubscription, doneValidating, waitFor} = createSubscription(
+        getMockClient(),
+        () => EMPTY,
+        {documentId, listener: 'auto', observeDocument},
       )
-      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'global')).toBe(
-        globalValidation,
+      await doneValidating()
+
+      // the pair reports its placeholder until its snapshots arrive
+      const pane = checkOutPair()
+      await firstValueFrom(timer(50))
+      pairDraft$.next({...movie, _id: draftId, _rev: 'pairRev2', title: 'A valid title'})
+      await waitFor((status) => !status.isValidating && status.revision === 'pairRev2')
+      closeSubscription()
+
+      const statuses = await subscription
+      const globalResult = statuses.findIndex((status) => !status.isValidating)
+      const beforePairResult = statuses.slice(globalResult + 1, -1)
+      expect(statuses[globalResult]).toMatchObject({
+        validation: [invalidTitle],
+        revision: 'globalRev1',
+      })
+      expect(beforePairResult.filter((status) => !status.isValidating)).toEqual([])
+      expect(statuses.every((status) => status.revision !== undefined)).toBe(true)
+      expect(statuses[statuses.length - 1]).toMatchObject({validation: [], revision: 'pairRev2'})
+      pane.unsubscribe()
+    })
+
+    it('falls back to the global listener once the pair is released', async () => {
+      const {documentId, draftId, pairDraft$, checkOutPair} = setup()
+      const observeDocument = vi.fn((_id: string) =>
+        of({...movie, _id: draftId, _rev: 'globalRev2', title: 'A valid title'}),
       )
+      pairDraft$.next({...movie, _id: draftId, _rev: 'pairRev1', title: 5})
+      const pane = checkOutPair()
+
+      const {closeSubscription, doneValidating, waitFor} = createSubscription(
+        getMockClient(),
+        () => EMPTY,
+        {documentId, listener: 'auto', observeDocument},
+      )
+      await doneValidating()
+      expect(observeDocument).not.toHaveBeenCalled()
+
+      pane.unsubscribe()
+      const status = await waitFor((next) => !next.isValidating && next.revision === 'globalRev2')
+      closeSubscription()
+
+      expect(status).toMatchObject({validation: []})
+      expect(observeDocument).toHaveBeenCalledWith(draftId)
+    })
+
+    /**
+     * Validates a `countedMovie` draft with each listener in turn, each subscription kept open
+     * while the next one waits for its result.
+     */
+    async function validateWithEach(
+      setupResult: ReturnType<typeof setup>,
+      observeDocument: (id: string) => Observable<SanityDocument | undefined>,
+      listeners: ValidationListener[],
+      revision: string,
+    ) {
+      const client = getMockClient()
+      const ctx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        observeDocument,
+        i18n: getFallbackLocaleSource(),
+        currentUser: null,
+      }
+      const idPair = {publishedId: setupResult.documentId, draftId: setupResult.draftId}
+      const forListener = (listener: ValidationListener) =>
+        validation(ctx, idPair, 'countedMovie', 'draft', undefined, undefined, listener)
+
+      const subscriptions = []
+      for (const listener of listeners) {
+        subscriptions.push(forListener(listener).subscribe())
+        await firstValueFrom(
+          forListener(listener).pipe(
+            filter((status) => !status.isValidating && status.revision === revision),
+          ),
+        )
+      }
+      // last first: the pair outlives every reader that doesn't hold it
+      for (const subscription of subscriptions.toReversed()) subscription.unsubscribe()
+    }
+
+    it('shares the pair run with `document` while the pair is checked out', async () => {
+      const setupResult = setup()
+      const {documentId, draftId, pairDraft$} = setupResult
+      pairDraft$.next({...movie, _type: 'countedMovie', _id: draftId, _rev: 'pairRev1'})
+      mockEditState.mockReturnValue(
+        checkedOutPair(
+          {publishedId: documentId, draftId},
+          pairDraft$.pipe(map((draft) => draftEditState(documentId, draft))),
+        ),
+      )
+      const observeDocument = vi.fn(() => EMPTY)
+      countedValidations = 0
+
+      await validateWithEach(setupResult, observeDocument, ['document', 'auto'], 'pairRev1')
+
+      expect(countedValidations).toBe(1)
+      expect(observeDocument).not.toHaveBeenCalled()
+    })
+
+    it('shares the global run with `global` while no pair is checked out', async () => {
+      const setupResult = setup()
+      const observeDocument = vi.fn((_id: string) =>
+        of({...movie, _type: 'countedMovie', _id: setupResult.draftId, _rev: 'globalRev1'}),
+      )
+      countedValidations = 0
+
+      await validateWithEach(setupResult, observeDocument, ['global', 'auto'], 'globalRev1')
+
+      expect(countedValidations).toBe(1)
+      expect(observeDocument).toHaveBeenCalledTimes(1)
     })
   })
 })
