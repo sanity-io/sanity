@@ -1,6 +1,6 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {Activity} from 'react'
-import {defer, of} from 'rxjs'
+import {defer, NEVER, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {useProjectStore} from '../../../store/datastores'
@@ -9,20 +9,47 @@ import {useCanInviteProjectMembers} from './useCanInviteMembers'
 
 vi.mock('../../../store/datastores', () => ({useProjectStore: vi.fn()}))
 
-const grants = {
-  'sanity.project.members': [{grants: [{name: 'invite', params: {}}]}],
-} as unknown as ProjectGrants
+const grants: ProjectGrants = {
+  'sanity.project.members': [
+    {
+      id: 'administrator',
+      name: 'administrator',
+      title: 'Administrator',
+      description: null,
+      isCustom: false,
+      config: {},
+      grants: [{name: 'invite', params: {}}],
+    },
+  ],
+}
 
-describe('useCanInviteProjectMembers', () => {
-  it('defers the grants request while hidden, even across re-renders', async () => {
-    const subscribes = {count: 0}
-    const getGrants = vi.fn(() =>
+/**
+ * Mocks the project store, counting how many times the grants request is
+ * actually subscribed to. The other store methods never emit — this hook only
+ * reads grants.
+ */
+function mockGrantsRequest() {
+  const subscribes = {count: 0}
+  const projectStore: ProjectStore = {
+    get: () => NEVER,
+    getDatasets: () => NEVER,
+    getProjectName: () => NEVER,
+    getOrganizationData: () => NEVER,
+    getOrganizationId: () => NEVER,
+    getGrants: vi.fn(() =>
       defer(() => {
         subscribes.count += 1
         return of(grants)
       }),
-    )
-    vi.mocked(useProjectStore).mockReturnValue({getGrants} as unknown as ProjectStore)
+    ),
+  }
+  vi.mocked(useProjectStore).mockReturnValue(projectStore)
+  return subscribes
+}
+
+describe('useCanInviteProjectMembers', () => {
+  it('defers the grants request while hidden, even across re-renders', async () => {
+    const subscribes = mockGrantsRequest()
 
     function CanInvite() {
       return <span data-testid="can-invite">{String(useCanInviteProjectMembers())}</span>
@@ -53,6 +80,29 @@ describe('useCanInviteProjectMembers', () => {
     // a subscription on every re-render here.
     rerender(view('visible'))
     rerender(view('visible'))
+    expect(subscribes.count).toBe(1)
+  })
+
+  it('does not subscribe while disabled, then subscribes once when enabled', async () => {
+    const subscribes = mockGrantsRequest()
+
+    function CanInvite({enabled}: {enabled: boolean}) {
+      return <span data-testid="can-invite">{String(useCanInviteProjectMembers({enabled}))}</span>
+    }
+
+    const {rerender} = render(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
+    rerender(<CanInvite enabled={false} />)
+    expect(subscribes.count).toBe(0)
+
+    rerender(<CanInvite enabled={true} />)
+    await waitFor(() => expect(screen.getByTestId('can-invite')).toHaveTextContent('true'))
+    expect(subscribes.count).toBe(1)
+
+    // `disabled` keeps the last emission, but the hook's contract is: if we
+    // are not checking grants, assume no access.
+    rerender(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
     expect(subscribes.count).toBe(1)
   })
 })
