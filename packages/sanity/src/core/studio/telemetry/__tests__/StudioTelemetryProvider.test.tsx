@@ -47,7 +47,10 @@ import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
-import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
+import {
+  DeprecatedConfigUsageObserved,
+  WorkspaceFeaturesObserved,
+} from '../../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
 import {useWorkspaces} from '../../workspaces/useWorkspaces'
@@ -713,6 +716,19 @@ describe('StudioTelemetryProvider', () => {
       fileDirectUploadsEnabled: true,
       imageDirectUploadsEnabled: true,
       searchStrategy: 'groq2024',
+    })
+  })
+
+  it('emits DeprecatedConfigUsageObserved with all deprecated config flags', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(DeprecatedConfigUsageObserved, {
       deprecatedWorkspaceLogo: false,
       deprecatedStudioComponentsLogo: false,
       deprecatedBetaCreate: false,

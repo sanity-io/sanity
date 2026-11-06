@@ -15,7 +15,7 @@ import {
   detectDeprecatedThemeOptions,
 } from './deprecatedConfigDetection'
 
-interface WorkspaceFeaturesObservedInfo extends DeprecatedConfigFlags {
+interface WorkspaceFeaturesObservedInfo {
   advancedVersionControlEnabled: boolean
   releasesEnabled: boolean | undefined
   releasesLimit: number | undefined
@@ -39,8 +39,14 @@ interface WorkspaceFeaturesObservedInfo extends DeprecatedConfigFlags {
 
 export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedInfo>({
   name: 'Workspace Features Observed',
-  version: 2,
+  version: 1,
   description: 'Feature flags enabled for the current workspace',
+})
+
+export const DeprecatedConfigUsageObserved = defineEvent<DeprecatedConfigFlags>({
+  name: 'Deprecated Config Usage Observed',
+  version: 1,
+  description: 'Tracks usage of deprecated config options before v7 removal',
 })
 
 /**
@@ -59,8 +65,6 @@ export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedIn
  * and cheap to aggregate.
  */
 export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeaturesObservedInfo {
-  const deprecatedFlags = collectDeprecatedConfigFlags(workspace)
-
   return {
     advancedVersionControlEnabled: workspace.advancedVersionControl.enabled,
     releasesEnabled: workspace.releases?.enabled,
@@ -88,15 +92,16 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     fileDirectUploadsEnabled: workspace.form.file.directUploads,
     imageDirectUploadsEnabled: workspace.form.image.directUploads,
     searchStrategy: workspace.search.strategy,
-    ...deprecatedFlags,
   }
 }
 
 /**
  * Collects all deprecated config flags from the workspace.
+ * Used by {@link DeprecatedConfigUsageObserved} to track usage of deprecated
+ * config options before their removal in v7.
  * @internal
  */
-function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedConfigFlags {
+export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedConfigFlags {
   const flags = createEmptyDeprecatedConfigFlags()
 
   // The raw config is available at workspace.__internal.options
