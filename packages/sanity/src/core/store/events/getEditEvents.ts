@@ -47,6 +47,14 @@ function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }
 
+/** Whether `transaction` modified `documentId`, rather than creating or deleting it. */
+export function isEditTransaction(
+  transaction: TransactionLogEventWithEffects,
+  documentId: string,
+): boolean {
+  return getEffectState(transaction.effects[documentId]) === 'modified'
+}
+
 const getEditTransaction = (
   transaction: TransactionLogEventWithEffects,
 ): EditDocumentVersionEvent['transactions'][number] => {
@@ -77,8 +85,9 @@ export function getEditEvents(
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[]
 /**
  * Builds synthetic edit events from translog transactions — the events API does not expose edits,
- * so the studio derives them client-side (both for the initial fetch and for real-time remote
- * mutations).
+ * so the studio derives them client-side. The events store calls it once over the fetched and the
+ * real-time remote transactions together (see `getEditEventsFromTransactions`), so an edit is
+ * grouped the same way whichever way it arrived.
  *
  * Behavior:
  * - Only transactions whose effect on `documentId` is `'modified'` are considered
@@ -101,11 +110,7 @@ export function getEditEvents(
   liveEdit: boolean,
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] {
   const editTransactions = transactions
-    .filter((tx) => {
-      const effectState = getEffectState(tx.effects[documentId])
-      // We only care about the transactions that have modified the document
-      return effectState === 'modified'
-    })
+    .filter((tx) => isEditTransaction(tx, documentId))
     // We sort the transactions by timestamp, newest first
     .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
 

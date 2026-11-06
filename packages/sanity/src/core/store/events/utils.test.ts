@@ -15,11 +15,7 @@ import {
   updateLiveDocumentEvent,
 } from './__fixtures__/events.fixture'
 import {remoteMutationEvent} from './__fixtures__/transactions.fixture'
-import {
-  type DocumentGroupEvent,
-  type EditDocumentVersionEvent,
-  type UpdateLiveDocumentEvent,
-} from './types'
+import {type DocumentGroupEvent, type EditDocumentVersionEvent} from './types'
 import {
   addEventId,
   addParentToEvents,
@@ -37,7 +33,6 @@ describe('addParentToEvents', () => {
 
 describe('sortEvents', () => {
   it('should sort events in the right order, if published and edited have same timestamp, published goes first ', () => {
-    const remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[] = []
     const events: DocumentGroupEvent[] = [
       // @ts-expect-error -- pre-existing, fix later
       {
@@ -92,13 +87,13 @@ describe('sortEvents', () => {
         parentId: 'b3075281-d9f1-41d0-9304-bca31a6ec958',
       },
     ]
-    const result = sortEvents({events, remoteEdits, expandedEvents})
+    const result = sortEvents({events, expandedEvents})
     expect(result[0].type).toBe('publishDocumentVersion')
     expect(result[1].type).toBe('editDocumentVersion')
     expect(result[2].type).toBe('createDocumentVersion')
   })
-  it('should handle remote edits correctly', () => {
-    const remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[] = [
+  it('should handle synthesized edit events correctly', () => {
+    const editEvents: EditDocumentVersionEvent[] = [
       // @ts-expect-error -- pre-existing, fix later
       {
         type: 'editDocumentVersion',
@@ -158,7 +153,7 @@ describe('sortEvents', () => {
       },
     ]
     const expandedEvents: EditDocumentVersionEvent[] = []
-    const result = sortEvents({events, remoteEdits, expandedEvents})
+    const result = sortEvents({events: [...editEvents, ...events], expandedEvents})
     expect(result[0].type).toBe('publishDocumentVersion')
     expect(result[1].type).toBe('editDocumentVersion')
     expect(result[2].type).toBe('createDocumentVersion')
@@ -431,7 +426,7 @@ describe('sortEvents (paired publish/edit)', () => {
       timestamp: BASE_TIME,
     })
 
-    const result = sortEvents({remoteEdits: [edit], events: [publish], expandedEvents: []})
+    const result = sortEvents({events: [edit, publish], expandedEvents: []})
     expect(result.map((event) => event.type)).toEqual([
       'publishDocumentVersion',
       'editDocumentVersion',
