@@ -6,22 +6,21 @@ import {
   deleteDocumentVersionEvent,
   DOCUMENT_ID,
   DRAFT_ID,
-  editDocumentVersionEvent,
   minutesAfterBase,
   publishDocumentVersionEvent,
   VERSION_ID,
 } from './__fixtures__/events.fixture'
 import {createMockClient, type RecordedRequest} from './__fixtures__/mockClient'
-import {editTransaction} from './__fixtures__/transactions.fixture'
+import {createTransaction, editTransaction} from './__fixtures__/transactions.fixture'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {
   accumulateEvents,
+  type FetchedEventsValue,
+  type FetchEventsResult,
   findEditEventsBaseline,
   getInitialFetchEvents,
-  HISTORY_CLEARED_EVENT_ID,
-  withHistoryClearedEvent,
 } from './getInitialFetchEvents'
-import {type DocumentGroupEvent, type EventsObservableValue} from './types'
+import {type DocumentGroupEvent} from './types'
 
 vi.mock('./getDocumentTransactions', () => ({
   getDocumentTransactions: vi.fn(),
@@ -44,12 +43,11 @@ describe('getInitialFetchEvents', () => {
     mockGetDocumentTransactions.mockResolvedValue([])
   })
 
-  it('draft: fetches events, assigns ids, and synthesizes edit events from the baseline revision', async () => {
+  it('draft: fetches events, assigns ids, and fetches the transactions after the baseline revision', async () => {
     const apiCreate = createDocumentVersionEvent()
     const {client, requests} = createMockClient({respond: eventsResponse(DRAFT_ID, [apiCreate])})
-    mockGetDocumentTransactions.mockResolvedValue([
-      editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)}),
-    ])
+    const edit = editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)})
+    mockGetDocumentTransactions.mockResolvedValue([edit])
 
     const {events$} = getInitialFetchEvents({client, documentId: DRAFT_ID})
     const {values, subscription} = collectEmissions(events$)
@@ -66,53 +64,13 @@ describe('getInitialFetchEvents', () => {
     })
 
     const result = values.at(-1)!
-    expect(result.events.map((event) => event.type)).toEqual([
-      'editDocumentVersion',
-      'createDocumentVersion',
-    ])
+    // Edit events are synthesized later, together with the remote transactions.
+    expect(result.events.map((event) => event.type)).toEqual(['createDocumentVersion'])
+    expect(result.transactionBatches).toEqual([[edit]])
     // Ids are (re)assigned client-side per variant.
-    expect(result.events[1].id).toBe(apiCreate.versionRevisionId)
+    expect(result.events[0].id).toBe(apiCreate.versionRevisionId)
+    expect(result.historyCleared).toBe(false)
     expect(result.error).toBeNull()
-  })
-
-  it('version: does not duplicate a delete that shares its id with a synthesized edit', async () => {
-    // Delete events often reuse the last edit's revision as versionRevisionId, so the
-    // synthesized edit and the delete get the same client-side id.
-    const lastEditRevision = '6bffe811-d5cc-4c73-995f-8b742d3a77f9'
-    const apiDelete = deleteDocumentVersionEvent({
-      versionId: VERSION_ID,
-      versionRevisionId: lastEditRevision,
-      timestamp: '2026-08-26T09:51:12Z',
-      documentVariantType: 'version',
-    })
-    const apiCreate = createDocumentVersionEvent({
-      versionId: VERSION_ID,
-      versionRevisionId: 'HyFGxFe6HLdujEBXb2YLpb',
-      timestamp: '2026-08-26T09:47:08Z',
-      documentVariantType: 'version',
-    })
-    const {client} = createMockClient({
-      respond: eventsResponse(VERSION_ID, [apiDelete, apiCreate]),
-    })
-    mockGetDocumentTransactions.mockResolvedValue([
-      editTransaction({
-        id: lastEditRevision,
-        documentId: VERSION_ID,
-        timestamp: '2026-08-26T09:50:00Z',
-      }),
-    ])
-
-    const {events$} = getInitialFetchEvents({client, documentId: VERSION_ID})
-    const {values, subscription} = collectEmissions(events$)
-    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
-    subscription.unsubscribe()
-
-    const events = values.at(-1)!.events
-    expect(events.filter((event) => event.type === 'deleteDocumentVersion')).toHaveLength(1)
-    expect(events.map((event) => event.type)).toEqual([
-      'deleteDocumentVersion',
-      'createDocumentVersion',
-    ])
   })
 
   it('version: uses the creation event as the baseline for edit synthesis', async () => {
@@ -147,6 +105,7 @@ describe('getInitialFetchEvents', () => {
 
     expect(mockGetDocumentTransactions).not.toHaveBeenCalled()
     expect(values.at(-1)?.events.map((event) => event.type)).toEqual(['publishDocumentVersion'])
+    expect(values.at(-1)?.transactionBatches).toEqual([[]])
   })
 
   it('falls back to fromTransaction "" when the batch has no baseline (known quirk: walks the whole translog)', async () => {
@@ -162,24 +121,28 @@ describe('getInitialFetchEvents', () => {
     )
   })
 
-  it('prepends a synthetic historyCleared event when the API has no events but edits exist', async () => {
+  it('flags the history as cleared when the API has no events but the translog has edits', async () => {
     const {client} = createMockClient({respond: eventsResponse(DRAFT_ID, [])})
-    const edit = editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(10)})
-    mockGetDocumentTransactions.mockResolvedValue([edit])
+    mockGetDocumentTransactions.mockResolvedValue([editTransaction({id: 'tx-edit-1'})])
 
     const {events$} = getInitialFetchEvents({client, documentId: DRAFT_ID})
     const {values, subscription} = collectEmissions(events$)
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
 
-    const result = values.at(-1)!
-    expect(result.events.map((event) => event.type)).toEqual([
-      'historyCleared',
-      'editDocumentVersion',
-    ])
-    expect(result.events[0].id).toBe(HISTORY_CLEARED_EVENT_ID)
-    // Timestamped 1ms before the oldest edit event.
-    expect(Date.parse(result.events[0].timestamp)).toBe(Date.parse(edit.timestamp) - 1)
+    expect(values.at(-1)).toMatchObject({events: [], historyCleared: true})
+  })
+
+  it('does not flag the history as cleared when the translog has no edits', async () => {
+    const {client} = createMockClient({respond: eventsResponse(DRAFT_ID, [])})
+    mockGetDocumentTransactions.mockResolvedValue([createTransaction({id: 'tx-create'})])
+
+    const {events$} = getInitialFetchEvents({client, documentId: DRAFT_ID})
+    const {values, subscription} = collectEmissions(events$)
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    subscription.unsubscribe()
+
+    expect(values.at(-1)?.historyCleared).toBe(false)
   })
 
   it('loadMore fetches the next page with the cursor, and is a no-op without one', async () => {
@@ -235,6 +198,26 @@ describe('getInitialFetchEvents', () => {
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     // The reload response cursor is discarded; the previous cursor is kept.
     expect(values.at(-1)?.nextCursor).toBe('cursor-1')
+    subscription.unsubscribe()
+  })
+
+  it('reloads fetch their transactions into a new batch, opened as soon as the reload starts', async () => {
+    const {client} = createMockClient({
+      respond: eventsResponse(DRAFT_ID, [createDocumentVersionEvent()]),
+    })
+    const first = editTransaction({id: 'tx-first'})
+    const second = editTransaction({id: 'tx-second'})
+    mockGetDocumentTransactions.mockResolvedValueOnce([first]).mockResolvedValueOnce([second])
+
+    const {events$, reloadEvents} = getInitialFetchEvents({client, documentId: DRAFT_ID})
+    const {values, subscription} = collectEmissions(events$)
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    expect(values.at(-1)?.transactionBatches).toEqual([[first]])
+
+    reloadEvents()
+    expect(values.at(-1)).toMatchObject({loading: true, transactionBatches: [[first], []]})
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    expect(values.at(-1)?.transactionBatches).toEqual([[first], [second]])
     subscription.unsubscribe()
   })
 
@@ -299,114 +282,88 @@ describe('findEditEventsBaseline', () => {
   })
 })
 
-describe('withHistoryClearedEvent', () => {
-  const editEvents = [
-    editDocumentVersionEvent({revisionId: 'tx-2', timestamp: minutesAfterBase(10)}),
-    editDocumentVersionEvent({revisionId: 'tx-1', timestamp: minutesAfterBase(5)}),
-  ]
-
-  it('prepends a historyCleared event when the API has no events but edits exist', () => {
-    const result = withHistoryClearedEvent(editEvents, {
-      apiEvents: [],
-      transactions: [{}, {}],
-      documentId: DRAFT_ID,
-      documentVariantType: 'draft',
-    })
-    expect(result.map((event) => event.type)).toEqual([
-      'historyCleared',
-      'editDocumentVersion',
-      'editDocumentVersion',
-    ])
-    expect(result[0]).toMatchObject({
-      id: HISTORY_CLEARED_EVENT_ID,
-      documentId: DRAFT_ID,
-      documentVariantType: 'draft',
-    })
-    // Timestamped 1ms before the oldest edit event so it sorts after it.
-    expect(Date.parse(result[0].timestamp)).toBe(Date.parse(editEvents[1].timestamp) - 1)
-  })
-
-  it('returns the edit events untouched when the API returned events', () => {
-    const result = withHistoryClearedEvent(editEvents, {
-      apiEvents: [publishDocumentVersionEvent()],
-      transactions: [{}],
-      documentId: DRAFT_ID,
-      documentVariantType: 'draft',
-    })
-    expect(result).toBe(editEvents)
-  })
-
-  it('returns the edit events untouched when there are no edits to anchor the timestamp to', () => {
-    const result = withHistoryClearedEvent([], {
-      apiEvents: [],
-      transactions: [{}],
-      documentId: DRAFT_ID,
-      documentVariantType: 'draft',
-    })
-    expect(result).toEqual([])
-  })
-})
-
 describe('accumulateEvents', () => {
   const publish = publishDocumentVersionEvent({id: 'tx-pub'})
-  const prev: EventsObservableValue = {
+  const fetchedEdit = editTransaction({id: 'tx-fetched'})
+  const prev: FetchedEventsValue = {
     events: [publish],
     nextCursor: 'cursor-1',
     loading: false,
     error: null,
+    transactionBatches: [[fetchedEdit]],
+    historyCleared: false,
+  }
+
+  function fetchResult(overrides: Partial<FetchEventsResult>): FetchEventsResult {
+    return {
+      events: [],
+      nextCursor: '',
+      loading: false,
+      error: null,
+      transactions: [],
+      historyCleared: false,
+      origin: 'reload',
+      ...overrides,
+    }
   }
 
   it('merges batches via removeDupes, keeping the existing event on id collision', () => {
     const incomingDupe = publishDocumentVersionEvent({id: 'tx-pub', author: 'someone-else'})
     const older = publishDocumentVersionEvent({id: 'tx-pub-old', timestamp: minutesAfterBase(-10)})
-    const result = accumulateEvents(prev, {
-      events: [incomingDupe, older],
-      nextCursor: 'cursor-2',
-      loading: false,
-      error: null,
-      origin: 'loadMore',
-    })
+    const result = accumulateEvents(
+      prev,
+      fetchResult({events: [incomingDupe, older], nextCursor: 'cursor-2', origin: 'loadMore'}),
+    )
     expect(result.events.map((event) => event.id)).toEqual(['tx-pub', 'tx-pub-old'])
     // The previously accumulated event wins over the incoming duplicate.
     expect(result.events[0].author).toBe('author-1')
   })
 
   it('reloads keep the previous cursor', () => {
-    const result = accumulateEvents(prev, {
-      events: [],
-      nextCursor: 'reload-cursor',
-      loading: false,
-      error: null,
-      origin: 'reload',
-    })
+    const result = accumulateEvents(prev, fetchResult({nextCursor: 'reload-cursor'}))
     expect(result.nextCursor).toBe('cursor-1')
   })
 
   it('initial and loadMore fetches take the response cursor', () => {
     for (const origin of ['initial', 'loadMore'] as const) {
-      const result = accumulateEvents(prev, {
-        events: [],
-        nextCursor: 'cursor-2',
-        loading: false,
-        error: null,
-        origin,
-      })
+      const result = accumulateEvents(prev, fetchResult({nextCursor: 'cursor-2', origin}))
       expect(result.nextCursor).toBe('cursor-2')
     }
   })
 
   it('passes loading and error through from the incoming emission', () => {
     const error = new Error('fetch failed')
-    const result = accumulateEvents(prev, {
-      events: [],
-      nextCursor: '',
-      loading: true,
-      error,
-      origin: 'loadMore',
-    })
+    const result = accumulateEvents(prev, fetchResult({loading: true, error, origin: 'loadMore'}))
     expect(result.loading).toBe(true)
     expect(result.error).toBe(error)
     // Known quirk: the failed non-reload emission resets the cursor.
     expect(result.nextCursor).toBe('')
+  })
+
+  it('opens a transaction batch when a reload starts, and fills it when it resolves', () => {
+    const reloadedEdit = editTransaction({id: 'tx-reloaded'})
+    const started = accumulateEvents(prev, fetchResult({loading: true}))
+    expect(started.transactionBatches).toEqual([[fetchedEdit], []])
+
+    const resolved = accumulateEvents(started, fetchResult({transactions: [reloadedEdit]}))
+    expect(resolved.transactionBatches).toEqual([[fetchedEdit], [reloadedEdit]])
+  })
+
+  it('leaves the batch of a failed reload empty', () => {
+    const started = accumulateEvents(prev, fetchResult({loading: true}))
+    const failed = accumulateEvents(started, fetchResult({error: new Error('fetch failed')}))
+    expect(failed.transactionBatches).toEqual([[fetchedEdit], []])
+  })
+
+  it('leaves the transaction batches alone on loadMore fetches', () => {
+    const started = accumulateEvents(prev, fetchResult({loading: true, origin: 'loadMore'}))
+    const resolved = accumulateEvents(started, fetchResult({origin: 'loadMore'}))
+    expect(resolved.transactionBatches).toEqual([[fetchedEdit]])
+  })
+
+  it('keeps historyCleared once a fetch set it', () => {
+    const cleared = accumulateEvents(prev, fetchResult({historyCleared: true}))
+    expect(cleared.historyCleared).toBe(true)
+    expect(accumulateEvents(cleared, fetchResult({})).historyCleared).toBe(true)
   })
 })
