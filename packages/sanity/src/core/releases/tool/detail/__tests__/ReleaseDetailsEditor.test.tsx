@@ -53,6 +53,29 @@ const otherRelease = {
   },
 } as ReleaseDocument
 
+const blockArrayDescription = [
+  {
+    _key: 'block1',
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [{_key: 'span1', _type: 'span', marks: [], text: 'Written as blocks'}],
+  },
+]
+
+const nonStringDescriptions: [string, unknown][] = [
+  ['an array of blocks', blockArrayDescription],
+  ['an object', {_type: 'unknown', text: 'Not a description'}],
+  ['a number', 42],
+]
+
+// Release metadata is untyped JSON on a system document, so any shape can arrive from the store.
+function releaseFromContentLake(description: unknown): ReleaseDocument {
+  return JSON.parse(
+    JSON.stringify({...initialRelease, metadata: {...initialRelease.metadata, description}}),
+  )
+}
+
 function getDescriptionTelemetryPayloads(): unknown[] {
   return mockTelemetryLog.mock.calls
     .filter(([event]) => event === ReleaseDescriptionSet)
@@ -205,6 +228,45 @@ describe('ReleaseDetailsEditor', () => {
       vi.useRealTimers()
     })
 
+    it.each(nonStringDescriptions)(
+      'renders the title and an empty description field when the description is %s',
+      async (_label, description) => {
+        const wrapper = await createTestProvider()
+        render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
+        await flushMicrotasksThisIsACodeSmell()
+
+        expect(screen.getByTestId('release-form-title')).toHaveValue('Initial Title')
+        expect(screen.getByTestId('release-form-description')).toHaveValue('')
+      },
+    )
+
+    it('keeps a description that is not a string untouched when only the title is edited', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(blockArrayDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              title: 'New Title',
+              description: blockArrayDescription,
+            }),
+          }),
+        )
+      })
+      expect(getDescriptionTelemetryPayloads()).toEqual([])
+      vi.useRealTimers()
+    })
+
     it('does not render metadata fields, and a title edit still saves', async () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
       const wrapper = await createTestProvider({
@@ -261,6 +323,20 @@ describe('ReleaseDetailsEditor', () => {
       expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
       expect(screen.queryByTestId('release-form-title')).toBeNull()
     })
+
+    it.each(nonStringDescriptions)(
+      'renders no description when the description is %s',
+      async (_label, description) => {
+        const wrapper = await createTestProvider({
+          config: {beta: {variants: {enabled: true}}},
+        })
+        render(<ReleaseDetailsEditor release={releaseFromContentLake(description)} />, {wrapper})
+        await flushMicrotasksThisIsACodeSmell()
+
+        expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+        expect(screen.queryByTestId('release-description-display')).toBeNull()
+      },
+    )
   })
 
   describe('when there is no permission', () => {
