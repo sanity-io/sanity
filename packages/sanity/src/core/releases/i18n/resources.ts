@@ -150,6 +150,20 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.metadata.status-validating': 'Validating',
   /** Status badge value when the release has no documents to validate. */
   'dashboard.details.metadata.status-empty': 'No documents',
+  /** Value of a release metadata property whose field has no value. */
+  'dashboard.details.metadata.empty-value': '-',
+  /** Value of a release metadata boolean field that is on. */
+  'dashboard.details.metadata.boolean-true': 'Yes',
+  /** Value of a release metadata boolean field that is off. */
+  'dashboard.details.metadata.boolean-false': 'No',
+  /** Shown in place of a release property value when the property throws while rendering. */
+  'dashboard.details.metadata.property-error': "Can't display this value",
+  /** Label of a release property that threw while rendering and has no name of its own. */
+  'dashboard.details.metadata.property-error-label': 'Property',
+  /** Button that shows the release metadata properties hidden by "Show fewer". */
+  'dashboard.details.metadata.show-more': 'Show {{count}} more',
+  /** Button that hides the release metadata properties, leaving the built-in properties. */
+  'dashboard.details.metadata.show-fewer': 'Show fewer',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',

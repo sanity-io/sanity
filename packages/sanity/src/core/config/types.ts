@@ -46,6 +46,7 @@ import {type DocumentInspector} from './document/inspector'
 import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type ReleaseDetailComponent} from './releases/detail'
+import {type ReleasePropertiesContext, type ReleasePropertyComponent} from './releases/properties'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
 
 /**
@@ -561,6 +562,14 @@ export type DocumentBadgesResolver = ComposableOption<
 export type ReleaseActionsResolver = ComposableOption<
   ReleaseActionComponent[],
   ReleaseActionsContext
+>
+
+/**
+ * @beta
+ */
+export type ReleasePropertiesResolver = ComposableOption<
+  ReleasePropertyComponent[],
+  ReleasePropertiesContext
 >
 
 /** @hidden @beta */
@@ -1248,6 +1257,15 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
+     * Returns the rows shown after the built-in rows in the properties of the release detail
+     * page, starting from Studio's default rows. Undefined when no config defines
+     * `releases.properties`.
+     */
+    properties?: (
+      props: PartialContext<ReleasePropertiesContext>,
+      defaultProperties: ReleasePropertyComponent[],
+    ) => ReleasePropertyComponent[]
+    /**
      * Renders under the release description on the release detail page. Receives the release
      * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
      */
@@ -1467,6 +1485,16 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+    /**
+     * Rows shown after the built-in rows in the properties of the release detail page. `prev`
+     * holds one row per metadata field. Each entry is called as a hook and returns a
+     * description of its row, or `null` to hide it. Define rows at module scope: a row created
+     * inside a resolver gets a new identity on every documents update and remounts, losing its
+     * hook state.
+     *
+     * @beta
+     */
+    properties?: ReleasePropertyComponent[] | ReleasePropertiesResolver
     /**
      * Renders under the release description on the release detail page. Receives the release
      * with its metadata and the documents in it. Rendered only while `beta.variants` is enabled.
