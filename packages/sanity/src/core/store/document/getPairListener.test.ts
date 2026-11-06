@@ -162,6 +162,86 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    describe('connection drops in the middle of a multi-event transaction', () => {
+      const firstHalf = createMultiTxMutationEvent(DRAFT_ID, {
+        transactionId: 'multi-tx',
+        transactionTotalEvents: 2,
+        transactionCurrentEvent: 1,
+        previousRev: 'draft-rev',
+        resultRev: 'draft-rev-2',
+      })
+      const secondHalf = createMultiTxMutationEvent(PUBLISHED_ID, {
+        transactionId: 'multi-tx',
+        transactionTotalEvents: 2,
+        transactionCurrentEvent: 2,
+        previousRev: 'pub-rev',
+        resultRev: 'pub-rev-2',
+      })
+
+      function pendingPhases(events: ListenerEvent[]) {
+        return events.flatMap((event) => (event.type === 'pending' ? [event.phase] : []))
+      }
+
+      function mutationIds(events: ListenerEvent[]) {
+        return events.flatMap((event) => (event.type === 'mutation' ? [event.documentId] : []))
+      }
+
+      test('a resumed connection keeps the buffered events and completes the transaction', async () => {
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((event) => events.push(event))
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+
+        listener$.next(firstHalf)
+        listener$.next({type: 'reconnect'})
+        listener$.next({type: 'welcomeback', listenerName: 'test'})
+        listener$.next(secondHalf)
+
+        expect(mutationIds(events)).toEqual([DRAFT_ID, PUBLISHED_ID])
+        expect(pendingPhases(events)).toEqual([...Array(3).fill('begin'), ...Array(3).fill('end')])
+
+        sub.unsubscribe()
+      })
+
+      test('a reset discards the buffered events and releases the lock', async () => {
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((event) => events.push(event))
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+
+        listener$.next(firstHalf)
+        listener$.next({type: 'reconnect'})
+        listener$.next({type: 'reset'})
+        await nextTick()
+
+        expect(mutationIds(events)).toEqual([])
+        expect(pendingPhases(events)).toEqual([...Array(3).fill('begin'), ...Array(3).fill('end')])
+
+        sub.unsubscribe()
+      })
+
+      test('the late second half of a transaction discarded by a reset is dropped without locking again', async () => {
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((event) => events.push(event))
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+
+        listener$.next(firstHalf)
+        listener$.next({type: 'reconnect'})
+        listener$.next({type: 'reset'})
+        await nextTick()
+        listener$.next(secondHalf)
+
+        expect(mutationIds(events)).toEqual([])
+        expect(pendingPhases(events)).toEqual([...Array(3).fill('begin'), ...Array(3).fill('end')])
+
+        sub.unsubscribe()
+      })
+    })
+
     test('non-mutation events pass through without buffering', async () => {
       const events: ListenerEvent[] = []
       const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
