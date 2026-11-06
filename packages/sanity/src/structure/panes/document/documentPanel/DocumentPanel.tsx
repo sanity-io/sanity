@@ -35,6 +35,7 @@ import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {useInspectorBesideForm} from '../documentInspector/useInspectorBesideForm'
 import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
@@ -110,10 +111,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   )
 
   const showInspector = Boolean(!collapsed && inspector)
-  // Keep the form mounted when the inspector takes over a collapsed layout.
+  const inspectorBesideForm = useInspectorBesideForm()
+  // Keep the form mounted when the inspector takes its place.
   // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
   // full-pane mode comes back inline after the window is widened again.
-  const showFormView = features.resizablePanes || !showInspector
+  const showFormView = inspectorBesideForm || !showInspector
 
   // Fullscreen PTE portals to this element. When the form is hidden, keep that
   // target inside the hidden subtree so the editor cannot cover the inspector.

@@ -63,6 +63,8 @@ export interface PaneLayoutContextValue {
   resize: (type: 'start' | 'move' | 'end', element: HTMLElement, deltaX: number) => void
   resizing: boolean
   panes: PaneData[]
+  /** The measured width of the layout root, `undefined` until it has been measured */
+  rootWidth?: number
 }
 
 /**

@@ -31,6 +31,11 @@ export interface StructureToolFeatures {
    */
   backButton: boolean
   resizablePanes: boolean
+  /**
+   * Render document inspectors in place of the form when the pane layout is too narrow to fit
+   * both side by side, instead of only when the layout is collapsed.
+   */
+  responsiveInspector: boolean
   reviewChanges: boolean
   splitPanes: boolean
   splitViews: boolean

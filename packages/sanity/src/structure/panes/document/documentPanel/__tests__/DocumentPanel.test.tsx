@@ -7,6 +7,7 @@ import {test as baseTest, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.mock'
+import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -103,14 +104,20 @@ vi.mock('sanity', async (importOriginal) => ({
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)
+const mockUsePaneLayout = vi.mocked(usePaneLayout)
 
 const publishedPerspectiveContextValue = {
   ...perspectiveContextValueMock,
   selectedPerspective: 'published' as const,
 }
 
-const splitPanesFeatures = {resizablePanes: true, splitPanes: true}
-const collapsedLayoutFeatures = {resizablePanes: false, splitPanes: false}
+const splitPanesFeatures = {resizablePanes: true, splitPanes: true, responsiveInspector: false}
+const collapsedLayoutFeatures = {
+  resizablePanes: false,
+  splitPanes: false,
+  responsiveInspector: false,
+}
+const presentationFeatures = {resizablePanes: true, splitPanes: true, responsiveInspector: true}
 
 function documentPaneValue() {
   return {
@@ -186,6 +193,40 @@ describe('DocumentPanel form persistence', () => {
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
     expect(screen.getByTestId('fullscreen-pte')).toBeVisible()
+  })
+
+  it('keeps the inspector beside the form in a narrow layout without responsiveInspector', async () => {
+    mockUsePaneLayout.mockReturnValue({collapsed: false, rootWidth: 400} as ReturnType<
+      typeof usePaneLayout
+    >)
+    await renderPanel()
+
+    expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
+    expect(screen.getByText('Inspector')).toBeVisible()
+  })
+
+  it('shows the inspector in place of the form while a responsive layout is too narrow for both', async () => {
+    mockUseStructureTool.mockReturnValue({
+      features: presentationFeatures,
+    } as ReturnType<typeof useStructureTool>)
+    mockUsePaneLayout.mockReturnValue({collapsed: false, rootWidth: 400} as ReturnType<
+      typeof usePaneLayout
+    >)
+    const {rerender} = await renderPanel()
+
+    await userEvent.click(screen.getByTestId('form-state'))
+    expect(screen.getByTestId('form-state')).toHaveTextContent('1')
+    expect(screen.getByTestId('document-panel-form-view')).not.toBeVisible()
+    expect(screen.getByText('Inspector')).toBeVisible()
+
+    mockUsePaneLayout.mockReturnValue({collapsed: false, rootWidth: 800} as ReturnType<
+      typeof usePaneLayout
+    >)
+    rerender(renderDocumentPanel())
+
+    expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
+    expect(screen.getByTestId('form-state')).toHaveTextContent('1')
+    expect(screen.getByText('Inspector')).toBeVisible()
   })
 })
 
