@@ -5,6 +5,7 @@ import {useCallback, useRef, useState} from 'react'
 import {DetailIdentity} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
+import {getDescriptionText} from '../../../util/getDescriptionText'
 import {ReleaseDescriptionSet} from '../../__telemetry__/releases.telemetry'
 import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -19,7 +20,7 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
   // Scoped to a release id because this component instance is reused across release navigation.
   const lastLoggedDescription = useRef({
     releaseId: release._id,
-    description: release.metadata?.description ?? '',
+    description: getDescriptionText(release.metadata?.description),
   })
 
   const handleOnChange = useCallback(
@@ -29,11 +30,11 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
       /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
       const newTimer = setTimeout(() => {
         if (canEdit) {
-          const nextDescription = changedValue.metadata?.description ?? ''
+          const nextDescription = getDescriptionText(changedValue.metadata?.description)
           const isSameRelease = lastLoggedDescription.current.releaseId === release._id
           const baselineDescription = isSameRelease
             ? lastLoggedDescription.current.description
-            : (release.metadata?.description ?? '')
+            : getDescriptionText(release.metadata?.description)
           const hasChangedDescription = nextDescription !== baselineDescription
 
           lastLoggedDescription.current = {
@@ -82,7 +83,7 @@ function ReleaseDetailsEditorVariants({release}: {release: ReleaseDocument}): Re
       title={release.metadata.title}
       titleAs="h1"
       titlePlaceholder={t('release.placeholder-untitled-release')}
-      description={release.metadata.description}
+      description={getDescriptionText(release.metadata.description)}
       titleTestId="release-title-display"
       descriptionTestId="release-description-display"
     />
