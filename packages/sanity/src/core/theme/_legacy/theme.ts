@@ -10,6 +10,44 @@ import {buildLegacyTones} from './tones'
 import {type LegacyThemeProps} from './types'
 
 /**
+ * Flags tracking customer usage of deprecated `--screen-*-break` keys.
+ * Set once per session when a customer explicitly passes these keys to buildLegacyTheme.
+ * @internal
+ */
+export interface LegacyThemeDeprecatedFlags {
+  screenMediumBreak: boolean
+  screenDefaultBreak: boolean
+  screenLargeBreak: boolean
+  screenXlargeBreak: boolean
+}
+
+const deprecatedScreenBreakFlags: LegacyThemeDeprecatedFlags = {
+  screenMediumBreak: false,
+  screenDefaultBreak: false,
+  screenLargeBreak: false,
+  screenXlargeBreak: false,
+}
+
+/**
+ * Returns the flags for deprecated `--screen-*-break` keys that customers have used.
+ * @internal
+ */
+export function getLegacyThemeDeprecatedFlags(): LegacyThemeDeprecatedFlags {
+  return {...deprecatedScreenBreakFlags}
+}
+
+/**
+ * Resets the deprecated flags. Only for testing.
+ * @internal
+ */
+export function _resetLegacyThemeDeprecatedFlags(): void {
+  deprecatedScreenBreakFlags.screenMediumBreak = false
+  deprecatedScreenBreakFlags.screenDefaultBreak = false
+  deprecatedScreenBreakFlags.screenLargeBreak = false
+  deprecatedScreenBreakFlags.screenXlargeBreak = false
+}
+
+/**
  * Build a Sanity UI theme from legacy CSS properties.
  *
  * @example
@@ -34,6 +72,20 @@ import {type LegacyThemeProps} from './types'
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
+  // Track customer usage of deprecated --screen-*-break keys
+  if ('--screen-medium-break' in partialLegacyTheme) {
+    deprecatedScreenBreakFlags.screenMediumBreak = true
+  }
+  if ('--screen-default-break' in partialLegacyTheme) {
+    deprecatedScreenBreakFlags.screenDefaultBreak = true
+  }
+  if ('--screen-large-break' in partialLegacyTheme) {
+    deprecatedScreenBreakFlags.screenLargeBreak = true
+  }
+  if ('--screen-xlarge-break' in partialLegacyTheme) {
+    deprecatedScreenBreakFlags.screenXlargeBreak = true
+  }
+
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
   const legacyPalette = buildLegacyPalette(legacyTheme)
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

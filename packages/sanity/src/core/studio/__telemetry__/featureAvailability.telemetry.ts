@@ -4,9 +4,18 @@
 import {defineEvent} from '@sanity/telemetry'
 import {type SearchStrategy} from '@sanity/types'
 
-import {type Workspace} from '../../config/types'
+import {type Workspace, type WorkspaceOptions} from '../../config/types'
+import {
+  createEmptyDeprecatedConfigFlags,
+  type DeprecatedConfigFlags,
+  detectDeprecatedLegacyThemeOptions,
+  detectDeprecatedPresentationOptions,
+  detectDeprecatedRawConfigOptions,
+  detectDeprecatedSchemaOptions,
+  detectDeprecatedThemeOptions,
+} from './deprecatedConfigDetection'
 
-interface WorkspaceFeaturesObservedInfo {
+interface WorkspaceFeaturesObservedInfo extends DeprecatedConfigFlags {
   advancedVersionControlEnabled: boolean
   releasesEnabled: boolean | undefined
   releasesLimit: number | undefined
@@ -30,7 +39,7 @@ interface WorkspaceFeaturesObservedInfo {
 
 export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedInfo>({
   name: 'Workspace Features Observed',
-  version: 1,
+  version: 2,
   description: 'Feature flags enabled for the current workspace',
 })
 
@@ -50,6 +59,8 @@ export const WorkspaceFeaturesObserved = defineEvent<WorkspaceFeaturesObservedIn
  * and cheap to aggregate.
  */
 export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeaturesObservedInfo {
+  const deprecatedFlags = collectDeprecatedConfigFlags(workspace)
+
   return {
     advancedVersionControlEnabled: workspace.advancedVersionControl.enabled,
     releasesEnabled: workspace.releases?.enabled,
@@ -77,5 +88,39 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     fileDirectUploadsEnabled: workspace.form.file.directUploads,
     imageDirectUploadsEnabled: workspace.form.image.directUploads,
     searchStrategy: workspace.search.strategy,
+    ...deprecatedFlags,
   }
+}
+
+/**
+ * Collects all deprecated config flags from the workspace.
+ * @internal
+ */
+function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedConfigFlags {
+  const flags = createEmptyDeprecatedConfigFlags()
+
+  // The raw config is available at workspace.__internal.options
+  // At runtime this includes workspace-level fields even though typed as SourceOptions
+  const rawConfig = workspace.__internal.options as WorkspaceOptions
+
+  // Detect deprecated raw config options (logo, beta.create, beta.form.enhancedObjectDialog, etc.)
+  Object.assign(flags, detectDeprecatedRawConfigOptions(rawConfig))
+
+  // Detect deprecated theme options (avatar, button, container, etc.)
+  // The theme is available on the workspace but comes from raw config
+  const theme = (workspace as unknown as {theme?: unknown}).theme
+  if (theme && typeof theme === 'object') {
+    Object.assign(flags, detectDeprecatedThemeOptions(theme))
+  }
+
+  // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
+  Object.assign(flags, detectDeprecatedLegacyThemeOptions())
+
+  // Detect deprecated presentation tool options (check, disable, unstable_showUnsafeShareUrl)
+  Object.assign(flags, detectDeprecatedPresentationOptions(workspace.tools))
+
+  // Detect deprecated schema options (array direction/treeEditing, cross-dataset __experimental_search)
+  Object.assign(flags, detectDeprecatedSchemaOptions(workspace.schema))
+
+  return flags
 }
