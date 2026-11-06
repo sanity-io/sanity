@@ -1,10 +1,10 @@
 import {StopIcon} from '@sanity/icons/Stop'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useId} from 'react'
 import {useTranslation} from 'sanity'
-import {VisuallyHidden} from 'ui5'
+import {Text, VisuallyHidden} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 
@@ -32,7 +32,16 @@ export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonPr
   const unavailable = !supported
 
   return (
-    <Tooltip animate content={<Text size={1}>{tooltip}</Text>} placement="top" portal>
+    <Tooltip
+      animate
+      content={
+        <Text size={1} as="div" trim={true}>
+          {tooltip}
+        </Text>
+      }
+      placement="top"
+      portal
+    >
       {/*
         A disabled button gets neither pointer events nor focus, so while the API version has no
         sync tags the wrapper stands in for it, as a disabled button described by the reason

@@ -1,7 +1,7 @@
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ComponentType, useCallback, useId} from 'react'
-import {VisuallyHidden} from 'ui5'
+import {Text, VisuallyHidden} from 'ui5'
 
 export interface DownloadButtonProps {
   /**
@@ -50,7 +50,16 @@ export function DownloadButton({
   const hintId = useId()
 
   return (
-    <Tooltip animate content={<Text size={1}>{tooltip || label}</Text>} placement="top" portal>
+    <Tooltip
+      animate
+      content={
+        <Text size={1} as="div" trim={true}>
+          {tooltip || label}
+        </Text>
+      }
+      placement="top"
+      portal
+    >
       {/*
         A disabled button gets neither pointer events nor focus, so while the download is
         unavailable the wrapper stands in for it: the tooltip listens to the wrapper, and the

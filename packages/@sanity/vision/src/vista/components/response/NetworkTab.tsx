@@ -1,7 +1,7 @@
-import {Badge, Stack, Text} from '@sanity/ui'
+import {Badge, Stack} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {isApiCdnHost} from '../../../util/parseQueryUrl'
@@ -15,7 +15,7 @@ import {NetworkGlobe} from './NetworkGlobe'
 function Row({label, children}: {label: string; children: ReactNode}) {
   return (
     <>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {label}
       </Text>
       <Box minWidth="0">{children}</Box>
@@ -51,7 +51,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   if (!meta) {
     return (
       <Box padding={3}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.network.empty')}
         </Text>
       </Box>
@@ -87,17 +87,23 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
           <Stack gap={4}>
             <Grid gap={3} gridTemplateColumns="max-content minmax(0, 1fr)">
               <Row label={t('vista.network.endpoint')}>
-                <Text data-testid="vista-network-endpoint" size={1} weight="medium">
+                <Text
+                  data-testid="vista-network-endpoint"
+                  size={1}
+                  weight="medium"
+                  as="div"
+                  trim={true}
+                >
                   {viaCdn ? t('vista.network.endpoint.cdn') : t('vista.network.endpoint.api')}
                 </Text>
               </Row>
               <Row label={t('vista.network.cache')}>
                 <Stack gap={2}>
-                  <Text data-testid="vista-network-cache" size={1}>
+                  <Text data-testid="vista-network-cache" size={1} as="div" trim={true}>
                     {cache}
                   </Text>
                   {network?.cacheControl && (
-                    <Text muted size={0}>
+                    <Text muted size={0} as="div" trim={true}>
                       {`Cache-Control: ${network.cacheControl}`}
                     </Text>
                   )}
@@ -105,38 +111,38 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
               </Row>
               <Row label={t('vista.network.region')}>
                 <Stack gap={2}>
-                  <Text data-testid="vista-network-region" size={1}>
+                  <Text data-testid="vista-network-region" size={1} as="div" trim={true}>
                     {region
                       ? `${region.id} (${region.location})`
                       : (network?.shard ?? t('vista.network.region.unknown'))}
                   </Text>
                   {region && network?.shard && (
-                    <Text muted size={0}>
+                    <Text muted size={0} as="div" trim={true}>
                       {network.shard}
                     </Text>
                   )}
                 </Stack>
               </Row>
               <Row label={t('vista.network.timing')}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   {t('vista.network.timing.value', {e2e: meta.e2eMs, server: meta.ms})}
                 </Text>
               </Row>
               {network?.traceId && (
                 <Row label={t('vista.network.trace')}>
-                  <Text size={1} textOverflow="ellipsis">
+                  <Text size={1} truncate={1} as="div" trim={true}>
                     <code>{network.traceId}</code>
                   </Text>
                 </Row>
               )}
             </Grid>
             {cacheHit && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('vista.network.cache.hit-explained')}
               </Text>
             )}
             {hint && (
-              <Text data-testid="vista-network-hint" muted size={1}>
+              <Text data-testid="vista-network-hint" muted size={1} as="div" trim={true}>
                 {hint}
               </Text>
             )}

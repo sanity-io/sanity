@@ -3,7 +3,7 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {cleanup, fireEvent, render, screen, within} from '@testing-library/react'
 import JSON5 from 'json5'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
@@ -28,6 +28,7 @@ const schema = Schema.compile({
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useSchema: () => schema,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>

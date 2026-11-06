@@ -1,7 +1,8 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -49,7 +50,16 @@ export function ApiVersionButton({resolved, onReveal}: ApiVersionButtonProps) {
   }
 
   return (
-    <Tooltip animate content={<Text size={1}>{tooltip}</Text>} placement="top" portal>
+    <Tooltip
+      animate
+      content={
+        <Text size={1} as="div" trim={true}>
+          {tooltip}
+        </Text>
+      }
+      placement="top"
+      portal
+    >
       <Button
         data-cdn-blocked={cdnBlocked || undefined}
         data-testid="vista-api-version-button"
