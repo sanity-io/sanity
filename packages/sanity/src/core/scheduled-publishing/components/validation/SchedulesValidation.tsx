@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react'
 
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
-import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {getDraftId} from '../../../util/draftUtils'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule, type ValidationStatus} from '../../types'
@@ -10,7 +9,6 @@ import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
 interface Props {
   schedule: Schedule
   updateValidation: (status: ValidationStatus) => void
-  listener: ValidationListener
 }
 
 // Duration to wait before validating (after this component has mounted)
@@ -22,7 +20,7 @@ const VALIDATION_DELAY_MS = 1500
  * This a boilerplate wrapper component around it,
  * so we conditionally call back with updated status whenver it is possible.
  * */
-export function ValidateScheduleDoc({schedule, updateValidation, listener}: Props) {
+export function ValidateScheduleDoc({schedule, updateValidation}: Props) {
   const schemaType = useScheduleSchemaType(schedule)
   const id = getScheduledDocumentId(schedule)
 
@@ -34,7 +32,6 @@ export function ValidateScheduleDoc({schedule, updateValidation, listener}: Prop
       id={id}
       schemaName={schemaType.name}
       updateValidation={updateValidation}
-      listener={listener}
     />
   )
 }
@@ -43,15 +40,9 @@ interface ValidationRunnerProps {
   id: string
   schemaName: string
   updateValidation: (status: ValidationStatus) => void
-  listener: ValidationListener
 }
 
-function DelayedValidationRunner({
-  id,
-  schemaName,
-  updateValidation,
-  listener,
-}: ValidationRunnerProps) {
+function DelayedValidationRunner({id, schemaName, updateValidation}: ValidationRunnerProps) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -68,22 +59,15 @@ function DelayedValidationRunner({
     return null
   }
 
-  return (
-    <ValidationRunner
-      id={id}
-      schemaName={schemaName}
-      updateValidation={updateValidation}
-      listener={listener}
-    />
-  )
+  return <ValidationRunner id={id} schemaName={schemaName} updateValidation={updateValidation} />
 }
 
-function ValidationRunner({id, schemaName, updateValidation, listener}: ValidationRunnerProps) {
+function ValidationRunner({id, schemaName, updateValidation}: ValidationRunnerProps) {
   const draftId = getDraftId(id)
   // No `getTargetScopeId(useTargetDocumentState())` here: scheduled publishing deliberately validates the
   // explicit draft of the scheduled document, independent of the selected perspective.
   // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
-  const validationStatus = useValidationStatus(draftId, schemaName, {listener})
+  const validationStatus = useValidationStatus(draftId, schemaName)
 
   useEffect(() => {
     if (!validationStatus.isValidating) {

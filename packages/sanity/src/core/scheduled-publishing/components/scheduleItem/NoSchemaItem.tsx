@@ -2,24 +2,16 @@ import {red} from '@sanity/color'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {type Schedule} from '../../types'
 import {FallbackContextMenu} from '../scheduleContextMenu/FallbackContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 
-const NoSchemaItem = ({
-  schedule,
-  validationListener,
-}: {
-  schedule: Schedule
-  validationListener: ValidationListener
-}) => {
+const NoSchemaItem = ({schedule}: {schedule: Schedule}) => {
   return (
     <PreviewWrapper
       contextMenu={<FallbackContextMenu schedule={schedule} />}
       schedule={schedule}
       useElementQueries
-      validationListener={validationListener}
     >
       <SanityDefaultPreview
         icon={UnknownIcon}

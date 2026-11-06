@@ -10,7 +10,6 @@ import {DocumentVersionsStatusIndicator} from '../../../components/documentStatu
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {type ValidationListener} from '../../../store/document/document-pair/validation'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
@@ -36,7 +35,6 @@ interface Props<TLink extends ElementType | undefined = undefined> {
   schedule: Schedule
   schemaType?: SchemaType
   useElementQueries?: boolean
-  validationListener: ValidationListener
 }
 
 function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
@@ -50,7 +48,6 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
     schedule,
     schemaType,
     useElementQueries,
-    validationListener,
   } = props
   const modePromise = use(ScheduledPublishingModePromiseContext)
   const mode = modePromise ? use(modePromise) : null
@@ -184,11 +181,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
           {/* Validation status (only displayed on upcoming schedules) */}
           {schedule.state === 'scheduled' && (
             <Box>
-              <ValidateScheduleDoc
-                schedule={schedule}
-                updateValidation={setValidationStatus}
-                listener={validationListener}
-              />
+              <ValidateScheduleDoc schedule={schedule} updateValidation={setValidationStatus} />
               <ValidationInfo
                 markers={validation}
                 type={schemaType}

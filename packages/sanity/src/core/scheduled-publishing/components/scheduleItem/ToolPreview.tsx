@@ -62,8 +62,6 @@ const ToolPreview = (props: Props) => {
         schedule={schedule}
         schemaType={schemaType}
         useElementQueries
-        // the tool lists the schedules of many documents, so no row opens a listener of its own
-        validationListener="global"
       >
         {previewState.isLoading ? (
           <SanityDefaultPreview
