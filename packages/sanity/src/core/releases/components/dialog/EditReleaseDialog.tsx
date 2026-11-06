@@ -15,6 +15,7 @@ import {
 import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useCanEditRelease} from '../../tool/detail/useCanEditRelease'
+import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 
 /**
@@ -126,7 +127,7 @@ export function EditReleaseDialog({
                 setMetadata((current) => ({...current, description}))
               }}
               rows={6}
-              value={typeof metadata.description === 'string' ? metadata.description : ''}
+              value={getReleaseDescriptionText(metadata.description)}
             />
           </VStack>
           {metadataFieldsEnabled ? (

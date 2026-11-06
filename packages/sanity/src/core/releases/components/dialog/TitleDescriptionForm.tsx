@@ -6,6 +6,7 @@ import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
+import {getReleaseDescriptionText} from '../../util/getReleaseDescriptionText'
 
 // Cap the description height and let it scroll internally past this point, so the dialog stays a
 // sensible size regardless of how long the description is.
@@ -171,7 +172,8 @@ export function TitleDescriptionForm({
     [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const shouldShowDescription = isReleaseOpen || localData.description
+  const descriptionText = getReleaseDescriptionText(localData.description)
+  const shouldShowDescription = isReleaseOpen || descriptionText
 
   return (
     <VStack gap={3}>
@@ -190,7 +192,7 @@ export function TitleDescriptionForm({
         <DescriptionTextArea
           ref={descriptionRef}
           autoFocus={!localData.title}
-          value={localData.description}
+          value={descriptionText}
           placeholder={t('release.form.placeholder-describe-release')}
           onChange={handleDescriptionChange}
           onFocus={createFocusHandler('description')}
