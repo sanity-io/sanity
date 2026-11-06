@@ -25,6 +25,14 @@ effect of merged work; secondary: leads scanning health weekly.
   `soak.settleMinute` on (minute 2 for runs stored before the field existed,
   `@repo/utils/soak-settle`), because the first minutes race the studio's
   lazy mount. End-of-run values and the in-run minute charts use every sample.
+- **Listener stall.** A daily run stores one `mode: "stall"` report for
+  `article` with a single metric, `listener stall recovery`: the time from a
+  peer deleting a Portable Text block until the studio stops showing it, while
+  its listener is stalled and it keeps typing into the block. It charts as
+  one series in the **Listener stall** tab, keyed `stall:article:listener
+  stall recovery`. A healthy run is about 31.5s, just past the studio's
+  30s stall watchdog, and a run at 90s is the cap, where the studio never
+  recovered.
 - Volume is tiny (≤366 docs/year) but documents are heavy (per-session sample
   arrays) — **dashboard queries must project summaries, never fetch
   `sessions`**.
