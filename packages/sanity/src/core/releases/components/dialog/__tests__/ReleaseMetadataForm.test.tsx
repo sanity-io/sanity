@@ -1,11 +1,22 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {defineField, type FieldDefinition} from '@sanity/types'
+import {
+  defineField,
+  defineType,
+  type FieldDefinition,
+  type SchemaTypeDefinition,
+} from '@sanity/types'
 import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ReactElement, useCallback, useState} from 'react'
+import {type ReactElement, type ReactNode, useCallback, useState} from 'react'
+import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {
+  type EditReferenceLinkComponentProps,
+  ReferenceInputOptionsProvider,
+} from '../../../../form/studio/contexts/ReferenceInputOptions'
 import {type InputProps} from '../../../../form/types/inputProps'
 import {
   asReleaseMetadata,
@@ -14,6 +25,22 @@ import {
 } from '../../../metadata/mergeReleaseMetadata'
 import {ReleaseForm} from '../ReleaseForm'
 import {ReleaseMetadataForm} from '../ReleaseMetadataForm'
+
+interface FetchOptions {
+  tag?: string
+  perspective?: string[]
+}
+
+const authorType = defineType({
+  name: 'author',
+  title: 'Author',
+  type: 'document',
+  fields: [{name: 'name', title: 'Name', type: 'string'}],
+})
+
+const getReferenceInfo = vi.hoisted(() => vi.fn())
+
+vi.mock('../../../../form/studio/inputs/client-adapters/reference', () => ({getReferenceInfo}))
 
 const legalReviewField = defineField({
   name: 'legalReview',
@@ -94,12 +121,16 @@ async function renderWithFields(
   fields: FieldDefinition[],
   ui: ReactElement,
   variantsEnabled = true,
+  client = createMockSanityClientAsClient(),
+  schemaTypes: SchemaTypeDefinition[] = [],
 ) {
   const wrapper = await createTestProvider({
+    client,
     config: {
       name: 'default',
       projectId: 'test',
       dataset: 'test',
+      schema: {name: 'default', types: [authorType, ...schemaTypes]},
       beta: {variants: {enabled: variantsEnabled}},
       releases: {metadata: {fields}},
     },
@@ -591,6 +622,299 @@ describe('ReleaseForm metadata fields', () => {
           }),
         }),
       )
+    })
+  })
+})
+
+const relatedAuthorField = defineField({
+  name: 'relatedAuthor',
+  title: 'Related author',
+  type: 'reference',
+  to: [{type: 'author'}],
+  validation: (rule) => rule.required(),
+})
+
+const storedAuthorReference = {_type: 'reference', _ref: 'author-1', _weak: true}
+
+function LeakedEditReferenceLink(props: EditReferenceLinkComponentProps) {
+  return <a data-testid="leaked-edit-link">{props.children}</a>
+}
+
+function OuterDocumentPaneOptions(props: {children: ReactNode; onEditReference: () => void}) {
+  return (
+    <ReferenceInputOptionsProvider
+      EditReferenceLinkComponent={LeakedEditReferenceLink}
+      initialValueTemplateItems={[
+        {
+          id: 'author',
+          title: 'Author',
+          type: 'initialValueTemplateItem',
+          schemaType: 'author',
+          templateId: 'author',
+          granted: true,
+          reason: 'Granted',
+          resolvedInitialValue: {},
+          template: {id: 'author', schemaType: 'author', title: 'Author', value: {}},
+        },
+      ]}
+      onEditReference={props.onEditReference}
+    >
+      {props.children}
+    </ReferenceInputOptionsProvider>
+  )
+}
+
+describe('ReleaseMetadataForm reference fields', () => {
+  beforeEach(() => {
+    getReferenceInfo.mockReset()
+    getReferenceInfo.mockImplementation(() =>
+      of({
+        id: 'author-1',
+        type: 'author',
+        isPublished: true,
+        availability: {available: true, reason: 'READABLE'},
+        preview: {snapshot: {title: 'Ada'}, original: {title: 'Ada'}},
+      }),
+    )
+  })
+
+  it('keeps the selected reference visible as a link that opens the document in a new tab', async () => {
+    const onValidityChange = vi.fn()
+    await renderWithFields(
+      [relatedAuthorField],
+      <ControlledMetadataForm
+        initial={{releaseType: 'asap', relatedAuthor: storedAuthorReference}}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    const link = await screen.findByRole('link')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(link).toHaveAttribute('href', expect.stringContaining('author-1'))
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(true))
+  })
+
+  it('searches and previews in the published perspective', async () => {
+    await renderWithFields(
+      [relatedAuthorField],
+      <ControlledMetadataForm
+        initial={{releaseType: 'asap', relatedAuthor: storedAuthorReference}}
+        onChange={vi.fn()}
+      />,
+    )
+
+    await waitFor(() => expect(getReferenceInfo).toHaveBeenCalled())
+    expect(getReferenceInfo.mock.calls.every((call) => call[3]?.join() === 'published')).toBe(true)
+  })
+
+  it('ignores the reference options of an outer document pane', async () => {
+    const onEditReference = vi.fn()
+    await renderWithFields(
+      [relatedAuthorField],
+      <OuterDocumentPaneOptions onEditReference={onEditReference}>
+        <ControlledMetadataForm
+          initial={{releaseType: 'asap', relatedAuthor: storedAuthorReference}}
+          onChange={vi.fn()}
+        />
+        <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={vi.fn()} />
+      </OuterDocumentPaneOptions>,
+    )
+
+    await screen.findByRole('link')
+    expect(screen.getAllByTestId('autocomplete')).toHaveLength(1)
+    expect(screen.queryByTestId('leaked-edit-link')).toBeNull()
+    expect(screen.queryByTestId(/^create-new-document-select/)).toBeNull()
+    expect(onEditReference).not.toHaveBeenCalled()
+  })
+
+  it('stays invalid while a required reference is empty', async () => {
+    const onValidityChange = vi.fn()
+    await renderWithFields(
+      [relatedAuthorField],
+      <ControlledMetadataForm
+        initial={{releaseType: 'asap'}}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    await screen.findByTestId('autocomplete')
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(false))
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30))
+    })
+    expect(onValidityChange).not.toHaveBeenCalledWith(true)
+  })
+
+  describe('stores references weak however they were produced', () => {
+    const strongInitial = {_type: 'reference', _ref: 'author-1'}
+    const storedWeak = {_type: 'reference', _ref: 'author-1', _weak: true}
+
+    async function seeded(field: FieldDefinition, schemaTypes: SchemaTypeDefinition[] = []) {
+      const onChange = vi.fn()
+      await renderWithFields(
+        [field],
+        <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={onChange} />,
+        true,
+        createMockSanityClientAsClient(),
+        schemaTypes,
+      )
+      return onChange
+    }
+
+    it('seeds an inline reference initialValue weak', async () => {
+      const onChange = await seeded(
+        defineField({
+          name: 'owner',
+          type: 'reference',
+          to: [{type: 'author'}],
+          initialValue: {...strongInitial, _strengthenOnPublish: {type: 'author'}},
+        }),
+      )
+
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith(expect.objectContaining({owner: storedWeak})),
+      )
+    })
+
+    it('seeds the initialValue of a named reference type weak', async () => {
+      const onChange = await seeded(defineField({name: 'owner', type: 'seededAuthorRef'}), [
+        defineType({
+          name: 'seededAuthorRef',
+          type: 'reference',
+          weak: true,
+          to: [{type: 'author'}],
+          initialValue: strongInitial,
+        }),
+      ])
+
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith(
+          expect.objectContaining({owner: {...storedWeak, _type: 'seededAuthorRef'}}),
+        ),
+      )
+    })
+
+    it('seeds a reference nested in an object initialValue weak', async () => {
+      const onChange = await seeded(
+        defineField({
+          name: 'signOff',
+          type: 'object',
+          fields: [defineField({name: 'owner', type: 'reference', to: [{type: 'author'}]})],
+          initialValue: {owner: strongInitial},
+        }),
+      )
+
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith(
+          expect.objectContaining({signOff: {owner: storedWeak}}),
+        ),
+      )
+    })
+
+    it('weakens a restored strong reference when another field is edited', async () => {
+      const onChange = vi.fn()
+      await renderWithFields(
+        [relatedAuthorField, defineField({name: 'note', type: 'string'})],
+        <ControlledMetadataForm
+          initial={{releaseType: 'asap', relatedAuthor: strongInitial}}
+          onChange={onChange}
+        />,
+      )
+
+      await userEvent.type(
+        within(await screen.findByTestId('field-note')).getByRole('textbox'),
+        'x',
+      )
+
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith(
+          expect.objectContaining({relatedAuthor: storedWeak, note: 'x'}),
+        ),
+      )
+    })
+  })
+
+  describe('against a dataset with a draft-only document', () => {
+    const dataset = [
+      {_id: 'author-1', _type: 'author', _rev: 'rev-1', name: 'Ada'},
+      {_id: 'drafts.author-2', _type: 'author', _rev: 'rev-2', name: 'Bea'},
+    ]
+
+    function resolveInPerspective(id: string, perspective: string[] | undefined) {
+      const candidates = perspective?.includes('drafts') ? [`drafts.${id}`, id] : [id]
+      const found = candidates
+        .map((candidate) => dataset.find((doc) => doc._id === candidate))
+        .find((doc) => doc !== undefined)
+      return found ? {found, _id: id} : undefined
+    }
+
+    function createDatasetClient() {
+      const client = createMockSanityClientAsClient()
+      client.observable.fetch = ((
+        query: string,
+        params: {__query?: string},
+        options?: FetchOptions,
+      ) => {
+        if (options?.tag === 'search.reference') {
+          const prefix = (params.__query ?? '').replace('*', '').toLowerCase()
+          const ids = dataset.map((doc) => doc._id.replace('drafts.', ''))
+          const hits = ids
+            .map((id) => resolveInPerspective(id, options.perspective))
+            .filter((resolved) => resolved?.found.name.toLowerCase().startsWith(prefix))
+          return of(
+            hits.map((resolved) => ({
+              _id: resolved?._id,
+              _type: 'author',
+              _originalId: resolved?.found._id,
+            })),
+          )
+        }
+        const requestedId = /_id in \["([^"]+)"\]/.exec(query)?.[1] ?? ''
+        const resolved = resolveInPerspective(requestedId, options?.perspective)
+        return of([resolved ? [{...resolved.found, _id: requestedId}] : []])
+      }) as typeof client.observable.fetch
+      return client
+    }
+
+    it('stores a picked reference as a weak reference without strengthen-on-publish', async () => {
+      const onChange = vi.fn()
+      await renderWithFields(
+        [relatedAuthorField],
+        <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={onChange} />,
+        true,
+        createDatasetClient(),
+      )
+
+      await userEvent.type(await screen.findByTestId('autocomplete'), 'Ada')
+      await userEvent.click(await screen.findByText('Ada'))
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            relatedAuthor: {_type: 'reference', _ref: 'author-1', _weak: true},
+          }),
+        )
+      })
+    })
+
+    it('does not offer a document that has no published version', async () => {
+      await renderWithFields(
+        [relatedAuthorField],
+        <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={vi.fn()} />,
+        true,
+        createDatasetClient(),
+      )
+
+      await userEvent.type(await screen.findByTestId('autocomplete'), 'Bea')
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 300))
+      })
+
+      expect(screen.getByText(/No results for/)).toBeInTheDocument()
+      expect(screen.queryByText('Bea')).toBeNull()
     })
   })
 })

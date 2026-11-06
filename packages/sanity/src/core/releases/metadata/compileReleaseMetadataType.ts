@@ -2,13 +2,17 @@ import {Schema} from '@sanity/schema'
 import {
   type FieldDefinition,
   isObjectSchemaType,
+  isReferenceSchemaType,
   type ObjectSchemaType,
   type Schema as SchemaType,
   type SchemaType as SanitySchemaType,
 } from '@sanity/types'
 import {inferFromSchema} from '@sanity/validation/_internal'
 
-import {warnRejectedReleaseMetadataField} from '../../config/releases/metadataFields'
+import {
+  warnAdjustedReleaseMetadataField,
+  warnRejectedReleaseMetadataField,
+} from '../../config/releases/metadataFields'
 import {isRecord} from '../../util/isRecord'
 
 /** Type name of the private object that hosts configured release metadata fields. */
@@ -25,6 +29,7 @@ const ALLOWED_TYPE_NAMES = new Set([
   'date',
   'datetime',
   'url',
+  'reference',
 ])
 
 const BUILTIN_TYPE_NAMES = new Set([
@@ -74,6 +79,9 @@ function rejectionReason(type: SanitySchemaType): string | undefined {
   )
   if (disallowed) return `type "${disallowed}" is not supported`
   if (type.jsonType === 'array') return 'arrays are not supported'
+  if (isReferenceSchemaType(type) && type.weak !== true) {
+    return 'named reference types must set weak: true on the type, a field-level weak is ignored'
+  }
   if (names.some((name) => ALLOWED_TYPE_NAMES.has(name))) return undefined
 
   if (type.jsonType === 'object' || names.includes('object')) {
@@ -107,6 +115,22 @@ function withFields(field: FieldDefinition, fields: FieldDefinition[]): FieldDef
 
 function isLooseField(value: unknown): value is FieldDefinition {
   return isRecord(value) && typeof value.name === 'string' && typeof value.type === 'string'
+}
+
+function asWeakReference(field: FieldDefinition, label: string): FieldDefinition {
+  if (isRecord(field) && field.type === 'reference') {
+    if (field.weak === false) {
+      warnAdjustedReleaseMetadataField(
+        label,
+        'weak: false is not supported, stored as a weak reference',
+      )
+    }
+
+    const weakField = {...field, weak: true}
+    if (isLooseField(weakField)) return weakField
+  }
+
+  return field
 }
 
 function probeResolvedType(
@@ -168,7 +192,8 @@ function acceptField(
     return undefined
   }
 
-  const resolved = probeResolvedType(next, parent, label)
+  const weakNext = asWeakReference(next, label)
+  const resolved = probeResolvedType(weakNext, parent, label)
   if (!resolved.ok) {
     if (!resolved.reported) {
       warnRejectedReleaseMetadataField(label, `type "${String(field.type)}" could not be resolved`)
@@ -182,7 +207,7 @@ function acceptField(
     return undefined
   }
 
-  return next
+  return weakNext
 }
 
 /**

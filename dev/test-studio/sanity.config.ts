@@ -373,6 +373,12 @@ const defaultWorkspace = defineConfig({
             defineField({name: 'approved', title: 'Approved', type: 'boolean'}),
           ],
         }),
+        defineField({
+          name: 'relatedBook',
+          title: 'Related book',
+          type: 'reference',
+          to: [{type: 'book'}],
+        }),
       ],
     },
   },
