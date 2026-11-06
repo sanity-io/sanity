@@ -1,15 +1,16 @@
-import {
-  type ClientConfig as SanityClientConfig,
-  ClientError,
-  type SanityClient,
-} from '@sanity/client'
-import {firstValueFrom} from 'rxjs'
-import {filter} from 'rxjs/operators'
 import {describe, expect, it, vi} from 'vitest'
 
 import {getOAuthFlowStorageKey} from '../constants'
 import {_createOAuthAuthStore} from '../createOAuthAuthStore'
-import {type OAuthEndpoints} from '../oauthEndpoints'
+import {
+  authenticatedState,
+  createEnvironment,
+  createMockClientFactory,
+  createMockEndpoints,
+  ORIGIN,
+  PROJECT_ID,
+  tokenOf,
+} from './fixtures'
 
 // Without localStorage the token pair lives in this tab's memory and is not shared with other
 // tabs. (jsdom reports no localStorage support to the store, so this is the default here.)
@@ -17,78 +18,18 @@ vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: false,
 }))
 
-const PROJECT_ID = 'test-project'
-const ORIGIN = 'http://localhost:3333'
-
-/** The bearer a client would send: the static `token`, or the current value of a reactive `auth`. */
-async function resolveConfiguredToken(config: SanityClientConfig): Promise<string | undefined> {
-  if (config.auth) {
-    const auth = await firstValueFrom(config.auth)
-    return auth && 'token' in auth ? auth.token : undefined
-  }
-  return config.token
-}
-
-function tokenOf(client: SanityClient): Promise<string | undefined> {
-  return resolveConfiguredToken(client.config())
-}
-
-function createClientFactory(validTokens: Set<string>) {
-  return (config: SanityClientConfig): SanityClient =>
-    ({
-      config: () => config,
-      request: vi.fn(async ({url}: {url: string}) => {
-        if (url !== '/users/me') return {}
-        const token = await resolveConfiguredToken(config)
-        if (token && validTokens.has(token)) {
-          return {id: 'user', name: 'User', email: 'u@example.com', role: '', roles: []}
-        }
-        throw new ClientError({
-          statusCode: 401,
-          headers: {},
-          body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX', statusCode: 401},
-          method: 'GET',
-          statusMessage: 'Unauthorized',
-          url: `https://${PROJECT_ID}.api.sanity.io/v1/users/me`,
-        })
-      }),
-    }) as unknown as SanityClient
-}
-
 describe('createOAuthAuthStore without localStorage', () => {
   it('keeps the token pair to the tab that signed in', async () => {
     const clientId = 'oc-memory-client'
-    const endpoints: OAuthEndpoints = {
-      authorizeUrl: () => 'https://api.sanity.io/v1/auth/oauth/authorize',
-      exchangeCode: vi.fn(async () => ({
-        access_token: 'access-1',
-        refresh_token: 'refresh-1',
-        token_type: 'bearer',
-        expires_in: 3600,
-      })),
-      refresh: vi.fn(async () => ({
-        access_token: 'access-2',
-        refresh_token: 'refresh-2',
-        token_type: 'bearer',
-        expires_in: 3600,
-      })),
-      revoke: vi.fn(async () => {}),
-    }
-    const environment = (search: string) => ({
-      getLocation: () => ({origin: ORIGIN, pathname: '/', search}),
-      navigate: vi.fn(),
-      replaceUrl: vi.fn(),
-      withLock: <T>(_name: string, task: () => Promise<T>) => task(),
-      locksAvailable: false,
-    })
-    const clientFactory = createClientFactory(new Set(['access-1']))
+    const endpoints = createMockEndpoints()
+    const {factory: clientFactory} = createMockClientFactory(new Set(['access-1']))
     const otherTab = _createOAuthAuthStore({
       projectId: PROJECT_ID,
       dataset: 'test-dataset',
       clientId,
       clientFactory,
       endpoints,
-      ...environment(''),
+      ...createEnvironment(),
     })
     const otherTabStates: boolean[] = []
     const subscription = otherTab.state.subscribe((state) =>
@@ -106,10 +47,10 @@ describe('createOAuthAuthStore without localStorage', () => {
       clientId,
       clientFactory,
       endpoints,
-      ...environment('?code=c&state=s'),
+      ...createEnvironment('?code=c&state=s'),
     })
     await expect(thisTab.handleCallbackUrl!()).resolves.toMatchObject({success: true})
-    const state = await firstValueFrom(thisTab.state.pipe(filter((s) => s.authenticated)))
+    const state = await authenticatedState(thisTab.state)
     expect(await tokenOf(state.client)).toBe('access-1')
 
     // A broadcast would reach the other tab out of order with the refresh lock, and it could
