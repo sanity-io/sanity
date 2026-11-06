@@ -103,7 +103,9 @@ describe('useValidationStatus', () => {
   })
 
   it.each([
-    {name: 'no options', options: undefined, listener: 'document'},
+    {name: 'no options', options: undefined, listener: 'auto'},
+    {name: 'no listener', options: {}, listener: 'auto'},
+    {name: 'the auto listener', options: {listener: 'auto'}, listener: 'auto'},
     {name: 'the document listener', options: {listener: 'document'}, listener: 'document'},
     {name: 'the global listener', options: {listener: 'global'}, listener: 'global'},
   ] as const)('validates through the $listener listener given $name', ({options, listener}) => {
@@ -121,7 +123,7 @@ describe('useValidationStatus', () => {
     )
   })
 
-  it('still accepts the deprecated boolean, and validates through the document listener', () => {
+  it('still accepts the deprecated boolean, and validates through the auto listener', () => {
     function Probe() {
       // oxlint-disable-next-line no-deprecated -- the deprecated signature is what this test covers
       useValidationStatus('doc-1', 'author', true)
@@ -133,7 +135,7 @@ describe('useValidationStatus', () => {
       'doc-1',
       'author',
       false,
-      {listener: 'document'},
+      {listener: 'auto'},
     )
   })
 })

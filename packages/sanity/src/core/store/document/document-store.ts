@@ -131,19 +131,23 @@ export interface DocumentStore {
         /**
          * `immediate` validates without waiting for idle callbacks while a user waits on the
          * result, and speeds up a run already in flight rather than starting it over.
-         * Scheduling is shared per document and `listener`: it stays `immediate` until the last
-         * immediate subscription with that listener unsubscribes, and idle subscribers on the
-         * same stream get those results too. Subscribers with the other listener keep
-         * validating in idle time.
+         * Scheduling is shared per run of the document: it stays `immediate` until the last
+         * immediate subscription reading that run unsubscribes, and idle subscribers on the same
+         * run get those results too. `document` and `auto` read the pair's run while the pair is
+         * checked out, and `global` and `auto` read the global listener's run otherwise.
          */
         scheduling?: ValidationScheduling
         /**
-         * Where the validated document comes from. `document`, the default, checks out the
-         * document pair: that opens a listener for the document, and validates local edits as
-         * they are made. `global` follows the document through the document preview store's
-         * shared global listener instead, so it opens no listener of its own, but validates a
-         * change only once the server has it. Use it where nobody edits the document, like a list
-         * or a board of documents.
+         * Where the validated document comes from.
+         *
+         * - `auto`, the default, validates from the document pair while something else has it
+         *   checked out, like the document's pane, and through the document preview store's
+         *   shared global listener otherwise. It never checks out the pair, so it opens no
+         *   listener of its own.
+         * - `document` checks out the document pair: that opens a listener for the document, and
+         *   validates local edits as they are made.
+         * - `global` always follows the document through the shared global listener, which
+         *   validates a change only once the server has it.
          */
         listener?: ValidationListener
       },

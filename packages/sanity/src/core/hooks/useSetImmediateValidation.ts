@@ -15,16 +15,15 @@ import {type ValidationListener} from '../store/document/document-pair/validatio
  * waiting, and disable it as soon as they no longer are.
  *
  * It switches the document's shared validation, so pass the same arguments as
- * `useValidationStatus`, its `listener` included: every `useValidationStatus` of that document
- * and listener gets the results sooner, and validation stays immediate until every caller has
- * disabled it or unmounted. It reports no errors itself: if the document's validation fails, the
- * hold ends, and `useValidationStatus` reports the failure.
+ * `useValidationStatus`: every `useValidationStatus` that reads the same validation gets the
+ * results sooner, and validation stays immediate until every caller has disabled it or unmounted.
+ * It reports no errors itself: if the document's validation fails, the hold ends, and
+ * `useValidationStatus` reports the failure.
  *
- * Each listener validates the document on its own, so a hold only speeds up the validation of its
- * own `listener`: one with the default, `document`, leaves a
- * `useValidationStatus(id, type, {listener: 'global'})` validating in idle time, and the other way
- * around. A hold on a listener that no `useValidationStatus` reads validates through it anyway,
- * and with `document` that checks out the document pair.
+ * The document is validated once for the checked out pair and once for the global listener, and
+ * a hold speeds up the one its `listener` reads. With the default, `auto`, that is the pair's
+ * while the pair is checked out, which `document` reads too, and the global listener's
+ * otherwise, which `global` reads too. A hold with `document` checks out the document pair.
  *
  * @beta
  */
@@ -37,11 +36,11 @@ export function useSetImmediateValidation(
   _requirePublishedReferences: boolean,
   {
     enabled,
-    listener = 'document',
+    listener = 'auto',
   }: {
     enabled: boolean
     /**
-     * The `listener` of the `useValidationStatus` to speed up. Defaults to `document`.
+     * The `listener` of the `useValidationStatus` to speed up. Defaults to `auto`.
      */
     listener?: ValidationListener
   },
