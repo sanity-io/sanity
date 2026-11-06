@@ -2,6 +2,24 @@ import {ImageIcon} from '@sanity/icons/Image'
 import {OlistIcon} from '@sanity/icons/Olist'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
+import AsyncSelect from './components/AsyncSelect'
+
+interface CatBreedsResponse {
+  data: Array<{breed: string}>
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function isCatBreedsResponse(value: unknown): value is CatBreedsResponse {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.data) &&
+    value.data.every((breed) => isRecord(breed) && typeof breed.breed === 'string')
+  )
+}
+
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
   type: 'array',
@@ -55,6 +73,26 @@ export default defineType({
       title: 'Title',
       type: 'string',
     },
+    defineField({
+      name: 'catBreed',
+      title: 'Cat Breed',
+      type: 'string',
+      options: {
+        list: [],
+        // @ts-expect-error - url is not a valid option for StringOptions but it is for AsyncSelect
+        url: 'https://catfact.ninja/breeds',
+        formatResponse: (json: unknown) => {
+          if (!isCatBreedsResponse(json)) return []
+          return json.data.map(({breed}) => ({
+            title: breed,
+            value: breed.toLowerCase().split(' ').join('-'),
+          }))
+        },
+      },
+      components: {
+        input: AsyncSelect,
+      },
+    }),
     // Example demonstrating schema validation error for issue #3631
     // This array contains multiple types that resolve to JSON type "string"
     // which is not allowed because there's no way to distinguish between them
