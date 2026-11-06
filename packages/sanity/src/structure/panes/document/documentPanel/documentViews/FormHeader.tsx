@@ -90,9 +90,15 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
             {schemaType.title ?? schemaType.name}
           </Text>
           {description && (
-            <Tooltip content={description} placement="right">
-              <InfoOutlineIcon data-testid="schema-description-icon" />
-            </Tooltip>
+            // The icon alone can't take focus, so the tooltip never opens from the keyboard.
+            // PressArea is the focus target; the box keeps it the size of the icon.
+            <Box as="span" width="fit-content">
+              <Tooltip content={description} placement="right">
+                <PressArea aria-label={description} type="button">
+                  <InfoOutlineIcon data-testid="schema-description-icon" />
+                </PressArea>
+              </Tooltip>
+            </Box>
           )}
         </Inline>
       )}
