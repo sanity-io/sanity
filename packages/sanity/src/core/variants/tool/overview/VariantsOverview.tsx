@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {Card} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useToast} from '@sanity/ui/toast'
+import {use, useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Container, Flex, VStack} from 'ui5'
 
@@ -8,11 +9,14 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantsMode} from '../../contexts/mode/useVariantsMode'
+import {useVariantsUpsell} from '../../contexts/upsell/useVariantsUpsell'
 import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
+import {VariantsUpsellPanel} from '../upsell/VariantsUpsellPanel'
 import {
   buildConditionFacets,
   filterVariantsForSearch,
@@ -33,12 +37,33 @@ const searchPredicate = (variant: TableVariant, term: string): boolean =>
 
 export function VariantsOverview(): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const {t: tStudio} = useTranslation()
   const router = useRouter()
+  // Suspends up to the tool's own loading block until the content variants check has answered, so
+  // the overview never renders the wrong empty state first
+  const mode = use(useVariantsMode())
+  const {handleOpenDialog: handleOpenUpsellDialog, upsellDialogOpen} = useVariantsUpsell()
+  const toast = useToast()
   const {data: variants, error, loading} = useAllVariants()
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
 
-  const handleCreateVariant = useCallback(() => setIsCreateVariantDialogOpen(true), [])
+  const handleCreateVariant = useCallback(() => {
+    if (mode === null) {
+      // The feature check failed, so whether the plan has variants is unknown: fail closed
+      toast.push({
+        status: 'error',
+        title: tStudio('errors.unable-to-perform-action'),
+        closable: true,
+      })
+      return
+    }
+    if (mode === 'upsell') {
+      handleOpenUpsellDialog()
+      return
+    }
+    setIsCreateVariantDialogOpen(true)
+  }, [handleOpenUpsellDialog, mode, tStudio, toast])
 
   const handleOnCreateVariant = useCallback(
     (createdVariantId: string) => {
@@ -93,13 +118,13 @@ export function VariantsOverview(): React.JSX.Element {
   const createVariantButton = useMemo(
     () => (
       <Button
-        disabled={isCreateVariantDialogOpen}
+        disabled={isCreateVariantDialogOpen || upsellDialogOpen}
         icon={AddIcon}
         onClick={handleCreateVariant}
         text={t('overview.action.new-variant')}
       />
     ),
-    [handleCreateVariant, isCreateVariantDialogOpen, t],
+    [handleCreateVariant, isCreateVariantDialogOpen, t, upsellDialogOpen],
   )
 
   const tableEmptyState = useCallback(() => {
@@ -135,8 +160,24 @@ export function VariantsOverview(): React.JSX.Element {
       )
     }
 
+    // Without the feature, definitions that already exist stay listed and editable; only a dataset
+    // with none shows the upsell, or the unavailable notice when the check failed
+    if (!hasVariants && mode === 'upsell') {
+      return <VariantsUpsellPanel />
+    }
+
+    if (!hasVariants && mode === null) {
+      return (
+        <Flex alignItems="center" flexDirection="column" justifyContent="center" padding={4}>
+          <Text data-testid="variants-unavailable" muted size={1} as="div" trim={true}>
+            {t('unavailable.text')}
+          </Text>
+        </Flex>
+      )
+    }
+
     return <VariantsEmptyState createVariantButton={createVariantButton} />
-  }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
+  }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, mode, rows.length, t])
 
   return (
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
