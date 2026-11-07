@@ -9,6 +9,7 @@ const DOCUMENT_URL =
   'https://sanity-cdn.com/v1/modules/by-app/app-from-document/t1754072932/%5E5.20.1/sanity'
 
 beforeEach(() => {
+  vi.spyOn(Date, 'now').mockReturnValue(1_754_072_932_000)
   vi.spyOn(globalThis, 'fetch').mockImplementation(async () =>
     Response.json({packageVersion: '5.21.0'}),
   )
@@ -35,7 +36,9 @@ it('polls the import map URL it was given instead of the document import map', a
   )
 
   await waitFor(() =>
-    expect(byAppRequests()).toEqual([expect.stringContaining('/by-app/app-from-prop/')]),
+    expect(byAppRequests()).toEqual([
+      'https://sanity-cdn.com/v1/modules/by-app/app-from-prop/t1754072880/^5.20.1/sanity',
+    ]),
   )
 })
 
