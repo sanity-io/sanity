@@ -88,3 +88,9 @@ it('sends the peak listener count in the beacon when the page is hidden for good
     }),
   ])
 })
+
+it('loads where the global object has no addEventListener, as in the schema manifest worker', async () => {
+  vi.stubGlobal('addEventListener', undefined)
+
+  await expect(loadHook()).resolves.toBeDefined()
+})

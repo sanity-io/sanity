@@ -31,10 +31,8 @@ function reportListenerPeak(): void {
   })
 }
 
-if (typeof window !== 'undefined') {
-  // Registered on module load, ahead of the telemetry store's own pagehide listener, so the event makes its beacon.
-  addEventListener('pagehide', reportListenerPeak, {capture: true})
-}
+// On module load so it runs before the telemetry store's beacon; optional for the schema manifest worker.
+globalThis.addEventListener?.('pagehide', reportListenerPeak, {capture: true})
 
 /**
  * Reports one `Listener Peak Measured` event per page load, when the page is hidden for good.
