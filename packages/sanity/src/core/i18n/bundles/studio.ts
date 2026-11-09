@@ -1852,8 +1852,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
   'release.menu.view-releases': 'View content releases',
-  /** Label above the current perspective in the navbar perspective picker's tooltip */
-  'release.navbar.chip-tooltip': 'Perspective',
+  /** Label above a release's title in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.release': 'Release',
+  /** Label above "Drafts" or "Published" in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.version': 'Version',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */

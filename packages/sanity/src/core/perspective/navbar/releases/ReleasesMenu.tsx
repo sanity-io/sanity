@@ -12,6 +12,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
@@ -43,6 +44,11 @@ function ReleasesMenuChip({
   // Drafts disabled coerces the default name to `published`, so a truthy name
   // is not enough to tell a selection from the default perspective.
   const canClearPerspective = selectedPerspective !== defaultPerspective
+  // The tooltip names what kind of value the chip shows, as the variants chip names its type:
+  // a release, or a version of the document (Drafts, Published)
+  const pickerLabel = isReleaseDocument(selectedPerspective)
+    ? t('release.navbar.chip-label.release')
+    : t('release.navbar.chip-label.version')
 
   const handleClearPerspective = useCallback(() => {
     setPerspective(undefined)
@@ -62,7 +68,7 @@ function ReleasesMenuChip({
         />
       }
       text={displayTitle}
-      pickerLabel={t('release.navbar.chip-tooltip')}
+      pickerLabel={pickerLabel}
       {...rest}
     />
   )
