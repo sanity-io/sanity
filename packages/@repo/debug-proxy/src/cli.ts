@@ -570,10 +570,13 @@ if (ERROR_PROBABILITY > 0) {
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
-  const what =
-    INVALID_SESSION_CODE === 'SIO-401-AEX'
-      ? 'the expired-session 401 (SIO-401-AEX)'
-      : 'the session-not-found 401 (SIO-401-ANF)'
+  const what = (
+    {
+      'SIO-401-AEX': 'the expired-session 401 (SIO-401-AEX)',
+      'SIO-401-ANF': 'the session-not-found 401 (SIO-401-ANF)',
+      'invalid_token': 'a plain bearer-token 401 (invalid_token, no Sanity error code)',
+    } satisfies Record<InvalidSessionCode, string>
+  )[INVALID_SESSION_CODE]
   console.info(
     INVALIDATE_SESSION_AFTER_MS === 0
       ? `Invalid session: every API request returns ${what}`
