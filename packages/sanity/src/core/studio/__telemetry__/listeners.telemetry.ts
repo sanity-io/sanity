@@ -15,6 +15,5 @@ export interface ListenerPeakMeasuredData {
 export const ListenerPeakMeasured = defineEvent<ListenerPeakMeasuredData>({
   name: 'Listener Peak Measured',
   version: 1,
-  description:
-    'The most listeners a Studio tab has held open at once, sent every minute while it rises',
+  description: 'The most listeners a Studio tab held open at once, sent when the tab closes',
 })

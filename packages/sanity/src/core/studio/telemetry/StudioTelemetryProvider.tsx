@@ -29,9 +29,9 @@ import {
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
+import {ListenerPeakTelemetry} from './ListenerPeakTelemetry'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
-import {useListenerPeakTelemetry} from './useListenerPeakTelemetry'
 import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 let sessionId: SessionId | undefined
@@ -216,7 +216,6 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [store.logger])
 
   const protocolCheckClient = useClient({apiVersion: PROTOCOL_CHECK_API_VERSION})
-  useListenerPeakTelemetry(store.logger, protocolCheckClient)
 
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
   // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
@@ -234,6 +233,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   return (
     <TelemetryProvider store={store}>
+      <ListenerPeakTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
       <PerformanceTelemetryTracker>{props.children}</PerformanceTelemetryTracker>
     </TelemetryProvider>
   )
