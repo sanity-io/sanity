@@ -5,10 +5,15 @@
  * Inspired by https://github.com/enyo/dropzone (MIT) (c) 2021 Matias Meno
  * Based on https://github.com/react-dropzone/attr-accept (MIT) (c) 2015 Andrey Okonetchnikov
  *
+ * Diverges from attr-accept in one case: when the accept entry is an extension (e.g. `.pdf`)
+ * and the file has no name, this returns `true` (fail open). Browsers omit the file name while
+ * hovering a file over an input and only provide it on drop, so failing closed would incorrectly
+ * reject files during hover.
+ *
  * @param file - https://developer.mozilla.org/en-US/docs/Web/API/File
  * @param acceptedFiles - List of accepted mime types (comma-separated string or array)
  * @returns True if file is accepted, false otherwise
- * @internal
+ * @public
  */
 export function accepts(
   file: {type: string; name?: string},
