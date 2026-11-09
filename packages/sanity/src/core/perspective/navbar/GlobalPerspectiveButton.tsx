@@ -112,7 +112,7 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
         content={
           <VStack gap={2} style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
             {pickerLabel ? (
-              <Text size={0} as="div" muted trim={true}>
+              <Text size={1} as="div" muted trim={true}>
                 {pickerLabel}
               </Text>
             ) : null}
