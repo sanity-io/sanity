@@ -1,5 +1,5 @@
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
-import {useCallback, useContext, useMemo} from 'react'
+import {useContext, useMemo} from 'react'
 import {
   defineDocumentFieldAction,
   type DocumentFieldActionGroup,
@@ -18,9 +18,6 @@ import {DEFAULT_TOOL_NAME} from '../constants'
 function useOpenInStructureAction(
   props: DocumentFieldActionProps,
 ): DocumentFieldActionItem | DocumentFieldActionGroup {
-  // The published bundle is not run through the React Compiler (apps skip node_modules).
-  // Stay on that path so a new `onAction` each render cannot hide from the regression test.
-  'use no memo'
   const {documentId, documentType, path} = props
   const workspace = useWorkspace()
   const {navigateIntent} = useRouter()
@@ -37,22 +34,19 @@ function useOpenInStructureAction(
     [documentId, documentType, workspace.tools, presentation],
   )
 
-  // A new function every render fails `useUnique` and setStates until React throws #301.
-  const onAction = useCallback(() => {
-    navigateIntent('edit', {
-      id: documentId,
-      type: documentType,
-      mode: 'structure',
-      path: pathToString(path),
-    })
-  }, [documentId, documentType, navigateIntent, path])
-
   return {
     type: 'action',
     hidden: !presentation || path.length > 0 || !defaultStructureTool,
     icon: defaultStructureTool?.icon || MasterDetailIcon,
     title: `Open in ${defaultStructureTool?.title || 'Structure'}`,
-    onAction,
+    onAction() {
+      navigateIntent('edit', {
+        id: documentId,
+        type: documentType,
+        mode: 'structure',
+        path: pathToString(path),
+      })
+    },
     renderAsButton: true,
   }
 }
