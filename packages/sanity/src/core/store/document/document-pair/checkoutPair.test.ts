@@ -1,9 +1,10 @@
 import {ClientError, type SanityClient} from '@sanity/client'
 import {merge, NEVER, of, type Observable, Subject, throwError} from 'rxjs'
-import {delay} from 'rxjs/operators'
+import {delay, tap} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
+import {DEFAULT_DEADLINE_MS} from '../utils/sequentializeListenerEvents'
 import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = vi.fn(() => of({}))
@@ -3840,5 +3841,54 @@ describe('checkoutPair -- telemetry per buffered document', () => {
     sub2.unsubscribe()
 
     expect(onPairTornDownWithPendingMutations).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('checkoutPair -- transaction lock', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  test.fails('a snapshot after a listener restart releases a pending transaction lock', async () => {
+    const listenerSubject = new Subject()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+    const onSyncErrorRecovery = vi.fn()
+    const pair = checkoutPair(testClient as any as SanityClient, idPair, of(true), {
+      onSyncErrorRecovery,
+    })
+    const pendingPhases: string[] = []
+    const sub = merge(
+      pair.draft.events,
+      pair.published.events,
+      pair.transactionsPendingEvents$.pipe(tap((event) => pendingPhases.push(event.phase))),
+    ).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    // Breaks the published chain, so the listener restarts once the chain deadline passes
+    listenerSubject.next(createMutationEvent('unchained', 'publishedId', 'unknown-rev', 'next-rev'))
+    listenerSubject.next({
+      ...createMutationEvent('publish', 'draftId', 'any', 'deleted-rev'),
+      transactionTotalEvents: 2,
+    })
+    await vi.advanceTimersByTimeAsync(0)
+    expect(pendingPhases.at(-1)).toBe('begin')
+
+    await vi.advanceTimersByTimeAsync(DEFAULT_DEADLINE_MS)
+
+    expect(onSyncErrorRecovery).toHaveBeenCalledTimes(1)
+    expect(pendingPhases.at(-1)).toBe('end')
+
+    sub.unsubscribe()
   })
 })

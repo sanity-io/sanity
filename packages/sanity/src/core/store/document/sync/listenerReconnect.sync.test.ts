@@ -8,6 +8,12 @@ import {
   type Step,
   type World,
 } from '../../../../../test/sync/syncTest'
+import {createSchema} from '../../../schema/createSchema'
+
+const schema = createSchema({
+  name: 'sync',
+  types: [{name: 'article', type: 'document', fields: [{name: 'title', type: 'string'}]}],
+})
 
 const PUBLISHED_ID = 'article-2'
 const DRAFT_ID = 'drafts.article-2'
@@ -83,5 +89,20 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
   // A reset clears the transaction buffer without ending the pending lock, so the form stays locked.
   test.fails('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
     world = await runSyncTest({...reconnectMidTransaction(false), knownBug: 'C1'})
+    expect(world.clients.B.transactionLocked()).toBe(false)
+  })
+
+  // The edit state keeps the lock the form and Publish read, so both stay disabled after the reset.
+  test.fails('LSN-RECONNECT-MID-TX-RESET-FORM: B can edit and publish again after a reset', async () => {
+    world = await runSyncTest(
+      {
+        ...reconnectMidTransaction(false),
+        id: 'LSN-RECONNECT-MID-TX-RESET-FORM',
+        seam: 'operations',
+        knownBug: 'C1',
+      },
+      {schema, typeName: 'article'},
+    )
+    expect(world.clients.B.transactionLocked()).toBe(false)
   })
 })
