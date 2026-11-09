@@ -183,6 +183,8 @@ describe('refusedRefreshToken', () => {
     expect(forwarded).toBe(false)
     expect(captured.head?.status).toBe(400)
     expect(captured.head?.headers['cache-control']).toBe('no-store')
+    // Same CORS headers as the other synthetic responses, so a credentialed caller can read it.
+    expect(captured.head?.headers['access-control-allow-credentials']).toBe('true')
     expect(JSON.parse(captured.body ?? '{}')).toMatchObject({error: 'invalid_grant'})
   })
 
