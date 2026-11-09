@@ -4,7 +4,7 @@ import {delay, tap} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
-import {DEFAULT_DEADLINE_MS} from '../utils/sequentializeListenerEvents'
+import {DEFAULT_DEADLINE_MS, DeadlineExceededError} from '../utils/sequentializeListenerEvents'
 import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = vi.fn(() => of({}))
@@ -3887,6 +3887,48 @@ describe('checkoutPair -- transaction lock', () => {
     await vi.advanceTimersByTimeAsync(DEFAULT_DEADLINE_MS)
 
     expect(onSyncErrorRecovery).toHaveBeenCalledTimes(1)
+    expect(pendingPhases.at(-1)).toBe('end')
+
+    sub.unsubscribe()
+  })
+
+  test.fails('a transaction whose second half never arrives releases the lock once its deadline passes', async () => {
+    const listenerSubject = new Subject()
+    const testClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        listen: () => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject),
+      },
+    }
+    const onSyncErrorRecovery = vi.fn()
+    const pair = checkoutPair(testClient as any as SanityClient, idPair, of(true), {
+      onSyncErrorRecovery,
+    })
+    const pendingPhases: string[] = []
+    const sub = merge(
+      pair.draft.events,
+      pair.published.events,
+      pair.transactionsPendingEvents$.pipe(tap((event) => pendingPhases.push(event.phase))),
+    ).subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    listenerSubject.next({
+      ...createMutationEvent('publish', 'draftId', 'any', 'deleted-rev'),
+      transactionTotalEvents: 2,
+    })
+    listenerSubject.next({type: 'reconnect'})
+    await vi.advanceTimersByTimeAsync(0)
+    expect(pendingPhases.at(-1)).toBe('begin')
+
+    await vi.advanceTimersByTimeAsync(DEFAULT_DEADLINE_MS)
+
+    expect(onSyncErrorRecovery).toHaveBeenCalledTimes(1)
+    expect(onSyncErrorRecovery.mock.calls[0][0]).toBeInstanceOf(DeadlineExceededError)
+    expect(onSyncErrorRecovery.mock.calls[0][0]).toMatchObject({
+      name: 'TransactionDeadlineExceededError',
+    })
     expect(pendingPhases.at(-1)).toBe('end')
 
     sub.unsubscribe()
