@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {TextInput} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type ComponentType,
@@ -26,6 +26,8 @@ export interface CreateVariantPickerOption {
   icon?: ComponentProps<typeof MenuItem>['icon']
 }
 
+const NO_OPTIONS: CreateVariantPickerOption[] = []
+
 const FilterMenu: ComponentType<
   ComponentProps<typeof Menu> & {filterRef: RefObject<HTMLInputElement | null>}
 > = ({filterRef, ...props}) => {
@@ -40,12 +42,23 @@ export const CreateVariantPicker: ComponentType<{
   icon: IconProps['icon']
   label: string
   description?: string
+  leadingOptions?: CreateVariantPickerOption[]
   options: CreateVariantPickerOption[]
   value: CreateVariantPickerOption | undefined
   onChange: (key: string) => void
   disabled: boolean
   testId: string
-}> = ({icon, label, description, options, value, onChange, disabled, testId}) => {
+}> = ({
+  icon,
+  label,
+  description,
+  leadingOptions = NO_OPTIONS,
+  options,
+  value,
+  onChange,
+  disabled,
+  testId,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const id = useId()
   const descriptionId = useId()
@@ -57,7 +70,19 @@ export const CreateVariantPicker: ComponentType<{
   const matches = (option: CreateVariantPickerOption) =>
     query.length === 0 || option.text.toLowerCase().includes(query)
 
-  const matchingOptions = options.filter(matches)
+  const sections = [leadingOptions.filter(matches), options.filter(matches)].filter(
+    (section) => section.length > 0,
+  )
+
+  const renderOption = (option: CreateVariantPickerOption) => (
+    <MenuItem
+      key={option.key}
+      icon={option.icon}
+      text={option.text}
+      pressed={option.key === value?.key}
+      onClick={() => onChange(option.key)}
+    />
+  )
 
   return (
     <>
@@ -88,7 +113,7 @@ export const CreateVariantPicker: ComponentType<{
               icon={value?.icon}
               iconRight={ChevronDownIcon}
               text={value?.text ?? ''}
-              disabled={disabled || options.length === 0}
+              disabled={disabled || leadingOptions.length + options.length === 0}
             />
           }
           menu={
@@ -108,7 +133,7 @@ export const CreateVariantPicker: ComponentType<{
                   value={filterQuery}
                 />
               </Box>
-              {matchingOptions.length === 0 ? (
+              {sections.length === 0 ? (
                 <Box data-testid={`${testId}-no-matches`} paddingX={3} paddingY={3}>
                   <Text muted size={1}>
                     {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
@@ -125,15 +150,10 @@ export const CreateVariantPicker: ComponentType<{
                   paddingBottom={1}
                 >
                   <Flex flexDirection="column" flexShrink={0} gap={1}>
-                    {matchingOptions.map((option) => (
-                      <MenuItem
-                        key={option.key}
-                        icon={option.icon}
-                        text={option.text}
-                        pressed={option.key === value?.key}
-                        onClick={() => onChange(option.key)}
-                      />
-                    ))}
+                    {sections.flatMap((section, index) => [
+                      ...(index > 0 ? [<MenuDivider key="divider" />] : []),
+                      ...section.map(renderOption),
+                    ])}
                   </Flex>
                 </Flex>
               )}

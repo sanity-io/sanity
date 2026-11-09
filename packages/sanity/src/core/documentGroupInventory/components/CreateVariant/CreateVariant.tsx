@@ -20,6 +20,7 @@ import {
   getAvailableBundles,
   getBundleKey,
 } from './getAvailableBundles'
+import {SelectBaseVersion} from './SelectBaseVersion'
 import {SelectBundle} from './SelectBundle'
 import {SelectVariantDefinition} from './SelectVariantDefinition'
 
@@ -56,6 +57,8 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
 
   const selectedBundle = useSelector(variantCreationRef, ({context}) => context.selectedBundle)
 
+  const selectedBaseId = useSelector(variantCreationRef, ({context}) => context.selectedBaseId)
+
   const isVariantCreationPending = useSelector(variantCreationRef, (snapshot) =>
     snapshot.matches({active: 'creating'}),
   )
@@ -79,6 +82,10 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
         typeof selectedBundle !== 'undefined' &&
         getBundleKey(option) === getBundleKey(selectedBundle),
     ) ?? bundleOptions[0]
+
+  const existingVersions = existingVariants.map(({document}) => document)
+
+  const baseVersion = existingVersions.find(({_id}) => _id === selectedBaseId)
 
   const handleSelectBundle = (bundleKey: string) => {
     const option = bundleOptions.find((candidate) => getBundleKey(candidate) === bundleKey)
@@ -104,6 +111,11 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
     variantCreationRef.send({
       type: 'createVariant.selectBundle',
       bundle: toVariantCreationBundle(bundle),
+    })
+
+    variantCreationRef.send({
+      type: 'createVariant.selectBase',
+      baseId: baseVersion?._id,
     })
 
     variantCreationRef.send({type: 'createVariant.confirm'})
@@ -142,6 +154,17 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
             bundles={bundleOptions}
             value={bundle}
             onChange={handleSelectBundle}
+            disabled={isVariantCreationPending}
+          />
+        </div>
+        <div className={createVariantFormRow}>
+          <SelectBaseVersion
+            sets={sets}
+            releases={releases ?? NO_RELEASES}
+            value={baseVersion}
+            onChange={(baseId) =>
+              variantCreationRef.send({type: 'createVariant.selectBase', baseId})
+            }
             disabled={isVariantCreationPending}
           />
         </div>

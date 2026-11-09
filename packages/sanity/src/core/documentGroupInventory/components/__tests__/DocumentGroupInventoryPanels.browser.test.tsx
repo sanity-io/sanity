@@ -304,14 +304,15 @@ const CREATE_VARIANT_TITLE_DOCUMENT = {_id: PUBLISHED_ID, _type: DOCUMENT_TYPE}
  */
 const CreateVariantHarness: ComponentType<{
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
-}> = ({variantCreationRef}) => {
+  sets?: VariantSet[]
+}> = ({variantCreationRef, sets = VERSION_SETS}) => {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <Card border radius={3} style={{display: 'flex', width: 360, height: 480}}>
         <Container>
           <CreateVariant
             variantCreationRef={variantCreationRef}
-            sets={VERSION_SETS}
+            sets={sets}
             documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
           />
           <Body />
@@ -323,8 +324,10 @@ const CreateVariantHarness: ComponentType<{
 
 const $variantTrigger = page.getByTestId('create-variant-variant-menu-button')
 const $targetTrigger = page.getByTestId('create-variant-target-menu-button')
+const $baseTrigger = page.getByTestId('create-variant-base-menu-button')
 const $variantMenu = page.getByTestId('create-variant-variant-menu')
 const $targetMenu = page.getByTestId('create-variant-target-menu')
+const $baseMenu = page.getByTestId('create-variant-base-menu')
 
 describe('CreateVariant', () => {
   it('shows the first variant and target, and creates nothing until confirmed', async () => {
@@ -344,6 +347,9 @@ describe('CreateVariant', () => {
     await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
     await expect.element(page.getByText('Where it lives')).toBeVisible()
     await expect.element($targetTrigger).toMatchTextContent('Drafts')
+    await expect.element(page.getByText('Document', {exact: true})).toBeVisible()
+    await expect.element(page.getByText('What it starts from')).toBeVisible()
+    await expect.element($baseTrigger).toMatchTextContent('Nearest version')
     await expect.element(page.getByRole('button', {name: 'Cancel'})).toBeEnabled()
 
     const $create = page.getByRole('button', {name: 'Create version'})
@@ -359,6 +365,93 @@ describe('CreateVariant', () => {
     expect(snapshot.matches({active: 'creating'})).toBe(true)
     expect(snapshot.context.selectedVariantId).toBe(SUMMER_SALE._id)
     expect(snapshot.context.selectedBundle).toEqual({type: 'drafts'})
+    // The nearest version is resolved when the variant is created.
+    expect(snapshot.context.selectedBaseId).toBeUndefined()
+  })
+
+  it('offers every version to start from, and keeps a picked one when the target changes', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click($baseTrigger)
+    // "Nearest version" comes first, in a section of its own.
+    const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitem').all()
+    await expect.element($nearest).toHaveTextContent('Nearest version')
+    expect($firstVersion.element().previousElementSibling).toBe(
+      $baseMenu.element().querySelector('[data-ui="MenuDivider"]'),
+    )
+    await expect
+      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .toBeVisible()
+    await expect.element($baseMenu.getByRole('menuitem', {name: 'Default · Draft'})).toBeVisible()
+    await expect
+      .element(
+        $baseMenu.getByRole('menuitem', {
+          name: `Summer sale · ${activeASAPRelease.metadata.title}`,
+        }),
+      )
+      .toBeVisible()
+    await userEvent.keyboard('{Escape}')
+    await expect.element($baseMenu).not.toBeVisible()
+
+    await userEvent.click($targetTrigger)
+    await userEvent.click(
+      $targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}),
+    )
+    await expect.element($baseTrigger).toMatchTextContent('Nearest version')
+
+    await userEvent.click($baseTrigger)
+    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+    await expect.element($baseTrigger).toMatchTextContent('Default · Published')
+
+    await userEvent.click($targetTrigger)
+    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+    await expect.element($baseTrigger).toMatchTextContent('Default · Published')
+    expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBe(PUBLISHED.id)
+
+    // Picking "Nearest version" again drops the picked version.
+    await userEvent.click($baseTrigger)
+    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Nearest version'}))
+    await expect.element($baseTrigger).toMatchTextContent('Nearest version')
+    expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBeUndefined()
+    await expect.element($baseMenu).not.toBeVisible()
+
+    await expect.element($targetMenu).not.toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  it('does not offer the proposed changes as a version to start from', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    const proposedChanges = variant(`versions.agent-abc123.${PUBLISHED_ID}`, 'Proposed changes', {
+      bundleId: 'agent-abc123',
+    })
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        sets={[
+          {
+            key: 'studio:content-agent',
+            name: 'Content Agent',
+            bundle: {type: 'agent'},
+            variants: [proposedChanges],
+          },
+          ...VERSION_SETS,
+        ]}
+      />,
+    )
+
+    await userEvent.click($baseTrigger)
+    await expect
+      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .toBeVisible()
+    await expect.element($baseMenu.getByText(/Proposed changes/)).not.toBeInTheDocument()
   })
 
   it('offers the open releases not holding the variant, and falls back when one does', async () => {
