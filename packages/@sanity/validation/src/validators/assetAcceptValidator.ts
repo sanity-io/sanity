@@ -1,7 +1,7 @@
 import {type CustomValidator, type ValidationContext} from '@sanity/types'
+import {accepts} from '@sanity/util/accepts'
 
 import {validationMarkerCodes} from '../codes'
-import {accepts} from '../util/accepts'
 
 const DEFAULT_API_VERSION = '2025-02-19'
 
