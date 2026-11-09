@@ -116,6 +116,7 @@ describe('listener counting fetch', () => {
     vi.mocked(fetch)
       .mockRejectedValueOnce(new TypeError('Failed to fetch'))
       .mockResolvedValueOnce(new Response('Unauthorized', {status: 401}))
+      .mockResolvedValueOnce(new Response('{}', {headers: {'content-type': 'application/json'}}))
     const countingFetch = listenerCount.resolveListenerCountingFetch()
     const listen = () =>
       countingFetch('https://abc123.api.sanity.io/v1/data/listen', {
@@ -124,6 +125,7 @@ describe('listener counting fetch', () => {
 
     await expect(listen()).rejects.toThrow('Failed to fetch')
     await expect(listen()).resolves.toMatchObject({status: 401})
+    await expect(listen()).resolves.toMatchObject({status: 200})
 
     expect(listenerCount.getListenerCounts()).toEqual({open: 0, peak: 1})
   })

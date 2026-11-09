@@ -126,6 +126,8 @@ type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 const debug = createDebug('sanity:config')
 
+const isBrowser = typeof window === 'object'
+
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
 function normalizeIcon(
@@ -580,7 +582,7 @@ function getAuthStore(
     clientFactory: (config) => {
       let client: SanityClient
       client = clientFactory({
-        resolveFetch: resolveListenerCountingFetch,
+        ...(isBrowser ? {resolveFetch: resolveListenerCountingFetch} : {}),
         ...config,
         ...(createStudioRequestHandler
           ? {

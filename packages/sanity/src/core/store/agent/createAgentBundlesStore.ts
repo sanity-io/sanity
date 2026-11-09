@@ -139,7 +139,8 @@ function listenToBundles(
               }) as EventListener)
 
               es.addEventListener('error', (() => {
-                // EventSource auto-reconnects on transient errors.
+                // EventSource auto-reconnects on transient errors; CLOSED means it gave up.
+                if (es.readyState === EventSource.CLOSED) releaseListener()
               }) as EventListener)
 
               return () => {
