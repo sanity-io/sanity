@@ -593,7 +593,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
-  /** The text of the actions that open the variant creation form and confirm the creation */
+  /** The text of the action that opens the variant creation form from the document group inventory */
   'document-group.create-variant': 'Create version',
   /** Describes the variant creation form's picker for the version the new variant starts from */
   'document-group.create-variant.base-description': 'What it starts from',
@@ -605,8 +605,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.base-option-nearest': 'Nearest version',
   /** The text of the button that closes the variant creation form without creating anything */
   'document-group.create-variant.cancel-button.text': 'Cancel',
+  /**
+   * Title of the variant creation form and the text of its confirm button. The form always creates
+   * a variant, in Drafts or in a release, so it says "variant"; "Add to release" is for adding the
+   * base document to a release
+   */
+  'document-group.create-variant.confirm': 'Create variant',
   /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
-  'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
+  'document-group.create-variant.description': 'A new variant of <DocumentTitle/>',
   /** Placeholder of the filter input in the variant creation form's pickers */
   'document-group.create-variant.filter-placeholder': 'Search…',
   /** Describes the variant creation form's picker for the draft or release to create the variant in */
