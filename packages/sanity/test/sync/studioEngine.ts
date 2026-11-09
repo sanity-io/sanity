@@ -22,6 +22,8 @@ export interface EngineClient {
   localDocument(documentId: string): SanityDocument | null
   consistent(): boolean
   errors(): unknown[]
+  /** Out-of-sync errors the pair listener recovered from by restarting and refetching */
+  syncErrorRecoveries(): unknown[]
   transactionLocked(): boolean
   teardown(): void
 }
@@ -36,7 +38,10 @@ export interface StudioEngineOptions {
 export function createStudioPairClient(options: StudioEngineOptions): EngineClient {
   const {lake, clientId, idPair, dataset} = options
   const client = createFakeSanityClient({lake, clientId, dataset})
-  const pair = checkoutPair(client, idPair, undefined, {})
+  const syncErrorRecoveries: unknown[] = []
+  const pair = checkoutPair(client, idPair, undefined, {
+    onSyncErrorRecovery: (error) => syncErrorRecoveries.push(error),
+  })
   const members = {[idPair.draftId]: pair.draft, [idPair.publishedId]: pair.published}
   const snapshots = new Map<string, SanityDocument | null>()
   const errors: unknown[] = []
@@ -88,6 +93,7 @@ export function createStudioPairClient(options: StudioEngineOptions): EngineClie
     localDocument: (documentId) => snapshots.get(documentId) ?? null,
     consistent: () => consistent,
     errors: () => errors,
+    syncErrorRecoveries: () => syncErrorRecoveries,
     transactionLocked: () => locked,
     teardown: () => subscriptions.forEach((subscription) => subscription.unsubscribe()),
   }
@@ -101,7 +107,17 @@ export interface StudioOperationsEngineOptions extends StudioEngineOptions {
 export function createStudioOperationsClient(options: StudioOperationsEngineOptions): EngineClient {
   const {lake, clientId, idPair, dataset, schema, typeName} = options
   const client = createFakeSanityClient({lake, clientId, dataset})
-  const context = {client, historyStore: {} as HistoryStore, schema}
+  const syncErrorRecoveries: unknown[] = []
+  const pairListenerOptions = {
+    onSyncErrorRecovery: (error: unknown) => syncErrorRecoveries.push(error),
+  }
+  const context = {
+    client,
+    historyStore: {} as HistoryStore,
+    schema,
+    pairListenerOptions,
+    extraOptions: pairListenerOptions,
+  }
   const errors: unknown[] = []
   let operations: OperationsAPI | undefined
   let state: EditStateFor | undefined
@@ -120,7 +136,7 @@ export function createStudioOperationsClient(options: StudioOperationsEngineOpti
       },
       error: (error) => errors.push(error),
     }),
-    consistencyStatus(client, idPair, typeName).subscribe({
+    consistencyStatus(client, idPair, typeName, pairListenerOptions).subscribe({
       next: (value) => {
         consistent = value
       },
@@ -152,6 +168,7 @@ export function createStudioOperationsClient(options: StudioOperationsEngineOpti
     localDocument,
     consistent: () => consistent,
     errors: () => errors,
+    syncErrorRecoveries: () => syncErrorRecoveries,
     transactionLocked: () => state?.transactionSyncLock?.enabled ?? false,
     teardown: () => subscriptions.forEach((subscription) => subscription.unsubscribe()),
   }
