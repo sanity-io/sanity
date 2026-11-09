@@ -4,7 +4,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, Suspense, use, useEffect} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {css, styled} from 'styled-components'
-import {Flex, Box, Container, type ContainerProps, type FlexParentProps} from 'ui5'
+import {Flex, Box, type FlexParentProps} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -49,10 +49,8 @@ interface UpsellCardProps {
   layout?: Layout
   border?: boolean
   align?: 'center' | 'flex-start'
-  /** Rendered centered above the card, in place of the content's image */
-  illustration?: ReactNode
-  /** Wraps the card in a `Container` of this size, only once there is content to show */
-  size?: ContainerProps['size']
+  /** Leaves out the content's image, for a host that shows an illustration of its own */
+  hideImage?: boolean
 }
 
 interface UpsellPanelProps extends UpsellCardProps {
@@ -131,8 +129,7 @@ function UpsellCard(
     layout = 'vertical',
     border = true,
     align = 'flex-start',
-    illustration,
-    size,
+    hideImage = false,
   } = props
   const direction: FlexParentProps['flexDirection'] = [
     'column',
@@ -140,10 +137,10 @@ function UpsellCard(
     layout === 'horizontal' ? 'row' : 'column',
   ]
 
-  const card = (
+  return (
     <Card radius={3} overflow={'hidden'} border={border}>
       <Flex flexDirection={direction} gap={2}>
-        {!illustration && data.image && (
+        {!hideImage && data.image && (
           <Image
             src={data.image.asset.url}
             alt={data.image.asset.altText ?? ''}
@@ -186,15 +183,4 @@ function UpsellCard(
       </Flex>
     </Card>
   )
-
-  const panel = illustration ? (
-    <Flex alignItems="center" flexDirection="column">
-      {illustration}
-      <Box paddingTop={2}>{card}</Box>
-    </Flex>
-  ) : (
-    card
-  )
-
-  return size === undefined ? panel : <Container size={size}>{panel}</Container>
 }

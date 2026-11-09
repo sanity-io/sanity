@@ -1,5 +1,5 @@
 import {motion} from 'motion/react'
-import {Flex} from 'ui5'
+import {Container, Flex} from 'ui5'
 
 import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -27,11 +27,12 @@ export function DocumentLimitsUpsellPanel({error, onReset}: DocumentLimitsUpsell
         animate={{opacity: 1, scale: 1}}
         transition={{duration: 0.2}}
       >
-        <UpsellPanel
-          size={0}
-          upsell={upsell}
-          unavailable={<FallbackErrorScreen error={error} onReset={onReset} />}
-        />
+        <Container size={0}>
+          <UpsellPanel
+            upsell={upsell}
+            unavailable={<FallbackErrorScreen error={error} onReset={onReset} />}
+          />
+        </Container>
       </motion.div>
     </Flex>
   )
