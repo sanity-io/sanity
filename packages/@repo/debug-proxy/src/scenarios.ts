@@ -237,6 +237,7 @@ export function refusedRefreshToken(
       'content-type': 'application/json',
       'cache-control': 'no-store',
       'access-control-allow-origin': req.headers.origin ?? '*',
+      'access-control-allow-credentials': 'true',
     })
     res.end(
       JSON.stringify({
