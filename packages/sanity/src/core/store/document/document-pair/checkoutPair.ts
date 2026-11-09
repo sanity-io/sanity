@@ -66,6 +66,8 @@ import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 import {variantsApiClient} from './utils/variantsApiClient'
 
+const TRANSACTION_ENDED: PendingMutationsEvent = {type: 'pending', phase: 'end'}
+
 /** TTL for unmatched entries in the latency tracking pending array */
 const PENDING_ENTRY_TTL = 60_000
 
@@ -491,9 +493,17 @@ export function checkoutPair(
     listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId))),
   )
 
-  // share commit handling between draft and published
-  const transactionsPendingEvents$ = listenerEvents$.pipe(
+  const transactionBoundaryEvents$ = listenerEvents$.pipe(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
+  )
+
+  // A snapshot is a full resync, so any transaction left open by a reset or restart is over
+  const transactionsPendingEvents$ = listenerEvents$.pipe(
+    filter(
+      (ev): ev is PendingMutationsEvent | InitialSnapshotEvent =>
+        ev.type === 'pending' || ev.type === 'snapshot',
+    ),
+    map((ev): PendingMutationsEvent => (ev.type === 'snapshot' ? TRANSACTION_ENDED : ev)),
   )
 
   const commitRequests$ = merge(
@@ -672,7 +682,7 @@ export function checkoutPair(
       })
     : EMPTY
 
-  const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
+  const pendingEnd$ = transactionBoundaryEvents$.pipe(filter((ev) => ev.phase === 'end'))
   const commitResolved$ = merge(pendingEnd$, commits$)
 
   // Each new commit request restarts the timer via switchMap.
