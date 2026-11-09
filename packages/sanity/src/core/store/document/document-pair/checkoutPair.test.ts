@@ -4,6 +4,7 @@ import {delay} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
+import {type ListenerStallDetails} from '../utils/watchForListenerStall'
 import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = vi.fn(() => of({}))
@@ -3852,8 +3853,12 @@ describe('checkoutPair -- listener stall', () => {
     vi.useRealTimers()
   })
 
-  async function commitOnce(options: {echo: boolean; reconnectWhileCommitting?: boolean}) {
-    const onListenerStall = vi.fn()
+  async function commitOnce(options: {
+    echo: boolean
+    reconnectWhileCommitting?: boolean
+    onListenerStall?: (details: ListenerStallDetails) => void
+  }) {
+    const onListenerStall = options.onListenerStall ?? vi.fn()
     const listenerSubject = new Subject()
     const listen = vi.fn(() => merge(of({type: 'welcome'}).pipe(delay(0)), listenerSubject))
     const testClient = {
@@ -3910,5 +3915,18 @@ describe('checkoutPair -- listener stall', () => {
 
     expect(onListenerStall).not.toHaveBeenCalled()
     expect(listen).toHaveBeenCalledOnce()
+  })
+
+  test('restarts the listener even when the stall callback throws', async () => {
+    const {onListenerStall, listen, errors} = await commitOnce({
+      echo: false,
+      onListenerStall: vi.fn(() => {
+        throw new Error('telemetry boom')
+      }),
+    })
+
+    expect(onListenerStall).toHaveBeenCalledOnce()
+    expect(listen).toHaveBeenCalledTimes(2)
+    expect(errors).toEqual([])
   })
 })

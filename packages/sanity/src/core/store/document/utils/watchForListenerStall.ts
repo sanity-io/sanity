@@ -51,6 +51,8 @@ type Signal =
 
 interface StallState {
   connected: boolean
+  /** Whether the server-sent-events connection is currently up. */
+  listening: boolean
   syncedAt?: number
   unconfirmed: Array<{transactionId: string; submittedAt: number; since: number}>
   delivered: Map<string, number>
@@ -61,6 +63,7 @@ interface StallState {
 
 const INITIAL_STATE: StallState = {
   connected: false,
+  listening: false,
   unconfirmed: [],
   delivered: new Map(),
   receivedFromServer: new Map(),
@@ -96,15 +99,16 @@ function reduceServerEvent(state: StallState, event: ListenerEvent, at: number):
   const heard = {...state, lastListenerEventAt: at}
   switch (event.type) {
     case 'reconnect':
-      return {...heard, connected: false}
+      return {...heard, connected: false, listening: false}
     case 'welcome':
     case 'reset':
-      return {...INITIAL_STATE, lastListenerEventAt: at}
+      return {...INITIAL_STATE, listening: true, lastListenerEventAt: at}
     case 'welcomeback':
       // The server replays what we missed; time spent offline doesn't count
       return {
         ...heard,
         connected: true,
+        listening: true,
         unconfirmed: heard.unconfirmed.map((entry) => ({...entry, since: at})),
       }
     case 'mutation':
@@ -202,7 +206,7 @@ export function watchForListenerStall(options: {
         scan(reduceSignal, INITIAL_STATE),
         switchMap((state) => {
           const [oldest] = state.unconfirmed
-          if (state.connected && oldest) {
+          if (state.connected && state.listening && oldest) {
             return timer(Math.max(0, oldest.since + timeout - Date.now())).pipe(
               mergeMap(() =>
                 throwError(() => new ListenerStalledError(describeStall(state, Date.now()))),

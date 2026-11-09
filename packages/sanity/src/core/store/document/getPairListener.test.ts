@@ -804,6 +804,32 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('does not count time spent disconnected when a reconnect interrupts the initial snapshot fetch', async () => {
+      const {onListenerStall, sub} = subscribe()
+
+      const snapshot$ = new Subject<unknown[]>()
+      serveNextSnapshot(snapshot$)
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      listener$.next({type: 'reconnect'})
+      snapshot$.next([publishedDoc, draftDoc])
+      snapshot$.complete()
+      await vi.advanceTimersByTimeAsync(0)
+
+      acknowledge('own-save')
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+      expect(client.observable.listen).toHaveBeenCalledTimes(1)
+
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(29_000)
+      expect(onListenerStall).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(onListenerStall).toHaveBeenCalledOnce()
+      expect(client.observable.listen).toHaveBeenCalledTimes(2)
+      sub.unsubscribe()
+    })
+
     test('ignores a save the snapshot of a new connection already contains', async () => {
       const {onListenerStall, sub} = subscribe()
       await connect()
