@@ -1603,6 +1603,57 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'})
     })
 
+    it('does not hold the refresh lock while revoking a pair a renewal obtained too late', async () => {
+      // A renewal whose pair was replaced while its request was out revokes that pair. Each
+      // revocation can take up to the request timeout, and a sign-out (or another tab's renewal)
+      // waits for the same lock, so the revocation must not hold it.
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const {factory} = createMockClientFactory(new Set(['access-1', 'access-other']))
+      const endpoints = createMockEndpoints({
+        refresh: vi.fn(async () => {
+          // Another tab stores its own pair while this tab's request is out.
+          localStorage.setItem(
+            TOKENS_KEY,
+            JSON.stringify(storedTokens('access-other', 'refresh-other')),
+          )
+          return tokenResponse('access-2', 'refresh-2')
+        }),
+        revoke: vi.fn(() => new Promise<void>(() => {})),
+      })
+      // An exclusive lock, like Web Locks: one task at a time.
+      let queue: Promise<unknown> = Promise.resolve()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+        withLock: ((_name, task) => {
+          const run = queue.then(task)
+          queue = run.catch(() => {})
+          return run
+        }) satisfies OAuthAuthStoreEnvironment['withLock'],
+        locksAvailable: true,
+      })
+      const requestHandler = (await authenticatedState(store.state)).client.config()
+        .requestHandler as RequestHandler
+
+      void requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValue(createExpiredSessionError()),
+      ).catch(() => {})
+      await vi.waitFor(() =>
+        expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'}),
+      )
+
+      const signedOut = await Promise.race([
+        store.logout!().then(() => true),
+        settle(200).then(() => false),
+      ])
+      expect(signedOut).toBe(true)
+    })
+
     it('signs out without waiting for the revocation to answer', async () => {
       localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
       const {factory} = createMockClientFactory(new Set(['access-1']))
