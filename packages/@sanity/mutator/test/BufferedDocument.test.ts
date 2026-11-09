@@ -1,7 +1,8 @@
 import {expect, test} from 'vitest'
 
-import {BufferedDocument} from '../src/document/BufferedDocument'
+import {BufferedDocument, type CommitHandlerMessage} from '../src/document/BufferedDocument'
 import {Mutation} from '../src/document/Mutation'
+import {type Doc} from '../src/document/types'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
@@ -361,4 +362,85 @@ test.fails('ARRIVE-UNSET-UNDER-DMP (K2, L3): a remote unset of a field with a bu
   )
 
   expect(doc.document.HEAD).toEqual({_id: 'a', _type: 't', _rev: '2'})
+})
+
+type CommitOutcome = 'pending' | 'resolved' | 'rejected'
+
+function trackOutcome(commit: Promise<void>): {current: CommitOutcome} {
+  const outcome: {current: CommitOutcome} = {current: 'pending'}
+  commit.then(
+    () => {
+      outcome.current = 'resolved'
+    },
+    () => {
+      outcome.current = 'rejected'
+    },
+  )
+  return outcome
+}
+
+function setField(field: string, value: string): Mutation {
+  return new Mutation({mutations: [{patch: {id: 'a', set: {[field]: value}}}]})
+}
+
+function createCommittingDocument(initial: Doc) {
+  const doc = new BufferedDocument(initial)
+  const consistencyEvents: boolean[] = []
+  const sent: CommitHandlerMessage[] = []
+  doc.onConsistencyChanged = (isConsistent) => consistencyEvents.push(isConsistent)
+  doc.commitHandler = (message) => sent.push(message)
+  return {doc, consistencyEvents, sent}
+}
+
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+function applySent(message: CommitHandlerMessage | undefined, document: Doc): Doc | null {
+  return new Mutation({mutations: message?.mutation.mutations ?? []}).apply(document) as Doc | null
+}
+
+test.fails('CMT-REJECT-SAME-FIELD (B1, L2): a rejected save drops a same-field edit typed during the request, and the next edit saves what the user sees', async () => {
+  const confirmed: Doc = {_id: 'a', _type: 't', _rev: '1', title: 'Hello'}
+  const {doc, consistencyEvents, sent} = createCommittingDocument(confirmed)
+  doc.add(setField('title', 'Hello wor'))
+  const inFlight = trackOutcome(doc.commit())
+  doc.add(setField('body', 'queued'))
+  const queued = trackOutcome(doc.commit())
+  doc.add(setField('title', 'Hello world'))
+
+  sent[0].cancel(new Error('Commit rejected with 403'))
+  await flushPromises()
+  const shownAfterCancel = doc.LOCAL?.title
+  const consistentAfterCancel = consistencyEvents.at(-1)
+  doc.add(setField('title', `${shownAfterCancel}!`))
+  trackOutcome(doc.commit())
+
+  expect({
+    shownAfterCancel,
+    consistentAfterCancel,
+    commits: [inFlight.current, queued.current],
+    shownAfterNextEdit: doc.LOCAL?.title,
+    savedByNextEdit: applySent(sent.at(-1), confirmed)?.title,
+  }).toEqual({
+    shownAfterCancel: 'Hello',
+    consistentAfterCancel: true,
+    commits: ['rejected', 'rejected'],
+    shownAfterNextEdit: 'Hello!',
+    savedByNextEdit: 'Hello!',
+  })
+})
+
+test.fails('CMT-REJECT-NEW-FIELD-WEDGE (B1, L2): a rejected first save of a new field, with more typing buffered, leaves later edits saving', () => {
+  const {doc, sent} = createCommittingDocument({_id: 'a', _type: 't', _rev: '1'})
+  doc.add(setField('title', 'Hel'))
+  trackOutcome(doc.commit())
+  doc.add(setField('title', 'Hello'))
+
+  sent[0].cancel(new Error('Commit rejected with 403'))
+  doc.add(setField('body', 'later'))
+  trackOutcome(doc.commit())
+
+  expect(sent.map(({mutation}) => mutation.mutations)).toEqual([
+    [{patch: {id: 'a', set: {title: 'Hel'}}}],
+    [{patch: {id: 'a', set: {body: 'later'}}}],
+  ])
 })
