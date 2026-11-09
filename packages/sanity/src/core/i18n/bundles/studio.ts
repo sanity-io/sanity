@@ -620,7 +620,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The label of the variant creation form's picker for the draft or release to create the variant in */
   'document-group.create-variant.target-label': 'Target',
   /** Describes the variant creation form's picker for the variant definition to create */
-  'document-group.create-variant.variant-description': 'Who sees this version',
+  'document-group.create-variant.variant-description': 'Who sees this variant',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */

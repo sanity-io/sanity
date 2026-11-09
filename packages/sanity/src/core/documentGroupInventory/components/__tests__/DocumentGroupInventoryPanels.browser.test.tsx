@@ -342,7 +342,7 @@ describe('CreateVariant', () => {
     await expect.element(page.getByRole('heading', {name: 'Create variant'})).toBeVisible()
     await expect.element(page.getByText('A new variant of Ursula K. Le Guin')).toBeVisible()
     await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('Who sees this version')).toBeVisible()
+    await expect.element(page.getByText('Who sees this variant')).toBeVisible()
     await expect.element($variantTrigger).toMatchTextContent('Summer sale')
     await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
     await expect.element(page.getByText('Where it lives')).toBeVisible()
