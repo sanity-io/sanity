@@ -398,7 +398,7 @@ function applySent(message: CommitHandlerMessage | undefined, document: Doc): Do
   return new Mutation({mutations: message?.mutation.mutations ?? []}).apply(document) as Doc | null
 }
 
-test.fails('CMT-REJECT-SAME-FIELD (B1, L2): a rejected save drops a same-field edit typed during the request, and the next edit saves what the user sees', async () => {
+test('CMT-REJECT-SAME-FIELD (B1, L2): a rejected save drops a same-field edit typed during the request, and the next edit saves what the user sees', async () => {
   const confirmed: Doc = {_id: 'a', _type: 't', _rev: '1', title: 'Hello'}
   const {doc, consistencyEvents, sent} = createCommittingDocument(confirmed)
   doc.add(setField('title', 'Hello wor'))
@@ -429,7 +429,7 @@ test.fails('CMT-REJECT-SAME-FIELD (B1, L2): a rejected save drops a same-field e
   })
 })
 
-test.fails('CMT-REJECT-NEW-FIELD-WEDGE (B1, L2): a rejected first save of a new field, with more typing buffered, leaves later edits saving', () => {
+test('CMT-REJECT-NEW-FIELD-WEDGE (B1, L2): a rejected first save of a new field, with more typing buffered, leaves later edits saving', () => {
   const {doc, sent} = createCommittingDocument({_id: 'a', _type: 't', _rev: '1'})
   doc.add(setField('title', 'Hel'))
   trackOutcome(doc.commit())
@@ -442,5 +442,21 @@ test.fails('CMT-REJECT-NEW-FIELD-WEDGE (B1, L2): a rejected first save of a new 
   expect(sent.map(({mutation}) => mutation.mutations)).toEqual([
     [{patch: {id: 'a', set: {title: 'Hel'}}}],
     [{patch: {id: 'a', set: {body: 'later'}}}],
+  ])
+})
+
+test('a cancelled commit reports the local document it discarded', () => {
+  const {doc, sent} = createCommittingDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const cancellations: Array<{message: string; discardedTitle: unknown}> = []
+  doc.onCommitsCancelled = (error, discardedLocal) =>
+    cancellations.push({message: error.message, discardedTitle: discardedLocal?.title})
+  doc.add(setField('title', 'Hello wor'))
+  trackOutcome(doc.commit())
+  doc.add(setField('title', 'Hello world'))
+
+  sent[0].cancel(new Error('Commit rejected with 403'))
+
+  expect(cancellations).toEqual([
+    {message: 'Commit rejected with 403', discardedTitle: 'Hello world'},
   ])
 })

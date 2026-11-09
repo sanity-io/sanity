@@ -78,3 +78,18 @@ function readErrorCode(value: unknown): string | undefined {
   const code = value.errorCode
   return typeof code === 'string' ? code : undefined
 }
+
+/**
+ * The HTTP status of a failed request, or `undefined` for anything else. `error` can be any thrown
+ * value, so it is checked before using `in`, which throws on primitives.
+ *
+ * @internal
+ */
+export function getStatusCode(error: unknown): number | undefined {
+  return typeof error === 'object' &&
+    error !== null &&
+    'statusCode' in error &&
+    typeof error.statusCode === 'number'
+    ? error.statusCode
+    : undefined
+}

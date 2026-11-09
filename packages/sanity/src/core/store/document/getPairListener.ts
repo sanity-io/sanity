@@ -2,7 +2,20 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
+import {
+  catchError,
+  concatMap,
+  connect,
+  endWith,
+  filter,
+  ignoreElements,
+  map,
+  mergeMap,
+  scan,
+  share,
+  takeUntil,
+  tap,
+} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
@@ -10,6 +23,7 @@ import {isConnectionSessionError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
+import {type DiscardedText} from './document-pair/getDiscardedText'
 import {
   type IdPair,
   type MutationEvent,
@@ -77,6 +91,18 @@ export interface CommitCancelledTelemetryEvent {
 }
 
 /** @internal */
+export interface SaveRejectedNoticeEvent {
+  /** The published id of the document pair */
+  documentId: string
+  /** The document as it was shown before its unsaved edits were dropped */
+  document: SanityDocument | null
+  /** The terminal HTTP status the save was rejected with */
+  statusCode: number | undefined
+  /** Each text value the user changed that was dropped with the save */
+  discardedText: DiscardedText[]
+}
+
+/** @internal */
 export interface CommitRetriesEndedTelemetryEvent {
   /** Time from the first failed attempt until the retries stopped being tracked */
   durationMs: number
@@ -127,6 +153,8 @@ export interface DocumentStoreExtraOptions {
   onDocumentRebase?: (event: DocumentRebaseTelemetryEvent) => void
   /** Called when a commit fails with a terminal status and its buffered mutations are reset */
   onCommitCancelled?: (event: CommitCancelledTelemetryEvent) => void
+  /** Called once per rejected save, after its unsaved edits are dropped and before the document is fetched again */
+  onSaveRejected?: (event: SaveRejectedNoticeEvent) => void
   /** Called once when a commit that was being retried with backoff stops being tracked */
   onCommitRetriesEnded?: (event: CommitRetriesEndedTelemetryEvent) => void
   /** Called when a pair is torn down while local mutations are pending */
@@ -164,11 +192,29 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   )
 }
 
+/**
+ * Restarts the pair listener so the documents are fetched again, after a rejected save left the
+ * buffered documents on a copy that can be behind the server.
+ *
+ * @internal
+ */
+export class RejectedSaveResyncError extends OutOfSyncError {
+  constructor() {
+    super('Refetching the document after a rejected save', {
+      base: undefined,
+      emitEvents: [],
+      buffer: [],
+    })
+    this.name = 'RejectedSaveResyncError'
+  }
+}
+
 /** @internal */
 export function getPairListener(
   _client: SanityClient,
   idPair: IdPair,
   options: DocumentStoreExtraOptions = {},
+  resyncRequest$: Observable<unknown> = EMPTY,
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
   const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client
@@ -299,7 +345,26 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
+  // Requests made before the refetched snapshots arrive are already covered by that refetch
+  let snapshotsCurrent = true
+
   return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
+    tap((event) => {
+      if (event.type === 'snapshot') snapshotsCurrent = true
+    }),
+    connect((events$) =>
+      merge(
+        events$,
+        resyncRequest$.pipe(
+          takeUntil(events$.pipe(ignoreElements(), endWith(null))),
+          filter(() => snapshotsCurrent),
+          mergeMap(() => {
+            snapshotsCurrent = false
+            return throwError(() => new RejectedSaveResyncError())
+          }),
+        ),
+      ),
+    ),
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
         debug('Recovering from OutOfSyncError: %s', err.name)

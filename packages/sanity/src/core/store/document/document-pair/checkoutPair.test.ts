@@ -1,8 +1,9 @@
 import {ClientError, type SanityClient} from '@sanity/client'
-import {merge, NEVER, of, type Observable, Subject, throwError} from 'rxjs'
-import {delay} from 'rxjs/operators'
+import {concat, merge, NEVER, of, type Observable, Subject, throwError, timer} from 'rxjs'
+import {delay, mergeMap} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {errorReporter} from '../../../error/errorReporter'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
 import {checkoutPair} from './checkoutPair'
 
@@ -3200,6 +3201,112 @@ describe('checkoutPair -- commit cancelled telemetry', () => {
     expect(streamErrored).toBe(false)
 
     consistencySub.unsubscribe()
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- rejected save', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    mockedActionRequest.mockImplementation(() => of({}))
+    vi.spyOn(client.observable, 'listen').mockImplementation(() =>
+      concat(of({type: 'welcome'}).pipe(delay(0)), NEVER),
+    )
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  function forbiddenError() {
+    return new ClientError({
+      statusCode: 403,
+      headers: {},
+      body: {error: {type: 'mutationError', description: 'Permission denied'}},
+      url: 'https://abc123.api.sanity.io/v1/data/actions/production',
+      method: 'POST',
+    } as never)
+  }
+
+  test('reports one handled error per cancel, tagged with the status and error type', async () => {
+    const reportError = vi.spyOn(errorReporter, 'reportError').mockReturnValue(null)
+    const rejection = forbiddenError()
+    mockedActionRequest.mockImplementation(
+      () => timer(10).pipe(mergeMap(() => throwError(() => rejection))) as any,
+    )
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const sub = merge(draft.events, published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'in flight'}}]))
+    draft.commit()
+    draft.mutate(draft.patch([{set: {subtitle: 'queued'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(10)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    expect(reportError).toHaveBeenCalledTimes(1)
+    expect(reportError).toHaveBeenCalledWith(rejection, {
+      handled: true,
+      tags: {statusCode: 403, errorType: 'mutationError'},
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('tells the user once, with the text that was dropped, and fetches the documents again', async () => {
+    vi.spyOn(errorReporter, 'reportError').mockReturnValue(null)
+    const getDocuments = vi.spyOn(client.observable, 'getDocuments')
+    const onSaveRejected = vi.fn()
+    const rejection = forbiddenError()
+    mockedActionRequest.mockImplementation(() => throwError(() => rejection) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onSaveRejected,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+    const fetchesBeforeRejection = getDocuments.mock.calls.length
+
+    draft.mutate(draft.patch([{set: {title: 'typed'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(onSaveRejected).toHaveBeenCalledTimes(1)
+    expect(onSaveRejected).toHaveBeenCalledWith({
+      documentId: 'publishedId',
+      document: expect.objectContaining({title: 'typed'}),
+      statusCode: 403,
+      discardedText: [{field: 'title', text: 'typed'}],
+    })
+    expect(getDocuments.mock.calls.length).toBeGreaterThan(fetchesBeforeRejection)
+
+    sub.unsubscribe()
+  })
+
+  test('refetches once for rejections that arrive before the refetched documents', async () => {
+    vi.spyOn(errorReporter, 'reportError').mockReturnValue(null)
+    const onSyncErrorRecovery = vi.fn()
+    const rejection = forbiddenError()
+    mockedActionRequest.mockImplementation(() => throwError(() => rejection) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true), {
+      onSyncErrorRecovery,
+    })
+    const sub = merge(draft.events, published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'first'}}]))
+    draft.commit()
+    draft.mutate(draft.patch([{set: {title: 'second'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    expect(onSyncErrorRecovery).toHaveBeenCalledTimes(1)
+
     sub.unsubscribe()
   })
 })

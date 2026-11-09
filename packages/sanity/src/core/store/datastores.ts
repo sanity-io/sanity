@@ -37,6 +37,8 @@ import {
   type DocumentRebaseTelemetryEvent,
   type LatencyReportEvent,
   type MutationPerformanceEvent,
+  RejectedSaveResyncError,
+  type SaveRejectedNoticeEvent,
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
@@ -51,6 +53,11 @@ import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
 import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
+import {
+  createSaveRejectedToast,
+  getRejectedDocumentTitle,
+  labelDiscardedText,
+} from './SaveRejectedToastDescription'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
@@ -186,6 +193,8 @@ export function useDocumentStore(): DocumentStore {
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError, info?: SyncErrorRecoveryTelemetryInfo) => {
+      // A deliberate refetch after a rejected save, already counted by `DocumentCommitCancelled`
+      if (error instanceof RejectedSaveResyncError) return
       telemetry.log(DocumentDesynced, {
         errorName: error.name,
         hadPendingMutations: info?.hadPendingMutations,
@@ -252,6 +261,25 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleSaveRejected = useCallback(
+    (event: SaveRejectedNoticeEvent) => {
+      toast.push(
+        createSaveRejectedToast({
+          documentId: event.documentId,
+          title: t('document-store.save-rejected.title'),
+          description: t('document-store.save-rejected.description', {
+            documentTitle:
+              getRejectedDocumentTitle(schema, event.document) ??
+              t('preview.default.title-fallback'),
+          }),
+          copyLabel: t('document-store.save-rejected.copy-discarded-text'),
+          discardedText: labelDiscardedText(schema, event.document, event.discardedText),
+        }),
+      )
+    },
+    [toast, t, schema],
+  )
+
   const handleCommitRetriesEnded = useCallback(
     (event: CommitRetriesEndedTelemetryEvent) => {
       telemetry.log(DocumentCommitRetriesEnded, event)
@@ -294,6 +322,7 @@ export function useDocumentStore(): DocumentStore {
           onReportMutationPerformance: handleReportMutationPerformance,
           onDocumentRebase: handleDocumentRebase,
           onCommitCancelled: handleCommitCancelled,
+          onSaveRejected: handleSaveRejected,
           onCommitRetriesEnded: handleCommitRetriesEnded,
           onPairTornDownWithPendingMutations: handlePairTornDownWithPendingMutations,
           snapshotFetchErrorHandler: errorHandler,
@@ -333,6 +362,7 @@ export function useDocumentStore(): DocumentStore {
     handleReportMutationPerformance,
     handleDocumentRebase,
     handleCommitCancelled,
+    handleSaveRejected,
     handleCommitRetriesEnded,
     handlePairTornDownWithPendingMutations,
     errorHandler,

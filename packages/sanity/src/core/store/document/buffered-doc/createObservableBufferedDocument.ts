@@ -15,6 +15,8 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
+import {errorReporter} from '../../../error/errorReporter'
+import {getStatusCode} from '../../../util/apiErrors'
 import {type ListenerEvent} from '../getPairListener'
 import {type MutationEvent} from '../types'
 import {
@@ -36,6 +38,29 @@ interface CommitAction {
 }
 
 type Action = MutationAction | CommitAction
+
+/**
+ * A terminal commit rejection, after the buffered document dropped its unsaved edits and reset to
+ * its last confirmed copy.
+ *
+ * @internal
+ */
+export interface SaveRejectedEvent {
+  error: Error
+  /** The local document as it was shown before the reset */
+  discardedDocument: SanityDocument | null
+  /** The last confirmed copy the document was reset to */
+  restoredDocument: SanityDocument | null
+}
+
+// A cancel carries an HTTP status and the pair reports it once; anything else is a mutator failure
+function reportUnexpectedCommitRejection(error: unknown): void {
+  if (typeof getStatusCode(error) === 'number') return
+  console.error(error)
+  errorReporter.reportError(error instanceof Error ? error : new Error(String(error)), {
+    handled: false,
+  })
+}
 
 /**
  * Represents "commit requests" from the mutator.
@@ -138,6 +163,8 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
 
   const commitRequests = new Subject<CommitRequest>()
 
+  const saveRejected = new Subject<SaveRejectedEvent>()
+
   // Instances a fresh snapshot has replaced. Marked before the consistency
   // flip that the replacement causes, so telemetry reacting to that flip
   // already sees the old instance as replaced.
@@ -192,6 +219,14 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       consistency$.next(isConsistent)
     }
 
+    bufferedDocument.onCommitsCancelled = (error, discardedLocal) => {
+      saveRejected.next({
+        error,
+        discardedDocument: discardedLocal as SanityDocument | null,
+        restoredDocument: bufferedDocument.LOCAL as SanityDocument | null,
+      })
+    }
+
     bufferedDocument.commitHandler = (commitArg: CommitRequest) => {
       const captured = firstMutationReceivedAt
       // Reset so the next commit batch doesn't reuse a stale timestamp
@@ -211,7 +246,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
           replacedBufferedDocuments.add(bufferedDocument)
-          void bufferedDocument.commit()
+          bufferedDocument.commit().catch(reportUnexpectedCommitRejection)
         }
         // mark as consistent when a new snapshot is received
         firstMutationReceivedAt = undefined
@@ -257,7 +292,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        void bufferedDocument.commit()
+        bufferedDocument.commit().catch(reportUnexpectedCommitRejection)
       }
     }),
     // We subscribe to this only for the side effects
@@ -275,7 +310,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     currentBufferedDocument$
       .pipe(
         take(1),
-        tap((bufferedDocument) => bufferedDocument.commit()),
+        tap((bufferedDocument) => bufferedDocument.commit().catch(reportUnexpectedCommitRejection)),
       )
       .subscribe()
   }
@@ -304,6 +339,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
     remoteSnapshot$,
     commitRequest$: commitRequests,
+    saveRejected$: saveRejected.asObservable(),
     addMutation,
     addMutations,
     commit,

@@ -4,6 +4,7 @@ import {type Observable} from 'rxjs'
 import {type ListenerEvent} from '../getPairListener'
 import {
   type CommitRequest,
+  type SaveRejectedEvent,
   createObservableBufferedDocument,
 } from './createObservableBufferedDocument'
 import {
@@ -35,6 +36,7 @@ export interface BufferedDocumentWrapper {
   remoteSnapshot$: Observable<RemoteSnapshotEvent>
   events: Observable<BufferedDocumentEvent>
   commitRequest$: Observable<CommitRequest>
+  saveRejected$: Observable<SaveRejectedEvent>
   // helper functions
   patch: (patches: any[]) => MutationPayload[]
   create: (document: Partial<SanityDocument>) => MutationPayload
@@ -65,6 +67,7 @@ export const createBufferedDocument = (
     consistency$: bufferedDocument.consistency$,
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
     commitRequest$: bufferedDocument.commitRequest$,
+    saveRejected$: bufferedDocument.saveRejected$,
 
     patch: (patches) => patches.map((patch) => ({patch: {...patch, id: documentId}})),
     create: (document) => ({create: prepareDoc(document)}),

@@ -103,6 +103,12 @@ export class BufferedDocument {
   onConsistencyChanged?: (isConsistent: boolean) => void
 
   /**
+   * Called after a commit is cancelled and the document is reset to its last confirmed copy.
+   * `discardedLocal` is the local document as it was before the reset.
+   */
+  onCommitsCancelled?: (error: Error, discardedLocal: Doc | null) => void
+
+  /**
    * Assignable event handler for when the buffered document should commit changes
    */
   commitHandler?: (msg: CommitHandlerMessage) => void
@@ -247,22 +253,7 @@ export class BufferedDocument {
         }
       },
 
-      cancel: (error: Error) => {
-        this.commits.forEach((comm) => comm.reject(error))
-
-        // Throw away waiting commits
-        this.commits = []
-
-        // Reset back to last known state from content lake and cause a rebase that will
-        // reset the view in the form
-        this.reset(this.document.HEAD)
-
-        // Clear the buffer of recent mutations
-        this.buffer = new SquashingBuffer(this.LOCAL)
-
-        // Stop the committer loop
-        this.committerRunning = false
-      },
+      cancel: (error: Error) => this.cancelCommits(error, commit),
     }
 
     debug('Posting commit')
@@ -274,6 +265,18 @@ export class BufferedDocument {
         cancel: responder.cancel,
       })
     }
+  }
+
+  // Buffered and queued edits were written on top of the rejected commit, so they are dropped before the reset
+  private cancelCommits(error: Error, rejected: Commit): void {
+    const cancelled = [rejected, ...this.commits]
+    const discardedLocal = this.LOCAL
+    this.committerRunning = false
+    this.commits = []
+    this.buffer = new SquashingBuffer(this.document.HEAD)
+    this.reset(this.document.HEAD)
+    cancelled.forEach((commit) => commit.reject(error))
+    this.onCommitsCancelled?.(error, discardedLocal)
   }
 
   handleDocRebase(edge: Doc | null, remoteMutations: Mutation[], localMutations: Mutation[]): void {

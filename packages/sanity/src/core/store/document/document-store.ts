@@ -184,6 +184,7 @@ export function createDocumentStore({
     onReportMutationPerformance,
     onDocumentRebase,
     onCommitCancelled,
+    onSaveRejected,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
   } = extraOptions
@@ -208,6 +209,7 @@ export function createDocumentStore({
         onReportMutationPerformance,
         onDocumentRebase,
         onCommitCancelled,
+        onSaveRejected,
         onCommitRetriesEnded,
         onPairTornDownWithPendingMutations,
       })
