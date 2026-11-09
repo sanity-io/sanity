@@ -6,14 +6,14 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Button, Card, Dialog, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Dialog, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -244,7 +244,15 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           />
         </Box>
         {mode === 'saved' && (
-          <Tooltip animate content={<Text size={1}>{t('vista.saved.save-current')}</Text>} portal>
+          <Tooltip
+            animate
+            content={
+              <Text size={1} as="div" trim={true}>
+                {t('vista.saved.save-current')}
+              </Text>
+            }
+            portal
+          >
             <Button
               aria-label={t('vista.saved.save-current')}
               data-testid="vista-save-current-query"
@@ -261,7 +269,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
       <Box className={styles.scrollArea} flexBasis="0%" flexGrow={1}>
         {visibleItems.length === 0 ? (
           <Box padding={4}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {emptyText}
             </Text>
           </Box>
@@ -312,7 +320,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                           width="fill"
                         >
                           <Flex flexDirection="column" gap={2} minWidth="0">
-                            <Text size={1} textOverflow="ellipsis" weight="medium">
+                            <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
                               {query.title || t('label.untitled-query')}
                             </Text>
                             {preview && (
@@ -324,7 +332,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                               {query.shared && query.authorId && (
                                 <UserAvatar size={0} user={query.authorId} withTooltip />
                               )}
-                              <Text muted size={0}>
+                              <Text muted size={0} as="div" trim={true}>
                                 {query.savedAt ? formatDate.format(new Date(query.savedAt)) : ''}
                               </Text>
                             </Flex>
@@ -419,7 +427,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           width={0}
         >
           <Box padding={4}>
-            <Text size={1}>{t('save-query.share-warning')}</Text>
+            <Text size={1} as="div" trim={true}>
+              {t('save-query.share-warning')}
+            </Text>
           </Box>
         </Dialog>
       )}

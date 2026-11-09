@@ -2,11 +2,11 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
-import {Badge, type BadgeTone, Button, Card, Label, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Label, Stack} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Text, Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -198,7 +198,7 @@ function ChangeRow(props: {change: DocumentChange; hiddenPaths: string[][]; expa
           {describeOperation(change.operation, t)}
         </Badge>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
-          <Text data-testid="vista-mutate-document-id" size={1} textOverflow="ellipsis">
+          <Text data-testid="vista-mutate-document-id" size={1} truncate={1} as="div" trim={true}>
             <code>{change.id}</code>
           </Text>
         </Box>
@@ -221,7 +221,7 @@ function ChangeRow(props: {change: DocumentChange; hiddenPaths: string[][]; expa
           <DiffBoundary
             renderFallback={(retry) => (
               <Flex alignItems="center" gap={2}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('vista.mutate.changes-failed')}
                 </Text>
                 <Button
@@ -264,17 +264,17 @@ function PreviewResult(props: {
         <Label muted size={0}>
           {t('vista.mutate.preview-heading')}
         </Label>
-        <Text data-testid="vista-mutate-summary" muted size={1}>
+        <Text data-testid="vista-mutate-summary" muted size={1} as="div" trim={true}>
           {t('vista.mutate.summary', {changed, unchanged: preview.changes.length - changed})}
         </Text>
       </Flex>
       {stale && (
-        <Text data-testid="vista-mutate-stale" size={1}>
+        <Text data-testid="vista-mutate-stale" size={1} as="div" trim={true}>
           {t('vista.mutate.stale')}
         </Text>
       )}
       {preview.changes.length === 0 ? (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.mutate.no-documents')}
         </Text>
       ) : (
@@ -290,12 +290,12 @@ function PreviewResult(props: {
         </Card>
       )}
       {preview.notShown > 0 && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.mutate.not-shown', {count: preview.notShown})}
         </Text>
       )}
       {hiddenFields.length > 0 && changed > 0 && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.mutate.hiding', {fields: hiddenFields.join(', ')})}
         </Text>
       )}
@@ -375,7 +375,7 @@ export function MutateTab(props: MutateTabProps) {
         overflow="auto"
         padding={3}
       >
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.mutate.description')}
         </Text>
         {generatorOpen && (
@@ -476,17 +476,17 @@ export function MutateTab(props: MutateTabProps) {
               value={state.text}
             />
             {input.status === 'invalid-json' && (
-              <Text data-testid="vista-mutate-invalid" size={1}>
+              <Text data-testid="vista-mutate-invalid" size={1} as="div" trim={true}>
                 {t('vista.mutate.invalid-json', {message: input.message})}
               </Text>
             )}
             {input.status === 'not-a-list' && (
-              <Text data-testid="vista-mutate-invalid" size={1}>
+              <Text data-testid="vista-mutate-invalid" size={1} as="div" trim={true}>
                 {t('vista.mutate.not-a-list')}
               </Text>
             )}
             {input.status === 'invalid-mutation' && (
-              <Text data-testid="vista-mutate-invalid" size={1}>
+              <Text data-testid="vista-mutate-invalid" size={1} as="div" trim={true}>
                 {t('vista.mutate.invalid-mutation', {index: input.index})}
               </Text>
             )}
@@ -510,14 +510,22 @@ export function MutateTab(props: MutateTabProps) {
                   tone="critical"
                 >
                   <Stack gap={3}>
-                    <Text size={1} weight="medium">
+                    <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                       {state.failure.action === 'preview'
                         ? t('vista.mutate.preview-failed')
                         : t('vista.mutate.apply-failed')}
                     </Text>
-                    <Text size={1}>{state.failure.failure.message}</Text>
+                    <Text size={1} as="div" trim={true} tone="critical">
+                      {state.failure.failure.message}
+                    </Text>
                     {state.failure.failure.items.map((item) => (
-                      <Text key={`${item.index}:${item.message}`} size={1}>
+                      <Text
+                        key={`${item.index}:${item.message}`}
+                        size={1}
+                        as="div"
+                        trim={true}
+                        tone="critical"
+                      >
                         {t('vista.mutate.failure-item', {
                           index: item.index,
                           message: item.message,
@@ -535,7 +543,7 @@ export function MutateTab(props: MutateTabProps) {
                   radius={2}
                   tone="positive"
                 >
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true} tone="positive">
                     {t('vista.mutate.applied', {
                       dataset: state.applied.dataset,
                       transactionId: state.applied.transactionId,
@@ -586,7 +594,7 @@ export function MutateTab(props: MutateTabProps) {
               tone="critical"
             />
             {run && !previewIsCurrent && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('vista.mutate.apply-needs-preview')}
               </Text>
             )}

@@ -1,6 +1,6 @@
-import {Dialog, Hotkeys, Stack, Text} from '@sanity/ui'
+import {Dialog, Hotkeys, Stack} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVistaActor} from '../../store/VistaActorContext'
@@ -30,12 +30,16 @@ export function ShortcutsDialog() {
               justifyContent="space-between"
               key={shortcut.labelKey}
             >
-              <Text size={1}>{t(shortcut.labelKey)}</Text>
+              <Text size={1} as="div" trim={true}>
+                {t(shortcut.labelKey)}
+              </Text>
               <Hotkeys fontSize={1} keys={shortcut.keys} />
             </Flex>
           ))}
           <Flex alignItems="center" gap={3} justifyContent="space-between">
-            <Text size={1}>{t('vista.shortcuts.close')}</Text>
+            <Text size={1} as="div" trim={true}>
+              {t('vista.shortcuts.close')}
+            </Text>
             <Hotkeys fontSize={1} keys={['Esc']} />
           </Flex>
         </Stack>
