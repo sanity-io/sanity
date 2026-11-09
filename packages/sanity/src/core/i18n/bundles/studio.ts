@@ -595,6 +595,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.base-variant': 'Default',
   /** The text of the actions that open the variant creation form and confirm the creation */
   'document-group.create-variant': 'Create version',
+  /** Describes the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-description': 'What it starts from',
+  /** The label of the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-label': 'Document',
+  /** An option of the variant creation form's picker for the version to start from, while Content Variants is switched on: the version's variant and the draft, release or published bundle it is in */
+  'document-group.create-variant.base-option': '{{variantName}} · {{bundleName}}',
+  /** The default option of the variant creation form's picker for the version to start from, listed first: the version nearest to the picked variant and target, resolved when the version is created */
+  'document-group.create-variant.base-option-nearest': 'Nearest version',
   /** The text of the button that closes the variant creation form without creating anything */
   'document-group.create-variant.cancel-button.text': 'Cancel',
   /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
