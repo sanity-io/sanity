@@ -159,10 +159,13 @@ export function ReleasesMenuItem(
         flexGrow={0}
         flexShrink={0}
         data-testid="release-indicator-icon"
-        paddingX={3}
+        // The left padding centres the icon on the layer line (`INDICATOR_LEFT_OFFSET`); the right
+        // padding puts the title where other studio menus start their labels
+        paddingLeft={3}
+        paddingRight={1}
         paddingY={2}
       >
-        <ReleaseAvatarIcon size="small" release={release} fontSize={2} />
+        <ReleaseAvatarIcon size="small" release={release} />
       </IconWrapperBox>
       <Flex
         flexBasis="0%"
