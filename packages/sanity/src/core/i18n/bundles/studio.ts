@@ -1571,6 +1571,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
   'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
+  /** Tooltip for the variants picker in the navbar, which names it for someone new to it. */
+  'navbar.variant.chip-tooltip': 'Select variant',
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
@@ -1852,6 +1854,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
   'release.menu.view-releases': 'View content releases',
+  /** Tooltip for the perspective picker in the navbar, which names it for someone new to it. */
+  'release.navbar.chip-tooltip': 'Select perspective',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */

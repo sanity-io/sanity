@@ -230,7 +230,8 @@ describe('ReleasesNav', () => {
 
       await renderVariants()
 
-      const truncated = `${'A'.repeat(50)}\u2026`
+      // The navbar chip cuts its label at 32 characters
+      const truncated = `${'A'.repeat(32)}\u2026`
       screen.getByText(truncated)
       screen.getByRole('button', {name: longTitle})
       screen.getByText(longTitle)
