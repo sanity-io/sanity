@@ -232,13 +232,13 @@ describe('DocumentScheduledDraftsMenu', () => {
     const trigger = screen.getByTestId('document-scheduled-drafts-menu-button')
     expect(trigger).toHaveTextContent('Dec 15, 2026')
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).not.toBeNull()
-    expect(trigger.querySelector('[data-sanity-icon="clock"]')).toBeNull()
+    expect(trigger.querySelector('[data-sanity-icon="clock-small"]')).toBeNull()
     // A selected pill takes its tone on the trigger itself, like a selected version chip
     expect(trigger).toHaveAttribute('data-tone', 'caution')
     expect(trigger).toHaveAttribute('data-selected')
   })
 
-  it('keeps the clock on the trigger for a scheduled draft that is not paused', async () => {
+  it('keeps the small clock on the trigger for a scheduled draft that is not paused', async () => {
     mockUsePerspective.mockReturnValue(
       createPerspective({
         selectedPerspective: novemberDraft,
@@ -249,7 +249,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     await renderMenu()
 
     const trigger = screen.getByTestId('document-scheduled-drafts-menu-button')
-    expect(trigger.querySelector('[data-sanity-icon="clock"]')).not.toBeNull()
+    expect(trigger.querySelector('[data-sanity-icon="clock-small"]')).not.toBeNull()
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).toBeNull()
     // A selected pill takes its tone on the trigger itself, like a selected version chip
     expect(trigger).toHaveAttribute('data-tone', 'suggest')
