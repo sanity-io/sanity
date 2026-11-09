@@ -20,7 +20,6 @@ import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
@@ -47,7 +46,12 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemIconColor, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
+import {
+  conditionMismatchIcon,
+  variantMenuItemIconColor,
+  variantMenuItemRow,
+  variantsMenu,
+} from './VariantsMenu.css'
 
 /**
  * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
@@ -55,6 +59,23 @@ import {variantMenuItemIconColor, variantMenuItemRow, variantsMenu} from './Vari
  */
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
   return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
+}
+
+/**
+ * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
+ * `Icon` sizes and colours the svg itself: a wrapper took the colour (grey) in its place and,
+ * holding the svg inline, added a line box under it that lifted the icon off the row's centre.
+ */
+const ConditionMismatchMenuIcon = (
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
+) => {
+  return (
+    <ErrorOutlineIcon
+      {...props}
+      className={clsx(props.className, conditionMismatchIcon)}
+      data-testid="variant-condition-mismatch"
+    />
+  )
 }
 
 function VariantMenuItem(props: {
@@ -79,13 +100,7 @@ function VariantMenuItem(props: {
         {...detailLinkMenuItemProps}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
-        iconRight={
-          mismatches.length > 0 ? (
-            <Box paddingRight={1} data-testid="variant-condition-mismatch">
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </Box>
-          ) : undefined
-        }
+        iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}

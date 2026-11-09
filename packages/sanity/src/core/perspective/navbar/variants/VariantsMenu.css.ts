@@ -56,3 +56,20 @@ export const variantMenuItemIconColor = css({
     '--icon-color': 'var(--card-fg-color)',
   },
 })
+
+/**
+ * The critical tone for a variant whose conditions no longer match the config. The menu item paints
+ * its icons with `var(--card-icon-color)` and ui5 `Icon` redeclares `--icon-color` on the svg, so
+ * `&&` sets both on the svg itself. A selected row is filled with the accent colour, which the
+ * critical tone does not stand out on, so there the icon takes the row's text colour.
+ */
+export const conditionMismatchIcon = css({
+  '&&': {
+    '--card-icon-color': 'var(--card-badge-critical-icon-color)',
+    '--icon-color': 'var(--card-badge-critical-icon-color)',
+  },
+  '[data-selected] &&': {
+    '--card-icon-color': 'var(--card-fg-color)',
+    '--icon-color': 'var(--card-fg-color)',
+  },
+})
