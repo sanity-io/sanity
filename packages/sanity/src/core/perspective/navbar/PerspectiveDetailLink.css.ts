@@ -28,12 +28,17 @@ export const detailLinkContainer = css({
  * are `@sanity/ui` v4, so the variable resolves to an unrelated colour further up the page. A
  * transparent rest background lets the button sit on the row in every state (hovered, selected),
  * and its hover still blends ui5's grey into that. Doubled to beat `.sui-Button` on specificity.
+ *
+ * On a selected row the arrow takes the row's text colour, `--detail-link-selected-fg`, at rest and
+ * on hover: ui5's hover would otherwise mix its own foreground back in.
  */
 export const detailLink = css({
   '&&': {
     '--background-color': 'transparent',
     'pointerEvents': 'auto',
   },
+  '&&[data-selected]': {'--foreground-color': 'var(--detail-link-selected-fg)'},
+  '&&[data-selected]:hover': {color: 'var(--detail-link-selected-fg)'},
 })
 
 /**
