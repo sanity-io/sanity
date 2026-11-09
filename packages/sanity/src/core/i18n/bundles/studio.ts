@@ -1560,7 +1560,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
-  'navbar.variant.menu.view-all': 'View all',
+  'navbar.variant.menu.view-all': 'View all variant definitions',
   /** Tooltip for the link that opens an audience's page from the variants selection menu. */
   'navbar.variant.menu.view-variant': 'View audience',
   /** Accessible label for the link that opens an audience's page from the variants selection menu. */
@@ -1568,7 +1568,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Find audience',
+  'navbar.variant.filter-placeholder': 'Find audience…',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
@@ -1833,11 +1833,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  'release.menu.scheduled-drafts': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View Content Releases',
+  'release.menu.view-releases': 'View content releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
