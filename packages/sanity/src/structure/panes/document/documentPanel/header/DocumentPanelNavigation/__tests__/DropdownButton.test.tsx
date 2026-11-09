@@ -22,6 +22,18 @@ describe('DropdownButton', () => {
     expect(trigger).toHaveAccessibleName(longTitle)
   })
 
+  it('marks the pill as having a selection, which squares the trigger against its ×, also when the label is cut', () => {
+    const longTitle = 'Spanish Festival: peru / photographers / spring'
+    render(
+      <DropdownButton data-testid="pill" icon={DotIcon} onClear={() => {}} text={longTitle} />,
+      {wrapper},
+    )
+
+    const pill = screen.getByTestId('pill').closest('[data-ui="DropdownButton"]')
+    expect(pill).toHaveAttribute('data-has-selection')
+    expect(screen.getByTestId('dropdown-button-clear')).toBeInTheDocument()
+  })
+
   it('shows a short label in full', () => {
     render(<DropdownButton data-testid="pill" icon={DotIcon} text="Winter sale" />, {wrapper})
 

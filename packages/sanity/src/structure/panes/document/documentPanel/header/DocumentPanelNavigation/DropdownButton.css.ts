@@ -24,7 +24,7 @@ export const dropdownButtonDivider = css({
 
 /**
  * The corners follow the pill. While something is selected the clear control sits beside the
- * trigger, so the trigger's right edge is square. Keyed off the card's `data-selected`, not
+ * trigger, so the trigger's right edge is square. Keyed off the card's `data-has-selection` (a v4 Card sets its own `data-selected`), not
  * `:only-child`: a tooltip on a cut label wraps the trigger, which made it an only child.
  */
 export const dropdownButtonTrigger = css({
@@ -32,7 +32,7 @@ export const dropdownButtonTrigger = css({
     borderRadius: pillRadius,
     zIndex: 1,
   },
-  '[data-selected] > &&, [data-selected] > * > &&': {
+  '[data-has-selection] > &&, [data-has-selection] > * > &&': {
     borderTopRightRadius: '0',
     borderBottomRightRadius: '0',
   },

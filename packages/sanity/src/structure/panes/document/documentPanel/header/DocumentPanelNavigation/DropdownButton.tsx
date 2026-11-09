@@ -71,7 +71,7 @@ export function DropdownButton(props: DropdownButtonProps) {
   return (
     <Card
       className={dropdownButtonCard}
-      data-selected={hasSelection ? '' : undefined}
+      data-has-selection={hasSelection ? '' : undefined}
       data-ui="DropdownButton"
       display="flex"
       flex="none"
