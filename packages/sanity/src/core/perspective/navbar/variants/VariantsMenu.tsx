@@ -3,6 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
@@ -35,11 +36,14 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
-import {suggestIconColor} from './VariantsNav.css'
+import {variantMenuItemIconColor, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 
+/**
+ * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
+ * than passed first, where the spread `className` would replace it.
+ */
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge className={suggestIconColor} {...props} />
+  return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
 }
 
 function VariantMenuItem(props: {

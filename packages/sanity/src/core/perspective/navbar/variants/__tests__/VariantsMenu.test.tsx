@@ -12,6 +12,7 @@ import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../variants/util/variantType'
 import {VariantsMenu} from '../VariantsMenu'
+import {variantMenuItemIconColor} from '../VariantsMenu.css'
 
 const variantsMock = vi.hoisted(() => ({
   data: [] as SystemVariant[],
@@ -98,6 +99,19 @@ describe('VariantsMenu', () => {
     expect(
       screen.getByTestId('variant-default').querySelector('[data-sanity-icon="rhombus"]'),
     ).not.toBeNull()
+  })
+
+  it('colours every row diamond with the variant colour, not only the chip', async () => {
+    await renderMenu()
+
+    const diamonds = [
+      ...document.querySelectorAll('[data-ui="MenuItem"] [data-sanity-icon="rhombus"]'),
+    ].filter((diamond) => !diamond.closest('[data-testid="view-all"]'))
+    expect(diamonds.length).toBeGreaterThan(1)
+    for (const diamond of diamonds) {
+      // Panda classes are atomic: one name per declaration
+      expect(diamond.getAttribute('class')).toContain(variantMenuItemIconColor)
+    }
   })
 
   it('filters the default option with the rest of the list', async () => {
