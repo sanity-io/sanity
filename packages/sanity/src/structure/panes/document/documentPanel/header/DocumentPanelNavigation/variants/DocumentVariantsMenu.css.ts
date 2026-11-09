@@ -9,6 +9,12 @@ export const variantIcon = css({
     '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
     '--icon-color': 'var(--card-badge-suggest-icon-color)',
   },
+  // On the selected fill (the selected variant, or the row under the pointer or keyboard focus)
+  // the diamond takes the row's text colour, as in the navbar variants menu
+  '[data-selected] &&': {
+    '--card-icon-color': 'var(--card-fg-color)',
+    '--icon-color': 'var(--card-fg-color)',
+  },
 })
 
 /**
