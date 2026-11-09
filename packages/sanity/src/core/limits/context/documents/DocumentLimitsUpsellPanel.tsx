@@ -1,5 +1,5 @@
 import {motion} from 'motion/react'
-import {Suspense, use, useCallback} from 'react'
+import {Suspense, use, useCallback, useEffect} from 'react'
 import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -21,6 +21,12 @@ interface DocumentLimitsUpsellPanelProps {
  * it, so the user is never left with an empty tool area.
  */
 export function DocumentLimitsUpsellPanel(props: DocumentLimitsUpsellPanelProps) {
+  // The provider never preloads the content, so the panel starts the request it waits for
+  const {requestUpsellData} = useDocumentLimitsUpsellContext()
+  useEffect(() => {
+    requestUpsellData()
+  }, [requestUpsellData])
+
   return (
     <Suspense fallback={<LoadingBlock title="Loading documents limit" showText />}>
       <DocumentLimitsUpsellPanelContent {...props} />

@@ -1,4 +1,4 @@
-import {Suspense, useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {firstValueFrom, tap} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
@@ -30,9 +30,14 @@ class StudioReleaseLimitExceededError extends Error {
  * @hidden
  */
 export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
+  const {enabled: isReleasesFeatureEnabled, isLoading: isReleasesFeatureLoading} =
+    useFeatureEnabled(FEATURES.contentReleases)
+  // A plan with releases only shows this content when a release limit is hit, and opening the
+  // dialog then starts the request. The loading state reports the feature as enabled.
   const upsellContext = useUpsellContext({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',
+    preLoadData: !isReleasesFeatureLoading && !isReleasesFeatureEnabled,
   })
   const {
     handleOpenDialog: openUpsellDialog,
@@ -41,7 +46,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     upsellDialogOpen,
   } = upsellContext
   const {data: allActiveReleases} = useActiveReleases()
-  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
 
   const meteredActiveReleases = useMemo(
     () => allActiveReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -220,9 +224,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       {showMisconfigurationDialog ? (
         <ReleaseLimitsMisconfigurationDialog onClose={() => setShowMisconfigurationDialog(false)} />
       ) : (
-        <Suspense>
-          <UpsellContextDialog contextValue={upsellContext} interpolation={interpolation} />
-        </Suspense>
+        <UpsellContextDialog contextValue={upsellContext} interpolation={interpolation} />
       )}
     </ReleasesUpsellContext.Provider>
   )

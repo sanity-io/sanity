@@ -5,6 +5,7 @@ import {
   type SchedulePublishUpsellContextValue,
 } from 'sanity/_singletons'
 
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {type UpsellContextValue, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
 
@@ -16,9 +17,11 @@ import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
  * @beta
  */
 export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) {
+  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.scheduledPublishing)
   const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-publishing',
     feature: 'scheduled_publishing',
+    preLoadData: !isLoading && !error && !enabled,
   })
 
   return (

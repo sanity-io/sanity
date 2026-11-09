@@ -90,6 +90,7 @@ const DOCUMENT_LIMIT: DocumentLimitUpsellContextValue = {
     'Document limit reached',
     'This dataset has reached the document limit of your plan. Upgrade to keep creating content.',
   ),
+  requestUpsellData: noop,
   telemetryLogs: TELEMETRY_LOGS,
 }
 

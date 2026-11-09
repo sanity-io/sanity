@@ -12,6 +12,8 @@ export interface DocumentLimitUpsellContextValue {
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
   handleClose: () => void
   upsellDataPromise: ObservablePromise<UpsellDataResult>
+  /** Starts the content request, which the provider does not preload */
+  requestUpsellData: () => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
