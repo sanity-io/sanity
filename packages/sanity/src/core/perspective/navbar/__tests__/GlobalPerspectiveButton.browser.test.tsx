@@ -50,4 +50,42 @@ describe('GlobalPerspectiveButton', () => {
       trigger.element().getBoundingClientRect().right,
     )
   })
+  it('cuts a long label so the chip does not push the navbar aside, and keeps it in full for the tooltip', async () => {
+    const longName = 'Regional Marketing Launch: birmingham / rich-customers / brand-z'
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="cut-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text={longName}
+          tooltip="Select variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('cut-trigger')
+    await expect.element(trigger).toHaveTextContent('Regional Marketing Launch: birmi…')
+    await expect.element(trigger).toHaveAccessibleName(longName)
+    await trigger.hover()
+    await expect.element(page.getByText('Select variant')).toBeVisible()
+    await expect.element(page.getByText(longName)).toBeVisible()
+  })
+
+  it('names the picker in its tooltip when the label is short', async () => {
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="short-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text="Default"
+          tooltip="Select variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('short-trigger')
+    await expect.element(trigger).toHaveTextContent('Default')
+    await trigger.hover()
+    await expect.element(page.getByText('Select variant')).toBeVisible()
+  })
 })

@@ -48,6 +48,7 @@ function VariantTypeFilter(props: {
           handleClearPerspective={selectedId ? handleClear : undefined}
           icon={<RhombusIconLarge className={clsx(suggestIconColor, rhombusIconLarge)} />}
           text={variantLabel}
+          tooltip={t('navbar.variant.chip-tooltip')}
         />
       }
     />

@@ -36,6 +36,7 @@ function ReleasesMenuChip({
   fullWidth,
   ...rest
 }: {fullWidth?: boolean} & React.HTMLAttributes<HTMLButtonElement>) {
+  const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const defaultPerspective = useGetDefaultPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useReleasesLabel()
@@ -61,6 +62,7 @@ function ReleasesMenuChip({
         />
       }
       text={displayTitle}
+      tooltip={t('release.navbar.chip-tooltip')}
       {...rest}
     />
   )

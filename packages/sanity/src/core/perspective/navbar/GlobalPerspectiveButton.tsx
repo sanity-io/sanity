@@ -4,11 +4,12 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Button as UIButton, Card, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type MouseEvent, useCallback} from 'react'
-import {Text, Box} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {truncateString} from '../../util/unicodeString'
 import {AnimatedTextWidth} from './AnimatedTextWidth'
 import {
   perspectiveButtonCard,
@@ -19,17 +20,32 @@ import {
   perspectiveButtonTriggerFullWidth,
 } from './GlobalPerspectiveButton.css'
 
+/**
+ * The longest label the chip shows, in characters. A longer one is cut with an ellipsis, so a long
+ * release or variant name does not push the navbar's other controls aside; the tooltip shows it in
+ * full.
+ */
+const LABEL_CHARACTER_LIMIT = 32
+
 /** Same cap as `ReleaseTitle`, so a long release name wraps in the tooltip. */
 const FULL_TEXT_TOOLTIP_MAX_WIDTH = '300px'
 
 type GlobalPerspectiveButtonProps = {
-  /** Label shown in the chip. Its width animates when the label changes. */
+  /**
+   * Label shown in the chip, cut at `LABEL_CHARACTER_LIMIT`. Its width animates when the label
+   * changes.
+   */
   text: string
   /**
-   * Uncut label. When it differs from `text`, the trigger shows it in a tooltip.
-   * Release titles are truncated to a character limit; this keeps the rest.
+   * Uncut label, when `text` is already cut. Release titles are truncated to a character limit;
+   * this keeps the rest. The trigger shows the uncut label in a tooltip when the chip cuts it.
    */
   fullText?: string
+  /**
+   * Names the picker, for someone who has not met it yet: the trigger's tooltip shows it, above
+   * the uncut label when the chip cuts it.
+   */
+  tooltip?: string
   /** Icon rendered before the label. */
   icon: UIButtonProps['icon']
   /**
@@ -53,10 +69,14 @@ type GlobalPerspectiveButtonProps = {
  * @internal
  */
 export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
-  const {text, fullText, fullWidth, icon, handleClearPerspective, ref, ...buttonProps} = props
+  const {text, fullText, fullWidth, icon, handleClearPerspective, ref, tooltip, ...buttonProps} =
+    props
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
-  const showFullText = fullText !== undefined && fullText !== text
+  const uncutText = fullText ?? text
+  // The full-width chip has room to show what fits, and cuts the rest with an ellipsis
+  const label = fullWidth ? text : truncateString(uncutText, LABEL_CHARACTER_LIMIT)
+  const showFullText = uncutText !== label
 
   const handleClearMouseDown = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -81,18 +101,25 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
     >
       <Tooltip
         content={
-          <Box style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
-            <Text size={1} as="div" trim={true}>
-              {fullText}
-            </Text>
-          </Box>
+          <VStack gap={2} style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
+            {tooltip ? (
+              <Text size={1} as="div" trim={true} weight="medium">
+                {tooltip}
+              </Text>
+            ) : null}
+            {showFullText ? (
+              <Text size={1} as="div" muted={Boolean(tooltip)} trim={true}>
+                {uncutText}
+              </Text>
+            ) : null}
+          </VStack>
         }
         portal
-        disabled={!showFullText}
+        disabled={!tooltip && !showFullText}
       >
         <UIButton
           {...buttonProps}
-          aria-label={showFullText ? fullText : buttonProps['aria-label']}
+          aria-label={showFullText ? uncutText : buttonProps['aria-label']}
           className={clsx(perspectiveButtonTrigger, fullWidth && perspectiveButtonTriggerFullWidth)}
           gap={2}
           icon={icon}
@@ -102,7 +129,7 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
           padding={2}
           ref={ref}
           radius={0}
-          text={fullWidth ? text : <AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
+          text={fullWidth ? text : <AnimatedTextWidth text={label}>{label}</AnimatedTextWidth>}
         />
       </Tooltip>
 
