@@ -1233,9 +1233,6 @@ importers:
 
   examples/studios/intents-and-routing:
     dependencies:
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../../packages/@sanity/vision
@@ -1266,6 +1263,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
+      react-icons:
+        specifier: ^5.7.0
+        version: 5.7.0(react@19.3.1)
       sanity:
         specifier: workspace:*
         version: link:../../../packages/sanity
