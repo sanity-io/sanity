@@ -13,10 +13,18 @@ const checkRequestTag = 'protocol-check'
 
 const DEFAULT_TIMEOUT = 2_500
 
-// The background warning is a one-shot check per client. Cache its promise so observable
-// warm-up, remounts, and multiple subscribers cannot start duplicate requests. The detailed
-// diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
-const legacyHttpChecks = new WeakMap<SanityClient, Promise<boolean | undefined>>()
+/**
+ * The API version of the client the protocol check runs with. Callers share it so they share the
+ * client, and with it the cached probe.
+ *
+ * @internal
+ */
+export const PROTOCOL_CHECK_API_VERSION = '2025-03-01'
+
+// The background warning and telemetry share a one-shot check per client. Cache its promise so
+// observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
+// detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
+const protocolChecks = new WeakMap<SanityClient, Promise<string>>()
 
 /** @internal */
 export interface ApiNetworkResourceTiming {
@@ -62,25 +70,33 @@ export interface ApiNetworkDiagnosticOptions {
  * @internal
  */
 export function isUsingLegacyHttp(client: SanityClient): Observable<boolean | undefined> {
+  return getApiProtocol(client).pipe(
+    map((protocol) => {
+      if (protocol === 'unknown') {
+        return undefined
+      }
+
+      // Typical values are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
+      return protocol.startsWith('http/0') || protocol.startsWith('http/1')
+    }),
+  )
+}
+
+/**
+ * The `nextHopProtocol` of a request to the API, or `'unknown'` if it could not be detected.
+ * Runs the probe once per client and replays its result to every later caller.
+ *
+ * @internal
+ */
+export function getApiProtocol(client: SanityClient): Observable<string> {
   return defer(() => {
-    let check = legacyHttpChecks.get(client)
+    const cachedCheck = protocolChecks.get(client)
+    if (cachedCheck) return cachedCheck
 
-    if (!check) {
-      check = firstValueFrom(
-        getApiNetworkDiagnostic(client).pipe(
-          map(({protocol}) => {
-            if (protocol === 'unknown') {
-              return undefined
-            }
-
-            // Typical values are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
-            return protocol.startsWith('http/0') || protocol.startsWith('http/1')
-          }),
-        ),
-      )
-      legacyHttpChecks.set(client, check)
-    }
-
+    const check = firstValueFrom(
+      getApiNetworkDiagnostic(client).pipe(map((diagnostic) => diagnostic.protocol)),
+    )
+    protocolChecks.set(client, check)
     return check
   })
 }

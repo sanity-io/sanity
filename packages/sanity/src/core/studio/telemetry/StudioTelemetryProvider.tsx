@@ -19,6 +19,7 @@ import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
 import {useClient} from '../../hooks/useClient'
+import {PROTOCOL_CHECK_API_VERSION} from '../../network/isUsingLegacyHttp'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {
@@ -32,6 +33,7 @@ import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
+import {useListenerPeakTelemetry} from './useListenerPeakTelemetry'
 import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 let sessionId: SessionId | undefined
@@ -214,6 +216,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       screenInnerWidth: ctx.screen.innerWidth,
     })
   }, [store.logger])
+
+  const protocolCheckClient = useClient({apiVersion: PROTOCOL_CHECK_API_VERSION})
+  useListenerPeakTelemetry(store.logger, protocolCheckClient)
 
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
   const deprecatedConfigFlags = useMemo(() => collectDeprecatedConfigFlags(workspace), [workspace])
