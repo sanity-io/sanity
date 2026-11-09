@@ -1074,6 +1074,12 @@ export function _createOAuthAuthStore({
   ): Promise<OAuthCallbackResult> {
     const fail = (failureReason: string, exchangeDurationMs?: number) =>
       failedCallback(startTime, failureReason, exchangeDurationMs)
+    // A failure the user did not cause: the login screen says sign-in did not complete, with the
+    // same fixed reason telemetry gets.
+    const failVisibly = (failureReason: string, exchangeDurationMs?: number) => {
+      callbackError$.next({error: failureReason})
+      return fail(failureReason, exchangeDurationMs)
+    }
 
     // Report the RFC 6749 error code only. `error_description` is free text from the URL, and
     // telemetry is no place for it. The login screen shows both: the response was matched to
@@ -1097,7 +1103,7 @@ export function _createOAuthAuthStore({
     const iss = params.get('iss')
     if (iss !== null && iss !== issuer) {
       debug('callback: iss %s does not match issuer %s, refusing', iss, issuer)
-      return fail('issuer mismatch')
+      return failVisibly('issuer mismatch')
     }
 
     // Captured before the exchange, like in `refresh`: a logout while it is out must win.
@@ -1116,7 +1122,7 @@ export function _createOAuthAuthStore({
       )
     } catch (err) {
       debug('callback: code exchange failed: %s', err instanceof Error ? err.message : err)
-      return fail(exchangeFailureReason(err), Math.round(performance.now() - exchangeStart))
+      return failVisibly(exchangeFailureReason(err), Math.round(performance.now() - exchangeStart))
     }
     const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
     debug('callback: code exchanged in %dms, %s', exchangeDurationMs, describeTokens(tokens))
