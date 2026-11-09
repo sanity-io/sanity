@@ -54,7 +54,7 @@ function VariantMenuItem(props: {
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
   const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
+    usePerspectiveDetailLink({selected: isSelected})
   const variantId = getVariantId(variant._id)
   const title = getVariantTitle(variant)
 

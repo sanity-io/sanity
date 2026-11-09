@@ -101,8 +101,6 @@ export function ReleasesMenuItem(
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, release, rangePosition, onNavigateToRelease} = props
-  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
 
   const {
     document: {
@@ -124,6 +122,9 @@ export function ReleasesMenuItem(
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName
     : isDefaultPerspective
+
+  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
+    usePerspectiveDetailLink({selected: active})
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
