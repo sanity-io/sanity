@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, type CardTone} from '@sanity/ui'
+import {type ButtonTone, Card} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
@@ -22,8 +22,12 @@ export type DropdownButtonProps = Omit<
   text: string
   /** Icon rendered before the label. */
   icon: ButtonProps['icon']
-  /** Tone of the pill while something other than the default option is selected. */
-  tone?: CardTone
+  /**
+   * Tone of the pill while something other than the default option is selected. Both halves then
+   * take the tone's selected colours, the same fill, text and icon colours as a selected version
+   * chip (Published, Draft), so every selected pill in the header follows one rule.
+   */
+  tone?: ButtonTone
   /**
    * Clears the selection. When set, the pill is in its selected state and the remove control
    * shows beside the trigger.
@@ -64,16 +68,19 @@ export function DropdownButton(props: DropdownButtonProps) {
       display="flex"
       flex="none"
       radius="full"
-      tone={hasSelection ? tone : 'default'}
     >
       <Button
         {...triggerProps}
         className={clsx(dropdownButtonTrigger, className)}
+        // The v4 button does not expose its tone; this keeps it readable in tests and devtools
+        data-tone={hasSelection ? tone : 'default'}
         icon={icon}
         iconRight={ChevronDownIcon}
         mode="ghost"
         ref={ref}
+        selected={hasSelection}
         text={text}
+        tone={hasSelection ? tone : 'default'}
       />
       {hasSelection ? (
         <>
@@ -85,6 +92,8 @@ export function DropdownButton(props: DropdownButtonProps) {
             mode="ghost"
             onClick={handleClear}
             onMouseDown={handleClearMouseDown}
+            selected
+            tone={tone}
             tooltipProps={{content: clearLabel}}
           />
         </>
