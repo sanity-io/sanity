@@ -217,7 +217,8 @@ export function ReleasesMenuItem(
             </LegacyText>
           )}
       </Flex>
-      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+      {/* Centred on the row, so the lock and the layer toggle sit between the title and date lines */}
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0} style={{alignSelf: 'center'}}>
         {canReleaseBeExcluded && (
           <Tooltip portal content={t('release.layer.hide')} placement="bottom">
             <ToggleLayerButton

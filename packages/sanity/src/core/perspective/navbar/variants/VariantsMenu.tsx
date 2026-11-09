@@ -212,7 +212,7 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
+            <Box flexShrink={0} padding={2}>
               <TextInput
                 fontSize={1}
                 icon={SearchIcon}
@@ -231,8 +231,7 @@ export function VariantsMenu({
                 flexShrink={1}
                 minHeight="0"
                 overflowY="auto"
-                paddingX={3}
-                paddingBottom={2}
+                padding={1}
               >
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
@@ -266,9 +265,7 @@ export function VariantsMenu({
               flexShrink={0}
               gap={1}
               borderTop
-              paddingX={3}
-              paddingTop={2}
-              paddingBottom={3}
+              padding={1}
               hidden={filterQuery.trim().length > 0}
             >
               <MenuItem
