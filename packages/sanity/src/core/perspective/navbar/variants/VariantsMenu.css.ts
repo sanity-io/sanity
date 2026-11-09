@@ -39,3 +39,20 @@ export const variantsMenu = css({
 export const variantMenuItemRow = css({
   position: 'relative',
 })
+
+/**
+ * A row's diamond is the variant colour, the suggest tone the navbar chip and the document status
+ * icons use. On the selected fill (the selected variant, or the row under the pointer or keyboard
+ * focus) it takes the row's text colour, like the row's other icons. `&&` beats the variable ui5
+ * `Icon` sets on the svg.
+ */
+export const variantMenuItemIconColor = css({
+  '&&': {
+    '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
+    '--icon-color': 'var(--card-badge-suggest-icon-color)',
+  },
+  '[data-selected] &&': {
+    '--card-icon-color': 'var(--card-fg-color)',
+    '--icon-color': 'var(--card-fg-color)',
+  },
+})
