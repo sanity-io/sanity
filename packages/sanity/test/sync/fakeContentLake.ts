@@ -45,9 +45,22 @@ export interface TransactionRecord {
   events: MutationEvent[]
 }
 
+export interface SubmissionRecord {
+  clientId: string
+  transactionId: string
+  mutations: MutationPayload[]
+  submittedAt: number
+  outcome: 'pending' | 'accepted' | 'rejected'
+  statusCode?: number
+  reason?: string
+  injected?: boolean
+  settledAt?: number
+}
+
 interface PendingCommit {
   transactionId: string
   mutations: MutationPayload[]
+  submission: SubmissionRecord
   resolve: (result: unknown) => void
   reject: (error: unknown) => void
 }
@@ -106,7 +119,9 @@ export class FakeContentLake {
   private pendingCommits = new Map<string, PendingCommit[]>()
   private controls = new Map<string, ClientControls>()
   private welcomeCounter = 0
+  private ticks = 0
   readonly transactions: TransactionRecord[] = []
+  readonly submissions: SubmissionRecord[] = []
   readonly rejectedCommits: Array<{clientId: string; transactionId: string; statusCode: number}> =
     []
 
@@ -120,6 +135,11 @@ export class FakeContentLake {
       } = seed
       this.documents[seed._id] = {...rest, _createdAt, _updatedAt, _rev}
     })
+  }
+
+  /** Counts submissions and settlements, so edits can be ordered against them. */
+  get clock(): number {
+    return this.ticks
   }
 
   get(id: string): SanityDocument | null {
@@ -213,11 +233,22 @@ export class FakeContentLake {
   ): Promise<unknown> {
     const policy = this.client(clientId).commits
     return new Promise((resolve, reject) => {
-      const pending: PendingCommit = {transactionId, mutations: [], resolve, reject}
+      const submission: SubmissionRecord = {
+        clientId,
+        transactionId,
+        mutations: [],
+        submittedAt: this.tick(),
+        outcome: 'pending',
+      }
+      this.submissions.push(submission)
+      const pending: PendingCommit = {transactionId, mutations: [], submission, resolve, reject}
       try {
         pending.mutations = toMutations()
+        submission.mutations = pending.mutations
       } catch (error) {
-        reject(toClientError(error))
+        const failure = toClientError(error)
+        this.recordSettlement(submission, failure, false)
+        reject(failure)
         return
       }
       this.pendingFor(clientId).push(pending)
@@ -250,6 +281,7 @@ export class FakeContentLake {
         transactionId: pending.transactionId,
         statusCode: rejection.statusCode,
       })
+      this.recordSettlement(pending.submission, rejection, true)
       pending.reject(rejection)
       return
     }
@@ -259,6 +291,7 @@ export class FakeContentLake {
         pending.transactionId,
         clientId,
       )
+      this.recordSettlement(pending.submission, undefined, false)
       pending.resolve({transactionId, results})
     } catch (error) {
       const failure = toClientError(error)
@@ -267,8 +300,31 @@ export class FakeContentLake {
         transactionId: pending.transactionId,
         statusCode: failure.statusCode,
       })
+      this.recordSettlement(pending.submission, failure, false)
       pending.reject(failure)
     }
+  }
+
+  private tick(): number {
+    const now = this.ticks
+    this.ticks += 1
+    return now
+  }
+
+  private recordSettlement(
+    submission: SubmissionRecord,
+    failure: ClientError | undefined,
+    injected: boolean,
+  ): void {
+    submission.settledAt = this.tick()
+    if (failure === undefined) {
+      submission.outcome = 'accepted'
+      return
+    }
+    submission.outcome = 'rejected'
+    submission.statusCode = failure.statusCode
+    submission.reason = failure.message
+    submission.injected = injected
   }
 
   private applyTransaction(
