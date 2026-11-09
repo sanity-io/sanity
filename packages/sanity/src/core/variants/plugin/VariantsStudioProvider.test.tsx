@@ -4,6 +4,7 @@ import {of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type SettledFeatures, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import type * as UpsellDataModule from '../../hooks/useUpsellData'
 import {useVariantsMode} from '../contexts/mode/useVariantsMode'
 import {variants} from './index'
 
@@ -11,6 +12,32 @@ vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
   ...(await importOriginal()),
   useFeatureEnabledObservable: vi.fn(),
 }))
+
+// The provider mounts the upsell hook, which reads the source. This harness only settles the mode,
+// so the request stays a stable empty answer and never touches `useSource`.
+vi.mock('../../hooks/useUpsellData', async (importOriginal) => {
+  const original = await importOriginal<typeof UpsellDataModule>()
+  const {Observable} = await import('rxjs')
+  // One observable for every render: react-rx caches the promise by identity.
+  const upsellData$ = new Observable((subscriber) => {
+    subscriber.next(original.NO_UPSELL_DATA)
+    subscriber.complete()
+  })
+  const telemetryLogs = {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    dialogViewed: () => null,
+    dialogDismissed: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
+  }
+  return {
+    ...original,
+    useUpsellData: () => ({upsellData$, telemetryLogs}),
+  }
+})
 
 const useFeatureEnabledObservableMock = vi.mocked(useFeatureEnabledObservable)
 
