@@ -3,9 +3,10 @@
  *
  * Handles three types of datasets:
  * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed.
- *   An open PR keeps every dataset from its latest run id and deletes the earlier
- *   runs. `-comments` addons are not deleted directly; removing the dataset they
- *   attach to removes them.
+ *   An open PR keeps its latest run when that run is younger than 5 days, and
+ *   deletes every earlier run. A run that is 5 days old or older is deleted even
+ *   while the PR is open. `-comments` addons are not deleted directly; removing
+ *   the dataset they attach to removes them.
  * - Main datasets (`main-<browser>-<run-id>`): deleted when older than 24 hours
  * - Agent datasets (`cursor_ci_<random>`): deleted when older than 24 hours
  *
@@ -166,6 +167,14 @@ async function cleanupPrDatasets(datasets: Dataset[]): Promise<CleanupCounts> {
       continue
     }
 
+    if (plan.keep.length === 0) {
+      console.log(
+        `PR #${plan.prNumber} is open, deleting ${plan.delete.length} dataset(s) older than 3 days (${formatCreatedAtRange(plan.delete)})`,
+      )
+      deletedCount += await deleteDatasets(plan.delete)
+      continue
+    }
+
     const kept = `keeping ${plan.keep.length} dataset(s) from run ${plan.latestRunId} (${formatCreatedAtRange(plan.keep)})`
     if (plan.delete.length === 0) {
       console.log(`PR #${plan.prNumber} is open, ${kept}`)
@@ -173,7 +182,7 @@ async function cleanupPrDatasets(datasets: Dataset[]): Promise<CleanupCounts> {
     }
 
     console.log(
-      `PR #${plan.prNumber} is open, ${kept}, deleting ${plan.delete.length} dataset(s) from older runs (${formatCreatedAtRange(plan.delete)})`,
+      `PR #${plan.prNumber} is open, ${kept}, deleting ${plan.delete.length} earlier dataset(s) (${formatCreatedAtRange(plan.delete)})`,
     )
     deletedCount += await deleteDatasets(plan.delete)
   }

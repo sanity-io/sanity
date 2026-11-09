@@ -3,9 +3,11 @@
  *
  * A workflow run creates `pr-<number>-chromium-<run-id>` and
  * `pr-<number>-firefox-<run-id>`. Run ids increase, so an open pull request
- * keeps every dataset from its highest run id and deletes the earlier runs. A
- * closed pull request loses all of them. `-comments` addons are left alone:
- * deleting the dataset they attach to removes them.
+ * keeps the datasets from its highest run id when that run is younger than 5
+ * days, and deletes every earlier run. A run that is 5 days old or older is
+ * deleted even when the pull request is still open. A closed pull request loses
+ * all of them. `-comments` addons are left alone: deleting the dataset they
+ * attach to removes them.
  */
 
 export interface PrDataset {
@@ -25,6 +27,8 @@ export interface PrDatasetPlan {
 
 // `pr-12225-chromium-22576482973` and its `…-comments` addon.
 const PR_DATASET_PATTERN = /^pr-(\d+)-(chromium|firefox)-(\d+)(-comments)?$/
+
+export const OPEN_PR_MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000
 
 interface ParsedPrDataset {
   dataset: PrDataset
@@ -47,6 +51,7 @@ export function parsePrDataset(dataset: PrDataset): ParsedPrDataset | undefined 
 export function planPrDatasetCleanup(
   datasets: PrDataset[],
   openPrNumbers: ReadonlySet<number>,
+  now = Date.now(),
 ): PrDatasetPlan[] {
   const byPr = new Map<number, ParsedPrDataset[]>()
   for (const dataset of datasets) {
@@ -80,7 +85,9 @@ export function planPrDatasetCleanup(
     const keep: PrDataset[] = []
     const remove: PrDataset[] = []
     for (const entry of group) {
-      if (entry.runId === latestRunId) keep.push(entry.dataset)
+      const ageMs = now - new Date(entry.dataset.createdAt).getTime()
+      const latestRunIsFresh = entry.runId === latestRunId && ageMs < OPEN_PR_MAX_AGE_MS
+      if (latestRunIsFresh) keep.push(entry.dataset)
       else remove.push(entry.dataset)
     }
     plans.push({prNumber, open, latestRunId, keep, delete: remove})
