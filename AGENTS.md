@@ -1005,8 +1005,8 @@ revealed. Two consequences for Suspense code:
   a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
   into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
   request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
-  [upsellData$])` (`useUpsellContext` does this for the simple providers,
-  `ReleasesUpsellProvider` for itself), and the context values carry the promise as
+  [upsellData$])` (`useUpsellContext` does this for every upsell provider, including
+  `ReleasesUpsellProvider`), and the context values carry the promise as
   `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
   just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
   is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),

@@ -24,8 +24,8 @@ export interface UpsellContextValue {
 }
 
 /**
- * Creates context value for simple upsell providers.
- * Handles data fetching, dialog state management, and error handling with toast notifications.
+ * Shared upsell dialog state: the content request, open and close, and telemetry.
+ * A failed request is reported from `UpsellContextDialog`, which toasts and closes again.
  *
  * The request starts when the provider commits (`preloadObservablePromise` in an effect, which
  * also keeps the answer cached across a remount) and is read with `use()` where its answer is
@@ -33,7 +33,9 @@ export interface UpsellContextValue {
  * and the upsell panels. The provider itself never suspends on it and does not re-render when it
  * arrives.
  *
- * For complex providers with custom logic, use useUpsellData directly.
+ * Providers with extra behavior compose this value with their own state. `ReleasesUpsellProvider`
+ * does that for the release-limit guard, the misconfiguration dialog, and `{{releaseLimit}}` in
+ * the copy.
  *
  * @internal
  */

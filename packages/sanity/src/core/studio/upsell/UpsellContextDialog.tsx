@@ -3,10 +3,15 @@ import {use, useEffect} from 'react'
 
 import {type UpsellContextValue} from '../../hooks/useUpsellContext'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type InterpolationProp} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {UpsellDialog} from './UpsellDialog'
 
 interface UpsellContextDialogProps {
   contextValue: UpsellContextValue
+  /**
+   * Values for `{{placeholders}}` in the dialog copy. Omitted, the copy is rendered as authored.
+   */
+  interpolation?: InterpolationProp
 }
 
 /**
@@ -17,12 +22,12 @@ interface UpsellContextDialogProps {
  *
  * @internal
  */
-export function UpsellContextDialog({contextValue}: UpsellContextDialogProps) {
+export function UpsellContextDialog({contextValue, interpolation}: UpsellContextDialogProps) {
   if (!contextValue.upsellDialogOpen) return null
-  return <OpenUpsellContextDialog contextValue={contextValue} />
+  return <OpenUpsellContextDialog contextValue={contextValue} interpolation={interpolation} />
 }
 
-function OpenUpsellContextDialog({contextValue}: UpsellContextDialogProps) {
+function OpenUpsellContextDialog({contextValue, interpolation}: UpsellContextDialogProps) {
   const {handleClose, telemetryLogs, upsellDataPromise} = contextValue
   const {upsellData} = use(upsellDataPromise)
 
@@ -30,6 +35,7 @@ function OpenUpsellContextDialog({contextValue}: UpsellContextDialogProps) {
   return (
     <UpsellDialog
       data={upsellData}
+      interpolation={interpolation}
       onClose={handleClose}
       onPrimaryClick={telemetryLogs.dialogPrimaryClicked}
       onSecondaryClick={telemetryLogs.dialogSecondaryClicked}
