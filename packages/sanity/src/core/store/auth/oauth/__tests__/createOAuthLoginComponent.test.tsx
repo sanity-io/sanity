@@ -68,6 +68,50 @@ describe('OAuth login component', () => {
     expect(screen.queryByTestId('oauth-login-error')).toBeNull()
   })
 
+  it.each([
+    ['the response names another issuer', '&iss=https%3A%2F%2Fevil.example', undefined],
+    ['the code exchange fails', '', new Error('token endpoint unavailable')],
+  ])('shows that sign-in did not complete when %s', async (_case, issParam, exchangeError) => {
+    sessionStorage.setItem(
+      FLOW_KEY,
+      JSON.stringify({codeVerifier: 'v', state: 'expected-state', redirectUri: ORIGIN}),
+    )
+    const endpoints = createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'})
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: {
+        ...endpoints,
+        exchangeCode: exchangeError ? () => Promise.reject(exchangeError) : endpoints.exchangeCode,
+      },
+      getLocation: () => ({
+        origin: ORIGIN,
+        pathname: '/',
+        search: `?code=c&state=expected-state${issParam}`,
+      }),
+      navigate: vi.fn(),
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: false})
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+      </TestProvider>,
+    )
+
+    expect(await screen.findByTestId('oauth-login-error')).toHaveTextContent(
+      'Sign-in was not completed',
+    )
+  })
+
   it('sends the user to the authorization server with a PKCE challenge', async () => {
     const navigate = vi.fn()
     const store = _createOAuthAuthStore({
