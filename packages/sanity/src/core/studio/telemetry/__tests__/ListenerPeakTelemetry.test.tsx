@@ -1,6 +1,7 @@
 import {createClient} from '@sanity/client'
 import {createBatchedStore, createSessionId, type TelemetryEvent} from '@sanity/telemetry'
 import {render} from '@testing-library/react'
+import {StrictMode} from 'react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
 const protocolCheckClient = createClient({
@@ -41,9 +42,11 @@ it('sends the peak listener count in the closing beacon', async () => {
   })
 
   render(
-    <TelemetryProvider store={store}>
-      <ListenerPeakTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
-    </TelemetryProvider>,
+    <StrictMode>
+      <TelemetryProvider store={store}>
+        <ListenerPeakTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
+      </TelemetryProvider>
+    </StrictMode>,
   )
   await resolveListenerCountingFetch()('https://abc123.api.sanity.io/v1/data/listen', {
     headers: {Accept: 'text/event-stream'},
