@@ -14,14 +14,19 @@ export type CreateVariantBundleOption =
  * The bundles a variant can be created in: drafts, then every open release,
  * leaving out the ones the document group already holds that variant in.
  *
+ * A live-edit document has no drafts, so a version of its default variant cannot be created in
+ * drafts. A variant still can: the inventory creates it as a published variant instead.
+ *
  * @param releases - The releases, keyed by release document id.
  */
 export function getAvailableBundles({
   variantId,
+  liveEdit,
   releases,
   existingVariants,
 }: {
   variantId: string | undefined
+  liveEdit: boolean
   releases: ReadonlyMap<string, ReleaseDocument>
   existingVariants: Variant[]
 }): CreateVariantBundleOption[] {
@@ -35,9 +40,10 @@ export function getAvailableBundles({
     }
   }
 
-  const options: CreateVariantBundleOption[] = existingBundles.has('drafts')
-    ? []
-    : [{type: 'drafts'}]
+  const offersDrafts =
+    !existingBundles.has('drafts') && !(liveEdit && typeof variantId === 'undefined')
+
+  const options: CreateVariantBundleOption[] = offersDrafts ? [{type: 'drafts'}] : []
 
   for (const [releaseId, release] of releases) {
     if (
