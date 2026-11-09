@@ -213,7 +213,7 @@ export function ReleasesList({
         </VStack>
       )}
       {!isFiltering && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        <StickyBottomCard borderTop padding={1}>
           <VStack gap={1}>
             <ScheduledDraftsMenuItem />
             {areReleasesEnabled && (
