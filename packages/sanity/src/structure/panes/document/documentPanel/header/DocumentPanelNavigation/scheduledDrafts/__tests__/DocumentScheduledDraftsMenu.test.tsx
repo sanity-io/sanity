@@ -256,7 +256,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     await renderMenu()
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search scheduled drafts…')
 
     await userEvent.type(input, 'dec')
     expect(within(menu).getByTestId('document-scheduled-draft-rDecember')).toBeInTheDocument()

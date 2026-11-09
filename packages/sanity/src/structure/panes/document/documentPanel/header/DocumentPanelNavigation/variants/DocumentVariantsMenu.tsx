@@ -282,7 +282,7 @@ export function DocumentVariantsMenu() {
             }
           />
         }
-        filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+        filterPlaceholder={t('document-panel-navigation.variants.filter-placeholder')}
         filterQuery={filterQuery}
         onFilterChange={setFilterQuery}
         leadingItems={

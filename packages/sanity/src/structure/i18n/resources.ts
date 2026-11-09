@@ -505,8 +505,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
 
-  /** Placeholder of the filter input in the variants and releases menus of the document header */
-  'document-panel-navigation.filter-placeholder': 'Find',
+  /** Placeholder of the search field in the releases menu of the document header */
+  'document-panel-navigation.releases.filter-placeholder': 'Search releases…',
   /** Label of the releases menu trigger in the document header when no release is selected */
   'document-panel-navigation.releases.button.text': 'Releases',
   /** A scheduled release in the releases menu of the document header: its title and publish date */
@@ -520,10 +520,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     "This document isn't in any release yet. Pick one below to add it.",
   /** Section header listing the releases the document has no version in */
   'document-panel-navigation.releases.section.other': 'Other releases',
+  /** Placeholder of the search field in the scheduled drafts menu of the document header */
+  'document-panel-navigation.scheduled-drafts.filter-placeholder': 'Search scheduled drafts…',
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
   'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  /** Placeholder of the search field in the variants menu of the document header */
+  'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */

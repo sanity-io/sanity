@@ -165,7 +165,7 @@ export function DocumentReleasesMenu() {
           }
         />
       }
-      filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+      filterPlaceholder={t('document-panel-navigation.releases.filter-placeholder')}
       filterQuery={filterQuery}
       onFilterChange={setFilterQuery}
       sections={[

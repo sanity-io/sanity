@@ -608,7 +608,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
   'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
   /** Placeholder of the filter input in the variant creation form's pickers */
-  'document-group.create-variant.filter-placeholder': 'Find',
+  'document-group.create-variant.filter-placeholder': 'Search…',
   /** Describes the variant creation form's picker for the draft or release to create the variant in */
   'document-group.create-variant.target-description': 'Where it lives',
   /** The label of the variant creation form's picker for the draft or release to create the variant in */

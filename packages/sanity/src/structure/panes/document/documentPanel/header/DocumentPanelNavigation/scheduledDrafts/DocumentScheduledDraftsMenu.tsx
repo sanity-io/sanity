@@ -139,7 +139,7 @@ export function DocumentScheduledDraftsMenu() {
           }
         />
       }
-      filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+      filterPlaceholder={t('document-panel-navigation.scheduled-drafts.filter-placeholder')}
       filterQuery={filterQuery}
       onFilterChange={setFilterQuery}
       sections={[

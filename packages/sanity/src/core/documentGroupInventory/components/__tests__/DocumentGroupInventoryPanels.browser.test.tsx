@@ -509,7 +509,7 @@ describe('CreateVariant', () => {
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
     await userEvent.click($targetTrigger)
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
     await expect.element($filter).toBeVisible()
 
     await userEvent.type($filter, 'undecided')
@@ -529,7 +529,7 @@ describe('CreateVariant', () => {
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     await userEvent.click($targetTrigger)
-    await expect.element($targetMenu.getByPlaceholder('Find')).toHaveValue('')
+    await expect.element($targetMenu.getByPlaceholder('Search…')).toHaveValue('')
     await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
 
     // The filter only narrows the list; the current option is unchanged.
@@ -547,7 +547,7 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
 
     await userEvent.click($targetTrigger)
     await expect.element($filter).toHaveFocus()

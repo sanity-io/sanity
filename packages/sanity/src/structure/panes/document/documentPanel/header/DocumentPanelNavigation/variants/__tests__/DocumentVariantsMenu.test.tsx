@@ -263,7 +263,7 @@ describe('DocumentVariantsMenu', () => {
     render(<DocumentVariantsMenu />, {wrapper})
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search variant definitions…')
 
     await userEvent.type(input, 'lapsed')
     expect(within(menu).getByTestId(`document-variant-${lapsed._id}`)).toBeInTheDocument()
