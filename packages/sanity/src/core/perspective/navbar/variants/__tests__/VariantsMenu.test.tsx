@@ -92,6 +92,14 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).toHaveTextContent('Default')
   })
 
+  it('shows the variant diamond on the default option, like every other variant', async () => {
+    await renderMenu()
+
+    expect(
+      screen.getByTestId('variant-default').querySelector('[data-sanity-icon="rhombus"]'),
+    ).not.toBeNull()
+  })
+
   it('filters the default option with the rest of the list', async () => {
     const user = userEvent.setup()
 

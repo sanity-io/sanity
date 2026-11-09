@@ -242,6 +242,8 @@ export function VariantsMenu({
                     isDefaultVariant(variant) ? (
                       <MenuItem
                         data-testid="variant-default"
+                        // The same diamond as every other variant row and the navbar chip
+                        icon={VariantMenuItemIcon}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
