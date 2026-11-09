@@ -132,7 +132,7 @@ function NewVariantMenuItem({onCreate}: {onCreate: () => void}) {
   return (
     <MenuItem
       data-testid="new-audience"
-      onClick={mode === 'upsell' ? handleOpenDialog : onCreate}
+      onClick={mode === 'upsell' ? () => handleOpenDialog('navbar') : onCreate}
       icon={AddIcon}
       text={t('navbar.variant.menu.new-audience')}
     />

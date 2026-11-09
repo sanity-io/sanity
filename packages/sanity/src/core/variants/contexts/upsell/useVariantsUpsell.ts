@@ -18,4 +18,15 @@ const FALLBACK_CONTEXT_VALUE = {
   upsellDialogOpen: false,
   handleOpenDialog: () => null,
   handleClose: () => null,
+  upsellDataPromise: null,
+  telemetryLogs: {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    dialogViewed: () => null,
+    dialogDismissed: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
+  },
 } satisfies VariantsUpsellContextValue

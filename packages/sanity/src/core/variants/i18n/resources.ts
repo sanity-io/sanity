@@ -219,16 +219,6 @@ const variantsLocaleStrings = {
     'This will permanently delete "{{title}}". This action cannot be undone.',
   /** Confirm action for the delete variant confirmation dialog. */
   'dialog.delete.action.confirm': 'Yes, delete variant definition',
-  /** Title of the upsell panel the Variants tool shows when the plan lacks content variants. */
-  'upsell.panel.title': 'Content variants are not available on your plan',
-  /** Description of the upsell panel the Variants tool shows when the plan lacks content variants. */
-  'upsell.panel.description':
-    'Upgrade your plan to create variant definitions and personalize content for different audiences, locales, and segments.',
-  /** Title of the upsell dialog opened by a create action when the plan lacks content variants. */
-  'upsell.dialog.title': 'Upgrade to create variant definitions',
-  /** Description of the upsell dialog opened by a create action when the plan lacks content variants. */
-  'upsell.dialog.description':
-    'Content variants are not available on your current plan. Upgrade your plan to create variant definitions.',
   /** Shown in place of the Variants tool content when the content variants feature check failed. */
   'unavailable.text': 'Variants are unavailable right now. Try again later.',
 }

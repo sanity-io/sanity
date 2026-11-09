@@ -146,6 +146,13 @@ describe('VariantsTool', () => {
 
       expect(await screen.findByTestId('variants-upsell-panel')).toBeInTheDocument()
       expect(
+        screen.getByRole('heading', {level: 2, name: 'Upgrade to create variant definitions'}),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('link', {name: 'Talk to sales'})).toHaveAttribute(
+        'href',
+        'https://www.sanity.io/contact/sales?ref=content-variants-studio-upsell',
+      )
+      expect(
         screen.getByRole('heading', {level: 1, name: 'Variant definitions'}),
       ).toBeInTheDocument()
       expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
@@ -185,7 +192,10 @@ describe('VariantsTool', () => {
       await user.click(await screen.findByRole('button', {name: 'New variant definition'}))
 
       expect(
-        await screen.findByRole('dialog', {name: 'Upgrade to create variant definitions'}),
+        await screen.findByRole('heading', {
+          level: 2,
+          name: 'Upgrade to create variant definitions',
+        }),
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('dialog', {name: 'Create variant definition'}),

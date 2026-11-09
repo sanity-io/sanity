@@ -240,7 +240,10 @@ describe('VariantsMenu', () => {
       await user.click(screen.getByTestId('new-audience'))
 
       expect(
-        await screen.findByRole('dialog', {name: 'Upgrade to create variant definitions'}),
+        await screen.findByRole('heading', {
+          level: 2,
+          name: 'Upgrade to create variant definitions',
+        }),
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('dialog', {name: 'Create variant definition'}),

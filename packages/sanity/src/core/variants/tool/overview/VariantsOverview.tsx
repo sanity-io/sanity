@@ -59,7 +59,7 @@ export function VariantsOverview(): React.JSX.Element {
       return
     }
     if (mode === 'upsell') {
-      handleOpenUpsellDialog()
+      handleOpenUpsellDialog('navbar')
       return
     }
     setIsCreateVariantDialogOpen(true)
