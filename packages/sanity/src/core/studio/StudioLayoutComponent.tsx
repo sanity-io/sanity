@@ -262,7 +262,7 @@ export function StudioLayoutComponent() {
                 <DetectViteDevServerStopped />
               </Suspense>
             )}
-            <Card flex={1} hidden={searchFullscreenOpen}>
+            <Card flex={1} hidden={searchFullscreenOpen} overflow="auto">
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
@@ -300,7 +300,7 @@ export function StudioLayoutComponent() {
                 <DetectViteDevServerStopped />
               </Suspense>
             )}
-            <Card flex={1} hidden={searchFullscreenOpen}>
+            <Card flex={1} hidden={searchFullscreenOpen} overflow="auto">
               {activeTool && (
                 <RenderTool
                   tool={activeTool}
