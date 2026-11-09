@@ -493,9 +493,20 @@ export function _createOAuthAuthStore({
     let outcome: OAuthRenewalOutcome = 'failed'
     let lifetimeMs: number | undefined
     let failure: OAuthFailure | undefined
-    /** Takes over a pair another tab stored. */
+    /**
+     * Takes over a pair another tab stored. A renewal can keep the access token and change only
+     * the refresh token or the expiry, so the whole pair is compared.
+     */
     const adopt = (tokens: OAuthTokens): OAuthTokens => {
-      if (tokens.accessToken !== tokenStorage.get()?.accessToken) tokenStorage.update(tokens)
+      const current = tokenStorage.get()
+      if (
+        tokens.accessToken !== current?.accessToken ||
+        tokens.refreshToken !== current.refreshToken ||
+        tokens.expiresAt !== current.expiresAt ||
+        tokens.refreshAt !== current.refreshAt
+      ) {
+        tokenStorage.update(tokens)
+      }
       outcome = 'adopted-other-tab'
       return tokens
     }
