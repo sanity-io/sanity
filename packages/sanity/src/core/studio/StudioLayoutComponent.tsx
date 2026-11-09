@@ -262,7 +262,10 @@ export function StudioLayoutComponent() {
                 <DetectViteDevServerStopped />
               </Suspense>
             )}
-            <Card flex={1} hidden={searchFullscreenOpen}>
+            {/* overflow="hidden" zeros the flex item's min-height:auto so it can shrink below
+                content height; without it the nested height="fill" Cards never constrain and
+                scrolling falls through to the host (same failure as before activity mode). */}
+            <Card flex={1} hidden={searchFullscreenOpen} overflow="hidden">
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
