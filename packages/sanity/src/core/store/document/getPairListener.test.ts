@@ -573,6 +573,22 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('other listener errors still propagate after recovering from a 401', async () => {
+      const error = new Error('channel error')
+      let attempt = 0
+      const {client: mockClient} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : throwError(() => error)),
+        () => of({}),
+      )
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+      await nextTick()
+      await nextTick()
+
+      expect(errors).toEqual([error])
+      sub.unsubscribe()
+    })
+
     test('a non-401 rejected connection also propagates (listen only 401s in practice)', async () => {
       const {client: mockClient} = createFailingClient(() => rejectedConnection(500))
       const errors: unknown[] = []
