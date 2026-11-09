@@ -50,7 +50,7 @@ export const NO_UPSELL_DATA: UpsellDataResult = {upsellData: null, hasError: fal
  * promise with `useObservablePromise(upsellData$)` and start the request with
  * `preloadObservablePromise(upsellData$)` in an effect, so only the leaf that renders the content
  * (an open dialog, an upsell panel) waits for it: the provider neither suspends nor re-renders
- * when the response arrives. `useUpsellContext` does this for the simple providers.
+ * when the response arrives. `useUpsellContext` does this for every upsell provider.
  *
  * @internal
  */
