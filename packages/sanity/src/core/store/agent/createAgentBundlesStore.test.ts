@@ -5,21 +5,34 @@ import {afterEach, describe, expect, test, vi} from 'vitest'
 import {getListenerCounts} from '../../network/listenerCount'
 import {createAgentBundlesStore} from './createAgentBundlesStore'
 
-const {connections, FakeEventSource} = vi.hoisted(() => {
+const {connections, instances, FakeEventSource} = vi.hoisted(() => {
   const opened: {
     init: EventSourceInit & {headers?: Record<string, string>}
     polyfill: boolean
     closed: boolean
   }[] = []
+  const created: {
+    readyState: number
+    dispatch: (type: string) => void
+  }[] = []
 
   const createFake = (polyfill: boolean) =>
     class {
+      static CLOSED = 2
+      readyState = 0
       connection: (typeof opened)[number]
+      private listeners: Record<string, (() => void)[]> = {}
       constructor(_url: string, init: EventSourceInit & {headers?: Record<string, string>}) {
         this.connection = {init, polyfill, closed: false}
         opened.push(this.connection)
+        created.push(this)
       }
-      addEventListener() {}
+      addEventListener(type: string, listener: () => void) {
+        this.listeners[type] = [...(this.listeners[type] ?? []), listener]
+      }
+      dispatch(type: string) {
+        this.listeners[type]?.forEach((listener) => listener())
+      }
       close() {
         this.connection.closed = true
       }
@@ -27,6 +40,7 @@ const {connections, FakeEventSource} = vi.hoisted(() => {
 
   return {
     connections: opened,
+    instances: created,
     FakeEventSource: {native: createFake(false), polyfill: createFake(true)},
   }
 })
@@ -61,6 +75,7 @@ function createReactiveClient(token: string) {
 
 afterEach(() => {
   connections.length = 0
+  instances.length = 0
   vi.unstubAllGlobals()
 })
 
@@ -128,6 +143,28 @@ describe('createAgentBundlesStore', () => {
     await vi.waitFor(() => expect(getListenerCounts().open).toBe(openBefore + 1))
     subscription.unsubscribe()
 
+    expect(getListenerCounts().open).toBe(openBefore)
+  })
+
+  test('releases its listener once when the connection closes for good, not again on unsubscribe', async () => {
+    vi.stubGlobal('EventSource', FakeEventSource.native)
+    const client = createClient({
+      apiVersion: '2025-02-19',
+      projectId: 'abc123',
+      useCdn: false,
+      withCredentials: true,
+    })
+    const openBefore = getListenerCounts().open
+    const {state$} = createAgentBundlesStore({client, organizationId$: of('org-1')})
+    const subscription = state$.subscribe()
+
+    await vi.waitFor(() => expect(getListenerCounts().open).toBe(openBefore + 1))
+    const [connection] = instances
+    connection.readyState = FakeEventSource.native.CLOSED
+    connection.dispatch('error')
+
+    expect(getListenerCounts().open).toBe(openBefore)
+    subscription.unsubscribe()
     expect(getListenerCounts().open).toBe(openBefore)
   })
 })
