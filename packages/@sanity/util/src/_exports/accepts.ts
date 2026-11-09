@@ -1,1 +1,1 @@
-export {accepts} from '../accepts/index'
+export {accepts} from '../accepts/accepts'

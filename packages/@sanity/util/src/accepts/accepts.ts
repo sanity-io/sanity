@@ -13,7 +13,7 @@
  * @param file - https://developer.mozilla.org/en-US/docs/Web/API/File
  * @param acceptedFiles - List of accepted mime types (comma-separated string or array)
  * @returns True if file is accepted, false otherwise
- * @public
+ * @internal
  */
 export function accepts(
   file: {type: string; name?: string},
@@ -38,10 +38,6 @@ export function accepts(
       if (fileName) {
         return fileName.toLowerCase().endsWith(validType)
       }
-      // If we do not have a valid fileName and validType is an extension, we
-      // should fail open. This happens because when hovering a file, the browser
-      // does not pass the name of the file but it will pass the file name when the
-      // file is dropped on the file upload input
       return true
     }
 

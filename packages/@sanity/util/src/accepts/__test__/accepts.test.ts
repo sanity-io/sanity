@@ -9,10 +9,6 @@ describe('accepts', () => {
       expect(accepts({type: 'image/png'}, '')).toBe(true)
     })
 
-    it('when acceptedFiles is an empty array (no restrictions)', () => {
-      expect(accepts({type: 'image/png'}, [])).toBe(false)
-    })
-
     it('for exact MIME type matches', () => {
       expect(accepts({type: 'image/png'}, 'image/png')).toBe(true)
       expect(accepts({type: 'image/jpeg'}, 'image/jpeg')).toBe(true)
@@ -61,6 +57,10 @@ describe('accepts', () => {
   })
 
   describe('returns false (rejects)', () => {
+    it('rejects everything when acceptedFiles is an empty array', () => {
+      expect(accepts({type: 'image/png'}, [])).toBe(false)
+    })
+
     it('when MIME type does not match', () => {
       expect(accepts({type: 'image/png'}, 'image/jpeg')).toBe(false)
       expect(accepts({type: 'video/mp4'}, 'image/*')).toBe(false)
@@ -77,7 +77,7 @@ describe('accepts', () => {
     })
 
     it('when wildcard does not match the base MIME type', () => {
-      expect(accepts({type: 'video/mp4'}, 'image/*')).toBe(false)
+      expect(accepts({type: 'imagex/png'}, 'image/*')).toBe(false)
       expect(accepts({type: 'text/plain'}, 'image/*')).toBe(false)
     })
   })
