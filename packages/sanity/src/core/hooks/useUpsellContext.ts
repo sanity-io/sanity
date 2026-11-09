@@ -31,10 +31,7 @@ export interface UpsellContextValue {
    * hold up a layout, and never awaited in an event handler.
    */
   upsellDataPromise: ObservablePromise<UpsellDataResult>
-  /**
-   * Starts the content request when it was not preloaded. Call it from an effect in a leaf that
-   * reads `upsellDataPromise` outside the dialog, above its `Suspense` boundary.
-   */
+  /** Starts the content request when it was not preloaded. `UpsellPanel` calls it when it mounts. */
   requestUpsellData: () => void
   telemetryLogs: UpsellTelemetryLogs
 }
@@ -45,11 +42,11 @@ export interface UpsellContextValue {
  *
  * With `preLoadData` the request starts when the provider commits (`preloadObservablePromise` in
  * an effect, which also keeps the answer cached across a remount); without it, the observable is
- * not subscribed until the dialog opens or `requestUpsellData` runs, so a plan that has the feature
- * never calls `/journey/*`. The answer is read with `use()` where it is rendered:
- * `UpsellContextDialog` (which shows a loading dialog while it waits, and reports a failed request
- * with a toast and closes again) and the upsell panels. The provider itself never suspends on it
- * and does not re-render when it arrives.
+ * not subscribed until the dialog opens or an `UpsellPanel` mounts, so a plan that has the feature
+ * never calls `/journey/*`. The answer is read with `use()` where it is rendered, and both readers
+ * show a loading state while they wait: `UpsellContextDialog` (which reports a failed request with
+ * a toast and closes again) and `UpsellPanel`. The provider itself never suspends on it and does
+ * not re-render when it arrives.
  *
  * Providers with extra behavior compose this value with their own state. `ReleasesUpsellProvider`
  * does that for the release-limit guard, the misconfiguration dialog, and `{{releaseLimit}}` in

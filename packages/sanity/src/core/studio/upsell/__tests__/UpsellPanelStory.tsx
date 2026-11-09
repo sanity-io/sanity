@@ -1,9 +1,10 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {type ComponentProps} from 'react'
 import {Text, VStack} from 'ui5'
 
-import {type UpsellData} from '../types'
+import {type UpsellData, type UpsellDataResult} from '../types'
 import {UpsellPanel} from '../UpsellPanel'
 
 const DESCRIPTION: PortableTextBlock[] = [
@@ -52,6 +53,20 @@ const FIXTURE_IMAGE: UpsellData['image'] = {
   },
 }
 
+// What a provider's context reads as once its request has answered. Settled in
+// place so `use()` returns synchronously and the panel never suspends.
+function settled(data: UpsellData): ComponentProps<typeof UpsellPanel>['upsell'] {
+  const value: UpsellDataResult = {upsellData: data, hasError: false}
+  return {
+    upsellDataPromise: Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value}),
+    requestUpsellData: noop,
+    telemetryLogs: {panelPrimaryClicked: noop, panelSecondaryClicked: noop},
+  }
+}
+
+const UPSELL = settled(UPSELL_DATA)
+const UPSELL_WITH_IMAGE = settled({...UPSELL_DATA, image: FIXTURE_IMAGE})
+
 /**
  * Chromatic sentinel for the shared upsell card after the ui5 Box migration.
  * Vertical vs horizontal layout, bordered vs flush, and start vs center
@@ -69,30 +84,19 @@ export function UpsellPanelStory() {
           <Text muted size={1} weight="medium" as="div" trim={true}>
             vertical bordered
           </Text>
-          <UpsellPanel data={UPSELL_DATA} onPrimaryClick={noop} onSecondaryClick={noop} />
+          <UpsellPanel upsell={UPSELL} />
         </VStack>
         <VStack gap={2}>
           <Text muted size={1} weight="medium" as="div" trim={true}>
             horizontal bordered (image left, copy right)
           </Text>
-          <UpsellPanel
-            data={{...UPSELL_DATA, image: FIXTURE_IMAGE}}
-            layout="horizontal"
-            onPrimaryClick={noop}
-            onSecondaryClick={noop}
-          />
+          <UpsellPanel layout="horizontal" upsell={UPSELL_WITH_IMAGE} />
         </VStack>
         <VStack gap={2}>
           <Text muted size={1} weight="medium" as="div" trim={true}>
             vertical flush centered
           </Text>
-          <UpsellPanel
-            align="center"
-            border={false}
-            data={UPSELL_DATA}
-            onPrimaryClick={noop}
-            onSecondaryClick={noop}
-          />
+          <UpsellPanel align="center" border={false} upsell={UPSELL} />
         </VStack>
       </VStack>
     </Card>

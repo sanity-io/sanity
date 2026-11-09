@@ -16,6 +16,8 @@ export interface SchedulePublishUpsellContextValue {
    * Read it with `use()` in the leaf that renders the content, under a `Suspense` boundary.
    */
   upsellDataPromise: ObservablePromise<UpsellDataResult> | null
+  /** Starts the content request when the provider did not preload it */
+  requestUpsellData: () => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
@@ -31,6 +33,7 @@ export interface SchedulePublishUpsellContextValue {
  */
 export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue>({
   upsellDataPromise: null,
+  requestUpsellData: () => null,
   handleOpenDialog: () => null,
   handleClose: () => null,
   upsellDialogOpen: false,

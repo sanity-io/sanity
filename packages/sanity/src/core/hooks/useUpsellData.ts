@@ -38,14 +38,6 @@ export interface UpsellTelemetryLogs {
 }
 
 /**
- * What a leaf reads where no upsell provider is mounted (its `upsellDataPromise` is `null`):
- * `const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA`.
- *
- * @internal
- */
-export const NO_UPSELL_DATA: UpsellDataResult = {upsellData: null, hasError: false}
-
-/**
  * The upsell content for `feature` from `dataUri`, as a stable observable of the settled answer
  * (`upsellData$`), plus the telemetry loggers for the dialog and panel. The observable is cold and
  * never errors: a failed or empty response settles as `hasError`. Turn it into a `use()`-compatible

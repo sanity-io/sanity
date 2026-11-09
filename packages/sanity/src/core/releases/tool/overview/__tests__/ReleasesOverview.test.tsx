@@ -237,6 +237,7 @@ describe('ReleasesOverview', () => {
       upsellDialogOpen: false,
       handleOpenDialog: vi.fn(),
       upsellDataPromise: null,
+      requestUpsellData: vi.fn(),
       telemetryLogs: {
         dialogSecondaryClicked: vi.fn(),
         dialogPrimaryClicked: vi.fn(),
@@ -254,6 +255,7 @@ describe('ReleasesOverview', () => {
 
     mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
       upsellDataPromise: null,
+      requestUpsellData: vi.fn(),
       telemetryLogs: {
         panelViewed: vi.fn(),
         panelDismissed: vi.fn(),
@@ -1263,6 +1265,7 @@ describe('ReleasesOverview', () => {
         upsellDialogOpen: false,
         handleOpenDialog: vi.fn(),
         upsellDataPromise: mockUpsellDataPromise,
+        requestUpsellData: vi.fn(),
         telemetryLogs: {
           dialogSecondaryClicked: vi.fn(),
           dialogPrimaryClicked: vi.fn(),
@@ -1359,6 +1362,7 @@ describe('ReleasesOverview', () => {
           })
           mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
             upsellDataPromise: mockUpsellDataPromise,
+            requestUpsellData: vi.fn(),
             telemetryLogs: {
               panelViewed: vi.fn(),
               panelDismissed: vi.fn(),
