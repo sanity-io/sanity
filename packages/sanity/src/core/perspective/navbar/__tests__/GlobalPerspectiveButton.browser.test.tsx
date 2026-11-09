@@ -58,7 +58,7 @@ describe('GlobalPerspectiveButton', () => {
           data-testid="cut-trigger"
           icon={<RhombusIcon className={suggestIconColor} />}
           text={longName}
-          tooltip="Select variant"
+          pickerLabel="Variant"
         />
       </TestWrapper>,
     )
@@ -67,18 +67,18 @@ describe('GlobalPerspectiveButton', () => {
     await expect.element(trigger).toHaveTextContent('Regional Marketing Launch: birmi…')
     await expect.element(trigger).toHaveAccessibleName(longName)
     await trigger.hover()
-    await expect.element(page.getByText('Select variant')).toBeVisible()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
     await expect.element(page.getByText(longName)).toBeVisible()
   })
 
-  it('names the picker in its tooltip when the label is short', async () => {
+  it('shows the picker and its current value in the tooltip when the label is short', async () => {
     void render(
       <TestWrapper schemaTypes={[]}>
         <GlobalPerspectiveButton
           data-testid="short-trigger"
           icon={<RhombusIcon className={suggestIconColor} />}
           text="Default"
-          tooltip="Select variant"
+          pickerLabel="Variant"
         />
       </TestWrapper>,
     )
@@ -86,6 +86,8 @@ describe('GlobalPerspectiveButton', () => {
     const trigger = page.getByTestId('short-trigger')
     await expect.element(trigger).toHaveTextContent('Default')
     await trigger.hover()
-    await expect.element(page.getByText('Select variant')).toBeVisible()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    // The chip's label and the tooltip's current value
+    await expect.poll(() => page.getByText('Default', {exact: true}).elements()).toHaveLength(2)
   })
 })
