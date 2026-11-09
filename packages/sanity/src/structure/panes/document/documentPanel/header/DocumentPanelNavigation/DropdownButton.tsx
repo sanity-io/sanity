@@ -3,7 +3,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {type ButtonTone, Card} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type MouseEvent, useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {truncateString, useTranslation} from 'sanity'
 
 import {Button, type ButtonProps} from '../../../../../../ui-components/button/Button'
 import {
@@ -12,6 +12,12 @@ import {
   dropdownButtonDivider,
   dropdownButtonTrigger,
 } from './DropdownButton.css'
+
+/**
+ * The longest label a pill shows, in characters, the same limit as the navbar perspective chips. A
+ * longer one is cut with an ellipsis and shown in full in a tooltip.
+ */
+const LABEL_CHARACTER_LIMIT = 32
 
 /** @internal */
 export type DropdownButtonProps = Omit<
@@ -47,6 +53,8 @@ export function DropdownButton(props: DropdownButtonProps) {
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const hasSelection = onClear !== undefined
+  const label = truncateString(text, LABEL_CHARACTER_LIMIT)
+  const isCut = label !== text
 
   const handleClearMouseDown = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -77,9 +85,11 @@ export function DropdownButton(props: DropdownButtonProps) {
         icon={icon}
         iconRight={ChevronDownIcon}
         mode="ghost"
+        aria-label={isCut ? text : triggerProps['aria-label']}
         ref={ref}
         selected={hasSelection}
-        text={text}
+        text={label}
+        tooltipProps={isCut ? {content: text, placement: 'bottom', portal: true} : undefined}
         tone={hasSelection ? tone : 'default'}
       />
       {hasSelection ? (
