@@ -145,6 +145,86 @@ describe('string', () => {
     )
   })
 
+  test('uri constraint rejects percent-encoded spaces in a special-scheme hostname', async () => {
+    const rule = Rule.string().uri()
+    const rejected = [
+      'https://07480%20589%20950/',
+      'https://f%20you%20leave%20freephase%20dynamic,%20you%20won%27t%20be%20able%20to%20rejoin/',
+      'https://link%20https://cdn-www.pod-point.com/policy.pdf',
+      'https://exa mple.com/',
+      'https://example.com%20/',
+      'ftp://07480%20589%20950/file',
+      'ws://07480%20589%20950/socket',
+    ]
+
+    await Promise.all(
+      rejected.map((value) =>
+        expect(rule.validate(value, context), value).resolves.toEqual([
+          expect.objectContaining({
+            code: 'string.url.invalid',
+            level: 'error',
+            message: 'Not a valid URL',
+          }),
+        ]),
+      ),
+    )
+
+    // A special scheme outside the default http/https list is a scheme mismatch
+    // when the host itself is fine. The `%20` cases above stay "Not a valid URL".
+    await expect(rule.validate('ws://example.com/socket', context)).resolves.toEqual([
+      expect.objectContaining({
+        code: 'string.url.scheme-not-allowed',
+        message: 'Does not match allowed protocols/schemes',
+      }),
+    ])
+  })
+
+  test('uri constraint allows percent-encoded spaces outside the hostname', async () => {
+    const rule = Rule.string().uri({allowCredentials: true})
+    await expect(
+      rule.validate('https://example.com/path%20with%20space', context),
+    ).resolves.toHaveLength(0)
+    await expect(
+      rule.validate('https://example.com/?q=hello%20world#hash%20fragment', context),
+    ).resolves.toHaveLength(0)
+    await expect(rule.validate('https://user%20name@example.com/', context)).resolves.toHaveLength(
+      0,
+    )
+    await expect(rule.validate('https://ex%61mple.com/', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('https://foo%2Ecom/', context)).resolves.toHaveLength(0)
+    // Node decodes `%2A` to `*`. Chrome keeps `%2A` in the hostname. Neither is a space.
+    await expect(rule.validate('https://ex%2Aample.com/', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('http://[::1]/path%20', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('http://127.0.0.1:8080/a%20b', context)).resolves.toHaveLength(0)
+  })
+
+  test('uri constraint allows percent-encoded spaces in opaque hosts', async () => {
+    const allowed = Rule.string().uri({scheme: ['git', 'ssh']})
+    await expect(allowed.validate('git://07480%20589%20950/repo', context)).resolves.toHaveLength(0)
+    await expect(allowed.validate('ssh://07480%20589%20950/repo', context)).resolves.toHaveLength(0)
+
+    // Default schemes are http/https. The opaque host parses, then the scheme check
+    // reports the mismatch. It must not be collapsed into "Not a valid URL".
+    const defaults = Rule.string().uri()
+    await expect(defaults.validate('git://07480%20589%20950/repo', context)).resolves.toEqual([
+      expect.objectContaining({
+        code: 'string.url.scheme-not-allowed',
+        message: 'Does not match allowed protocols/schemes',
+      }),
+    ])
+  })
+
+  test('uri constraint (allowRelative) rejects a protocol-relative host with a percent-encoded space', async () => {
+    const rule = Rule.string().uri({allowRelative: true})
+    await expect(rule.validate('/docs/my%20page', context)).resolves.toHaveLength(0)
+    await expect(rule.validate('//07480%20589%20950/path', context)).resolves.toEqual([
+      expect.objectContaining({
+        code: 'string.url.invalid',
+        message: 'Not a valid URL',
+      }),
+    ])
+  })
+
   test('uri constraint (allowRelative with restrictive scheme)', async () => {
     const rule = Rule.string().uri({scheme: ['https'], allowRelative: true})
     await expect(rule.validate('/example', context)).resolves.toHaveLength(0)

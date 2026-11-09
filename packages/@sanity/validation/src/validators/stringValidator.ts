@@ -5,6 +5,19 @@ import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
 const isRelativeUrl = (url: string) => /^\.*\//.test(url)
+// WHATWG "special" schemes, whose hosts are domains or IP addresses. `%` is a
+// forbidden domain code point, but Chrome still accepts a host that contains
+// `%20` (`https://07480%20589%20950/`) while Node throws. Reject those hosts
+// after parsing so Studio matches `sanity documents validate`. Other schemes
+// use opaque hosts, which may contain `%20`, and Node already accepts them.
+const SPECIAL_URL_SCHEMES = new Set(['file', 'ftp', 'http', 'https', 'ws', 'wss'])
+
+function specialSchemeHostHasPercentEncodedSpace(url: URL): boolean {
+  const scheme = url.protocol.replace(/:$/, '')
+  if (!SPECIAL_URL_SCHEMES.has(scheme)) return false
+  return url.hostname.toLowerCase().includes('%20') || /\s/.test(url.hostname)
+}
+
 const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -64,6 +77,13 @@ export const stringValidators: Validators = {
       // to new URL(str, base), and will fail if invoked with new URL(strValue, undefined)
       url = allowRelative ? new URL(strValue, DUMMY_ORIGIN) : new URL(strValue)
     } catch {
+      return {
+        code: validationMarkerCodes.stringUrlInvalid,
+        message: message || i18n.t('validation:string.url.invalid'),
+      }
+    }
+
+    if (specialSchemeHostHasPercentEncodedSpace(url)) {
       return {
         code: validationMarkerCodes.stringUrlInvalid,
         message: message || i18n.t('validation:string.url.invalid'),
