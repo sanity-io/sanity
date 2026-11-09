@@ -2,6 +2,7 @@ import {type Auth, createClient} from '@sanity/client'
 import {BehaviorSubject, of} from 'rxjs'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
+import {getListenerCounts} from '../../network/listenerCount'
 import {createAgentBundlesStore} from './createAgentBundlesStore'
 
 const {connections, FakeEventSource} = vi.hoisted(() => {
@@ -110,5 +111,23 @@ describe('createAgentBundlesStore', () => {
     expect(connections).toHaveLength(1)
     expect(connections[0].closed).toBe(false)
     subscription.unsubscribe()
+  })
+
+  test('counts its connection as an open listener until the last subscriber leaves', async () => {
+    vi.stubGlobal('EventSource', FakeEventSource.native)
+    const client = createClient({
+      apiVersion: '2025-02-19',
+      projectId: 'abc123',
+      useCdn: false,
+      withCredentials: true,
+    })
+    const openBefore = getListenerCounts().open
+    const {state$} = createAgentBundlesStore({client, organizationId$: of('org-1')})
+    const subscription = state$.subscribe()
+
+    await vi.waitFor(() => expect(getListenerCounts().open).toBe(openBefore + 1))
+    subscription.unsubscribe()
+
+    expect(getListenerCounts().open).toBe(openBefore)
   })
 })

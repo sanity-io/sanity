@@ -27,6 +27,7 @@ import {
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
@@ -579,6 +580,7 @@ function getAuthStore(
     clientFactory: (config) => {
       let client: SanityClient
       client = clientFactory({
+        resolveFetch: resolveListenerCountingFetch,
         ...config,
         ...(createStudioRequestHandler
           ? {
