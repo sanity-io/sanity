@@ -803,6 +803,42 @@ describe('createOAuthAuthStore', () => {
       expect(await tokenOf(state.client)).toBe('access-from-other-tab')
     })
 
+    it('adopts a pair another tab rotated even when it kept the access token', async () => {
+      // A renewal can return a new refresh token and expiry with the same access token. Adopting
+      // only on a new access token would leave this tab with the used refresh token, and it would
+      // keep adopting instead of renewing.
+      const due = {...storedTokens('access-1', 'refresh-1'), refreshAt: Date.now() - 1000}
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(due))
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const endpoints = createMockEndpoints()
+      let locks = 0
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+        // Before this tab gets the lock, another tab rotates the refresh token only. Its pair is
+        // due for renewal too, so this tab must renew it next, with the new refresh token.
+        withLock: async (_name, task) => {
+          if (++locks === 1) {
+            localStorage.setItem(TOKENS_KEY, JSON.stringify({...due, refreshToken: 'refresh-2'}))
+          }
+          return task()
+        },
+      })
+
+      const subscription = store.state.subscribe()
+      await settle(50)
+      subscription.unsubscribe()
+
+      expect(endpoints.refresh).toHaveBeenCalledWith({
+        clientId: CLIENT_ID,
+        refreshToken: 'refresh-2',
+      })
+    })
+
     it('does not sign both tabs out when two tabs redeem the same refresh token without Web Locks', async () => {
       // Both tabs hold the same pair and both renew at once. The second redemption is refused as
       // a reuse (`invalid_grant`). That tab adopts the pair the first tab stored instead of
