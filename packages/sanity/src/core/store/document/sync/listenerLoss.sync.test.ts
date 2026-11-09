@@ -28,11 +28,12 @@ const definition: SyncTestDefinition = {
   title:
     "B never receives A's event; B's own later edit cannot chain and the deadline recovery kicks in",
   seam: 'pair',
+  evidence: 'L3',
   initial: [initial],
   idPair,
   clients: ['A', 'B'],
   steps: [
-    {client: 'B', do: 'listener', mode: 'hold'},
+    {client: 'B', do: 'listener', mode: 'hold', represents: 'listener latency'},
     {
       client: 'A',
       do: 'patch',
@@ -49,7 +50,11 @@ const definition: SyncTestDefinition = {
     },
     {client: 'B', do: 'commit'},
     {do: 'advance', ms: 10},
-    {client: 'B', do: 'dropEvent'},
+    {
+      client: 'B',
+      do: 'dropEvent',
+      represents: 'an event lost on a live connection, which no documented protocol path produces',
+    },
     {client: 'B', do: 'listener', mode: 'auto'},
     {client: 'B', do: 'releaseEvents'},
   ],

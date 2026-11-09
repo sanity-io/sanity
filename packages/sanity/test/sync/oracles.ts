@@ -3,9 +3,10 @@ import {expect} from 'vitest'
 
 import {type World} from './syncTest'
 
+// The server stamps these; the client never predicts _system, and _createdAt on a draft created from published is unverified.
 function content(document: SanityDocument | null): Record<string, unknown> | null {
   if (document === null) return null
-  const {_rev, _updatedAt, _createdAt, ...rest} = document
+  const {_rev, _updatedAt, _createdAt, _system, ...rest} = document
   return rest
 }
 
@@ -14,7 +15,7 @@ export function expectConverged(world: World): void {
   Object.values(world.clients).forEach((client) => {
     ids.forEach((id) => {
       expect(content(client.localDocument(id)), `${client.id} view of ${id}`).toEqual(
-        world.lake.content(id),
+        content(world.lake.get(id)),
       )
     })
   })
