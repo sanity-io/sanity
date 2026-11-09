@@ -3,8 +3,6 @@ import {afterEach, describe, expect, test} from 'vitest'
 
 import {expectConverged} from '../../../../../test/sync/oracles'
 import {
-  createWorld,
-  runSteps,
   runSyncTest,
   type SyncTestDefinition,
   type Step,
@@ -62,17 +60,10 @@ afterEach(() => {
   world = undefined
 })
 
-// Skips the settled-world check, which fails on B's lock until the known bugs below are fixed.
-async function runScopedSyncTest(definition: SyncTestDefinition): Promise<World> {
-  const scopedWorld = await createWorld(definition)
-  world = scopedWorld
-  await runSteps(scopedWorld, definition.steps)
-  return scopedWorld
-}
-
 describe('listener reconnect in the middle of a two-event transaction', () => {
-  test('LSN-RECONNECT-MID-TX: A, whose listener stayed up, sees the publish', async () => {
-    world = await runScopedSyncTest(reconnectMidTransaction(true))
+  // B's lock stays on after the resumed reconnect, so the world never settles healthy.
+  test.fails('LSN-RECONNECT-MID-TX: A, whose listener stayed up, sees the publish', async () => {
+    world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
     expect(world.clients.A.localDocument(DRAFT_ID)).toBeNull()
     expect(world.clients.A.localDocument(PUBLISHED_ID)?.title).toBe('Draft title')
     expect(world.clients.A.transactionLocked()).toBe(false)
@@ -83,8 +74,9 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
   })
 
-  test('LSN-RECONNECT-MID-TX-RESET: B converges after a reset, because the snapshot is refetched', async () => {
-    world = await runScopedSyncTest(reconnectMidTransaction(false))
+  // B's lock stays on after the reset, so the world never settles healthy.
+  test.fails('LSN-RECONNECT-MID-TX-RESET: B converges after a reset, because the snapshot is refetched', async () => {
+    world = await runSyncTest({...reconnectMidTransaction(false), knownBug: 'C1'})
     expectConverged(world)
   })
 
