@@ -1582,7 +1582,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Find audience…',
+  'navbar.variant.filter-placeholder': 'Search variant definitions…',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
@@ -1855,7 +1855,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
-  'release.navbar.filter-placeholder': 'Find a version or release',
+  'release.navbar.filter-placeholder': 'Search versions and releases…',
   /** Accessible name for the chevron that opens the releases menu */
   'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
