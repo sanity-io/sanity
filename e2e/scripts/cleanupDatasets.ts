@@ -2,7 +2,10 @@
  * Periodic cleanup of e2e datasets.
  *
  * Handles three types of datasets:
- * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed
+ * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed.
+ *   An open PR keeps every dataset from its latest run id and deletes the earlier
+ *   runs. `-comments` addons are not deleted directly; removing the dataset they
+ *   attach to removes them.
  * - Main datasets (`main-<browser>-<run-id>`): deleted when older than 24 hours
  * - Agent datasets (`cursor_ci_<random>`): deleted when older than 24 hours
  *
@@ -10,6 +13,7 @@
  */
 
 import {readEnv} from '../envVars'
+import {parsePrDataset, planPrDatasetCleanup, type PrDataset} from './prDatasetCleanup'
 
 const SANITY_E2E_PROJECT_ID = readEnv('SANITY_E2E_PROJECT_ID')
 const SANITY_E2E_SESSION_TOKEN = readEnv('SANITY_E2E_SESSION_TOKEN')
@@ -22,14 +26,15 @@ const API_BASE_URL = `https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2026-03-
 
 const MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
 
-interface Dataset {
-  name: string
-  createdAt: string
-  addonFor: string | null
+type Dataset = PrDataset
+
+interface CleanupCounts {
+  deleted: number
+  skipped: number
 }
 
-// Match dataset names like `pr-12225-chromium-22576482973`
-const PR_DATASET_PATTERN = /^pr-(\d+)-/
+// Names like `pr-12225-extra` match none of the run patterns and are left alone.
+const UNRECOGNIZED_PR_DATASET_PATTERN = /^pr-\d+-/
 // Match dataset names like `main-chromium-22576482973`
 const MAIN_DATASET_PATTERN = /^main-(chromium|firefox)-/
 // Match dataset names like `cursor_ci_f167bd`, created by agents running the
@@ -50,7 +55,13 @@ async function deleteDataset(name: string): Promise<void> {
     method: 'DELETE',
     headers: {Authorization: `Bearer ${SANITY_E2E_SESSION_TOKEN}`},
   })
-  if (!res.ok) throw new Error(`Failed to delete "${name}": ${res.statusText}`)
+  if (!res.ok) {
+    const body = (await res.text()).trim()
+    const detail = body
+      ? `${res.status} ${res.statusText}: ${body}`
+      : `${res.status} ${res.statusText}`
+    throw new Error(`Failed to delete "${name}": ${detail}`)
+  }
 }
 
 async function fetchOpenPrNumbers(): Promise<Set<number>> {
@@ -87,74 +98,31 @@ async function fetchOpenPrNumbers(): Promise<Set<number>> {
   return openPrs
 }
 
-async function cleanupPrDatasets(datasets: Dataset[]): Promise<number> {
-  const prDatasets = datasets.filter(
-    (ds) => PR_DATASET_PATTERN.test(ds.name) && !ds.name.endsWith('-comments'),
-  )
-
-  console.log(`Found ${prDatasets.length} PR datasets total`)
-
-  const datasetsByPr = new Map<number, Dataset[]>()
-  for (const ds of prDatasets) {
-    const match = ds.name.match(PR_DATASET_PATTERN)
-    if (match) {
-      const prNumber = parseInt(match[1], 10)
-      const existing = datasetsByPr.get(prNumber) || []
-      existing.push(ds)
-      datasetsByPr.set(prNumber, existing)
-    }
-  }
-
-  console.log(`Datasets belong to ${datasetsByPr.size} unique PRs`)
-
-  const openPrs = await fetchOpenPrNumbers()
-  console.log(`Found ${openPrs.size} open PRs in ${GITHUB_REPO}`)
-
-  let deletedCount = 0
-
-  for (const [prNumber, prDatasetsGroup] of datasetsByPr) {
-    if (openPrs.has(prNumber)) {
-      console.log(`PR #${prNumber} is open, skipping ${prDatasetsGroup.length} dataset(s)`)
-      continue
-    }
-
-    console.log(`PR #${prNumber} is closed, deleting ${prDatasetsGroup.length} dataset(s)`)
-
-    for (const ds of prDatasetsGroup) {
-      try {
-        await deleteDataset(ds.name)
-        console.log(`  Deleted: ${ds.name}`)
-        deletedCount++
-      } catch (err) {
-        console.error(`  Failed to delete ${ds.name}: ${err}`)
-      }
-    }
-  }
-
-  return deletedCount
+function datasetAgeMs(dataset: Dataset, now: number): number {
+  return now - new Date(dataset.createdAt).getTime()
 }
 
-async function cleanupExpiredDatasets(
-  datasets: Dataset[],
-  {label, pattern}: {label: string; pattern: RegExp},
-): Promise<number> {
-  const now = Date.now()
-  const matchingDatasets = datasets.filter((ds) => pattern.test(ds.name))
+function formatAgeHours(ageMs: number): number {
+  return Math.round(ageMs / 3_600_000)
+}
 
-  console.log(`Found ${matchingDatasets.length} ${label} datasets total`)
+function formatCreatedAtRange(datasets: Dataset[]): string {
+  const created = datasets
+    .map((ds) => ds.createdAt)
+    .filter(Boolean)
+    .sort()
+  if (created.length === 0) return 'createdAt unknown'
+  if (created[0] === created[created.length - 1]) return `created ${created[0]}`
+  return `created ${created[0]} – ${created[created.length - 1]}`
+}
 
+async function deleteDatasets(datasets: Dataset[]): Promise<number> {
   let deletedCount = 0
 
-  for (const ds of matchingDatasets) {
-    const age = now - new Date(ds.createdAt).getTime()
-    if (age < MAX_AGE_MS) {
-      console.log(`  Skipping ${ds.name} (${Math.round(age / 3600000)}h old)`)
-      continue
-    }
-
+  for (const ds of datasets) {
     try {
       await deleteDataset(ds.name)
-      console.log(`  Deleted: ${ds.name} (${Math.round(age / 3600000)}h old)`)
+      console.log(`  Deleted: ${ds.name} (created ${ds.createdAt})`)
       deletedCount++
     } catch (err) {
       console.error(`  Failed to delete ${ds.name}: ${err}`)
@@ -164,21 +132,109 @@ async function cleanupExpiredDatasets(
   return deletedCount
 }
 
+async function cleanupPrDatasets(datasets: Dataset[]): Promise<CleanupCounts> {
+  const recognized = datasets.filter((ds) => {
+    const parsed = parsePrDataset(ds)
+    return parsed !== undefined && !parsed.comments
+  })
+  const unrecognized = datasets.filter(
+    (ds) => UNRECOGNIZED_PR_DATASET_PATTERN.test(ds.name) && !parsePrDataset(ds),
+  )
+
+  console.log(`Found ${recognized.length} PR datasets total`)
+  if (unrecognized.length > 0) {
+    console.log(`Leaving ${unrecognized.length} unrecognized PR dataset name(s) in place`)
+  }
+
+  const openPrs = await fetchOpenPrNumbers()
+  console.log(`Found ${openPrs.size} open PRs in ${GITHUB_REPO}`)
+
+  const plans = planPrDatasetCleanup(recognized, openPrs)
+  console.log(`Datasets belong to ${plans.length} unique PRs`)
+
+  let deletedCount = 0
+  let skippedCount = 0
+
+  for (const plan of plans) {
+    skippedCount += plan.keep.length
+
+    if (!plan.open) {
+      console.log(
+        `PR #${plan.prNumber} is closed, deleting ${plan.delete.length} dataset(s) (${formatCreatedAtRange(plan.delete)})`,
+      )
+      deletedCount += await deleteDatasets(plan.delete)
+      continue
+    }
+
+    const kept = `keeping ${plan.keep.length} dataset(s) from run ${plan.latestRunId} (${formatCreatedAtRange(plan.keep)})`
+    if (plan.delete.length === 0) {
+      console.log(`PR #${plan.prNumber} is open, ${kept}`)
+      continue
+    }
+
+    console.log(
+      `PR #${plan.prNumber} is open, ${kept}, deleting ${plan.delete.length} dataset(s) from older runs (${formatCreatedAtRange(plan.delete)})`,
+    )
+    deletedCount += await deleteDatasets(plan.delete)
+  }
+
+  console.log(`PR datasets: deleted ${deletedCount}, kept ${skippedCount}`)
+
+  return {deleted: deletedCount, skipped: skippedCount}
+}
+
+async function cleanupExpiredDatasets(
+  datasets: Dataset[],
+  {label, pattern}: {label: string; pattern: RegExp},
+): Promise<CleanupCounts> {
+  const now = Date.now()
+  const matchingDatasets = datasets.filter((ds) => pattern.test(ds.name))
+
+  console.log(`Found ${matchingDatasets.length} ${label} datasets total`)
+
+  let deletedCount = 0
+  let skippedCount = 0
+
+  for (const ds of matchingDatasets) {
+    const age = datasetAgeMs(ds, now)
+    if (age < MAX_AGE_MS) {
+      console.log(`  Skipping ${ds.name} (${formatAgeHours(age)}h old)`)
+      skippedCount++
+      continue
+    }
+
+    try {
+      await deleteDataset(ds.name)
+      console.log(`  Deleted: ${ds.name} (${formatAgeHours(age)}h old)`)
+      deletedCount++
+    } catch (err) {
+      console.error(`  Failed to delete ${ds.name}: ${err}`)
+    }
+  }
+
+  console.log(`${label} datasets: deleted ${deletedCount}, skipped ${skippedCount}`)
+
+  return {deleted: deletedCount, skipped: skippedCount}
+}
+
 async function run() {
   const datasets = await listDatasets()
 
-  const prDeleted = await cleanupPrDatasets(datasets)
-  const mainDeleted = await cleanupExpiredDatasets(datasets, {
+  const pr = await cleanupPrDatasets(datasets)
+  const main = await cleanupExpiredDatasets(datasets, {
     label: 'main',
     pattern: MAIN_DATASET_PATTERN,
   })
-  const agentDeleted = await cleanupExpiredDatasets(datasets, {
+  const agent = await cleanupExpiredDatasets(datasets, {
     label: 'agent',
     pattern: AGENT_DATASET_PATTERN,
   })
 
+  const deleted = pr.deleted + main.deleted + agent.deleted
+  const skipped = pr.skipped + main.skipped + agent.skipped
+
   console.log(
-    `\nCleanup complete. Deleted ${prDeleted} PR dataset(s), ${mainDeleted} main dataset(s) and ${agentDeleted} agent dataset(s).`,
+    `\nCleanup complete. Deleted ${deleted} dataset(s) and skipped ${skipped}: ${pr.deleted} PR deleted (${pr.skipped} kept), ${main.deleted} main deleted (${main.skipped} skipped) and ${agent.deleted} agent deleted (${agent.skipped} skipped).`,
   )
 }
 
