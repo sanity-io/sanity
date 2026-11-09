@@ -262,11 +262,14 @@ export function StudioLayoutComponent() {
                 <DetectViteDevServerStopped />
               </Suspense>
             )}
-            <Card flex={1} hidden={searchFullscreenOpen} overflow="auto">
+            <Card flex={1} hidden={searchFullscreenOpen}>
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
                 // tool's. `useMountedTools` keeps the active tool's entry on the live router.
+                // Per-tool overflow (not a shared Card) so each mounted tool keeps its own
+                // scrollTop when `tasks.enabled` is false and there is no Tasks activeToolLayout
+                // scroller — otherwise switching tools would clamp and lose the offset.
                 <Activity
                   key={tool.name}
                   mode={tool.name === activeToolName ? 'visible' : 'hidden'}
@@ -276,11 +279,13 @@ export function StudioLayoutComponent() {
                       heading={`The ${tool.name} tool crashed`}
                       getErrorScreen={getErrorScreen}
                     >
-                      <RenderTool
-                        tool={tool}
-                        ActiveToolLayout={ActiveToolLayout}
-                        toolMountT0Ref={toolMountT0Ref}
-                      />
+                      <Card height="fill" overflow="auto">
+                        <RenderTool
+                          tool={tool}
+                          ActiveToolLayout={ActiveToolLayout}
+                          toolMountT0Ref={toolMountT0Ref}
+                        />
+                      </Card>
                     </StudioErrorBoundary>
                   </RouterContext.Provider>
                 </Activity>
