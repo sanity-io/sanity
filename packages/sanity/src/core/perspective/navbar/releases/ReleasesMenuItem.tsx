@@ -212,7 +212,7 @@ export function ReleasesMenuItem(
           release.metadata.releaseType === 'scheduled' &&
           (release.publishAt || release.metadata.intendedPublishAt) && (
             // Muted on hover menu items is not working properly, the text is not readable when hovered
-            <Text muted size={1} as="div" style={{color: 'inherit'}}>
+            <Text muted size={1} as="div" trim style={{color: 'inherit'}}>
               {formatPublishDate(release)}
             </Text>
           )}
