@@ -35,7 +35,7 @@ import {useDocumentPane} from '../../../../useDocumentPane'
 import {DropdownButton} from '../DropdownButton'
 import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
 import {RhombusIcon, RhombusOutlineIcon} from '../RhombusIcons'
-import {menuDivider, variantIcon, versionCount} from './DocumentVariantsMenu.css'
+import {menuDivider, pillVariantIcon, variantIcon, versionCount} from './DocumentVariantsMenu.css'
 import {getDocumentVariantBundles} from './getDocumentVariantBundles'
 import {useSelectedVariant} from './useSelectedVariant'
 
@@ -275,7 +275,7 @@ export function DocumentVariantsMenu() {
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
-            icon={RhombusIcon}
+            icon={<RhombusIcon className={pillVariantIcon} size="small" />}
             onClear={selectedVariant ? handleSelectDefault : undefined}
             tone="suggest"
             text={
