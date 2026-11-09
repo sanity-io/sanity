@@ -89,8 +89,16 @@ it('sends the peak listener count in the beacon when the page is hidden for good
   ])
 })
 
-it('loads where the global object has no addEventListener, as in the schema manifest worker', async () => {
+// The CLI's schema manifest worker copies only a jsdom window's own properties onto the global object.
+it('registers on window where the global object has no addEventListener', async () => {
+  const workerWindow = {addEventListener: vi.fn()}
+  vi.stubGlobal('window', workerWindow)
   vi.stubGlobal('addEventListener', undefined)
 
-  await expect(loadHook()).resolves.toBeDefined()
+  vi.resetModules()
+  await import('../useListenerPeakTelemetry')
+
+  expect(workerWindow.addEventListener).toHaveBeenCalledWith('pagehide', expect.any(Function), {
+    capture: true,
+  })
 })
