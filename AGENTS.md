@@ -1022,11 +1022,21 @@ revealed. Two consequences for Suspense code:
 - The upsell content itself follows the same rule. `useUpsellData` returns
   `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
   a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
-  into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
-  request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
-  [upsellData$])` (`useUpsellContext` does this for every upsell provider, including
-  `ReleasesUpsellProvider`), and the context values carry the promise as
-  `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
+  into a `use()`-compatible promise with `useObservablePromise(upsellData$)`; `useUpsellContext`
+  does this for every upsell provider, including `ReleasesUpsellProvider`, and the context values
+  carry the promise as `upsellDataPromise`. Whether the request starts on commit is the required
+  `preLoadData` option. A provider passes `true` only once its feature check has settled as
+  upsell (`!isLoading && !error && !enabled` from `useFeatureEnabled`, or
+  `useSingleDocReleaseEnabled().mode === 'upsell'`), so a plan that has the feature never calls
+  `/journey/*`; then the provider preloads with
+  `useEffect(() => { void preloadObservablePromise(upsellData$) }, [upsellData$])`. With `false`,
+  `useObservablePromise` is passed `{disabled: true}` (it would otherwise subscribe on commit by
+  itself) until `handleOpenDialog` or `requestUpsellData` runs. The asset and document limit
+  providers always pass `false`, and releases does for a plan that has the feature: their dialog
+  opens on a quota error, and `UpsellContextDialog` shows a loading dialog under its own
+  `<Suspense>` until the content arrives. `DocumentLimitsUpsellPanel`, which replaces a tool
+  that failed on the document limit, calls `requestUpsellData` from an effect above its boundary.
+  `upsellDataPromise` is only ever read with `use()`, never awaited: `handleOpenDialog`
   just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
   is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),
   and each upsell panel (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`,

@@ -1,4 +1,4 @@
-import {act, render, screen} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {Suspense} from 'react'
 import {Observable, Subject} from 'rxjs'
@@ -61,8 +61,8 @@ beforeEach(() => {
   useUpsellDataMock.mockReturnValue({upsellData$, telemetryLogs})
 })
 
-function Harness() {
-  const contextValue = useUpsellContext({dataUri: '/journey/test', feature: 'test'})
+function Harness({preLoadData}: {preLoadData: boolean}) {
+  const contextValue = useUpsellContext({dataUri: '/journey/test', feature: 'test', preLoadData})
   return (
     <>
       <button type="button" onClick={() => contextValue.handleOpenDialog('navbar')}>
@@ -76,9 +76,9 @@ function Harness() {
   )
 }
 
-async function renderHarness() {
+async function renderHarness({preLoadData = true}: {preLoadData?: boolean} = {}) {
   const TestProvider = await createTestProvider()
-  render(<Harness />, {wrapper: TestProvider})
+  return render(<Harness preLoadData={preLoadData} />, {wrapper: TestProvider})
 }
 
 function answer(result: UpsellDataResult) {
@@ -96,6 +96,7 @@ describe('useUpsellContext', () => {
         feature: 'test',
         enabled: false,
         fallbackData: upsellData,
+        preLoadData: true,
       })
       return null
     }
@@ -159,16 +160,16 @@ describe('useUpsellContext', () => {
       await userEvent.click(screen.getByRole('button', {name: 'open'}))
     })
 
-    // The open state is set synchronously; only the dialog leaf suspends, nothing is awaited
+    // The open state is set synchronously; only the dialog leaf suspends, to the loading dialog
     expect(screen.getByTestId('open-state')).toHaveTextContent('true')
-    expect(screen.getByTestId('dialog-pending')).toBeInTheDocument()
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.queryByTestId('dialog-pending')).not.toBeInTheDocument()
     expect(telemetryLogs.dialogViewed).toHaveBeenCalledWith('navbar')
 
     await answer({upsellData, hasError: false})
 
     expect(await screen.findByRole('dialog')).toHaveTextContent('Upgrade to unlock this feature')
-    expect(screen.queryByTestId('dialog-pending')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
   it('reports a failed request with a toast and closes the dialog again', async () => {
@@ -182,5 +183,40 @@ describe('useUpsellContext', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByTestId('open-state')).toHaveTextContent('false')
     expect(telemetryLogs.dialogDismissed).toHaveBeenCalledTimes(1)
+  })
+
+  describe('without preLoadData', () => {
+    it('never requests the content while the dialog stays closed', async () => {
+      await renderHarness({preLoadData: false})
+
+      expect(subscriptions).toBe(0)
+    })
+
+    it('starts the request when the dialog opens, and shows a loading dialog until it answers', async () => {
+      await renderHarness({preLoadData: false})
+
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog leaf suspends on the click
+      await act(async () => {
+        await userEvent.click(screen.getByRole('button', {name: 'open'}))
+      })
+
+      expect(subscriptions).toBe(1)
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+      expect(screen.queryByText('Upgrade to unlock this feature')).not.toBeInTheDocument()
+
+      await answer({upsellData, hasError: false})
+
+      expect(await screen.findByRole('dialog')).toHaveTextContent('Upgrade to unlock this feature')
+      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    })
+
+    it('starts the request when preLoadData turns true once the feature check settles', async () => {
+      const {rerender} = await renderHarness({preLoadData: false})
+      expect(subscriptions).toBe(0)
+
+      rerender(<Harness preLoadData />)
+
+      await waitFor(() => expect(subscriptions).toBe(1))
+    })
   })
 })
