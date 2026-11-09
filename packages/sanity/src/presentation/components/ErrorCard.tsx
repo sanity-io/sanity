@@ -9,12 +9,15 @@ import {presentationLocaleNamespace} from '../i18n'
 export function ErrorCard(
   props: {
     children?: ReactNode
+    title?: string
     message: string
+    continueAnywayText?: string
     onRetry?: () => void
     onContinueAnyway?: () => void
   } & CardProps,
 ): React.JSX.Element {
-  const {children, message, onRetry, onContinueAnyway, ...restProps} = props
+  const {children, title, message, continueAnywayText, onRetry, onContinueAnyway, ...restProps} =
+    props
 
   const {t} = useTranslation(presentationLocaleNamespace)
 
@@ -26,7 +29,7 @@ export function ErrorCard(
       mode="ghost"
       tone="critical"
       onClick={onContinueAnyway}
-      text={t('error-card.continue-button.text')}
+      text={continueAnywayText ?? t('error-card.continue-button.text')}
     />
   )
 
@@ -37,7 +40,7 @@ export function ErrorCard(
           <VStack gap={4}>
             <VStack gap={3}>
               <Text size={1} weight="semibold" as="div" trim={true}>
-                {t('error-card.title')}
+                {title ?? t('error-card.title')}
               </Text>
               <Text muted size={1} as="div" trim={true}>
                 {message}
