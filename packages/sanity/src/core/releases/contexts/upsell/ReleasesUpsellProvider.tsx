@@ -43,6 +43,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     handleOpenDialog: openUpsellDialog,
     telemetryLogs,
     upsellDataPromise,
+    requestUpsellData,
     upsellDialogOpen,
   } = upsellContext
   const {data: allActiveReleases} = useActiveReleases()
@@ -200,6 +201,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       onReleaseLimitReached,
       telemetryLogs,
       upsellDataPromise,
+      requestUpsellData,
       handleOpenDialog,
     }),
     [
@@ -209,6 +211,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       onReleaseLimitReached,
       telemetryLogs,
       upsellDataPromise,
+      requestUpsellData,
       handleOpenDialog,
     ],
   )

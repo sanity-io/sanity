@@ -1,11 +1,15 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {_responsive, Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
+import {type ReactNode, Suspense, use, useEffect} from 'react'
+import {type ObservablePromise} from 'react-rx'
 import {css, styled} from 'styled-components'
-import {Flex, Box, type FlexParentProps} from 'ui5'
+import {Flex, Box, Container, type ContainerProps, type FlexParentProps} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
-import {type UpsellData} from './types'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {type UpsellTelemetryLogs} from '../../hooks/useUpsellData'
+import {type UpsellData, type UpsellDataResult} from './types'
 import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
 type Layout = 'vertical' | 'horizontal'
@@ -33,13 +37,29 @@ const DescriptionRoot = styled(Box)`
   margin: auto 0;
 `
 
-interface CommentsUpsellPanelProps {
-  data: UpsellData
-  onPrimaryClick: () => void
-  onSecondaryClick: () => void
+/** What the panel needs from a feature's upsell context */
+interface UpsellPanelSource {
+  /** `null` outside the provider, where the panel renders `unavailable` */
+  upsellDataPromise: ObservablePromise<UpsellDataResult> | null
+  requestUpsellData: () => void
+  telemetryLogs: Pick<UpsellTelemetryLogs, 'panelPrimaryClicked' | 'panelSecondaryClicked'>
+}
+
+interface UpsellCardProps {
   layout?: Layout
   border?: boolean
   align?: 'center' | 'flex-start'
+  /** Rendered centered above the card, in place of the content's image */
+  illustration?: ReactNode
+  /** Wraps the card in a `Container` of this size, only once there is content to show */
+  size?: ContainerProps['size']
+}
+
+interface UpsellPanelProps extends UpsellCardProps {
+  /** The feature's upsell context value, as returned by its `use*Upsell()` hook */
+  upsell: UpsellPanelSource
+  /** Rendered when the content cannot be loaded. Nothing by default */
+  unavailable?: ReactNode
 }
 
 /**
@@ -47,7 +67,63 @@ interface CommentsUpsellPanelProps {
  */
 const HORIZONTAL_PADDING_Y: [3, 3, 5] = [3, 3, 5]
 
-export function UpsellPanel(props: CommentsUpsellPanelProps) {
+/**
+ * The inline upsell card for a feature. It starts the content request when it mounts (a no-op
+ * when the provider preloaded it), shows a loading state until the content arrives, and renders
+ * `unavailable` when it cannot be loaded, so a host only renders it.
+ *
+ * @internal
+ */
+export function UpsellPanel(props: UpsellPanelProps) {
+  const {upsell, unavailable = null, ...cardProps} = props
+  const {requestUpsellData, upsellDataPromise, telemetryLogs} = upsell
+
+  useEffect(() => {
+    requestUpsellData()
+  }, [requestUpsellData])
+
+  if (!upsellDataPromise) return unavailable
+  // The content is read in a child: this component has to commit for its effect to start the request
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      <UpsellPanelContent
+        {...cardProps}
+        upsellDataPromise={upsellDataPromise}
+        telemetryLogs={telemetryLogs}
+        unavailable={unavailable}
+      />
+    </Suspense>
+  )
+}
+
+function UpsellPanelContent(
+  props: UpsellCardProps & {
+    upsellDataPromise: ObservablePromise<UpsellDataResult>
+    telemetryLogs: UpsellPanelSource['telemetryLogs']
+    unavailable: ReactNode
+  },
+) {
+  const {upsellDataPromise, telemetryLogs, unavailable, ...cardProps} = props
+  const {upsellData} = use(upsellDataPromise)
+
+  if (!upsellData) return unavailable
+  return (
+    <UpsellCard
+      {...cardProps}
+      data={upsellData}
+      onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+      onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+    />
+  )
+}
+
+function UpsellCard(
+  props: UpsellCardProps & {
+    data: UpsellData
+    onPrimaryClick: () => void
+    onSecondaryClick: () => void
+  },
+) {
   const {
     data,
     onPrimaryClick,
@@ -55,6 +131,8 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
     layout = 'vertical',
     border = true,
     align = 'flex-start',
+    illustration,
+    size,
   } = props
   const direction: FlexParentProps['flexDirection'] = [
     'column',
@@ -62,10 +140,10 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
     layout === 'horizontal' ? 'row' : 'column',
   ]
 
-  return (
+  const card = (
     <Card radius={3} overflow={'hidden'} border={border}>
       <Flex flexDirection={direction} gap={2}>
-        {data.image && (
+        {!illustration && data.image && (
           <Image
             src={data.image.asset.url}
             alt={data.image.asset.altText ?? ''}
@@ -108,4 +186,15 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
       </Flex>
     </Card>
   )
+
+  const panel = illustration ? (
+    <Flex alignItems="center" flexDirection="column">
+      {illustration}
+      <Box paddingTop={2}>{card}</Box>
+    </Flex>
+  ) : (
+    card
+  )
+
+  return size === undefined ? panel : <Container size={size}>{panel}</Container>
 }

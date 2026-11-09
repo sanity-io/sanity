@@ -1,11 +1,10 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
-import {Suspense, use} from 'react'
+import {use} from 'react'
 import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Text, Container, Flex, Box, Icon} from 'ui5'
 
-import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'
@@ -23,11 +22,7 @@ export const Schedules = () => {
   const showWarning = mode === 'upsell' && scheduleState === 'scheduled'
   return (
     <Box style={{height: '100%'}}>
-      {mode === 'upsell' && (
-        <Suspense>
-          <SchedulesUpsellPanel />
-        </Suspense>
-      )}
+      {mode === 'upsell' && <SchedulesUpsellPanel />}
       {activeSchedules.length === 0 ? (
         <Panel size={1} padding={4} paddingTop={4}>
           <EmptySchedules scheduleState={scheduleState} selectedDate={selectedDate} />
@@ -54,20 +49,12 @@ export const Schedules = () => {
   )
 }
 
-/** Waits for the upsell content at the leaf, so the schedules list renders without it */
 function SchedulesUpsellPanel() {
-  const {upsellDataPromise, telemetryLogs} = useSchedulePublishingUpsell()
-  const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
+  const upsell = useSchedulePublishingUpsell()
 
-  if (!upsellData) return null
   return (
     <Panel size={1} padding={4} paddingBottom={1}>
-      <UpsellPanel
-        layout="horizontal"
-        data={upsellData}
-        onPrimaryClick={telemetryLogs.panelPrimaryClicked}
-        onSecondaryClick={telemetryLogs.panelSecondaryClicked}
-      />
+      <UpsellPanel layout="horizontal" upsell={upsell} />
     </Panel>
   )
 }

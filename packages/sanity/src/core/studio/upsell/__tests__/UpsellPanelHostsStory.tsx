@@ -78,6 +78,7 @@ const TASKS: TasksUpsellContextValue = {
     'Unlock Tasks',
     'Assign work, track progress and discuss documents without leaving the Studio.',
   ),
+  requestUpsellData: noop,
   telemetryLogs: TELEMETRY_LOGS,
 }
 
@@ -109,6 +110,7 @@ const RELEASES: ReleasesUpsellContextValue = {
   guardWithReleaseLimitUpsell: async () => undefined,
   onReleaseLimitReached: noop,
   handleOpenDialog: noop,
+  requestUpsellData: noop,
   telemetryLogs: TELEMETRY_LOGS,
 }
 
@@ -126,6 +128,7 @@ const SCHEDULED_DRAFTS: SingleDocReleaseUpsellContextValue = {
     'Unlock scheduled drafts',
     'Pick a date and time and let the Studio publish the draft for you.',
   ),
+  requestUpsellData: noop,
   telemetryLogs: TELEMETRY_LOGS,
 }
 
