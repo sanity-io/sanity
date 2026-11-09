@@ -97,7 +97,7 @@ describe('VariantsMenu', () => {
 
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience…'), 'alpha')
+    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'alpha')
 
     expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
     expect(
@@ -110,7 +110,7 @@ describe('VariantsMenu', () => {
 
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience…'), 'default')
+    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'default')
 
     expect(screen.getByTestId('variant-default')).toBeInTheDocument()
     expect(
@@ -124,7 +124,7 @@ describe('VariantsMenu', () => {
 
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience…'), 'zzz')
+    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'zzz')
 
     expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
       'Nothing matches "zzz"',

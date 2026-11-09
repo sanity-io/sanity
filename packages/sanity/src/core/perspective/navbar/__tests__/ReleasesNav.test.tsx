@@ -488,7 +488,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Find a version or release'),
+            releaseMenu.getByPlaceholderText('Search versions and releases…'),
             'ACTIVE',
           )
 
@@ -513,7 +513,7 @@ describe('ReleasesNav', () => {
           const releaseMenu = within(releaseMenuElement)
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Find a version or release'),
+            releaseMenu.getByPlaceholderText('Search versions and releases…'),
             'draft',
           )
 
@@ -523,7 +523,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenu.queryByText('active Release')).toBeNull()
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
 
-          await userEvent.clear(releaseMenu.getByPlaceholderText('Find a version or release'))
+          await userEvent.clear(releaseMenu.getByPlaceholderText('Search versions and releases…'))
 
           releaseMenu.getByText('Published')
           releaseMenu.getByText('Drafts')
