@@ -536,17 +536,18 @@ export function _createOAuthAuthStore({
         // sign-in replaced the pair (a code exchange does not wait for this lock). The pair it
         // obtained is valid on the server and known only here, so revoke it rather than drop it
         // or publish it over the current one. The check and the write below are synchronous, so
-        // nothing in this tab can slip in between.
+        // nothing in this tab can slip in between. Revoked without waiting, so the lock is not
+        // held for as long as the revocation takes.
         if (epoch !== sessionEpoch()) {
           debug('refresh: logged out while the request was out, revoking the pair it returned')
-          await revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          void revokeTokens(toTokens(response, renewBeforeExpiryMs))
           outcome = 'session-ended'
           return undefined
         }
         const latest = latestTokens()
         if (latest && latest.refreshToken !== stored.refreshToken) {
           debug('refresh: pair replaced while the request was out, revoking the pair it returned')
-          await revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          void revokeTokens(toTokens(response, renewBeforeExpiryMs))
           outcome = 'adopted-other-tab'
           return latest
         }
@@ -1137,7 +1138,7 @@ export function _createOAuthAuthStore({
       // The user logged out while the code was being exchanged. The pair is valid on the server
       // and known only here, so revoke it rather than drop it.
       debug('callback: logged out during the exchange, revoking the new pair')
-      await revokeTokens(tokens)
+      void revokeTokens(tokens)
       return fail('logged out during sign-in', exchangeDurationMs)
     }
     const settle = await waitForAuthenticatedState()
