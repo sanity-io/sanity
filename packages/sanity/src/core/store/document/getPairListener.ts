@@ -338,17 +338,17 @@ export function getPairListener(
         )
         return concat(
           of({type: 'reconnect'} as ReconnectEvent),
-          client.observable
-            .request({url: '/users/me', tag: 'document.pair.reauthorize'})
-            .pipe(mergeMap(() => caught$)),
-        ).pipe(
-          catchError((checkError: unknown) => {
-            debug(
-              'Listener credential could not be restored, terminating: %s',
-              checkError instanceof Error ? checkError.message : checkError,
-            )
-            return EMPTY
-          }),
+          client.observable.request({url: '/users/me', tag: 'document.pair.reauthorize'}).pipe(
+            // Only the check: errors from the reconnected listener take the usual paths above.
+            catchError((checkError: unknown) => {
+              debug(
+                'Listener credential could not be restored, terminating: %s',
+                checkError instanceof Error ? checkError.message : checkError,
+              )
+              return EMPTY
+            }),
+            mergeMap(() => caught$),
+          ),
         )
       }
 
