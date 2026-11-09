@@ -457,6 +457,9 @@ const Select: ComponentType<{
           <DocumentGroupSet
             key={set.key}
             name={set.name}
+            // The single set shown while Content Variants is off has no bundle, and its name
+            // already carries the count.
+            count={set.bundle ? set.variants.length : undefined}
             bundle={set.bundle}
             readOnly={readOnly}
             locked={isLocked}
