@@ -89,7 +89,9 @@ export function DropdownButton(props: DropdownButtonProps) {
         ref={ref}
         selected={hasSelection}
         text={label}
-        tooltipProps={isCut ? {content: text, placement: 'bottom', portal: true} : undefined}
+        // Always wrapped, so a title that becomes cut (or stops being cut) does not remount the
+        // trigger and drop its focus; the tooltip is only switched off
+        tooltipProps={{content: text, disabled: !isCut, placement: 'bottom', portal: true}}
         tone={hasSelection ? tone : 'default'}
       />
       {hasSelection ? (

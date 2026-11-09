@@ -34,6 +34,26 @@ describe('DropdownButton', () => {
     expect(screen.getByTestId('dropdown-button-clear')).toBeInTheDocument()
   })
 
+  it('keeps the same trigger when the label becomes cut, so the trigger does not lose focus', () => {
+    const {rerender} = render(
+      <DropdownButton data-testid="pill" icon={DotIcon} text="Releases" />,
+      {
+        wrapper,
+      },
+    )
+    const trigger = screen.getByTestId('pill')
+
+    rerender(
+      <DropdownButton
+        data-testid="pill"
+        icon={DotIcon}
+        text="Spanish Festival: peru / photographers / spring"
+      />,
+    )
+
+    expect(screen.getByTestId('pill')).toBe(trigger)
+  })
+
   it('shows a short label in full', () => {
     render(<DropdownButton data-testid="pill" icon={DotIcon} text="Winter sale" />, {wrapper})
 
