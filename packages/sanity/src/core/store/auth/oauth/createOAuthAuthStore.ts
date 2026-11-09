@@ -882,9 +882,15 @@ export function _createOAuthAuthStore({
     )
   }
 
-  // Renews ahead of expiry while anything is subscribed to the state and the tab is shown.
-  // Failures are left to the invalid-session handler above, which retries on the next rejected
-  // request.
+  // Whether the tab has renewed on the schedule since it was last hidden. A hidden tab renews
+  // once: leaving just before a renewal then still leaves the full idle timeout of the refresh
+  // token, while a tab left open in the background stops renewing after that and lets the session
+  // reach its idle timeout. Reset when the tab is shown.
+  let renewedWhileHidden = false
+
+  // Renews ahead of expiry while anything is subscribed to the state: always while the tab is
+  // shown, once while it is hidden. Failures are left to the invalid-session handler above, which
+  // retries on the next rejected request.
   const scheduledRefresh$ = renewals$.pipe(
     switchMap((tokens) => {
       if (!tokens?.refreshToken) return EMPTY
@@ -893,6 +899,11 @@ export function _createOAuthAuthStore({
       return timer(delay).pipe(
         filter(() => {
           if (!isHidden()) return true
+          if (!renewedWhileHidden) {
+            renewedWhileHidden = true
+            debug('scheduled renewal due while the tab is hidden, renewing once')
+            return true
+          }
           debug('scheduled renewal due while the tab is hidden, waiting until it is shown')
           return false
         }),
@@ -909,6 +920,9 @@ export function _createOAuthAuthStore({
   // the renewal is not due; the schedule covers that.
   // `refresh` joins a renewal already in flight, so overlapping wakes start one.
   const wake$ = visible$.pipe(
+    tap(() => {
+      renewedWhileHidden = false
+    }),
     map(() => tokenStorage.get()),
     filter((tokens): tokens is OAuthTokens =>
       Boolean(tokens?.refreshToken && Date.now() >= tokens.refreshAt),

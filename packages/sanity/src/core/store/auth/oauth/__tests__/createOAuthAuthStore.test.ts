@@ -1166,10 +1166,11 @@ describe('createOAuthAuthStore', () => {
       }
     })
 
-    it('skips the scheduled renewal while the tab is hidden, and renews when it is shown', async () => {
-      // A tab left open in the background would otherwise renew forever, and the session would
-      // never reach the refresh token's idle timeout. Nothing in a hidden tab needs a fresh token
-      // on a schedule: a request with an expired one renews through the invalid-session handler.
+    it('renews once while the tab is hidden, then waits until it is shown', async () => {
+      // Renewing on a schedule forever, a tab left open in the background would keep the session
+      // from ever reaching the refresh token's idle timeout. Not renewing at all, leaving the tab
+      // just before a renewal would cut the time away short by up to one access token lifetime.
+      // One renewal per absence gives the full idle timeout after leaving, and no more.
       vi.useFakeTimers()
       try {
         localStorage.setItem(
@@ -1195,14 +1196,18 @@ describe('createOAuthAuthStore', () => {
         })
         const subscription = store.state.subscribe()
 
+        // The renewal due a minute after the tab was hidden still runs.
         await vi.advanceTimersByTimeAsync(120_000)
-        expect(endpoints.refresh).not.toHaveBeenCalled()
+        expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+
+        // The next one, an access token lifetime later, waits.
+        await vi.advanceTimersByTimeAsync(3_600_000)
+        expect(endpoints.refresh).toHaveBeenCalledTimes(1)
 
         hidden = false
         visible$.next()
         await vi.advanceTimersByTimeAsync(0)
-
-        expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+        expect(endpoints.refresh).toHaveBeenCalledTimes(2)
         subscription.unsubscribe()
       } finally {
         vi.useRealTimers()
