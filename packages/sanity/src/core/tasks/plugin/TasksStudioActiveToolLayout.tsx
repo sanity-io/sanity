@@ -23,6 +23,20 @@ const RootFlex = styled(Flex)(({theme}) => {
     }
   `
 })
+
+// Collapsed PaneLayout is its own scrollport (`overflow: auto` + `height: fill`), so the
+// tool wrapper's `overflow: hidden` alone no longer stops background scroll under the
+// fullscreen sidebar. Lock that nested scrollport while the sidebar owns the viewport.
+const ToolBox = styled(Box)<{$scrollLock: boolean}>(({$scrollLock}) =>
+  $scrollLock
+    ? css`
+        & [data-ui='PaneLayout'] {
+          overflow: hidden !important;
+        }
+      `
+    : undefined,
+)
+
 const SidebarMotionLayer = styled(Layer)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
@@ -76,9 +90,15 @@ export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
     <RootFlex height="100%">
-      <Box flexBasis="0%" flexGrow={1} height="100%" overflow={scrollLock ? 'hidden' : 'auto'}>
+      <ToolBox
+        $scrollLock={scrollLock}
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        overflow={scrollLock ? 'hidden' : 'auto'}
+      >
         {props.renderDefault(props)}
-      </Box>
+      </ToolBox>
 
       <AnimatePresence initial={false}>
         {isOpen && (
