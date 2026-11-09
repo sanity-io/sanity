@@ -30,6 +30,7 @@ export type Step =
   | {client: string; do: 'acceptCommit'}
   | ({client: string; do: 'rejectCommit'; statusCode: number} & NamedFault)
   | ({client: string; do: 'listener'} & StreamPolicyStep)
+  | {client: string; do: 'snapshots'; latencyMs: number}
   | {client: string; do: 'releaseEvents'; count?: number; order?: 'fifo' | 'reverse'}
   | ({client: string; do: 'dropEvent'} & NamedFault)
   | ({client: string; do: 'disconnect'} & NamedFault)
@@ -228,6 +229,9 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'listener':
       controls.listener = {mode: step.mode, latencyMs: step.latencyMs ?? 0}
+      break
+    case 'snapshots':
+      controls.snapshots = {latencyMs: step.latencyMs}
       break
     case 'releaseEvents':
       controls.releaseHeldEvents({count: step.count, order: step.order})

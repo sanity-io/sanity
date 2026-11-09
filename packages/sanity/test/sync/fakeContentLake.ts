@@ -38,6 +38,10 @@ export interface ListenerPolicy {
   latencyMs: number
 }
 
+export interface SnapshotPolicy {
+  latencyMs: number
+}
+
 export interface TransactionRecord {
   transactionId: string
   identity: string
@@ -79,6 +83,7 @@ interface Connection {
 export interface ClientControls {
   commits: CommitPolicy
   listener: ListenerPolicy
+  snapshots: SnapshotPolicy
   acceptNextCommit: () => void
   rejectNextCommit: (statusCode: number, description?: string) => void
   releaseHeldEvents: (options?: {count?: number; order?: 'fifo' | 'reverse'}) => void
@@ -152,6 +157,7 @@ export class FakeContentLake {
     const controls: ClientControls = {
       commits: {mode: 'auto', latencyMs: 0},
       listener: {mode: 'auto', latencyMs: 0},
+      snapshots: {latencyMs: 0},
       acceptNextCommit: () => this.settleNextCommit(clientId, undefined),
       rejectNextCommit: (statusCode, description = `Rejected with ${statusCode}`) =>
         this.settleNextCommit(clientId, httpError(statusCode, mutationError(description))),
@@ -188,6 +194,13 @@ export class FakeContentLake {
 
   getDocuments(ids: string[]): Array<SanityDocument | null> {
     return ids.map((id) => structuredClone(this.get(id)))
+  }
+
+  /** Reads the documents once the client's snapshot latency has passed, so commits can land in between. */
+  readSnapshots(clientId: string, ids: string[]): Promise<Array<SanityDocument | null>> {
+    const {latencyMs} = this.client(clientId).snapshots
+    if (latencyMs === 0) return Promise.resolve(this.getDocuments(ids))
+    return new Promise((resolve) => setTimeout(() => resolve(this.getDocuments(ids)), latencyMs))
   }
 
   listen(clientId: string, ids: string[]): Observable<RawListenerEvent> {

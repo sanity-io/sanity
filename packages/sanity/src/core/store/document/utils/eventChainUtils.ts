@@ -13,7 +13,7 @@ function split<T>(array: T[], index: number) {
   return [array.slice(0, index), array.slice(index)]
 }
 
-export function toOrderedChains<T extends {previousRev: string; resultRev: string}>(events: T[]) {
+export function toOrderedChains<T extends {previousRev?: string; resultRev: string}>(events: T[]) {
   const parents: Record<string, T | undefined> = {}
 
   events.forEach((event) => {

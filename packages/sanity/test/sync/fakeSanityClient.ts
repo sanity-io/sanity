@@ -45,7 +45,7 @@ export function createFakeSanityClient(options: FakeClientOptions): SanityClient
     observable: {
       listen: (_query: string, params: {ids: string[]}): Observable<RawListenerEvent> =>
         lake.listen(clientId, params.ids),
-      getDocuments: (ids: string[]) => defer(() => from(Promise.resolve(lake.getDocuments(ids)))),
+      getDocuments: (ids: string[]) => defer(() => from(lake.readSnapshots(clientId, ids))),
       action: (actions: Action | Action[], actionOptions?: {transactionId?: string}) =>
         defer(() =>
           from(

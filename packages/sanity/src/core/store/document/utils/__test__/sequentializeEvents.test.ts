@@ -16,11 +16,13 @@ function mutationEvent({
   resultRev,
   mutations,
   messageReceivedAt,
+  transition = 'update',
 }: {
-  previousRev: string
+  previousRev?: string
   resultRev: string
   mutations: MutationPayload[]
   messageReceivedAt: string
+  transition?: MutationEvent['transition']
 }): MutationEvent {
   return {
     type: 'mutation',
@@ -30,7 +32,7 @@ function mutationEvent({
     mutations,
     previousRev: previousRev,
     resultRev: resultRev,
-    transition: 'update',
+    transition,
     transactionCurrentEvent: 1,
     transactionTotalEvents: 1,
     visibility: 'transaction',
@@ -354,4 +356,81 @@ test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', a
   // the first gap is emitted by the third event and there's 50ms between each event emitting
   // so with a deadline of 200, the DeadlineExceededError should be thrown around the 350ms mark.
   expect(350 - new Date().getTime() - start.getTime()).toBeLessThan(50)
+})
+
+function documentExistsAfter(events: ListenerEvent[]): boolean {
+  return events.reduce((exists, event) => {
+    if (event.type === 'snapshot') return event.document !== null
+    if (event.type === 'mutation' && event.transition === 'appear') return true
+    if (event.type === 'mutation' && event.transition === 'disappear') return false
+    return exists
+  }, false)
+}
+
+const nullSnapshot = {type: 'snapshot', documentId: 'test', document: null} as const
+
+const create = mutationEvent({
+  resultRev: 'one',
+  transition: 'appear',
+  mutations: [{create: {_id: 'test', _type: 'test'}}],
+  messageReceivedAt: now(),
+})
+
+const update = mutationEvent({
+  previousRev: 'one',
+  resultRev: 'two',
+  mutations: [{patch: {set: {name: 'two'}}}],
+  messageReceivedAt: now(),
+})
+
+function deleteAfter(previousRev: string) {
+  return mutationEvent({
+    previousRev,
+    resultRev: `delete-after-${previousRev}`,
+    transition: 'disappear',
+    mutations: [{delete: {id: 'test'}}],
+    messageReceivedAt: now(),
+  })
+}
+
+function sequentialize(events: ListenerEvent[]) {
+  return lastValueFrom(
+    from(events).pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray()),
+  )
+}
+
+// Waits out the 30s deadline and resyncs: safe but slow. A shorter grace period needs onSyncErrorRecovery data.
+test.fails('a delete committed while the snapshot was read ends consistent with the server', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('one')])
+
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test.fails('an update and a delete committed while the snapshot was read end consistent with the server', async () => {
+  const emitted = await sequentialize([nullSnapshot, update, deleteAfter('two')])
+
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test('a create and its delete arriving reversed after a null snapshot are both applied', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('one'), create])
+
+  expect(emitted.map((event) => event.type === 'mutation' && event.transition)).toEqual([
+    false,
+    'appear',
+    'disappear',
+  ])
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test('a reversed create, update and delete after a null snapshot are applied in order', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('two'), create, update])
+
+  expect(emitted.map((event) => event.type === 'mutation' && event.transition)).toEqual([
+    false,
+    'appear',
+    'update',
+    'disappear',
+  ])
+  expect(documentExistsAfter(emitted)).toBe(false)
 })
