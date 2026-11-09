@@ -1,7 +1,6 @@
-import {useToast} from '@sanity/ui/toast'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useEffect} from 'react'
-import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore, useTranslation} from 'sanity'
+import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {fromObservable} from 'xstate'
 
@@ -12,7 +11,6 @@ import {defineResolveInitialUrlActor} from './actors/resolve-initial-url'
 import {defineResolvePreviewModeActor} from './actors/resolve-preview-mode'
 import {defineResolvePreviewModeUrlActor} from './actors/resolve-preview-mode-url'
 import {API_VERSION} from './constants'
-import {presentationLocaleNamespace} from './i18n'
 import {previewUrlMachine, type PreviewUrlRef} from './machines/preview-url'
 import {type PreviewUrlAllowOption, type PreviewUrlOption} from './types'
 import {usePresentationPerspective} from './usePresentationPerspective'
@@ -31,8 +29,6 @@ export function usePreviewUrlActorRef(
   const router = useRouter()
   const routerSearchParams = new URLSearchParams(router.state._searchParams)
   const previewSearchParam = routerSearchParams.get('preview')
-  const {push: pushToast} = useToast()
-  const {t} = useTranslation(presentationLocaleNamespace)
 
   // TODO: Do we need to pass the scheduled draft perspective here?
   // Scheduled draft are a "local" perspective which applies only when the user is in the document pane and has selected the scheduled draft.
@@ -41,16 +37,6 @@ export function usePreviewUrlActorRef(
 
   const actorRef = useActorRef(
     previewUrlMachine.provide({
-      actions: {
-        'notify preview will likely fail': () =>
-          pushToast({
-            id: 'preview-url-secret.missing-grants',
-            closable: true,
-            status: 'error',
-            duration: Infinity,
-            title: t('preview-url-secret.missing-grants'),
-          }),
-      },
       actors: {
         'create preview secret': defineCreatePreviewSecretActor({client, currentUserId}),
         'read shared preview secret': defineReadSharedSecretActor({client}),

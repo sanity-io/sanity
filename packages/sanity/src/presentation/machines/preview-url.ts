@@ -25,6 +25,12 @@ interface Context {
   previewAccessSharingUpdatePermission: PermissionCheckResult | null
   previewUrlSecretPermission: PermissionCheckResult | null
   previewMode: PreviewUrlPreviewMode | null
+  /**
+   * Preview mode needs a secret, and this user can neither create one nor use a shared one.
+   * The preview iframe stays unloaded so a failed draft-mode request is not reported as a
+   * connection problem.
+   */
+  previewBlockedByGrants: boolean
 }
 
 type SetPreviewSearchParamEvent = {
@@ -49,6 +55,29 @@ export const previewUrlSecretDocument = {
   _type: schemaType,
 }
 
+/**
+ * A 403 from the Content Lake means this user is not allowed to create or read the preview secret.
+ * The grants check is supposed to catch that first; this covers a stale or wrong check.
+ */
+function isInsufficientPermissions(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false
+  }
+  if ('statusCode' in error && error.statusCode === 403) {
+    return true
+  }
+  if (
+    'response' in error &&
+    typeof error.response === 'object' &&
+    error.response !== null &&
+    'statusCode' in error.response &&
+    error.response.statusCode === 403
+  ) {
+    return true
+  }
+  return false
+}
+
 export const previewUrlMachine = setup({
   types: {} as {
     context: Context
@@ -58,8 +87,20 @@ export const previewUrlMachine = setup({
   },
   actions: {
     'notify preview will likely fail': log(
-      `Missing permissions to create preview secret, or read shared preview secret. Preview will likely fail loading.`,
+      `The current role cannot create a preview URL secret, and no shared preview secret is available. The preview was not loaded.`,
     ),
+    'block preview for missing grants': assign({
+      previewUrl: null,
+      previewMode: null,
+      previewUrlSecret: null,
+      previewBlockedByGrants: true,
+      error: null,
+    }),
+    'restart preview resolution': assign(({context}) => ({
+      previewBlockedByGrants: false,
+      // Drop a URL from a blocked attempt so the tool shows a loader instead of the previous page
+      previewUrl: context.previewBlockedByGrants ? null : context.previewUrl,
+    })),
     'assign preview search param': assign({
       previewSearchParam: (_, params: {previewSearchParam: string | null}) =>
         params.previewSearchParam,
@@ -200,6 +241,7 @@ export const previewUrlMachine = setup({
     previewAccessSharingUpdatePermission: null,
     previewUrlSecretPermission: null,
     previewMode: null,
+    previewBlockedByGrants: false,
   }),
 
   invoke: [
@@ -380,10 +422,13 @@ export const previewUrlMachine = setup({
       on: {
         'set preview search param': {
           guard: 'search param has new origin',
-          actions: {
-            type: 'assign preview search param',
-            params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
-          },
+          actions: [
+            {
+              type: 'assign preview search param',
+              params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
+            },
+            'restart preview resolution',
+          ],
           target: '#loop',
           reenter: true,
         },
@@ -427,14 +472,7 @@ export const previewUrlMachine = setup({
               type: 'has preview mode without permissions',
               params: ({event}) => event.output,
             },
-            actions: [
-              assign({
-                previewUrl: ({context}) => context.initialUrl,
-                previewMode: null,
-                previewUrlSecret: null,
-              }),
-              'notify preview will likely fail',
-            ],
+            actions: ['block preview for missing grants', 'notify preview will likely fail'],
             target: 'success',
           },
           {
@@ -451,13 +489,17 @@ export const previewUrlMachine = setup({
     },
 
     success: {
+      id: 'ready',
       on: {
         'set preview search param': {
           guard: 'search param has new origin',
-          actions: {
-            type: 'assign preview search param',
-            params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
-          },
+          actions: [
+            {
+              type: 'assign preview search param',
+              params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
+            },
+            'restart preview resolution',
+          ],
           target: '#loop',
           reenter: true,
         },
@@ -468,10 +510,13 @@ export const previewUrlMachine = setup({
       on: {
         'set preview search param': {
           guard: 'search param has new origin',
-          actions: {
-            type: 'assign preview search param',
-            params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
-          },
+          actions: [
+            {
+              type: 'assign preview search param',
+              params: ({event}) => ({previewSearchParam: event.previewSearchParam}),
+            },
+            'restart preview resolution',
+          ],
           target: '#loop',
           reenter: true,
         },
@@ -481,16 +526,23 @@ export const previewUrlMachine = setup({
         createPreviewSecret: {
           invoke: {
             src: 'create preview secret',
-            onError: {
-              target: 'error',
-              actions: {
-                type: 'assign error',
-                params: ({event}) => ({
-                  message: 'Failed to create preview secret',
-                  error: event.error,
-                }),
+            onError: [
+              {
+                guard: ({event}) => isInsufficientPermissions(event.error),
+                actions: ['block preview for missing grants', 'notify preview will likely fail'],
+                target: '#ready',
               },
-            },
+              {
+                target: 'error',
+                actions: {
+                  type: 'assign error',
+                  params: ({event}) => ({
+                    message: 'Failed to create preview secret',
+                    error: event.error,
+                  }),
+                },
+              },
+            ],
             onDone: {
               target: 'resolvePreviewUrl',
               actions: assign({previewUrlSecret: ({event}) => event.output}),
@@ -501,25 +553,49 @@ export const previewUrlMachine = setup({
         readShareAccess: {
           invoke: {
             src: 'read shared preview secret',
-            onError: {
-              target: 'error',
-              actions: {
-                type: 'assign error',
-                params: ({event}) => ({
-                  message: 'Failed to read shared preview secret',
-                  error: event.error,
+            onError: [
+              {
+                guard: ({event}) => isInsufficientPermissions(event.error),
+                actions: ['block preview for missing grants', 'notify preview will likely fail'],
+                target: '#ready',
+              },
+              {
+                target: 'error',
+                actions: {
+                  type: 'assign error',
+                  params: ({event}) => ({
+                    message: 'Failed to read shared preview secret',
+                    error: event.error,
+                  }),
+                },
+              },
+            ],
+            onDone: [
+              {
+                // A Viewer can read the share-access document even when sharing is off, which
+                // resolves to null. Loading the enable route with that secret is what the frontend
+                // rejects as "Invalid secret", and the overlays timeout then looks like a connection error.
+                guard: ({event}) => typeof event.output === 'string' && event.output.length > 0,
+                target: 'resolvePreviewUrl',
+                actions: assign({
+                  previewBlockedByGrants: false,
+                  previewUrlSecret: ({event}) => {
+                    const secret = event.output
+                    if (typeof secret !== 'string' || secret.length === 0) {
+                      return null
+                    }
+                    return {
+                      secret,
+                      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 60 * 24),
+                    }
+                  },
                 }),
               },
-            },
-            onDone: {
-              target: 'resolvePreviewUrl',
-              actions: assign({
-                previewUrlSecret: ({event}) => ({
-                  secret: event.output!,
-                  expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 60 * 24),
-                }),
-              }),
-            },
+              {
+                actions: ['block preview for missing grants', 'notify preview will likely fail'],
+                target: '#ready',
+              },
+            ],
           },
           tags: ['busy'],
         },
@@ -543,7 +619,10 @@ export const previewUrlMachine = setup({
             },
             onDone: {
               target: 'success',
-              actions: assign({previewUrl: ({event}) => event.output}),
+              actions: assign({
+                previewUrl: ({event}) => event.output,
+                previewBlockedByGrants: false,
+              }),
             },
           },
           tags: ['busy'],
