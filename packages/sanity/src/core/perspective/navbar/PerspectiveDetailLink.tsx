@@ -69,7 +69,6 @@ export function usePerspectiveDetailLink({selected}: {selected: boolean}) {
       onMouseEnter: handleLinkMouseEnter,
       onMouseLeave: handleLinkMouseLeave,
       ref: linkRef,
-      selected,
     },
   }
 }
@@ -107,8 +106,6 @@ export function PerspectiveDetailLink(
     'onMouseEnter': () => void
     'onMouseLeave': () => void
     'onNavigate'?: () => void
-    /** Whether the row's perspective is the selected one. The link then takes its text colour. */
-    'selected': boolean
   } & PaddingProps &
     RefAttributes<HTMLAnchorElement>,
 ) {
@@ -123,16 +120,16 @@ export function PerspectiveDetailLink(
     onMouseLeave,
     onNavigate,
     ref,
-    selected,
     ...paddingProps
   } = props
   const {href, onClick} = useIntentLink({intent, params, onClick: onNavigate})
   const {color} = useTheme_v2()
   // The link sits beside the menu item, not in it, so it does not inherit the colour the item
-  // takes when selected. It reads the same theme value: a v4 menu item's `selected` colours
-  const selectedStyle = selected
-    ? ({'--detail-link-selected-fg': color.selectable.default.selected.fg} as CSSProperties)
-    : undefined
+  // takes when the menu marks it selected (the active item, under the pointer or keyboard focus).
+  // The link's styles read the same theme value from this variable while the item is selected.
+  const linkStyle = {
+    '--detail-link-selected-fg': color.selectable.default.selected.fg,
+  } as CSSProperties
 
   return (
     // Centred on the row, like the menu item's own right icon
@@ -143,7 +140,6 @@ export function PerspectiveDetailLink(
           aria-label={ariaLabel}
           as="a"
           className={detailLink}
-          data-selected={selected ? '' : undefined}
           data-testid={testId}
           href={href}
           onClick={onClick}
@@ -151,7 +147,7 @@ export function PerspectiveDetailLink(
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           ref={ref}
-          style={selectedStyle}
+          style={linkStyle}
           // Menu items leave the tab order to the menu; the right arrow key reaches the link
           tabIndex={-1}
         />
