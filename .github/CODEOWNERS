@@ -16,4 +16,4 @@
 *.telemetry.ts @sanity-io/data-eng
 
 # Examples
-/examples/functions @kmelve @kenjonespizza @iamkevingreen
+/examples/functions @kenjonespizza @iamkevingreen
