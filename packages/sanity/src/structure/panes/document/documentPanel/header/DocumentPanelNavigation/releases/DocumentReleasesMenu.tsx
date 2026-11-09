@@ -155,7 +155,7 @@ export function DocumentReleasesMenu() {
       button={
         <DropdownButton
           data-testid="document-releases-menu-button"
-          icon={selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} /> : DotIcon}
+          icon={selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} size="small" /> : DotIcon}
           onClear={selectedRelease ? handleClear : undefined}
           tone={selectedRelease ? getReleaseTone(selectedRelease) : undefined}
           text={

@@ -51,4 +51,8 @@ export const dropdownButtonClear = css({
   '&&:hover': {
     zIndex: 2,
   },
+  // The navbar perspective chips draw their × at this scale; the header pills match them
+  '& [data-sanity-icon]': {
+    transform: 'scale(0.65)',
+  },
 })

@@ -275,7 +275,7 @@ export function DocumentVariantsMenu() {
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
-            icon={<RhombusIcon className={pillVariantIcon} size="small" />}
+            icon={<RhombusIcon className={pillVariantIcon} size="large" />}
             onClear={selectedVariant ? handleSelectDefault : undefined}
             tone="suggest"
             text={
