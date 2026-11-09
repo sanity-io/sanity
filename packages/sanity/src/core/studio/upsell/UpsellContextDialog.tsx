@@ -46,10 +46,8 @@ function OpenUpsellContextDialog({contextValue, interpolation}: UpsellContextDia
 /**
  * Rendered in place of an upsell dialog whose content request failed: says so with a toast and
  * closes the dialog again, so nothing stays open with nothing in it.
- *
- * @internal
  */
-export function UpsellContentUnavailable({onClose}: {onClose: () => void}) {
+function UpsellContentUnavailable({onClose}: {onClose: () => void}) {
   const toast = useToast()
   const {t} = useTranslation()
 
