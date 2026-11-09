@@ -1,51 +1,13 @@
 import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
 import {studioTheme as defaults} from '@sanity/ui'
 
-import {type StudioTheme} from '../types'
+import {type LegacyThemeDeprecatedFlags, type StudioTheme} from '../types'
 import {buildColor} from './color'
 import {buildFonts} from './fonts'
 import {_isDark} from './helpers'
 import {buildLegacyPalette} from './palette'
 import {buildLegacyTones} from './tones'
 import {type LegacyThemeProps} from './types'
-
-/**
- * Flags tracking customer usage of deprecated `--screen-*-break` keys.
- * Set once per session when a customer explicitly passes these keys to buildLegacyTheme.
- * @internal
- */
-export interface LegacyThemeDeprecatedFlags {
-  screenMediumBreak: boolean
-  screenDefaultBreak: boolean
-  screenLargeBreak: boolean
-  screenXlargeBreak: boolean
-}
-
-const deprecatedScreenBreakFlags: LegacyThemeDeprecatedFlags = {
-  screenMediumBreak: false,
-  screenDefaultBreak: false,
-  screenLargeBreak: false,
-  screenXlargeBreak: false,
-}
-
-/**
- * Returns the flags for deprecated `--screen-*-break` keys that customers have used.
- * @internal
- */
-export function getLegacyThemeDeprecatedFlags(): LegacyThemeDeprecatedFlags {
-  return {...deprecatedScreenBreakFlags}
-}
-
-/**
- * Resets the deprecated flags. Only for testing.
- * @internal
- */
-export function _resetLegacyThemeDeprecatedFlags(): void {
-  deprecatedScreenBreakFlags.screenMediumBreak = false
-  deprecatedScreenBreakFlags.screenDefaultBreak = false
-  deprecatedScreenBreakFlags.screenLargeBreak = false
-  deprecatedScreenBreakFlags.screenXlargeBreak = false
-}
 
 /**
  * Build a Sanity UI theme from legacy CSS properties.
@@ -72,18 +34,13 @@ export function _resetLegacyThemeDeprecatedFlags(): void {
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
-  // Track customer usage of deprecated --screen-*-break keys
-  if ('--screen-medium-break' in partialLegacyTheme) {
-    deprecatedScreenBreakFlags.screenMediumBreak = true
-  }
-  if ('--screen-default-break' in partialLegacyTheme) {
-    deprecatedScreenBreakFlags.screenDefaultBreak = true
-  }
-  if ('--screen-large-break' in partialLegacyTheme) {
-    deprecatedScreenBreakFlags.screenLargeBreak = true
-  }
-  if ('--screen-xlarge-break' in partialLegacyTheme) {
-    deprecatedScreenBreakFlags.screenXlargeBreak = true
+  // Track customer usage of deprecated --screen-*-break keys on the theme object
+  // This avoids module-level state issues in multi-workspace setups
+  const deprecatedKeys: LegacyThemeDeprecatedFlags = {
+    screenMediumBreak: '--screen-medium-break' in partialLegacyTheme,
+    screenDefaultBreak: '--screen-default-break' in partialLegacyTheme,
+    screenLargeBreak: '--screen-large-break' in partialLegacyTheme,
+    screenXlargeBreak: '--screen-xlarge-break' in partialLegacyTheme,
   }
 
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
@@ -99,6 +56,7 @@ export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>):
   return {
     __dark: _isDark(color.light.default.base.bg, color.light.default.base.fg),
     __legacy: true,
+    __deprecatedLegacyThemeKeys: deprecatedKeys,
     color,
     fonts,
   }

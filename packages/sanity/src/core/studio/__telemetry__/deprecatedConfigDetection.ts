@@ -2,7 +2,7 @@ import {type Schema} from '@sanity/types'
 
 import {flattenConfig} from '../../config/flattenConfig'
 import {type PluginOptions, type WorkspaceOptions} from '../../config/types'
-import {getLegacyThemeDeprecatedFlags} from '../../theme/_legacy/theme'
+import {type LegacyThemeDeprecatedFlags} from '../../theme/types'
 
 /**
  * Flags for deprecated config options that a customer might set.
@@ -212,7 +212,9 @@ export function detectDeprecatedSchemaOptions(
 }
 
 function checkFieldForDeprecatedOptions(
-  field: {type?: {name?: string; options?: unknown; of?: unknown[]; to?: unknown[]}},
+  field: {
+    type?: {name?: string; options?: unknown; of?: unknown[]; to?: unknown[]; fields?: unknown[]}
+  },
   flags: Partial<DeprecatedConfigFlags>,
 ): void {
   const fieldType = field.type
@@ -225,6 +227,16 @@ function checkFieldForDeprecatedOptions(
   // Check cross-dataset reference fields for __experimental_search
   if (fieldType?.name === 'crossDatasetReference' && fieldType.to) {
     checkCrossDatasetReferenceForDeprecatedOptions(fieldType.to, flags)
+  }
+
+  // Recursively check nested object fields
+  if (fieldType?.name === 'object' && fieldType.fields) {
+    const nestedFields = fieldType.fields as Array<{
+      type?: {name?: string; options?: unknown; of?: unknown[]; to?: unknown[]; fields?: unknown[]}
+    }>
+    for (const nestedField of nestedFields) {
+      checkFieldForDeprecatedOptions(nestedField, flags)
+    }
   }
 }
 
@@ -243,12 +255,28 @@ function checkArrayTypeForDeprecatedOptions(
 
   // Also check nested types within the array
   const ofTypes = arrayType.of as
-    | Array<{type?: {name?: string; options?: unknown; to?: unknown[]}}>
+    | Array<{type?: {name?: string; options?: unknown; to?: unknown[]; fields?: unknown[]}}>
     | undefined
   if (ofTypes) {
     for (const ofType of ofTypes) {
+      // Check cross-dataset references
       if (ofType.type?.name === 'crossDatasetReference' && ofType.type.to) {
         checkCrossDatasetReferenceForDeprecatedOptions(ofType.type.to, flags)
+      }
+      // Recursively check nested object types within arrays
+      if (ofType.type?.name === 'object' && ofType.type.fields) {
+        const nestedFields = ofType.type.fields as Array<{
+          type?: {
+            name?: string
+            options?: unknown
+            of?: unknown[]
+            to?: unknown[]
+            fields?: unknown[]
+          }
+        }>
+        for (const nestedField of nestedFields) {
+          checkFieldForDeprecatedOptions(nestedField, flags)
+        }
       }
     }
   }
@@ -319,13 +347,24 @@ export function detectDeprecatedPresentationOptions(
 
 /**
  * Detects deprecated buildLegacyTheme options (--screen-*-break keys).
- * These are tracked at the module level when buildLegacyTheme is called.
+ * Reads from the `__deprecatedLegacyThemeKeys` property stored on the theme object
+ * by buildLegacyTheme, avoiding module-level state in multi-workspace setups.
  *
  * @internal
  */
-export function detectDeprecatedLegacyThemeOptions(): Partial<DeprecatedConfigFlags> {
-  const legacyFlags = getLegacyThemeDeprecatedFlags()
+export function detectDeprecatedLegacyThemeOptions(theme: unknown): Partial<DeprecatedConfigFlags> {
   const flags: Partial<DeprecatedConfigFlags> = {}
+
+  if (typeof theme !== 'object' || theme === null) {
+    return flags
+  }
+
+  const themeObj = theme as {__deprecatedLegacyThemeKeys?: LegacyThemeDeprecatedFlags}
+  const legacyFlags = themeObj.__deprecatedLegacyThemeKeys
+
+  if (!legacyFlags) {
+    return flags
+  }
 
   if (legacyFlags.screenMediumBreak) {
     flags.deprecatedLegacyThemeScreenMediumBreak = true

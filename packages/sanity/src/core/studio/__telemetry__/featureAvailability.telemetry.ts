@@ -116,10 +116,10 @@ export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedCo
   const theme = (workspace as unknown as {theme?: unknown}).theme
   if (theme && typeof theme === 'object') {
     Object.assign(flags, detectDeprecatedThemeOptions(theme))
+    // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
+    // These are stored on the theme object by buildLegacyTheme
+    Object.assign(flags, detectDeprecatedLegacyThemeOptions(theme))
   }
-
-  // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
-  Object.assign(flags, detectDeprecatedLegacyThemeOptions())
 
   // Detect deprecated presentation tool options (check, disable, unstable_showUnsafeShareUrl)
   Object.assign(flags, detectDeprecatedPresentationOptions(workspace.tools))

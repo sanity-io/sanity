@@ -1,7 +1,6 @@
-import {describe, expect, it, beforeEach} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
 import {type WorkspaceOptions} from '../../../config/types'
-import {_resetLegacyThemeDeprecatedFlags} from '../../../theme/_legacy/theme'
 import {
   createEmptyDeprecatedConfigFlags,
   detectDeprecatedLegacyThemeOptions,
@@ -12,10 +11,6 @@ import {
 } from '../deprecatedConfigDetection'
 
 describe('deprecatedConfigDetection', () => {
-  beforeEach(() => {
-    _resetLegacyThemeDeprecatedFlags()
-  })
-
   describe('createEmptyDeprecatedConfigFlags', () => {
     it('returns all flags as false', () => {
       const flags = createEmptyDeprecatedConfigFlags()
@@ -229,12 +224,71 @@ describe('deprecatedConfigDetection', () => {
   })
 
   describe('detectDeprecatedLegacyThemeOptions', () => {
-    it('returns empty flags when buildLegacyTheme has not been called', () => {
-      const flags = detectDeprecatedLegacyThemeOptions()
+    it('returns empty flags when theme has no __deprecatedLegacyThemeKeys', () => {
+      const theme = {color: {}, fonts: {}}
+      const flags = detectDeprecatedLegacyThemeOptions(theme)
       expect(flags.deprecatedLegacyThemeScreenMediumBreak).toBeUndefined()
       expect(flags.deprecatedLegacyThemeScreenDefaultBreak).toBeUndefined()
       expect(flags.deprecatedLegacyThemeScreenLargeBreak).toBeUndefined()
       expect(flags.deprecatedLegacyThemeScreenXlargeBreak).toBeUndefined()
+    })
+
+    it('detects deprecated screen medium break', () => {
+      const theme = {
+        __deprecatedLegacyThemeKeys: {
+          screenMediumBreak: true,
+          screenDefaultBreak: false,
+          screenLargeBreak: false,
+          screenXlargeBreak: false,
+        },
+      }
+      const flags = detectDeprecatedLegacyThemeOptions(theme)
+      expect(flags.deprecatedLegacyThemeScreenMediumBreak).toBe(true)
+    })
+
+    it('detects deprecated screen default break', () => {
+      const theme = {
+        __deprecatedLegacyThemeKeys: {
+          screenMediumBreak: false,
+          screenDefaultBreak: true,
+          screenLargeBreak: false,
+          screenXlargeBreak: false,
+        },
+      }
+      const flags = detectDeprecatedLegacyThemeOptions(theme)
+      expect(flags.deprecatedLegacyThemeScreenDefaultBreak).toBe(true)
+    })
+
+    it('detects deprecated screen large break', () => {
+      const theme = {
+        __deprecatedLegacyThemeKeys: {
+          screenMediumBreak: false,
+          screenDefaultBreak: false,
+          screenLargeBreak: true,
+          screenXlargeBreak: false,
+        },
+      }
+      const flags = detectDeprecatedLegacyThemeOptions(theme)
+      expect(flags.deprecatedLegacyThemeScreenLargeBreak).toBe(true)
+    })
+
+    it('detects deprecated screen xlarge break', () => {
+      const theme = {
+        __deprecatedLegacyThemeKeys: {
+          screenMediumBreak: false,
+          screenDefaultBreak: false,
+          screenLargeBreak: false,
+          screenXlargeBreak: true,
+        },
+      }
+      const flags = detectDeprecatedLegacyThemeOptions(theme)
+      expect(flags.deprecatedLegacyThemeScreenXlargeBreak).toBe(true)
+    })
+
+    it('handles non-object theme', () => {
+      expect(detectDeprecatedLegacyThemeOptions(null)).toEqual({})
+      expect(detectDeprecatedLegacyThemeOptions(undefined)).toEqual({})
+      expect(detectDeprecatedLegacyThemeOptions('string')).toEqual({})
     })
   })
 
@@ -439,6 +493,119 @@ describe('deprecatedConfigDetection', () => {
         {} as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0],
       )
       expect(Object.keys(flags).length).toBe(0)
+    })
+
+    it('detects deprecated array direction in nested object fields', () => {
+      const mockSchema = {
+        getTypeNames: () => ['testDoc'],
+        get: (name: string) => {
+          if (name === 'testDoc') {
+            return {
+              type: {name: 'document'},
+              fields: [
+                {
+                  type: {
+                    name: 'object',
+                    fields: [
+                      {
+                        type: {
+                          name: 'array',
+                          options: {direction: 'horizontal'},
+                          of: [],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }
+          }
+          return undefined
+        },
+      } as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0]
+
+      const flags = detectDeprecatedSchemaOptions(mockSchema)
+      expect(flags.deprecatedArrayOptionsDirection).toBe(true)
+    })
+
+    it('detects deprecated treeEditing in deeply nested object fields', () => {
+      const mockSchema = {
+        getTypeNames: () => ['testDoc'],
+        get: (name: string) => {
+          if (name === 'testDoc') {
+            return {
+              type: {name: 'document'},
+              fields: [
+                {
+                  type: {
+                    name: 'object',
+                    fields: [
+                      {
+                        type: {
+                          name: 'object',
+                          fields: [
+                            {
+                              type: {
+                                name: 'array',
+                                options: {treeEditing: true},
+                                of: [],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }
+          }
+          return undefined
+        },
+      } as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0]
+
+      const flags = detectDeprecatedSchemaOptions(mockSchema)
+      expect(flags.deprecatedArrayOptionsTreeEditing).toBe(true)
+    })
+
+    it('detects deprecated array direction in object types within arrays', () => {
+      const mockSchema = {
+        getTypeNames: () => ['testDoc'],
+        get: (name: string) => {
+          if (name === 'testDoc') {
+            return {
+              type: {name: 'document'},
+              fields: [
+                {
+                  type: {
+                    name: 'array',
+                    of: [
+                      {
+                        type: {
+                          name: 'object',
+                          fields: [
+                            {
+                              type: {
+                                name: 'array',
+                                options: {direction: 'vertical'},
+                                of: [],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }
+          }
+          return undefined
+        },
+      } as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0]
+
+      const flags = detectDeprecatedSchemaOptions(mockSchema)
+      expect(flags.deprecatedArrayOptionsDirection).toBe(true)
     })
   })
 })
