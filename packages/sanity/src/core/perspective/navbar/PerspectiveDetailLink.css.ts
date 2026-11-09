@@ -21,13 +21,27 @@ export const detailLinkContainer = css({
   '@media (hover: none)': {opacity: 1},
 })
 
-/** Only the link takes the pointer, so the container's padding still belongs to the menu item. */
+/**
+ * Only the link takes the pointer, so the container's padding still belongs to the menu item.
+ *
+ * A ui5 tertiary button paints `--backdrop` at rest, which only a ui5 surface defines. These menus
+ * are `@sanity/ui` v4, so the variable resolves to an unrelated colour further up the page. A
+ * transparent rest background lets the button sit on the row in every state (hovered, selected),
+ * and its hover still blends ui5's grey into that. Doubled to beat `.sui-Button` on specificity.
+ */
 export const detailLink = css({
-  pointerEvents: 'auto',
+  '&&': {
+    '--background-color': 'transparent',
+    'pointerEvents': 'auto',
+  },
 })
 
-/** Reserves the link's width only; the container places the link vertically. */
+/**
+ * Reserves the link's width only; the container places the link vertically. 25px is a ui5
+ * `IconButton` at regular density (a 17px icon box and 4px padding on each side);
+ * `PerspectiveDetailLink.browser.test.tsx` checks the two stay equal.
+ */
 export const detailLinkSpace = css({
+  width: '25px',
   height: 0,
-  visibility: 'hidden',
 })
