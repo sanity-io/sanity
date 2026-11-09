@@ -70,7 +70,7 @@ function VersionCount(props: {bundleTitles: string[]}) {
       placement="top"
       portal
     >
-      <Flex alignItems="center" gap={1}>
+      <Flex alignItems="center" gap={2}>
         <Text muted size={1} className={versionCount} data-testid="variant-version-count">
           {bundleTitles.length}
         </Text>
