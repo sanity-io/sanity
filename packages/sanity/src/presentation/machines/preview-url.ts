@@ -179,12 +179,14 @@ export const previewUrlMachine = setup({
       )
     },
     'search param has new origin': ({context, event}) => {
-      if (!context.previewUrl || !event.previewSearchParam) {
+      // After a grants block, previewUrl is null; fall back to initialUrl so a new origin can re-resolve.
+      const currentUrl = context.previewUrl ?? context.initialUrl
+      if (!currentUrl || !event.previewSearchParam) {
         return false
       }
       try {
-        const previewSearchParamUrl = new URL(event.previewSearchParam, context.previewUrl)
-        return context.previewUrl.origin !== previewSearchParamUrl.origin
+        const previewSearchParamUrl = new URL(event.previewSearchParam, currentUrl)
+        return currentUrl.origin !== previewSearchParamUrl.origin
       } catch {
         return false
       }
