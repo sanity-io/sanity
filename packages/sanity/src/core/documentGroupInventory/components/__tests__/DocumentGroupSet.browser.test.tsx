@@ -7,6 +7,7 @@ import {page, userEvent} from 'vitest/browser'
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
+import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type Variant} from '../../machines/selectionMachine'
 import {type ServedVersion} from '../../utils/resolveServedVersion'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
@@ -67,7 +68,9 @@ function SetHarness({
   locked,
   editingId,
   servedVersion,
+  count,
 }: {
+  count?: number
   editingId?: string
   servedVersion?: ServedVersion
   selectedIds?: ReadonlySet<string>
@@ -82,6 +85,7 @@ function SetHarness({
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <DocumentGroupSet
         name={SET_NAME}
+        count={count}
         bundle={{type: 'perspective', perspective: activeASAPRelease}}
         selectedIds={selectedIds}
         checked={checked}
@@ -112,6 +116,69 @@ function SetHarness({
       </DocumentGroupSet>
     </TestWrapper>
   )
+}
+
+function stub(id: string, bundleId?: string): VersionInfoDocumentStub {
+  return {
+    _id: id,
+    _rev: 'rev',
+    _createdAt: '2026-01-01T00:00:00.000Z',
+    _updatedAt: new Date().toISOString(),
+    _type: DOCUMENT_TYPE,
+    _system: {group: {_ref: PUBLISHED_ID, _weak: true}, bundleId},
+  }
+}
+
+const DRAFT: Variant = {
+  id: `drafts.${PUBLISHED_ID}`,
+  name: 'Draft',
+  document: stub(`drafts.${PUBLISHED_ID}`, 'drafts'),
+}
+const PUBLISHED: Variant = {id: PUBLISHED_ID, name: 'Published', document: stub(PUBLISHED_ID)}
+
+/** A set of the draft and published versions, outside any release. */
+function UnreleasedHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <DocumentGroupSet
+        name="Unreleased"
+        selectedIds={NOTHING_SELECTED}
+        checked={false}
+        onCheckedChange={NOOP}
+        readOnly
+      >
+        {[DRAFT, PUBLISHED].map((entry) => (
+          <DocumentGroupEntry
+            key={entry.id}
+            variant={entry}
+            releases={RELEASES}
+            documentVersions={[DRAFT.document, PUBLISHED.document]}
+            onPrimaryAction={NOOP}
+          />
+        ))}
+      </DocumentGroupSet>
+    </TestWrapper>
+  )
+}
+
+function getSecondaryLine(row: HTMLElement): HTMLElement {
+  const line = row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')
+
+  if (!line) {
+    throw new Error('Expected the row to render a secondary line')
+  }
+
+  return line
+}
+
+function getStatusKinds(row: HTMLElement): (string | undefined)[] {
+  const status = row.querySelector<HTMLElement>('[data-testid="version-status"]')
+
+  if (!status) {
+    throw new Error('Expected the row to render a status track')
+  }
+
+  return [...status.children].map((icon) => (icon as HTMLElement).dataset.status)
 }
 
 function getSet(): HTMLElement {
@@ -331,5 +398,40 @@ describe('DocumentGroupSet', () => {
     expect(getComputedStyle(getSetIcon()).position).toBe('static')
 
     await settleChromaticEndState()
+  })
+  it('counts the versions in the set header', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SetHarness count={VARIANTS.length} />)
+
+    await expect.element(page.getByTestId('variant-set-count')).toHaveTextContent('2')
+    await settleChromaticEndState()
+  })
+
+  it('says when a release version goes out, and marks it with its release', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SetHarness />)
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await settleChromaticEndState()
+
+    expect(getSecondaryLine(getRow(SUMMER_SALE)).textContent).toBe('As soon as possible')
+    // The release icon carries no draft or published status of its own.
+    expect(getStatusKinds(getRow(SUMMER_SALE))).toEqual([undefined])
+  })
+
+  it('says when a version outside a release was edited or published, and marks a changed draft', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<UnreleasedHarness />)
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    const draftRow = document.querySelector<HTMLElement>('[data-variant-name="Draft"]')!
+    const publishedRow = document.querySelector<HTMLElement>('[data-variant-name="Published"]')!
+
+    expect(getSecondaryLine(draftRow).textContent).toMatch(/^Edited /)
+    expect(getSecondaryLine(publishedRow).textContent).toMatch(/^Published /)
+    expect(getStatusKinds(draftRow)).toEqual(['draft', 'published'])
+    expect(getStatusKinds(publishedRow)).toEqual(['published'])
   })
 })
