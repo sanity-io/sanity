@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
+import {catchError, concatMap, filter, map, mergeMap, scan, share, switchMap} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
@@ -20,7 +20,14 @@ import {
   type WelcomeEvent,
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
-import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
+import {
+  DEFAULT_DEADLINE_MS,
+  OutOfSyncError,
+  remainingMs,
+  sequentializeListenerEvents,
+  TransactionDeadlineExceededError,
+  withDeadline,
+} from './utils/sequentializeListenerEvents'
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -233,16 +240,14 @@ export function getPairListener(
         : of(event)
     }),
     scan(
-      (
-        acc: {
-          next: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
-          buffer: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
-        },
-        msg,
-      ) => {
-        // we only care about mutation events
-        if (!isMutationEvent(msg)) {
+      (acc: {next: ListenerEvent[]; buffer: MutationEvent[]}, msg) => {
+        if (msg.type === 'snapshot') {
           return {next: [msg], buffer: []}
+        }
+
+        // A resumed connection replays what followed the last event it delivered, so the rest of the transaction can still arrive
+        if (!isMutationEvent(msg)) {
+          return {next: [msg], buffer: acc.buffer}
         }
 
         const isBuffering = acc.buffer.length > 0
@@ -261,13 +266,26 @@ export function getPairListener(
         const nextBuffer = acc.buffer.concat(msg)
         if (allPendingTransactionEventsReceived(nextBuffer)) {
           // we have received all pending transactions, emit the buffer, and signal end of buffer
-          return {next: nextBuffer.concat(PENDING_END), buffer: []}
+          return {next: [...nextBuffer, PENDING_END], buffer: []}
         }
         // if we get here, we are still waiting for more multi-transaction messages
         // if nextBuffer only has one element, we know we just started buffering
         return {next: nextBuffer.length === 1 ? [PENDING_START] : [], buffer: nextBuffer}
       },
       {next: [], buffer: []},
+    ),
+    switchMap((acc) =>
+      acc.buffer.length > 0
+        ? withDeadline(
+            acc,
+            remainingMs(acc.buffer[0], DEFAULT_DEADLINE_MS),
+            () =>
+              new TransactionDeadlineExceededError(
+                `Did not receive the rest of transaction ${acc.buffer[0].transactionId} within ${DEFAULT_DEADLINE_MS}ms`,
+                {base: undefined, buffer: acc.buffer, emitEvents: []},
+              ),
+          )
+        : of(acc),
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
     mergeMap((v) => v.next),

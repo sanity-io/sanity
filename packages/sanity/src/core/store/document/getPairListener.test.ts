@@ -194,7 +194,7 @@ describe('getPairListener', () => {
         vi.useRealTimers()
       })
 
-      test.fails('a resumed connection keeps the buffered events and completes the transaction', async () => {
+      test('a resumed connection keeps the buffered events and completes the transaction', async () => {
         const events: ListenerEvent[] = []
         const sub = getPairListener(client, idPair).subscribe((event) => events.push(event))
 
@@ -212,7 +212,7 @@ describe('getPairListener', () => {
         sub.unsubscribe()
       })
 
-      test.fails('a transaction left open across a reconnect with no welcomeback hits the deadline and refetches', async () => {
+      test('a transaction left open across a reconnect with no welcomeback hits the deadline and refetches', async () => {
         vi.useFakeTimers()
         const firstConnection$ = new Subject<ListenerEvent>()
         const secondConnection$ = new Subject<ListenerEvent>()
