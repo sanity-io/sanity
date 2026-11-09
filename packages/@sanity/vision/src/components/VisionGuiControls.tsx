@@ -1,10 +1,10 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {RocketIcon} from '@sanity/icons/Rocket'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Button, Card, Hotkeys, Text} from '@sanity/ui'
+import {Button, Card, Hotkeys} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {ControlsContainer} from './VisionGui.styled'
@@ -43,7 +43,7 @@ export function VisionGuiControls({
           animate
           content={
             <Card radius={4}>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {t('params.error.params-invalid-json')}
               </Text>
             </Card>
@@ -91,7 +91,11 @@ export function VisionGuiControls({
               <Box flexShrink={0} marginLeft={3}>
                 <Tooltip
                   animate
-                  content={<Text size={1}>{t('vista.redesign.try.description')}</Text>}
+                  content={
+                    <Text size={1} as="div" trim={true}>
+                      {t('vista.redesign.try.description')}
+                    </Text>
+                  }
                   placement="top"
                   portal
                 >

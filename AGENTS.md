@@ -444,6 +444,22 @@ pnpm engine-confidence unit                              # the package's unit te
 - **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
 - **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
 
+### Sync tests (No Auth Required)
+
+A sync test runs the real Studio document engine (`checkoutPair`, `getPairListener`, `sequentializeListenerEvents`, the buffered document and `@sanity/mutator`) with two or more clients against an in-memory fake Content Lake, on fake timers and with no browser. Each test ends in the oracles in `packages/sanity/test/sync/oracles.ts`: every client converged on the server copy, revisions agree, no stream errored or stayed locked, and no array item was lost or duplicated. A bench test (`perf/bench`) runs a built studio in a real browser and measures time, and a unit test exercises one piece of code with stub inputs. Never call sync tests "scenarios": bench uses that word for its runs.
+
+```bash
+pnpm --filter @sanity/types build && pnpm --filter @sanity/validation build   # once: createSchema imports their built output
+pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/
+```
+
+- The tests live in `packages/sanity/src/core/store/document/sync/` and are named `*.sync.test.ts`. They count toward the Stryker `sanity` target only while they sit under `store/document/`, and a `*.fuzz.test.*` name drops them from it.
+- The helpers live in `packages/sanity/test/sync/`. `fakeContentLake.ts` holds the documents, the transactions and the per-client controls (held or rejected commits, held, dropped or reordered listener events, disconnect and reconnect). `fakeSanityClient.ts` is the `SanityClient` slice the store calls. `referenceApplier.ts` applies mutations with `@sanity/mutate`, so the server's result never comes from the `@sanity/mutator` code under test. `studioEngine.ts` attaches a client at the pair seam (`checkoutPair`) or the operations seam (`editOperations` and `editState`, with autocommit). `syncTest.ts` runs the steps.
+- A new fault control goes into `fakeContentLake.ts`, never into a second fake server or a hand-rolled listener `Subject`.
+- A test for a known, unfixed bug asserts the correct behaviour and is marked `test.fails`, and the PR that fixes the bug changes it to `test`. Never assert a bug's current behaviour as correct.
+- Test names start with a provisional id (`ARR-`, `LSN-`, `CMT-`, `OPS-`), which would be mapped onto the collaborative editing scenario list once it exists.
+- The store's memo caches key on token and dataset, so every world gets a fresh dataset and every client its own token. A test that reuses a dataset reads another test's cached pair.
+
 ### E2E Tests (Token Required)
 
 E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
@@ -989,8 +1005,8 @@ revealed. Two consequences for Suspense code:
   a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
   into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
   request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
-  [upsellData$])` (`useUpsellContext` does this for the simple providers,
-  `ReleasesUpsellProvider` for itself), and the context values carry the promise as
+  [upsellData$])` (`useUpsellContext` does this for every upsell provider, including
+  `ReleasesUpsellProvider`), and the context values carry the promise as
   `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
   just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
   is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),

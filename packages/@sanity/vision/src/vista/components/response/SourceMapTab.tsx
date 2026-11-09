@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {ResultView} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -17,7 +16,7 @@ export function SourceMapTab({meta, dataset}: SourceMapTabProps) {
   if (!meta?.resultSourceMap) {
     return (
       <Box padding={3}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.source-map.empty')}
         </Text>
       </Box>

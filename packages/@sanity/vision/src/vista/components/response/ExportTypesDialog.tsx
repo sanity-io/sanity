@@ -1,9 +1,9 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
 import {useSchema, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {parseParams} from '../../../components/ParamsEditor'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -95,12 +95,18 @@ export function ExportTypesDialog({
     >
       <Box padding={4}>
         <Stack gap={4}>
-          <Text data-testid="vista-export-types-source" muted size={1}>
+          <Text data-testid="vista-export-types-source" muted size={1} as="div" trim={true}>
             {sourceNote}
           </Text>
           {output.schemaError && (
             <Card border padding={3} radius={2} tone="caution">
-              <Text data-testid="vista-export-types-schema-error" size={1}>
+              <Text
+                data-testid="vista-export-types-schema-error"
+                size={1}
+                as="div"
+                trim={true}
+                tone="caution"
+              >
                 {t('vista.export-types.schema-error', {message: output.schemaError.message})}
               </Text>
             </Card>

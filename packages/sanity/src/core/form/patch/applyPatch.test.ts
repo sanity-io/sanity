@@ -264,7 +264,7 @@ describe('string and primitive patches', () => {
     )
   })
 
-  test.fails('quotes an unsupported string patch type once in the error message', () => {
+  test('quotes an unsupported string patch type once in the error message', () => {
     expect(() => applyAll('hello', [insert(['x'], 'after')])).toThrow(
       'Received patch of unsupported type: "insert" for string. This is most likely a bug.',
     )

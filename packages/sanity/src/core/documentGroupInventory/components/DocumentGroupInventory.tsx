@@ -26,6 +26,7 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {usePerspective} from '../../perspective/usePerspective'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -37,7 +38,6 @@ import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
-import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
@@ -47,19 +47,23 @@ import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
-import {variantCreationMachine} from '../machines/variantCreationMachine'
+import {
+  type VariantCreationBundle,
+  variantCreationMachine,
+} from '../machines/variantCreationMachine'
 import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
+import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
-import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -160,7 +164,6 @@ export function DocumentGroupInventory(
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
-  const documentStore = useDocumentStore()
 
   const filterString = useMemo(
     () =>
@@ -238,24 +241,10 @@ export function DocumentGroupInventory(
                   variants: fromObservable(() => variants),
                   releases: fromObservable(() => releases),
                   createVariant: fromPromise(async ({input, signal}) => {
-                    const bundleId =
+                    const baseBundle: VariantCreationBundle =
                       typeof input.bundle === 'string'
-                        ? undefined
-                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
-
-                    const editStateSlot =
-                      typeof input.bundle === 'string'
-                        ? input.bundle === ('drafts' satisfies SystemBundle)
-                          ? 'draft'
-                          : 'published'
-                        : 'version'
-
-                    const readTargetPair = documentStore.pair
-                      .editState(getPublishedId(documentId), documentType, bundleId)
-                      .pipe(
-                        filter(({ready}) => ready),
-                        timeout({first: 30_000}),
-                      )
+                        ? {type: 'drafts'}
+                        : {type: 'release', releaseId: input.bundle._id}
 
                     // Live-edit documents have no drafts sibling: create the variant-of-published
                     // even when the selected bundle is drafts. Release bundles still target the release.
@@ -264,53 +253,56 @@ export function DocumentGroupInventory(
                         ? 'published'
                         : input.bundle
 
-                    const [targetPair, versionSnapshot] = await Promise.all([
-                      firstValueFrom(readTargetPair),
-                      firstValueFrom(
+                    const perspective =
+                      typeof input.bundle === 'string'
+                        ? input.bundle
+                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
+
+                    const readVersions = async () => {
+                      const versionSnapshot = await firstValueFrom(
                         versionState.pipe(
                           filter(({loading}) => !loading),
                           timeout({first: 30_000}),
                         ),
-                      ),
-                    ])
-                    // An error snapshot is `{loading: false, versions: []}`. Treating that as
-                    // "no published variant" would copy the base document.
-                    if (versionSnapshot.error) {
-                      throw versionSnapshot.error instanceof Error
-                        ? versionSnapshot.error
-                        : new Error('Failed to load document versions')
+                      )
+
+                      if (versionSnapshot.error) {
+                        throw versionSnapshot.error instanceof Error
+                          ? versionSnapshot.error
+                          : new Error('Failed to load document versions')
+                      }
+                      return versionSnapshot.versions
                     }
-                    const {versions} = versionSnapshot
-                    const fallback =
-                      editStateSlot === 'draft'
-                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
-                          targetPair[editStateSlot] || targetPair.published
-                        : targetPair[editStateSlot]
-                    // Published variant of the selected variant wins over the base document.
-                    const baseDocument = resolveManageVersionsCreateBase({
-                      variantId: input.variantDefinition._id,
-                      documentVersions: versions,
-                      fallback,
-                    })
-                    // If there is no base document, create an empty variant.
-                    if (baseDocument === null) {
+
+                    const variantDefinition = input.variantDefinition
+
+                    // Without a picked version, the variant starts from the version nearest to
+                    // the selected variant and bundle.
+                    const baseDocument =
+                      typeof input.baseId === 'string'
+                        ? {_id: input.baseId}
+                        : getNearestBaseVersion({
+                            variantId: variantDefinition._id,
+                            bundle: baseBundle,
+                            versions: await readVersions(),
+                          })
+
+                    if (typeof baseDocument === 'undefined') {
+                      // There is no version to start from, so the variant starts empty.
                       await createVariantDocument({
                         documentGroupId: getPublishedId(documentId),
                         document: {
                           _type: documentType,
                         },
-                        variant: input.variantDefinition,
+                        variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
                       })
-                    }
-
-                    // If there is a base document, create a variant based on it.
-                    if (baseDocument !== null) {
+                    } else {
                       await createVariantDocument({
                         documentGroupId: getPublishedId(documentId),
                         baseId: baseDocument._id,
-                        variant: input.variantDefinition,
+                        variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
                       })
@@ -318,11 +310,8 @@ export function DocumentGroupInventory(
 
                     // TODO: Would this be better encapsulated as a machine effect?
                     setVariant({
-                      variantId: input.variantDefinition._id,
-                      perspective:
-                        typeof input.bundle === 'string'
-                          ? input.bundle
-                          : getReleaseIdFromReleaseDocumentId(input.bundle._id),
+                      variantId: variantDefinition._id,
+                      perspective,
                     })
                   }),
                 },
@@ -335,7 +324,6 @@ export function DocumentGroupInventory(
           setVariant,
           documentType,
           documentId,
-          documentStore.pair,
           schema,
           versionState,
         ],
@@ -360,37 +348,45 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
+  const titleDocument = useMemo(
+    () => ({_id: documentId, _type: documentType}),
+    [documentId, documentType],
+  )
+
+  const sets = useSelector(inventoryRef, ({context}) => context.sets)
+
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
-        {(isVariantCreationActive || isVariantCreationPending) && (
-          <CreateVariant variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
+        {isVariantCreationActive || isVariantCreationPending ? (
+          <CreateVariant
+            variantCreationRef={variantCreationRef}
+            sets={sets}
+            documentTitle={components && <components.DocTitle document={titleDocument} />}
+          />
+        ) : (
+          !readOnly && (
+            <InventoryHeader
+              selectionRef={selectionRef}
+              deletionRef={deletionRef}
+              variantCreationRef={variantCreationRef}
+              components={components}
+            />
+          )
         )}
-        {!isVariantCreationActive && (
-          <>
-            {!readOnly && (
-              <InventoryHeader
-                selectionRef={selectionRef}
-                deletionRef={deletionRef}
-                variantCreationRef={variantCreationRef}
-                components={components}
-              />
-            )}
-            <Body>
-              {schema && (
-                <Select
-                  machine={selectionRef}
-                  inventoryRef={inventoryRef}
-                  selectedId={selectedId}
-                  documentType={documentType}
-                  readOnly={readOnly}
-                  perspectiveList={perspectiveList}
-                  onSelect={onSelect}
-                />
-              )}
-            </Body>
-          </>
-        )}
+        <Body>
+          {schema && (
+            <Select
+              machine={selectionRef}
+              inventoryRef={inventoryRef}
+              selectedId={selectedId}
+              documentType={documentType}
+              readOnly={readOnly}
+              perspectiveList={perspectiveList}
+              onSelect={onSelect}
+            />
+          )}
+        </Body>
       </Container>
       {isDeletionActive &&
         typeof portalElementName !== 'undefined' &&
@@ -428,6 +424,17 @@ const Select: ComponentType<{
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
+  const perspective = usePerspective()
+
+  const servedVersion = readOnly
+    ? undefined
+    : resolveServedVersion({
+        perspective,
+        variantsEnabled: variantsEnabled ?? false,
+        versions: sets.flatMap((set) => set.variants.map(({document}) => document)),
+      })
+
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const isLocked = useSelector(machine, (snapshot) => snapshot.matches('locked'))
 
@@ -484,6 +491,9 @@ const Select: ComponentType<{
                     documentType={documentType}
                     onSelect={onSelect}
                     isSelected={selectedId === variant.id}
+                    servedStatus={
+                      servedVersion?.id === variant.id ? servedVersion.status : undefined
+                    }
                     perspectiveList={perspectiveList}
                   />
                 ),
@@ -524,12 +534,22 @@ const ManagedVariantRow: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
+  servedStatus: ServedStatus | undefined
   /**
    * Always supplied by manage mode, where this row is rendered. Optional only
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
+}> = ({
+  variant,
+  machine,
+  inventoryRef,
+  documentType,
+  onSelect,
+  isSelected,
+  servedStatus,
+  perspectiveList,
+}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -590,6 +610,7 @@ const ManagedVariantRow: ComponentType<{
         variant={variant}
         releases={releases}
         isSelected={isSelected}
+        servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}

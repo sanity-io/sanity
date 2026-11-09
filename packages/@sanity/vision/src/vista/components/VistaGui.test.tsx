@@ -114,6 +114,7 @@ vi.mock('sanity', async () => {
   // The project store's organization ID, stable like the real store's
   const organizationId$ = of('org-1')
   return {
+    InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
     usePerspective: () =>
       useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
     useClient: sanityMocks.useClient,

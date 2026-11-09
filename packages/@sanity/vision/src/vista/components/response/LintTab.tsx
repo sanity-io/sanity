@@ -1,6 +1,6 @@
-import {Badge, Card, Stack, Text} from '@sanity/ui'
-import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Badge, Card, Stack} from '@sanity/ui'
+import {InlineCode, type TFunction, useTranslation} from 'sanity'
+import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type LintSeverity, type QueryLintFinding, splitMessage} from '../../util/groqLint'
@@ -53,7 +53,7 @@ export function LintTab({findings, onReveal}: LintTabProps) {
   if (findings.length === 0) {
     return (
       <Box padding={3}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.lint.empty')}
         </Text>
       </Box>
@@ -81,16 +81,16 @@ export function LintTab({findings, onReveal}: LintTabProps) {
               </Badge>
             </Box>
             <Stack flex={1} gap={2}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {splitMessage(finding.message).map((segment, index) =>
                   segment.code ? (
-                    <code key={index}>{segment.text}</code>
+                    <InlineCode key={index}>{segment.text}</InlineCode>
                   ) : (
                     <span key={index}>{segment.text}</span>
                   ),
                 )}
               </Text>
-              <Text muted size={0}>
+              <Text muted size={0} as="div" trim={true}>
                 {t('vista.lint.position', {line: finding.line, column: finding.column})}
                 {finding.source ? ` · ${finding.source}` : ''}
               </Text>

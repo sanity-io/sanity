@@ -1,7 +1,8 @@
-import {type Placement, Stack, Text} from '@sanity/ui'
+import {type Placement, Stack} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactElement} from 'react'
 import {useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
 
@@ -24,8 +25,12 @@ export function AgentActionsTooltip(props: AgentActionsTooltipProps) {
       animate
       content={
         <Stack gap={2}>
-          {title && <Text size={1}>{title}</Text>}
-          <Text muted size={1}>
+          {title && (
+            <Text size={1} as="div" trim={true}>
+              {title}
+            </Text>
+          )}
+          <Text muted size={1} as="div" trim={true}>
             {t('vista.agent-actions.credits')}
           </Text>
         </Stack>

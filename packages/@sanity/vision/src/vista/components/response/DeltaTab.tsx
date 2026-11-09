@@ -1,8 +1,8 @@
-import {Badge, Button, Card, Label, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Button, Card, Label, Select, Stack, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequest} from '../../store/types'
@@ -238,7 +238,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
       overflow="auto"
       padding={3}
     >
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {t('vista.delta.description')}
       </Text>
       <Flex alignItems="flex-end" flexShrink={0} gap={2}>
@@ -271,7 +271,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
         />
       </Flex>
       {state.loadError && (
-        <Text data-testid="vista-delta-load-error" size={1}>
+        <Text data-testid="vista-delta-load-error" size={1} as="div" trim={true}>
           {t('vista.delta.load-failed', {message: state.loadError})}
         </Text>
       )}
@@ -382,24 +382,26 @@ function DeltaResult(props: {
         )}
       </Flex>
       {!request && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.delta.no-request')}
         </Text>
       )}
       {request && evaluation.status === 'idle' && (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('vista.delta.empty')}
         </Text>
       )}
       {evaluation.status === 'invalid' && (
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           {evaluation.side === 'before'
             ? t('vista.delta.invalid-before', {message: evaluation.message})
             : t('vista.delta.invalid-after', {message: evaluation.message})}
         </Text>
       )}
       {evaluation.status === 'failed' && (
-        <Text size={1}>{t('vista.delta.failed', {message: evaluation.message})}</Text>
+        <Text size={1} as="div" trim={true}>
+          {t('vista.delta.failed', {message: evaluation.message})}
+        </Text>
       )}
       {evaluation.status === 'done' && typeof evaluation.value === 'boolean' && (
         <Card
@@ -409,7 +411,7 @@ function DeltaResult(props: {
           radius={2}
           tone={evaluation.value ? 'positive' : 'caution'}
         >
-          <Text size={1}>
+          <Text size={1} as="div" trim={true} tone={evaluation.value ? 'positive' : 'caution'}>
             {evaluation.value ? t('vista.delta.matches') : t('vista.delta.no-match')}
           </Text>
         </Card>

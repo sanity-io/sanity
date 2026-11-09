@@ -1,7 +1,7 @@
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type ComponentProps} from 'react'
+import {type ComponentProps, type ReactNode} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type QueryLintFinding} from '../../util/groqLint'
@@ -10,6 +10,7 @@ import {LintTab} from './LintTab'
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,

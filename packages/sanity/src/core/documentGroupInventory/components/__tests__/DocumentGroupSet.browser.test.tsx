@@ -8,6 +8,7 @@ import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type Variant} from '../../machines/selectionMachine'
+import {type ServedVersion} from '../../utils/resolveServedVersion'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
 import {DocumentGroupSet} from '../DocumentGroupSet'
 import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
@@ -64,7 +65,11 @@ function SetHarness({
   onToggle = NOOP,
   readOnly,
   locked,
+  editingId,
+  servedVersion,
 }: {
+  editingId?: string
+  servedVersion?: ServedVersion
   selectedIds?: ReadonlySet<string>
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
@@ -89,6 +94,8 @@ function SetHarness({
             key={entry.id}
             variant={entry}
             releases={RELEASES}
+            isSelected={entry.id === editingId}
+            servedStatus={servedVersion?.id === entry.id ? servedVersion.status : undefined}
             onPrimaryAction={() => onPrimaryAction(entry)}
             leading={
               readOnly ? undefined : (
@@ -273,6 +280,42 @@ describe('DocumentGroupSet', () => {
 
     expect(isShown(getSetCheckbox()!)).toBe(true)
     expect(getSetCheckbox()).toBeDisabled()
+  })
+
+  it('badges the served version alongside the version being edited', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <SetHarness
+        editingId={SUMMER_SALE.id}
+        servedVersion={{id: SUMMER_SALE.id, status: 'primary'}}
+      />,
+    )
+
+    await expect.element(page.getByText('Served', {exact: true})).toBeVisible()
+    await settleChromaticEndState()
+
+    expect(getRow(SUMMER_SALE).dataset.served).toBe('primary')
+    expect(getRow(SUMMER_SALE).textContent).toContain('Editing')
+    expect(getRow(WINTER_SALE).dataset.served).toBeUndefined()
+    expect(getRow(WINTER_SALE).textContent).not.toContain('Served')
+  })
+
+  it('badges the base version served instead when the selected variant is missing', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <SetHarness
+        editingId={SUMMER_SALE.id}
+        servedVersion={{id: WINTER_SALE.id, status: 'secondary'}}
+      />,
+    )
+
+    await expect.element(page.getByText('Served instead', {exact: true})).toBeVisible()
+    await settleChromaticEndState()
+
+    expect(getRow(WINTER_SALE).dataset.served).toBe('secondary')
+    expect(getRow(WINTER_SALE).textContent).not.toContain('Editing')
+    expect(getRow(SUMMER_SALE).dataset.served).toBeUndefined()
+    expect(getRow(SUMMER_SALE).textContent).not.toContain('Served')
   })
 
   it('renders no set checkbox in read-only mode, where versions cannot be selected', async () => {
