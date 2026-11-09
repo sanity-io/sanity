@@ -7,13 +7,13 @@ import {getListenerCounts} from '../../network/listenerCount'
 import {getPeakStudioTabCount, startTrackingStudioTabs} from '../../network/studioTabs'
 import {ListenerPeakMeasured} from '../__telemetry__/listeners.telemetry'
 
-const REPORT_INTERVAL_MS = 5 * 60_000
+const REPORT_INTERVAL_MS = 60_000
 
 // Module scope so a workspace switch, which remounts the telemetry provider, does not report the same peak again.
 let lastReportedPeak = 0
 
 /**
- * Reports the tab's peak listener count every five minutes, whenever it has risen since the last report.
+ * Reports the tab's peak listener count every minute, whenever it has risen since the last report.
  *
  * @internal
  */
