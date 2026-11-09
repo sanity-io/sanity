@@ -26,8 +26,10 @@ const LINK_BUTTON_PROPS = {density: 'regular', icon: ArrowTopRightIcon, level: '
  * right arrow key moves focus from the item to its link and the left arrow key back; the other
  * keys still reach the menu, which moves on from the item, because focusing the link leaves it
  * as the menu's active item.
+ *
+ * `selected` is whether the row's perspective is the selected one.
  */
-export function usePerspectiveDetailLink() {
+export function usePerspectiveDetailLink({selected}: {selected: boolean}) {
   const menuItemRef = useRef<HTMLButtonElement>(null)
   const linkRef = useRef<HTMLAnchorElement>(null)
   const [linkHovered, setLinkHovered] = useState(false)
@@ -54,8 +56,9 @@ export function usePerspectiveDetailLink() {
   return {
     menuItemProps: {
       // The link lies over the item but outside it, so hovering the link ends the item's own
-      // hover; `data-hovered` keeps the row highlighted
-      'data-hovered': linkHovered ? '' : undefined,
+      // hover; `data-hovered` keeps the row highlighted. A selected row stays as it is: the
+      // hover style would replace its selected fill.
+      'data-hovered': linkHovered && !selected ? '' : undefined,
       'onKeyDown': handleMenuItemKeyDown,
       'ref': menuItemRef,
     },
