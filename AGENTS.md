@@ -1044,8 +1044,8 @@ revealed. Two consequences for Suspense code:
   fallback, and renders its `unavailable` prop (nothing by default) when the content cannot be
   loaded or no provider is mounted (`upsellDataPromise: null`). A host renders only its own
   layout around it (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`, the
-  schedules panels); a layout that must not stay on screen without the content goes through
-  `UpsellPanel`'s `size` and `illustration` props instead. Nothing else reads the promise: a form
+  schedules panels), and that layout stays on screen while the panel loads. Nothing else reads
+  the promise: a form
   field or a document action in upsell mode just calls `handleOpenDialog`, so a slow `/journey/*`
   request can only delay the dialog or a panel, never the form (`CommentsField`,
   `CommentsPortableTextInput`, `TaskCreateAction`). Because the settled promise is

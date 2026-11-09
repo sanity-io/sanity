@@ -1,7 +1,7 @@
 import {motion} from 'motion/react'
 import {type ComponentProps} from 'react'
 import {styled} from 'styled-components'
-import {Container, Flex} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
@@ -30,13 +30,18 @@ function UpsellIllustrationPanel({upsell}: Pick<ComponentProps<typeof UpsellPane
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
         <Panel size={0} padding={4} paddingY={1}>
-          <UpsellPanel
-            align="center"
-            layout="vertical"
-            border={false}
-            illustration={<ReleaseIllustration />}
-            upsell={upsell}
-          />
+          <Flex alignItems={'center'} flexDirection="column">
+            <ReleaseIllustration />
+            <Box paddingTop={2}>
+              <UpsellPanel
+                align="center"
+                layout="vertical"
+                hideImage
+                border={false}
+                upsell={upsell}
+              />
+            </Box>
+          </Flex>
         </Panel>
       </motion.div>
     </Flex>
