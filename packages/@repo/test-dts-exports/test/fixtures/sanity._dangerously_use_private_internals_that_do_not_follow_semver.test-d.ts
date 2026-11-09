@@ -31,9 +31,12 @@ import type {
   BooleanDiff,
   BufferedDocumentWrapper,
   buildCommentRangeDecorations,
+  buildCommentRangeDecorationsLegacy,
   Builder,
   buildRangeDecorationSelectionsFromComments,
+  buildRangeDecorationSelectionsFromCommentsLegacy,
   buildTextSelectionFromFragment,
+  buildTextSelectionFromFragmentLegacy,
   CapabilityGate,
   CardinalityOneRelease,
   catchWithCount,
@@ -77,13 +80,21 @@ import type {
   CommandListProps,
   CommandListRenderItemCallback,
   CommentDisabledIcon,
+  CommentDisabledIconLegacy,
   CommentInlineHighlightSpan,
+  CommentInlineHighlightSpanLegacy,
   CommentInput,
   CommentInputHandle,
+  CommentInputHandleLegacy,
+  CommentInputLegacy,
   CommentInputProps,
+  CommentInputPropsLegacy,
   COMMENTS_INSPECTOR_NAME,
+  COMMENTS_INSPECTOR_NAME_LEGACY,
   CommentsSelectedPath,
+  CommentsSelectedPathLegacy,
   CommentsSelectedPathProvider,
+  CommentsSelectedPathProviderLegacy,
   CommitError,
   CommitFunction,
   CommitRequest,
@@ -380,6 +391,7 @@ import type {
   GroupChangeNode,
   HandleCallbackResult,
   hasCommentMessageValue,
+  hasCommentMessageValueLegacy,
   HELP_URL,
   HexColor,
   HiddenField,
@@ -436,6 +448,7 @@ import type {
   isSystemBundle,
   isSystemBundleName,
   isTextSelectionComment,
+  isTextSelectionCommentLegacy,
   isTruthy,
   isUnauthorizedError,
   isUnchangedDiff,
@@ -731,7 +744,9 @@ import type {
   useColorSchemeOptions,
   useComlinkStore,
   useCommentsSelectedPath,
+  useCommentsSelectedPathLegacy,
   useCommentsTelemetry,
+  useCommentsTelemetryLegacy,
   useConditionalToast,
   useConfigContextFromSource,
   useConnectionState,
@@ -984,14 +999,23 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('buildCommentRangeDecorations', () => {
     expectTypeOf<typeof buildCommentRangeDecorations>().toBeFunction()
   })
+  test('buildCommentRangeDecorationsLegacy', () => {
+    expectTypeOf<typeof buildCommentRangeDecorationsLegacy>().toBeFunction()
+  })
   test('Builder', () => {
     expectTypeOf<Builder>().not.toBeNever()
   })
   test('buildRangeDecorationSelectionsFromComments', () => {
     expectTypeOf<typeof buildRangeDecorationSelectionsFromComments>().toBeFunction()
   })
+  test('buildRangeDecorationSelectionsFromCommentsLegacy', () => {
+    expectTypeOf<typeof buildRangeDecorationSelectionsFromCommentsLegacy>().toBeFunction()
+  })
   test('buildTextSelectionFromFragment', () => {
     expectTypeOf<typeof buildTextSelectionFromFragment>().toBeFunction()
+  })
+  test('buildTextSelectionFromFragmentLegacy', () => {
+    expectTypeOf<typeof buildTextSelectionFromFragmentLegacy>().toBeFunction()
   })
   test('CapabilityGate', () => {
     expectTypeOf<typeof CapabilityGate>().not.toBeNever()
@@ -1122,8 +1146,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommentDisabledIcon', () => {
     expectTypeOf<typeof CommentDisabledIcon>().toBeFunction()
   })
+  test('CommentDisabledIconLegacy', () => {
+    expectTypeOf<typeof CommentDisabledIconLegacy>().toBeFunction()
+  })
   test('CommentInlineHighlightSpan', () => {
     expectTypeOf<typeof CommentInlineHighlightSpan>().toBeFunction()
+  })
+  test('CommentInlineHighlightSpanLegacy', () => {
+    expectTypeOf<typeof CommentInlineHighlightSpanLegacy>().toBeFunction()
   })
   test('CommentInput', () => {
     expectTypeOf<typeof CommentInput>().toBeFunction()
@@ -1131,17 +1161,35 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommentInputHandle', () => {
     expectTypeOf<CommentInputHandle>().toBeObject()
   })
+  test('CommentInputHandleLegacy', () => {
+    expectTypeOf<CommentInputHandleLegacy>().toBeObject()
+  })
+  test('CommentInputLegacy', () => {
+    expectTypeOf<typeof CommentInputLegacy>().toBeFunction()
+  })
   test('CommentInputProps', () => {
     expectTypeOf<CommentInputProps>().toBeObject()
+  })
+  test('CommentInputPropsLegacy', () => {
+    expectTypeOf<CommentInputPropsLegacy>().toBeObject()
   })
   test('COMMENTS_INSPECTOR_NAME', () => {
     expectTypeOf<typeof COMMENTS_INSPECTOR_NAME>().not.toBeNever()
   })
+  test('COMMENTS_INSPECTOR_NAME_LEGACY', () => {
+    expectTypeOf<typeof COMMENTS_INSPECTOR_NAME_LEGACY>().not.toBeNever()
+  })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
   })
+  test('CommentsSelectedPathLegacy', () => {
+    expectTypeOf<CommentsSelectedPathLegacy>().toBeObject()
+  })
   test('CommentsSelectedPathProvider', () => {
     expectTypeOf<typeof CommentsSelectedPathProvider>().not.toBeNever()
+  })
+  test('CommentsSelectedPathProviderLegacy', () => {
+    expectTypeOf<typeof CommentsSelectedPathProviderLegacy>().not.toBeNever()
   })
   test('CommitError', () => {
     expectTypeOf<CommitError>().not.toBeNever()
@@ -2033,6 +2081,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('hasCommentMessageValue', () => {
     expectTypeOf<typeof hasCommentMessageValue>().toBeFunction()
   })
+  test('hasCommentMessageValueLegacy', () => {
+    expectTypeOf<typeof hasCommentMessageValueLegacy>().toBeFunction()
+  })
   test('HELP_URL', () => {
     expectTypeOf<typeof HELP_URL>().not.toBeNever()
   })
@@ -2200,6 +2251,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isTextSelectionComment', () => {
     expectTypeOf<typeof isTextSelectionComment>().toBeFunction()
+  })
+  test('isTextSelectionCommentLegacy', () => {
+    expectTypeOf<typeof isTextSelectionCommentLegacy>().toBeFunction()
   })
   test('isTruthy', () => {
     expectTypeOf<typeof isTruthy>().toBeFunction()
@@ -3087,8 +3141,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
   })
+  test('useCommentsSelectedPathLegacy', () => {
+    expectTypeOf<typeof useCommentsSelectedPathLegacy>().toBeFunction()
+  })
   test('useCommentsTelemetry', () => {
     expectTypeOf<typeof useCommentsTelemetry>().toBeFunction()
+  })
+  test('useCommentsTelemetryLegacy', () => {
+    expectTypeOf<typeof useCommentsTelemetryLegacy>().toBeFunction()
   })
   test('useConditionalToast', () => {
     expectTypeOf<typeof useConditionalToast>().toBeFunction()

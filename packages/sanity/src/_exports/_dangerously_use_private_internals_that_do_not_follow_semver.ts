@@ -39,22 +39,41 @@ export {
   type TrackedArea,
   type TrackedChange,
 } from '../core/changeIndicators/types'
-export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
+export {CommentDisabledIcon} from '../core/comments-v2/components/icons/CommentDisabledIcon'
+export {CommentDisabledIcon as CommentDisabledIconLegacy} from '../core/comments/components/icons/CommentDisabledIcon'
 export {
   CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
+} from '../core/comments-v2/components/pte/comment-input/CommentInput'
+export {
+  CommentInput as CommentInputLegacy,
+  type CommentInputHandle as CommentInputHandleLegacy,
+  type CommentInputProps as CommentInputPropsLegacy,
 } from '../core/comments/components/pte/comment-input/CommentInput'
-export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
-export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
-export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
-export {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
-export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
-export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
-export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
-export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
-export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
-export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentInlineHighlightSpan} from '../core/comments-v2/components/pte/CommentInlineHighlightSpan'
+export {CommentInlineHighlightSpan as CommentInlineHighlightSpanLegacy} from '../core/comments/components/pte/CommentInlineHighlightSpan'
+export {COMMENTS_INSPECTOR_NAME} from '../core/comments-v2/constants'
+export {COMMENTS_INSPECTOR_NAME as COMMENTS_INSPECTOR_NAME_LEGACY} from '../core/comments/constants'
+export {CommentsSelectedPathProvider} from '../core/comments-v2/context/selected-path/CommentsSelectedPathProvider'
+export {CommentsSelectedPathProvider as CommentsSelectedPathProviderLegacy} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
+export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
+export {type CommentsSelectedPath as CommentsSelectedPathLegacy} from '../core/comments/context/selected-path/types'
+export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments-v2/helpers'
+export {
+  hasCommentMessageValue as hasCommentMessageValueLegacy,
+  isTextSelectionComment as isTextSelectionCommentLegacy,
+} from '../core/comments/helpers'
+export {useCommentsSelectedPath} from '../core/comments-v2/hooks/useCommentsSelectedPath'
+export {useCommentsSelectedPath as useCommentsSelectedPathLegacy} from '../core/comments/hooks/useCommentsSelectedPath'
+export {useCommentsTelemetry} from '../core/comments-v2/hooks/useCommentsTelemetry'
+export {useCommentsTelemetry as useCommentsTelemetryLegacy} from '../core/comments/hooks/useCommentsTelemetry'
+export {buildCommentRangeDecorations} from '../core/comments-v2/utils/inline-comments/buildCommentRangeDecorations'
+export {buildCommentRangeDecorations as buildCommentRangeDecorationsLegacy} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
+export {buildRangeDecorationSelectionsFromComments} from '../core/comments-v2/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+export {buildRangeDecorationSelectionsFromComments as buildRangeDecorationSelectionsFromCommentsLegacy} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+export {buildTextSelectionFromFragment} from '../core/comments-v2/utils/inline-comments/buildTextSelectionFromFragment'
+export {buildTextSelectionFromFragment as buildTextSelectionFromFragmentLegacy} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {DashboardLink} from '../core/components/DashboardLink'
