@@ -42,10 +42,11 @@ type GlobalPerspectiveButtonProps = {
    */
   fullText?: string
   /**
-   * Names the picker, for someone who has not met it yet: the trigger's tooltip shows it, above
-   * the uncut label when the chip cuts it.
+   * Names the picker ("Variant", "Perspective"). The trigger's tooltip shows it as a muted label
+   * above the uncut current value, so the tooltip reads as what the picker is and what it is set
+   * to, whether or not the chip cuts the value.
    */
-  tooltip?: string
+  pickerLabel?: string
   /** Icon rendered before the label. */
   icon: UIButtonProps['icon']
   /**
@@ -69,8 +70,16 @@ type GlobalPerspectiveButtonProps = {
  * @internal
  */
 export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
-  const {text, fullText, fullWidth, icon, handleClearPerspective, ref, tooltip, ...buttonProps} =
-    props
+  const {
+    text,
+    fullText,
+    fullWidth,
+    icon,
+    handleClearPerspective,
+    pickerLabel,
+    ref,
+    ...buttonProps
+  } = props
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const uncutText = fullText ?? text
@@ -102,20 +111,18 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
       <Tooltip
         content={
           <VStack gap={2} style={{maxWidth: FULL_TEXT_TOOLTIP_MAX_WIDTH}}>
-            {tooltip ? (
-              <Text size={1} as="div" trim={true} weight="medium">
-                {tooltip}
+            {pickerLabel ? (
+              <Text size={0} as="div" muted trim={true}>
+                {pickerLabel}
               </Text>
             ) : null}
-            {showFullText ? (
-              <Text size={1} as="div" muted={Boolean(tooltip)} trim={true}>
-                {uncutText}
-              </Text>
-            ) : null}
+            <Text size={1} as="div" trim={true} weight={pickerLabel ? 'medium' : undefined}>
+              {uncutText}
+            </Text>
           </VStack>
         }
         portal
-        disabled={!tooltip && !showFullText}
+        disabled={!pickerLabel && !showFullText}
       >
         <UIButton
           {...buttonProps}

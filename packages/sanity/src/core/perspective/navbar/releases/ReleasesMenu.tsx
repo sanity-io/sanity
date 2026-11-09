@@ -62,7 +62,7 @@ function ReleasesMenuChip({
         />
       }
       text={displayTitle}
-      tooltip={t('release.navbar.chip-tooltip')}
+      pickerLabel={t('release.navbar.chip-tooltip')}
       {...rest}
     />
   )
