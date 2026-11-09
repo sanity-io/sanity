@@ -50,7 +50,7 @@ export const BarcodeInput = function BarcodeInput(props: ObjectInputProps<Barcod
           />
         )}
         {!valid && (
-          <ErrorMessage as="div" trim={true}>
+          <ErrorMessage forwardedAs="div" trim={true}>
             Not a valid {value?.format}
           </ErrorMessage>
         )}
