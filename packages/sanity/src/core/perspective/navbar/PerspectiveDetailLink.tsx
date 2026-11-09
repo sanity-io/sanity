@@ -1,6 +1,4 @@
-import {LaunchIcon} from '@sanity/icons/Launch'
-// oxlint-disable-next-line no-restricted-imports -- the studio Button types its ref for a <button>, and this is an <a>
-import {Button} from '@sanity/ui'
+import {ArrowTopRightIcon} from '@sanity/icons/ArrowTopRight'
 import {
   type KeyboardEvent,
   type ReactNode,
@@ -10,13 +8,16 @@ import {
   useState,
 } from 'react'
 import {type IntentParameters, useIntentLink} from 'sanity/router'
-import {Box, Flex, type PaddingProps} from 'ui5'
+import {Box, Flex, IconButton, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {detailLink, detailLinkContainer, detailLinkSpace} from './PerspectiveDetailLink.css'
 
-/** Shared by the link and the space reserved for it, so both keep the same footprint. */
-const LINK_BUTTON_PROPS = {fontSize: 1, icon: LaunchIcon, mode: 'ghost', padding: 2} as const
+/**
+ * The arrow is the icon for opening content in another view; tertiary is the quiet level for a
+ * secondary action in a row. `detailLinkSpace` reserves this button's width.
+ */
+const LINK_BUTTON_PROPS = {density: 'regular', icon: ArrowTopRightIcon, level: 'tertiary'} as const
 
 /**
  * Wires a perspective menu item to the detail link next to it.
@@ -91,7 +92,6 @@ export function usePerspectiveDetailLinkTrigger() {
  */
 export function PerspectiveDetailLink(
   props: {
-    'alignItems': 'flex-start' | 'center'
     'aria-label': string
     'data-testid': string
     'intent': string
@@ -105,7 +105,6 @@ export function PerspectiveDetailLink(
     RefAttributes<HTMLAnchorElement>,
 ) {
   const {
-    alignItems,
     'aria-label': ariaLabel,
     'data-testid': testId,
     intent,
@@ -121,9 +120,10 @@ export function PerspectiveDetailLink(
   const {href, onClick} = useIntentLink({intent, params, onClick: onNavigate})
 
   return (
-    <Flex alignItems={alignItems} className={detailLinkContainer} {...paddingProps}>
+    // Centred on the row, like the menu item's own right icon
+    <Flex alignItems="center" className={detailLinkContainer} {...paddingProps}>
       <Tooltip portal content={tooltip} placement="bottom">
-        <Button
+        <IconButton
           {...LINK_BUTTON_PROPS}
           aria-label={ariaLabel}
           as="a"
@@ -144,8 +144,9 @@ export function PerspectiveDetailLink(
 }
 
 /**
- * Lays out a menu item's content with the detail link's width reserved at its end, filled by the
- * same button, hidden and inert. Matches the studio `MenuItem`'s `renderMenuItem`.
+ * Lays out a menu item's content with the detail link's width reserved at its end. The space is an
+ * empty box: the menu item is a `<button>`, so it cannot hold a second button to measure against.
+ * Matches the studio `MenuItem`'s `renderMenuItem`.
  */
 export function renderWithDetailLinkSpace(menuItemContent: ReactNode) {
   return (
@@ -153,9 +154,7 @@ export function renderWithDetailLinkSpace(menuItemContent: ReactNode) {
       <Box flexBasis="0%" flexGrow={1} minWidth="0">
         {menuItemContent}
       </Box>
-      <Box className={detailLinkSpace} flexShrink={0}>
-        <Button {...LINK_BUTTON_PROPS} as="span" />
-      </Box>
+      <Box className={detailLinkSpace} data-testid="perspective-detail-link-space" flexShrink={0} />
     </Flex>
   )
 }

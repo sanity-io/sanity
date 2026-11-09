@@ -271,7 +271,6 @@ export function ReleasesMenuItem(
       {hasDetailLink && (
         <PerspectiveDetailLink
           {...detailLinkProps}
-          alignItems="flex-start"
           aria-label={t('release.navbar.view-release-aria-label', {
             title: release.metadata.title || t('release.placeholder-untitled-release'),
           })}

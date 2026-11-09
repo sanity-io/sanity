@@ -101,9 +101,7 @@ function VariantMenuItem(props: {
       />
       <PerspectiveDetailLink
         {...detailLinkProps}
-        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
-        // link, so the link centers on the item instead of mirroring its top padding
-        alignItems="center"
+        // `paddingRight` mirrors the studio menu item's own
         aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
         data-testid={`variant-detail-link-${variantId}`}
         intent={VARIANTS_INTENT}
