@@ -1,4 +1,4 @@
-import {expect, test} from 'vitest'
+import {expect, test, vi} from 'vitest'
 
 import {BufferedDocument} from '../src/document/BufferedDocument'
 import {Mutation} from '../src/document/Mutation'
@@ -361,4 +361,53 @@ test.fails('ARRIVE-UNSET-UNDER-DMP (K2, L3): a remote unset of a field with a bu
   )
 
   expect(doc.document.HEAD).toEqual({_id: 'a', _type: 't', _rev: '2'})
+})
+
+function observeConsistency(doc: BufferedDocument) {
+  const observed = {latest: true, history: [] as boolean[]}
+  doc.onConsistencyChanged = (isConsistent) => {
+    observed.latest = isConsistent
+    observed.history.push(isConsistent)
+  }
+  return observed
+}
+
+function setTitle(title: string) {
+  return new Mutation({mutations: [{patch: {id: 'a', set: {title}}}]})
+}
+
+test.fails('NO-NET-CHANGE-COMMIT (B3, L3): committing a local edit with no net change reports the document consistent again', async () => {
+  const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const consistency = observeConsistency(doc)
+  doc.commitHandler = () => {
+    throw new Error('Nothing should be sent for an edit with no net change')
+  }
+
+  doc.add(setTitle('Hello!'))
+  doc.add(setTitle('Hello'))
+  await doc.commit()
+
+  expect(consistency.latest).toBe(true)
+})
+
+test('committing nothing while a failed commit waits to retry keeps the document inconsistent', async () => {
+  vi.useFakeTimers()
+  try {
+    const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+    const consistency = observeConsistency(doc)
+    let failCommit: (() => void) | undefined
+    doc.commitHandler = (message) => {
+      failCommit = message.failure
+    }
+
+    doc.add(setTitle('Good bye'))
+    void doc.commit()
+    failCommit?.()
+    doc.add(setTitle('Good bye'))
+    await doc.commit()
+
+    expect(new Set(consistency.history)).toEqual(new Set([false]))
+  } finally {
+    vi.useRealTimers()
+  }
 })

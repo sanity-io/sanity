@@ -150,6 +150,19 @@ describe('actionsToMutations', () => {
     })
   })
 
+  it('deletes the published document and the listed drafts that exist', () => {
+    const index = {'a': PUBLISHED, 'drafts.a': {...PUBLISHED, _id: 'drafts.a'}}
+    const action: ContentLakeAction = {
+      actionType: 'sanity.action.document.delete',
+      publishedId: 'a',
+      includeDrafts: ['drafts.a', 'versions.r1.a'],
+    }
+    expect(actionsToMutations(index, [action])).toEqual([
+      {delete: {id: 'a'}},
+      {delete: {id: 'drafts.a'}},
+    ])
+  })
+
   it('rejects an unsupported action with a 400', () => {
     const unsupported = () =>
       actionsToMutations({}, [{actionType: 'sanity.action.document.publish'} as never])

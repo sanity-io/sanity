@@ -26,6 +26,7 @@ export type Step =
   | {client: string; do: 'patch'; id: string; patches: RawPatch[]}
   | {client: string; do: 'mutate'; id: string; mutations: MutationPayload[]}
   | {client: string; do: 'commit'}
+  | {client: string; do: 'delete'}
   | ({client: string; do: 'commits'} & StreamPolicyStep)
   | {client: string; do: 'acceptCommit'}
   | ({client: string; do: 'rejectCommit'; statusCode: number} & NamedFault)
@@ -216,6 +217,9 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'commit':
       client.commit()
+      break
+    case 'delete':
+      client.delete()
       break
     case 'commits':
       controls.commits = {mode: step.mode, latencyMs: step.latencyMs ?? 0}

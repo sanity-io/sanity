@@ -19,6 +19,7 @@ export interface EngineClient {
   patch(documentId: string, patches: RawPatch[]): void
   mutate(documentId: string, mutations: MutationPayload[]): void
   commit(): void
+  delete(): void
   localDocument(documentId: string): SanityDocument | null
   consistent(): boolean
   errors(): unknown[]
@@ -89,6 +90,9 @@ export function createStudioPairClient(options: StudioEngineOptions): EngineClie
     commit: () => {
       pair.draft.commit()
       pair.published.commit()
+    },
+    delete: () => {
+      throw new Error('The pair seam has no document operations')
     },
     localDocument: (documentId) => snapshots.get(documentId) ?? null,
     consistent: () => consistent,
@@ -165,6 +169,7 @@ export function createStudioOperationsClient(options: StudioOperationsEngineOpti
       throw new Error('The operations seam only exposes patches')
     },
     commit: () => ready().commit.execute(),
+    delete: () => ready().delete.execute(),
     localDocument,
     consistent: () => consistent,
     errors: () => errors,
