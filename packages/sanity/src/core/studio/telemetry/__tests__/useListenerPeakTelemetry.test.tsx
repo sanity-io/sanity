@@ -3,7 +3,7 @@ import {createBatchedStore, createSessionId, type TelemetryEvent} from '@sanity/
 import {act, renderHook} from '@testing-library/react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
-const FIVE_MINUTES = 5 * 60_000
+const ONE_MINUTE = 60_000
 
 const protocolCheckClient = createClient({
   projectId: 'abc123',
@@ -29,7 +29,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-it('reports the peak listener count every five minutes while it rises', async () => {
+it('reports the peak listener count every minute while it rises', async () => {
   vi.resetModules()
   const {useListenerPeakTelemetry} = await import('../useListenerPeakTelemetry')
   const {resolveListenerCountingFetch} = await import('../../../network/listenerCount')
@@ -55,10 +55,10 @@ it('reports the peak listener count every five minutes while it rises', async ()
 
   renderHook(() => useListenerPeakTelemetry(store.logger, protocolCheckClient))
   await openListener()
-  await act(() => vi.advanceTimersByTimeAsync(FIVE_MINUTES))
-  await act(() => vi.advanceTimersByTimeAsync(FIVE_MINUTES))
+  await act(() => vi.advanceTimersByTimeAsync(ONE_MINUTE))
+  await act(() => vi.advanceTimersByTimeAsync(ONE_MINUTE))
   await openListener()
-  await act(() => vi.advanceTimersByTimeAsync(FIVE_MINUTES))
+  await act(() => vi.advanceTimersByTimeAsync(ONE_MINUTE))
 
   expect(await listenerPeaks()).toEqual([
     expect.objectContaining({peakListenerCount: 1, peakStudioTabCount: null}),
