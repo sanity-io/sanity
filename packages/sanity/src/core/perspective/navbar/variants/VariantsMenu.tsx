@@ -3,13 +3,13 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
@@ -35,11 +35,28 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
+import {conditionMismatchIcon, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
   return <RhombusIconLarge className={suggestIconColor} {...props} />
+}
+
+/**
+ * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
+ * `Icon` sizes and colours the svg itself: a wrapper took the colour (grey) in its place and,
+ * holding the svg inline, added a line box under it that lifted the icon off the row's centre.
+ */
+const ConditionMismatchMenuIcon = (
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
+) => {
+  return (
+    <ErrorOutlineIcon
+      {...props}
+      className={clsx(props.className, conditionMismatchIcon)}
+      data-testid="variant-condition-mismatch"
+    />
+  )
 }
 
 function VariantMenuItem(props: {
@@ -64,13 +81,7 @@ function VariantMenuItem(props: {
         {...detailLinkMenuItemProps}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
-        iconRight={
-          mismatches.length > 0 ? (
-            <Box paddingRight={1} data-testid="variant-condition-mismatch">
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </Box>
-          ) : undefined
-        }
+        iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}

@@ -145,7 +145,8 @@ describe('VariantsMenu', () => {
       },
     })
 
-    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+    // The icon itself, not a wrapper: a wrapper takes the icon's colour and lifts it off centre
+    expect(screen.getByTestId('variant-condition-mismatch').tagName).toBe('svg')
   })
 
   it('does not show a mismatch error in freeform mode', async () => {
