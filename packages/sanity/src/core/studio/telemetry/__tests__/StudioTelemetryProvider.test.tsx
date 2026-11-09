@@ -392,6 +392,8 @@ describe('StudioTelemetryProvider', () => {
     // Mock window properties
     vi.stubGlobal('window', {
       ...window,
+      addEventListener: window.addEventListener.bind(window),
+      removeEventListener: window.removeEventListener.bind(window),
       devicePixelRatio: 2,
       innerHeight: 800,
       innerWidth: 1200,
