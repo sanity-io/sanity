@@ -14,6 +14,3 @@
 
 # Telemetry definitions
 *.telemetry.ts @sanity-io/data-eng
-
-# Examples
-/examples/functions @kenjonespizza @iamkevingreen
