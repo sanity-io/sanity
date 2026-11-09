@@ -147,10 +147,14 @@ export function PerspectiveDetailLink(
  * Lays out a menu item's content with the detail link's width reserved at its end. The space is an
  * empty box: the menu item is a `<button>`, so it cannot hold a second button to measure against.
  * Matches the studio `MenuItem`'s `renderMenuItem`.
+ *
+ * The gap is the 12px the menu item leaves before its own right-side content (`marginLeft={3}`).
+ * A right icon bleeds 6px into it, which leaves room between a row's right icon and the link,
+ * including the link's hover fill.
  */
 export function renderWithDetailLinkSpace(menuItemContent: ReactNode) {
   return (
-    <Flex gap={1}>
+    <Flex gap={3}>
       <Box flexBasis="0%" flexGrow={1} minWidth="0">
         {menuItemContent}
       </Box>
