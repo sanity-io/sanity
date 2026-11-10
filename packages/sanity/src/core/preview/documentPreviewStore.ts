@@ -208,9 +208,9 @@ export function createDocumentPreviewStore({
   globalListenerStore = createGlobalListenerStore({client}),
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '2025-02-19'})
-  const {mutationChannel, invalidationChannel} = globalListenerStore
+  const {globalListener, invalidationChannel} = globalListenerStore
 
-  const observeDocument = createObserveDocument({client, mutationChannel})
+  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 

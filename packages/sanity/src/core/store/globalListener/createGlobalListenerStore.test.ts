@@ -72,13 +72,13 @@ describe('createGlobalListenerStore', () => {
     vi.useRealTimers()
   })
 
-  it('serves both channels from one listener on every document in the dataset', () => {
+  it('serves the listener and the invalidation channel from one connection on every document', () => {
     const {store, server, connections, withConfig, listen} = setup()
-    const mutations: (WelcomeEvent | MutationEvent)[] = []
+    const listenerEvents: (WelcomeEvent | MutationEvent)[] = []
     const invalidations: InvalidationChannelEvent[] = []
 
     const subscriptions = [
-      store.mutationChannel.subscribe((event) => mutations.push(event)),
+      store.globalListener.subscribe((event) => listenerEvents.push(event)),
       store.invalidationChannel.subscribe((event) => invalidations.push(event)),
     ]
 
@@ -103,7 +103,7 @@ describe('createGlobalListenerStore', () => {
     server.next(WELCOME)
     server.next(event)
 
-    expect(mutations).toEqual([WELCOME, event])
+    expect(listenerEvents).toEqual([WELCOME, event])
     expect(invalidations).toEqual([{type: 'connected'}, event])
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
@@ -115,15 +115,15 @@ describe('createGlobalListenerStore', () => {
     server.next(WELCOME)
     server.next(mutation('article'))
 
-    const mutations: (WelcomeEvent | MutationEvent)[] = []
+    const listenerEvents: (WelcomeEvent | MutationEvent)[] = []
     const invalidations: InvalidationChannelEvent[] = []
     const subscriptions = [
       first,
-      store.mutationChannel.subscribe((event) => mutations.push(event)),
+      store.globalListener.subscribe((event) => listenerEvents.push(event)),
       store.invalidationChannel.subscribe((event) => invalidations.push(event)),
     ]
 
-    expect(mutations).toEqual([WELCOME])
+    expect(listenerEvents).toEqual([WELCOME])
     expect(invalidations).toEqual([{type: 'connected'}])
     expect(connections.opened).toBe(1)
 

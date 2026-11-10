@@ -31,11 +31,11 @@ describe('createDocumentPreviewStore', () => {
 
   it('follows the global listener store it is given, without opening a listener', async () => {
     const {client, fetch, listen} = createSpiedClient()
-    const mutationChannel = new Subject<WelcomeEvent | MutationEvent>()
+    const globalListener = new Subject<WelcomeEvent | MutationEvent>()
     const invalidationChannel = new Subject<InvalidationChannelEvent>()
     const store = createDocumentPreviewStore({
       client,
-      globalListenerStore: {mutationChannel, invalidationChannel},
+      globalListenerStore: {globalListener, invalidationChannel},
     })
 
     const subscriptions = [
@@ -45,7 +45,7 @@ describe('createDocumentPreviewStore', () => {
     await vi.advanceTimersByTimeAsync(1_000)
     expect(fetch).not.toHaveBeenCalled()
 
-    mutationChannel.next(WELCOME)
+    globalListener.next(WELCOME)
     await vi.advanceTimersByTimeAsync(1_000)
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(fetch).toHaveBeenLastCalledWith(

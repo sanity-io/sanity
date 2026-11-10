@@ -7,23 +7,22 @@ import {type InvalidationChannelEvent} from '../../preview/types'
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 
 /**
- * The Studio's shared listener on every document in the dataset. Both channels are served by
- * one connection, which opens on the first subscription and closes `LISTENER_RESET_DELAY` after
- * the last subscriber has left.
+ * The Studio's shared listener on every document in the dataset. `globalListener` and
+ * `invalidationChannel` are served by one connection, which opens on the first subscription and
+ * closes `LISTENER_RESET_DELAY` after the last subscriber has left.
  *
- * Each channel starts with an event that marks the listener as connected. A new subscriber gets
- * it right away while the listener stays connected, and every subscriber gets it again once the
- * listener has reconnected after losing its connection, since changes may have been missed in
- * between.
+ * Both start with an event that marks the listener as connected. A new subscriber gets it right
+ * away while the listener stays connected, and every subscriber gets it again once the listener
+ * has reconnected after losing its connection, since changes may have been missed in between.
  *
  * @internal
  */
 export interface GlobalListenerStore {
   /**
-   * `welcome`, then a `mutation` event with its mendoza effects for every change to a document
-   * in the dataset, for keeping a local copy of documents in sync.
+   * The listener's own events: `welcome`, then a `mutation` event with its mendoza effects for
+   * every change to a document in the dataset, for keeping a local copy of documents in sync.
    */
-  mutationChannel: Observable<WelcomeEvent | MutationEvent>
+  globalListener: Observable<WelcomeEvent | MutationEvent>
   /**
    * `{type: 'connected'}`, then a mutation event for every change to a document in the dataset,
    * for refetching whatever a change may affect.
@@ -64,7 +63,7 @@ export function createGlobalListenerStore({
       }),
     )
 
-  const mutationChannel = listener.pipe(
+  const globalListener = listener.pipe(
     filter(
       (event): event is MutationEvent | WelcomeEvent =>
         // ignore reconnect events for now until we've verified that downstream consumers can handle them
@@ -72,9 +71,9 @@ export function createGlobalListenerStore({
     ),
   )
 
-  const invalidationChannel = mutationChannel.pipe(
+  const invalidationChannel = globalListener.pipe(
     map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
   )
 
-  return {mutationChannel, invalidationChannel}
+  return {globalListener, invalidationChannel}
 }
