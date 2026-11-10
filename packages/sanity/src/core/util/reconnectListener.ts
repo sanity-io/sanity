@@ -2,10 +2,14 @@ import {type ReconnectEvent} from '@sanity/client'
 import {
   catchError,
   concat,
+  connect,
   defer,
   EMPTY,
+  filter,
+  merge,
   mergeMap,
   type MonoTypeOperatorFunction,
+  type Observable,
   of,
   type OperatorFunction,
   retry,
@@ -25,6 +29,22 @@ export interface ReconnectListenerOptions {
   maxDelayMs?: number
   /** Source of the jitter, a number in `[0, 1)`. */
   random?: () => number
+  /**
+   * How many `reconnect` events the listener may emit without opening a connection before its
+   * connection is replaced by one opened with backoff.
+   */
+  maxClientReconnects?: number
+}
+
+/**
+ * Raised when the client keeps failing to reconnect on its own, to hand the reconnect over to the
+ * backoff.
+ */
+class ClientReconnectsExceededError extends Error {
+  constructor() {
+    super('The listener failed to reconnect')
+    this.name = 'ClientReconnectsExceededError'
+  }
 }
 
 const RECONNECT: ReconnectEvent = {type: 'reconnect'}
@@ -38,6 +58,10 @@ const CONNECTED_EVENT_TYPES = new Set(['welcome', 'welcomeback', 'reset'])
 
 function isConnected(event: {type: string}): boolean {
   return CONNECTED_EVENT_TYPES.has(event.type)
+}
+
+function isRecoverable(error: unknown): boolean {
+  return error instanceof ClientReconnectsExceededError || isTransientListenerError(error)
 }
 
 /**
@@ -56,6 +80,28 @@ function announceEachOutageOnce<E extends {type: string}>(): MonoTypeOperatorFun
       ),
       mergeMap(({passed}) => (passed ? [passed] : [])),
     )
+}
+
+/**
+ * Fails a connection once the client has failed to reconnect on its own `maxClientReconnects`
+ * times without opening it. A connection opened with backoff fails after the first, until it opens.
+ */
+function clientReconnectsExceeded(
+  events$: Observable<{type: string}>,
+  maxClientReconnects: number,
+  openedWithBackoff: boolean,
+): Observable<never> {
+  return events$.pipe(
+    scan(
+      ({limit, count}, event) => {
+        if (isConnected(event)) return {limit: maxClientReconnects, count: 0}
+        return {limit, count: event.type === 'reconnect' ? count + 1 : count}
+      },
+      {limit: openedWithBackoff ? 1 : maxClientReconnects, count: 0},
+    ),
+    filter(({limit, count}) => count >= limit),
+    mergeMap(() => throwError(() => new ClientReconnectsExceededError())),
+  )
 }
 
 /**
@@ -83,6 +129,13 @@ export function reconnectDelay(
  *   react to when the client reconnects on its own: the document form turns read-only, document
  *   lists mark themselves as not live. A `reconnect` the listener emitted itself starts the outage
  *   too, so an outage never emits more than one.
+ * - the client retries a failed listen request on its own, at a fixed interval and for as long as
+ *   it keeps failing (every 3s after a network failure, every 1s after a 5xx), emitting a
+ *   `reconnect` for each attempt. Once it has emitted `maxClientReconnects` of them without
+ *   opening a connection, its connection is closed and replaced by one opened with backoff, and
+ *   every connection opened during the outage is replaced after its first failed attempt. A
+ *   connection opened this way cannot resume from the last event, so it opens with `welcome`
+ *   rather than `welcomeback`, which makes the consumers refetch.
  *
  * Any other error is passed on. Place the operator right after `client.listen()`, before the
  * listener is shared, so that a single recovery serves every subscriber.
@@ -92,22 +145,34 @@ export function reconnectDelay(
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  return (listener$) =>
-    defer(() => {
+  const {maxClientReconnects = 2} = options
+  return (listener$) => {
+    // A single connection: subscribing to it opens it. `connect` subscribes every branch before
+    // the listener, so they all see the events of a listener that emits as soon as it is
+    // subscribed, and in this order.
+    function openConnection(openedWithBackoff: boolean): Observable<T> {
+      return listener$.pipe(
+        connect((events$) =>
+          merge(clientReconnectsExceeded(events$, maxClientReconnects, openedWithBackoff), events$),
+        ),
+      )
+    }
+
+    return defer(() => {
       // Failed attempts since a connection last opened, which sets the backoff.
       let attempt = 0
 
-      return listener$.pipe(
+      return defer(() => openConnection(attempt > 0)).pipe(
         // A failure the backoff recovers from starts an outage before the next attempt.
         catchError((error) =>
           concat(
-            isTransientListenerError(error) ? of(RECONNECT) : EMPTY,
+            isRecoverable(error) ? of(RECONNECT) : EMPTY,
             throwError(() => error),
           ),
         ),
         retry({
           delay: (error) => {
-            if (!isTransientListenerError(error)) return throwError(() => error)
+            if (!isRecoverable(error)) return throwError(() => error)
             const delayMs = reconnectDelay(attempt, options)
             attempt += 1
             return timer(delayMs)
@@ -119,4 +184,5 @@ export function reconnectListener<T extends {type: string}>(
         announceEachOutageOnce(),
       )
     })
+  }
 }
