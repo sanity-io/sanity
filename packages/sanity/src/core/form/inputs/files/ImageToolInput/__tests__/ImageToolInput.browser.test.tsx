@@ -198,7 +198,7 @@ describe('image tool input', () => {
     )
     expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
 
-    await expect.element(getCropSize()).toHaveTextContent('2000 × 1000 px')
+    await expect.element(getCropSize()).toHaveTextContent('1000 × 1000 px')
     ;(cropRect.element() as SVGRectElement).focus()
     const modifier = getModifierKey()
     await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
@@ -209,7 +209,9 @@ describe('image tool input', () => {
     expect(dimensions.width).toBeLessThan(1000)
     expect(dimensions.width).toBeGreaterThanOrEqual(600)
     expect(state.image.hotspot).toBeUndefined()
-    await expect.element(getCropSize()).toHaveTextContent('1000 × 1000 px')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(`${dimensions.width} × ${dimensions.height} px`)
     await expect.element(getCropSize()).toHaveAttribute('data-tone', 'default')
     await settleChromaticEndState()
   })
