@@ -29,6 +29,10 @@ export interface ListenerPolicy {
   latencyMs: number
 }
 
+export interface SnapshotFetchPolicy {
+  mode: 'auto' | 'hold'
+}
+
 export interface TransactionRecord {
   transactionId: string
   identity: string
@@ -57,6 +61,9 @@ interface Connection {
 export interface ClientControls {
   commits: CommitPolicy
   listener: ListenerPolicy
+  /** Held fetches answer when released, with the documents as they are then. */
+  snapshotFetches: SnapshotFetchPolicy
+  releaseSnapshotFetches: () => void
   acceptNextCommit: () => void
   rejectNextCommit: (statusCode: number, description?: string) => void
   releaseHeldEvents: (options?: {count?: number; order?: 'fifo' | 'reverse'}) => void
@@ -121,6 +128,7 @@ export class FakeContentLake {
   private pendingCommits = new Map<string, PendingCommit[]>()
   private controls = new Map<string, ClientControls>()
   private brokenListeners = new Set<string>()
+  private heldSnapshotFetches = new Map<string, Array<() => void>>()
   private welcomeCounter = 0
   readonly transactions: TransactionRecord[] = []
   readonly rejectedCommits: Array<{clientId: string; transactionId: string; statusCode: number}> =
@@ -153,6 +161,8 @@ export class FakeContentLake {
     const controls: ClientControls = {
       commits: {mode: 'auto', latencyMs: 0},
       listener: {mode: 'auto', latencyMs: 0},
+      snapshotFetches: {mode: 'auto'},
+      releaseSnapshotFetches: () => this.releaseSnapshotFetches(clientId),
       acceptNextCommit: () => this.settleNextCommit(clientId, undefined),
       rejectNextCommit: (statusCode, description = `Rejected with ${statusCode}`) =>
         this.settleNextCommit(clientId, httpError(statusCode, description)),
@@ -189,6 +199,17 @@ export class FakeContentLake {
 
   getDocuments(ids: string[]): Array<SanityDocument | null> {
     return ids.map((id) => structuredClone(this.get(id)))
+  }
+
+  fetchDocuments(clientId: string, ids: string[]): Promise<Array<SanityDocument | null>> {
+    if (this.client(clientId).snapshotFetches.mode === 'auto') {
+      return Promise.resolve(this.getDocuments(ids))
+    }
+    return new Promise((resolve) => {
+      const held = this.heldSnapshotFetches.get(clientId) ?? []
+      held.push(() => resolve(this.getDocuments(ids)))
+      this.heldSnapshotFetches.set(clientId, held)
+    })
   }
 
   listen(clientId: string, ids: string[]): Observable<RawListenerEvent> {
@@ -410,6 +431,12 @@ export class FakeContentLake {
       const ordered = options?.order === 'reverse' ? batch.toReversed() : batch
       ordered.forEach((event) => connection.emit(event))
     })
+  }
+
+  private releaseSnapshotFetches(clientId: string): void {
+    const held = this.heldSnapshotFetches.get(clientId) ?? []
+    this.heldSnapshotFetches.delete(clientId)
+    held.forEach((answer) => answer())
   }
 
   private disconnect(clientId: string): void {

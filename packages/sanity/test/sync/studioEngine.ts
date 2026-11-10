@@ -1,6 +1,7 @@
 import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Subscription} from 'rxjs'
 
+import {type ConnectionState, toConnectionState} from '../../src/core/hooks/useConnectionState'
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
 import {checkoutPair} from '../../src/core/store/document/document-pair/checkoutPair'
 import {consistencyStatus} from '../../src/core/store/document/document-pair/consistencyStatus'
@@ -23,6 +24,11 @@ export interface EngineClient {
   consistent(): boolean
   errors(): unknown[]
   transactionLocked(): boolean
+  /**
+   * The connection state the document form reads (`useConnectionState`); the form is editable
+   * only while it is `connected`. Only the pair seam sees the listener's connection events.
+   */
+  connectionState?(): ConnectionState
   teardown(): void
 }
 
@@ -42,6 +48,7 @@ export function createStudioPairClient(options: StudioEngineOptions): EngineClie
   const errors: unknown[] = []
   let consistent = true
   let locked = false
+  let connection: ConnectionState = 'connecting'
 
   const subscriptions: Subscription[] = Object.entries(members).map(([documentId, member]) =>
     member.events.subscribe({
@@ -63,6 +70,12 @@ export function createStudioPairClient(options: StudioEngineOptions): EngineClie
     pair.transactionsPendingEvents$.subscribe({
       next: (event) => {
         locked = event.phase === 'begin'
+      },
+      error: (error) => errors.push(error),
+    }),
+    pair.draft.events.pipe(toConnectionState()).subscribe({
+      next: (state) => {
+        connection = state
       },
       error: (error) => errors.push(error),
     }),
@@ -89,6 +102,7 @@ export function createStudioPairClient(options: StudioEngineOptions): EngineClie
     consistent: () => consistent,
     errors: () => errors,
     transactionLocked: () => locked,
+    connectionState: () => connection,
     teardown: () => subscriptions.forEach((subscription) => subscription.unsubscribe()),
   }
 }

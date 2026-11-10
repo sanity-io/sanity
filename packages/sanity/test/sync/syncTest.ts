@@ -21,6 +21,8 @@ export type Step =
   | {client: string; do: 'rejectCommit'; statusCode: number}
   | {client: string; do: 'listener'; mode: 'auto' | 'hold'; latencyMs?: number}
   | {client: string; do: 'releaseEvents'; count?: number; order?: 'fifo' | 'reverse'}
+  | {client: string; do: 'snapshotFetches'; mode: 'auto' | 'hold'}
+  | {client: string; do: 'releaseSnapshotFetches'}
   | {client: string; do: 'dropEvent'}
   | {client: string; do: 'disconnect'}
   | {client: string; do: 'reconnect'; resume: boolean}
@@ -178,6 +180,12 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'releaseEvents':
       controls.releaseHeldEvents({count: step.count, order: step.order})
+      break
+    case 'snapshotFetches':
+      controls.snapshotFetches = {mode: step.mode}
+      break
+    case 'releaseSnapshotFetches':
+      controls.releaseSnapshotFetches()
       break
     case 'dropEvent':
       controls.dropNextHeldEvent()

@@ -228,22 +228,39 @@ export function getPairListener(
     ),
   )
 
-  const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      const shouldSyncDocument =
-        event.type === 'reset' ||
-        // note: resumability may not be enabled – if so, treat welcome the same way as a reset
-        event.type === 'welcome'
-      return shouldSyncDocument
-        ? fetchInitialDocumentSnapshots().pipe(
-            mergeMap(({draft, published, version}) => [
-              createSnapshotEvent(draftId, draft),
-              createSnapshotEvent(publishedId, published),
-              ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
-            ]),
-          )
-        : of(event)
-    }),
+  const pairEvents$ = defer(() => {
+    let hasSnapshots = false
+    return sharedEvents.pipe(
+      concatMap((event) => {
+        const shouldSyncDocument =
+          event.type === 'reset' ||
+          // note: resumability may not be enabled – if so, treat welcome the same way as a reset
+          event.type === 'welcome' ||
+          // The listener is down before it delivered anything: the snapshots are fetched without
+          // it, so the document can be shown while it reconnects, and again once it welcomes.
+          (event.type === 'reconnect' && !hasSnapshots)
+        if (!shouldSyncDocument) {
+          return of(event)
+        }
+        hasSnapshots = true
+        const snapshots$ = fetchInitialDocumentSnapshots().pipe(
+          mergeMap(({draft, published, version}) => [
+            createSnapshotEvent(draftId, draft),
+            createSnapshotEvent(publishedId, published),
+            ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
+          ]),
+        )
+        // The connection state follows the connection events alone, and a form is editable once
+        // it reads connected. A reconnect goes before its snapshots, so they are not shown as
+        // live. A welcome or reset goes after them: until the fresh snapshots have replaced the
+        // documents, the pair still holds the copies from before the outage, and edits made on
+        // those would be built on content the listener missed.
+        return event.type === 'reconnect'
+          ? concat(of(event), snapshots$)
+          : concat(snapshots$, of(event))
+      }),
+    )
+  }).pipe(
     scan(
       (
         acc: {
