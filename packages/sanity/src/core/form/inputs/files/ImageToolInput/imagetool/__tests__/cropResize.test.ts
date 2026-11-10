@@ -63,6 +63,28 @@ describe('getMinimumCropSize', () => {
     })
   })
 
+  test.each([
+    {width: 1, height: 1},
+    {width: 7, height: 5},
+    {width: 2, height: 1000},
+  ])('never drops below a pixel on a $width × $height source', (source) => {
+    const minimum = getMinimumCropSize(source)
+    expect(minimum.width).toBeGreaterThanOrEqual(1)
+    expect(minimum.height).toBeGreaterThanOrEqual(1)
+    expect(minimum.width).toBeLessThanOrEqual(source.width)
+    expect(minimum.height).toBeLessThanOrEqual(source.height)
+
+    const shrunk = resizeCropRect(
+      {x: 0, y: 0, width: source.width, height: source.height},
+      HANDLE_DIRECTIONS['crop-bottomRight'],
+      {x: 0, y: 0},
+      source,
+      {minimum},
+    )
+    expect(Math.round(shrunk.width)).toBeGreaterThanOrEqual(1)
+    expect(Math.round(shrunk.height)).toBeGreaterThanOrEqual(1)
+  })
+
   test('ignores a pixel minimum larger than the source', () => {
     expect(getMinimumCropSize({width: 400, height: 1000}, {width: 800, height: 600})).toEqual({
       width: 20,

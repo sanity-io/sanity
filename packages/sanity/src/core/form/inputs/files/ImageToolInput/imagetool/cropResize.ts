@@ -4,7 +4,7 @@ import {
   type ResolvedImageAspectRatio,
 } from '@sanity/util/image'
 
-import {MIN_CROP_SIZE} from './constants'
+import {MIN_CROP_PIXELS, MIN_CROP_SIZE} from './constants'
 import {type Size, type ToolHandleType} from './types'
 
 type AxisDirection = -1 | 0 | 1
@@ -41,11 +41,15 @@ export interface CropResizeOptions {
 
 /**
  * The smallest crop the handles allow, in source pixels: `minDimensions` when the source can hold
- * it, and never less than the tool's fractional floor. A source smaller than `minDimensions` keeps
- * only the floor, so the tool stays usable and validation reports the size instead.
+ * it, and never less than the tool's fractional floor or a pixel. A source smaller than
+ * `minDimensions` keeps only the floor, so the tool stays usable and validation reports the size
+ * instead.
  */
 export function getMinimumCropSize(source: Size, minDimensions?: Size): Size {
-  const floor = {width: source.width * MIN_CROP_SIZE, height: source.height * MIN_CROP_SIZE}
+  const floor = {
+    width: Math.min(Math.max(source.width * MIN_CROP_SIZE, MIN_CROP_PIXELS), source.width),
+    height: Math.min(Math.max(source.height * MIN_CROP_SIZE, MIN_CROP_PIXELS), source.height),
+  }
   const sourceHoldsMinimum =
     minDimensions !== undefined &&
     minDimensions.width <= source.width &&

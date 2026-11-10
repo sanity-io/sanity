@@ -18,13 +18,19 @@ export function largestSizeForRatio(
     : {width: bounds.width, height: bounds.width / ratio}
 }
 
+// A tiny source would otherwise get a crop that rounds to zero pixels.
+const MIN_CROP_PIXELS = 1
+
 /**
- * The largest rectangle at `ratio` that fits inside `source`, centered.
+ * The largest rectangle at `ratio` that fits inside `source`, centered, and at least a pixel on
+ * each axis.
  *
  * @internal
  */
 export function largestRectForRatio(source: ImageCropDimensions, ratio: number): ImagePixelRect {
-  const {width, height} = largestSizeForRatio(source, ratio)
+  const largest = largestSizeForRatio(source, ratio)
+  const width = Math.min(Math.max(largest.width, MIN_CROP_PIXELS), source.width)
+  const height = Math.min(Math.max(largest.height, MIN_CROP_PIXELS), source.height)
   return {
     x: (source.width - width) / 2,
     y: (source.height - height) / 2,

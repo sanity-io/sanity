@@ -93,3 +93,30 @@ describe('defaultCropRect', () => {
     expect(ratioOf(defaultCropRect({width: 3000, height: 1000}, SNAP))).toBeCloseTo(16 / 9)
   })
 })
+
+describe('defaultCropRect on tiny sources', () => {
+  const TINY_SOURCES: ImageCropDimensions[] = [
+    {width: 1, height: 1},
+    {width: 7, height: 5},
+    {width: 2, height: 1000},
+  ]
+  const CONSTRAINTS = [16 / 9, 4, 1 / 4, {min: 4 / 3, max: 16 / 9}, [1 / 3, 3]].map((aspectRatio) =>
+    resolveAspectRatio(aspectRatio),
+  )
+  const CASES = TINY_SOURCES.flatMap((source) =>
+    CONSTRAINTS.map((constraint) => ({source, constraint})),
+  )
+
+  it.each(CASES)(
+    'keeps a $source.width × $source.height crop at least a pixel on each axis',
+    ({source, constraint}) => {
+      const rect = defaultCropRect(source, constraint)
+      expect(rect.width).toBeGreaterThanOrEqual(1)
+      expect(rect.height).toBeGreaterThanOrEqual(1)
+      expect(rect.x).toBeGreaterThanOrEqual(0)
+      expect(rect.y).toBeGreaterThanOrEqual(0)
+      expect(rect.x + rect.width).toBeLessThanOrEqual(source.width)
+      expect(rect.y + rect.height).toBeLessThanOrEqual(source.height)
+    },
+  )
+})
