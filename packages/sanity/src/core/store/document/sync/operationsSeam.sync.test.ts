@@ -1,8 +1,14 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
-import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
+import {expectQuiescent, expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
+import {
+  createWorld,
+  runSteps,
+  runSyncTest,
+  type SyncTestDefinition,
+  type World,
+} from '../../../../../test/sync/syncTest'
 import {createSchema} from '../../../schema/createSchema'
 
 const schema = createSchema({
@@ -132,7 +138,8 @@ describe('editOperations and editState, live-edit document', () => {
       title:
         'A saves an edit to a live-edit document, then types a character and deletes it before the next autocommit, then deletes the document',
       seam: 'operations',
-      evidence: 'L3',
+      // L2: the bug is in BufferedDocument.add(), which runs for real here; the fake lake only supplies the echo
+      evidence: 'L2',
       knownBug: 'B3',
       initial: [liveDocument],
       idPair: liveIdPair,
@@ -147,11 +154,15 @@ describe('editOperations and editState, live-edit document', () => {
         {client: 'A', do: 'patch', id: LIVE_ID, patches: [{set: {title: 'Hello world'}}]},
         {do: 'advance', ms: 1_500},
         {client: 'A', do: 'delete'},
-        {do: 'settle'},
+        {do: 'advance', ms: 5_000},
       ],
     }
-    world = await runSyncTest(syncTest, {schema, typeName: 'liveArticle'})
+    const deleteWorld = await createWorld(syncTest, {schema, typeName: 'liveArticle'})
+    world = deleteWorld
+    await runSteps(deleteWorld, syncTest.steps)
 
-    expect(world.lake.get(LIVE_ID)).toBeNull()
+    expect(deleteWorld.lake.get(LIVE_ID)).toBeNull()
+    await deleteWorld.settle()
+    expectQuiescent(deleteWorld)
   })
 })
