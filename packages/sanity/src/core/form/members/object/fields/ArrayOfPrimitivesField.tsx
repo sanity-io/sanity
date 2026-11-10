@@ -7,6 +7,7 @@ import {
   type SchemaType,
   type StringSchemaType,
 } from '@sanity/types'
+import {accepts} from '@sanity/util/accepts'
 import {type FocusEvent, useCallback, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {filter, map, tap} from 'rxjs/operators'
@@ -24,7 +25,6 @@ import {type FieldMember} from '../../../store/types/members'
 import {type ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {accepts} from '../../../studio/uploads/accepts'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
 import {
   type Uploader,
@@ -334,11 +334,18 @@ export function ArrayOfPrimitivesField(props: {
 
   const handleUpload = useCallback(
     ({file, schemaType, uploader}: UploadEvent) => {
+      // Uploaded lines are appended, so the first of them lands at the current end of the array.
+      // Focusing it keeps the result in view when the array is rendered collapsed.
+      const firstUploadedIndex = (member.field.value || []).length
+
       const events$ = uploader.upload(client, file, schemaType).pipe(
         map((uploadProgressEvent: UploadProgressEvent) =>
           PatchEvent.from(uploadProgressEvent.patches || []),
         ),
-        tap((event) => handleChange(event.patches)),
+        tap((event) => {
+          handleChange(event.patches)
+          handleFocusIndex(firstUploadedIndex)
+        }),
       )
 
       if (uploadSubscriptions.current) {
@@ -346,7 +353,7 @@ export function ArrayOfPrimitivesField(props: {
       }
       uploadSubscriptions.current = events$.subscribe()
     },
-    [client, handleChange],
+    [client, handleChange, handleFocusIndex, member.field.value],
   )
 
   const inputProps = useMemo((): Omit<ArrayOfPrimitivesInputProps, 'renderDefault'> => {

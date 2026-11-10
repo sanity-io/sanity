@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ConfigErrorClassification} from '../../core/studio/requestErrors/classify'
 
@@ -19,7 +19,4 @@ export interface ConfigErrorValue {
 }
 
 /** @internal */
-export const ConfigErrorContext = createContext<ConfigErrorValue | null>(
-  'sanity/_singletons/context/config-error',
-  null,
-)
+export const ConfigErrorContext = createContext<ConfigErrorValue | null>(null)

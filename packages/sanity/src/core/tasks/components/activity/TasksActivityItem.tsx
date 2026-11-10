@@ -1,14 +1,7 @@
-import {styled} from 'styled-components'
 import {Flex, Box, type Space} from 'ui5'
 
 import {TasksUserAvatar} from '../TasksUserAvatar'
-
-const ActivityChildrenRoot = styled(Flex)`
-  height: 100%;
-`
-const ActivityItemChildrenContainer = styled.div`
-  width: 100%;
-`
+import {activityChildrenRoot, activityItemChildrenContainer} from './TasksActivityItem.css'
 
 interface ActivityItemProps {
   userId: string
@@ -21,9 +14,9 @@ export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityI
       <Box marginRight={3} paddingTop={avatarPaddingTop}>
         <TasksUserAvatar user={{id: userId}} size={0} />
       </Box>
-      <ActivityChildrenRoot alignItems="center" flexBasis="0%" flexGrow={1}>
-        <ActivityItemChildrenContainer>{children}</ActivityItemChildrenContainer>
-      </ActivityChildrenRoot>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} className={activityChildrenRoot}>
+        <div className={activityItemChildrenContainer}>{children}</div>
+      </Flex>
     </Flex>
   )
 }

@@ -1,15 +1,25 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {type SchemaType} from '@sanity/types'
-import {render} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {defineField, defineType, type SchemaType} from '@sanity/types'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {act, render, screen} from '@testing-library/react'
+import {type ComponentType, isValidElement, lazy, type ReactNode} from 'react'
+import {assert, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type PreviewProps} from '../../../components/previews/types'
+import {createSchema} from '../../../schema/createSchema'
 import {useValuePreview} from '../../useValuePreview'
 import {useVisibility} from '../../useVisibility'
 import {PreviewLoader} from '../PreviewLoader'
+import {SanityDefaultPreview} from '../SanityDefaultPreview'
 
 // Mock dependencies
 vi.mock('../../useValuePreview')
 vi.mock('../../useVisibility')
+// The lazy-component fallback renders `SanityDefaultPreview`, which builds an image URL builder
+// from the studio client; neither is exercised with icon media.
+vi.mock('../../../hooks/useClient', () => ({useClient: () => ({})}))
+vi.mock('@sanity/image-url', () => ({createImageUrlBuilder: () => ({})}))
 vi.mock('react-i18next', async (importOriginal) => ({
   ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
@@ -18,12 +28,40 @@ vi.mock('../_extractUploadState', () => ({
   _extractUploadState: () => null,
 }))
 
+const theme = buildTheme()
+
 // Mock component that captures the media prop for testing
 let capturedMedia: unknown
 const MockPreviewComponent = vi.fn((props: {media?: unknown}) => {
   capturedMedia = props.media
   return null
 })
+
+// Previews render media components with `dimensions` and `layout`, so a component schema icon
+// has to arrive as an element without props.
+function expectSchemaIconElement(media: unknown, Icon: ComponentType) {
+  assert(isValidElement(media), 'expected the schema icon as an element')
+  expect(media.type).toBe(Icon)
+  expect(media.props).toEqual({})
+}
+
+// Schema definitions accept any React node as an icon and the compiled type keeps it, even though
+// `SchemaType['icon']` is typed as a component only.
+function compileDocumentType(icon: ComponentType | ReactNode): SchemaType {
+  const schemaType = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'testDoc',
+        type: 'document',
+        icon,
+        fields: [defineField({name: 'title', type: 'string'})],
+      }),
+    ],
+  }).get('testDoc')
+  assert(schemaType, 'expected the testDoc type to compile')
+  return schemaType
+}
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -59,7 +97,7 @@ describe('PreviewLoader', () => {
       )
 
       // Verify the component was called with the schema icon as media
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show schema icon when prepare function exists but returns no media key', () => {
@@ -88,7 +126,7 @@ describe('PreviewLoader', () => {
       )
 
       // media key is absent, so fall back to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show returned media when prepare function returns media', () => {
@@ -205,7 +243,7 @@ describe('PreviewLoader', () => {
       )
 
       // media: undefined is not an explicit opt-out, fall back to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show schema icon when no preview config at all', () => {
@@ -231,7 +269,148 @@ describe('PreviewLoader', () => {
       )
 
       // No preview config means no prepare function, so fallback to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
+    })
+
+    it('renders a component schema icon without the media props of the preview', () => {
+      const schemaType = compileDocumentType(DocumentIcon)
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      render(
+        <ThemeProvider theme={theme}>
+          <PreviewLoader
+            component={SanityDefaultPreview}
+            schemaType={schemaType}
+            value={{_id: 'test', _type: 'testDoc'}}
+            skipVisibilityCheck
+          />
+        </ThemeProvider>,
+      )
+
+      // oxlint-disable-next-line testing-library/no-node-access -- the icon is an <svg> without a role or test id
+      const icon = screen.getByTestId('Media').querySelector('svg')
+      expect(icon).toHaveAttribute('data-sanity-icon', 'document')
+      expect(icon).not.toHaveAttribute('dimensions')
+      expect(icon).not.toHaveAttribute('layout')
+    })
+
+    it.each([
+      ['string', '📄'],
+      ['element', <span key="icon" data-testid="element-icon" />],
+    ])('passes %s schema icons through unchanged', (_kind, icon) => {
+      const schemaType = compileDocumentType(icon)
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      render(
+        <PreviewLoader
+          component={MockPreviewComponent}
+          schemaType={schemaType}
+          value={{_id: 'test', _type: 'testDoc'}}
+          skipVisibilityCheck
+        />,
+      )
+
+      expect(capturedMedia).toBe(icon)
+    })
+  })
+
+  describe('lazy preview component', () => {
+    type LoadedPreview = ComponentType<Omit<PreviewProps, 'renderDefault'>>
+
+    function renderLazyPreview(schemaType: SchemaType) {
+      let resolveComponent!: (component: LoadedPreview) => void
+      const LazyPreview = lazy(
+        () =>
+          new Promise<{default: LoadedPreview}>((resolve) => {
+            resolveComponent = (component) => resolve({default: component})
+          }),
+      )
+
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the lazy preview suspends during mount, and React only resumes work that suspended inside an awaited async `act`
+      const mounted = act(async () => {
+        render(
+          <ThemeProvider theme={theme}>
+            <PreviewLoader
+              component={LazyPreview}
+              schemaType={schemaType}
+              status={<span data-testid="preview-status" />}
+              value={{_id: 'test', _type: 'testDoc'}}
+              skipVisibilityCheck
+            />
+          </ThemeProvider>,
+        )
+      })
+      return {mounted, resolve: (component: LoadedPreview) => resolveComponent(component)}
+    }
+
+    it('shows the default preview placeholder until the component loads', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      const {mounted, resolve} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
+      // Layout props reach the placeholder too, so its footprint matches the loaded preview.
+      expect(screen.getByTestId('preview-status')).toBeInTheDocument()
+      // The loaded preview shows the type icon on the left and one text row, so the placeholder
+      // reserves the media slot and draws a single row.
+      expect(placeholder.querySelectorAll('[data-ui="Skeleton"]')).toHaveLength(1)
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(1)
+
+      await act(async () => {
+        resolve((props) => (
+          <div data-testid="loaded-preview">
+            {typeof props.title === 'string' ? props.title : null}
+          </div>
+        ))
+      })
+
+      expect(screen.getByTestId('loaded-preview')).toHaveTextContent('Test Title')
+      expect(screen.queryByTestId('default-preview')).not.toBeInTheDocument()
+    })
+
+    it('draws one row for a resolved value without a title, like the loaded title fallback', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      // `useValuePreview` settled, but the document has nothing to show for a title or subtitle.
+      vi.mocked(useValuePreview).mockReturnValue({
+        isLoading: false,
+        value: {title: undefined, subtitle: undefined},
+      })
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(1)
+    })
+
+    it('draws both rows while the value itself is still loading', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: true, value: undefined})
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(2)
+    })
+
+    it('reserves the media slot when the type has no icon, like the loaded fallback icon does', async () => {
+      const schemaType = {name: 'testDoc'} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({
+        isLoading: false,
+        value: {title: 'Test Title', subtitle: 'Second row'},
+      })
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="Skeleton"]')).toHaveLength(1)
+      // A value with a subtitle gets both rows.
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(2)
     })
   })
 })

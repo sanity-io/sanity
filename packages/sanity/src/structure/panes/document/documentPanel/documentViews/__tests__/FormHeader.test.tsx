@@ -1,5 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -46,5 +47,60 @@ describe('FormHeader', () => {
 
     // Check that the info icon is not present
     expect(screen.queryByTestId('schema-description-icon')).not.toBeInTheDocument()
+  })
+
+  it('renders the title as plain heading text without a title click handler', async () => {
+    const wrapper = await createTestProvider()
+
+    render(<FormHeader documentId="test-id" schemaType={mockSchemaType} title="Test Title" />, {
+      wrapper,
+    })
+
+    const heading = screen.getByTestId('document-panel-document-title')
+    expect(heading).toHaveTextContent('Test Title')
+    expect(within(heading).queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('calls the title click handler from a button inside the heading', async () => {
+    const user = userEvent.setup()
+    const onTitleClick = vi.fn()
+    const wrapper = await createTestProvider()
+
+    render(
+      <FormHeader
+        documentId="test-id"
+        schemaType={mockSchemaType}
+        title="Test Title"
+        onTitleClick={onTitleClick}
+      />,
+      {wrapper},
+    )
+
+    const heading = screen.getByRole('heading', {level: 2, name: 'Test Title'})
+    const button = within(heading).getByRole('button', {name: 'Test Title'})
+    expect(button).toHaveAttribute('type', 'button')
+    expect(button).toBe(screen.getByTestId('document-panel-document-title-field'))
+
+    await user.click(button)
+
+    expect(onTitleClick).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the untitled fallback clickable', async () => {
+    const user = userEvent.setup()
+    const onTitleClick = vi.fn()
+    const wrapper = await createTestProvider()
+
+    render(
+      <FormHeader documentId="test-id" schemaType={mockSchemaType} onTitleClick={onTitleClick} />,
+      {wrapper},
+    )
+
+    // `useTranslation` is mocked to return the key.
+    await user.click(
+      screen.getByRole('button', {name: 'document-view.form-view.form-title-fallback'}),
+    )
+
+    expect(onTitleClick).toHaveBeenCalledOnce()
   })
 })

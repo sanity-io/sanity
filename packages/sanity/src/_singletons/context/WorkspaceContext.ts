@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {Workspace} from '../../core/config/types'
 
 /**
  * @internal
  */
-export const WorkspaceContext = createContext<Workspace | null>(
-  'sanity/_singletons/context/workspace',
-  null,
-)
+export const WorkspaceContext = createContext<Workspace | null>(null)

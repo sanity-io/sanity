@@ -1,3 +1,5 @@
+import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
+import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
 import {
   createBatchedStore,
   type CreateBatchedStoreOptions,
@@ -27,7 +29,7 @@ import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
-import {debugLoggingStore} from './utils/debugLoggingStore'
+import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 const sessionId = createSessionId()
 
@@ -117,6 +119,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       },
       studioVersion: SANITY_VERSION,
       reactVersion,
+      portableTextEditorVersion: portableTextEditorManifest.version,
+      appSdkVersion: appSdkManifest.version,
       environment: isProd ? 'production' : 'development',
       connection: getConnection(),
 
@@ -142,9 +146,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   ])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
-
-    if (debugTelemetry) {
+    if (isDebugTelemetryEnabled()) {
       return debugLoggingStore
     }
     return {

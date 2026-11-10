@@ -14,7 +14,9 @@ import debounce from 'lodash-es/debounce.js'
 import {AnimatePresence} from 'motion/react'
 import {
   memo,
+  type PropsWithChildren,
   startTransition,
+  use,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -32,6 +34,7 @@ import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineH
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
 import {useComments} from '../../../hooks/useComments'
 import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../../hooks/useCommentsMode'
 import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
@@ -39,17 +42,15 @@ import {
   type CommentDocument,
   type CommentFieldCreatePayload,
   type CommentMessage,
-  type CommentsTextSelectionItem,
-  type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
 import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
-import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+import {buildCommentRangeUpdate} from '../../../utils/inline-comments/buildCommentRangeUpdate'
 import {
   buildTextSelectionFromFragment,
   getCommentFieldPath,
 } from '../../../utils/inline-comments/buildTextSelectionFromFragment'
-import {selectionsToRange, selectionToRange} from '../../../utils/inline-comments/selectionToRange'
+import {selectionToRange} from '../../../utils/inline-comments/selectionToRange'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -59,7 +60,7 @@ const EMPTY_ARRAY: [] = []
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
   const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
@@ -78,13 +79,16 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     return props.renderDefault(props)
   }
 
-  return <CommentsPortableTextInputInner {...props} mode={mode} />
+  return <CommentsPortableTextInputInner {...props} />
 }
 
 const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
-  props: PortableTextInputProps & {mode: CommentsUIMode},
+  props: PortableTextInputProps,
 ) {
-  const {mode, onItemClose, onItemOpen} = props
+  const {onItemClose, onItemOpen} = props
+  // Settled in place by the plugin's provider long before a form renders, so this reads
+  // synchronously; a form that does get here first waits under the document pane's boundary
+  const mode = use(useCommentsMode())
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -136,6 +140,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
   const [addedCommentsDecorations, setAddedCommentsDecorations] =
     useState<RangeDecoration[]>(EMPTY_ARRAY)
+  const dirtyCommentIdsRef = useRef(new Set<string>())
 
   const [fragment, setFragment] = useState<PortableTextBlock[] | null>(null)
 
@@ -163,6 +168,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
+    if (mode === null) {
+      // The feature check failed: the inspector explains that comments are unavailable
+      onCommentsOpen?.()
+      return
+    }
     // When trying to add a comment in "upsell" mode, we want to
     // display the upsell dialog instead of the comment input popover.
     if (mode === 'upsell') {
@@ -172,7 +182,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     const currentFragment = getFragment() || null
     setFragment(currentFragment)
     setNextCommentSelection(currentSelection)
-  }, [currentSelection, getFragment, handleOpenDialog, mode])
+  }, [currentSelection, getFragment, handleOpenDialog, mode, onCommentsOpen])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -218,11 +228,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
-      const range = selectionToRange(normalizedSelection, editorValue) ?? undefined
+      const textAnchor = selectionToRange(normalizedSelection, editorValue) ?? undefined
 
       const threadId = uuid()
 
-      const payload: Omit<CommentFieldCreatePayload, 'range' | 'fieldValue'> = {
+      const payload: Omit<CommentFieldCreatePayload, 'anchor'> = {
         type: 'field',
         contentSnapshot: fragment,
         fieldPath,
@@ -234,7 +244,9 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         threadId,
       }
 
-      void operation.create(range ? {...payload, range, fieldValue: editorValue} : payload)
+      void operation.create(
+        textAnchor ? {...payload, anchor: {...textAnchor, fieldValue: editorValue}} : payload,
+      )
 
       // Open the inspector when a new comment is added
       onCommentsOpen?.()
@@ -377,9 +389,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     const commentId = rangeDecoration.payload?.commentId
     if (typeof commentId !== 'string') return
 
+    dirtyCommentIdsRef.current.add(commentId)
+
     // Update the range decoration with the new selection.
     setAddedCommentsDecorations((prev) => {
-      const next = prev.map((p) => {
+      return prev.map((p) => {
         if (p.payload?.commentId === commentId) {
           const nextDecoration: RangeDecoration = {
             ...rangeDecoration,
@@ -390,23 +404,24 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         }
         return p
       })
-      return next
     })
   }, [])
 
   const updateCommentRange = useCallback(() => {
-    const decoratorsToUpdate = addedCommentsDecorations.filter(
-      (decorator) => decorator.payload?.dirty,
-    )
-    if (decoratorsToUpdate.length === 0) return
+    const commentIdsToUpdate = Array.from(dirtyCommentIdsRef.current)
+    if (commentIdsToUpdate.length === 0) return
 
-    decoratorsToUpdate.forEach((decorator) => {
-      const commentId = decorator.payload?.commentId
-      if (typeof commentId !== 'string') return
+    // Offsets must be computed against the editor's live value, which is also
+    // what is sent as `anchor.fieldValue`. Without an editor there is nothing to
+    // rematch against, so leave the comments dirty for the next edit.
+    if (!editorRef.current) return
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
+    commentIdsToUpdate.forEach((commentId) => {
       const comment = getComment(commentId)
 
-      // If the comment no longer exists, remove the range decoration.
+      // Deleted comments are dropped from decorations below. Skip persist.
       if (!comment) {
         return
       }
@@ -424,30 +439,12 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const commentFieldPath = parseCommentFieldPath(comment.target.path?.field)
       if (!commentFieldPath || !PathUtils.isEqual(commentFieldPath, props.path)) return
 
-      // The below code will update the comment object to reflect the new selection
-      if (!editorRef.current) return
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
-
-      const updatedDecorations = buildRangeDecorationSelectionsFromComments({
-        comments: [comment],
+      const {anchor: textAnchor, selection} = buildCommentRangeUpdate({
+        comment,
         value: editorValue,
         documentValue: documentValueRef.current,
         basePath: props.path,
       })
-      const [updatedDecoration] = updatedDecorations
-
-      const nextRange = updatedDecoration?.range ? [updatedDecoration.range] : EMPTY_ARRAY
-
-      const nextValue: CommentsTextSelectionItem[] = updatedDecoration
-        ? [
-            ...(comment.target.path?.selection?.value
-              .filter((r) => r._key !== nextRange[0]?._key)
-              .concat(nextRange)
-              .flat()
-              .sort((a, b) => a._key.localeCompare(b._key)) || EMPTY_ARRAY),
-          ]
-        : EMPTY_ARRAY
 
       const nextComment: CommentUpdatePayload = {
         target: {
@@ -455,10 +452,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
           path: {
             ...comment.target?.path,
             field: comment.target.path?.field || '',
-            selection: {
-              type: 'text',
-              value: nextValue,
-            },
+            selection,
           },
         },
       }
@@ -466,18 +460,16 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const hasChanged = !isEqual(comment.target, nextComment.target)
 
       if (hasChanged) {
-        const range = selectionsToRange(
-          updatedDecorations.map((d) => d.selection),
-          editorValue,
-        )
-
-        // API gets range + fieldValue (or null to clear); optimisticUpdate patches the
+        // API gets an anchor (or null to detach); optimisticUpdate patches the
         // local comment immediately while that request is in flight.
         void operation.updateRange(
           comment._id,
-          range
-            ? {range, fieldValue: editorValue, optimisticUpdate: nextComment}
-            : {range: null, optimisticUpdate: nextComment},
+          textAnchor
+            ? {
+                anchor: {...textAnchor, fieldValue: editorValue},
+                optimisticUpdate: nextComment,
+              }
+            : {anchor: null, optimisticUpdate: nextComment},
         )
       }
     })
@@ -485,9 +477,8 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     // Mark the range decorations as not dirty
     setAddedCommentsDecorations((prev) => {
       const next = prev.map((p) => {
-        const isDirty = decoratorsToUpdate.find(
-          (d) => d.payload?.commentId === p.payload?.commentId,
-        )?.payload?.dirty
+        const commentId = p.payload?.commentId
+        const isDirty = typeof commentId === 'string' && commentIdsToUpdate.includes(commentId)
 
         if (isDirty) {
           const nextDecoration: RangeDecoration = {
@@ -498,9 +489,23 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         }
         return p
       })
-      return next.filter((p) => p.selection !== null)
+      return next.filter((p) => {
+        if (p.selection === null) return false
+        const commentId = p.payload?.commentId
+        if (
+          typeof commentId === 'string' &&
+          commentIdsToUpdate.includes(commentId) &&
+          !getComment(commentId)
+        ) {
+          return false
+        }
+        return true
+      })
     })
-  }, [addedCommentsDecorations, versionId, getComment, operation, props.path])
+    commentIdsToUpdate.forEach((commentId) => dirtyCommentIdsRef.current.delete(commentId))
+  }, [versionId, getComment, operation, props.path])
+
+  const debounceCommentRangeUpdate = useDebounceCommentRangeUpdate()
 
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
@@ -533,16 +538,30 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'mutation') {
-        updateCommentRange()
+        debounceCommentRangeUpdate(updateCommentRange)
       }
       if (change.type === 'blur') {
+        debounceCommentRangeUpdate.flush()
         blurred.current = true
       }
       if (change.type === 'selection') {
         debounceSelectionChange(change.selection)
       }
     },
-    [debounceSelectionChange, updateCommentRange],
+    [debounceCommentRangeUpdate, debounceSelectionChange, updateCommentRange],
+  )
+
+  // The editor invokes a range decoration's `component` as a plain render
+  // callback (`rangeDecoration.component({children})`), so this is not a
+  // component type and a stable identity is enough. The state setter it
+  // captures never changes.
+  const renderAuthoringDecoration = useCallback(
+    ({children}: PropsWithChildren) => (
+      <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
+        {children}
+      </CommentInlineHighlightSpan>
+    ),
+    [],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -552,14 +571,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (!nextCommentSelection) return null
 
     return {
-      component: ({children}) => (
-        <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
-          {children}
-        </CommentInlineHighlightSpan>
-      ),
+      component: renderAuthoringDecoration,
       selection: nextCommentSelection,
     }
-  }, [nextCommentSelection])
+  }, [nextCommentSelection, renderAuthoringDecoration])
 
   // All the range decorations
   const rangeDecorations: RangeDecoration[] = [
@@ -725,6 +740,20 @@ function useDebounceSelectionChange(
 ) {
   return useMemo(() => debounce(handleSelectionChange, 200), [handleSelectionChange])
 }
+
+// Stable debounce for persisting ranges. The update is passed in so the timer
+// is not recreated when `updateCommentRange` changes. 500ms is long enough to
+// ride out typing pauses; blur flushes. Cancelled rather than flushed on
+// unmount, since the editor is gone by then and there is nothing to rematch
+// against. The comments stay dirty and are persisted on the next edit.
+function useDebounceCommentRangeUpdate() {
+  const debounced = useMemo(() => debounce((update: () => void) => update(), 500), [])
+
+  useEffect(() => () => debounced.cancel(), [debounced])
+
+  return debounced
+}
+
 // Used to workaround restrictions on passing refs to functions in react compiler
 function RenderDefaultCommentsPortableTextInputInner(
   props: React.ComponentProps<typeof CommentsPortableTextInputInner>,

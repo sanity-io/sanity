@@ -27,7 +27,7 @@ vi.mock('@sanity/ui', async (importOriginal) => ({
 }))
 
 vi.mock('../../../../../../ui-components/toneIcon/ToneIcon', () => ({
-  ToneIcon: () => <span data-testid="tone-icon" />,
+  ToneIcon: ({icon: _icon, tone: _tone, ...props}: Record<string, unknown>) => <span {...props} />,
 }))
 
 // Stub Tooltip so we can assert its presence without a portal/full DOM tree.

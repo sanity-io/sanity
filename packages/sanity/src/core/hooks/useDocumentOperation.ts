@@ -5,7 +5,7 @@ import {useDocumentStore} from '../store/datastores'
 import {GUARDED} from '../store/document/document-pair/operations/helpers'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'
 import {type DocumentPairTarget} from '../store/document/types'
-import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
+import {useDocumentOperationWithHistory} from './useDocumentOperationWithHistory'
 import {useMemoizedDocumentPairTarget} from './useMemoizedDocumentPairTarget'
 
 /**
@@ -37,7 +37,7 @@ export function useDocumentOperation(
   // `GUARDED` is also what the pair emits first, so nothing can execute before it is ready.
   const api = useSyncObservable(observable, GUARDED)
 
-  return useDocumentOperationWithComlinkHistory({
+  return useDocumentOperationWithHistory({
     api,
     docTypeName,
     publishedDocId,

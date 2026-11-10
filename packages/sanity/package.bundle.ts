@@ -4,12 +4,13 @@ import {defineConfig, mergeConfig} from 'vite'
 import pkg from './package.json' with {type: 'json'}
 
 export default defineConfig(() => {
-  return mergeConfig(createDefaultConfig({version: pkg.version}), {
+  return mergeConfig(createDefaultConfig({version: pkg.version, styles: 'panda'}), {
     build: {
       lib: {
         entry: {
           '_singletons': './src/_exports/_singletons.ts',
-          '_createContext': './src/_exports/_createContext.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts',
           // 'sanity' module
           'index': './src/_exports/index.ts',
           'desk': './src/_exports/desk.ts',

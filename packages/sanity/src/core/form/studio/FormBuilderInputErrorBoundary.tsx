@@ -1,7 +1,7 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
-import {Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
@@ -61,14 +61,14 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
 
   return (
     <Alert status="error" title={<>{t('form.error.unhandled-runtime-error.title')}</>}>
-      <Stack gap={4}>
-        <Text as="p" muted size={1}>
+      <VStack gap={4}>
+        <Text as="p" muted size={1} trim={true} tone="critical">
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
         {callStack && (
           <Box key="call-stack">
-            <Stack gap={2}>
-              <Text as="p" size={1}>
+            <VStack gap={2}>
+              <Text as="p" size={1} trim={true} tone="critical">
                 <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">
@@ -78,13 +78,13 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
                   </Code>
                 )}
               </Card>
-            </Stack>
+            </VStack>
           </Box>
         )}
         {isDev && componentStack && (
           <Box key="component-stack">
-            <Stack gap={2}>
-              <Text as="p" size={1}>
+            <VStack gap={2}>
+              <Text as="p" size={1} trim={true} tone="critical">
                 <>{t('form.error.unhandled-runtime-error.component-stack.title')}</>
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">
@@ -94,10 +94,10 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
                   </Code>
                 )}
               </Card>
-            </Stack>
+            </VStack>
           </Box>
         )}
-      </Stack>
+      </VStack>
     </Alert>
   )
 }

@@ -143,7 +143,10 @@ function createTestActor(
   }: {
     requestDeletionConfirmation?: () => void
     deleteVariants?: () => Promise<unknown>
-    createVariant?: (options: {signal: AbortSignal}) => Promise<unknown>
+    createVariant?: (options: {
+      signal: AbortSignal
+      input: {baseId?: string; variantDefinition?: unknown}
+    }) => Promise<unknown>
     meta?: Meta | Observable<Meta>
     variantsEnabled?: boolean
     readOnly?: boolean
@@ -178,11 +181,11 @@ function createTestActor(
           actors: {
             variants: fromObservable(() => of(creationVariants)),
             releases: fromObservable(() => of(creationReleases)),
-            createVariant: fromPromise(async ({signal}) => {
+            createVariant: fromPromise(async ({signal, input}) => {
               // Defaults to a resolving no-op; tests override to exercise
               // outcomes. The signal is forwarded so tests can observe
               // cancellation aborting the in-flight creation.
-              if (createVariant) await createVariant({signal})
+              if (createVariant) await createVariant({signal, input})
             }),
           },
         }),
@@ -766,6 +769,34 @@ describe('documentGroupInventoryMachine', () => {
     expect(variantCreationRef.getSnapshot().context.selectedBundle).toBeUndefined()
   })
 
+  it('creates the variant from the picked version, and from the nearest one when none is picked', async () => {
+    const createVariant = vi.fn().mockResolvedValue(undefined)
+    const {variantCreationRef} = createTestActor(loading, {createVariant, variantsEnabled: true})
+
+    variantCreationRef.send({type: 'createVariant.request'})
+    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: 'variant-a'})
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.selectBase', baseId: 'foo'})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true))
+    expect(createVariant).toHaveBeenLastCalledWith(
+      expect.objectContaining({input: expect.objectContaining({baseId: 'foo'})}),
+    )
+    expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBeUndefined()
+
+    // The picked version is not carried into the next flow either.
+    variantCreationRef.send({type: 'createVariant.request'})
+    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: 'variant-a'})
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(createVariant).toHaveBeenCalledTimes(2))
+    expect(createVariant).toHaveBeenLastCalledWith(
+      expect.objectContaining({input: expect.objectContaining({baseId: undefined})}),
+    )
+  })
+
   it('captures the thrown value and enters the error state when variant creation fails', async () => {
     const failure = new Error('create variant failed')
     const {variantCreationRef} = createTestActor(loading, {
@@ -810,22 +841,33 @@ describe('documentGroupInventoryMachine', () => {
     expect(createVariant).toHaveBeenCalledTimes(1)
   })
 
-  it('does not leave the feedback state when variant creation deactivates', () => {
+  it('begins and ends feedback from idle', () => {
+    const {inventoryRef} = createTestActor(loading)
+
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(true)
+
+    inventoryRef.send({type: 'feedback.begin'})
+    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
+
+    inventoryRef.send({type: 'feedback.end'})
+    expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('refuses to begin feedback while a variant is being created', () => {
     const {inventoryRef, variantCreationRef} = createTestActor(loading, {variantsEnabled: true})
 
     variantCreationRef.send({type: 'createVariant.request'})
     expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
 
-    // Feedback takes over the parent state while the creation flow is active.
     inventoryRef.send({type: 'feedback.begin'})
-    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
+    expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
 
-    // Deactivation must not yank the machine out of the feedback state.
-    variantCreationRef.send({type: 'createVariant.cancel'})
-    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
-
+    // Ending feedback that never began must not abandon the creation flow.
     inventoryRef.send({type: 'feedback.end'})
-    expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+    expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
+    expect(variantCreationRef.getSnapshot().matches('active')).toBe(true)
   })
 
   it('aborts the in-flight creation when cancelled mid-creation', () => {
@@ -951,6 +993,15 @@ describe('documentGroupInventoryMachine', () => {
 
       variantCreationRef.send({type: 'createVariant.request'})
       expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+      expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+    })
+
+    it('refuses to begin feedback', () => {
+      const {inventoryRef} = createTestActor(loading, {readOnly: true})
+
+      expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
+
+      inventoryRef.send({type: 'feedback.begin'})
       expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
     })
 

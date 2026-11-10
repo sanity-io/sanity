@@ -1,10 +1,11 @@
-import {Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Flex, Icon} from 'ui5'
 
+import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
@@ -25,19 +26,33 @@ const IconSlotRoot = styled.div`
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
   }
+  &[data-status='published'] svg {
+    --icon-color: var(--card-badge-positive-dot-color);
+  }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+  }
+  &[data-status='draft'] svg {
+    --icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='variant'] {
     --card-icon-color: var(--card-badge-suggest-dot-color);
   }
+  &[data-status='variant'] svg {
+    --icon-color: var(--card-badge-suggest-dot-color);
+  }
+
+  & svg {
+    flex-shrink: 0;
+  }
 `
 
 /**
- * The icons are `1em` boxes in a 25-unit viewBox, like everything in `@sanity/icons`, so a `Text` is
- * what sizes them: it resolves the em to the text size's icon size — 17px at size 0 — and applies
- * the negative margin that centres the glyph on the cap height. It is also what makes them honour
- * `--card-icon-color`, which is how each icon gets its tone.
+ * Centers a status glyph in a fixed 15px column. Draft, published, and variant slots set
+ * `--icon-color` on the svg (ui5 `Icon` re-declares that variable on the element, shadowing an
+ * ancestor) and `--card-icon-color` on the root for v4 call sites. Release uses
+ * `ReleaseAvatarIcon`, which sets both variables inline on its `Icon`. Glyphs use ui5
+ * `Icon size={2}` (or `ReleaseAvatarIcon` with `fontSize={2}`), not v4 `Text` descendant rules.
  */
 function IconSlot({
   status,
@@ -46,46 +61,55 @@ function IconSlot({
   status?: 'published' | 'draft' | 'variant'
   children: ReactNode
 }) {
-  return (
-    <IconSlotRoot data-status={status}>
-      <Text size={2}>{children}</Text>
-    </IconSlotRoot>
-  )
+  return <IconSlotRoot data-status={status}>{children}</IconSlotRoot>
 }
 
 function VariantIcon() {
   return (
     <IconSlot status="variant">
-      <RhombusIcon />
+      <Icon icon={RhombusIcon} size={2} />
     </IconSlot>
   )
 }
 
-function renderDocumentStatusIcon(
-  icon: DocumentStatusIconKind,
-  selectedPerspective: TargetPerspective,
-) {
-  switch (icon) {
+/**
+ * A single document status glyph in its 15px slot. `release` is the perspective the release icon
+ * is drawn for; the other kinds ignore it.
+ *
+ * @internal
+ */
+export function DocumentStatusIcon({
+  kind,
+  release,
+}: {
+  kind: DocumentStatusIconKind
+  release?: TargetPerspective
+}) {
+  switch (kind) {
     case 'variant':
-      return <VariantIcon key="variant" />
+      return <VariantIcon />
     case 'release':
-      return (
-        <IconSlot key="release">
-          <ReleaseAvatarIcon release={selectedPerspective} size="small" />
+      return release ? (
+        <IconSlot>
+          <ReleaseAvatar release={release} size="small" padding={2} />
         </IconSlot>
-      )
+      ) : null
     case 'draft':
       return (
-        <IconSlot key="draft" status="draft">
-          <RingIcon />
+        <IconSlot status="draft">
+          <Icon icon={RingIcon} size={2} />
         </IconSlot>
       )
     case 'published':
       return (
-        <IconSlot key="published" status="published">
-          <CircleSmallIcon />
+        <IconSlot status="published">
+          <Icon icon={CircleSmallIcon} size={2} />
         </IconSlot>
       )
+    default: {
+      const unknownKind: never = kind
+      return unknownKind
+    }
   }
 }
 
@@ -100,7 +124,8 @@ function renderDocumentStatusIcon(
  * @internal
  */
 export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStatusProps) {
-  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
 
   const icons = resolveDocumentStatusIcons({
     bundle,
@@ -113,8 +138,10 @@ export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStat
   }
 
   return (
-    <Flex align="center">
-      {icons.map((icon) => renderDocumentStatusIcon(icon, selectedPerspective))}
+    <Flex alignItems="center">
+      {icons.map((icon) => (
+        <DocumentStatusIcon key={icon} kind={icon} release={selectedPerspective} />
+      ))}
     </Flex>
   )
 }

@@ -15,7 +15,7 @@ describe('toVariantDocumentVersion', () => {
         _system: {
           bundleId: null,
           release: null,
-          variant: {_ref: variantAlphaAudience._id, _weak: true},
+          variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
           group: {_ref: 'article-1', _weak: true},
           scopeId: 'scope',
         },
@@ -39,7 +39,7 @@ describe('toVariantDocumentVersion', () => {
         _system: {
           bundleId: 'drafts',
           release: null,
-          variant: {_ref: variantAlphaAudience._id, _weak: true},
+          variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
           group: {_ref: 'article-1', _weak: true},
           scopeId: null,
         },

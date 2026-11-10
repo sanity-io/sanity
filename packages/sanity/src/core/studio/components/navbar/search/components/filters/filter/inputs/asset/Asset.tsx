@@ -3,12 +3,11 @@ import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
 import {UndoIcon} from '@sanity/icons/Undo'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
-import {Portal, Stack} from '@sanity/ui'
+import {Portal} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../../../../../../ui-components/menuButton/MenuButton'
@@ -22,6 +21,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioCl
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {containerBox} from './Asset.css'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -31,10 +31,6 @@ const ASSET_TYPE: Record<AssetType, string> = {
   file: 'sanity.fileAsset',
   image: 'sanity.imageAsset',
 }
-
-const ContainerBox = styled(Box)`
-  width: min(calc(100vw - 40px), 320px);
-`
 
 export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({
@@ -120,8 +116,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 
     return (
-      <ContainerBox>
-        <Stack gap={3}>
+      <Box className={containerBox}>
+        <VStack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>
@@ -203,8 +199,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
               />
             )}
           </Flex>
-        </Stack>
-      </ContainerBox>
+        </VStack>
+      </Box>
     )
   }
 }

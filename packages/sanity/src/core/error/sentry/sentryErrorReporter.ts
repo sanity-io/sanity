@@ -8,12 +8,12 @@ import {
   defaultStackParser,
   type ErrorEvent,
   type Event,
+  eventFiltersIntegration,
   functionToStringIntegration,
   getClient,
   getCurrentScope,
   globalHandlersIntegration,
   httpContextIntegration,
-  inboundFiltersIntegration,
   init,
   isInitialized as sentryIsInitialized,
   linkedErrorsIntegration,
@@ -28,6 +28,7 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
+import {scrubAutomaticPii, studioSentryDataCollection} from './sentryPrivacy'
 
 /** @internal
  * The Sentry project DSN for the Sanity Studio project in Sentry.
@@ -49,14 +50,16 @@ const clientOptions: BrowserOptions = {
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
+  dataCollection: studioSentryDataCollection,
 }
 
 const integrations = [
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  inboundFiltersIntegration(),
+  eventFiltersIntegration(),
   functionToStringIntegration(),
   browserApiErrorsIntegration({eventTarget: false}),
-  breadcrumbsIntegration({console: false}),
+  // Console breadcrumbs moved to `consoleIntegration` in v11. Studio disabled
+  // them (`console: false`); leaving that integration out keeps them off.
+  breadcrumbsIntegration(),
   globalHandlersIntegration({onerror: true, onunhandledrejection: true}),
   linkedErrorsIntegration(),
   dedupeIntegration(),
@@ -293,7 +296,7 @@ export function beforeSend(event: ErrorEvent): ErrorEvent | null {
   }
 
   setAsUnhandled(event)
-  return scrubPii(event)
+  return scrubAutomaticPii(event)
 }
 
 /**
@@ -337,25 +340,6 @@ function isTeardownAbort(event: ErrorEvent): boolean {
         exception.type === 'AbortError' || (exception.value || '').startsWith('AbortError:'),
     )
   )
-}
-
-/**
- * Strips personally identifiable information from a Sentry event so that
- * error reports never contain data that could identify a user.
- *
- * @param event - The event to scrub
- * @returns The scrubbed event
- * @internal
- */
-function scrubPii<T extends ErrorEvent>(event: T): T {
-  delete event.user
-  // kept out due to concerns around headers being sent to Sentry
-  delete event.request
-
-  // Prevent Sentry from inferring IP from the HTTP request
-  event.user = {ip_address: '0.0.0.0'}
-
-  return event
 }
 
 /**

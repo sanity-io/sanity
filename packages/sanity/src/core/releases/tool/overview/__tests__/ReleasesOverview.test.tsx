@@ -17,6 +17,7 @@ import {
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {type UpsellDataResult} from '../../../../studio/upsell/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -217,8 +218,8 @@ const TestComponent = () => {
 }
 
 async function mountAndFlush(...args: Parameters<typeof render>) {
-  const view = render(...args)
-  await act(() => Promise.resolve())
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the upsell panels read their settled promise with `use()`; a sync act stops flushing at that read and React warns that the act was not awaited
+  const view = await act(async () => render(...args))
   return view
 }
 
@@ -235,7 +236,7 @@ describe('ReleasesOverview', () => {
       onReleaseLimitReached: vi.fn(),
       upsellDialogOpen: false,
       handleOpenDialog: vi.fn(),
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         dialogSecondaryClicked: vi.fn(),
         dialogPrimaryClicked: vi.fn(),
@@ -252,7 +253,7 @@ describe('ReleasesOverview', () => {
     })
 
     mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         panelViewed: vi.fn(),
         panelDismissed: vi.fn(),
@@ -309,7 +310,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for creating a new release', () => {
-      expect(screen.getByText('New release')).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'New release'})).toBeEnabled()
     })
   })
 
@@ -340,7 +341,26 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows create new releases button', () => {
-      expect(screen.getByText('New release')).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'New release'})).toBeEnabled()
+    })
+  })
+
+  describe('when the workspace release limit is reached', () => {
+    beforeEach(async () => {
+      const wrapper = await createTestProvider({
+        config: {releases: {limit: 0}},
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      return mountAndFlush(<TestComponent />, {wrapper})
+    })
+
+    it('disables the create new release button and explains the limit', async () => {
+      const createReleaseButton = screen.getByRole('button', {name: 'New release'})
+      expect(createReleaseButton).toBeDisabled()
+
+      await userEvent.hover(createReleaseButton)
+      expect(await screen.findByText('This workspace is limited to 0 releases')).toBeInTheDocument()
     })
   })
 
@@ -574,7 +594,7 @@ describe('ReleasesOverview', () => {
         const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
           'day-tile-today',
         )
-        expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
+        expect(todayTile.firstElementChild!.firstElementChild).toHaveStyle({fontWeight: '700'})
       })
 
       describe('selecting a release date', () => {
@@ -1217,6 +1237,12 @@ describe('ReleasesOverview', () => {
       _rev: '1',
       id: 'test-upsell',
     }
+    const mockUpsellDataValue: UpsellDataResult = {upsellData: mockUpsellData, hasError: false}
+    // Already settled, so `use()` reads it without suspending
+    const mockUpsellDataPromise = Object.assign(Promise.resolve(mockUpsellDataValue), {
+      status: 'fulfilled' as const,
+      value: mockUpsellDataValue,
+    })
 
     const setupEmptyState = () => {
       mockUseActiveReleases.mockReturnValue({
@@ -1236,7 +1262,7 @@ describe('ReleasesOverview', () => {
         onReleaseLimitReached: vi.fn(),
         upsellDialogOpen: false,
         handleOpenDialog: vi.fn(),
-        upsellData: mockUpsellData,
+        upsellDataPromise: mockUpsellDataPromise,
         telemetryLogs: {
           dialogSecondaryClicked: vi.fn(),
           dialogPrimaryClicked: vi.fn(),
@@ -1332,7 +1358,7 @@ describe('ReleasesOverview', () => {
             mode: 'upsell',
           })
           mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-            upsellData: mockUpsellData,
+            upsellDataPromise: mockUpsellDataPromise,
             telemetryLogs: {
               panelViewed: vi.fn(),
               panelDismissed: vi.fn(),

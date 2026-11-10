@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
+
+### Features
+
+* **schema:** upload encoded schema descriptors ([#15681](https://github.com/sanity-io/sanity/issues/15681)) ([a43dc62](https://github.com/sanity-io/sanity/commit/a43dc627a93476a926946c57721d1b310609e856))
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.6.2 ([#15507](https://github.com/sanity-io/sanity/issues/15507)) ([272da18](https://github.com/sanity-io/sanity/commit/272da186ea3abadb4bd35f87e24cd4e2faff7992))
+* **schema:** preserve built-in validators in serialized schemas ([#15492](https://github.com/sanity-io/sanity/issues/15492)) ([7015662](https://github.com/sanity-io/sanity/commit/7015662dfc9b63e64ebd5a60d49311c655b23677))
+
+### Performance Improvements
+
+* **schema:** allow skipping manifest validation and cloning ([#15625](https://github.com/sanity-io/sanity/issues/15625)) ([64ad107](https://github.com/sanity-io/sanity/commit/64ad10708f57f6efa15b7352e1424051e3ad2993))
+* **schema:** use structuredClone for manifests ([#15627](https://github.com/sanity-io/sanity/issues/15627)) ([89696ee](https://github.com/sanity-io/sanity/commit/89696eed9c846886da6b20024a9d2496b54962f0))
+## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
+
+### Bug Fixes
+
+* **schema:** reduce usages of lodash ([#14903](https://github.com/sanity-io/sanity/issues/14903)) ([3e58b07](https://github.com/sanity-io/sanity/commit/3e58b07d7caa1cecf7d8fcf2619b4aac86ba087b))
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Features
+
+* **schema:** make manifest validation aware of built-in parent types during compilation ([#15133](https://github.com/sanity-io/sanity/issues/15133)) ([e3e0fc2](https://github.com/sanity-io/sanity/commit/e3e0fc2f1300a32ffd0a1c6cc0af650a3aeccc76))
+## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.3 ([#15086](https://github.com/sanity-io/sanity/issues/15086)) ([5ecaf30](https://github.com/sanity-io/sanity/commit/5ecaf300efa8821379892e4eb12c9accd7d15f55))
+* **deps:** update dependency get-it to ^9.6.1 ([#15115](https://github.com/sanity-io/sanity/issues/15115)) ([c6bc655](https://github.com/sanity-io/sanity/commit/c6bc655a707477959167c6e7d8e71795c4bae2ff))
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-29)
+
+### Features
+
+* **form:** collapse long arrays behind a show all items toggle ([#13870](https://github.com/sanity-io/sanity/issues/13870)) ([83a9f83](https://github.com/sanity-io/sanity/commit/83a9f8389271ede7e4930afb6e94123a7e0749e6))
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.5.7 ([#14921](https://github.com/sanity-io/sanity/issues/14921)) ([455717e](https://github.com/sanity-io/sanity/commit/455717e7ba18a5abc126c46542f7a9b992708dc1))
+* **deps:** update dependency get-it to ^9.5.8 ([#14951](https://github.com/sanity-io/sanity/issues/14951)) ([37abe77](https://github.com/sanity-io/sanity/commit/37abe7764fe3d6ed539826f1422845dc54808e38))
+* **deps:** update dependency get-it to ^9.6.0 ([#15013](https://github.com/sanity-io/sanity/issues/15013)) ([a3e1534](https://github.com/sanity-io/sanity/commit/a3e153438c61aa42a94c856eeeb8fa8d9fe8664a))
+* **schema:** inline object-inspect parts ([#14902](https://github.com/sanity-io/sanity/issues/14902)) ([3efc395](https://github.com/sanity-io/sanity/commit/3efc3950ca4e7d11ac974bc0801153b5f0f818fb))
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.5.5 ([#14853](https://github.com/sanity-io/sanity/issues/14853)) ([9fb4756](https://github.com/sanity-io/sanity/commit/9fb4756235bb5828b74b09d5569755c98fd08878))
 ## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
 
 ### Bug Fixes

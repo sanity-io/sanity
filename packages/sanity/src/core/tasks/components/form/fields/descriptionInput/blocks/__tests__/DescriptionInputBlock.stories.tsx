@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text, VStack} from 'ui5'
 
 import {DescriptionInputBlock} from '../DescriptionInputBlock'
 
@@ -19,23 +20,23 @@ export const States: Story = {
   args: {children: 'Review the hero image crop.'},
   render: () => (
     <Card padding={4} style={{maxWidth: 360}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             short
           </Text>
           <DescriptionInputBlock>Review the hero image crop.</DescriptionInputBlock>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             wrapped
           </Text>
           <DescriptionInputBlock>
             A longer task description that should wrap inside the Box padding so a padding-top or
             padding-bottom regression is visible in Chromatic.
           </DescriptionInputBlock>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

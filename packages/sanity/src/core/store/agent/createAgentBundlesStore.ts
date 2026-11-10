@@ -13,7 +13,7 @@ import {
   switchMap,
 } from 'rxjs'
 
-const AGENT_BUNDLE_PREFIX = 'agent-'
+import {AGENT_BUNDLE_PREFIX} from './constants'
 
 /**
  * A single active agent bundle as reported by the SSE endpoint.
@@ -102,7 +102,7 @@ function listenToBundles(
   const url = client.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
   const esOptions: PolyfillEventSourceInit = {}
-  if (token || withCredentials) esOptions.withCredentials = true
+  if (withCredentials) esOptions.withCredentials = true
   if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
 
   // Use polyfill when headers are needed (token auth), native EventSource otherwise

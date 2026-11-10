@@ -1,52 +1,52 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {styled} from 'styled-components'
+import {Icon, type IconProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {errorIcon, infoIcon, warningIcon} from './ValidationStatusIcon.css'
 
-const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)`
-  --card-icon-color: var(--card-badge-critical-icon-color);
-`
-function ValidationErrorIcon() {
+function ValidationErrorIcon(props: Omit<IconProps, 'icon'>) {
   const {t} = useTranslation()
   return (
-    <StyledErrorOutlineIcon
+    <Icon
+      icon={ErrorOutlineIcon}
+      className={errorIcon}
       data-testid="input-validation-icon-error"
       aria-label={t('form.validation.has-error-aria-label')}
       aria-hidden
       role="presentation"
+      {...props}
     />
   )
 }
 
-const StyledWarningOutlineIcon = styled(WarningOutlineIcon)`
-  --card-icon-color: var(--card-badge-caution-icon-color);
-`
-
-function ValidationWarningIcon() {
+function ValidationWarningIcon(props: Omit<IconProps, 'icon'>) {
   const {t} = useTranslation()
   return (
-    <StyledWarningOutlineIcon
+    <Icon
+      icon={WarningOutlineIcon}
+      className={warningIcon}
       data-testid="input-validation-icon-warning"
       aria-label={t('form.validation.has-warning-aria-label')}
       aria-hidden
       role="presentation"
+      {...props}
     />
   )
 }
 
-const StyledInfoOutlineIcon = styled(InfoOutlineIcon)`
-  --card-icon-color: var(--card-badge-primary-icon-color);
-`
-function ValidationInfoIcon() {
+function ValidationInfoIcon(props: Omit<IconProps, 'icon'>) {
   const {t} = useTranslation()
   return (
-    <StyledInfoOutlineIcon
+    <Icon
+      icon={InfoOutlineIcon}
+      className={infoIcon}
       data-testid="input-validation-icon-info"
       aria-label={t('form.validation.has-info-aria-label')}
       aria-hidden
       role="presentation"
+      {...props}
     />
   )
 }
@@ -57,9 +57,12 @@ const VALIDATION_ICONS = {
   info: ValidationInfoIcon,
 }
 
-export const StatusIcon = ({status}: {status: 'error' | 'warning' | 'info'}) => {
-  const Icon = VALIDATION_ICONS[status]
-  if (!Icon) return null
+export const StatusIcon = ({
+  status,
+  ...rest
+}: Omit<IconProps, 'icon'> & {status: 'error' | 'warning' | 'info'}) => {
+  const ValidationIcon = VALIDATION_ICONS[status]
+  if (!ValidationIcon) return null
 
-  return <Icon />
+  return <ValidationIcon {...rest} />
 }

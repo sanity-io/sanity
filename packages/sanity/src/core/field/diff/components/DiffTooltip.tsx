@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Card, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Inline} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components/tooltip/Tooltip'
 import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
@@ -50,17 +50,17 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack gap={2} style={{minWidth: '240px'}} paddingTop={1}>
-      <Text muted size={1} weight="medium">
+    <Flex gap={2} style={{minWidth: '240px'}} paddingTop={1} flexDirection="column" flexShrink={0}>
+      <Text muted size={1} weight="medium" as="div" trim={true}>
         {description || t('changes.changed-label')}
       </Text>
-      <Stack gap={2}>
+      <VStack gap={2}>
         {annotations.map((annotation, idx) => (
           // oxlint-disable-next-line no-array-index-key
           <AnnotationItem key={idx} annotation={annotation} />
         ))}
-      </Stack>
-    </Stack>
+      </VStack>
+    </Flex>
   )
 
   return (
@@ -101,14 +101,14 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
               <>
                 <UserAvatar user={author} />
                 <Inline paddingLeft={2}>
-                  <Text muted size={1} style={{color: color.text}}>
+                  <Text muted size={1} style={{color: color.text}} as="div" trim={true}>
                     {user ? user.displayName : t('changes.loading-author')}
                   </Text>
                 </Inline>
               </>
             )}
           </Flex>
-          <Text as="time" muted size={1} dateTime={timestamp}>
+          <Text as="time" muted size={1} dateTime={timestamp} trim={true}>
             {timeAgo}
           </Text>
         </Inline>

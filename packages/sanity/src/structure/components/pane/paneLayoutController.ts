@@ -95,6 +95,10 @@ export function createPaneLayoutController(): PaneLayoutController {
   }
 
   function resize(type: 'start' | 'move' | 'end', leftElement: HTMLElement, deltaX: number) {
+    if (type === 'start') {
+      _setFlexFromWidths()
+    }
+
     const leftIndex = elements.indexOf(leftElement)
     const leftOptions = optionsMap.get(leftElement)
 
@@ -111,13 +115,13 @@ export function createPaneLayoutController(): PaneLayoutController {
       cache.left = {
         element: leftElement,
         flex: leftOptions.flex || 1,
-        width: leftElement.offsetWidth,
+        width: leftElement.getBoundingClientRect().width,
       }
 
       cache.right = {
         element: rightElement,
         flex: rightOptions.flex || 1,
-        width: rightElement.offsetWidth,
+        width: rightElement.getBoundingClientRect().width,
       }
 
       _notifyObservers()
@@ -150,7 +154,7 @@ export function createPaneLayoutController(): PaneLayoutController {
       optionsMap.set(leftElement, {
         ...leftOptions,
         currentMinWidth: 0,
-        currentMaxWidth: leftOptions.maxWidth ?? Infinity,
+        currentMaxWidth: leftResizeData?.width ?? leftOptions.currentMaxWidth,
         flex: leftResizeData?.flex ?? leftOptions.flex,
       })
 
@@ -158,7 +162,7 @@ export function createPaneLayoutController(): PaneLayoutController {
       optionsMap.set(rightElement, {
         ...rightOptions,
         currentMinWidth: 0,
-        currentMaxWidth: leftOptions.maxWidth ?? Infinity,
+        currentMaxWidth: rightResizeData?.width ?? rightOptions.currentMaxWidth,
         flex: rightResizeData?.flex ?? rightOptions.flex,
       })
 
@@ -186,7 +190,7 @@ export function createPaneLayoutController(): PaneLayoutController {
     observers.push(observer)
 
     return () => {
-      const idx = observers.push(observer)
+      const idx = observers.indexOf(observer)
 
       if (idx > -1) {
         observers.splice(idx, 1)
@@ -264,12 +268,43 @@ export function createPaneLayoutController(): PaneLayoutController {
       if (data) panes.push(data)
     }
 
+    // Flexbox only hands out part of the free space when the flex factors of growing panes add up
+    // to less than 1, so scale all factors alike to keep each of them at 1 or more
+    const minFlex = Math.min(...panes.map((pane) => pane.flex).filter((flex) => flex > 0))
+
+    if (minFlex < 1) {
+      for (const pane of panes) pane.flex /= minFlex
+    }
+
     for (const observer of observers) {
       observer({
         expandedElement: expandedElement || elements[elements.length - 1] || null,
         panes,
         resizing,
       })
+    }
+  }
+
+  // Distribute the total flex of the visible panes by their rendered widths, so the flex values
+  // calculated for the two resized panes are consistent with those of the other panes
+  function _setFlexFromWidths() {
+    const visiblePanes = []
+    let totalFlex = 0
+    let totalWidth = 0
+
+    for (const element of elements) {
+      const options = optionsMap.get(element)
+      const width = element.getBoundingClientRect().width
+
+      if (options && width > 0 && !element.hasAttribute('data-pane-collapsed')) {
+        visiblePanes.push({element, options, width})
+        totalFlex += options.flex || 1
+        totalWidth += width
+      }
+    }
+
+    for (const {element, options, width} of visiblePanes) {
+      optionsMap.set(element, {...options, flex: (width / totalWidth) * totalFlex})
     }
   }
 }

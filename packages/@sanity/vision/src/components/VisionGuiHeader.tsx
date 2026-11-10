@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Flex, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Inline, Select, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -11,15 +11,17 @@ import {
   useRef,
 } from 'react'
 import {
+  getDefaultVariant,
   getVariantTitle,
   type PerspectiveContextValue,
   type TFunction,
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box, Grid} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
-import {API_VERSIONS} from '../apiVersions'
+import {API_VERSIONS, VARIANTS_API_VERSION} from '../apiVersions'
+import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActiveVariant,
@@ -32,16 +34,14 @@ import {Header, QueryCopyLink, StyledLabel} from './VisionGui.styled'
 
 const PinnedReleasePerspectiveOption: ComponentType<{
   pinnedPerspective: PerspectiveContextValue
+  /** The navbar's variant, where the workspace has variants switched on */
+  variantTitle: string | undefined
   t: TFunction
-}> = ({pinnedPerspective, t}) => {
+}> = ({pinnedPerspective, variantTitle, t}) => {
   const name =
     typeof pinnedPerspective.selectedPerspective === 'object'
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
-
-  const variantTitle = pinnedPerspective.selectedVariant
-    ? getVariantTitle(pinnedPerspective.selectedVariant)
-    : pinnedPerspective.selectedVariantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
@@ -94,9 +94,17 @@ export function VisionGuiHeader({
   isScheduledDraftsEnabled,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
-  const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, pinnedPerspective.selectedVariantName),
-  )
+  const isVariantsEnabled = useVariantsEnabled()
+  // The navbar has no variant selector where the workspace has variants switched off, so a
+  // variant its URL still carries is not one the studio shows
+  const navbarVariantName = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariantNames)
+    : undefined
+  const navbarVariant = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariants)
+    : undefined
+  const navbarVariantTitle = navbarVariant ? getVariantTitle(navbarVariant) : navbarVariantName
+  const isApiVersionLocked = Boolean(getActiveVariant(perspective, navbarVariantName))
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
@@ -124,7 +132,7 @@ export function VisionGuiHeader({
       >
         {/* Dataset selector */}
         <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
-          <Stack>
+          <VStack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
             </Card>
@@ -133,17 +141,22 @@ export function VisionGuiHeader({
                 <option key={ds}>{ds}</option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* API version selector */}
         <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
-          <Stack>
+          <VStack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
             </Card>
             <Tooltip
-              content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
+              animate
+              content={
+                <Text size={1} as="div" trim={true}>
+                  {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
+                </Text>
+              }
               disabled={!isApiVersionLocked}
               placement="bottom"
               portal
@@ -164,13 +177,13 @@ export function VisionGuiHeader({
                 </Select>
               </Box>
             </Tooltip>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* Custom API version input */}
         {!isApiVersionLocked && customApiVersion !== false && (
           <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
-            <Stack>
+            <VStack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
                   {t('settings.custom-api-version-label')}
@@ -186,13 +199,13 @@ export function VisionGuiHeader({
                 }
                 maxLength={11}
               />
-            </Stack>
+            </VStack>
           </Box>
         )}
 
         {/* Perspective selector */}
         <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
-          <Stack>
+          <VStack>
             <Card paddingBottom={1}>
               <Inline gap={1}>
                 <Box>
@@ -213,7 +226,11 @@ export function VisionGuiHeader({
                 if (perspectiveName === 'pinnedRelease') {
                   return (
                     <Fragment key="pinnedRelease">
-                      <PinnedReleasePerspectiveOption pinnedPerspective={pinnedPerspective} t={t} />
+                      <PinnedReleasePerspectiveOption
+                        pinnedPerspective={pinnedPerspective}
+                        t={t}
+                        variantTitle={navbarVariantTitle}
+                      />
                       <option key="default" value="default">
                         {t('settings.perspectives.default')}
                       </option>
@@ -232,7 +249,7 @@ export function VisionGuiHeader({
                 return <option key={perspectiveName}>{perspectiveName}</option>
               })}
             </Select>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* Query URL (for copying) */}
@@ -246,7 +263,7 @@ export function VisionGuiHeader({
               customApiVersion === false ? 'span 6 / span 6' : 'span 4 / span 4',
             ]}
           >
-            <Stack>
+            <VStack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
                   {t('query.url')}&nbsp;
@@ -262,7 +279,7 @@ export function VisionGuiHeader({
                   </QueryCopyLink>
                 </StyledLabel>
               </Card>
-              <Flex flex={1} gap={1}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1}>
                 <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
                     data-testid="vision-query-url"
@@ -272,7 +289,7 @@ export function VisionGuiHeader({
                     value={url}
                   />
                 </Box>
-                <Tooltip content={t('action.copy-url-to-clipboard')}>
+                <Tooltip animate content={t('action.copy-url-to-clipboard')}>
                   <Button
                     aria-label={t('action.copy-url-to-clipboard')}
                     type="button"
@@ -282,7 +299,7 @@ export function VisionGuiHeader({
                   />
                 </Tooltip>
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         ) : (
           <Box flexBasis="0%" flexGrow={1} />

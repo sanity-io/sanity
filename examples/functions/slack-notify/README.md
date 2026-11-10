@@ -82,7 +82,9 @@ Most official templates already include these fields.
    ```ts
    // sanity.blueprint.ts
    import 'dotenv/config'
+
    import process from 'node:process'
+
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
    export default defineBlueprint({

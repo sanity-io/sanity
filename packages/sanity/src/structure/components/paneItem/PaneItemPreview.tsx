@@ -13,6 +13,7 @@ import {
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getDefaultVariant,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
@@ -23,7 +24,6 @@ import {
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {useDocumentListItemOverride} from './DocumentListItemOverride'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -54,7 +54,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {
@@ -91,7 +92,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const isLoading = previewIsLoading
 
-  const defaultStatus = isLoading ? null : (
+  const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
@@ -100,20 +101,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  // PROPOSED: a host (the Variants 2.0 test studio) may replace the status area and the tooltip.
-  const override = useDocumentListItemOverride({
-    documentId: publishedId,
-    documentType: schemaType.name,
-    presence,
-    defaultStatus,
-  })
-  const status = isLoading ? null : override ? override.status : defaultStatus
-
-  const tooltip = override ? (
-    override.tooltip
-  ) : (
-    <DocumentVersionsStatus documentGroupId={publishedId} />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview
@@ -123,7 +111,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       layout={layout}
       status={status}
       tooltip={tooltip}
-      // PROPOSED: list rows have room to their right, so the versions popover opens beside the status icons.
       tooltipPlacement="beside"
     />
   )

@@ -3,6 +3,7 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
+  accepts,
   convertToValidationMarker,
   evaluateDocumentInternal,
   evaluateDocumentObservable,
@@ -25,10 +26,14 @@ import type {
   ValidateItemOptions,
   ValidationContext,
   validationLocaleStrings,
+  ValidationScheduling,
 } from '@sanity/validation/_internal'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/validation/_internal', () => {
+  test('accepts', () => {
+    expectTypeOf<typeof accepts>().toBeFunction()
+  })
   test('convertToValidationMarker', () => {
     expectTypeOf<typeof convertToValidationMarker>().toBeFunction()
   })
@@ -96,5 +101,8 @@ describe('@sanity/validation/_internal', () => {
   })
   test('validationLocaleStrings', () => {
     expectTypeOf<typeof validationLocaleStrings>().not.toBeNever()
+  })
+  test('ValidationScheduling', () => {
+    expectTypeOf<ValidationScheduling>().not.toBeNever()
   })
 })

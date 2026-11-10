@@ -1,4 +1,5 @@
-import {type ComponentType, type PropsWithChildren, type ReactNode} from 'react'
+import {useContext, type ComponentType, type PropsWithChildren, type ReactNode} from 'react'
+import {FormRowGutterSuppressedContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
 import {useFormGutterEnabled} from '../../hooks/useFormGutterEnabled'
@@ -13,16 +14,34 @@ export interface FormRowProps extends PropsWithChildren {
 }
 
 /**
+ * Turn the variant gutter off for the rows rendered directly inside. A row
+ * opts back in for its own descendants, so an object field's children keep
+ * their gutter. Document forms leave this unset.
+ *
+ * @internal
+ */
+export function SuppressFormRowGutter(props: {children: ReactNode}) {
+  return (
+    <FormRowGutterSuppressedContext.Provider value={true}>
+      {props.children}
+    </FormRowGutterSuppressedContext.Provider>
+  )
+}
+
+/**
  * @internal
  */
 export const FormRow: ComponentType<FormRowProps> = ({children, gutterStartCell}) => {
-  const gutterEnabled = useFormGutterEnabled()
+  const gutterSuppressed = useContext(FormRowGutterSuppressedContext)
+  const gutterEnabled = useFormGutterEnabled() && !gutterSuppressed
 
   return (
-    <FormRowContainer data-ui="FormRow" data-gutter={gutterEnabled ? 'true' : undefined}>
-      {gutterStartCell && <FormCell $area="gutterStart">{gutterStartCell}</FormCell>}
-      <FormCell $area="body">{children}</FormCell>
-    </FormRowContainer>
+    <FormRowGutterSuppressedContext.Provider value={false}>
+      <FormRowContainer data-ui="FormRow" data-gutter={gutterEnabled ? 'true' : undefined}>
+        {gutterStartCell && <FormCell $area="gutterStart">{gutterStartCell}</FormCell>}
+        <FormCell $area="body">{children}</FormCell>
+      </FormRowContainer>
+    </FormRowGutterSuppressedContext.Provider>
   )
 }
 

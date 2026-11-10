@@ -6,6 +6,7 @@ import {CommentsContextV2} from 'sanity/_singletons'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
 import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
@@ -16,7 +17,6 @@ import {
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
 import {useCommentsClient} from '../../hooks/useCommentsClient'
-import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
@@ -96,8 +96,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     onPathOpen,
     mentionsDisabled,
   } = props
-  const commentsEnabled = useCommentsEnabled()
-  const {selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [status, setStatus] = useState<CommentStatus>('open')
   const publishedId = getPublishedId(groupId)
   const scopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined
@@ -157,6 +157,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = useCommentsStore({
     groupId,
     versionId,
+    type,
     client: commentsClient,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
@@ -174,17 +175,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       transactionsIdMap.set(commentDocumentId, transactionId)
     },
     [transactionsIdMap],
-  )
-
-  const handleSetStatus = useCallback(
-    (newStatus: CommentStatus) => {
-      // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled.mode === 'upsell' && newStatus === 'resolved') {
-        return null
-      }
-      return setStatus(newStatus)
-    },
-    [setStatus, commentsEnabled],
   )
 
   const projectMentionOptions = useUserListWithPermissions(
@@ -350,7 +340,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       versionId,
 
       status,
-      setStatus: handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,
@@ -385,7 +375,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentType,
       isCommentsClientLoading,
       status,
-      handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,

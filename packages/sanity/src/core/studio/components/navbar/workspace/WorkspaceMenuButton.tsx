@@ -1,20 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Stack,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button as UIButton} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
 import {useProjectStore} from '../../../../store/datastores'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useVisibleWorkspaces} from '../../../workspaces/useVisibleWorkspaces'
@@ -51,13 +46,7 @@ export function WorkspaceMenuButton() {
   // alive across the transient subscribe/unsubscribe cycle from `take(1)`.
   const handlePreload = useCallback(() => {
     visibleWorkspaces.forEach((workspace) => {
-      probeWorkspaceAuth({
-        projectId: workspace.projectId,
-        dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
-      })
-        .pipe(take(1))
-        .subscribe()
+      workspace.auth.currentUserId?.pipe(take(1)).subscribe()
     })
   }, [visibleWorkspaces])
 
@@ -69,13 +58,11 @@ export function WorkspaceMenuButton() {
             <UIButton mode="bleed" padding={2} width="fill">
               <Flex alignItems="center" gap={2}>
                 <Box>
-                  <Text size={1} textOverflow="ellipsis" weight="medium">
+                  <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
                     {activeWorkspace.title}
                   </Text>
                 </Box>
-                <Text size={1}>
-                  <ChevronDownIcon />
-                </Text>
+                <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
               </Flex>
             </UIButton>
           </Tooltip>
@@ -93,12 +80,12 @@ export function WorkspaceMenuButton() {
               <MenuDivider style={{padding: 0}} />
               <Box paddingTop={2} paddingBottom={1}>
                 <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
-                  <Text size={0} weight="medium">
+                  <Text size={0} weight="medium" as="div" trim={true}>
                     {t('workspaces.action.switch-workspace')}
                   </Text>
                 </Box>
 
-                <Stack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                <VStack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                   {visibleWorkspaces.map((workspace) => (
                     <WorkspaceMenuItem
                       key={workspace.name}
@@ -107,7 +94,7 @@ export function WorkspaceMenuButton() {
                       scrollbarWidth={scrollbarWidth}
                     />
                   ))}
-                </Stack>
+                </VStack>
               </Box>
             </>
           )}

@@ -1,6 +1,7 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import noop from 'lodash-es/noop.js'
+import {Text, VStack} from 'ui5'
 
 import {NotFoundScreen} from '../NotFoundScreen'
 import {NoToolsScreen} from '../NoToolsScreen'
@@ -26,40 +27,40 @@ type Story = StoryObj<typeof meta>
 export const States: Story = {
   render: () => (
     <Card padding={4}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             no tools
           </Text>
           <div style={FRAME_STYLE}>
             <NoToolsScreen />
           </div>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             tool not found
           </Text>
           <div style={FRAME_STYLE}>
             <ToolNotFoundScreen toolName="vision" />
           </div>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             redirecting
           </Text>
           <div style={FRAME_STYLE}>
             <RedirectingScreen />
           </div>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             workspace not found
           </Text>
           <div style={FRAME_STYLE}>
             <NotFoundScreen onNavigateToDefaultWorkspace={noop} />
           </div>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

@@ -26,7 +26,9 @@ import {
   dropMutations,
   duplicateMutations,
   invalidSession,
+  type InvalidSessionCode,
   randomLatency,
+  refusedRefreshToken,
   sendReset,
   shuffleEventDelivery,
 } from './scenarios'
@@ -176,7 +178,18 @@ const flags = run(
           }),
           (seconds) => ({kind: 'revoke' as const, afterMs: seconds * 1000}),
         ),
+        mapValue(
+          option('--bearer-401', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`like --expire-token, but answer with a plain RFC 6750 bearer token 401 (error "invalid_token", no Sanity error code) — a hypothesis for what an expired OAuth access token gets. For studios using auth.experimental_oauth: shows whether the studio renews on a 401 that carries no SIO code. Mutually exclusive with the other two`,
+          }),
+          (seconds) => ({kind: 'bearer' as const, afterMs: seconds * 1000}),
+        ),
       ),
+    ),
+    refuseRefresh: optional(
+      option('--refuse-refresh', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`after SECONDS, answer every POST to the OAuth token endpoint (/auth/oauth/token) with the RFC 6749 invalid_grant error — the refresh token expired, was redeemed already, or its session was revoked in Manage. For studios using auth.experimental_oauth: the one failure that ends the session, so it exercises forced sign-out. Combine with --expire-token to force a renewal first. Use 0 to refuse immediately`,
+      }),
     ),
   }),
   {
@@ -208,6 +221,10 @@ const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'revoke' ? flags.tokenFault.afterMs : undefined
+const BEARER_401_AFTER_MS =
+  flags.tokenFault?.kind === 'bearer' ? flags.tokenFault.afterMs : undefined
+const REFUSE_REFRESH_AFTER_MS =
+  flags.refuseRefresh === undefined ? undefined : flags.refuseRefresh * 1000
 
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 
@@ -442,8 +459,21 @@ const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 // "already past", i.e. invalidate now. Re-armed whenever the studio
 // re-authenticates (a `/auth/fetch` token exchange), so you can log back in
 // and watch the simulated session lapse again — see below.
-const INVALIDATE_SESSION_AFTER_MS = EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS
-const INVALID_SESSION_CODE = REVOKE_TOKEN_AFTER_MS === undefined ? 'SIO-401-AEX' : 'SIO-401-ANF'
+const INVALIDATE_SESSION_AFTER_MS =
+  EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS ?? BEARER_401_AFTER_MS
+const INVALID_SESSION_CODE: InvalidSessionCode =
+  REVOKE_TOKEN_AFTER_MS !== undefined
+    ? 'SIO-401-ANF'
+    : BEARER_401_AFTER_MS !== undefined
+      ? 'invalid_token'
+      : 'SIO-401-AEX'
+// --refuse-refresh: OAuth token endpoint requests after this wall-clock time
+// get `invalid_grant`. Not re-armed: once the refresh token is refused the
+// studio signs out, and a fresh sign-in's code exchange is refused too until
+// the proxy restarts.
+const REFUSE_REFRESH_AT =
+  REFUSE_REFRESH_AFTER_MS === undefined ? undefined : Date.now() + REFUSE_REFRESH_AFTER_MS
+const isRefreshRefused = () => REFUSE_REFRESH_AT !== undefined && Date.now() >= REFUSE_REFRESH_AT
 let sessionInvalidAt =
   INVALIDATE_SESSION_AFTER_MS === undefined ? undefined : Date.now() + INVALIDATE_SESSION_AFTER_MS
 const isSessionInvalid = () => sessionInvalidAt !== undefined && Date.now() >= sessionInvalidAt
@@ -468,7 +498,11 @@ const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
           errorCode: INVALID_SESSION_CODE,
           onReauthenticated: rearmSessionInvalidation,
         })
-  const faulted = faultRequests(maybeInvalid)
+  const maybeRefused =
+    REFUSE_REFRESH_AFTER_MS === undefined
+      ? maybeInvalid
+      : refusedRefreshToken(maybeInvalid, isRefreshRefused)
+  const faulted = faultRequests(maybeRefused)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
@@ -536,10 +570,13 @@ if (ERROR_PROBABILITY > 0) {
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
-  const what =
-    INVALID_SESSION_CODE === 'SIO-401-AEX'
-      ? 'the expired-session 401 (SIO-401-AEX)'
-      : 'the session-not-found 401 (SIO-401-ANF)'
+  const what = (
+    {
+      'SIO-401-AEX': 'the expired-session 401 (SIO-401-AEX)',
+      'SIO-401-ANF': 'the session-not-found 401 (SIO-401-ANF)',
+      'invalid_token': 'a plain bearer-token 401 (invalid_token, no Sanity error code)',
+    } satisfies Record<InvalidSessionCode, string>
+  )[INVALID_SESSION_CODE]
   console.info(
     INVALIDATE_SESSION_AFTER_MS === 0
       ? `Invalid session: every API request returns ${what}`

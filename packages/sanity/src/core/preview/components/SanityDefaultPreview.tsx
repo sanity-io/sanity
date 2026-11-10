@@ -21,30 +21,65 @@ import {
 import {isValidElementType} from 'react-is'
 import {Flex} from 'ui5'
 
-import {resolveBlockImageDimensions} from '../../components/previews/helpers'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
+import {
+  isVideoAssetSource,
+  type VideoAssetSource,
+} from '../../../media-library/plugin/preview/isVideoAssetSource'
+import {VideoThumbnail} from '../../../media-library/plugin/preview/VideoThumbnail'
+import {renderPreviewNode, resolveBlockImageDimensions} from '../../components/previews/helpers'
+import {
+  type PreviewLayoutKey,
+  type PreviewMediaDimensions,
+  type PreviewProps,
+} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
-import {PreviewTooltip, type PreviewTooltipPlacement} from './PreviewTooltip'
+import {PreviewTooltip, PreviewTooltipAnchor, type PreviewTooltipPlacement} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
+}
+
+// Stable per asset-ref media component. Preview prepare() recreates media objects on
+// every title keystroke; a new function identity remounts VideoThumbnail and refetches.
+type VideoMediaPreviewComponent = ComponentType<{
+  dimensions: PreviewMediaDimensions
+  layout: PreviewLayoutKey
+}>
+const videoMediaPreviewByAssetRef = new Map<string, VideoMediaPreviewComponent>()
+const videoValueByAssetRef = new Map<string, VideoAssetSource>()
+
+function getVideoMediaPreview(value: VideoAssetSource): VideoMediaPreviewComponent {
+  const assetRef = value.asset._ref
+  videoValueByAssetRef.set(assetRef, value)
+
+  const existing = videoMediaPreviewByAssetRef.get(assetRef)
+  if (existing) return existing
+
+  function VideoMediaPreview({
+    dimensions,
+  }: {
+    dimensions: PreviewMediaDimensions
+    layout: PreviewLayoutKey
+  }) {
+    const current = videoValueByAssetRef.get(assetRef)
+    return current ? <VideoThumbnail value={current} dimensions={dimensions} /> : null
+  }
+
+  videoMediaPreviewByAssetRef.set(assetRef, VideoMediaPreview)
+  return VideoMediaPreview
 }
 
 /** @internal */
 export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDefault'> {
   error?: Error | null
   icon?: ElementType | false
+  /** Opens on hover over the whole row, placed against the row's status */
   tooltip?: ReactNode
-  /**
-   * PROPOSED: where the tooltip opens: below the status icons (the default; in forms, search results and dialogs, where a side would cover
-   * the form or be cut off), or beside them (the structure list pane, whose rows have room to their right).
-   * @internal
-   */
   tooltipPlacement?: PreviewTooltipPlacement
 }
 
@@ -124,11 +159,13 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     layout,
     media: mediaProp,
     imageUrl,
+    status,
     title,
     tooltip,
     tooltipPlacement,
     ...restProps
   } = props
+  const hasTooltip = Boolean(tooltip)
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
@@ -181,6 +218,10 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return renderMedia
     }
 
+    if (isVideoAssetSource(mediaProp)) {
+      return getVideoMediaPreview(mediaProp)
+    }
+
     if (isValidElementType(mediaProp)) {
       return mediaProp
     }
@@ -220,25 +261,22 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     return resolveBlockImageDimensions(mediaProp)
   }, [layout, mediaProp, props.mediaDimensions])
 
-  // PROPOSED: the row opens the tooltip (as shipped), but it is placed beside the status icons, which it is about, so it does not cover the
-  // row's text. A status given as a component (not a node) is not marked, and the tooltip is placed beside the row.
-  const hasTooltip = Boolean(tooltip)
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       ...restProps,
       media,
       mediaDimensions: resolvedMediaDimensions,
       status:
-        hasTooltip && restProps.status && typeof restProps.status !== 'function' ? (
-          <span data-preview-tooltip-anchor="" style={{display: 'inline-flex'}}>
-            {restProps.status}
-          </span>
+        hasTooltip && status ? (
+          <PreviewTooltipAnchor>
+            {renderPreviewNode(status, layout || 'default')}
+          </PreviewTooltipAnchor>
         ) : (
-          restProps.status
+          status
         ),
       title,
     }),
-    [hasTooltip, media, resolvedMediaDimensions, restProps, title],
+    [hasTooltip, layout, media, resolvedMediaDimensions, restProps, status, title],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<

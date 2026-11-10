@@ -1,10 +1,11 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {useCallback, useMemo, useState} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
@@ -88,14 +89,14 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
         },
       }}
     >
-      <Stack gap={4} paddingX={4} paddingBottom={4} paddingTop={1}>
-        <Text size={1} muted>
+      <Flex gap={4} paddingX={4} paddingBottom={4} paddingTop={1} flexDirection="column">
+        <Text size={1} muted as="div" trim={true}>
           {t('schedule-publish-dialog.description')}
         </Text>
 
         <label>
-          <Stack gap={3}>
-            <Text size={1} weight="semibold">
+          <VStack gap={3}>
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {t('release.schedule-dialog.select-publish-date-label')}
             </Text>
             <DateTimeInput
@@ -113,15 +114,17 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
               showTimeZone
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
-          </Stack>
+          </VStack>
         </label>
 
         {_isScheduledDateInPast && (
           <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('release.schedule-dialog.publish-date-in-past-warning')}
+            </Text>
           </Card>
         )}
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

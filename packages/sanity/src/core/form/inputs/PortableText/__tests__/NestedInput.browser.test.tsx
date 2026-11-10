@@ -121,6 +121,7 @@ describe('Portable Text Input', () => {
         insertPortableText,
         waitForFocusedNodeText,
         waitForSelectionOffsets,
+        settleChromaticEndState,
       } = testHelpers()
       void render(<NestedInputHarness />)
 
@@ -171,6 +172,8 @@ describe('Portable Text Input', () => {
         failed = true
       }
       expect(failed).toBeTruthy()
+      // Nested dialog field headers can flash field-actions; park the pointer.
+      await settleChromaticEndState()
     })
 
     it('opens one editable annotation dialog in an independently nested input', async () => {

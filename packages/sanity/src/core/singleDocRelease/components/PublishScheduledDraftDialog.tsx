@@ -1,8 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -100,18 +99,18 @@ export function PublishScheduledDraftDialog(
         },
       }}
     >
-      <Stack gap={3} paddingX={3} marginBottom={2}>
+      <Flex gap={3} paddingX={3} marginBottom={2} flexDirection="column">
         {schemaType && firstDocument ? (
           <Preview value={firstDocument} schemaType={schemaType} />
         ) : (
           <LoadingBlock />
         )}
         <Box paddingX={2}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('release.dialog.publish-scheduled-draft.body')}
           </Text>
         </Box>
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

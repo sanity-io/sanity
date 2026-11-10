@@ -44,6 +44,8 @@ export interface BufferedDocumentWrapper {
 
   mutate: (mutations: MutationPayload[]) => void
   commit: () => void
+  /** Whether local mutations are pending, for telemetry */
+  hasPendingMutations: () => boolean
 }
 
 /** @internal */
@@ -72,5 +74,6 @@ export const createBufferedDocument = (
 
     mutate: (mutations: MutationPayload[]) => bufferedDocument.addMutations(mutations),
     commit: () => bufferedDocument.commit(),
+    hasPendingMutations: bufferedDocument.hasPendingMutations,
   }
 }

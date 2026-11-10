@@ -240,6 +240,8 @@ export type TimelineEntry =
       baseSha: string
       /** What the bisect already knows about the collapsed commits. */
       zone: 'bad' | 'unknown' | 'good'
+      /** The collapsed commits themselves, newest first — for expanding the gap in place. */
+      commits: BisectCommit[]
     }
 
 /**
@@ -298,6 +300,7 @@ export function buildTimeline(
       // endpoint) is always included, so a gap can't run off the end
       baseSha: chain[end].sha,
       zone: zoneOf(gapStart),
+      commits: chain.slice(gapStart, end),
     })
     gapStart = undefined
   }
@@ -311,4 +314,31 @@ export function buildTimeline(
   })
   flushGap(chain.length)
   return entries
+}
+
+/**
+ * Which commits on the map can be picked for testing out of turn: the
+ * commits of expanded gaps, and every visited (marked) commit. Excluded are
+ * the endpoints (implicit marks — re-marking one has no meaning), the
+ * proposed step (it already renders as the test card), and, once converged,
+ * the verdict commit (its card stands until an undo reopens the search).
+ */
+export function pickableShas(
+  entries: TimelineEntry[],
+  expandedGapShas: ReadonlySet<string>,
+  options: {verdictSha?: string} = {},
+): Set<string> {
+  const shas = new Set<string>()
+  entries.forEach((entry, index) => {
+    if (entry.kind === 'gap') {
+      if (expandedGapShas.has(entry.newestSha)) {
+        for (const commit of entry.commits) shas.add(commit.sha)
+      }
+      return
+    }
+    const isEndpoint = index === 0 || index === entries.length - 1
+    if (isEndpoint || entry.role === 'current' || entry.commit.sha === options.verdictSha) return
+    shas.add(entry.commit.sha)
+  })
+  return shas
 }

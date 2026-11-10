@@ -6,15 +6,20 @@ import type {
   BuiltInValidationMarkerCode,
   DocumentValidationMarker,
   DocumentValidationResult,
+  ReleaseReferenceOptions,
   validateDocument,
   ValidateDocumentOptions,
+  validateDocuments,
+  ValidateDocumentsOptions,
   validateDocumentWithWorkspace,
   ValidateDocumentWorkspaceOptions,
   ValidationClient,
+  ValidationLocaleSource,
   ValidationMarkerCode,
   validationMarkerCodes,
   ValidationSchema,
   ValidationSource,
+  withReleaseReferences,
 } from '@sanity/validation'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -28,11 +33,20 @@ describe('@sanity/validation', () => {
   test('DocumentValidationResult', () => {
     expectTypeOf<DocumentValidationResult>().toBeObject()
   })
+  test('ReleaseReferenceOptions', () => {
+    expectTypeOf<ReleaseReferenceOptions>().toBeObject()
+  })
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
+  })
+  test('validateDocuments', () => {
+    expectTypeOf<typeof validateDocuments>().toBeFunction()
+  })
+  test('ValidateDocumentsOptions', () => {
+    expectTypeOf<ValidateDocumentsOptions>().not.toBeNever()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
@@ -42,6 +56,9 @@ describe('@sanity/validation', () => {
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
+  })
+  test('ValidationLocaleSource', () => {
+    expectTypeOf<ValidationLocaleSource>().toBeObject()
   })
   test('ValidationMarkerCode', () => {
     expectTypeOf<ValidationMarkerCode>().not.toBeNever()
@@ -54,5 +71,8 @@ describe('@sanity/validation', () => {
   })
   test('ValidationSource', () => {
     expectTypeOf<ValidationSource>().toBeObject()
+  })
+  test('withReleaseReferences', () => {
+    expectTypeOf<typeof withReleaseReferences>().toBeFunction()
   })
 })

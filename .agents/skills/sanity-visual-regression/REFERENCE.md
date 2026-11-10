@@ -16,8 +16,8 @@
   harnesses lived in shared `*Story.tsx` files with thin stories on top; both were removed once
   it went GA, so today every `*Story.tsx` is a Storybook harness owned by a `*.stories.tsx`.
 - **Why the storybook Vite config mirrors `vitest.browser.config.mts`:** the `monorepo` exports
-  condition resolves `sanity` (and other workspace packages) to TypeScript source; the
-  vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
+  condition resolves `sanity` (and other workspace packages) to TypeScript source; `@pandacss/vite`
+  compiles the package's Panda CSS `.css.ts` modules; the React Compiler babel preset matches what the
   studio ships. Divergence here would make snapshots render differently from production.
 - **Why preview imports both `ui5/styles.css` and `@sanity/ui/styles.css`:** the studio entry
   side-effect-imports both. Storybook must too — colocated sentinel stories import source files
@@ -35,7 +35,7 @@
 - **Why all three CI uploads go through `chromaui/action`:** the action forwards the `pull_request`
   event (head sha, branch, repository) to Chromatic. Running the bare CLI from a `pull_request`
   checkout logged `Branch '<branch>' does not exist … Falling back to <sha> … Pull request status
-updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
+  updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
   checkouts also use `ref: ${{ github.event.pull_request.head.ref }}` so the workspace holds the
   PR branch rather than GitHub's ephemeral merge commit, as Chromatic's TurboSnap guidance asks.
 
@@ -85,8 +85,8 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   - `await takeSnapshot('state name')` — targeted mid-test snapshots (e.g. menu open, mid-drag).
     Un-awaited calls fail the test at the end (`PendingSnapshotsError`).
   - Verified against 1.0: a file-level, suite-level and test-level `configure({disableAutoSnapshot:
-true})` each produced no archive for the tests they cover; a test with a `takeSnapshot('first
-state')` plus its end state produced two archives; the same file in a normal run produced only
+    true})` each produced no archive for the tests they cover; a test with a `takeSnapshot('first
+    state')` plus its end state produced two archives; the same file in a normal run produced only
     the explicit one, and nothing on firefox.
 - Cost control: end-of-test snapshots ≈ number of test cases. Reduce with per-suite
   `configure({disableAutoSnapshot: true})` (opt-out) or flip the model to opt-in by disabling at
@@ -139,23 +139,24 @@ hold — the last two are not on that page and were verified against `@chromatic
    `preview-stats*.json`) at the start of each non-merge run. Two shards run back to back in one
    checkout leave only the second shard's archives. One runner per shard (a matrix job) is fine;
    locally, point each shard at its own `outputDirectory` or checkout.
-2. **Ship the hidden directories.** Upload `packages/sanity/.vitest` (archives plus
-   `preview-stats-<i>-<n>.json`) and `packages/sanity/.vitest-reports` (the blob reports, see 3)
-   with `include-hidden-files: true`, one artifact per shard; download them all into the same
-   paths with `merge-multiple: true`.
+2. **Ship the hidden directory.** Upload `packages/sanity/.vitest` (the archives and
+   `preview-stats-<i>-<n>.json` under `.vitest/chromatic/`, plus the blob reports under
+   `.vitest/blob/`, see 3) with `include-hidden-files: true`, one artifact per shard; download
+   them all into the same path with `merge-multiple: true`.
 3. **Merge the stats before uploading, or TurboSnap traces nothing.** Shards write
    `preview-stats-<i>-<n>.json`, but the archive Storybook the CLI builds only reads
    `preview-stats.json`; with `--only-changed` and no merged file the build has no module graph,
    every changed file traces to zero tests, and Chromatic uploads an empty build that looks green.
    The merge is `CHROMATIC=1 SANITY_VITEST_BROWSER=chromium pnpm exec vitest run -c
-vitest.browser.config.mts --merge-reports`, run in the upload job after the download: the
+   vitest.browser.config.mts --merge-reports`, run in the upload job after the download: the
    plugin's merge-reports branch combines the shard stats into `preview-stats.json` and skips the
    wipe, so the archives survive. It needs the shards to have run with `--reporter=default
---reporter=blob` (blob reports land in `.vitest-reports/`), and `CHROMATIC=1` so the plugin is
-   loaded at all. Verified locally: shards 1/2 + 2/2 produced 60 + 58 archives, and the merge
-   produced the same 118 archives and a `preview-stats.json` with the same 4545 modules / 32 test
-   files as an unsharded run. The merged console summary under-counts tests; only the stats and
-   archives matter here.
+   --reporter=blob` (blob reports land in `.vitest/blob/`, where `--merge-reports` reads them
+   by default since Vitest 5), and `CHROMATIC=1` so the plugin is loaded at all. Verified
+   locally: shards 1/2 + 2/2 produced 60 + 58 archives, and the merge produced the same 118
+   archives and a `preview-stats.json` with the same 4545 modules / 32 test files as an
+   unsharded run. The merged console summary under-counts tests; only the stats and archives
+   matter here.
 4. **Upload once**, from `packages/sanity`, with `chromatic --vitest --only-changed`. The
    `Check TurboSnap stats file` step in `chromatic.yml` fails the job when `preview-stats.json`
    is missing, which catches both a forgotten merge and a dropped `turboSnap: true`.
@@ -181,6 +182,26 @@ chromium-only, so it is unaffected by any of this.
 - Only snapshot deterministic states: chrome (navbar, panes) without live data, and never
   anything showing relative timestamps ("2 minutes ago"), presence from other CI runs, or
   dataset-dependent lists.
+- **Wait for everything the archive shows, region by region.** The navbar reaches its end state
+  long before the tool below it does, so a spec that only asserts on the navbar archives whatever
+  the tool happens to be rendering — the structure tool's root pane starts as a `LOADING_PANE` and
+  `StructureToolPane` lazy-loads the pane component, which is how `studio navbar` archived a
+  centered spinner over an empty studio (Chromatic build 2148). Locally, 7 of 8 runs were still on
+  that spinner at the moment the spec called for the archive and only escaped because serializing
+  the DOM took long enough. Assert the settled tool too (`structure-tool-list-pane` for the
+  structure root). As a backstop, `takeChromaticSnapshot` waits out every visible
+  `[data-testid="loading-block"]` before it serializes; the `:visible` filter matters, because
+  closed `@sanity/ui` overlays stay mounted with their own loading blocks inside.
+- **Content that cannot settle under the fixture goes in `ignoreSelectors`, not in a wait.** The
+  CDP instrumentation that breaks streaming connections also breaks document previews, so any
+  `documentListItem` row is a coin flip: one in the root structure list resolved in 2 of 13 local
+  runs and kept its media and text skeletons indefinitely in the rest, so neither state can be
+  waited for. `test.use({ignoreSelectors: [...]})` (a `ChromaticConfig` option, forwarded as the
+  `chromatic.ignoreSelectors` parameter of the generated archive story) drops just that region
+  from the comparison and keeps the rest of the pane covered. Only document previews need this —
+  a `S.listItem()` renders a static title and icon, because `ListPaneContent` passes a `value` to
+  `PaneItem` (and so mounts a `PaneItemPreview`) only for items carrying an `_id`, which only
+  `S.documentListItem()` sets.
 - The e2e studio (`dev/studio-e2e-testing`) must set a workspace `icon`. The default
   letter-mark hashes `projectId` + `dataset` into a color, and e2e datasets change per PR.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow

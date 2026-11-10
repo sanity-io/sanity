@@ -13,7 +13,7 @@ import {
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
 
-import styles from './AuthorReferenceInput.module.css'
+import * as styles from './AuthorReferenceInput.module.css'
 
 const noop = () => null
 

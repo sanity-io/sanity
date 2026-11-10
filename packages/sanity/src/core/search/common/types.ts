@@ -70,10 +70,26 @@ export interface WeightedHit extends SearchHit {
 }
 
 /**
+ * Field paths from a dataset's partial indexing settings, in the format returned by the indexing
+ * settings API (e.g. `analytics`, `analytics[]`, `seo.title`).
+ *
+ * @internal
+ */
+export interface PartialIndexFieldPaths {
+  excludeFieldPaths?: readonly string[]
+  includeFieldPaths?: readonly string[]
+}
+
+/**
  * @internal
  */
 export interface SearchFactoryOptions {
   maxDepth?: number
+  /**
+   * Fields excluded from the dataset's partial index cannot be used in `score()`. Search
+   * strategies that score results skip boosts on those fields.
+   */
+  partialIndexFieldPaths?: PartialIndexFieldPaths
   filter?: string
   params?: Record<string, unknown>
   tag?: string
@@ -121,6 +137,11 @@ export type SearchStrategyFactory<TResult extends WeightedSearchResults | Groq20
 export type SearchOptions = {
   maxDepth?: number
   comments?: string[]
+  /**
+   * GROQ constraint AND-ed into the search query. Takes precedence over a filter passed as a
+   * factory option (`SearchFactoryOptions.filter`), matching how the strategies merge options.
+   */
+  filter?: string
   skipSortByScore?: boolean
   sort?: SearchSort[]
   cursor?: string

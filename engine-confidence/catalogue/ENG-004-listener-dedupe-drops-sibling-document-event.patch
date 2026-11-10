@@ -1,0 +1,13 @@
+diff --git a/packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts b/packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts
+index 6ac2836f6f..6152f7f04c 100644
+--- a/packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts
++++ b/packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts
+@@ -22,7 +22,7 @@ export function dedupeListenerEvents<T extends ListenerEvent>({
+           if (event.type !== 'mutation') {
+             return {emit: [event], seen}
+           }
+-          const key = `${event.transactionId}#${event.documentId}`
++          const key = event.transactionId
+           if (seen.has(key)) {
+             debug('Ignoring duplicate listener event: ', key)
+             return {seen, emit: []}

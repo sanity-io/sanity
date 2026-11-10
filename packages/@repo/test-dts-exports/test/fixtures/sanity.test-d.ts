@@ -272,6 +272,7 @@ import type {
   ConnectionStatusStore,
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
   CopyOptions,
@@ -334,6 +335,7 @@ import type {
   CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
+  DashboardLink,
   DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
@@ -356,6 +358,7 @@ import type {
   DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DEFAULT_VARIANT_TYPE_KEY,
   defaultLocale,
   DefaultPluginsWorkspaceOptions,
   DefaultPreview,
@@ -388,6 +391,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchMachine,
   defineSearchOperator,
+  defineSingleton,
   defineType,
   Delay,
   DeleteDocumentGroupEvent,
@@ -463,8 +467,10 @@ import type {
   DocumentFormNode,
   DocumentGroupEvent,
   DocumentGroupInventory,
-  DocumentGroupInventoryAction,
   DocumentGroupInventoryComponents,
+  DocumentGroupInventoryFeedbackAction,
+  DocumentGroupInventoryFeedbackActionProps,
+  DocumentGroupInventoryHandle,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
@@ -548,6 +554,7 @@ import type {
   EmptyProps,
   emptyValuesByType,
   encodePath,
+  encodeVariantLinkParam,
   EnhancedObjectDialog,
   EnumListProps,
   ErrorActions,
@@ -568,6 +575,8 @@ import type {
   ExpandOperation,
   ExpandPathOperation,
   FallbackDiff,
+  FederatedAssetSourcesConfig,
+  FederatedAssetSourceViewInfo,
   FeedbackContext,
   FeedbackContextValue,
   FeedbackDialog,
@@ -620,6 +629,7 @@ import type {
   FileSchemaType,
   FileValue,
   Filters,
+  filterVariantsForSearch,
   findIndex,
   FIXME,
   flattenConfig,
@@ -699,6 +709,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDiffAtPath,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
@@ -706,6 +717,7 @@ import type {
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDocumentVersionType,
+  getDocumentVersionVariantId,
   getDraftId,
   getErrorMessage,
   getExpandOperations,
@@ -740,6 +752,7 @@ import type {
   getValueError,
   getVariantPublishedSibling,
   getVariantTitle,
+  getVariantType,
   getVersionFromId,
   getVersionId,
   getVersionInlineBadge,
@@ -822,6 +835,7 @@ import type {
   InitialValueState,
   InitialValueSuccessMsg,
   InitialValueTemplateItem,
+  InlineCode,
   InlineFieldDefinition,
   InlinePreview,
   InlinePreviewProps,
@@ -874,6 +888,7 @@ import type {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
+  isDefaultVariant,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isDeleteMutation,
@@ -906,6 +921,7 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
+  isNonSelectableTerminalEvent,
   isNumberInputProps,
   isNumberSchemaType,
   isObjectInputProps,
@@ -1134,6 +1150,7 @@ import type {
   parseStudioDiagnostics,
   PartialContext,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   PasteData,
@@ -1213,6 +1230,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PUBLISHED,
   PublishedId,
@@ -1299,6 +1317,7 @@ import type {
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
+  ResolvedTemplate,
   ResolvedUploader,
   resolveInitialObjectValue,
   resolveInitialValue,
@@ -1338,7 +1357,9 @@ import type {
   ScheduledPublishingPluginOptions,
   SchedulesContext,
   Schema,
+  SchemaAssetSources,
   SchemaError,
+  SchemaErrorContext,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -1371,6 +1392,7 @@ import type {
   SearchOperatorParams,
   SearchOperatorType,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -1398,6 +1420,8 @@ import type {
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
+  SingletonDefinition,
+  SingletonsResolver,
   SingleWorkspace,
   Size,
   sliceString,
@@ -1453,6 +1477,7 @@ import type {
   StringSegmentChanged,
   StringSegmentUnchanged,
   stringToPath,
+  StructureNodeIdValidationResult,
   Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
@@ -1557,6 +1582,7 @@ import type {
   UnitFormatter,
   UniversalArrayInput,
   UnpublishDocumentEvent,
+  UnresolvedSingletonDefinition,
   UnscheduleDocumentVersionEvent,
   unset,
   unstable_useObserveDocument,
@@ -1593,6 +1619,7 @@ import type {
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useClient,
@@ -1605,6 +1632,8 @@ import type {
   useComments,
   useCommentsEnabled,
   useCommentsEnabledV2,
+  useCommentsMode,
+  useCommentsModeV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -1718,6 +1747,7 @@ import type {
   useReferringDocuments,
   useRelativeTime,
   useReleasesIds,
+  useReleasesToolAvailable,
   useRenderingContextStore,
   useReportParseError,
   useResolveInitialValueForType,
@@ -1740,6 +1770,7 @@ import type {
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
   useSearchState,
+  useSetImmediateValidation,
   useSetPerspective,
   useSetVariant,
   useShallowUnique,
@@ -1759,6 +1790,7 @@ import type {
   useTimeAgo,
   useTimelineSelector,
   useTimelineStore,
+  useTimeZone,
   useTools,
   useTrackerStore,
   useTrackerStoreReporter,
@@ -1790,6 +1822,7 @@ import type {
   validateDocument,
   ValidateDocumentOptions,
   validateNames,
+  validateStructureNodeId,
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
@@ -1805,7 +1838,14 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VariantConditionMap,
+  VariantConditions,
+  VariantConditionsContext,
+  VariantConditionValue,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
+  VariantTypeConfig,
+  VariantTypeContext,
+  VariantTypesConfig,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
@@ -2658,6 +2698,9 @@ describe('sanity', () => {
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
+  test('CONTENT_RELEASES_TIME_ZONE_SCOPE', () => {
+    expectTypeOf<typeof CONTENT_RELEASES_TIME_ZONE_SCOPE>().not.toBeNever()
+  })
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
@@ -2846,6 +2889,9 @@ describe('sanity', () => {
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
   })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
+  })
   test('DashboardNotificationPayload', () => {
     expectTypeOf<DashboardNotificationPayload>().toBeObject()
   })
@@ -2913,6 +2959,9 @@ describe('sanity', () => {
   })
   test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('DEFAULT_VARIANT_TYPE_KEY', () => {
+    expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
   })
   test('defaultLocale', () => {
     expectTypeOf<typeof defaultLocale>().not.toBeNever()
@@ -3009,6 +3058,9 @@ describe('sanity', () => {
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
+  })
+  test('defineSingleton', () => {
+    expectTypeOf<typeof defineSingleton>().toBeFunction()
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
@@ -3234,13 +3286,19 @@ describe('sanity', () => {
     expectTypeOf<DocumentGroupEvent>().not.toBeNever()
   })
   test('DocumentGroupInventory', () => {
-    expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
-  })
-  test('DocumentGroupInventoryAction', () => {
-    expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
+    expectTypeOf<typeof DocumentGroupInventory>().toBeFunction()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
+  test('DocumentGroupInventoryFeedbackAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryFeedbackAction>().toBeFunction()
+  })
+  test('DocumentGroupInventoryFeedbackActionProps', () => {
+    expectTypeOf<DocumentGroupInventoryFeedbackActionProps>().toBeObject()
+  })
+  test('DocumentGroupInventoryHandle', () => {
+    expectTypeOf<DocumentGroupInventoryHandle>().toBeObject()
   })
   test('DocumentGroupInventoryPerspectiveList', () => {
     expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
@@ -3492,6 +3550,9 @@ describe('sanity', () => {
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
   })
+  test('encodeVariantLinkParam', () => {
+    expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
+  })
   test('EnhancedObjectDialog', () => {
     expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
   })
@@ -3551,6 +3612,12 @@ describe('sanity', () => {
   })
   test('FallbackDiff', () => {
     expectTypeOf<typeof FallbackDiff>().not.toBeNever()
+  })
+  test('FederatedAssetSourcesConfig', () => {
+    expectTypeOf<FederatedAssetSourcesConfig>().toBeObject()
+  })
+  test('FederatedAssetSourceViewInfo', () => {
+    expectTypeOf<FederatedAssetSourceViewInfo>().toBeObject()
   })
   test('FeedbackContext', () => {
     expectTypeOf<typeof FeedbackContext>().not.toBeNever()
@@ -3709,6 +3776,9 @@ describe('sanity', () => {
   })
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
+  })
+  test('filterVariantsForSearch', () => {
+    expectTypeOf<typeof filterVariantsForSearch>().toBeFunction()
   })
   test('findIndex', () => {
     expectTypeOf<typeof findIndex>().toBeFunction()
@@ -3948,6 +4018,10 @@ describe('sanity', () => {
   test('getCreatableVariantTarget', () => {
     expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
   })
+  test('getDefaultVariant', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof getDefaultVariant>().toBeFunction()
+  })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
   })
@@ -3968,6 +4042,9 @@ describe('sanity', () => {
   })
   test('getDocumentVersionType', () => {
     expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
+  })
+  test('getDocumentVersionVariantId', () => {
+    expectTypeOf<typeof getDocumentVersionVariantId>().toBeFunction()
   })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
@@ -4070,6 +4147,9 @@ describe('sanity', () => {
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
+  })
+  test('getVariantType', () => {
+    expectTypeOf<typeof getVariantType>().toBeFunction()
   })
   test('getVersionFromId', () => {
     expectTypeOf<typeof getVersionFromId>().toBeFunction()
@@ -4318,6 +4398,9 @@ describe('sanity', () => {
   test('InitialValueTemplateItem', () => {
     expectTypeOf<InitialValueTemplateItem>().toBeObject()
   })
+  test('InlineCode', () => {
+    expectTypeOf<typeof InlineCode>().toBeFunction()
+  })
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
   })
@@ -4474,6 +4557,9 @@ describe('sanity', () => {
   test('isDateTimeSchemaType', () => {
     expectTypeOf<typeof isDateTimeSchemaType>().toBeFunction()
   })
+  test('isDefaultVariant', () => {
+    expectTypeOf<typeof isDefaultVariant>().toBeFunction()
+  })
   test('isDeleteDocumentGroupEvent', () => {
     expectTypeOf<typeof isDeleteDocumentGroupEvent>().not.toBeNever()
   })
@@ -4569,6 +4655,9 @@ describe('sanity', () => {
   })
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
+  })
+  test('isNonSelectableTerminalEvent', () => {
+    expectTypeOf<typeof isNonSelectableTerminalEvent>().not.toBeNever()
   })
   test('isNumberInputProps', () => {
     expectTypeOf<typeof isNumberInputProps>().toBeFunction()
@@ -5257,6 +5346,9 @@ describe('sanity', () => {
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -5493,6 +5585,9 @@ describe('sanity', () => {
   })
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
+  })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
   })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
@@ -5754,6 +5849,9 @@ describe('sanity', () => {
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
+  test('ResolvedTemplate', () => {
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
+  })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
   })
@@ -5871,8 +5969,14 @@ describe('sanity', () => {
   test('Schema', () => {
     expectTypeOf<Schema>().toBeObject()
   })
+  test('SchemaAssetSources', () => {
+    expectTypeOf<SchemaAssetSources>().not.toBeNever()
+  })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
+  })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
@@ -5970,6 +6074,9 @@ describe('sanity', () => {
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
   })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
+  })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
   })
@@ -6050,6 +6157,12 @@ describe('sanity', () => {
   })
   test('SingleMutationResult', () => {
     expectTypeOf<SingleMutationResult>().toBeObject()
+  })
+  test('SingletonDefinition', () => {
+    expectTypeOf<SingletonDefinition>().toBeObject()
+  })
+  test('SingletonsResolver', () => {
+    expectTypeOf<SingletonsResolver>().not.toBeNever()
   })
   test('SingleWorkspace', () => {
     expectTypeOf<SingleWorkspace>().not.toBeNever()
@@ -6217,6 +6330,9 @@ describe('sanity', () => {
   })
   test('stringToPath', () => {
     expectTypeOf<typeof stringToPath>().toBeFunction()
+  })
+  test('StructureNodeIdValidationResult', () => {
+    expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
   })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
@@ -6531,6 +6647,9 @@ describe('sanity', () => {
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
   })
+  test('UnresolvedSingletonDefinition', () => {
+    expectTypeOf<UnresolvedSingletonDefinition>().not.toBeNever()
+  })
   test('UnscheduleDocumentVersionEvent', () => {
     expectTypeOf<UnscheduleDocumentVersionEvent>().toBeObject()
   })
@@ -6640,6 +6759,9 @@ describe('sanity', () => {
   test('useCanvasCompanionDoc', () => {
     expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
   })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
+  })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()
   })
@@ -6676,6 +6798,12 @@ describe('sanity', () => {
   })
   test('useCommentsEnabledV2', () => {
     expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
+  })
+  test('useCommentsMode', () => {
+    expectTypeOf<typeof useCommentsMode>().toBeFunction()
+  })
+  test('useCommentsModeV2', () => {
+    expectTypeOf<typeof useCommentsModeV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
@@ -7017,6 +7145,9 @@ describe('sanity', () => {
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
   })
+  test('useReleasesToolAvailable', () => {
+    expectTypeOf<typeof useReleasesToolAvailable>().toBeFunction()
+  })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
   })
@@ -7078,10 +7209,14 @@ describe('sanity', () => {
     expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()
+  })
+  test('useSetImmediateValidation', () => {
+    expectTypeOf<typeof useSetImmediateValidation>().toBeFunction()
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()
@@ -7139,6 +7274,9 @@ describe('sanity', () => {
   })
   test('useTimelineStore', () => {
     expectTypeOf<typeof useTimelineStore>().toBeFunction()
+  })
+  test('useTimeZone', () => {
+    expectTypeOf<typeof useTimeZone>().not.toBeNever()
   })
   test('useTools', () => {
     expectTypeOf<typeof useTools>().toBeFunction()
@@ -7233,6 +7371,9 @@ describe('sanity', () => {
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
   })
+  test('validateStructureNodeId', () => {
+    expectTypeOf<typeof validateStructureNodeId>().toBeFunction()
+  })
   test('ValidateWorkspaceOptions', () => {
     expectTypeOf<ValidateWorkspaceOptions>().toBeObject()
   })
@@ -7240,7 +7381,7 @@ describe('sanity', () => {
     expectTypeOf<typeof validateWorkspaces>().toBeFunction()
   })
   test('validation', () => {
-    expectTypeOf<typeof validation>().not.toBeNever()
+    expectTypeOf<typeof validation>().toBeFunction()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()
@@ -7279,8 +7420,29 @@ describe('sanity', () => {
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
   })
+  test('VariantConditionMap', () => {
+    expectTypeOf<VariantConditionMap>().toBeObject()
+  })
+  test('VariantConditions', () => {
+    expectTypeOf<VariantConditions>().not.toBeNever()
+  })
+  test('VariantConditionsContext', () => {
+    expectTypeOf<VariantConditionsContext>().not.toBeNever()
+  })
+  test('VariantConditionValue', () => {
+    expectTypeOf<VariantConditionValue>().toBeObject()
+  })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('VariantTypeConfig', () => {
+    expectTypeOf<VariantTypeConfig>().toBeObject()
+  })
+  test('VariantTypeContext', () => {
+    expectTypeOf<VariantTypeContext>().not.toBeNever()
+  })
+  test('VariantTypesConfig', () => {
+    expectTypeOf<VariantTypesConfig>().not.toBeNever()
   })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()
@@ -7292,7 +7454,7 @@ describe('sanity', () => {
     expectTypeOf<VersionInfoDocumentStub>().toBeObject()
   })
   test('VersionInlineBadge', () => {
-    expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+    expectTypeOf<typeof VersionInlineBadge>().toBeFunction()
   })
   test('VersionType', () => {
     expectTypeOf<VersionType>().not.toBeNever()

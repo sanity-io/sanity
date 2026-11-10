@@ -1,6 +1,7 @@
 import {type SchemaTypeDefinition} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {CopyToDraftsMenuItem} from '../CopyToDraftsMenuItem'
@@ -24,8 +25,8 @@ export function CopyToDraftsMenuItemStory() {
   return (
     <TestWrapper schemaTypes={ARTICLE_SCHEMA}>
       <Card padding={4} style={{maxWidth: 320}}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             copy version to drafts
           </Text>
           <Card padding={1} radius={2} shadow={2}>
@@ -37,7 +38,7 @@ export function CopyToDraftsMenuItemStory() {
               />
             </Menu>
           </Card>
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

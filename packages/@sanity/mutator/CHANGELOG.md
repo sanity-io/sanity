@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Bug Fixes
+
+* **mutator:** drop lodash-es usages ([#14593](https://github.com/sanity-io/sanity/issues/14593)) ([eca963b](https://github.com/sanity-io/sanity/commit/eca963b915e063dee92be7e05d3c3e25db7ea49b))
 ## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
 
 ### Bug Fixes

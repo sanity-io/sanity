@@ -215,6 +215,20 @@ export const isDeleteDocumentGroupEvent = (
 ): event is DeleteDocumentGroupEvent => event.type === 'deleteDocumentGroup'
 
 /**
+ * Discard of a published document's draft emits `deleteDocumentVersion`.
+ * Deleting the document group (or the last remaining draft, per the events
+ * lifecycle docs) emits `deleteDocumentGroup`. Neither is selectable in Review
+ * Changes; treat both as a terminal event for the live revision.
+ *
+ * @hidden
+ * @beta
+ */
+export const isNonSelectableTerminalEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is DeleteDocumentVersionEvent | DeleteDocumentGroupEvent =>
+  isDeleteDocumentVersionEvent(event) || isDeleteDocumentGroupEvent(event)
+
+/**
  * @hidden
  * @beta
  */

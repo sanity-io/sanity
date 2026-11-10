@@ -1,20 +1,18 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const titleStack = style({
-  minWidth: 0,
-  width: '100%',
+export const root = css({
+  maxWidth: '440px',
+  minWidth: '400px',
+  width: 'max-content',
 })
 
-/** No longer used by the tooltip (it shows no dates); kept for the hosts that style a version's date with it. */
-export const updatedAtText = style({
+export const lineName = css({
+  flex: '1 1 auto',
+  minWidth: '96px',
+})
+
+export const lineIcons = css({
+  display: 'flex',
   flex: 'none',
-  whiteSpace: 'nowrap',
-})
-
-export const versionStatusItem = style({
-  selectors: {
-    '&&': {
-      padding: '2px 0',
-    },
-  },
+  gap: '2px',
 })

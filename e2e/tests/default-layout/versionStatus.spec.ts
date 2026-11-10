@@ -59,3 +59,44 @@ test.describe('auto-updating studio behavior', () => {
     await expect(page.getByTestId('menu-item-update-studio-now')).toContainText('4.2.0')
   })
 })
+
+test.describe('deprecated studio version', () => {
+  test('should flag the running version in the help menu when the module server reports it as deprecated', async ({
+    page,
+    baseURL,
+  }) => {
+    // Without an import map the studio asks the `latest` channel with `^<current version>` as
+    // the range, so the intercepted URL tells us which version the studio is running.
+    await page.route('https://sanity-cdn.**/v1/modules/sanity/latest/**', (route) => {
+      const url = new URL(route.request().url())
+      const rangeSegment = url.pathname.split('/').find((segment) => segment.startsWith('%5E'))
+      const currentVersion = decodeURIComponent(rangeSegment ?? '').slice(1)
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          packageVersion: currentVersion,
+          latest: currentVersion,
+          deprecated: {[currentVersion]: {reason: 'Contains a data loss bug'}},
+        }),
+      })
+    })
+
+    await page.goto(baseURL ?? '', {waitUntil: 'domcontentloaded'})
+
+    const resourcesMenuButton = page.getByTestId('button-resources-menu')
+    await expect(resourcesMenuButton).toBeVisible()
+    await expect(resourcesMenuButton).toBeEnabled()
+    await resourcesMenuButton.click()
+
+    const versionItem = page.getByTestId('menu-item-studio-version-deprecated')
+    await expect(versionItem).toBeVisible({timeout: 10000})
+    await expect(versionItem).toContainText('is deprecated')
+
+    // the About dialog explains why and what to do
+    await versionItem.click()
+    const warning = page.getByTestId('studio-version-deprecation-warning')
+    await expect(warning).toBeVisible()
+    await expect(warning).toContainText('Contains a data loss bug')
+  })
+})

@@ -1,5 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentPropsWithRef} from 'react'
 import {type TextProps, Text, Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -10,27 +11,20 @@ import {useUser} from '../../../store/user/hooks'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'
+import {contentStack, inlineText, textBox, textGroup} from './CommentReactionsUsersTooltip.css'
 import {EmojiText} from './EmojiText.styled'
 
 const TEXT_SIZE: TextProps['size'] = 1
 
-const ContentStack = styled(Flex)`
-  max-width: 180px;
-`
+type InlineTextProps = TextProps<'div'> & Omit<ComponentPropsWithRef<'div'>, keyof TextProps<'div'>>
 
-const TextGroup = styled.div`
-  display: inline-block;
-`
+function InlineText(props: InlineTextProps) {
+  const {className, ...rest} = props
 
-const InlineText = styled(Text).attrs({size: TEXT_SIZE})`
-  display: inline-block !important;
-  white-space: break-spaces;
-`
-
-const TextBox = styled(Box)`
-  line-height: 1;
-  text-align: center;
-`
+  return (
+    <Text {...rest} size={TEXT_SIZE} className={clsx(inlineText, className)} as="div" trim={true} />
+  )
+}
 
 const LEADING_NON_WHITESPACE_RE = /^\S+/
 
@@ -98,11 +92,7 @@ function FormattedUserList({
 
     if (item.type === 'literal') {
       // Add literals as-is - the next case will rewrite literals to exclude leading non-whitespace
-      elements.push(
-        <InlineText key={`literal-${i}`} forwardedAs="div" trim={true}>
-          {item.value}
-        </InlineText>,
-      )
+      elements.push(<InlineText key={`literal-${i}`}>{item.value}</InlineText>)
       continue
     }
 
@@ -116,14 +106,12 @@ function FormattedUserList({
 
       elements.push(
         // Key (value) is user ID, thus unique
-        <TextGroup key={item.value}>
-          <InlineText weight="medium" forwardedAs="div" trim={true}>
+        <div className={textGroup} key={item.value}>
+          <InlineText weight="medium">
             <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
           </InlineText>
-          <InlineText forwardedAs="div" trim={true}>
-            {nonWhitespace}
-          </InlineText>
-        </TextGroup>,
+          <InlineText>{nonWhitespace}</InlineText>
+        </div>,
       )
 
       // Rewrite the next item to not contain this leading non-whitespace
@@ -135,7 +123,7 @@ function FormattedUserList({
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <InlineText key={item.value} weight="medium" forwardedAs="div" trim={true}>
+      <InlineText key={item.value} weight="medium">
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
       </InlineText>,
     )
@@ -156,20 +144,13 @@ function UserList({currentUserId, userIds}: ReactionTooltipComponentProps) {
 }
 
 function ReactionName({reactionName}: ReactionTooltipComponentProps) {
-  return (
-    <InlineText muted forwardedAs="div" trim={true}>
-      {reactionName}
-    </InlineText>
-  )
+  return <InlineText muted>{reactionName}</InlineText>
 }
 
 function ReactionText({children}: ReactionTooltipComponentProps) {
   return (
     <>
-      <InlineText muted forwardedAs="div" trim={true}>
-        {children}
-      </InlineText>{' '}
-      <wbr />{' '}
+      <InlineText muted>{children}</InlineText> <wbr />{' '}
     </>
   )
 }
@@ -181,14 +162,12 @@ function CommentReactionsUsersTooltipContent(
   const {t} = useTranslation(commentsLocaleNamespace)
 
   return (
-    <ContentStack padding={1} flexDirection="column">
+    <Flex className={contentStack} padding={1} flexDirection="column">
       <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
-        <EmojiText size={4} forwardedAs="div" trim={true}>
-          {COMMENT_REACTION_EMOJIS[reactionName]}
-        </EmojiText>
+        <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
-      <TextBox>
+      <Box className={textBox}>
         <Translate
           t={t}
           i18nKey="reactions.users-reacted-with-reaction"
@@ -200,7 +179,7 @@ function CommentReactionsUsersTooltipContent(
             userIds,
           }}
         />
-      </TextBox>
-    </ContentStack>
+      </Box>
+    </Flex>
   )
 }

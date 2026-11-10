@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text, VStack} from 'ui5'
 
 import {PopoverContent} from '../PopoverContent'
 import {type FreeTrialDialog} from '../types'
@@ -65,20 +66,20 @@ export const States: Story = {
   args: {content: PRIMARY_ONLY, handleClose: NOOP, handleOpenNext: NOOP},
   render: () => (
     <Card padding={4} style={{maxWidth: 360}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             primary only
           </Text>
           <PopoverContent content={PRIMARY_ONLY} handleClose={NOOP} handleOpenNext={NOOP} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             primary and secondary
           </Text>
           <PopoverContent content={WITH_SECONDARY} handleClose={NOOP} handleOpenNext={NOOP} />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
   // Both CTAs set autoFocus; React commits them in tree order so the last one

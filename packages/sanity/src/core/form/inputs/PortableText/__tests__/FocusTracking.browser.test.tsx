@@ -8,7 +8,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {type PortableTextPluginsProps} from 'sanity'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -174,8 +174,8 @@ function FocusTrackingHarness({
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -250,9 +250,6 @@ const document: SanityDocument = {
 }
 
 describe('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
   describe('Should track focusPath', () => {
     it(`for span .text`, async () => {
       const {waitForFocusedNodeText} = testHelpers()
@@ -435,7 +432,7 @@ describe('Portable Text Input', () => {
   it(`reports focus on spans with with .text prop, and everything else without`, async () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
     void render(<FocusTrackingHarness document={document} onPathFocus={pushPath} />)
     const $pte = await getFocusedPortableTextEditor('field-body')
     await expect.element($pte).toHaveFocus()
@@ -448,5 +445,23 @@ describe('Portable Text Input', () => {
     const $blockObject = page.getByTestId('pte-block-object').first()
     await $blockObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'k'}])
+    // Inline toolbar can linger via Activity; wait until only the block is selected
+    // so Chromatic does not archive a floating inline popover mid-close.
+    await expect
+      .poll(() => {
+        const popover = window.document.querySelector<HTMLElement>(
+          '[data-testid="inline-object-toolbar-popover"]',
+        )
+        return !popover || !popover.checkVisibility()
+      })
+      .toBe(true)
+    await expect.element($blockObject).toBeVisible()
+    // The real pointer still sits on the clicked block object; park it so the
+    // archive does not carry its hover state or a lingering tooltip.
+    await settleChromaticEndState({
+      styleSelectText: /^No style$/,
+      styleSelectRoot: '[data-testid="field-body"]',
+    })
+    await expect.element($blockObject).toBeVisible()
   })
 })

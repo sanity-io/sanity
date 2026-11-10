@@ -2,12 +2,16 @@ import {defineContainer} from '@portabletext/editor'
 import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
+import {Box, Button, Dialog} from '@sanity/ui'
+import {useState} from 'react'
 import {
+  type ArrayOfObjectsInputProps,
   defineArrayMember,
   defineField,
   defineType,
   type PortableTextPluginsProps,
   useFormValue,
+  useZIndex,
 } from 'sanity'
 
 const CONTAINER_NODES = [
@@ -113,6 +117,54 @@ function RichTableAdoptionPlugins(props: PortableTextPluginsProps) {
       table: {enabled: true, containers: richTableContainers},
     },
   })
+}
+
+function TablePlugins(props: PortableTextPluginsProps) {
+  return props.renderDefault({
+    ...props,
+    plugins: {...props.plugins, table: {enabled: true}},
+  })
+}
+
+// Hosts the input in a dialog at Studio's own `inspectorDialog` offset, a
+// layer that out-ranks the table's trash chips when they portal outside the
+// editor.
+function TableInDialogInput(props: ArrayOfObjectsInputProps) {
+  const [open, setOpen] = useState(false)
+  const zOffsets = useZIndex()
+
+  return (
+    <>
+      <Button mode="ghost" onClick={() => setOpen(true)} text="Edit table in dialog" />
+      {open && (
+        <Dialog
+          header="Table in dialog"
+          id="table-in-dialog"
+          onClose={() => setOpen(false)}
+          width={2}
+          zOffset={zOffsets.inspectorDialog}
+        >
+          <Box padding={4}>{props.renderDefault(props)}</Box>
+        </Dialog>
+      )}
+    </>
+  )
+}
+
+function tableCell(key: string, text: string) {
+  return {
+    _type: 'cell',
+    _key: key,
+    value: [
+      {
+        _type: 'block',
+        _key: `${key}-block`,
+        style: 'normal',
+        markDefs: [],
+        children: [{_type: 'span', _key: `${key}-span`, text, marks: []}],
+      },
+    ],
+  }
 }
 
 export const customPlugins = defineType({
@@ -304,6 +356,69 @@ export const customPlugins = defineType({
       components: {
         portableText: {
           plugins: RichTableAdoptionPlugins,
+        },
+      },
+    },
+    {
+      type: 'array',
+      name: 'tableInDialog',
+      title: 'Table in Dialog',
+      description:
+        'A table-enabled input inside a dialog layer at Studio\'s inspectorDialog offset. Click "Edit table in dialog", hover a cell in the first column and click the column handle above it: a trash button appears above the handle. Click it to delete the column. Broken: the trash button paints beneath the dialog, so it is hidden and clicking where it should be does nothing. Fixed: it shows above the handle and deletes the column. The row handle and its trash button on the left behave the same.',
+      initialValue: [
+        {
+          _type: 'table',
+          _key: 'table',
+          headerRows: 0,
+          rows: [
+            {_type: 'row', _key: 'row-1', cells: [tableCell('a1', 'A1'), tableCell('b1', 'B1')]},
+            {_type: 'row', _key: 'row-2', cells: [tableCell('a2', 'A2'), tableCell('b2', 'B2')]},
+          ],
+        },
+      ],
+      of: [
+        defineArrayMember({type: 'block'}),
+        defineArrayMember({
+          type: 'object',
+          name: 'table',
+          fields: [
+            defineField({type: 'number', name: 'headerRows'}),
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'value',
+                              of: [defineArrayMember({type: 'block'})],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        input: TableInDialogInput,
+        portableText: {
+          plugins: TablePlugins,
         },
       },
     },

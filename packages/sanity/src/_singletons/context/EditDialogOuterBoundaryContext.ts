@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /** @internal */
 export interface EditDialogOuterBoundaryContextValue {
@@ -13,7 +13,4 @@ export interface EditDialogOuterBoundaryContextValue {
  * `sanity/_singletons` surface does not break; will be removed in the next major.
  */
 export const EditDialogOuterBoundaryContext =
-  createContext<EditDialogOuterBoundaryContextValue | null>(
-    'sanity/_singletons/context/edit-dialog-outer-boundary',
-    null,
-  )
+  createContext<EditDialogOuterBoundaryContextValue | null>(null)

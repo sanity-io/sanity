@@ -9,7 +9,7 @@ export type ComparisonVerdict = 'regression' | 'improvement' | 'neutral' | 'inco
 
 export interface ComparisonMetric {
   label: string
-  unit: 'ms' | 'count' | 'cls'
+  unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent'
   experiment: {summary: {median: number} | null} | null
   reference: {summary: {median: number} | null} | null
   comparison: {diff: number; lo: number; hi: number; verdict: ComparisonVerdict} | null

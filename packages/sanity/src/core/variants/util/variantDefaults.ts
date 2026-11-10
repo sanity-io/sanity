@@ -3,11 +3,14 @@ import {randomKey} from '@sanity/util/content'
 
 import {type EditableSystemVariant} from '../types'
 import {createVariantId} from './createVariantId'
+import {DEFAULT_VARIANT_TYPE_KEY} from './variantType'
 
 /**
  * @internal
  */
-export function getVariantDefaults(): EditableSystemVariant {
+export function getVariantDefaults(type?: string): EditableSystemVariant {
+  const trimmedType = type?.trim()
+
   return {
     _id: createVariantId(),
     _type: 'system.variant',
@@ -16,6 +19,7 @@ export function getVariantDefaults(): EditableSystemVariant {
     metadata: {
       title: '',
       description: [],
+      type: trimmedType || DEFAULT_VARIANT_TYPE_KEY,
     },
   }
 }

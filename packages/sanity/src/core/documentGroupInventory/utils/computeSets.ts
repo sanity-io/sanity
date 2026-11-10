@@ -4,9 +4,14 @@ import {type TFunction} from '../../i18n/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../util/versionsUtils'
 import {type SystemVariant} from '../../variants/types'
-import {type Meta, type VariantSet} from '../machines/documentGroupInventoryMachine'
+import {
+  type Meta,
+  type VariantSet,
+  type VariantSetBundle,
+} from '../machines/documentGroupInventoryMachine'
 import {type Variant} from '../machines/selectionMachine'
 
 /**
@@ -37,8 +42,8 @@ export function computeSets({
   })
 
   if (!variantsEnabled) {
-    const hasVariants = meta.versionState.versions.some(
-      (version) => typeof version._system.variant !== 'undefined',
+    const hasVariants = meta.versionState.versions.some((version) =>
+      Boolean(getDocumentVersionVariantId(version)),
     )
 
     if (hasVariants) {
@@ -111,6 +116,7 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
     return {
       key: releaseId,
       name: getReleaseName({releaseId, releases, t}),
+      bundle: getReleaseBundle({releaseId, releases}),
       variants: releaseVariants.map<Variant>((variant) => ({
         id: variant._id,
         name: getVariantName({document: variant, variants, t}),
@@ -124,6 +130,7 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
     return sets.toSpliced(0, 0, {
       key: 'studio:content-agent',
       name: t('content-agent'),
+      bundle: {type: 'agent'},
       variants: [
         {
           id: proposedChanges._id,
@@ -150,9 +157,9 @@ function getVariantName({
   document: VersionInfoDocumentStub
   variants: Map<string, SystemVariant>
 }): string {
-  const releaseDocumentId = document._system.variant?._ref
-  const release = releaseDocumentId ? variants.get(releaseDocumentId) : undefined
-  return release?.metadata?.title ?? t('document-group.base-variant')
+  const variantDocumentId = getDocumentVersionVariantId(document)
+  const variant = variantDocumentId ? variants.get(variantDocumentId) : undefined
+  return variant?.metadata?.title ?? t('document-group.base-variant')
 }
 
 function getVersionName({
@@ -172,6 +179,26 @@ function getVersionName({
 
   const release = releases.get(document._system.release?._ref ?? '')
   return release?.metadata.title ?? document._system.release?._ref ?? document._id
+}
+
+function getReleaseBundle({
+  releaseId,
+  releases,
+}: Pick<GetNameOptions, 'releases'> & {releaseId: string}): VariantSetBundle {
+  if (
+    releaseId === ('published' satisfies SystemBundle) ||
+    releaseId === ('drafts' satisfies SystemBundle)
+  ) {
+    return {
+      type: 'perspective',
+      perspective: releaseId,
+    }
+  }
+
+  return {
+    type: 'perspective',
+    perspective: releases.get(releaseId) ?? '',
+  }
 }
 
 function getReleaseName({releaseId, releases, t}: GetNameOptions & {releaseId: string}): string {

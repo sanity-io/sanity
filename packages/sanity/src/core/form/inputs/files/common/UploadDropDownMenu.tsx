@@ -48,7 +48,7 @@ function UploadDropDownMenuComponent(
   props: UploadDropDownButtonComponentProps & RefAttributes<HTMLButtonElement>,
 ) {
   const {
-    ref: forwardedRef,
+    'ref': forwardedRef,
     accept,
     assetSources,
     capture,

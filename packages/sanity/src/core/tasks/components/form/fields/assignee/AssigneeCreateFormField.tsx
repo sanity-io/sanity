@@ -1,8 +1,8 @@
-import {Badge, Card, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {set} from '../../../../../form/patch/patch'
 import {type StringInputProps} from '../../../../../form/types/inputProps'
@@ -21,6 +21,10 @@ const FocusableCard = styled(Card)((props) => {
         border: 1px solid var(--card-focus-ring-color);
       }
       --card-muted-fg-color: ${theme.color.input.default.enabled.placeholder};
+      &[data-selected] [data-ui='Text'] {
+        --text-color-muted: light-dark(var(--blue-200), var(--blue-800));
+        --text-color: light-dark(var(--white), var(--black));
+      }
     }
   `
 })
@@ -53,7 +57,7 @@ export function AssigneeCreateFormField(props: StringInputProps) {
           <Flex alignItems="center" gap={3}>
             <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
               <TasksUserAvatar user={mentionedUser} size={1} border={false} />
-              <Text size={1} textOverflow="ellipsis" muted={!mentionedUser}>
+              <Text size={1} truncate={1} muted={!mentionedUser} as="div" trim={true}>
                 {displayText}
               </Text>
             </Flex>

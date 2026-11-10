@@ -164,6 +164,12 @@ export const TIME_ZONE_SCOPE_TYPE = {
   input: 'input',
 }
 
+/**
+ * The time zone selected for a scope (content releases, scheduled publishing or an input), with
+ * helpers to convert dates between it and UTC.
+ *
+ * @internal
+ */
 export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()
   const keyValueStore = useKeyValueStore()

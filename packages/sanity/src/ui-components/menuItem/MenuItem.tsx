@@ -1,21 +1,15 @@
 /* oxlint-disable no-restricted-imports */
-import {Badge, Flex, Stack, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
-import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
-import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {type ElementType, type ReactNode, useMemo} from 'react'
+import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
+import {previewWrapper, subtitleText} from './MenuItem.css'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
-
-/* Using px value here to make title/subtitles align with icon */
-const SubtitleText = styled(Text)`
-  margin-top: 2px;
-`
 
 /** @internal */
 export type MenuItemProps<E extends ElementType = 'button'> = Omit<
@@ -52,12 +46,6 @@ export type MenuItemProps<E extends ElementType = 'button'> = Omit<
   __unstable_space?: number
 }
 
-const PreviewWrapper = styled(Box)`
-  height: 25px;
-  width: 25px;
-  overflow: hidden;
-`
-
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
  * single line menu items.
@@ -75,8 +63,8 @@ export function MenuItem<E extends ElementType = 'button'>({
   children: childrenProp,
   disabled,
   hotkeys,
-  icon: Icon,
-  iconRight: IconRight,
+  icon: IconComponent,
+  iconRight: IconRightComponent,
   preview = null,
   renderMenuItem,
   text,
@@ -87,39 +75,66 @@ export function MenuItem<E extends ElementType = 'button'>({
 }: MenuItemProps<E>) {
   const menuItemContent = useMemo(() => {
     return (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {preview && (
-          <PreviewWrapper
+          <Box
+            className={previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
-            <Flex align="center" height="fill" justify="center">
+            <Flex alignItems="center" height="100%" justifyContent="center">
               {preview}
             </Flex>
-          </PreviewWrapper>
+          </Box>
         )}
-        {Icon && (
+        {IconComponent && (
           <Box paddingRight={1}>
-            <Text size={FONT_SIZE}>
-              {isValidElement(Icon) && Icon}
-              {isValidElementType(Icon) && <Icon />}
-            </Text>
+            <Icon
+              size={FONT_SIZE}
+              icon={IconComponent as IconProps['icon']}
+              style={{
+                marginInline: '-0.375rem',
+                marginBlock: '-0.5rem',
+                color: 'var(--card-icon-color)',
+              }}
+            />
           </Box>
         )}
         {text && (
-          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
-            <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
+          <Flex
+            flexBasis="0%"
+            flexGrow={1}
+            gap={__unstable_subtitle ? 1 : 2}
+            flexDirection="column"
+          >
+            <Text
+              size={FONT_SIZE}
+              truncate={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               {text}
             </Text>
             {__unstable_subtitle && (
-              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+              <Text
+                className={subtitleText}
+                size={SUBTITLE_FONT_SIZE}
+                truncate={1}
+                weight="medium"
+                muted
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {__unstable_subtitle}
-              </SubtitleText>
+              </Text>
             )}
-          </Stack>
+          </Flex>
         )}
-        {(badgeText || hotkeys || IconRight) && (
-          <Flex align="center" gap={3} marginLeft={3}>
+        {(badgeText || hotkeys || IconRightComponent) && (
+          <Flex alignItems="center" gap={3} marginLeft={3}>
             {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
             {badgeText && (
@@ -128,11 +143,12 @@ export function MenuItem<E extends ElementType = 'button'>({
               </Badge>
             )}
 
-            {IconRight && (
-              <Text size={FONT_SIZE}>
-                {isValidElement(IconRight) && IconRight}
-                {isValidElementType(IconRight) && <IconRight />}
-              </Text>
+            {IconRightComponent && (
+              <Icon
+                size={FONT_SIZE}
+                icon={IconRightComponent as IconProps['icon']}
+                style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
+              />
             )}
           </Flex>
         )}
@@ -142,12 +158,12 @@ export function MenuItem<E extends ElementType = 'button'>({
     preview,
     disabled,
     __unstable_space,
-    Icon,
+    IconComponent,
     text,
     __unstable_subtitle,
     badgeText,
     hotkeys,
-    IconRight,
+    IconRightComponent,
   ])
 
   const children = (

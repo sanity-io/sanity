@@ -1,3 +1,5 @@
+import {Reference} from '../reference/types'
+
 /** @public */
 export interface SanityDocument {
   _id: string
@@ -7,7 +9,7 @@ export interface SanityDocument {
   _rev: string
   /**
    * System-managed attributes. Which fields are present depends on the document (e.g.
-   * `variant`/`scopeId` only exist on version documents, and documents predating the `_system`
+   * `variants`/`scopeId` only exist on version documents, and documents predating the `_system`
    * migration may carry only some of them), hence the partial shape.
    */
   _system?: Partial<DocumentSystem>
@@ -29,7 +31,7 @@ export interface SanityDocumentLike {
   _rev?: string
   /**
    * System-managed attributes. Which fields are present depends on the document (e.g.
-   * `variant`/`scopeId` only exist on version documents, and documents predating the `_system`
+   * `variants`/`scopeId` only exist on version documents, and documents predating the `_system`
    * migration may carry only some of them), hence the partial shape.
    */
   _system?: Partial<DocumentSystem>
@@ -69,9 +71,16 @@ export interface DocumentSystem {
    */
   release?: DocumentSystemRef
   /**
-   * A weak reference to the variant document that the version belongs to.
+   * References to the variant documents that the version belongs to. Content Lake currently
+   * limits this to a single entry, so `variants[0]` is the variant of the document.
    */
-  variant?: DocumentSystemRef
+  variants?: (Omit<DocumentSystemRef, '_weak'> & {_key: string})[]
+  /**
+   * @deprecated Use `variants[0]` instead. This single-reference field remains only on
+   * documents that have not been migrated yet; read it as a fallback from `variants[0]`,
+   * never as the primary source.
+   */
+  variant?: Omit<DocumentSystemRef, '_weak'>
   /**
    * A weak reference to the group document (aka published document).
    */

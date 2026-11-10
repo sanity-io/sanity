@@ -1,6 +1,13 @@
-import {BrowserClient, defaultStackParser, makeFetchTransport, Scope} from '@sentry/react'
+import {
+  BrowserClient,
+  defaultStackParser,
+  type Event,
+  makeFetchTransport,
+  Scope,
+} from '@sentry/react'
 
 import {isDev} from '../environment'
+import {scrubAutomaticPii, studioSentryDataCollection} from '../error/sentry/sentryPrivacy'
 import {SANITY_VERSION} from '../version'
 import {type FeedbackPayload} from './types'
 
@@ -28,7 +35,10 @@ function getFeedbackClient(dsn: string): Scope {
     release: SANITY_VERSION,
     environment: isDev ? 'development' : 'production',
     stackParser: defaultStackParser,
-    integrations: [],
+    // Feedback events skip `beforeSend`. This client also has to opt out of
+    // v11's default data collection, then drop anything the SDK still attaches.
+    dataCollection: studioSentryDataCollection,
+    integrations: [scrubAutomaticPiiIntegration()],
     transport: makeFetchTransport,
   })
 
@@ -38,6 +48,19 @@ function getFeedbackClient(dsn: string): Scope {
 
   clientsByDsn.set(dsn, scope)
   return scope
+}
+
+/**
+ * `beforeSend` only runs for error events. Feedback is captured with
+ * `type: 'feedback'`, so the same scrub has to run as an event processor.
+ */
+function scrubAutomaticPiiIntegration() {
+  return {
+    name: 'SanityPiiScrub',
+    processEvent(event: Event) {
+      return scrubAutomaticPii(event)
+    },
+  }
 }
 
 /**

@@ -203,9 +203,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           message: apiMessage,
           threadId: comment.threadId,
           context: {...nextComment.context},
-          target: comment.range
-            ? {...target, range: comment.range, fieldValue: comment.fieldValue}
-            : target,
+          target: comment.anchor ? {...target, anchor: comment.anchor} : target,
         }
   }
 

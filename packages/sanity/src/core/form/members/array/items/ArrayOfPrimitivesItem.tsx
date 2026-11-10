@@ -1,4 +1,5 @@
 import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/types'
+import {rem, Skeleton} from '@sanity/ui'
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
@@ -23,6 +24,7 @@ import {
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {FormNodeSuspense, type FormNodeComponentKey} from '../../common/FormNodeSuspense'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
@@ -212,38 +214,54 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   )
 
   return (
-    <RenderItem
-      key={member.key}
-      index={member.index}
-      level={member.item.level}
-      value={member.item.value as FIXME}
-      changed={member.item.changed}
-      __unstable_computeDiff={member.item.__unstable_computeDiff}
-      hasUpstreamVersion={member.item.hasUpstreamVersion}
-      changedFromBaseVariant={member.item.changedFromBaseVariant}
-      baseVariantValue={member.item.baseVariantValue}
-      hasBaseVariant={member.item.hasBaseVariant}
-      title={member.item.schemaType.title}
-      description={member.item.schemaType.description}
-      schemaType={member.item.schemaType as FIXME}
-      parentSchemaType={member.parentSchemaType}
-      onInsert={onInsert}
-      onCopy={handleCopy}
-      onRemove={onRemove}
-      presence={member.item.presence}
-      validation={member.item.validation}
-      readOnly={member.item.readOnly}
-      focused={member.item.focused}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      inputId={member.item.id}
+    <FormNodeSuspense
+      fallback={<PrimitiveItemBestEffortFallback />}
+      schemaType={member.item.schemaType}
       path={member.item.path}
-      render={renderItem}
+      components={PRIMITIVE_ITEM_COMPONENTS}
     >
-      <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
-        <RenderInput {...inputProps} render={renderInput} />
-      </FormNodeDivergenceDetail>
-    </RenderItem>
+      <RenderItem
+        key={member.key}
+        index={member.index}
+        level={member.item.level}
+        value={member.item.value as FIXME}
+        changed={member.item.changed}
+        __unstable_computeDiff={member.item.__unstable_computeDiff}
+        hasUpstreamVersion={member.item.hasUpstreamVersion}
+        changedFromBaseVariant={member.item.changedFromBaseVariant}
+        baseVariantValue={member.item.baseVariantValue}
+        hasBaseVariant={member.item.hasBaseVariant}
+        title={member.item.schemaType.title}
+        description={member.item.schemaType.description}
+        schemaType={member.item.schemaType as FIXME}
+        parentSchemaType={member.parentSchemaType}
+        onInsert={onInsert}
+        onCopy={handleCopy}
+        onRemove={onRemove}
+        presence={member.item.presence}
+        validation={member.item.validation}
+        readOnly={member.item.readOnly}
+        focused={member.item.focused}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        inputId={member.item.id}
+        path={member.item.path}
+        render={renderItem}
+      >
+        <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+          <RenderInput {...inputProps} render={renderInput} />
+        </FormNodeDivergenceDetail>
+      </RenderItem>
+    </FormNodeSuspense>
+  )
+}
+
+// The item's input renders inline, under the same boundary
+const PRIMITIVE_ITEM_COMPONENTS: readonly FormNodeComponentKey[] = ['item', 'input']
+
+function PrimitiveItemBestEffortFallback() {
+  return (
+    <Skeleton data-testid="custom-item-fallback" radius={1} animated style={{height: rem(35)}} />
   )
 }
 

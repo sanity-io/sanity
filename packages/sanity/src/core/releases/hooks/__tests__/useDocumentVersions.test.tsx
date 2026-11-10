@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
+import {Activity} from 'react'
 import {BehaviorSubject, concat, NEVER, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -27,6 +28,12 @@ vi.mock('../../../hooks/useProjectId', () => ({
 
 vi.mock('../../../store/datastores', () => ({useDocumentPreviewStore: vi.fn()}))
 
+const mockRandomKey = vi.hoisted(() => vi.fn(() => 'k-123'))
+
+vi.mock('../../../form/utils/randomKey', () => ({
+  randomKey: mockRandomKey,
+}))
+
 const initialReleasesState: ReleasesReducerState = {
   releases: new Map(),
   state: 'loaded',
@@ -43,6 +50,7 @@ async function setupMocks({
   versionIds,
   observeSystem = true,
   pendingIdSet = false,
+  system,
 }: {
   releases: ReleaseDocument[]
   versionIds: string[]
@@ -53,6 +61,8 @@ async function setupMocks({
   observeSystem?: boolean
   /** When `true`, the version document ids observable never emits (initial loading state). */
   pendingIdSet?: boolean
+  /** Extra `_system` attributes to return for every observed version. */
+  system?: Partial<DocumentSystem>
 }) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
 
@@ -77,6 +87,7 @@ async function setupMocks({
                   bundleId: 'drafts',
                   group: {_ref: getPublishedId(id), _weak: true},
                   scopeId: getPublishedId(id),
+                  ...system,
                 } satisfies DocumentSystem,
               }
             : {
@@ -114,6 +125,18 @@ describe('useDocumentVersions', () => {
     expect(result.current.loading).toBe(true)
     expect(result.current.error).toBe(null)
     expect(result.current.data).toEqual([])
+  })
+
+  it('leaves no cache entries behind when rendered inside a hidden Activity', async () => {
+    await setupMocks({releases: [activeASAPRelease], versionIds: ['drafts.document-1']})
+
+    const {unmount} = renderHook(() => useDocumentVersions({documentId: 'document-1'}), {
+      wrapper: ({children}) => <Activity mode="hidden">{children}</Activity>,
+    })
+    unmount()
+
+    expect(observableCache.size).toBe(0)
+    expect(withSystemCache.size).toBe(0)
   })
 
   it('should return an empty array if no versions are found', async () => {
@@ -170,7 +193,6 @@ describe('useDocumentVersions', () => {
         _system: {
           bundleId: 'rASAP',
           release: {_ref: '_.releases.rASAP', _weak: true},
-          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
           scopeId: 'rASAP',
         },
@@ -198,12 +220,97 @@ describe('useDocumentVersions', () => {
         _system: {
           bundleId: 'drafts',
           release: undefined,
-          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
           scopeId: undefined,
         },
       },
     ])
+  })
+
+  describe('variant reference normalization', () => {
+    const variantRef = {_ref: '_.variants.alpha', _key: 'k-123'} as const
+
+    it('passes `_system.variants` through untouched', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        system: {variants: [variantRef]},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system).toEqual({
+        bundleId: 'drafts',
+        group: {_ref: 'document-1', _weak: true},
+        scopeId: 'document-1',
+        variants: [variantRef],
+      })
+    })
+
+    it('folds the legacy `_system.variant` of unmigrated documents into `variants`', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
+        system: {variant: variantRef},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system).toEqual({
+        bundleId: 'drafts',
+        group: {_ref: 'document-1', _weak: true},
+        scopeId: 'document-1',
+        variants: [variantRef],
+      })
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+
+    it('prefers `variants` when a document carries both fields', async () => {
+      const legacyRef = {_ref: '_.variants.legacy', _weak: true as const}
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
+        system: {variants: [variantRef], variant: legacyRef},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toEqual([variantRef])
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+
+    it('leaves base documents without a variant reference', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['drafts.document-1'],
+        system: {variants: []},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toEqual([])
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+    it('strips a null legacy `_system.variant` from base documents', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['drafts.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
+        system: {variant: undefined},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toBeUndefined()
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
   })
 })
 

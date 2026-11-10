@@ -3,6 +3,7 @@ import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   getCreatableVariantTarget,
+  getDefaultVariant,
   isPublishedPerspective,
   isReleaseDocument,
   usePerspective,
@@ -38,7 +39,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const footerLeadAlone =
     extension?.footerLeadAlways && !footerGreyed ? extension.footerLead : undefined
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -142,21 +144,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
-      {!shouldRender && !showingRevision && footerGreyed && editState?.ready ? (
-        // PROPOSED: no version to show, so no status line; the host's control and the actions keep their places, the actions greyed.
-        <Flex
-          alignItems="stretch"
-          gap={1}
-          justifyContent="flex-end"
-          paddingLeft={1}
-          paddingRight={1}
-        >
-          <Flex alignItems="flex-start" justifyContent="flex-end" style={{flexShrink: 0}}>
-            <SpacerButton />
-            <DocumentStatusBarActions disabled />
-          </Flex>
-        </Flex>
-      ) : null}
       {!shouldRender && !showingRevision && footerLeadAlone && editState?.ready ? (
         // PROPOSED: no version to show, so no status and no Publish; the host's control keeps its place at the bar's right end.
         <Flex justifyContent="flex-end" paddingLeft={1} paddingRight={1}>

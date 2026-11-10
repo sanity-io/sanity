@@ -1,6 +1,6 @@
-import {Flex, rem, Stack, Text} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -16,7 +16,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   min-height: ${rem(PREVIEW_SIZES.block.media.height)};
 `
 
@@ -39,37 +39,58 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
   const isUploading = typeof progress === 'number' && progress > -1
 
   return (
-    <Stack data-testid="block-preview" gap={1}>
+    <VStack data-testid="block-preview" gap={1}>
       <HeaderFlex data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
-        <Box flexBasis="0%" flexGrow={1} paddingLeft={media ? 2 : 1}>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
-            {title ? renderPreviewNode(title, 'block') : 'Untitled'}
-          </Text>
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
+          paddingLeft={media ? 2 : 1}
+          flexDirection="column"
+          gap={3}
+        >
+          <Flex flexDirection="column" gap={2}>
+            <Text
+              size={1}
+              truncate={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
+              {title ? renderPreviewNode(title, 'block') : 'Untitled'}
+            </Text>
 
-          {subtitle && (
-            <Box marginTop={2}>
-              <Text muted size={1} textOverflow="ellipsis">
+            {subtitle && (
+              <Text
+                muted
+                size={1}
+                truncate={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {renderPreviewNode(subtitle, 'block')}
               </Text>
-            </Box>
-          )}
+            )}
+          </Flex>
 
           {description && (
-            <Box marginTop={3}>
-              <Text muted size={1} textOverflow="ellipsis">
-                {renderPreviewNode(description, 'block')}
-              </Text>
-            </Box>
+            <Text
+              muted
+              size={1}
+              truncate={1}
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-muted-fg-color)'}}
+            >
+              {renderPreviewNode(description, 'block')}
+            </Text>
           )}
 
-          {isUploading && (
-            <Box marginTop={3}>
-              <LinearProgress value={progress} />
-            </Box>
-          )}
-        </Box>
+          {isUploading && <LinearProgress value={progress} />}
+        </Flex>
 
         <Flex gap={1} paddingLeft={1}>
           {status && (
@@ -83,6 +104,6 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
       </HeaderFlex>
 
       {children && <div data-testid="block-preview__children">{children}</div>}
-    </Stack>
+    </VStack>
   )
 }

@@ -24,7 +24,8 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@repo/css-modules-kit": "workspace:*",
+    "@repo/pandacss": "workspace:*",
     "@types/react": "catalog:",
     "vite": "catalog:"
   }

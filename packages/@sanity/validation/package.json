@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "6.15.0",
+  "version": "6.22.0",
   "description": "Document validation for Sanity schemas",
   "keywords": [
     "cms",
@@ -53,6 +53,7 @@
     "access": "public"
   },
   "scripts": {
+    "bench": "vitest bench --run --config vitest.bench.config.mts",
     "build": "tsdown",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
@@ -66,7 +67,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "dequal": "catalog:",
-    "i18next": "^26.4.2",
+    "i18next": "^26.4.4",
     "lodash-es": "^4.18.1",
     "rxjs": "^7.8.2"
   },

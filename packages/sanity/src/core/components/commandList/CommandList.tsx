@@ -1,4 +1,4 @@
-import {rem, Stack} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {
   measureElement,
   type ScrollToOptions,
@@ -21,7 +21,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
@@ -41,15 +41,15 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 /**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
-const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
+const FocusOverlayDiv = styled.div<{$offset: number}>(({theme, $offset}) => {
   return css`
-    bottom: ${-offset}px;
+    bottom: ${-$offset}px;
     border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    left: ${-offset}px;
+    left: ${-$offset}px;
     pointer-events: none;
     position: absolute;
-    right: ${-offset}px;
-    top: ${-offset}px;
+    right: ${-$offset}px;
+    top: ${-$offset}px;
     z-index: 2;
 
     ${VirtualListBox}:focus-visible & {
@@ -110,6 +110,7 @@ function CommandListComponent({
   ariaMultiselectable = false,
   autoFocus,
   canReceiveFocus,
+  className,
   fixedHeight,
   focusRingOffset = 0,
   getItemDisabled,
@@ -571,6 +572,7 @@ function CommandListComponent({
 
   return (
     <VirtualListBox
+      className={className}
       id={getCommandListChildrenId()}
       onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
@@ -579,7 +581,7 @@ function CommandListComponent({
       data-testid={testId}
       {...paddingProps}
     >
-      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
+      {canReceiveFocus && <FocusOverlayDiv $offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox
@@ -712,7 +714,7 @@ function CommandListItemComponent(
   )
 
   return (
-    <Stack
+    <VStack
       as="li"
       data-index={virtualIndex}
       ref={forwardedRef}
@@ -722,7 +724,7 @@ function CommandListItemComponent(
       onMouseEnter={onMouseEnter}
     >
       {children}
-    </Stack>
+    </VStack>
   )
 }
 

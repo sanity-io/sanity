@@ -1,4 +1,9 @@
-import {render} from '@testing-library/react'
+import {
+  type AssetSource,
+  type AssetSourceComponentProps,
+  type AssetSourceUploader,
+} from '@sanity/types'
+import {act, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
@@ -12,6 +17,7 @@ import {insert, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
 import {type FieldMember} from '../../../store/types/members'
 import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
+import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
   FormCallbacksProvider,
@@ -72,6 +78,47 @@ describe('ArrayOfObjectsField', () => {
     onChange(PatchEvent.from(unset([{_key: 'a'}])))
 
     expect(formCallbacks.onChange).toHaveBeenCalledWith(PatchEvent.from(unset(['items'])))
+  })
+
+  // Array and Portable Text drops subscribe to the uploader here, not through
+  // useAssetSourceUploader, so the already-exists warning must be raised from
+  // this subscriber too (review feedback on the federated asset-source PR:
+  // the warning used to live in UploadAssetsDialog, which every upload
+  // mounted; after moving it to the subscribers, the array path lost it).
+  it('surfaces the already-exists warning for deduplicated array uploads', async () => {
+    const {onSelectFile, itemType} = await setupTest('items')
+
+    let uploader: AssetSourceUploader | undefined
+    const UploadComponent = (props: AssetSourceComponentProps) => {
+      uploader = props.uploader
+      return null
+    }
+    const assetSource = {
+      name: 'mock-source',
+      title: 'Mock source',
+      component: UploadComponent,
+      Uploader: MediaLibraryUploader,
+    } as unknown as AssetSource
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'cat.png', {type: 'image/png'}),
+      })
+    })
+
+    if (!uploader) throw new Error('asset source component was never mounted')
+    const [file] = uploader.getFiles()
+
+    // The source reports the file as a duplicate: the terminal status fires
+    // `all-complete`, which must push the warning toast.
+    act(() => {
+      uploader!.updateFile(file.id, {status: 'alreadyExists'})
+    })
+
+    expect(await screen.findByText("File: 'cat.png' already exists")).toBeInTheDocument()
+    expect(screen.getByText('Using the existing file found in this source.')).toBeInTheDocument()
   })
 })
 
@@ -142,12 +189,14 @@ async function setupTest(fieldName: 'body' | 'items', value?: {_key: string; _ty
   )
 
   let capturedOnChange: ArrayOfObjectsInputProps['onChange'] | undefined
+  let capturedOnSelectFile: ArrayOfObjectsInputProps['onSelectFile'] | undefined
 
   render(
     <ArrayOfObjectsField
       member={member}
       renderInput={(inputProps: FIXME) => {
         capturedOnChange = inputProps.onChange
+        capturedOnSelectFile = inputProps.onSelectFile
         return null
       }}
       renderField={(fieldProps: FIXME) => fieldProps.children}
@@ -157,9 +206,14 @@ async function setupTest(fieldName: 'body' | 'items', value?: {_key: string; _ty
     {wrapper: TestWrapper},
   )
 
-  if (!capturedOnChange) {
+  if (!capturedOnChange || !capturedOnSelectFile) {
     throw new Error('renderInput was never called')
   }
 
-  return {formCallbacks, onChange: capturedOnChange}
+  return {
+    formCallbacks,
+    onChange: capturedOnChange,
+    onSelectFile: capturedOnSelectFile,
+    itemType: schemaType.of[0],
+  }
 }

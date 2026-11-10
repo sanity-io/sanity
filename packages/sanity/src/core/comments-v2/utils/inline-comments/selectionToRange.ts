@@ -1,11 +1,13 @@
 import {type EditorSelection, type EditorSelectionPoint} from '@portabletext/editor'
-import {type CollaborationCommentRange} from '@sanity/client'
+import {type CollaborationCommentAnchor} from '@sanity/client'
 import {
   isKeySegment,
   isPortableTextSpan,
   isPortableTextTextBlock,
   type PortableTextBlock,
 } from '@sanity/types'
+
+type PortableTextAnchor = Extract<CollaborationCommentAnchor, {type: 'portable-text'}>
 
 /**
  * PTE selection offsets are relative to a span; the Comments API expects
@@ -15,7 +17,7 @@ import {
 function resolvePoint(
   point: EditorSelectionPoint,
   value: PortableTextBlock[],
-): CollaborationCommentRange['start'] | null {
+): PortableTextAnchor['start'] | null {
   const blockSegment = point.path[0]
   const spanSegment = point.path[point.path.length - 1]
   if (!isKeySegment(blockSegment) || !isKeySegment(spanSegment)) return null
@@ -34,7 +36,7 @@ function resolvePoint(
 }
 
 /**
- * Converts a PTE selection into the range used by the Comments API.
+ * Converts a PTE selection into a portable-text anchor.
  * Backward selections are normalized so `start` always precedes `end`.
  *
  * @internal
@@ -42,7 +44,7 @@ function resolvePoint(
 export function selectionToRange(
   selection: NonNullable<EditorSelection>,
   value: PortableTextBlock[],
-): CollaborationCommentRange | null {
+): CollaborationCommentAnchor | null {
   const normalized = selection.backward
     ? {anchor: selection.focus, focus: selection.anchor}
     : selection
@@ -51,41 +53,41 @@ export function selectionToRange(
   const end = resolvePoint(normalized.focus, value)
   if (!start || !end) return null
 
-  return {start, end}
+  return {type: 'portable-text', start, end}
 }
 
 /**
- * Combines the per-block decorations of a comment into the single range the
- * Comments API stores. Returns `null` when no selection resolves, which
- * de-anchors the comment.
+ * Combines the per-block decorations of a comment into one portable-text anchor.
+ * Returns `null` when no selection resolves, which de-anchors the comment.
  *
  * @internal
  */
 export function selectionsToRange(
   selections: Array<EditorSelection | null>,
   value: PortableTextBlock[],
-): CollaborationCommentRange | null {
-  const ranges = selections.flatMap((selection) => {
+): CollaborationCommentAnchor | null {
+  const anchors = selections.flatMap((selection) => {
     if (selection === null) return []
-    const range = selectionToRange(selection, value)
-    return range ? [range] : []
+    const anchor = selectionToRange(selection, value)
+    return anchor ? [anchor] : []
   })
 
-  if (ranges.length === 0) return null
+  if (anchors.length === 0) return null
 
   const blockOrder = new Map(value.map((block, index) => [block._key, index]))
   const comparePoints = (
-    a: CollaborationCommentRange['start'],
-    b: CollaborationCommentRange['start'],
+    a: PortableTextAnchor['start'],
+    b: PortableTextAnchor['start'],
   ): number => {
     const blockDifference = (blockOrder.get(a._key) ?? -1) - (blockOrder.get(b._key) ?? -1)
     return blockDifference || a.offset - b.offset
   }
 
-  const starts = ranges.map((range) => range.start).sort(comparePoints)
-  const ends = ranges.map((range) => range.end).sort(comparePoints)
+  const starts = anchors.map((anchor) => anchor.start).sort(comparePoints)
+  const ends = anchors.map((anchor) => anchor.end).sort(comparePoints)
 
   return {
+    type: 'portable-text',
     start: starts[0],
     end: ends[ends.length - 1],
   }

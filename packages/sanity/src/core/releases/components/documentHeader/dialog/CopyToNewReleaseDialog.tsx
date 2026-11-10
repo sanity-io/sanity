@@ -1,9 +1,9 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {useCallback, useState} from 'react'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -16,6 +16,8 @@ import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
+import {useWorkspaceReleaseLimitGuard} from '../../../hooks/useWorkspaceReleaseLimit'
+import {useReleaseMetadataFieldsEnabled} from '../../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
@@ -62,19 +64,22 @@ export function CopyToNewReleaseDialog(props: {
    * and so date in past warning ui elements wouldn't show
    */
   const [, setRerenderDialog] = useState(0)
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
 
   const displayTitle = title || t('release.placeholder-untitled-release')
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
-  const invalid = getIsReleaseInvalid(release)
+  const invalid = getIsReleaseInvalid(release) || !metadataValid
 
-  const handleOnChange = (releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
-  }
+  }, [])
 
   const handleAddVersion = () => {
     onCreateVersion(newReleaseId)
@@ -86,6 +91,13 @@ export function CopyToNewReleaseDialog(props: {
     if (getIsScheduledDateInPast(release)) {
       setRerenderDialog((cur) => cur + 1)
       return // do not submit if date is in past
+    }
+    if (!metadataValid) return
+
+    if (blockAtWorkspaceReleaseLimit()) {
+      onClose()
+      clearReleaseDataFromStorage()
+      return
     }
 
     setIsSubmitting(true)
@@ -160,7 +172,7 @@ export function CopyToNewReleaseDialog(props: {
             }}
           >
             <ReleaseAvatar padding={1} release={sourceRelease} />
-            <Text size={1} title={displayTitle}>
+            <Text size={1} title={displayTitle} as="div" trim={true}>
               {displayTitle}
             </Text>
           </Flex>
@@ -170,10 +182,16 @@ export function CopyToNewReleaseDialog(props: {
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (
           <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('release.schedule-dialog.publish-date-in-past-warning')}
+            </Text>
           </Card>
         )}
-        <ReleaseForm onChange={handleOnChange} value={release} />
+        <ReleaseForm
+          onChange={handleOnChange}
+          onValidityChange={setMetadataValid}
+          value={release}
+        />
 
         <Flex gap={3} justifyContent="flex-end" paddingTop={3} alignItems="center">
           <Button

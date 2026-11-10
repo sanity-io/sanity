@@ -4,7 +4,6 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {studioDefaultLocaleResources} from '../i18n/bundles/studio'
 import {activeASAPRelease} from '../releases/__fixtures__/release.fixture'
-import {releasesUsEnglishLocaleBundle} from '../releases/i18n'
 import {type DocumentPresence} from '../store/presence/types'
 import {DocumentPreviewPresence} from './DocumentPreviewPresence'
 
@@ -31,9 +30,9 @@ const presence = (
 })
 
 const renderPresence = async (documentId: string) => {
-  const wrapper = await createTestProvider({
-    resources: [studioDefaultLocaleResources, releasesUsEnglishLocaleBundle],
-  })
+  // Only the always registered bundles: previews also render in studios without the releases
+  // plugin, which is the only thing that registers the `releases` namespace (SAPP-4649)
+  const wrapper = await createTestProvider({resources: [studioDefaultLocaleResources]})
 
   render(<DocumentPreviewPresence presence={[presence(documentId)]} />, {wrapper})
 

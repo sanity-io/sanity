@@ -1,6 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {NewDocumentListOption} from '../NewDocumentListOption'
@@ -36,9 +37,9 @@ export function NewDocumentListOptionStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               default permitted
             </Text>
             <NewDocumentListOption
@@ -47,9 +48,9 @@ export function NewDocumentListOptionStory() {
               option={AUTHOR_OPTION}
               preview="default"
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               inline permitted
             </Text>
             <NewDocumentListOption
@@ -58,9 +59,9 @@ export function NewDocumentListOptionStory() {
               option={AUTHOR_OPTION}
               preview="inline"
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               inline disabled
             </Text>
             <NewDocumentListOption
@@ -69,8 +70,8 @@ export function NewDocumentListOptionStory() {
               option={DISABLED_OPTION}
               preview="inline"
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

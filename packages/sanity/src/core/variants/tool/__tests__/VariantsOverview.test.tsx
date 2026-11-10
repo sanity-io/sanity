@@ -1,11 +1,14 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type Ref, type HTMLProps} from 'react'
+import {act, type Ref, type HTMLProps} from 'react'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
@@ -126,16 +129,30 @@ describe('VariantsOverview', () => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  const renderOverview = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsOverview />, {wrapper})
+    const mode = Object.assign(Promise.resolve<VariantsMode>('default'), {
+      status: 'fulfilled' as const,
+      value: 'default' as const,
+    })
+    // The overview reads the mode with `use()`; a sync `render` act drops the commit's passive
+    // effects once a render has called `use()` on a thenable, so mount inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
+    await act(async () => {
+      render(
+        <VariantsModePromiseContext value={mode}>
+          <VariantsOverview />
+        </VariantsModePromiseContext>,
+        {wrapper},
+      )
+    })
     // Wait on the always-present page description rather than the search box (search now lives in the
     // shared DocumentTable command lane, which only renders once there are rows) — and not on the
     // title, which the empty state duplicates as its own h1.
     await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
-    return view
   }
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -392,6 +409,58 @@ describe('VariantsOverview', () => {
         variantId: getVariantId(createdVariant._id),
       })
     })
+  })
+
+  it('shows a mismatch error when a stored condition is not in the configured list', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: [{name: 'locale', values: ['en-US']}]}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toHaveAccessibleName(
+      'The condition "audience" is not in the configured list. Edit the variant to fix it.',
+    )
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: () => new Promise(() => undefined)}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 
   it('shows error copy in the table empty state when load fails with no data', async () => {

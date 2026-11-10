@@ -6,7 +6,7 @@ import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'
 import {LocaleProviderBase} from '../../i18n/components/LocaleProvider'
 import {prepareI18n} from '../../i18n/i18nConfig'
 import {usEnglishLocale} from '../../i18n/locales'
-import {useCompactRelativeTime, useRelativeTime} from '../useRelativeTime'
+import {useCompactTimeAgo, useRelativeTime} from '../useRelativeTime'
 
 describe('useRelativeTime', () => {
   const timeZone = 'UTC'
@@ -637,31 +637,27 @@ describe('useRelativeTime', () => {
     })
   })
 
-  describe('compact', () => {
-    const now = new Date('2026-10-22T12:00:00Z')
+  describe('useCompactTimeAgo', () => {
     afterEach(() => {
       vi.useRealTimers()
     })
-    const compact = (time: string) => {
-      vi.useFakeTimers({toFake: ['Date']})
-      vi.setSystemTime(now)
-      const {result} = renderHook(() => useCompactRelativeTime(new Date(time)), {wrapper})
-      return result.current
-    }
 
     it.each([
-      ['2026-10-22T11:59:30Z', 'now'],
-      ['2026-10-22T11:55:00Z', '5 min'],
-      ['2026-10-22T09:00:00Z', '3 hr'],
-      ['2026-10-21T12:00:00Z', '1 day'],
-      ['2026-10-19T12:00:00Z', '3 days'],
-      ['2026-10-08T12:00:00Z', '2 wk'],
-      ['2026-09-22T12:00:00Z', '1 mo'],
-      ['2026-01-22T12:00:00Z', '9 mo'],
-      ['2025-10-22T12:00:00Z', '1 yr'],
-      ['2023-10-22T12:00:00Z', '3 yr'],
-    ])('%s is "%s"', (time, expected) => {
-      expect(compact(time)).toBe(expected)
+      ['2026-10-22T11:59:30Z', 'just now'],
+      ['2026-10-22T11:55:00Z', '5 min ago'],
+      ['2026-10-22T09:00:00Z', '3 hr ago'],
+      ['2026-10-21T12:00:00Z', '1 day ago'],
+      ['2026-10-19T12:00:00Z', '3 days ago'],
+      ['2026-10-08T12:00:00Z', '2 wk ago'],
+      ['2026-09-22T12:00:00Z', '1 mo ago'],
+      ['2026-01-22T12:00:00Z', '9 mo ago'],
+      ['2025-10-22T12:00:00Z', '1 yr ago'],
+      ['2023-10-22T12:00:00Z', '3 yr ago'],
+    ])('outputs "%s" as "%s" on 2026-10-22 at noon', (time, expected) => {
+      vi.useFakeTimers({toFake: ['Date']})
+      vi.setSystemTime(new Date('2026-10-22T12:00:00Z'))
+      const {result} = renderHook(() => useCompactTimeAgo(time), {wrapper})
+      expect(result.current).toBe(expected)
     })
   })
 })

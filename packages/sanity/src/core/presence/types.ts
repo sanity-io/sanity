@@ -10,7 +10,15 @@ export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
 /** @internal */
-export type ReportedRegionWithRect<T> = T & {id: string; rect: Rect}
+export type ReportedRegionWithRect<T> = T & {
+  id: string
+  rect: Rect
+  /**
+   * Set when the reported element is scrolled out of its `clipElement`: `rect` is then the spot
+   * at the top or bottom edge of the clip element where the presence is shown instead.
+   */
+  clampedTo?: 'top' | 'bottom'
+}
 
 /** @internal */
 export type RegionWithIntersectionDetails = {
@@ -25,6 +33,17 @@ export type FieldPresenceData = {
   element: HTMLElement | null
   presence: FormNodePresence[]
   maxAvatars: number
+  /**
+   * The presence is already rendered inline at `element` (e.g. a Portable Text cursor),
+   * so the overlay only renders it when the element is out of view.
+   */
+  inline?: boolean
+  /**
+   * A scroll container between `element` and the overlay that can hide `element` (e.g. the
+   * Portable Text editor's scroller). When `element` is scrolled out of it, the presence is shown
+   * at the top or bottom edge of this element instead.
+   */
+  clipElement?: HTMLElement | null
 }
 
 /** @internal */

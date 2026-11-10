@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useSchema} from '../../hooks/useSchema'
 import {
   createDocumentVersionEvent,
+  deleteDocumentGroupEvent,
   deleteDocumentVersionEvent,
   editDocumentVersionEvent,
   minutesAfterBase,
@@ -159,15 +160,35 @@ describe('useEventsStore', () => {
       expect(result.current.revision?.revisionId).toBe('e1')
     })
 
-    it('undefined rev with a delete-version as newest event uses the newest edit revision', () => {
+    it('undefined rev with a delete-version as newest event resolves to no revision (live document)', () => {
       const deleted = deleteDocumentVersionEvent({
         id: 'e-del',
         versionRevisionId: 'e-del',
         timestamp: minutesAfterBase(50),
       })
       const {result} = setup({events: [deleted, editNewest, publishNewest, created]})
-      // The delete event's versionRevisionId is unreliable; the newest edit is used instead.
-      expect(result.current.revision?.revisionId).toBe('e0')
+      // Discards are not selectable; resolving to the discarded draft's newest
+      // edit would keep the thrown-away changes in the Review Changes pane.
+      expect(result.current.revision).toBeNull()
+      expect(mockGetDocumentAtRevision).not.toHaveBeenCalledWith(
+        expect.objectContaining({revisionId: 'e0'}),
+      )
+    })
+
+    it('undefined rev with a delete-version as newest event and no publish resolves to no revision', () => {
+      const deleted = deleteDocumentVersionEvent({
+        id: 'e-del',
+        versionRevisionId: 'e-del',
+        timestamp: minutesAfterBase(50),
+      })
+      const {result} = setup({events: [deleted, editNewest, created]})
+      expect(result.current.revision).toBeNull()
+    })
+
+    it('undefined rev with a group-delete as newest event resolves to no revision (live document)', () => {
+      const deleted = deleteDocumentGroupEvent({timestamp: minutesAfterBase(50)})
+      const {result} = setup({events: [deleted, editNewest, publishNewest, created]})
+      expect(result.current.revision).toBeNull()
     })
 
     it('undefined rev with an edit as newest event resolves to no revision (viewing latest)', () => {

@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {commentsUsEnglishLocaleBundle} from '../../../i18n'
@@ -17,9 +18,9 @@ export function CommentsInspectorHeaderStory() {
   return (
     <TestWrapper i18nBundles={[commentsUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               open
             </Text>
             <CommentsInspectorHeader
@@ -28,9 +29,9 @@ export function CommentsInspectorHeaderStory() {
               onViewChange={NOOP}
               view="open"
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               resolved
             </Text>
             <CommentsInspectorHeader
@@ -39,14 +40,14 @@ export function CommentsInspectorHeaderStory() {
               onViewChange={NOOP}
               view="resolved"
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               upsell
             </Text>
             <CommentsInspectorHeader mode="upsell" onClose={NOOP} onViewChange={NOOP} view="open" />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

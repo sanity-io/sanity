@@ -1,5 +1,6 @@
-import {Stack, Text, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {type ComponentProps} from 'react'
+import {Text, VStack} from 'ui5'
 
 import {normalizeReproPath} from './reproPath'
 
@@ -41,18 +42,18 @@ export function ReproPathField(props: {
 }) {
   const {value, onChange, appliesTo} = props
   return (
-    <Stack gap={3}>
-      <Text size={1} weight="medium">
+    <VStack gap={3}>
+      <Text size={1} weight="medium" as="div" trim={true}>
         Test studio path{' '}
-        <Text as="span" size={1} muted>
+        <Text as="span" size={1} muted trim={true}>
           (optional)
         </Text>
       </Text>
       <ReproPathInput value={value} onChange={onChange} />
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         Where the issue reproduces — {appliesTo} opens there. Paste a test-studio URL and only its
         path is kept.
       </Text>
-    </Stack>
+    </VStack>
   )
 }

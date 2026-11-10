@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
@@ -28,7 +28,4 @@ export interface PortalBoundaryContextValue {
  *
  * @internal
  */
-export const PortalBoundaryContext = createContext<PortalBoundaryContextValue | null>(
-  'sanity/_singletons/context/portal-boundary',
-  null,
-)
+export const PortalBoundaryContext = createContext<PortalBoundaryContextValue | null>(null)

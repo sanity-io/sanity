@@ -22,6 +22,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDocumentVersionType,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -69,7 +70,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
-import {useCompareWithId} from './useCompareWithId'
+import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
@@ -199,7 +200,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
@@ -244,7 +244,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 
@@ -440,17 +440,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [getDisplayed, value],
   )
 
-  const {previousId: stackPreviousId} = useDocumentIdStack({
+  const {previousId} = useDocumentIdStack({
     strict: true,
     displayed,
     documentId,
     editState,
-  })
-  // PROPOSED (open beta): Compare versions opens against the earlier layer when there is one, otherwise another version of the document.
-  const previousId = useCompareWithId({
-    documentId,
-    displayedId: value._id,
-    previousId: stackPreviousId,
   })
 
   const setTimelineRange = useCallback(
@@ -551,6 +545,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return displayed
   }, [editState.version, editState.published, displayed])
 
+  useDocumentApplicationContext({displayedId: currentDisplayed?._id, editState})
+
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
@@ -606,8 +602,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setIsDeleting,
         targetDocumentState,
         isDeleting,
-        isDocumentGroupInventoryActive,
-        setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
         // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
@@ -676,7 +670,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       setTimelineRange,
       targetDocumentState,
       isDeleting,
-      isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
       timelineStore,

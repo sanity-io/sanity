@@ -1,7 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
+import type {ObservablePromise} from 'react-rx'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
-import type {UpsellData} from '../../core/studio/upsell/types'
+import type {UpsellDataResult} from '../../core/studio/upsell/types'
 
 /**
  * @internal
@@ -10,7 +11,7 @@ export interface DocumentLimitUpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
   handleClose: () => void
-  upsellData: UpsellData | null
+  upsellDataPromise: ObservablePromise<UpsellDataResult>
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
@@ -23,6 +24,5 @@ export interface DocumentLimitUpsellContextValue {
  * @internal
  */
 export const DocumentLimitUpsellContext = createContext<DocumentLimitUpsellContextValue | null>(
-  'sanity/_singletons/context/document-limit-upsell',
   null,
 )

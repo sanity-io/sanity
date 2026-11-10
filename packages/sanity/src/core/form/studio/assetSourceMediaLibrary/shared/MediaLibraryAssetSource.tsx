@@ -110,7 +110,15 @@ function MediaLibraryAssetSourceComponent(
 
 export const MediaLibraryAssetSource = memo(MediaLibraryAssetSourceComponent)
 
-const useRootPortalElement = () => {
+/**
+ * A portal element appended directly to `document.body`, so Media Library
+ * dialogs escape the document pane's own `PortalProvider` (which, combined
+ * with the pane's `DialogProvider position="absolute"`, would confine the
+ * dialog to the pane). Shared by the iframe and federated asset sources.
+ *
+ * @internal
+ */
+export const useRootPortalElement = (): HTMLDivElement => {
   const [container] = useState(() => document.createElement('div'))
 
   useEffect(() => {

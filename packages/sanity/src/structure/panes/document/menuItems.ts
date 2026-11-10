@@ -20,8 +20,6 @@ interface GetMenuItemsParams {
   inspectors: DocumentInspector[]
   previewUrl?: string | null
   documentIdStack?: DocumentIdStack
-  /** PROPOSED (open beta): the version Compare versions opens against (see useCompareWithId); it enables the item whenever another version exists. */
-  compareWithId?: string
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
   displayInlineChanges: boolean
@@ -33,28 +31,25 @@ function getInspectorItems({
   inspectors,
   inspectorMenuItems,
 }: GetMenuItemsParams): PaneMenuItem[] {
-  return inspectors.flatMap((inspector, index): PaneMenuItem[] => {
-    const menuItem = inspectorMenuItems[index]
+  return inspectors
+    .map((inspector, index) => {
+      const menuItem = inspectorMenuItems[index]
 
-    if (!menuItem || menuItem.hidden) return []
+      if (!menuItem || menuItem.hidden) return null
 
-    // The inspector menu item's tone is wider than a pane menu item's; the cast is the one the list had before.
-    const item = {
-      action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
-      group: menuItem.showAsAction ? undefined : 'inspectors',
-      icon: menuItem.icon,
-      disabled: !hasValue,
-      selected: currentInspector?.name === inspector.name,
-      shortcut: menuItem.hotkeys?.join('+'),
-      showAsAction: menuItem.showAsAction,
-      title: menuItem.title,
-      tone: menuItem.tone,
-    } as PaneMenuItem
-    // PROPOSED: a button in the header that is also an entry in the menu (`showInMenu`).
-    return menuItem.showAsAction && menuItem.showInMenu
-      ? [item, {...item, group: 'inspectors', showAsAction: false}]
-      : [item]
-  })
+      return {
+        action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
+        group: menuItem.showAsAction ? undefined : 'inspectors',
+        icon: menuItem.icon,
+        disabled: !hasValue,
+        selected: currentInspector?.name === inspector.name,
+        shortcut: menuItem.hotkeys?.join('+'),
+        showAsAction: menuItem.showAsAction,
+        title: menuItem.title,
+        tone: menuItem.tone,
+      }
+    })
+    .filter(Boolean) as PaneMenuItem[]
 }
 
 function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
@@ -68,12 +63,11 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
   }
 }
 
-function getCompareVersionsItem({
-  compareWithId,
+export function getCompareVersionsItem({
   documentIdStack,
   t,
-}: GetMenuItemsParams): PaneMenuItem | null {
-  const disabled = typeof (compareWithId ?? documentIdStack?.previousId) === 'undefined' && {
+}: Pick<GetMenuItemsParams, 'documentIdStack' | 't'>): PaneMenuItem {
+  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
   }
 

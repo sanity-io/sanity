@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Switch, TabList, TabPanel, Text} from '@sanity/ui'
-import {useContext, useState} from 'react'
+import {Card, TabList, TabPanel} from '@sanity/ui'
+import {useState} from 'react'
 import {
   type DocumentInspectorProps,
   isReleaseDocument,
@@ -12,10 +12,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {DocumentInspectorTabsContext} from 'sanity/_singletons'
-import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
@@ -23,19 +20,12 @@ import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {useDocumentPane} from '../../useDocumentPane'
 import {ChangesInspector} from './ChangesInspector'
+import {fadeInFlex} from './ChangesTabs.css'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
 import {HistorySelector} from './HistorySelector'
 
-const FadeInFlex = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-  &[data-ready] {
-    opacity: 1;
-  }
-`
 const TABS = ['history', 'review'] as const
 const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
   // @ts-expect-error TS doesn't understand the type guard
@@ -50,11 +40,6 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const {t: tCore} = useTranslation()
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
   const {selectedPerspective} = usePerspective()
-  // PROPOSED: a host's tab row carries History and Review changes, and the Inline changes command becomes a switch at the top of Review changes.
-  const tabsActive = useContext(DocumentInspectorTabsContext)
-  const {onMenuAction} = useDocumentPane()
-  const {stickyParams} = useRouter()
-  const inlineChanges = stickyParams.displayInlineChanges === 'true'
 
   const paneRouterTab = isValidTab(params?.changesInspectorTab)
     ? params.changesInspectorTab
@@ -69,55 +54,41 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     })
 
   return (
-    <FadeInFlex
+    <Flex
+      className={fadeInFlex}
       flexDirection="column"
       padding={0}
       height="100%"
       data-ready={isReady ? '' : undefined}
       ref={setParentRef}
     >
-      {tabsActive ? null : (
-        <Card paddingBottom={1}>
-          <Flex alignItems="center" padding={3} gap={2}>
-            <TabList gap={1} flex={1}>
-              <Tab
-                aria-controls="history-panel"
-                id="history-tab"
-                label={t('changes.tab.history')}
-                onClick={() => setPaneRouterTab('history')}
-                selected={paneRouterTab === 'history'}
-              />
-              <Tab
-                aria-controls="review-changes-panel"
-                id="changes-tab"
-                label={t('changes.tab.review-changes')}
-                onClick={() => setPaneRouterTab('review')}
-                selected={paneRouterTab === 'review'}
-              />
-            </TabList>
-            <Button
-              aria-label={t('changes.action.close-label')}
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={props.onClose}
-              tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
+      <Card paddingBottom={1}>
+        <Flex alignItems="center" padding={3} gap={2}>
+          <TabList gap={1} flex={1}>
+            <Tab
+              aria-controls="history-panel"
+              id="history-tab"
+              label={t('changes.tab.history')}
+              onClick={() => setPaneRouterTab('history')}
+              selected={paneRouterTab === 'history'}
             />
-          </Flex>
-        </Card>
-      )}
-      {tabsActive && paneRouterTab === 'review' ? (
-        <Flex alignItems="center" gap={3} justifyContent="space-between" padding={3}>
-          <Text as="label" htmlFor="show-changes-in-form" size={1}>
-            {t('changes.inline-switch.label')}
-          </Text>
-          <Switch
-            checked={inlineChanges}
-            data-testid="show-changes-in-form"
-            id="show-changes-in-form"
-            onChange={() => onMenuAction({action: 'toggleInlineChanges', title: ''})}
+            <Tab
+              aria-controls="review-changes-panel"
+              id="changes-tab"
+              label={t('changes.tab.review-changes')}
+              onClick={() => setPaneRouterTab('review')}
+              selected={paneRouterTab === 'review'}
+            />
+          </TabList>
+          <Button
+            aria-label={tCore('changes.action.close-label')}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={props.onClose}
+            tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
           />
         </Flex>
-      ) : null}
+      </Card>
       <Card padding={2} marginBottom={3} marginX={3} tone="neutral" border radius={3}>
         <Flex gap={2} alignItems="flex-start">
           <Tooltip
@@ -126,17 +97,15 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             boundaryElement={parentRef}
             content={
               <Box flexBasis="0%" flexGrow={1} padding={1}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <Translate t={t} i18nKey="changes.banner.tooltip" />
                 </Text>
               </Box>
             }
           >
-            <Text size={0} muted>
-              <InfoOutlineIcon fontSize={1} />
-            </Text>
+            <Icon size={0} muted icon={InfoOutlineIcon} style={{margin: '-0.3125rem'}} />
           </Tooltip>
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             <Translate
               t={t}
               values={{
@@ -179,7 +148,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
           <ChangesInspector showChanges={paneRouterTab === 'review'} />
         )}
       </TabPanel>
-    </FadeInFlex>
+    </Flex>
   )
 }
 

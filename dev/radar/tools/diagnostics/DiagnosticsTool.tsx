@@ -1,7 +1,7 @@
-import {Box, Button, Card, Container, Heading, Stack, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {DiagnosticsReport, parseStudioDiagnostics, type StudioDiagnostics} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied
@@ -36,7 +36,7 @@ export function DiagnosticsTool() {
 
   return (
     <Card height="fill" overflow="auto" ref={scrollRef}>
-      <Container width={2}>
+      <Container size={2}>
         <Box padding={[3, 4, 5]}>
           {diagnostics ? (
             <DiagnosticsReport
@@ -47,19 +47,19 @@ export function DiagnosticsTool() {
           ) : (
             <Card border padding={[4, 5]} radius={3}>
               <form onSubmit={handleSubmit}>
-                <Stack gap={4}>
-                  <Stack gap={3}>
+                <VStack gap={4}>
+                  <VStack gap={3}>
                     <Heading as="h2" size={2}>
                       Paste diagnostics output
                     </Heading>
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       Copy the JSON from Studio diagnostics and paste it below. The data stays in
                       this browser and is not uploaded anywhere.
                     </Text>
-                  </Stack>
+                  </VStack>
 
-                  <Stack gap={3}>
-                    <Text as="label" htmlFor={inputId} size={1} weight="medium">
+                  <VStack gap={3}>
+                    <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
                       Diagnostics JSON
                     </Text>
                     <TextArea
@@ -71,18 +71,20 @@ export function DiagnosticsTool() {
                       ref={inputRef}
                       rows={18}
                     />
-                  </Stack>
+                  </VStack>
 
                   {error ? (
                     <Card padding={3} radius={2} tone="critical">
-                      <Text size={1}>{error}</Text>
+                      <Text size={1} as="div" trim={true} tone="critical">
+                        {error}
+                      </Text>
                     </Card>
                   ) : null}
 
                   <Flex justifyContent="flex-end">
                     <Button mode="default" text="View diagnostics" tone="primary" type="submit" />
                   </Flex>
-                </Stack>
+                </VStack>
               </form>
             </Card>
           )}

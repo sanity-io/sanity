@@ -1,7 +1,8 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Spinner, Stack, Text} from '@sanity/ui'
+import {type Path} from '@sanity/types'
+import {BoundaryElementProvider, Card, Spinner} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {type ReactElement, useMemo, useState} from 'react'
+import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
@@ -10,6 +11,7 @@ import {
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
   getTargetSiblings,
+  isNonSelectableTerminalEvent,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
@@ -23,25 +25,14 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
-import {Flex, Box, Grid} from 'ui5'
+import {Text, Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
-
-const SpinnerContainer = styled(Flex)`
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-`
+import {spinnerContainer} from './EventsInspector.css'
+import {getPublishedComparisonBase, getPublishedSiblingScopeId} from './getPublishedComparisonBase'
+import {scroller} from './Scroller.css'
 
 const DIFF_INITIAL_VALUE = {
   diff: null,
@@ -49,24 +40,35 @@ const DIFF_INITIAL_VALUE = {
   error: null,
 }
 
-const CompareWithPublishedView = () => {
+interface FieldWrapperProps {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}
+
+function PassThroughFieldWrapper(props: FieldWrapperProps) {
+  return props.children
+}
+
+function EventsFieldWrapper(props: FieldWrapperProps) {
+  return props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children
+}
+
+function CompareWithPublishedView() {
   const {documentId, documentType, schemaType, editState, displayed, targetDocumentState} =
     useDocumentPane()
   const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  // For variant targets, "published" means the variant-of-published sibling, not the base
-  // published document. Its scope id checks out the sibling pair; the sibling document arrives
-  // in the `version` slot of that edit state.
-  const isVariantTarget =
-    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
-  const siblingScopeId = isVariantTarget
-    ? getTargetSiblings(targetDocumentState)?.published?._system.scopeId
-    : undefined
+  // "Published" means this lane's published sibling, not the group's published document.
+  const siblings = getTargetSiblings(targetDocumentState)
+  const siblingScopeId = getPublishedSiblingScopeId(siblings)
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
-  const publishedComparisonBase = isVariantTarget
-    ? (siblingScopeId && siblingEditState.version) || null
-    : editState?.published
+  const publishedComparisonBase = getPublishedComparisonBase({
+    siblings,
+    siblingVersion: siblingEditState.version,
+    published: editState?.published,
+  })
 
   const rootDiff = useMemo(() => {
     const diff = diffInput(
@@ -77,8 +79,8 @@ const CompareWithPublishedView = () => {
     return diff
   }, [publishedComparisonBase, displayed])
 
-  if (isVariantTarget && !publishedComparisonBase) {
-    // The variant has never been published — there is nothing to compare against.
+  if (!publishedComparisonBase) {
+    // This lane has never been published — there is nothing to compare against.
     return null
   }
   if (selectedReleaseId && !editState?.version) {
@@ -91,13 +93,13 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Stack gap={2} marginBottom={3}>
+    <Flex gap={2} marginBottom={3} flexDirection="column" data-testid="compare-with-published">
       <Card borderBottom paddingBottom={3}>
-        <Stack gap={3} paddingTop={1}>
-          <Text size={1} weight="medium">
+        <Flex gap={3} paddingTop={1} flexDirection="column">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('events.compare-with-published.title')}
           </Text>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <Translate
               i18nKey="events.compare-with-published.description"
               t={t}
@@ -108,7 +110,7 @@ const CompareWithPublishedView = () => {
               }}
             />
           </Text>
-        </Stack>
+        </Flex>
       </Card>
       <DocumentChangeContext.Provider
         value={{
@@ -116,7 +118,7 @@ const CompareWithPublishedView = () => {
           schemaType,
           rootDiff,
           isComparingCurrent: true,
-          FieldWrapper: (props) => props.children,
+          FieldWrapper: PassThroughFieldWrapper,
           value: displayed,
           showFromValue: true,
         }}
@@ -125,9 +127,10 @@ const CompareWithPublishedView = () => {
           <ChangeList diff={rootDiff} schemaType={schemaType} />
         </Box>
       </DocumentChangeContext.Provider>
-    </Stack>
+    </Flex>
   )
 }
+
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
@@ -152,8 +155,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     return {
       documentId,
       schemaType,
-      FieldWrapper: (props) =>
-        props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children,
+      FieldWrapper: EventsFieldWrapper,
       rootDiff: diff,
       isComparingCurrent: isComparingCurrent && !formState?.readOnly,
       value,
@@ -163,9 +165,15 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   const [sinceEvent, toEvent] = useMemo(() => {
     if (!events) return [null, null]
+    const [lastEvent] = events
+    const revisionEvent = events.find((e) => e.id === revision?.revisionId)
+    // Discard is not selectable. Do not use it as the live to-event when the
+    // current revision did not resolve (e.g. an unpublished draft was discarded).
+    const fallbackToEvent =
+      lastEvent && isNonSelectableTerminalEvent(lastEvent) ? null : lastEvent || null
     return [
       events.find((e) => e.id === sinceRevision?.revisionId) || null,
-      events.find((e) => e.id === revision?.revisionId) || events[0],
+      revisionEvent || fallbackToEvent,
     ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 
@@ -186,14 +194,14 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   if (!events.length) {
     return (
       <Box paddingX={2}>
-        <Stack padding={3} gap={3}>
-          <Text size={1} weight="medium">
+        <Flex padding={3} gap={3} flexDirection="column">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('timeline.error.no-document-history-title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('timeline.error.no-document-history-description')}
           </Text>
-        </Stack>
+        </Flex>
       </Box>
     )
   }
@@ -206,7 +214,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
           gridTemplateColumns="48px 1fr"
           style={{alignItems: 'center', gap: '0.25em'}}
         >
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('changes.inspector.from-label')}
           </Text>
           <EventsTimelineMenu
@@ -215,7 +223,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             mode="since"
             placement="bottom-start"
           />
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('changes.inspector.to-label')}
           </Text>
           <EventsTimelineMenu
@@ -231,19 +239,19 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             initial={{opacity: 0}}
             transition={{delay: 0.2, duration: 0.2}}
           >
-            <SpinnerContainer justifyContent="center" alignItems="center" gap={2}>
-              <Text muted size={0}>
+            <Flex className={spinnerContainer} justifyContent="center" alignItems="center" gap={2}>
+              <Text muted size={0} as="div" trim={true}>
                 {t('changes.loading-changes')}
               </Text>
               <Spinner size={0} />
-            </SpinnerContainer>
+            </Flex>
           </motion.div>
         )}
       </Box>
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
             <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
@@ -251,12 +259,14 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                   error={timelineError || diffError}
                   loading={revision?.loading || sinceRevision?.loading || false}
                   schemaType={schemaType}
-                  sameRevisionSelected={sinceEvent?.id === toEvent?.id}
+                  sameRevisionSelected={Boolean(
+                    sinceEvent && toEvent && sinceEvent.id === toEvent.id,
+                  )}
                   sinceEvent={sinceEvent}
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>
@@ -323,14 +333,14 @@ function SameRevisionSelected() {
       initial={{opacity: 0}}
       transition={{delay: 0.2, duration: 0.2}}
     >
-      <Stack gap={3} paddingTop={2}>
-        <Text size={1} weight="medium" as="h3">
+      <Flex gap={3} paddingTop={2} flexDirection="column">
+        <Text size={1} weight="medium" as="h3" trim={true}>
           {t('changes.same-revision-selected-title')}
         </Text>
-        <Text as="p" size={1} muted>
+        <Text as="p" size={1} muted trim={true}>
           <Translate i18nKey="changes.same-revision-selected-description" t={t} />
         </Text>
-      </Stack>
+      </Flex>
     </motion.div>
   )
 }

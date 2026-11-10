@@ -11,13 +11,14 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3399",
+    "sqrl": "node --conditions=monorepo --import tsx scripts/sqrl.ts",
     "start": "sanity preview --port 3399",
     "sync-git": "node --conditions=monorepo --import tsx scripts/syncGitHistory.ts"
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
-    "@sanity/icons": "^5.2.2",
+    "@sanity/icons": "^5.2.3",
     "@sanity/ui": "catalog:",
     "@visx/axis": "^4.0.0",
     "@visx/group": "^4.0.0",
@@ -35,11 +36,11 @@
     "vite": "catalog:"
   },
   "devDependencies": {
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:",
     "rimraf": "catalog:",
-    "tsx": "^4.23.13",
+    "tsx": "^4.23.15",
     "vitest": "catalog:"
   }
 }

@@ -5,10 +5,10 @@ import {
   isReference,
   isReferenceSchemaType,
 } from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -69,7 +69,7 @@ export function UnknownFields(props: Props) {
       status="warning"
       title={<>{t('inputs.object.unknown-fields.warning.title', {count: fieldsLen})}</>}
     >
-      <Text as="p" muted size={1}>
+      <Text as="p" muted size={1} trim={true} tone="caution">
         <>{t('inputs.object.unknown-fields.warning.description', {count: fieldsLen})}</>
       </Text>
 
@@ -77,14 +77,15 @@ export function UnknownFields(props: Props) {
         marginTop={4}
         open={isDev}
         title={t('inputs.object.unknown-fields.warning.details.title')}
+        tone="caution"
       >
         <Box marginBottom={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <>{t('inputs.object.unknown-fields.warning.details.description', {count: fieldsLen})}</>
           </Text>
         </Box>
 
-        <Stack as="ul" gap={3}>
+        <VStack as="ul" gap={3}>
           {fieldNames.map((fieldName) => {
             return (
               <UnknownField
@@ -98,7 +99,7 @@ export function UnknownFields(props: Props) {
               />
             )
           })}
-        </Stack>
+        </VStack>
       </Details>
     </Alert>
   )
@@ -155,7 +156,7 @@ function UnknownField({
 
       {readOnly && (
         <Box padding={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <Translate t={t} i18nKey="inputs.object.unknown-fields.read-only.description" />
           </Text>
         </Box>

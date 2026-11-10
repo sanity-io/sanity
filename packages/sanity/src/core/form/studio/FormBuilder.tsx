@@ -4,8 +4,9 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {Suspense, useCallback, useMemo, useRef} from 'react'
 
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence/types'
@@ -346,12 +347,17 @@ export function FormBuilder(props: FormBuilderProps) {
               <DialogStackProvider>
                 {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                 <EnhancedObjectDialogProvider>
-                  <RootInput
-                    rootInputProps={rootInputProps}
-                    onPathOpen={onPathOpen}
-                    openPath={openPath}
-                    renderInput={renderInput}
-                  />
+                  {/* Each field member and array item has a `FormNodeSuspense` of its own. This one
+                      catches the root input: suspending the pane instead would hide it after it
+                      committed, detach the refs it keeps in state, and remount the form in a loop. */}
+                  <Suspense fallback={<LoadingBlock showText />}>
+                    <RootInput
+                      rootInputProps={rootInputProps}
+                      onPathOpen={onPathOpen}
+                      openPath={openPath}
+                      renderInput={renderInput}
+                    />
+                  </Suspense>
                 </EnhancedObjectDialogProvider>
               </DialogStackProvider>
             </FullscreenPTEProvider>

@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ParseError} from '../../core/form/store/utils/mergeParseErrors'
 
@@ -19,7 +19,7 @@ interface ParseErrorsContextValue {
 /**
  * @internal
  */
-export const ParseErrorsContext = createContext<ParseErrorsContextValue>(
-  'sanity/_singletons/context/parse-errors',
-  {errors: {}, set: () => undefined},
-)
+export const ParseErrorsContext = createContext<ParseErrorsContextValue>({
+  errors: {},
+  set: () => undefined,
+})

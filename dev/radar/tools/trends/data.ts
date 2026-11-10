@@ -2,6 +2,10 @@
  * Data layer for the Trends tool: one tightly-projected GROQ query (never
  * fetch `sessions` — see SPEC.md) and pure series derivation.
  */
+import {soakSettleMinute, steadySoakSamples} from '@repo/utils/soak-settle'
+import {STYLE_METRICS, STYLE_SYSTEMS, styleMetricFor} from '@repo/utils/style-systems'
+
+import {ENGINE_CONFIDENCE_EXPLAINER} from './engineConfidence'
 
 export interface TrendRun {
   _id: string
@@ -53,12 +57,28 @@ export interface TrendRun {
         metrics:
           | {
               label: string
-              unit: 'ms' | 'count' | 'cls'
+              unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent'
               experiment: {summary: {median: number; p75: number; p90: number} | null} | null
             }[]
           | null
+        /**
+         * Build facts behind the style-migration rows (perf/bench's
+         * `StyleContext`): whether the build ships @sanity/ui v5 — the
+         * reason the `UI v5 …` rows can be absent — and the styled-components
+         * runtime version on the page. Absent on runs before the probe.
+         */
+        styles?: {
+          experiment?: {
+            ui5Available?: boolean | null
+            styledComponentsVersion?: string | null
+            /** Readable CSS rules on the page — the rule share's denominator. */
+            readableCssRules?: number | null
+          } | null
+        } | null
         soak?: {
           minutes: number
+          /** First steady-state minute; absent on runs stored before perf/bench recorded it. */
+          settleMinute?: number | null
           samples:
             | {
                 minute: number
@@ -96,7 +116,8 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
     mode,
     settleExpectation{expectedToSettle},
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
-    soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
+    styles{experiment{ui5Available, styledComponentsVersion, readableCssRules}},
+    soak{minutes, settleMinute, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
   }
 }`
 
@@ -105,6 +126,7 @@ export type TrendUnit =
   | 'count'
   | 'cls'
   | 'bytes'
+  | 'percent'
   | 'megabytes'
   | 'mb-per-min'
   | 'count-per-min'
@@ -123,6 +145,21 @@ export interface TrendPoint {
    * percentile rule wants at least INP_MIN_INTERACTIONS.
    */
   interactions?: number
+  /**
+   * Style-migration points only: the styled-components runtime version the
+   * measured page ran (`data-styled-version`), for the tooltip and popover —
+   * a jump in the styled-components rows that coincides with a version bump
+   * is the library changing how it emits CSS, not the studio migrating.
+   */
+  styledComponentsVersion?: string
+  /**
+   * `styled-components CSS rules` points only: the readable CSS rules on the
+   * page the count is a part of. Carried on the point so the all-scenarios
+   * rule share can be Σ inserted ÷ Σ readable (aggregateStyleSeries), with
+   * every page's stylesheet in the denominator — a page with no styled rules
+   * still has readable ones.
+   */
+  readableCssRules?: number
   /**
    * Host-speed score of the machine that measured this point (higher = slower
    * host) — the scenario's own shard calibration on multi-shard CI runs,
@@ -157,18 +194,61 @@ export interface TrendPoint {
    * popover say "released as" instead of bracketing between two releases.
    */
   releaseTag?: string
-  /** benchRun document id — opens the run in the studio. */
+  /** Document id — opens the run in the studio. */
   runId: string
+  /** Type of the document `runId` names. Absent = `benchRun`. */
+  documentType?: 'benchRun' | 'engineConfidenceRun'
   /** Backlink metadata (GitHub PR / commit / CI run). */
   prNumber?: number
   ciRunId?: string
   ciRunAttempt?: number
 }
 
-/** One line within a chart — a single branch's run history for the metric. */
+/** Window sizes for drift detection, in points of the series. */
+export interface DriftWindows {
+  recentRuns: number
+  baselineRuns: number
+  /** Fewest points a series needs before it is compared at all. */
+  minimumRuns: number
+}
+
+export interface SeriesBreak {
+  date: Date
+  label: string
+}
+
+/**
+ * One line within a chart — a single branch's run history for the metric.
+ *
+ * A series normally has one line per branch. The paired style series (UI v5
+ * vs v4, see `UI_LINES`) plot two measured things per branch on one chart so
+ * the crossing is visible; those lines carry a `label` and a fixed `color`,
+ * and the one that is not the headline is `secondary`: drawn for the
+ * crossing, but not the line the card's latest value, the drift verdict or the
+ * baseline overlay are read from.
+ */
 export interface TrendLine {
   branch: string
   points: TrendPoint[]
+  label?: string
+  color?: string
+  secondary?: boolean
+}
+
+/** The lines a series is read from: every line unless the series marks some secondary. */
+export function primaryLines(series: Pick<TrendSeries, 'lines'>): TrendLine[] {
+  return series.lines.filter((line) => !line.secondary)
+}
+
+/**
+ * How a line is named in the legend and tooltip: its label where it has one
+ * (the version pair), its branch otherwise — and both when several branches'
+ * pairs share a chart, since neither alone tells the four lines apart.
+ */
+export function lineName(series: Pick<TrendSeries, 'lines'>, line: TrendLine): string {
+  if (!line.label) return line.branch
+  const branches = new Set(series.lines.map((candidate) => candidate.branch))
+  return branches.size > 1 ? `${line.branch} · ${line.label}` : line.label
 }
 
 export interface TrendSeries {
@@ -177,8 +257,13 @@ export interface TrendSeries {
   unit: TrendUnit
   /** One plain-English sentence: what this metric measures. */
   description: string
-  /** How to read the trend: lower values are better, or context-only. */
-  goal: 'lower' | 'context'
+  /**
+   * How to read the trend: lower values are better (every performance
+   * metric), higher values are better (the migration adoption shares and
+   * counts, which climb as the studio moves to @sanity/ui v5), or
+   * context-only (host calibration).
+   */
+  goal: 'lower' | 'higher' | 'context'
   /** Section the chart is grouped under in the dashboard. */
   group: TrendGroup
   /** Repo-root-relative scenario source file, for a "view source" backlink. */
@@ -206,6 +291,24 @@ export interface TrendSeries {
    * pass/fail verdict.
    */
   goodThreshold?: number
+  /**
+   * Built for derivation, never shown: no card, no drift row, no deep link.
+   * The paired `UI instances` series is the share pair before the division,
+   * so charting it repeats the share chart — but its summed counts are what
+   * the cross-scenario adoption score is computed from (aggregateStyleSeries).
+   */
+  hidden?: boolean
+  /**
+   * Drift windows for a series that does not tick once per commit. Absent =
+   * the bench defaults (see `DEFAULT_DRIFT_WINDOWS` in drift.ts).
+   */
+  drift?: DriftWindows
+  /**
+   * Points where the measurement itself changed (a pinned-config version
+   * bump). Drift never compares across the newest one, and weekly cards draw a
+   * dashed rule at it.
+   */
+  breaks?: SeriesBreak[]
   /** One line per branch (usually just one — comparison overlays several). */
   lines: TrendLine[]
 }
@@ -237,11 +340,14 @@ export function availableBranches(runs: TrendRun[]): string[] {
 
 export type TrendGroup =
   | 'vitals'
+  | 'navigation'
   | 'responsiveness'
   | 'load'
   | 'bundle'
+  | 'styles'
   | 'soak'
   | 'settle'
+  | 'engine'
   | 'environment'
 
 /**
@@ -337,6 +443,15 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'Google Core Web Vitals and supporting load metrics; lower is better on all of them. Measured in a canned environment (local API mock, no external network), so vitals that would only measure that setup are left out. TTFB, for example, would just time the mock.',
   },
   {
+    id: 'navigation',
+    title: 'Soft navigations',
+    description:
+      'In-app navigations never trigger a full page load - opening a document, switching panes ' +
+      "or tools - but still report the browser's own soft-navigation vitals, bucketed per " +
+      'navigation. Soft LCP is diagnostic only for pane-open and tool-switch, which can land ' +
+      'on the pane header before content arrives.',
+  },
+  {
     id: 'responsiveness',
     title: 'Editing responsiveness',
     description: 'Per-keystroke latency (keydown → paint) while typing into each scenario.',
@@ -351,6 +466,17 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
     title: 'Bundle size',
     description:
       'How much JavaScript the build ships, and how much of it booting actually downloads.',
+  },
+  {
+    id: 'styles',
+    title: 'Style migration',
+    description:
+      'Two migrations, counted on the rendered page of every benchmark scenario: @sanity/ui v5 ' +
+      'adoption (rendered v5 components as a share of all @sanity/ui components — higher is ' +
+      'better) and the styled-components escape hatch (rendered instances, distinct components, ' +
+      'and the CSS it inserts at runtime — lower is better). The same fingerprints the test ' +
+      "studio's Style migrations widget uses; the UI v5 rows are absent, not zero, on builds " +
+      'that predate @sanity/ui v5 (before studio v6.10).',
   },
   {
     id: 'soak',
@@ -370,6 +496,11 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'customization build (perf/bench/studio-customizations). Lower is better on every series.',
   },
   {
+    id: 'engine',
+    title: 'Engine confidence',
+    description: ENGINE_CONFIDENCE_EXPLAINER,
+  },
+  {
     id: 'environment',
     title: 'Calibration',
     description: `${CALIBRATION_EXPLAINER} Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.`,
@@ -386,6 +517,68 @@ function describeSeries(
   label: string,
   mode?: string | null,
 ): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
+  // Style-migration rows first: the same census runs in every mode (they ride
+  // along on interaction, pageload and settle reports alike), so the label
+  // decides the group before any mode does. The registry in @repo/utils is
+  // the join key with perf/bench, so a metric added there lands here with its
+  // wording and direction already attached.
+  const styleMetric = styleMetricFor(label)
+  if (styleMetric) {
+    return {group: 'styles', description: styleMetric.description, goal: styleMetric.goal}
+  }
+  // Before any substring check, so a nav label like "tool visible" never lands in Load.
+  if (label.startsWith('nav:')) {
+    if (label.includes('soft LCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
+          'became visible. Element size and text are unreliable on soft navs, so only the ' +
+          'timing is charted. Diagnostic only for pane-open and tool-switch, which can land ' +
+          'on the pane header before content arrives.',
+        goal: 'lower',
+        goodThreshold: 2500,
+      }
+    }
+    if (label.includes('soft FCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation First Contentful Paint: first pixels drawn after the navigation started.',
+        goal: 'lower',
+        goodThreshold: 1800,
+      }
+    }
+    if (label.includes('soft INP latency')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Interaction to Next Paint, bucketed to this navigation by navigationId ' +
+          '(per-nav, not the page-load percentile rule).',
+        goal: 'lower',
+        goodThreshold: 200,
+      }
+    }
+    if (label.includes('soft CLS score')) {
+      return {
+        group: 'navigation',
+        description: 'Soft-navigation Cumulative Layout Shift, bucketed to this navigation.',
+        goal: 'lower',
+        goodThreshold: 0.1,
+      }
+    }
+    if (label.includes('click to ready')) {
+      return {
+        group: 'navigation',
+        description:
+          "From the bench's trusted click that started the navigation until its readiness " +
+          'selector matched.',
+        goal: 'lower',
+      }
+    }
+    // A new nav metric must never silently vanish from the dashboard
+    return {group: 'navigation', description: label, goal: 'lower'}
+  }
   if (mode === 'settle') {
     if (label === 'sessions not settled') {
       return {
@@ -454,6 +647,39 @@ function describeSeries(
       goal: 'lower',
     }
   }
+  // Load-step milestones (perf/bench/scenarios/load.ts, synthetic)
+  if (label.includes('login clickable')) {
+    return {
+      group: 'load',
+      description:
+        'Signed out: from navigation start until the login button can be clicked (visible, stable, enabled).',
+      goal: 'lower',
+    }
+  }
+  if (label.includes('tool visible after login')) {
+    return {
+      group: 'load',
+      description:
+        "From the login callback page load (the redirect back after clicking log in) until the tool renders: the structure tool's items, or the empty tool's marker (loginToEmptyTool). The HTTP cache is primed by the login screen.",
+      goal: 'lower',
+    }
+  }
+  if (label.includes('tool visible')) {
+    return {
+      group: 'load',
+      description:
+        "Already signed in: from navigation start until the tool renders: the structure tool's items, or the empty tool's marker (emptyToolReady, the studio shell baseline).",
+      goal: 'lower',
+    }
+  }
+  if (label.includes('all fields editable')) {
+    return {
+      group: 'load',
+      description:
+        'From navigation start until every field in the form holds an enabled control. Catches field components lazy-loaded after the first field is editable.',
+      goal: 'lower',
+    }
+  }
   if (label.includes('main-thread blocking')) {
     return {
       group: 'load',
@@ -502,7 +728,7 @@ function describeSeries(
     return {
       group: 'bundle',
       description:
-        'Exact gzip sum of the JS chunks fetched before the document was editable (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.',
+        "Exact gzip sum of the JS chunks fetched before the load ended — the document editable, or the scenario's last milestone (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.",
       goal: 'lower',
     }
   }
@@ -542,6 +768,9 @@ function describeSeries(
 export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
   if (unit === 'cls') return value.toFixed(3) // unitless layout-shift score
+  // Shares are stored 0–100. Whole percents: a migration moves in whole
+  // components, and the widget these numbers mirror rounds the same way
+  if (unit === 'percent') return `${value.toFixed(0)}%`
   // MB past 1 MiB: the total-JS series runs to megabytes, where "2368.1 KB"
   // buries the magnitude a reader actually wants
   if (unit === 'bytes') {
@@ -601,6 +830,7 @@ export function formatValue(value: number, unit: TrendUnit): string {
  */
 export function formatTick(value: number, unit: TrendUnit, domainMax = 0): string {
   if (isSignedUnit(unit)) return parseFloat(value.toFixed(2)).toString()
+  if (unit === 'percent') return `${Math.round(value)}%`
   if (unit === 'megabytes') return `${parseFloat(value.toFixed(1))}MB`
   if (unit === 'bytes') {
     return Math.abs(value) >= 1024 * 1024
@@ -1089,6 +1319,19 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
     // 05:00; the release run measures the tag hours later), and the merged point
     // has to keep the tag for the marker, tooltip and popover to attribute it.
     const releaseTag = group.find((point) => point.releaseTag)?.releaseTag
+    // Style context merges like the values it describes: the readable-rule
+    // total by median (it is the denominator of the merged rule count in
+    // aggregateStyleSeries, so pairing a median numerator with one shard's
+    // total would mix pages), the runtime version as the union of what the
+    // shards saw — the bench already comma-joins several versions on one page,
+    // so "6.1.15, 6.5.3" reads the same whether the two came from one shard or
+    // from two.
+    const readableTotals = group
+      .map((point) => point.readableCssRules)
+      .filter((v): v is number => v !== undefined)
+    const versions = [
+      ...new Set(group.flatMap((point) => point.styledComponentsVersion?.split(', ') ?? [])),
+    ].sort()
     merged.push({
       ...last,
       ...(releaseTag ? {releaseTag} : {}),
@@ -1101,6 +1344,8 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
       // unmerged per-run spread stays visible in the Calibration tab.
       calibrationMs: calibrations.length > 0 ? medianOf(calibrations) : undefined,
       host: hostKeys.size === 1 ? last.host : undefined,
+      readableCssRules: readableTotals.length > 0 ? medianOf(readableTotals) : undefined,
+      styledComponentsVersion: versions.length > 0 ? versions.join(', ') : undefined,
     })
   }
   return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -1114,16 +1359,31 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     unit: TrendUnit,
     meta: Pick<
       TrendSeries,
-      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold'
+      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold' | 'hidden'
     >,
     run: TrendRun,
-    point: Pick<TrendPoint, 'value' | 'p75' | 'p90' | 'interactions' | 'calibrationMs' | 'host'>,
+    point: Pick<
+      TrendPoint,
+      | 'value'
+      | 'p75'
+      | 'p90'
+      | 'interactions'
+      | 'styledComponentsVersion'
+      | 'readableCssRules'
+      | 'calibrationMs'
+      | 'host'
+    >,
+    // Which of a paired chart's lines the point belongs to (UI v5 vs v4);
+    // absent for the ordinary one-line-per-branch series
+    lineMeta?: Pick<TrendLine, 'label' | 'color' | 'secondary'>,
   ) => {
     const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
     const branch = run.git?.branch ?? 'unknown'
-    let line = existing.lines.find((candidate) => candidate.branch === branch)
+    let line = existing.lines.find(
+      (candidate) => candidate.branch === branch && candidate.label === lineMeta?.label,
+    )
     if (!line) {
-      line = {branch, points: []}
+      line = {branch, points: [], ...lineMeta}
       existing.lines.push(line)
     }
     line.points.push({date: runDate(run), ...pointMeta(run), ...point})
@@ -1142,6 +1402,9 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       )?.experiment?.summary?.median
       const scenarioMeta = shardMeta(run, scenario.runner)
       const redByDesign = scenario.settleExpectation?.expectedToSettle === false
+      const styledComponentsVersion =
+        scenario.styles?.experiment?.styledComponentsVersion ?? undefined
+      const readableCssRules = scenario.styles?.experiment?.readableCssRules ?? undefined
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
         // Older documents carry a TTFB metric; skip it. Against the local
@@ -1157,18 +1420,70 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
         ) {
           continue
         }
+        // Style rows the registry records but does not chart (the style-tag
+        // count: 1 on every page) stay on the document and out of the charts,
+        // the drift feed and the deep links alike.
+        if (styleMetricFor(metric.label)?.charted === false) continue
         const summary = metric.experiment?.summary
         if (!summary) continue
         const meta = describeSeries(scenario.kind, metric.label, scenario.mode)
+        // Style rows are a property of the scenario's page, not of the mode
+        // that opened it: the interaction and pageload shards of one scenario
+        // (and its settle run) count the same DOM. One key per scenario, so
+        // the shards' identical points merge per commit instead of drawing
+        // two series that say the same thing.
+        const isStyleRow = meta.group === 'styles'
+        const pair = isStyleRow ? UI_PAIRS[metric.label] : undefined
+        if (pair) {
+          // The three UI rows become two paired charts (see UI_PAIRS): the
+          // row's value lands on its major's line, and the share chart's v4
+          // line is the complement of the stored v5 share. No p75/p90 on pair
+          // lines — the counts are exact, and a complement of a percentile
+          // is not that percentile.
+          const pairPoint = {
+            ...scenarioMeta,
+            ...(styledComponentsVersion ? {styledComponentsVersion} : {}),
+          }
+          const key = `styles:${scenario.scenario}:${pair.key}`
+          const title = `${scenario.scenario} · ${pair.title}`
+          const seriesMeta = {
+            group: 'styles' as const,
+            goal: 'higher' as const,
+            description: pair.description,
+            sourceFile: scenario.sourceFile,
+            ...(pair.hidden ? {hidden: true} : {}),
+          }
+          push(
+            key,
+            title,
+            pair.unit,
+            seriesMeta,
+            run,
+            {value: summary.median, ...pairPoint},
+            UI_LINES[pair.line],
+          )
+          if (pair.complement) {
+            push(
+              key,
+              title,
+              pair.unit,
+              seriesMeta,
+              run,
+              {value: 100 - summary.median, ...pairPoint},
+              UI_LINES.ui4,
+            )
+          }
+          continue
+        }
         push(
           // Settle reuses kind 'pageload'; the mode keeps its keys from ever
           // colliding with a real pageload metric of the same scenario.
-          `${scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
+          `${isStyleRow ? 'styles' : scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
           `${scenario.scenario} · ${metric.label}`,
           metric.unit,
           {
             ...meta,
-            ...(scenario.mode === 'settle' && redByDesign
+            ...(scenario.mode === 'settle' && redByDesign && !isStyleRow
               ? {
                   description: `${meta.description} RED BY DESIGN: this scenario exercises a known unfixed render-loop footgun (expectedToSettle: false) — its non-zero line is the standing evidence, and the bench warns when a fix lands.`,
                 }
@@ -1183,6 +1498,11 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
             ...scenarioMeta,
             ...(metric.label === 'INP' && inpInteractions !== undefined
               ? {interactions: inpInteractions}
+              : {}),
+            ...(isStyleRow && styledComponentsVersion ? {styledComponentsVersion} : {}),
+            ...(metric.label === 'styled-components CSS rules' &&
+            typeof readableCssRules === 'number'
+              ? {readableCssRules}
               : {}),
           },
         )
@@ -1230,10 +1550,14 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     }
   }
   // Merge after collection: one point per commit per line (calibrationSeries is
-  // deliberately left unmerged — see mergeRunsPerCommit)
+  // deliberately left unmerged — see mergeRunsPerCommit). Headline lines
+  // before secondary ones, so a paired chart's legend and tooltip lead with
+  // v5 whichever row happened to be recorded first (a pre-v5 run has only v4).
   return [...series.values()].map((entry) => ({
     ...entry,
-    lines: entry.lines.map((line) => ({...line, points: mergeRunsPerCommit(line.points)})),
+    lines: entry.lines
+      .map((line) => ({...line, points: mergeRunsPerCommit(line.points)}))
+      .sort((a, b) => Number(Boolean(a.secondary)) - Number(Boolean(b.secondary))),
   }))
 }
 
@@ -1262,19 +1586,31 @@ export interface VitalSection {
 
 const byTitle = (a: TrendSeries, b: TrendSeries) => a.title.localeCompare(b.title)
 
-export function vitalSections(list: TrendSeries[]): VitalSection[] {
+/** Nav titles end with their full metric phrase, so `NAVIGATION_METRICS` matches the same way. */
+export function vitalSections(
+  list: TrendSeries[],
+  metrics: readonly {vital: string; name?: string}[] = VITALS,
+): VitalSection[] {
   const matched = new Set<TrendSeries>()
-  const sections: VitalSection[] = VITALS.map(({vital, name}) => {
+  const sections: VitalSection[] = metrics.map(({vital, name}) => {
     const series = list.filter((entry) => entry.title.endsWith(vital)).sort(byTitle)
     for (const entry of series) matched.add(entry)
     return {vital, name, series}
   })
-  // Anything in the vitals group that isn't a known vital still renders —
+  // Anything that isn't a known metric still renders —
   // a new metric must never silently vanish from the dashboard
   const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
   if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
   return sections.filter((section) => section.series.length > 0)
 }
+
+export const NAVIGATION_METRICS = [
+  {vital: 'soft LCP time', name: 'Largest Contentful Paint'},
+  {vital: 'soft FCP time', name: 'First Contentful Paint'},
+  {vital: 'soft INP latency', name: 'Interaction to Next Paint'},
+  {vital: 'soft CLS score', name: 'Cumulative Layout Shift'},
+  {vital: 'click to ready', name: 'Click to ready'},
+] as const
 
 export interface SettleView {
   id: 'tripwire' | 'time' | 'activity' | 'renders' | 'other'
@@ -1351,6 +1687,332 @@ export function settleViews(list: TrendSeries[]): SettleView[] {
     .map((view) => ({...view, series: [...view.series].sort(byTitle)}))
 }
 
+/** The two `@sanity/ui` majors as chart lines, colored like the widget's donut. */
+const UI_LINES = {
+  ui5: {
+    label: STYLE_SYSTEMS.find((system) => system.id === 'ui5')!.label,
+    color: STYLE_SYSTEMS.find((system) => system.id === 'ui5')!.color,
+  },
+  ui4: {
+    label: STYLE_SYSTEMS.find((system) => system.id === 'ui4')!.label,
+    color: STYLE_SYSTEMS.find((system) => system.id === 'ui4')!.color,
+    secondary: true,
+  },
+} as const
+
+/**
+ * The paired UI v5 vs v4 charts: which bench row feeds which line of which
+ * chart. Both majors on one chart, because the migration reads as a crossing
+ * — v5 climbing past v4 — that two single-line charts never show. The share
+ * chart draws v4 as the complement of the stored v5 share (the two sum to
+ * 100% by construction, so nothing is invented); the instances chart draws the
+ * two stored counts, and its v4 line reaches back before v5 existed while the
+ * v5 line starts with the first build that shipped it.
+ */
+const UI_SHARE_DESCRIPTION =
+  'Rendered @sanity/ui components by major version, as shares of all @sanity/ui components on the page (v5 + v4 = 100%). The v5 line is the headline of the migration and the one the latest value and the drift verdict read; where the lines cross, v5 became the majority. Absent on builds that do not ship @sanity/ui v5 (studio releases before v6.10) — not applicable, not 0%.'
+const UI_INSTANCES_DESCRIPTION =
+  'Rendered @sanity/ui components by major version, as counts — the share pair before the division. Never charted on its own (it would repeat the share chart); its summed counts are what the all-scenarios adoption score is computed from.'
+
+const UI_PAIRS: Record<
+  string,
+  {
+    key: string
+    title: string
+    unit: TrendUnit
+    line: keyof typeof UI_LINES
+    /** Also draw the other major as 100 minus this row (the share chart). */
+    complement?: boolean
+    /** Built for the aggregate only, never shown (see TrendSeries.hidden). */
+    hidden?: boolean
+    description: string
+  }
+> = {
+  'UI v5 share': {
+    key: 'UI share',
+    title: 'UI v5 vs v4 share',
+    unit: 'percent',
+    line: 'ui5',
+    complement: true,
+    description: UI_SHARE_DESCRIPTION,
+  },
+  'UI v5 instances': {
+    key: 'UI instances',
+    title: 'UI v5 vs v4 instances',
+    unit: 'count',
+    line: 'ui5',
+    hidden: true,
+    description: UI_INSTANCES_DESCRIPTION,
+  },
+  'UI v4 instances': {
+    key: 'UI instances',
+    title: 'UI v5 vs v4 instances',
+    unit: 'count',
+    line: 'ui4',
+    hidden: true,
+    description: UI_INSTANCES_DESCRIPTION,
+  },
+}
+
+/** The all-scenarios adoption score: `styles:all:UI share` (see aggregateStyleSeries). */
+export const UI_OVERVIEW_KEY = 'styles:all:UI share'
+
+/** One style-migration metric across scenarios: a section header and a card per scenario. */
+export interface StyleSection {
+  /** The section's series key suffix (`styles:<scenario>:<id>`). */
+  id: string
+  label: string
+  /** How to read a move; also the direction of the paired chart's headline line. */
+  goal: 'higher' | 'lower'
+  series: TrendSeries[]
+}
+
+export interface StyleView {
+  id: 'ui5' | 'styled' | 'css'
+  label: string
+  /** One-line reading guide shown above the view's sections. */
+  hint: string
+  sections: StyleSection[]
+}
+
+/** The metric label behind a style series key (`styles:<scenario>:<label>`). */
+export function styleLabel(entry: TrendSeries): string {
+  return entry.key.split(':').slice(2).join(':')
+}
+
+/** The scenario behind a style series key (`styles:<scenario>:<label>`). */
+export function styleScenario(entry: TrendSeries): string {
+  return entry.key.split(':')[1] ?? ''
+}
+
+/** Scenario of the cross-scenario aggregate series (see aggregateStyleSeries). */
+export const ALL_SCENARIOS = 'all'
+
+/**
+ * The style-migration tab's sub-views, one per migration. UI v5 adoption is
+ * the paired v5/v4 share chart per scenario (see `UI_PAIRS`; the panel puts
+ * the all-scenarios adoption score above it, see UI_OVERVIEW_KEY);
+ * styled-components and CSS weight are one section per registry metric, in
+ * registry order.
+ * Within a section, one card per scenario — the Vitals layout, since the
+ * question is the same: "how is this number doing, everywhere?" Views without
+ * data are dropped, like the soak and settle ones. There is no "Other": a
+ * series only reaches this group through the registry (see describeSeries),
+ * so every label is known. Hidden series and the `all` aggregate stay out —
+ * the aggregate is placed by the panel, see aggregateStyleSeries.
+ */
+export function styleViews(list: TrendSeries[]): StyleView[] {
+  const perScenario = list.filter(
+    (entry) => styleScenario(entry) !== ALL_SCENARIOS && !entry.hidden,
+  )
+  const section = (id: string, label: string, goal: 'higher' | 'lower'): StyleSection => ({
+    id,
+    label,
+    goal,
+    series: perScenario.filter((entry) => styleLabel(entry) === id).sort(byTitle),
+  })
+  const trackSections = (track: 'styled' | 'css') =>
+    STYLE_METRICS.filter((metric) => metric.track === track && metric.charted !== false).map(
+      (metric) => section(metric.label, metric.label, metric.goal),
+    )
+  const views: StyleView[] = [
+    {
+      id: 'ui5',
+      label: 'UI v5 adoption',
+      hint: 'Rendered @sanity/ui components by major version, v5 and v4 on one chart so the crossing shows: first every scenario\u2019s counts summed into one adoption score, then each scenario\u2019s page on its own. Higher v5 is better; 100% means fully on v5. Builds without @sanity/ui v5 (before studio v6.10) record no v5 rows rather than 0%, so the v5 line starts where v5 did.',
+      sections: [section('UI share', 'UI v5 vs v4 share', 'higher')],
+    },
+    {
+      id: 'styled',
+      label: 'styled-components',
+      hint: 'The runtime-styling escape hatch on each scenario\u2019s page: rendered styled-components nodes, the distinct components behind them, and the CSS the library inserted at runtime (rules, bytes, share of all rules). Lower is better; every row applies to studio v5-era builds too.',
+      sections: trackSections('styled'),
+    },
+    {
+      id: 'css',
+      label: 'CSS weight',
+      hint: 'All the CSS each scenario\u2019s page holds, whatever wrote it: linked stylesheets, <style> tags (styled-components included) and constructed sheets, as bytes and rules, then the part held by <style> tags on its own. Lower is better. Compare the login screen (loginReady), a tool with no document (toolReady, emptyToolReady) and a settled document form (synthetic) to see what each step adds.',
+      sections: trackSections('css'),
+    },
+  ]
+  return views
+    .map((view) => ({...view, sections: view.sections.filter((s) => s.series.length > 0)}))
+    .filter((view) => view.sections.length > 0)
+}
+
+/**
+ * "All scenarios" style series for the weekly view: one point per commit,
+ * summed over every scenario that reported on that commit (rendered
+ * styled-components nodes, inserted CSS bytes), with the shares recomputed
+ * from the summed counts rather than averaged (Σ v5 ÷ Σ (v5 + v4); Σ inserted
+ * rules ÷ Σ readable rules, the totals recovered from each scenario's rule
+ * count and rule share); the CSS weight rows sum the same way. Sums count
+ * shared studio chrome once per scenario
+ * page, so the number is "across the benchmark's pages", not "in the studio";
+ * a shard that failed leaves its commit's sum short, which the weekly median
+ * over that week's commits absorbs. Each point keeps the identity of the
+ * newest contributing run, so a bar still opens a real document.
+ */
+export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
+  const perScenario = list.filter((entry) => styleScenario(entry) !== ALL_SCENARIOS)
+  if (perScenario.length === 0) return []
+
+  /** Every point of every scenario for one label and line, grouped per branch and commit. */
+  const gather = (label: string, lineLabel?: string) => {
+    const groups = new Map<string, TrendPoint[]>()
+    for (const entry of perScenario) {
+      if (styleLabel(entry) !== label) continue
+      for (const line of entry.lines) {
+        if (lineLabel !== undefined && line.label !== lineLabel) continue
+        for (const point of line.points) {
+          const key = `${line.branch}|${point.sha === 'unknown' ? `run:${point.runId}` : point.sha}`
+          const group = groups.get(key)
+          if (group) group.push(point)
+          else groups.set(key, [point])
+        }
+      }
+    }
+    return groups
+  }
+  const newest = (points: TrendPoint[]) =>
+    points.reduce((best, point) => (point.date.getTime() > best.date.getTime() ? point : best))
+  const sum = (points: TrendPoint[]) => points.reduce((total, point) => total + point.value, 0)
+  /** Points → one aggregated point per commit, as a set of lines per branch. */
+  const linesFrom = (
+    groups: Map<string, TrendPoint[]>,
+    value: (points: TrendPoint[], key: string) => number | null,
+    lineMeta: Partial<TrendLine> = {},
+  ): TrendLine[] => {
+    const byBranch = new Map<string, TrendLine>()
+    for (const [key, points] of groups) {
+      const aggregated = value(points, key)
+      if (aggregated === null) continue
+      const anchor = newest(points)
+      const branch = key.slice(0, key.indexOf('|'))
+      const line = byBranch.get(branch) ?? {branch, points: [], ...lineMeta}
+      // A summed point is no longer one page's measurement: no percentiles,
+      // no page-level context (runtime version, readable-rule total)
+      const {
+        p75: _p75,
+        p90: _p90,
+        styledComponentsVersion: _version,
+        readableCssRules: _readable,
+        ...identity
+      } = anchor
+      line.points.push({...identity, value: aggregated})
+      byBranch.set(branch, line)
+    }
+    for (const line of byBranch.values()) {
+      line.points.sort((a, b) => a.date.getTime() - b.date.getTime())
+    }
+    return [...byBranch.values()]
+  }
+  const key = (label: string) => `styles:${ALL_SCENARIOS}:${label}`
+  const title = (label: string) => `all scenarios · ${label}`
+  const base = {group: 'styles' as const, lineLabel: 'summed over scenarios, per commit'}
+  const result: TrendSeries[] = []
+
+  // UI v5 vs v4: the counts are summed, the share is recomputed from them
+  const v5 = gather('UI instances', UI_LINES.ui5.label)
+  const v4 = gather('UI instances', UI_LINES.ui4.label)
+  const uiCommits = [...new Set([...v5.keys(), ...v4.keys()])].filter(
+    (commit) => v5.has(commit) && v4.has(commit),
+  )
+  if (uiCommits.length > 0) {
+    const both = (commit: string) => ({v5: sum(v5.get(commit)!), v4: sum(v4.get(commit)!)})
+    const only = (source: Map<string, TrendPoint[]>) =>
+      new Map(uiCommits.map((commit) => [commit, source.get(commit)!]))
+    result.push(
+      {
+        key: key('UI share'),
+        title: title('UI v5 vs v4 share'),
+        unit: 'percent',
+        goal: 'higher',
+        ...base,
+        description: `The migration\u2019s overview score: every scenario page\u2019s rendered @sanity/ui components summed per commit, v5 against v4 (Σ v5 ÷ Σ (v5 + v4)) — weighted by how much each page renders, not an average of the pages\u2019 percentages. ${UI_PAIRS['UI v5 share'].description}`,
+        lines: [
+          ...linesFrom(
+            only(v5),
+            (_points, commit) => {
+              const {v5: a, v4: b} = both(commit)
+              return a + b === 0 ? null : (a / (a + b)) * 100
+            },
+            UI_LINES.ui5,
+          ),
+          ...linesFrom(
+            only(v4),
+            (_points, commit) => {
+              const {v5: a, v4: b} = both(commit)
+              return a + b === 0 ? null : (b / (a + b)) * 100
+            },
+            UI_LINES.ui4,
+          ),
+        ],
+      },
+      {
+        key: key('UI instances'),
+        title: title('UI v5 vs v4 instances'),
+        unit: 'count',
+        goal: 'higher',
+        ...base,
+        hidden: true,
+        description: `${UI_PAIRS['UI v5 instances'].description} Summed over every scenario page.`,
+        lines: [
+          ...linesFrom(only(v5), (points) => sum(points), UI_LINES.ui5),
+          ...linesFrom(only(v4), (points) => sum(points), UI_LINES.ui4),
+        ],
+      },
+    )
+  }
+
+  for (const metric of STYLE_METRICS) {
+    if (metric.track === 'ui5' || metric.charted === false) continue
+    if (metric.unit === 'percent') {
+      // The rule share is Σ inserted rules ÷ Σ readable rules, both read off
+      // the `CSS rules` points (each carries its page's readable total, see
+      // TrendPoint.readableCssRules) — never derived from the per-scenario
+      // shares, which cannot be paired back to their scenario and lose a
+      // page's readable rules entirely when it inserted none. A point without
+      // the total (documents before the field) is left out of both sums.
+      const rules = gather('styled-components CSS rules')
+      const lines = linesFrom(rules, (points) => {
+        let inserted = 0
+        let readable = 0
+        for (const point of points) {
+          if (typeof point.readableCssRules !== 'number' || point.readableCssRules <= 0) continue
+          inserted += point.value
+          readable += point.readableCssRules
+        }
+        return readable === 0 ? null : (inserted / readable) * 100
+      })
+      if (lines.some((line) => line.points.length > 0)) {
+        result.push({
+          key: key(metric.label),
+          title: title(metric.label),
+          unit: metric.unit,
+          goal: metric.goal,
+          ...base,
+          description: `${metric.description} Summed over every scenario page (Σ inserted rules ÷ Σ readable rules).`,
+          lines,
+        })
+      }
+      continue
+    }
+    const groups = gather(metric.label)
+    if (groups.size === 0) continue
+    result.push({
+      key: key(metric.label),
+      title: title(metric.label),
+      unit: metric.unit,
+      goal: metric.goal,
+      ...base,
+      description: `${metric.description} Summed over every scenario page that reported on the commit.`,
+      lines: linesFrom(groups, (points) => sum(points)),
+    })
+  }
+  return result
+}
+
 /** The honesty overlay: host-speed score per run (higher = slower host). */
 export function calibrationSeries(runs: TrendRun[]): TrendSeries {
   // One line per branch, like the metric charts. Collecting every branch's
@@ -1408,7 +2070,15 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
 type SoakScenario = NonNullable<NonNullable<TrendRun['scenarios']>[number]['soak']>
 type SoakSample = NonNullable<SoakScenario['samples']>[number]
 
-/** Find each run's soak scenario (there's at most one), newest run first. */
+/**
+ * The soak scenario the soak series follow. A run can carry several soak
+ * reports (the daily run adds an `article` soak), and the stored order of
+ * scenarios is not stable, so the series name theirs rather than taking the
+ * first soak they find.
+ */
+const SOAK_SERIES_SCENARIO = 'singleString'
+
+/** Each run's `SOAK_SERIES_SCENARIO` soak report, in run order. */
 function runsWithSoak(runs: TrendRun[]): {
   run: TrendRun
   soak: SoakScenario
@@ -1418,7 +2088,10 @@ function runsWithSoak(runs: TrendRun[]): {
 }[] {
   return runs
     .map((run) => {
-      const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
+      const scenario = run.scenarios?.find(
+        (candidate) =>
+          candidate.scenario === SOAK_SERIES_SCENARIO && candidate.soak?.samples?.length,
+      )
       return scenario?.soak
         ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile, runner: scenario.runner}
         : null
@@ -1486,6 +2159,16 @@ function slopePerMinute(samples: SoakSample[], key: keyof SoakSample): number {
   return (n * sumXY - sumX * sumY) / denominator
 }
 
+/**
+ * The samples from the run's settle minute on. The minutes before it race the
+ * studio's lazy mount, so a slope over them measures mount time rather than
+ * growth. Runs stored before the settle minute existed get the bench default.
+ */
+function steadyStateSoakSamples(soak: SoakScenario): SoakSample[] {
+  const settleMinute = soak.settleMinute ?? soakSettleMinute(soak.minutes)
+  return steadySoakSamples(soak.samples ?? [], settleMinute)
+}
+
 /** The end-of-run (last-minute) value of a soak metric, or null if absent. */
 function lastSoakValue(samples: SoakSample[], key: keyof SoakSample): number | null {
   for (let i = samples.length - 1; i >= 0; i--) {
@@ -1504,7 +2187,7 @@ function lastSoakValue(samples: SoakSample[], key: keyof SoakSample): number | n
 function soakHistory(
   runs: TrendRun[],
   variant: 'slope' | 'latest',
-  reduce: (samples: SoakSample[], key: keyof SoakSample) => number | null,
+  reduce: (soak: SoakScenario, key: keyof SoakSample) => number | null,
   meta: (
     metric: (typeof SOAK_METRICS)[number],
   ) => Pick<TrendSeries, 'title' | 'unit' | 'description' | 'lineLabel'>,
@@ -1514,7 +2197,7 @@ function soakHistory(
     const lineByBranch = new Map<string, TrendLine>()
     let sourceFile: string | undefined
     for (const {run, soak, sourceFile: file, runner} of withSoak) {
-      const value = reduce(soak.samples ?? [], metric.key)
+      const value = reduce(soak, metric.key)
       if (value === null) continue
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
@@ -1544,11 +2227,11 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
   return soakHistory(
     runs,
     'slope',
-    (samples, key) => slopePerMinute(samples, key),
+    (soak, key) => slopePerMinute(steadyStateSoakSamples(soak), key),
     (metric) => ({
       title: `soak · ${metric.title} per minute`,
       unit: slopeUnitFor(metric.unit),
-      description: `${metric.title} change per soak minute (linear fit), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
+      description: `${metric.title} change per soak minute (linear fit from the run's settle minute, minute 2 by default), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
       lineLabel: 'slope per run',
     }),
   )
@@ -1564,7 +2247,7 @@ export function soakLatestValueSeries(runs: TrendRun[]): TrendSeries[] {
   return soakHistory(
     runs,
     'latest',
-    (samples, key) => lastSoakValue(samples, key),
+    (soak, key) => lastSoakValue(soak.samples ?? [], key),
     (metric) => ({
       title: `soak · ${metric.title} at end`,
       unit: metric.unit,

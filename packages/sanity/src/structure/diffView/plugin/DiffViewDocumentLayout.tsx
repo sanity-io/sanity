@@ -15,7 +15,30 @@ import {
   DiffViewDocumentSelectionChanged,
 } from '../__telemetry__/diffView.telemetry'
 import {DiffView} from '../components/DiffView'
-import {selectActiveTransition, useDiffViewState} from '../hooks/useDiffViewState'
+import {
+  type DiffViewStateErrorWithInput,
+  selectActiveTransition,
+  useDiffViewState,
+} from '../hooks/useDiffViewState'
+
+function ParamsErrorDescription({errors}: {errors: DiffViewStateErrorWithInput[]}) {
+  const {t} = useTranslation(structureLocaleNamespace)
+  return (
+    <ul>
+      {errors.map(([error, input]) => (
+        <li key={error}>
+          {t(`compare-version.error.${error}`, {
+            input,
+          })}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function paramsErrorDescription(errors: DiffViewStateErrorWithInput[]) {
+  return <ParamsErrorDescription errors={errors} />
+}
 
 export const DiffViewDocumentLayout: ComponentType<
   PropsWithChildren<Pick<DocumentLayoutProps, 'documentId' | 'documentType'>>
@@ -29,17 +52,7 @@ export const DiffViewDocumentLayout: ComponentType<
         id: 'diffViewParamsParsingError',
         status: 'error',
         title: t('compare-version.error.invalidParams.title'),
-        description: (
-          <ul>
-            {errors.map(([error, input]) => (
-              <li key={error}>
-                {t(`compare-version.error.${error}`, {
-                  input,
-                })}
-              </li>
-            ))}
-          </ul>
-        ),
+        description: paramsErrorDescription(errors),
       })
     },
     onActiveChanged: (previousState, state) => {

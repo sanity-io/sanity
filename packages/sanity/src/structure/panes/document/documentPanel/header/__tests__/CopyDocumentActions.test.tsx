@@ -22,6 +22,7 @@ const DEFAULT_PERSPECTIVE = {
   selectedPerspective: 'drafts' as const,
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantNames: [] as string[],
 }
 
 const DRAFT_SIBLING = {_id: 'drafts.doc-123'}
@@ -31,7 +32,10 @@ const SCHEDULED_SIBLING = {_id: 'versions.rScheduled.doc-123'}
 
 function readyTarget(
   siblings: {
-    published?: {_id: string; _system?: {draft?: {_ref: string}; variant?: {_ref: string}}}
+    published?: {
+      _id: string
+      _system?: {draft?: {_ref: string}; variants?: {_ref: string; _key: string}[]}
+    }
     draft?: {_id: string}
     version?: {_id: string}
   } = {},
@@ -154,14 +158,14 @@ describe('CopyDocumentActions', () => {
     it('copies URL with variant search param when a variant is selected', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
       })
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -170,7 +174,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
@@ -181,7 +185,7 @@ describe('CopyDocumentActions', () => {
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
         ['perspective', 'rMyRelease'],
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -214,7 +218,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })
@@ -230,7 +234,7 @@ describe('CopyDocumentActions', () => {
       expect(mockResolveIntentLink).toHaveBeenCalledWith(
         'edit',
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
-        [['variant', 'alpha-audience']],
+        [['variant', 'variant:alpha-audience']],
       )
     })
 
@@ -352,7 +356,7 @@ describe('CopyDocumentActions', () => {
           published: {
             _id: 'versions.varscopePub.doc-123',
             _system: {
-              variant: {_ref: 'variant-1'},
+              variants: [{_ref: 'variant-1', _key: 'variant-1'}],
               draft: {_ref: advertisedDraftId},
             },
           },
@@ -512,7 +516,7 @@ describe('CopyDocumentActions', () => {
         readyTarget({
           published: {
             _id: 'versions.varscopePub.doc-123',
-            _system: {variant: {_ref: 'variant-1'}},
+            _system: {variants: [{_ref: 'variant-1', _key: 'variant-1'}]},
           },
         }),
       )

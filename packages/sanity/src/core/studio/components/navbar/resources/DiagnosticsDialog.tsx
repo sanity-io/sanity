@@ -1,5 +1,6 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Spinner, Stack, Text} from '@sanity/ui'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {Card, Spinner} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
   useCallback,
@@ -10,12 +11,13 @@ import {
   useState,
   version as reactVersion,
 } from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../../hooks/useClient'
 import {SANITY_VERSION} from '../../../../version'
+import {downloadSchema} from '../../../diagnostics/downloadSchema'
 import {
   formatStudioDiagnostics,
   gatherStudioDiagnostics,
@@ -45,6 +47,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const client = useClient({apiVersion: '2025-02-19'})
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
+  const [schemaWarningOpen, setSchemaWarningOpen] = useState(false)
   const initialDiagnosticsStartedRef = useRef(false)
   const requestIdRef = useRef(0)
   const [copiedText, copy] = useCopyToClipboard()
@@ -125,6 +128,22 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   }, [startDiagnostics])
   const isCopied = Boolean(output && copiedText === output)
 
+  const handleOpenSchemaWarning = useCallback(() => setSchemaWarningOpen(true), [])
+  const handleCloseSchemaWarning = useCallback(() => setSchemaWarningOpen(false), [])
+
+  const handleDownloadSchema = useCallback(() => {
+    try {
+      downloadSchema(workspace)
+    } catch (cause) {
+      toast.push({
+        description: formatError(cause),
+        status: 'error',
+        title: 'Could not download schema',
+      })
+    }
+    setSchemaWarningOpen(false)
+  }, [toast, workspace])
+
   return (
     <Dialog
       bodyHeight="70vh"
@@ -143,7 +162,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
       onClose={onClose}
       width={2}
     >
-      <Stack gap={4} height="fill">
+      <Flex gap={4} height="100%" flexDirection="column">
         {!diagnostics && !error ? (
           <Flex
             alignItems="center"
@@ -154,7 +173,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
             justifyContent="center"
           >
             <Spinner />
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Gathering diagnostics…
             </Text>
           </Flex>
@@ -162,21 +181,52 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
 
         {error ? (
           <Card padding={4} radius={2} tone="critical">
-            <Stack gap={4}>
-              <Text size={1}>Could not gather diagnostics: {error}</Text>
+            <VStack gap={4}>
+              <Text size={1} tone="critical" as="div" trim={true}>
+                Could not gather diagnostics: {error}
+              </Text>
               <Flex>
                 <Button mode="ghost" onClick={handleRunAgain} text="Run again" />
               </Flex>
-            </Stack>
+            </VStack>
           </Card>
         ) : null}
 
         {diagnostics ? (
           <Card flex={1} overflow="auto" padding={3} radius={2} tone="transparent">
-            <DiagnosticsReport diagnostics={diagnostics} onRunAgain={handleRunAgain} />
+            <DiagnosticsReport
+              diagnostics={diagnostics}
+              onDownloadSchema={handleOpenSchemaWarning}
+              onRunAgain={handleRunAgain}
+            />
           </Card>
         ) : null}
-      </Stack>
+      </Flex>
+
+      {schemaWarningOpen ? (
+        <Dialog
+          footer={{
+            confirmButton: {
+              icon: DownloadIcon,
+              onClick: handleDownloadSchema,
+              text: 'Download',
+              tone: 'caution',
+            },
+          }}
+          header="Download schema"
+          id={`${dialogId}-schema`}
+          onClickOutside={handleCloseSchemaWarning}
+          onClose={handleCloseSchemaWarning}
+          width={1}
+        >
+          <Card padding={3} radius={2} tone="caution">
+            <Text size={1}>
+              The schema may contain sensitive information, such as field names, descriptions and
+              initial values. Only share it with Sanity support.
+            </Text>
+          </Card>
+        </Dialog>
+      ) : null}
     </Dialog>
   )
 }

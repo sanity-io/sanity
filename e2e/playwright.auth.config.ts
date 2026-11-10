@@ -49,7 +49,11 @@ export default defineConfig({
   ...(CI
     ? {
         webServer: {
-          command: `pnpm sanity preview --port ${PORT}`,
+          // `node --run`, not `pnpm`. pnpm 12.6+ (@pnpm/exe) spawns the script
+          // detached in its own process group, so Playwright's group-kill on
+          // teardown never reaps the preview server and the runner hangs until
+          // the job timeout. `node --run` stays in the webServer process group.
+          command: 'node --run start',
           port: PORT,
           cwd: '../dev/auth-test-studio',
           reuseExistingServer: false,

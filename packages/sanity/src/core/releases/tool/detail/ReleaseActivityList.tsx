@@ -1,7 +1,6 @@
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {AnimatePresence} from 'motion/react'
 import {useEffect, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -12,6 +11,7 @@ import {
   isTranslogEvent,
   type ReleaseEvent,
 } from './events/types'
+import {virtualContainer} from './ReleaseActivityList.css'
 import {ReleaseActivityListItem} from './ReleaseActivityListItem'
 
 const estimateSize = (event: ReleaseEvent | undefined) => {
@@ -23,10 +23,6 @@ const estimateSize = (event: ReleaseEvent | undefined) => {
   }
   return 56
 }
-const VirtualContainer = styled(Box)`
-  height: 100%;
-  overflow: scroll;
-`
 
 interface ReleaseActivityListProps {
   events: ReleaseEvent[]
@@ -98,7 +94,12 @@ export const ReleaseActivityList = ({
   }, [listEvents.length, hasMore, loadMore, virtualItems])
 
   return (
-    <VirtualContainer id="virtualizer-container" ref={virtualizerContainerRef} paddingX={3}>
+    <Box
+      className={virtualContainer}
+      id="virtualizer-container"
+      ref={virtualizerContainerRef}
+      paddingX={3}
+    >
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
@@ -140,6 +141,6 @@ export const ReleaseActivityList = ({
           })}
         </AnimatePresence>
       </div>
-    </VirtualContainer>
+    </Box>
   )
 }

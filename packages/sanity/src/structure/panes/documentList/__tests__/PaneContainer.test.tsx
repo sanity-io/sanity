@@ -48,7 +48,11 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedPerspective: 'drafts',
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
+    selectedVariantNames: [],
+    selectedVariants: [],
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariantName: undefined,
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariant: undefined,
     bundle: 'drafts',
   })),

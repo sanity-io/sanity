@@ -16,11 +16,12 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
-import isObject from 'lodash-es/isObject.js'
 
+import {isInternalValidator} from '../legacy/internalValidators'
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {isType} from '../manifest/manifestTypeHelpers'
+import {isObject} from '../utils/isObject'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
@@ -519,11 +520,6 @@ function maybeValidations(obj: unknown): Validation[] | undefined {
         scheme: ['http', 'https'],
       })
       break
-    case 'slug':
-      impliedRules.push({
-        type: 'custom',
-      })
-      break
     case 'reference':
       impliedRules.push({
         type: 'reference',
@@ -808,6 +804,8 @@ function convertRuleSpec(spec: unknown, optional?: true): RuleType | undefined {
       }
     }
     case 'custom':
+      // Built-in callbacks are restored from the type, not serialized as unavailable custom rules.
+      if (isInternalValidator(constraint)) return undefined
       return {type: 'custom', ...(optional && {optional})}
     case 'media':
       return {type: 'custom', name: 'media'}

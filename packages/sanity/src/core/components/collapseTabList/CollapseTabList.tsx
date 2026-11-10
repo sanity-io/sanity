@@ -1,4 +1,3 @@
-import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
@@ -9,39 +8,21 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {styled} from 'styled-components'
+import {Flex, type GapProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
-import {ObserveElement} from '../collapseMenu/ObserveElement'
+import {type ObservedIntersection, ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
+import {hiddenRow, menuButtonPlaceholder, optionObserveElement} from './CollapseTabList.css'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
 }
 
-const OptionObserveElement = styled(ObserveElement)`
-  list-style: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-  opacity: 0;
-  visibility: hidden;
-`
-
-const HiddenRow = styled(Flex)`
-  opacity: 0;
-  height: 0.1px;
-  overflow: hidden;
-`
-
-const MenuButtonPlaceholder = styled.div`
-  display: flex;
-  visibility: hidden;
-`
-
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -68,8 +49,10 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   // Nothing is shown until a measurement arrives for the current children, to
-  // avoid flashing children that may not fit. Derived from the current children
-  // rather than the map as a whole, which retains entries for departed keys.
+  // avoid flashing children that may not fit. The clones below report their
+  // first measurement from a layout effect, so this is true before the first
+  // paint. Derived from the current children rather than the map as a whole,
+  // which retains entries for departed keys.
   const hasMeasured = children.some(
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
@@ -108,7 +91,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   const handleIntersection = useCallback(
-    (entry: IntersectionObserverEntry, child: React.JSX.Element) => {
+    (entry: ObservedIntersection, child: React.JSX.Element) => {
       const {key} = child
       if (key === null) return
       setIntersections((prev) =>
@@ -120,13 +103,15 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
 
   return (
     <Flex
-      direction="column"
+      flexDirection="column"
       ref={ref}
-      sizing="border"
       {...rest}
-      style={{position: 'relative', minWidth: 0, ...style}}
+      style={{
+        position: 'relative',
+        ...style,
+      }}
     >
-      <Flex justify="center" gap={gap} flex={1}>
+      <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
         {hasMeasured ? displayChildren : null}
         {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
@@ -141,37 +126,53 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
           // that footprint here keeps a content-sized container (the navbar's
           // wide-regime `auto` grid track) wide enough on its own, and makes the
           // swap with the real menu button layout-stable.
-          <MenuButtonPlaceholder aria-hidden="true" data-testid="collapse-tab-list-placeholder">
+          <div
+            className={menuButtonPlaceholder}
+            aria-hidden="true"
+            data-testid="collapse-tab-list-placeholder"
+          >
             {cloneElement(menuButton, {
               'disabled': true,
               'aria-hidden': true,
               'tabIndex': -1,
             })}
-          </MenuButtonPlaceholder>
+          </div>
         )}
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+      <Flex
+        className={hiddenRow}
+        justifyContent="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
         })}
-        {children?.map((child) => (
-          <OptionObserveElement
-            key={`${child.key}_observer`}
-            options={intersectionOptions}
-            // Entries are delivered oldest first, so the last one is current
-            onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
-          >
-            {cloneElement(child, {
-              'disabled': true,
-              'aria-hidden': true,
-              'tabIndex': -1,
-            })}
-          </OptionObserveElement>
-        ))}
-      </HiddenRow>
+        {/* The clones measure against this row, known after the first commit. Mounting them
+            then, rather than with a viewport root they would re-measure against a commit later,
+            keeps it to one measurement; both commits happen before the first paint. */}
+        {rootEl &&
+          children.map((child) => (
+            <ObserveElement
+              className={optionObserveElement}
+              key={`${child.key}_observer`}
+              options={intersectionOptions}
+              // Entries are delivered oldest first, so the last one is current
+              onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
+            >
+              {cloneElement(child, {
+                'disabled': true,
+                'aria-hidden': true,
+                'tabIndex': -1,
+              })}
+            </ObserveElement>
+          ))}
+      </Flex>
     </Flex>
   )
 }

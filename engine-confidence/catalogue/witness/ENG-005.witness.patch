@@ -1,0 +1,54 @@
+diff --git a/packages/sanity/src/core/store/document/document-pair/operationEvents.autocommitWitness.test.ts b/packages/sanity/src/core/store/document/document-pair/operationEvents.autocommitWitness.test.ts
+new file mode 100644
+index 0000000000..930d1334fe
+--- /dev/null
++++ b/packages/sanity/src/core/store/document/document-pair/operationEvents.autocommitWitness.test.ts
+@@ -0,0 +1,48 @@
++import {type SanityClient} from '@sanity/client'
++import {of} from 'rxjs'
++import {expect, it, vi} from 'vitest'
++
++import {createSchema} from '../../../schema/createSchema'
++import {editOperations} from './editOperations'
++import {type OperationsAPI} from './operations/types'
++
++const schema = createSchema({
++  name: 'default',
++  types: [
++    {name: 'book', title: 'Book', type: 'document', fields: [{name: 'title', type: 'string'}]},
++  ],
++})
++
++it('ENG-005 witness: the last edit of a burst is committed without a further edit', {timeout: 10_000}, async () => {
++  const actionRequest = vi.fn((..._args: unknown[]) => of({transactionId: 'tx'}))
++  const client = {
++    config: () => ({apiHost: 'mock.api.sanity.io', projectId: 'p', dataset: 'witness'}),
++    observable: {
++      action: actionRequest,
++      getDocuments: vi.fn(() => of([null, null])),
++      listen: vi.fn(() => of({type: 'welcome'})),
++    },
++    dataRequest: vi.fn(() => Promise.resolve({transactionId: 'tx'})),
++    withConfig: vi.fn(),
++  }
++  client.withConfig.mockReturnValue(client)
++
++  let operations: OperationsAPI | undefined
++  const subscription = editOperations(
++    {client: client as unknown as SanityClient, historyStore: {} as never, schema},
++    {publishedId: 'book-1', draftId: 'drafts.book-1'},
++    'book',
++  ).subscribe((value) => {
++    operations = value
++  })
++  await new Promise((resolve) => setTimeout(resolve, 0))
++
++  operations?.patch.execute([{set: {title: 'first'}}], {_id: 'book-1', _type: 'book'})
++  await new Promise((resolve) => setTimeout(resolve, 100))
++  operations?.patch.execute([{set: {title: 'second'}}], {_id: 'book-1', _type: 'book'})
++  await new Promise((resolve) => setTimeout(resolve, 1_500))
++
++  const sentPayloads = JSON.stringify(actionRequest.mock.calls)
++  subscription.unsubscribe()
++  expect(sentPayloads).toContain('second')
++})

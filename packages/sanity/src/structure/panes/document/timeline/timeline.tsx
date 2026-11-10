@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type Chunk,
@@ -7,7 +6,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
@@ -178,10 +177,10 @@ export const Timeline = ({
     >
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} gap={3}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('timeline.error.no-document-history-title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('timeline.error.no-document-history-description')}
           </Text>
         </StackWrapper>

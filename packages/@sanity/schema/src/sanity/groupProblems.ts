@@ -3,7 +3,6 @@ import {
   type SchemaTypeDefinition,
   type SchemaValidationProblemGroup,
 } from '@sanity/types'
-import flatten from 'lodash-es/flatten.js'
 import get from 'lodash-es/get.js'
 
 import {type ProblemPath, type ProblemPathPropertySegment, type TypeWithProblems} from './typedefs'
@@ -13,9 +12,7 @@ import {error} from './validation/createValidationResult'
  * @internal
  */
 export function groupProblems(types: SchemaTypeDefinition[]): SchemaValidationProblemGroup[] {
-  return flatten<TypeWithProblems>(types.map((type) => getTypeProblems(type))).filter(
-    (type) => type.problems.length > 0,
-  )
+  return types.flatMap((type) => getTypeProblems(type)).filter((type) => type.problems.length > 0)
 }
 
 function createTypeWithMembersProblemsAccessor(
@@ -53,7 +50,7 @@ function createTypeWithMembersProblemsAccessor(
         path: currentPath,
         problems: type._problems || [],
       },
-      ...flatten(memberProblems),
+      ...memberProblems.flat(),
     ]
   }
 }

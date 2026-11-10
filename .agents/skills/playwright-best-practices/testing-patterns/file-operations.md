@@ -103,10 +103,11 @@ test('download multiple files', async ({page}) => {
 ### Download Fixture
 
 ```typescript
-// fixtures/download.fixture.ts
-import {test as base, Download} from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
+
+// fixtures/download.fixture.ts
+import {test as base, Download} from '@playwright/test'
 
 type DownloadFixtures = {
   downloadDir: string

@@ -188,7 +188,6 @@ async function renderReferenceInput(options: RenderReferenceInputOptions = {}) {
   const props = {
     changed: false,
     createOptions,
-    editReferenceLinkComponent: () => null,
     elementProps,
     focusPath,
     focused,
@@ -242,6 +241,15 @@ async function getEditableCombobox() {
     expect(input).not.toBeDisabled()
   })
   return input
+}
+
+/**
+ * The autocomplete popover doesn't render until it opens or its input shows
+ * intent to open it, so hover the input to pre-render it.
+ */
+async function findAutocompletePopover(input: HTMLElement) {
+  await userEvent.hover(input)
+  return screen.findByTestId('autocomplete-popover')
 }
 
 async function moveFocus(from: HTMLElement, to: HTMLElement) {
@@ -326,7 +334,7 @@ describe('ReferenceInput blur handling', () => {
       value: POPULATED_VALUE,
     })
     const input = await getEditableCombobox()
-    const popover = await screen.findByTestId('autocomplete-popover')
+    const popover = await findAutocompletePopover(input)
 
     await moveFocus(input, popover)
 
@@ -339,7 +347,7 @@ describe('ReferenceInput blur handling', () => {
       value: POPULATED_VALUE,
     })
     const input = await getEditableCombobox()
-    const popover = await screen.findByTestId('autocomplete-popover')
+    const popover = await findAutocompletePopover(input)
 
     input.focus()
     // oxlint-disable-next-line testing-library/prefer-user-event -- Safari closes on pointerdown+blur, before click

@@ -49,6 +49,8 @@ export interface CommandListProps<T = any> extends PaddingProps {
   autoFocus?: CommandListElementType
   /** Whether the virtual list can receive focus */
   canReceiveFocus?: boolean
+  /** Class name to apply to the virtual list container (scroller) element */
+  className?: string
   /** Pixel offset of the virtual list focus ring. Negative values will cause the focus ring to appear inset */
   focusRingOffset?: number
   /** Force a fixed height for all virtual list children and skip measurement (faster). */

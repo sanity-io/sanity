@@ -29,7 +29,10 @@ interface ToolMountTimerProps {
  * One-shot per mount: the effect runs once. Because the parent
  * `<StudioErrorBoundary>` re-keys on `activeTool.name`, every tool
  * activation produces a fresh `<ToolMountTimer>` instance and therefore
- * exactly one event.
+ * exactly one event. With `beta.reactActivityMode`, a tool that is
+ * shown again from a hidden `<Activity>` boundary is not remounted, but
+ * React re-creates its effects on reveal, so each activation still logs
+ * exactly one event (`isFirstMount: false`).
  */
 export function ToolMountTimer({toolName, t0Ref}: ToolMountTimerProps): null {
   const telemetry = useTelemetry()

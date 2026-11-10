@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Dev-only synthetic data for the Trends tool: deterministic (seeded PRNG,
  * never Math.random) runs exhibiting the shapes the charts and the drift feed
@@ -8,10 +9,37 @@
  * main-thread blocking, INP, soak, settle (green controls, a red-by-design
  * scenario, a re-regressed loop), and the PR/CI backlink fields.
  */
+import {
+  addMutantCounts,
+  CATALOGUE_SUITE_IDS,
+  type CatalogueEntryResult,
+  type CatalogueSuiteId,
+  type CatalogueSuiteStatus,
+  coveredMutationScoreOf,
+  emptyMutantCounts,
+  ENGINE_CONFIDENCE_RUN_TYPE,
+  ENGINE_CONFIDENCE_SCHEMA_VERSION,
+  type EngineConfidenceRunDocument,
+  type EngineConfidenceScore,
+  isEntryCaught,
+  isoWeekOf,
+  isoWeekStart,
+  type KnownBugsSummary,
+  type MutantCounts,
+  type MutatedFileResult,
+  mutationScoreOf,
+  STRYKER_TARGET_IDS,
+  type StrykerTargetId,
+  type StrykerTargetRun,
+  STUDIO_ENGINE_TARGET,
+  targetScoreOf,
+} from '@repo/utils/engine-confidence'
+import {engineConfidenceRunId} from '@repo/utils/radar-ids'
+
 import {type TrendRun, type TrendTag} from './data'
 
 /** mulberry32 — same tiny PRNG the bench fixtures use. */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let state = seed >>> 0
   return () => {
     state = (state + 0x6d2b79f5) | 0
@@ -21,7 +49,16 @@ function mulberry32(seed: number): () => number {
   }
 }
 
-export const DEBUG_SOURCES = ['demo', 'sparse', 'single-run', 'empty'] as const
+export const DEBUG_SOURCES = [
+  'demo',
+  'sparse',
+  'single-run',
+  'empty',
+  'sqrl',
+  'sqrl-climb',
+  'sqrl-regressed',
+  'sqrl-empty',
+] as const
 export type DebugSource = (typeof DEBUG_SOURCES)[number]
 
 const DAYS = 90
@@ -75,7 +112,7 @@ function metric(
   rng: () => number,
   label: string,
   median: number,
-  unit: 'ms' | 'count' | 'cls' = 'ms',
+  unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent' = 'ms',
 ): NonNullable<NonNullable<TrendRun['scenarios']>[number]['metrics']>[number] {
   return {
     label,
@@ -88,6 +125,110 @@ function metric(
 }
 
 type DemoScenario = NonNullable<TrendRun['scenarios']>[number]
+
+/** The day the demo's build starts shipping @sanity/ui v5 — earlier runs record no adoption rows. */
+const UI5_ARRIVES_DAY = 10
+
+/**
+ * The style-migration rows of one scenario page (see STYLE_METRICS in
+ * @repo/utils/style-systems), telling the migration story the tab exists to
+ * show: no @sanity/ui v5 in the build for the first ten days (the rows are
+ * absent, never 0%), then an S-curve of adoption climbing past 60% as the v4
+ * count falls by the same amount, while the styled-components escape hatch
+ * — instances, components, inserted CSS — shrinks week over week. A
+ * styled-components version bump lands at day 60 so the version context has
+ * something to show. `scale` sizes the page (an article renders more than a
+ * single string field); the base magnitudes are a local bench run of
+ * singleString (900 @sanity/ui nodes, 98 styled nodes, ~950 inserted rules).
+ */
+function styleRows(
+  rng: () => number,
+  day: number,
+  scale: number,
+): {metrics: NonNullable<DemoScenario['metrics']>; styles: DemoScenario['styles']} {
+  const ui5Available = day >= UI5_ARRIVES_DAY
+  const uiTotal = Math.round(900 * scale)
+  // Logistic adoption: ~3% on arrival, 50% around day 55, flattening near 65%
+  const adoption = ui5Available ? 0.65 / (1 + Math.exp(-(day - 55) / 9)) : 0
+  const ui5 = Math.round(uiTotal * adoption)
+  const ui4 = uiTotal - ui5
+  const progress = ui5Available ? (day - UI5_ARRIVES_DAY) / (DAYS - UI5_ARRIVES_DAY) : 0
+  // The escape hatch shrinks roughly linearly as components migrate
+  const styledInstances = Math.round((98 - 45 * progress) * scale + (rng() - 0.5) * 2)
+  const styledComponents = Math.round((50 - 22 * progress) * scale)
+  const cssRules = Math.round(950 - 480 * progress)
+  const totalRules = 2050 - 250 * progress
+  const cssBytes = Math.round(648_000 - 330_000 * progress)
+  const version = day < 60 ? '6.1.15' : '6.5.3'
+  return {
+    metrics: [
+      ...(ui5Available
+        ? [
+            metric(rng, 'UI v5 share', (ui5 / uiTotal) * 100, 'percent'),
+            metric(rng, 'UI v5 instances', ui5, 'count'),
+          ]
+        : []),
+      metric(rng, 'UI v4 instances', ui4, 'count'),
+      metric(rng, 'styled-components instances', styledInstances, 'count'),
+      metric(rng, 'styled-components components', styledComponents, 'count'),
+      metric(rng, 'styled-components CSS rules', cssRules, 'count'),
+      metric(rng, 'styled-components CSS bytes', cssBytes, 'bytes'),
+      metric(rng, 'styled-components CSS rule share', (cssRules / totalRules) * 100, 'percent'),
+      metric(rng, 'styled-components style tags', 1, 'count'),
+      // CSS weight: the inserted CSS plus a static stylesheet that grows a
+      // little as components move to it (fewer bytes per rule than runtime CSS)
+      metric(rng, 'CSS bytes', cssBytes + Math.round(420_000 + 90_000 * progress), 'bytes'),
+      metric(rng, 'CSS rules', cssRules + Math.round(1500 + 260 * progress), 'count'),
+      metric(rng, 'style tag CSS bytes', cssBytes, 'bytes'),
+      metric(rng, 'style tag CSS rules', cssRules, 'count'),
+    ],
+    styles: {
+      experiment: {
+        ui5Available,
+        styledComponentsVersion: version,
+        readableCssRules: Math.round(totalRules),
+      },
+    },
+  }
+}
+
+/** Append the style rows to a scenario's own metrics. */
+function withStyleRows(
+  scenario: DemoScenario,
+  rng: () => number,
+  day: number,
+  scale: number,
+): DemoScenario {
+  const rows = styleRows(rng, day, scale)
+  return {...scenario, metrics: [...(scenario.metrics ?? []), ...rows.metrics], styles: rows.styles}
+}
+
+/**
+ * Pane and tool switches stay fast and flat, as an LCP landing on the pane
+ * header would.
+ */
+function navigationScenario(rng: () => number, shift: number): DemoScenario {
+  const lcpByKind: Record<string, number> = {
+    'document-open': 420 + shift,
+    'document-switch': 390 + shift,
+    'pane-open': 60 + shift,
+    'tool-switch': 300 + shift,
+  }
+  const metrics = Object.entries(lcpByKind).flatMap(([kind, lcp]) => [
+    metric(rng, `nav:${kind} / soft LCP time`, lcp),
+    metric(rng, `nav:${kind} / soft FCP time`, lcp * 0.6),
+    metric(rng, `nav:${kind} / soft INP latency`, 90 + (rng() - 0.5) * 30),
+    metric(rng, `nav:${kind} / soft CLS score`, 0.01 + rng() * 0.02, 'cls'),
+    metric(rng, `nav:${kind} / click to ready`, lcp * 1.4),
+  ])
+  return {
+    scenario: 'softNav',
+    sourceFile: 'perf/bench/scenarios/softNav.ts',
+    kind: 'pageload',
+    mode: 'softnav',
+    metrics,
+  }
+}
 
 function settleScenarios(rng: () => number, day: number): DemoScenario[] {
   const settle = (
@@ -180,56 +321,85 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         },
       },
       scenarios: [
-        {
-          scenario: 'singleString',
-          sourceFile: 'perf/bench/scenarios/singleString.ts',
-          kind: 'interaction',
-          metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
-        },
-        {
-          scenario: 'article',
-          sourceFile: 'perf/bench/scenarios/article.ts',
-          kind: 'interaction',
-          metrics: [
-            metric(rng, 'title', 30 + day * 0.09), // slow drift up
-            metric(rng, 'body', day < 60 ? 36 : 44), // step regression at day 60
-          ],
-        },
-        {
-          scenario: 'recipe',
-          sourceFile: 'perf/bench/scenarios/recipe.ts',
-          kind: 'interaction',
-          metrics: [metric(rng, 'name', day < 45 ? 40 : 33)], // improvement at day 45
-        },
-        {
-          scenario: 'synthetic',
-          sourceFile: 'perf/bench/scenarios/synthetic.ts',
-          kind: 'interaction',
-          // Tracks host speed — read against the calibration strip
-          metrics: [metric(rng, 'title', 34 * hostFactor)],
-        },
-        {
-          scenario: 'singleString',
-          sourceFile: 'perf/bench/scenarios/singleString.ts',
-          kind: 'pageload',
-          // CI measures two load conditions — boot-cold (first visit) and
-          // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
-          metrics: [
-            metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
-            metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
-            metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
-            metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
-            metric(rng, 'boot-cold · main-thread blocking', 620 + (rng() - 0.5) * 120),
-            // The auth story: a serialized round trip removed at day 50
-            metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
-            metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
-            metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
-            metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
-            metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
-            metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
-            metric(rng, 'open-doc-warm · main-thread blocking', 240 + (rng() - 0.5) * 60),
-          ],
-        },
+        // Every scenario that opens a document carries the style census rows
+        // (interaction and pageload shards of one scenario count the same
+        // page, so their rows merge into one series per scenario — see
+        // buildSeries)
+        withStyleRows(
+          {
+            scenario: 'singleString',
+            sourceFile: 'perf/bench/scenarios/singleString.ts',
+            kind: 'interaction',
+            metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
+          },
+          rng,
+          day,
+          1,
+        ),
+        withStyleRows(
+          {
+            scenario: 'article',
+            sourceFile: 'perf/bench/scenarios/article.ts',
+            kind: 'interaction',
+            metrics: [
+              metric(rng, 'title', 30 + day * 0.09), // slow drift up
+              metric(rng, 'body', day < 60 ? 36 : 44), // step regression at day 60
+            ],
+          },
+          rng,
+          day,
+          1.6,
+        ),
+        withStyleRows(
+          {
+            scenario: 'recipe',
+            sourceFile: 'perf/bench/scenarios/recipe.ts',
+            kind: 'interaction',
+            metrics: [metric(rng, 'name', day < 45 ? 40 : 33)], // improvement at day 45
+          },
+          rng,
+          day,
+          1.3,
+        ),
+        withStyleRows(
+          {
+            scenario: 'synthetic',
+            sourceFile: 'perf/bench/scenarios/synthetic.ts',
+            kind: 'interaction',
+            // Tracks host speed — read against the calibration strip
+            metrics: [metric(rng, 'title', 34 * hostFactor)],
+          },
+          rng,
+          day,
+          2.2,
+        ),
+        withStyleRows(
+          {
+            scenario: 'singleString',
+            sourceFile: 'perf/bench/scenarios/singleString.ts',
+            kind: 'pageload',
+            // CI measures two load conditions — boot-cold (first visit) and
+            // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
+            metrics: [
+              metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
+              metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
+              metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
+              metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
+              metric(rng, 'boot-cold · main-thread blocking', 620 + (rng() - 0.5) * 120),
+              // The auth story: a serialized round trip removed at day 50
+              metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
+              metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
+              metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
+              metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
+              metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
+              metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
+              metric(rng, 'open-doc-warm · main-thread blocking', 240 + (rng() - 0.5) * 60),
+            ],
+          },
+          rng,
+          day,
+          1,
+        ),
         {
           scenario: 'singleString',
           sourceFile: 'perf/bench/scenarios/singleString.ts',
@@ -276,6 +446,7 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         // re-regresses at day 75 — every session loops, so 'time to settle'
         // (settled sessions only) drops out and the commit count explodes.
         ...settleScenarios(rng, day),
+        navigationScenario(rng, shift),
       ],
     })
   }
@@ -326,6 +497,10 @@ export function generateDebugRuns(source: DebugSource): TrendRun[] {
   const demo = [...generateDemo('main', 0), ...generateDemo('perf-bench', -4)]
   switch (source) {
     case 'demo':
+    case 'sqrl':
+    case 'sqrl-climb':
+    case 'sqrl-regressed':
+    case 'sqrl-empty':
       return demo
     case 'sparse':
       return demo.filter((_, index) => index % 7 === 0)
@@ -333,6 +508,436 @@ export function generateDebugRuns(source: DebugSource): TrendRun[] {
       return demo.filter((run) => run.git?.branch === 'main').slice(-1)
     case 'empty':
       return []
+    default:
+      return source satisfies never
+  }
+}
+
+const ENGINE_DEMO_WEEKS = 20
+const ENGINE_CONFIG_BREAK_WEEK = 12
+const WEEK_MS = 7 * DAY_MS
+const THURSDAY_RUN_OFFSET_MS = 3 * DAY_MS + 3 * 60 * 60 * 1000
+
+type EngineFileSeed = [
+  path: string,
+  target: StrykerTargetId,
+  detected: number,
+  survived: number,
+  noCoverage: number,
+]
+
+const SANITY_ROOT = 'packages/sanity/src/core/'
+const MUTATOR_ROOT = 'packages/@sanity/mutator/src/'
+
+/** Per-file mutant counts from the Stryker tier 1 sizing run, trimmed to the files worth a row. */
+const ENGINE_FILE_SEEDS: EngineFileSeed[] = [
+  [`${SANITY_ROOT}form/patch/PatchChannel.ts`, 'sanity', 0, 0, 16],
+  [`${SANITY_ROOT}store/document/document-pair/consistencyStatus.ts`, 'sanity', 1, 2, 9],
+  [`${SANITY_ROOT}store/document/document-pair/utils/actionsApiClient.ts`, 'sanity', 1, 5, 0],
+  [`${SANITY_ROOT}store/document/document-pair/utils/operationsApiClient.ts`, 'sanity', 1, 3, 0],
+  [`${SANITY_ROOT}store/document/document-pair/operationEvents.ts`, 'sanity', 19, 34, 7],
+  [`${SANITY_ROOT}store/document/document-pair/utils/isLiveEditEnabled.ts`, 'sanity', 2, 4, 0],
+  [`${MUTATOR_ROOT}document/BufferedDocument.ts`, 'mutator', 71, 66, 63],
+  [`${MUTATOR_ROOT}document/Document.ts`, 'mutator', 129, 102, 54],
+  [`${SANITY_ROOT}store/document/document-pair/editOperations.ts`, 'sanity', 8, 8, 1],
+  [`${MUTATOR_ROOT}patch/InsertPatch.ts`, 'mutator', 22, 16, 5],
+  [`${MUTATOR_ROOT}patch/IncPatch.ts`, 'mutator', 21, 8, 5],
+  [`${SANITY_ROOT}store/document/utils/sequentializeListenerEvents.ts`, 'sanity', 70, 39, 4],
+  [`${SANITY_ROOT}store/document/utils/dedupeListenerEvents.ts`, 'sanity', 15, 5, 4],
+  [`${SANITY_ROOT}store/document/document-pair/operations/helpers.ts`, 'sanity', 55, 32, 0],
+  [`${MUTATOR_ROOT}patch/ImmutableAccessor.ts`, 'mutator', 91, 25, 28],
+  [
+    `${SANITY_ROOT}store/document/buffered-doc/createObservableBufferedDocument.ts`,
+    'sanity',
+    63,
+    31,
+    4,
+  ],
+  [`${SANITY_ROOT}store/document/getPairListener.ts`, 'sanity', 144, 57, 8],
+  [`${MUTATOR_ROOT}patch/Patcher.ts`, 'mutator', 58, 17, 7],
+  [`${MUTATOR_ROOT}jsonpath/Expression.ts`, 'mutator', 278, 59, 42],
+  [`${MUTATOR_ROOT}document/Mutation.ts`, 'mutator', 93, 16, 17],
+  [`${SANITY_ROOT}form/patch/string.ts`, 'sanity', 18, 5, 1],
+  [`${MUTATOR_ROOT}jsonpath/PlainProbe.ts`, 'mutator', 43, 5, 9],
+  [`${SANITY_ROOT}form/utils/path.ts`, 'sanity', 68, 22, 0],
+  [`${MUTATOR_ROOT}jsonpath/Descender.ts`, 'mutator', 79, 15, 10],
+  [`${SANITY_ROOT}store/document/document-pair/checkoutPair.ts`, 'sanity', 261, 75, 5],
+  [`${MUTATOR_ROOT}jsonpath/Matcher.ts`, 'mutator', 112, 17, 13],
+  [`${MUTATOR_ROOT}jsonpath/toPath.ts`, 'mutator', 79, 11, 10],
+  [`${MUTATOR_ROOT}document/SquashingBuffer.ts`, 'mutator', 131, 29, 5],
+  [`${MUTATOR_ROOT}jsonpath/parse.ts`, 'mutator', 262, 37, 26],
+  [`${MUTATOR_ROOT}jsonpath/tokenize.ts`, 'mutator', 183, 25, 11],
+  [`${SANITY_ROOT}form/patch/applyPatch.ts`, 'sanity', 130, 11, 11],
+  [`${SANITY_ROOT}form/utils/mutationPatch.ts`, 'sanity', 106, 0, 1],
+]
+
+interface DemoCatalogueEntry {
+  id: string
+  title: string
+  severity: CatalogueEntryResult['severity']
+  failureClass: string
+  sourceUrl?: string
+  addedWeek: number
+  /** Suite statuses; a function so an entry can start being caught part-way through the history. */
+  statuses: (week: number) => Record<CatalogueSuiteId, CatalogueSuiteStatus>
+}
+
+const DEMO_CATALOGUE: DemoCatalogueEntry[] = [
+  {
+    id: 'ENG-001',
+    title: 'Keyed Portable Text block deletion escalated to a whole-field unset',
+    severity: 'S1',
+    failureClass: 'form layer rewrites a patch from a lagging copy of the value',
+    sourceUrl: 'https://github.com/sanity-io/sanity/pull/14747',
+    addedWeek: 0,
+    statuses: () => ({
+      'unit:mutator': 'not-applicable',
+      'unit:engine': 'caught',
+      'fuzz:pt': 'caught',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-002',
+    title: 'A retryable commit failure drops the commit instead of re-queuing it',
+    severity: 'S1',
+    failureClass: 'transient commit failure treated as terminal',
+    addedWeek: 0,
+    statuses: () => ({
+      'unit:mutator': 'missed',
+      'unit:engine': 'caught',
+      'fuzz:pt': 'not-applicable',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-003',
+    title: 'A remote mutation arriving over buffered local edits skips the rebase',
+    severity: 'S1',
+    failureClass: 'rebase skipped when a remote mutation lands on pending local edits',
+    addedWeek: 0,
+    statuses: () => ({
+      'unit:mutator': 'caught',
+      'unit:engine': 'caught',
+      'fuzz:pt': 'missed',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-004',
+    title: 'Listener dedupe drops the second document event of a multi-document transaction',
+    severity: 'S2',
+    failureClass: 'listener dedupe drops a real event',
+    addedWeek: 0,
+    statuses: () => ({
+      'unit:mutator': 'not-applicable',
+      'unit:engine': 'caught',
+      'fuzz:pt': 'not-applicable',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-005',
+    title: 'Autocommit throttle loses its trailing commit',
+    severity: 'S1',
+    failureClass: 'lost edit when switching documents shortly after typing',
+    sourceUrl: 'https://github.com/sanity-io/sanity/issues/15261',
+    addedWeek: 0,
+    statuses: (week) => ({
+      'unit:mutator': 'not-applicable',
+      'unit:engine': week >= 15 ? 'caught' : 'missed',
+      'fuzz:pt': 'not-applicable',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-006',
+    title: 'Demo entry: a reconnect replays an already-applied optimistic patch',
+    severity: 'S2',
+    failureClass: 'duplicate application after a listener reconnect',
+    addedWeek: 6,
+    statuses: () => ({
+      'unit:mutator': 'not-applicable',
+      'unit:engine': 'caught',
+      'fuzz:pt': 'not-applicable',
+      'e2e': 'not-run',
+    }),
+  },
+  {
+    id: 'ENG-007',
+    title: 'Demo entry: a squashed patch loses its key on array reorder',
+    severity: 'S2',
+    failureClass: 'patch squashing rewrites keyed paths',
+    addedWeek: 10,
+    statuses: () => ({
+      'unit:mutator': 'missed',
+      'unit:engine': 'missed',
+      'fuzz:pt': 'missed',
+      'e2e': 'not-run',
+    }),
+  },
+]
+
+/** Scores climb, with one flat stretch (weeks 7 to 10) and a small step down when the config changes. */
+function engineScoreShift(week: number): number {
+  const effectiveWeek = week < 7 ? week : week <= 10 ? 7 : week - 3
+  const progress = effectiveWeek / 16
+  return -0.005 + 0.2 * progress + (week >= ENGINE_CONFIG_BREAK_WEEK ? -0.03 : 0)
+}
+
+function shiftedFileCounts(seed: EngineFileSeed, shift: number): MutantCounts {
+  const [, , detected, survived, noCoverage] = seed
+  const base = emptyMutantCounts()
+  if (shift >= 0) {
+    const recovered = Math.round((survived + noCoverage) * shift)
+    const fromSurvived = Math.min(survived, recovered)
+    return withReviewCounts({
+      ...base,
+      killed: detected + recovered,
+      survived: survived - fromSurvived,
+      noCoverage: noCoverage - (recovered - fromSurvived),
+    })
+  }
+  const lost = Math.round(detected * -shift)
+  return withReviewCounts({...base, killed: detected - lost, survived: survived + lost, noCoverage})
+}
+
+/** Adds mutants outside the score, so the demo ratios do not depend on them. */
+function withReviewCounts(counts: MutantCounts): MutantCounts {
+  return {
+    ...counts,
+    excluded: Math.floor(counts.survived * 0.25),
+    ignored: Math.floor(counts.killed * 0.04),
+  }
+}
+
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+function hexString(rng: () => number, length: number): string {
+  return Array.from({length}, () => '0123456789abcdef'[Math.floor(rng() * 16)]).join('')
+}
+
+function demoMutatedFiles(shift: number): MutatedFileResult[] {
+  return ENGINE_FILE_SEEDS.map((seed, index) => ({
+    _key: `file-${index}`,
+    path: seed[0],
+    target: seed[1],
+    counts: shiftedFileCounts(seed, shift),
+  }))
+}
+
+function sumCounts(files: MutatedFileResult[]): MutantCounts {
+  return files.reduce((total, file) => addMutantCounts(total, file.counts), emptyMutantCounts())
+}
+
+function demoStrykerTargets(options: {
+  week: number
+  configVersion: number
+  files: MutatedFileResult[]
+}): StrykerTargetRun[] {
+  const {week, configVersion, files} = options
+  const full = week % 4 === 0
+  return STRYKER_TARGET_IDS.map((target, index) => {
+    const targetCounts = sumCounts(files.filter((file) => file.target === target))
+    const mutants = Object.values(targetCounts).reduce((total, count) => total + count, 0)
+    return {
+      _key: `target-${index}`,
+      target,
+      mode: full ? 'full' : 'incremental',
+      reusedMutants: full ? 0 : mutants - 12 - ((week * (index + 3)) % 17),
+      dryRunTests: target === 'sanity' ? 391 + (configVersion - 1) * 10 : 298,
+      durationMs: full ? (target === 'sanity' ? 428_000 : 97_000) : 41_000 + week * 600,
+    }
+  })
+}
+
+function demoCatalogueEntries(week: number, addedOn: string): CatalogueEntryResult[] {
+  return DEMO_CATALOGUE.filter((entry) => entry.addedWeek <= week).map((entry, entryIndex) => {
+    const statuses = entry.statuses(week)
+    return {
+      _key: `entry-${entryIndex}`,
+      id: entry.id,
+      title: entry.title,
+      severity: entry.severity,
+      failureClass: entry.failureClass,
+      ...(entry.sourceUrl ? {sourceUrl: entry.sourceUrl} : {}),
+      addedOn,
+      results: CATALOGUE_SUITE_IDS.map((suite, suiteIndex) => ({
+        _key: `suite-${suiteIndex}`,
+        suite,
+        status: statuses[suite],
+      })),
+    }
+  })
+}
+
+function demoEngineScore(
+  week: number,
+  configVersion: number,
+  files: MutatedFileResult[],
+): EngineConfidenceScore {
+  const counts = sumCounts(files)
+  const ratio = mutationScoreOf(counts)
+  const coveredRatio = coveredMutationScoreOf(counts)
+  return ratio === undefined
+    ? {status: 'not-measured', reason: 'No mutants were scored'}
+    : {
+        status: 'measured',
+        ratio,
+        ...(coveredRatio === undefined ? {} : {coveredRatio}),
+        counts,
+        targets: demoStrykerTargets({week, configVersion, files}),
+        files,
+      }
+}
+
+function demoKnownBugs(entries: CatalogueEntryResult[]): KnownBugsSummary {
+  return entries.length === 0
+    ? {status: 'not-measured', reason: 'The catalogue has no active entries'}
+    : {
+        status: 'measured',
+        activeEntries: entries.length,
+        caughtEntries: entries.filter(isEntryCaught).length,
+        entries,
+      }
+}
+
+function demoEngineRun(week: number, weekStart: Date): EngineConfidenceRunDocument {
+  const rng = mulberry32(4000 + week)
+  const configVersion = week >= ENGINE_CONFIG_BREAK_WEEK ? 2 : 1
+  const startedAt = new Date(weekStart.getTime() + THURSDAY_RUN_OFFSET_MS)
+  const isoWeek = isoWeekOf(startedAt)
+  const files = demoMutatedFiles(engineScoreShift(week))
+  const score = demoEngineScore(week, configVersion, files)
+  const knownBugs = demoKnownBugs(demoCatalogueEntries(week, isoDate(startedAt)))
+  return {
+    _id: engineConfidenceRunId(isoWeek),
+    _type: ENGINE_CONFIDENCE_RUN_TYPE,
+    schemaVersion: ENGINE_CONFIDENCE_SCHEMA_VERSION,
+    isoWeek,
+    trigger: 'schedule',
+    startedAt: startedAt.toISOString(),
+    completedAt: new Date(startedAt.getTime() + 55 * 60 * 1000).toISOString(),
+    git: {
+      sha: hexString(rng, 40),
+      branch: 'main',
+      committedAt: new Date(startedAt.getTime() - DAY_MS).toISOString(),
+    },
+    runner: {
+      os: 'linux',
+      arch: 'x64',
+      cpus: 4,
+      memGb: 16,
+      nodeVersion: 'v24.16.0',
+      cpuModel: 'AMD EPYC 7763 64-Core Processor',
+      imageOs: 'ubuntu24',
+      imageVersion: '20260901.1',
+      ci: true,
+      runId: String(9_000_000_000 + week),
+      runAttempt: 1,
+    },
+    config: {
+      version: configVersion,
+      hash: hexString(mulberry32(configVersion), 64),
+      strykerVersion: '10.0.0',
+      vitestVersion: '5.0.4',
+      timeoutMs: 60_000,
+      concurrency: 4,
+      fuzzSeeds: [1, 2, 3],
+      fuzzRuns: 150,
+    },
+    score,
+    studioScore: targetScoreOf(files, STUDIO_ENGINE_TARGET),
+    knownBugs,
+  }
+}
+
+/** The newest week whose Thursday run has already happened, so the demo never shows a future run. */
+function newestDemoWeekStart(now: Date): Date {
+  const currentWeekStart = isoWeekStart(isoWeekOf(now))
+  const thursdayRun = currentWeekStart.getTime() + THURSDAY_RUN_OFFSET_MS
+  return new Date(
+    thursdayRun <= now.getTime()
+      ? currentWeekStart.getTime()
+      : currentWeekStart.getTime() - WEEK_MS,
+  )
+}
+
+function isEngineConfidenceRun(value: unknown): value is EngineConfidenceRunDocument {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Partial<EngineConfidenceRunDocument>
+  return (
+    candidate._type === ENGINE_CONFIDENCE_RUN_TYPE &&
+    candidate.schemaVersion === ENGINE_CONFIDENCE_SCHEMA_VERSION &&
+    typeof candidate.score === 'object'
+  )
+}
+
+const LOCAL_ENGINE_RUN_MODULES = import.meta.glob('./__local__/*.json', {
+  eager: true,
+  import: 'default',
+})
+
+/** A real run dropped into `__local__/` (gitignored); the last file by name wins. */
+function localEngineRun(): EngineConfidenceRunDocument | undefined {
+  const latestPath = Object.keys(LOCAL_ENGINE_RUN_MODULES).toSorted().at(-1)
+  const candidate = latestPath === undefined ? undefined : LOCAL_ENGINE_RUN_MODULES[latestPath]
+  return isEngineConfidenceRun(candidate) ? candidate : undefined
+}
+
+/**
+ * The real run stands in for the newest generated week, relabelled to that
+ * week and config version so the demo timeline stays consistent: a real run
+ * from another week or config would otherwise draw a phantom gap or break.
+ */
+function withLocalRun(
+  runs: EngineConfidenceRunDocument[],
+  local: EngineConfidenceRunDocument | undefined,
+): EngineConfidenceRunDocument[] {
+  const newest = runs.at(-1)
+  if (local === undefined || newest === undefined) return runs
+  return [
+    ...runs.slice(0, -1),
+    {
+      ...local,
+      _id: newest._id,
+      isoWeek: newest.isoWeek,
+      startedAt: newest.startedAt,
+      completedAt: newest.completedAt,
+      config: {...local.config, version: newest.config.version},
+    },
+  ]
+}
+
+const SPARSE_ENGINE_WEEKS = [14, 15, 18, 19]
+
+/**
+ * Synthetic weekly Engine confidence runs, typed against the stored document so
+ * every one is a valid `engineConfidenceRun`. Deterministic for a given `now`.
+ */
+export function generateDebugEngineConfidenceRuns(
+  source: DebugSource,
+  now: Date = new Date(),
+): EngineConfidenceRunDocument[] {
+  if (source === 'empty') return []
+  const newestStart = newestDemoWeekStart(now).getTime()
+  const weeks = Array.from({length: ENGINE_DEMO_WEEKS}, (_, week) =>
+    demoEngineRun(week, new Date(newestStart - (ENGINE_DEMO_WEEKS - 1 - week) * WEEK_MS)),
+  )
+  switch (source) {
+    case 'demo':
+      return withLocalRun(weeks, localEngineRun())
+    case 'sqrl':
+    case 'sqrl-climb':
+    case 'sqrl-regressed':
+    case 'sqrl-empty':
+      return weeks
+    case 'sparse':
+      return SPARSE_ENGINE_WEEKS.map((week) => weeks[week])
+    case 'single-run':
+      return weeks.slice(-1)
     default:
       return source satisfies never
   }

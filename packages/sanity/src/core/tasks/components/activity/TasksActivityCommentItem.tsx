@@ -1,5 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {getTheme_v2} from '@sanity/ui/theme'
+import {use} from 'react'
 import {css, styled} from 'styled-components'
 
 import {CommentsListItem as CommentsListItemV2} from '../../../comments-v2/components/list/CommentsListItem'
@@ -8,7 +9,7 @@ import {CommentsListItem} from '../../../comments/components/list/CommentsListIt
 import {useComments} from '../../../comments/hooks/useComments'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useWorkspace} from '../../../studio/workspace'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {ActivityItem} from './TasksActivityItem'
 import {type TaskCommentReply} from './types'
 
@@ -64,7 +65,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
  */
 function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const {comments, operation} = useComments()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)
@@ -99,7 +100,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
  */
 function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const {comments, operation, readOnly} = useCommentsV2()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)

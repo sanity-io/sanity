@@ -1,18 +1,21 @@
 import {type RequestHandler, type RequestHandlerOptions, type SanityClient} from '@sanity/client'
 
-import {type RequestFailureDiagnostics} from '../../store/authStore/createAuthStore'
+import {type AuthStore} from '../../store/auth/types'
 import {
   getRequestBucket,
   studioRequestPerformance,
   type RequestPerformanceTracker,
 } from '../diagnostics/requestPerformance'
 import {isInvalidSessionError} from './classify'
+import {type RequestFailureDiagnostics} from './diagnoseRequestFailure'
 import {type RequestErrorChannel} from './types'
 
 interface StudioRequestHandlerOptions {
   channel: RequestErrorChannel
   diagnostics?: RequestFailureDiagnostics
   getClient?: () => SanityClient
+  /** The auth store of the client this handler serves, so an invalid session logs it out. */
+  getAuthStore?: () => AuthStore | undefined
   requestPerformance?: RequestPerformanceTracker
   waitForCorsRetry?: () => Promise<void>
 }
@@ -28,6 +31,7 @@ export function createStudioRequestHandler({
   channel,
   diagnostics,
   getClient,
+  getAuthStore,
   requestPerformance,
   waitForCorsRetry,
 }: StudioRequestHandlerOptions): RequestHandler {
@@ -51,7 +55,7 @@ export function createStudioRequestHandler({
         if (aborted) throw error
 
         if (isInvalidSessionError(error)) {
-          return channel.handle(error)
+          return channel.handle(error, {authStore: getAuthStore?.()})
         }
 
         if (diagnostics && getClient) {

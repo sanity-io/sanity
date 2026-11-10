@@ -11,11 +11,11 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
   }
 }

@@ -1,8 +1,9 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Card, Inline, type Theme} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
@@ -98,7 +99,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const renderOption = useCallback((option: NormalizedTimeZone) => {
     return (
       <Card as="button" padding={3}>
-        <Text size={1} textOverflow="ellipsis">
+        <Text size={1} truncate={1} as="div" trim={true}>
           <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
           <TimeZoneOffsetSpan>
             {' '}
@@ -142,25 +143,31 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} gap={5}>
-        <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack gap={3}>
-          <Flex align="center" justify="space-between">
+      <Flex padding={4} gap={5} flexDirection="column">
+        <Text size={1} as="div" trim={true}>
+          {timeZoneScopeTypeToLabel[timeZoneScope.type]}
+        </Text>
+        <VStack gap={3}>
+          <Flex alignItems="center" justifyContent="space-between">
             <Inline gap={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="semibold" as="div" trim={true}>
                 {t('time-zone.time-zone')}
               </Text>
               {isLocalTzSelected && (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('time-zone.local-time')}
                 </Text>
               )}
             </Inline>
             {!isLocalTzSelected && (
-              <Text size={1} weight="medium">
-                <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
+              <Text size={1} weight="medium" as="div" trim={true}>
+                <Link
+                  onClick={handleTimeZoneSelectLocal}
+                  style={{cursor: 'pointer', color: 'var(--card-link-color)'}}
+                  underlined={false}
+                >
                   {t('time-zone.action.select-local-time-zone')}
-                </a>
+                </Link>
               </Text>
             )}
           </Flex>
@@ -191,8 +198,8 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             tabIndex={-1}
             value={selectedTz?.value}
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </Flex>
     </Dialog>
   )
 }

@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -9,8 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
-import {Grid, Flex, Box} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -26,6 +25,7 @@ import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
 import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
+import {placeholder} from './ImageToolInput.css'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -60,10 +60,6 @@ const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
 }
-
-const Placeholder = styled.div`
-  min-height: 6em;
-`
 
 function LoadStatus(props: {children: ReactNode}) {
   return (
@@ -165,10 +161,15 @@ export function ImageToolInput(props: ImageToolInputProps) {
       {isSvg ? (
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
-            <Stack gap={4}>
-              <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
-              <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
-                <Text size={1}>
+            <VStack gap={4}>
+              <Text size={1} as="div" trim={true} tone="caution">
+                {t('inputs.imagetool.vector-warning.title')}
+              </Text>
+              <Details
+                title={t('inputs.imagetool.vector-warning.expand-developer-info')}
+                tone="caution"
+              >
+                <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
@@ -176,7 +177,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   />
                 </Text>
               </Details>
-            </Stack>
+            </VStack>
           </Card>
         </>
       ) : null}
@@ -200,7 +201,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 <LoadStatus>
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
-                      <Text>
+                      <Text as="div" trim={true} tone="critical">
                         {t('inputs.imagetool.load-error', {
                           errorMessage: imageLoadError.message,
                         })}
@@ -246,7 +247,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                             crop={localValue.crop || DEFAULT_CROP}
                           />
                         ) : (
-                          <Placeholder />
+                          <div className={placeholder} />
                         )}
                       </Card>
                     </RatioBox>

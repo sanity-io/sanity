@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
-import {Button, Card, Checkbox, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Checkbox, Inline} from '@sanity/ui'
 import {useState} from 'react'
 import {
   FormInput,
@@ -9,7 +9,7 @@ import {
   pathToString,
   type RenderInputCallback,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 export function FormInputExample(props: ObjectInputProps) {
   const [path, setPath] = useState<Path>([])
@@ -42,34 +42,38 @@ export function FormInputExample(props: ObjectInputProps) {
 
   if (renderDefaultForm) {
     return (
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Card shadow={2} margin={3} padding={4} radius={2}>
           {props.renderDefault({...props, renderInput})}
         </Card>
-      </Stack>
+      </VStack>
     )
   }
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Card padding={3} radius={2}>
-        <Stack gap={4}>
-          <Stack gap={4}>
+        <VStack gap={4}>
+          <VStack gap={4}>
             <Flex gap={2}>
-              <Text weight="semibold">
+              <Text weight="semibold" as="div" trim={true}>
                 Input at <code>{pathToString(path)}</code>
               </Text>
             </Flex>
             <Flex gap={4}>
               <Inline gap={2}>
                 <Checkbox checked={includeField} onChange={() => setIncludeField((v) => !v)} />{' '}
-                <Text>Include field</Text>
+                <Text as="div" trim={true}>
+                  Include field
+                </Text>
               </Inline>
               <Inline gap={2}>
                 <Checkbox checked={includeItem} onChange={() => setIncludeItem((v) => !v)} />{' '}
-                <Text>Include item</Text>
+                <Text as="div" trim={true}>
+                  Include item
+                </Text>
               </Inline>
             </Flex>
-          </Stack>
+          </VStack>
           <Card shadow={2} padding={3} radius={2}>
             <FormInput
               {...props}
@@ -79,8 +83,8 @@ export function FormInputExample(props: ObjectInputProps) {
               includeItem={includeItem}
             />
           </Card>
-        </Stack>
+        </VStack>
       </Card>
-    </Stack>
+    </VStack>
   )
 }

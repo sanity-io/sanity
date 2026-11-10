@@ -1,9 +1,10 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
-import {type ComponentProps, type ReactNode} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Children, type ComponentProps, type ReactNode} from 'react'
+import {Text, Flex, Box, VStack, type TextProps, Icon, type IconProps} from 'ui5'
+
+import {suffixBox} from './Alert.css'
 
 interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {
   title: ReactNode
@@ -15,10 +16,6 @@ const STATUS_TONES = {
   warning: 'caution',
   error: 'critical',
 } as const
-
-const SuffixBox = styled(Box)`
-  border-top: 1px solid var(--card-border-color);
-`
 
 export function Alert(props: AlertProps) {
   const {children, status = 'warning', suffix, title, ...rest} = props
@@ -32,23 +29,34 @@ export function Alert(props: AlertProps) {
       data-testid={`alert-${status}`}
     >
       <Flex padding={4}>
-        <Box>
-          <Text size={1}>
-            {status === 'warning' && <WarningOutlineIcon />}
-            {status === 'error' && <ErrorOutlineIcon />}
-          </Text>
+        <Box flexShrink={0}>
+          <Icon
+            size={1}
+            muted
+            icon={status === 'warning' ? WarningOutlineIcon : ErrorOutlineIcon}
+            tone={STATUS_TONES[status] as IconProps['tone']}
+            style={{margin: '-0.375rem'}}
+          />
         </Box>
 
         <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-          <Text size={1} weight="medium">
-            {title}
-          </Text>
+          <VStack gap={3}>
+            <Text
+              size={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              tone={STATUS_TONES[status] as TextProps['tone']}
+            >
+              {title}
+            </Text>
 
-          {children && <Box marginTop={3}>{children}</Box>}
+            {children && <VStack gap={0}>{children}</VStack>}
+          </VStack>
         </Box>
       </Flex>
 
-      {suffix && <SuffixBox>{suffix}</SuffixBox>}
+      {suffix && <Box className={suffixBox}>{suffix}</Box>}
     </Card>
   )
 }

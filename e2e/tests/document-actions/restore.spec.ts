@@ -202,12 +202,13 @@ test(`user defined restore actions should not appear in any other document actio
 }) => {
   const actionMenuButton = page.getByTestId('action-menu-button')
   const customRestoreButton = page.getByTestId('action-Customrestore')
-  const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
 
   await createDraftDocument('/content/input-debug;documentActionsTest')
 
   await actionMenuButton.click()
 
-  await expect(paneContextMenu).toBeVisible()
+  // `[data-ui="MenuButton__popover"]` also matches the field action menus, which stay mounted
+  // while closed, so whether it resolves to one element depends on what the form rendered first
+  await expect(actionMenuButton).toHaveAttribute('aria-expanded', 'true')
   await expect(customRestoreButton).not.toBeVisible()
 })

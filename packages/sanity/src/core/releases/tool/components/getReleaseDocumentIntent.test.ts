@@ -68,7 +68,7 @@ describe('getReleaseDocumentIntent', () => {
   it('includes the variant sticky param when the document belongs to a variant', () => {
     const {searchParams} = getReleaseDocumentIntent({...base, variantId: 'alpha-audience'})
     expect(searchParams).toEqual([
-      ['variant', 'alpha-audience'],
+      ['variant', 'variant:alpha-audience'],
       ['perspective', RELEASE_NAME],
     ])
   })
@@ -80,7 +80,7 @@ describe('getReleaseDocumentIntent', () => {
       variantId: 'alpha-audience',
     })
     expect(searchParams).toEqual([
-      ['variant', 'alpha-audience'],
+      ['variant', 'variant:alpha-audience'],
       ['perspective', 'published'],
     ])
   })

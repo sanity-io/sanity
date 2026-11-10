@@ -60,9 +60,12 @@ export function resolveIntentState(
     throw new Error('intent must be a string')
   }
 
-  if (!isRecord(params)) {
+  if (params != null && !isRecord(params)) {
     throw new Error('intent params must be a string')
   }
+
+  // `/intent/<name>` has no params segment. Callers that omit params mean an empty set.
+  const intentParams = isRecord(params) ? params : {}
 
   const orderedTools = getOrderedTools(tools)
 
@@ -91,7 +94,11 @@ export function resolveIntentState(
         return prev
       }
 
-      const canHandle = tool.canHandleIntent(intent, params, prevState && prevState[tool.name])
+      const canHandle = tool.canHandleIntent(
+        intent,
+        intentParams,
+        prevState && prevState[tool.name],
+      )
       if (typeof canHandle === 'boolean') {
         // Treat `true` as a score of `0`, since an empty object also has that score
         return canHandle && prev.score < 0 ? {score: 0, tool} : prev
@@ -104,7 +111,7 @@ export function resolveIntentState(
 
       // Rank by number of supported, weighted values
       const score = weightedParams.reduce((prevScore, weightedParam) => {
-        return weightedParam in params && canHandle[weightedParam] ? prevScore + 1 : prevScore
+        return weightedParam in intentParams && canHandle[weightedParam] ? prevScore + 1 : prevScore
       }, 0)
 
       return score > prev.score ? {score, tool} : prev
@@ -115,7 +122,7 @@ export function resolveIntentState(
   if (matchingTool?.getIntentState) {
     const _toolState = matchingTool.getIntentState(
       intent,
-      params as any,
+      intentParams as any,
       prevState && (prevState[matchingTool.name] as any),
       payload,
     ) as Record<string, unknown>
@@ -147,7 +154,7 @@ export function resolveIntentState(
   return {
     type: 'intent',
     isNotFound: true,
-    intent: {name: intent, params},
+    intent: {name: intent, params: intentParams},
   }
 }
 

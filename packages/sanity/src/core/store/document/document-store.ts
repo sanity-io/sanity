@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -121,11 +122,21 @@ export interface DocumentStore {
     validation: (
       validationTargetId: string,
       type: string,
-      // Whether to require referenced documents to be published
-      // if `true`, any reference to a document that's not published will yield a validation error
-      // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
-      // as the document we're validating
+      /**
+       * @deprecated Ignored. Release documents may reference documents in the same release, and
+       * every other document requires references to be published, based on `validationTargetId`.
+       */
       validatePublishedReferences: boolean,
+      options?: {
+        /**
+         * `immediate` validates without waiting for idle callbacks while a user waits on the
+         * result, and speeds up a run already in flight rather than starting it over.
+         * Scheduling is shared per document: it stays `immediate` until the last immediate
+         * subscription unsubscribes, and idle subscribers on the same stream get those results
+         * too.
+         */
+        scheduling?: ValidationScheduling
+      },
     ) => Observable<ValidationStatus>
   }
 }
@@ -172,6 +183,9 @@ export function createDocumentStore({
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    onCommitCancelled,
+    onCommitRetriesEnded,
+    onPairTornDownWithPendingMutations,
   } = extraOptions
   const ctx = {
     client,
@@ -193,6 +207,9 @@ export function createDocumentStore({
         onSlowCommit,
         onReportMutationPerformance,
         onDocumentRebase,
+        onCommitCancelled,
+        onCommitRetriesEnded,
+        onPairTornDownWithPendingMutations,
       })
     },
     initialValue(opts, context) {
@@ -291,11 +308,11 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requirePublishedReferences) {
+      validation(validationTargetId, type, _validatePublishedReferences, options) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        return validation(ctx, idPair, type, validationTarget, undefined, options?.scheduling)
       },
     },
   }

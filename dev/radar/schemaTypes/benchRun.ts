@@ -79,11 +79,20 @@ const benchMetric = defineType({
     }),
   ],
   preview: {
-    select: {label: 'label', verdict: 'comparison.verdict', median: 'experiment.summary.median'},
-    prepare: ({label, verdict, median}) => ({
+    select: {
+      label: 'label',
+      unit: 'unit',
+      verdict: 'comparison.verdict',
+      median: 'experiment.summary.median',
+    },
+    prepare: ({label, unit, verdict, median}) => ({
       title: label,
       subtitle: [
-        typeof median === 'number' ? `p50 ${median.toFixed(0)}ms` : null,
+        typeof median === 'number'
+          ? `p50 ${median.toFixed(unit === 'cls' ? 3 : 0)}${
+              unit === 'ms' ? 'ms' : unit === 'percent' ? '%' : unit === 'bytes' ? ' B' : ''
+            }`
+          : null,
         verdict ?? 'no comparison',
       ]
         .filter(Boolean)
@@ -91,6 +100,31 @@ const benchMetric = defineType({
     }),
   },
 })
+
+const styleContextFields = [
+  defineField({
+    name: 'ui5Available',
+    description:
+      'Whether the build ships @sanity/ui v5 — false is why the "UI v5 …" metric rows are absent on this scenario (not applicable, never 0%)',
+    type: 'boolean',
+  }),
+  defineField({
+    name: 'styledComponentsVersion',
+    description: 'styled-components runtime version(s) seen on the page (data-styled-version)',
+    type: 'string',
+  }),
+  defineField({
+    name: 'readableCssRules',
+    description:
+      'Readable CSS rules on the page across every stylesheet (median over sessions) — the denominator behind the "styled-components CSS rule share" row',
+    type: 'number',
+  }),
+  defineField({
+    name: 'sessions',
+    description: 'Sessions the style rows summarize over',
+    type: 'number',
+  }),
+]
 
 const interruptionCountFields = [
   defineField({name: 'count', type: 'number'}),
@@ -160,7 +194,7 @@ const benchScenario = defineType({
     defineField({
       name: 'mode',
       type: 'string',
-      options: {list: ['interaction', 'pageload', 'soak', 'inp', 'settle']},
+      options: {list: ['interaction', 'pageload', 'soak', 'inp', 'settle', 'softnav']},
     }),
     defineField({
       name: 'settleExpectation',
@@ -248,11 +282,27 @@ const benchScenario = defineType({
       ],
     }),
     defineField({
+      name: 'styles',
+      description:
+        'Build facts behind the style-migration metric rows (UI v5 adoption, styled-components footprint) the style census recorded for this scenario — see @repo/utils/style-systems',
+      type: 'object',
+      fields: [
+        defineField({name: 'experiment', type: 'object', fields: styleContextFields}),
+        defineField({name: 'reference', type: 'object', fields: styleContextFields}),
+      ],
+    }),
+    defineField({
       name: 'soak',
       description: 'Soak series (soak mode only)',
       type: 'object',
       fields: [
         defineField({name: 'minutes', type: 'number'}),
+        defineField({
+          name: 'settleMinute',
+          description:
+            'First steady-state minute: growth is read from this sample on (absent on older runs, which default to minute 2)',
+          type: 'number',
+        }),
         defineField({
           name: 'samples',
           type: 'array',

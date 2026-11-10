@@ -1,0 +1,8 @@
+/*
+ * The stylesheet `@pandacss/vite` fills with the generated CSS of the Panda package being bundled
+ * (`styles: 'panda'` in package.bundle.ts): Panda treats the CSS file that declares its layers as the
+ * generated CSS root, and `pandaCssImportPlugin()` imports it from every library entry.
+ * `removeCascadeLayers()` takes the layers out again, so the CDN stylesheet cascades unlayered like
+ * the package's own `bundle.css`.
+ */
+@layer reset, base, tokens, recipes, utilities;

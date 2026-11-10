@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {isRecord, Translate, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -26,7 +25,7 @@ export function UnknownPane(props: UnknownPaneProps) {
       <PaneContent>
         <Box padding={4}>
           {typeof type === 'string' ? (
-            <Text as="p" muted>
+            <Text as="p" muted trim={true}>
               <Translate
                 t={t}
                 i18nKey="panes.unknown-pane-type.unknown-type.text"
@@ -34,7 +33,7 @@ export function UnknownPane(props: UnknownPaneProps) {
               />
             </Text>
           ) : (
-            <Text as="p" muted>
+            <Text as="p" muted trim={true}>
               <Translate t={t} i18nKey="panes.unknown-pane-type.missing-type.text" />
             </Text>
           )}

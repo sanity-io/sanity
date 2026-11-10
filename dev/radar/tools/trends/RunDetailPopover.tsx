@@ -3,11 +3,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Button, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -95,9 +95,10 @@ export function RunDetailPopover(props: {
       ? compareUrl(previousPoint.sha, point.sha)
       : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const documentType = point.documentType ?? 'benchRun'
   const documentLink = useIntentLink({
     intent: 'edit',
-    params: {id: point.runId, type: 'benchRun'},
+    params: {id: point.runId, type: documentType},
   })
   // Two copy affordances share the previous point as `ab_from`: the bare
   // dispatch command (for someone who already knows what they suspect) and
@@ -109,7 +110,10 @@ export function RunDetailPopover(props: {
   // has no URL that prefills a workflow_dispatch form — so the affordance is
   // a copyable command, previous point as reference, this point as experiment
   const abCommand =
-    previousPoint && FULL_SHA.test(previousPoint.sha) && FULL_SHA.test(point.sha)
+    documentType === 'benchRun' &&
+    previousPoint &&
+    FULL_SHA.test(previousPoint.sha) &&
+    FULL_SHA.test(point.sha)
       ? abDispatchCommand(previousPoint.sha, point.sha)
       : undefined
   const backlinks = backlinksFor(point)
@@ -156,11 +160,11 @@ export function RunDetailPopover(props: {
       tone="default"
       content={
         <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex alignItems="flex-start" gap={3}>
               <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
-                <Text size={1} weight="medium" muted textOverflow="ellipsis">
+                <Text size={1} weight="medium" muted truncate={1} as="div" trim={true}>
                   {series.title}
                 </Text>
               </Box>
@@ -177,36 +181,42 @@ export function RunDetailPopover(props: {
 
             {/* The value is the headline; the when-line sits beneath it, and
                 the percentiles read as a labelled stat row rather than a run-on */}
-            <Stack gap={3}>
-              <Stack gap={2}>
-                <Text size={4} weight="semibold">
+            <VStack gap={3}>
+              <VStack gap={2}>
+                <Text size={4} weight="semibold" as="div" trim={true}>
                   {formatValue(point.value, series.unit)}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {when}
                 </Text>
-              </Stack>
+              </VStack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
-                  <Stack gap={2}>
-                    <Text size={0} muted>
+                  <VStack gap={2}>
+                    <Text size={0} muted as="div" trim={true}>
                       p75
                     </Text>
-                    <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
-                  </Stack>
-                  <Stack gap={2}>
-                    <Text size={0} muted>
+                    <Text size={1} as="div" trim={true}>
+                      {formatValue(point.p75 ?? point.value, series.unit)}
+                    </Text>
+                  </VStack>
+                  <VStack gap={2}>
+                    <Text size={0} muted as="div" trim={true}>
                       p90
                     </Text>
-                    <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
-                  </Stack>
+                    <Text size={1} as="div" trim={true}>
+                      {formatValue(point.p90 ?? point.value, series.unit)}
+                    </Text>
+                  </VStack>
                   {point.interactions !== undefined && (
-                    <Stack gap={2}>
-                      <Text size={0} muted>
+                    <VStack gap={2}>
+                      <Text size={0} muted as="div" trim={true}>
                         interactions
                       </Text>
-                      <Text size={1}>{point.interactions}</Text>
-                    </Stack>
+                      <Text size={1} as="div" trim={true}>
+                        {point.interactions}
+                      </Text>
+                    </VStack>
                   )}
                 </Flex>
               )}
@@ -218,7 +228,15 @@ export function RunDetailPopover(props: {
                   {INP_MIN_INTERACTIONS})
                 </Badge>
               )}
-            </Stack>
+              {/* Style-migration points name the styled-components runtime the
+                  page ran: a step that coincides with a version bump is the
+                  library's output changing, not a migration */}
+              {point.styledComponentsVersion && (
+                <Text size={1} muted as="div" trim={true}>
+                  styled-components {point.styledComponentsVersion} on this page
+                </Text>
+              )}
+            </VStack>
 
             {/* Where this run sits in the release timeline. Stated for every
                 run (not only ones next to a marker), because "is this before or
@@ -233,36 +251,38 @@ export function RunDetailPopover(props: {
                 rather than to "main around then". Stated plainly, and
                 deliberately distinct from the after/before bracket below. */}
             {measuredTag && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
+              <VStack gap={2}>
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Release
                 </Text>
                 <Flex alignItems="center" gap={2}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     released as
                   </Text>
-                  <Text size={1} weight="semibold">
+                  <Text size={1} weight="semibold" as="div" trim={true}>
                     {measuredTag}
                   </Text>
                 </Flex>
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   This run measured the release commit.
                 </Text>
-              </Stack>
+              </VStack>
             )}
 
             {(releaseContext.previous || releaseContext.next) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
+              <VStack gap={2}>
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Release
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {releaseContext.previous && (
                     <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         after
                       </Text>
-                      <Text size={1}>{releaseContext.previous.tag}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {releaseContext.previous.tag}
+                      </Text>
                       {releaseContext.previous.distTags?.includes('latest') && (
                         <Badge tone="primary" fontSize={0}>
                           latest
@@ -272,38 +292,40 @@ export function RunDetailPopover(props: {
                   )}
                   {releaseContext.next ? (
                     <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         before
                       </Text>
-                      <Text size={1}>{releaseContext.next.tag}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {releaseContext.next.tag}
+                      </Text>
                     </Flex>
                   ) : (
                     // The common case for recent runs, and worth saying out
                     // loud: silence here would read as missing data
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       not yet released
                     </Text>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {/* The machine that produced this run — the context every absolute
                 number depends on. cpuModel/image/browser exist on documents
                 from Aug 2026 on; older runs show what they recorded. */}
             {(host || point.calibrationMs !== undefined) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
+              <VStack gap={2}>
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Host
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {host?.cpuModel && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {host.cpuModel}
                     </Text>
                   )}
                   {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {[
                         host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
                         host.cpus !== undefined ? `${host.cpus} cores` : undefined,
@@ -314,7 +336,7 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {(host?.browserVersion || host?.nodeVersion) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {[
                         host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
                         host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
@@ -324,25 +346,27 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {(host?.imageOs || host?.imageVersion) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
                     </Text>
                   )}
                   {point.calibrationMs !== undefined && (
                     <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         calibration
                       </Text>
-                      <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {formatValue(point.calibrationMs, 'ms')}
+                      </Text>
                     </Flex>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {(backlinks.length > 0 || scenarioHref) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
+              <VStack gap={2}>
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Links
                 </Text>
                 <Flex gap={2} flexWrap="wrap">
@@ -374,12 +398,12 @@ export function RunDetailPopover(props: {
                     />
                   )}
                 </Flex>
-              </Stack>
+              </VStack>
             )}
 
             {compareHref && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
+              <VStack gap={2}>
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Suspect a regression?
                 </Text>
                 <Button
@@ -418,32 +442,34 @@ export function RunDetailPopover(props: {
                 {/* A paste-ready brief for a coding agent: the full signal
                     (metric, both commits, delta, backlinks) plus the A/B
                     dispatch / bisect recipe from perf/bench/README.md */}
-                <Button
-                  mode="ghost"
-                  fontSize={1}
-                  icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
-                  tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
-                  text={
-                    promptCopy.state === 'copied'
-                      ? 'Copied'
-                      : promptCopy.state === 'failed'
-                        ? 'Copy failed'
-                        : 'Copy investigation prompt'
-                  }
-                  aria-label="Copy an investigation brief for a coding agent to the clipboard"
-                  onClick={() =>
-                    previousPoint &&
-                    promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
-                  }
-                />
-              </Stack>
+                {documentType === 'benchRun' && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
+                    tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
+                    text={
+                      promptCopy.state === 'copied'
+                        ? 'Copied'
+                        : promptCopy.state === 'failed'
+                          ? 'Copy failed'
+                          : 'Copy investigation prompt'
+                    }
+                    aria-label="Copy an investigation brief for a coding agent to the clipboard"
+                    onClick={() =>
+                      previousPoint &&
+                      promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
+                    }
+                  />
+                )}
+              </VStack>
             )}
 
             {/* Divider before the footer action so it reads as a distinct row */}
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
               <Flex alignItems="center" justifyContent="space-between" gap={2}>
                 <Badge tone="default" fontSize={0}>
-                  benchRun
+                  {documentType}
                 </Badge>
                 <Button
                   as="a"
@@ -459,7 +485,7 @@ export function RunDetailPopover(props: {
                 />
               </Flex>
             </Box>
-          </Stack>
+          </VStack>
         </Box>
       }
     />

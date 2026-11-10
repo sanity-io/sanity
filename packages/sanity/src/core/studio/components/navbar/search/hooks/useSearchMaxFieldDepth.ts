@@ -7,6 +7,7 @@ import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
+import {type PartialIndexFieldPaths} from '../../../../../search/common/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
 
@@ -20,7 +21,24 @@ const DEFAULT_API_FIELD_DEPTH = 0
 export interface PartialIndexSettings {
   partialIndexSettings: {
     maxFieldDepth: number
+    excludeFieldPaths?: string[]
+    includeFieldPaths?: string[]
   }
+}
+
+/**
+ * The parts of the dataset's partial index settings that Studio search applies.
+ *
+ * @internal
+ * @hidden
+ */
+export interface SearchPartialIndexSettings {
+  maxFieldDepth: number
+  /**
+   * `undefined` when partial indexing is disabled for the workspace, or the dataset excludes no
+   * field paths.
+   */
+  fieldPaths: PartialIndexFieldPaths | undefined
 }
 
 interface Settings {
@@ -40,7 +58,7 @@ const INITIAL_LOADING_STATE: Settings = {
 /**
  * Fetches the index settings for the current dataset, if any
  */
-function fetchMaxDepth({client}: {client: SanityClient}): Observable<PartialIndexSettings> {
+function fetchIndexSettings({client}: {client: SanityClient}): Observable<PartialIndexSettings> {
   const {projectId, dataset} = client.config()
   return client.observable.request<PartialIndexSettings>({
     url: `/projects/${projectId}/datasets/${dataset}/settings/indexing`,
@@ -50,11 +68,44 @@ function fetchMaxDepth({client}: {client: SanityClient}): Observable<PartialInde
 
 const cachedSettings: Map<string, Observable<PartialIndexSettings>> = new Map()
 
+function toFieldPaths(
+  settings: PartialIndexSettings['partialIndexSettings'] | undefined,
+): PartialIndexFieldPaths | undefined {
+  const excludeFieldPaths = settings?.excludeFieldPaths
+  if (!Array.isArray(excludeFieldPaths) || excludeFieldPaths.length === 0) {
+    return undefined
+  }
+  return {
+    excludeFieldPaths,
+    includeFieldPaths: Array.isArray(settings?.includeFieldPaths) ? settings.includeFieldPaths : [],
+  }
+}
+
 /**
+ * Resolves the maximum field depth to search when `search.unstable_partialIndexing` is enabled.
+ *
+ * @deprecated Pass `fieldPaths: true` to also get the field paths excluded from the dataset's
+ * partial index, which search must not boost: `useSearchMaxFieldDepth(client, true)`.
  * @internal
  * @hidden
  */
-export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
+export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number
+/**
+ * Resolves the dataset's partial index settings when `search.unstable_partialIndexing` is enabled:
+ * the maximum field depth to search, and the field paths excluded from the index, which search
+ * must not boost.
+ *
+ * @internal
+ * @hidden
+ */
+export function useSearchMaxFieldDepth(
+  overrideClient: SanityClient | undefined,
+  fieldPaths: true,
+): SearchPartialIndexSettings
+export function useSearchMaxFieldDepth(
+  overrideClient?: SanityClient,
+  withFieldPaths?: true,
+): number | SearchPartialIndexSettings {
   const isEnabled = useWorkspace().search?.unstable_partialIndexing?.enabled
   const workspaceClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const client = useMemo(() => overrideClient || workspaceClient, [overrideClient, workspaceClient])
@@ -65,7 +116,7 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
   }
 
   if (!cachedSettings.has(dataset)) {
-    cachedSettings.set(dataset, fetchMaxDepth({client}).pipe(shareReplay()))
+    cachedSettings.set(dataset, fetchIndexSettings({client}).pipe(shareReplay()))
   }
 
   const indexSettingsObservable = useMemo(
@@ -88,12 +139,16 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
     [dataset],
   )
   const indexSettings = useObservable(indexSettingsObservable, INITIAL_LOADING_STATE)
+  const partialIndexSettings = indexSettings?.settings?.partialIndexSettings
 
-  const maxFieldDepth = indexSettings?.settings?.partialIndexSettings?.maxFieldDepth
+  const apiMaxFieldDepth = partialIndexSettings?.maxFieldDepth
+  const maxFieldDepth = isFinite(apiMaxFieldDepth)
+    ? Math.min(apiMaxFieldDepth, DEFAULT_MAX_FIELD_DEPTH)
+    : DEFAULT_MAX_FIELD_DEPTH
 
-  if (!isFinite(maxFieldDepth)) {
-    return DEFAULT_MAX_FIELD_DEPTH
-  }
+  const fieldPaths = useMemo(() => toFieldPaths(partialIndexSettings), [partialIndexSettings])
 
-  return Math.min(maxFieldDepth, DEFAULT_MAX_FIELD_DEPTH)
+  const settings = useMemo(() => ({maxFieldDepth, fieldPaths}), [maxFieldDepth, fieldPaths])
+
+  return withFieldPaths ? settings : maxFieldDepth
 }

@@ -1,0 +1,15 @@
+.fixedHeader {
+  flex-shrink: 0;
+  background: var(--card-bg-color);
+  z-index: 1;
+}
+
+.scrollContainer {
+  min-height: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.queryList {
+  min-height: 0;
+}

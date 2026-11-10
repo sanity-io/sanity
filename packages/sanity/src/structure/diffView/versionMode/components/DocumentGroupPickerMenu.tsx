@@ -27,7 +27,7 @@ import {Flex} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
-import {useDocumentPaneExtension} from '../../../panes/document/documentPanel/DocumentPaneExtension'
+import {documentGroupPickerMenuPopover} from './DocumentGroupPickerMenu.css'
 
 /**
  * A document selector driven by the document group inventory's sets: lists every version of the
@@ -40,10 +40,8 @@ export const DocumentGroupPickerMenu: ComponentType<{
     type: string
     id: string
   }
-  /** PROPOSED (open beta, T4): the document the other side shows, so this side's list can mark it. */
-  otherDocumentId?: string
   onSelectDocument: (documentId: string) => void
-}> = ({role, document, otherDocumentId, onSelectDocument}) => {
+}> = ({role, document, onSelectDocument}) => {
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
@@ -53,12 +51,6 @@ export const DocumentGroupPickerMenu: ComponentType<{
   const version = versions.find((v) => v._id === document.id)
   const {loading: variantsLoading, error: variantsError} = useAllVariants()
   const {byId: releasesById, loading: releasesLoading, error: releasesError} = useActiveReleases()
-
-  // PROPOSED (open beta, T4): a host can show its own version list here (the Versions inspector's inventory).
-  const VersionPicker = useDocumentPaneExtension({
-    documentId: getPublishedId(document.id),
-    documentType: document.type,
-  })?.versionPicker
 
   const release = version?._system.release?._ref
     ? releasesById.get(version._system.release?._ref)
@@ -88,18 +80,7 @@ export const DocumentGroupPickerMenu: ComponentType<{
       <Popover
         ref={popoverRef}
         content={
-          VersionPicker ? (
-            <VersionPicker
-              documentId={getPublishedId(document.id)}
-              documentType={document.type}
-              onSelect={(selectedId) => {
-                setOpen(false)
-                onSelectDocument(selectedId)
-              }}
-              otherId={otherDocumentId}
-              selectedId={document.id}
-            />
-          ) : (
+          <div className={documentGroupPickerMenuPopover}>
             <DocumentGroupInventory
               mode="readOnly"
               documentId={document.id}
@@ -110,7 +91,7 @@ export const DocumentGroupPickerMenu: ComponentType<{
                 onSelectDocument(selected._id)
               }}
             />
-          )
+          </div>
         }
         placement="bottom-start"
         padding={0}

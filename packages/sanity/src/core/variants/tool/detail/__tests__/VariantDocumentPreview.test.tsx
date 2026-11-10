@@ -78,7 +78,7 @@ describe('VariantDocumentPreview', () => {
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         intent: 'edit',
-        searchParams: [['variant', VARIANT_ID]],
+        searchParams: [['variant', `variant:${VARIANT_ID}`]],
       }),
     )
   })
@@ -100,7 +100,7 @@ describe('VariantDocumentPreview', () => {
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         searchParams: [
-          ['variant', VARIANT_ID],
+          ['variant', `variant:${VARIANT_ID}`],
           ['perspective', 'published'],
         ],
       }),
@@ -122,7 +122,7 @@ describe('VariantDocumentPreview', () => {
     expect(intentLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
         searchParams: [
-          ['variant', VARIANT_ID],
+          ['variant', `variant:${VARIANT_ID}`],
           ['perspective', 'rASAP'],
         ],
       }),

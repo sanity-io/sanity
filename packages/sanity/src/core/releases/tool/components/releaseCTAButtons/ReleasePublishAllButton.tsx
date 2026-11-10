@@ -2,10 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Checkbox, Stack, Text} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -114,7 +114,7 @@ export const ReleasePublishAllButton = ({
           toast.push({
             status: 'warning',
             title: (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <Translate
                   t={t}
                   i18nKey="toast.publish.update-drafts-error"
@@ -139,7 +139,7 @@ export const ReleasePublishAllButton = ({
       toast.push({
         status: 'error',
         title: (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="toast.publish.error"
@@ -194,8 +194,8 @@ export const ReleasePublishAllButton = ({
           },
         }}
       >
-        <Stack gap={4}>
-          <Text muted size={1}>
+        <VStack gap={4}>
+          <Text muted size={1} as="div" trim={true}>
             {
               <Translate
                 t={t}
@@ -209,7 +209,7 @@ export const ReleasePublishAllButton = ({
             }
           </Text>
           {showUpdateDraftsOption && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Flex alignItems="center" gap={3} as="label">
                 <Checkbox
                   checked={shouldUpdateDrafts}
@@ -218,17 +218,19 @@ export const ReleasePublishAllButton = ({
                   }
                   data-testid="update-drafts-checkbox"
                 />
-                <Text size={1}>{t('publish-dialog.confirm-publish.update-drafts-checkbox')}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {t('publish-dialog.confirm-publish.update-drafts-checkbox')}
+                </Text>
               </Flex>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('publish-dialog.confirm-publish.update-drafts-description', {
                   count: draftDocumentsCount,
                   draftDocumentsLength: draftDocumentsCount,
                 })}
               </Text>
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Dialog>
     )
   }, [
@@ -269,9 +271,19 @@ export const ReleasePublishAllButton = ({
 
     // TODO: this is a duplicate of logic in ReleaseScheduleButton
     return (
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         <Flex alignItems="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
+          <Flex style={{marginInline: '-0.375rem'}}>
+            <Icon
+              size={1}
+              icon={
+                <ToneIcon
+                  icon={ErrorOutlineIcon}
+                  tone={isValidatingDocuments ? 'default' : 'critical'}
+                />
+              }
+            />
+          </Flex>
           {tooltipText()}
         </Flex>
       </Text>

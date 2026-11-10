@@ -1,13 +1,18 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {EditIcon} from '@sanity/icons/Edit'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {CompactPreview} from '../CompactPreview'
 import {DefaultPreview} from '../DefaultPreview'
 import {DetailPreview} from '../DetailPreview'
 
-const STATUS = <Text size={0}>Draft</Text>
+const STATUS = (
+  <Text size={0} as="div" trim={true}>
+    Draft
+  </Text>
+)
 
 /**
  * Chromatic sentinel for ui5 Box padding on the three general preview
@@ -18,15 +23,15 @@ export function DocumentPreviewsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               default / title only
             </Text>
             <DefaultPreview title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               default / media subtitle status
             </Text>
             <DefaultPreview
@@ -35,27 +40,27 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               default / fallback title
             </Text>
             <DefaultPreview media={<DocumentIcon />} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               compact / media
             </Text>
             <CompactPreview media={<DocumentIcon />} status={<EditIcon />} title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               compact / no media
             </Text>
             <CompactPreview title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               detail
             </Text>
             <DetailPreview
@@ -66,8 +71,8 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -12,12 +12,6 @@ const variantsLocaleStrings = {
   'navbar.version': 'Version',
   /** Label for the variant selector in the variants navigation row. */
   'navbar.variant': 'Variant',
-  /** Default option label when no variant is selected. */
-  'navbar.variant.default': 'All users (Default)',
-  /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Filter variants…',
-  /** Section header for non-default variants in the dropdown. */
-  'navbar.variant.other': 'Other variants',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Tooltip for the button that clears the selected version */
@@ -67,6 +61,8 @@ const variantsLocaleStrings = {
   'overview.filter.no-matching-definitions': 'No variant definitions match the active filters',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
+  /** Column header for the variant type column in the overview table. */
+  'overview.table.type': 'Type',
   /** Column header for the documents count column in the overview table. */
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
@@ -87,6 +83,8 @@ const variantsLocaleStrings = {
   'detail.metadata.total-documents': 'Total documents',
   /** Label for the count of documents with unpublished (draft) changes. */
   'detail.metadata.unpublished-changes': 'Unpublished changes',
+  /** Label for the variant definition's type on the detail page. */
+  'detail.metadata.type': 'Variant type',
   /** Label for the variant definition's resolution priority on the detail page. */
   'detail.metadata.priority': 'Priority',
   /** Created status label in the Variant detail footer. */
@@ -138,6 +136,20 @@ const variantsLocaleStrings = {
   /** Tooltip when add condition is disabled because the current row is incomplete. */
   'dialog.create.action.add-condition.disabled-hint':
     'Complete the current condition key and value before adding another.',
+  /** Tooltip when add condition is disabled because every mapped condition is already used. */
+  'dialog.create.action.add-condition.none-remaining': 'Every available condition is already used.',
+  /** Placeholder on the condition key dropdown before a configured key is picked. */
+  'dialog.create.conditions.choose-key': 'Choose a condition',
+  /** Placeholder on the condition value dropdown before a value is picked for the selected key. */
+  'dialog.create.conditions.choose-value': 'Choose a value',
+  /** Placeholder on the condition key dropdown while configured conditions are resolving. */
+  'dialog.create.conditions.loading': 'Loading conditions',
+  /** Error message when configured conditions fail to load. */
+  'dialog.create.conditions.error': 'Unable to load conditions',
+  /** Error message when the static conditions list is empty or has no valid entries. */
+  'dialog.create.conditions.invalid': 'No valid conditions are configured',
+  /** Retry action when configured conditions fail to load. */
+  'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
   'dialog.create.remove-condition': 'Remove condition',
   /** Label for the variant title field in the create variant dialog. */
@@ -153,6 +165,10 @@ const variantsLocaleStrings = {
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
   'dialog.create.description.placeholder': 'Describe who this variant definition targets',
+  /** Label for the variant type field in the variant dialog. */
+  'dialog.create.type.label': 'Type',
+  /** Placeholder for the variant type picker. */
+  'dialog.create.type.placeholder': 'Choose type',
   /** Label for the priority field in the variant dialog. */
   'dialog.create.priority.label': 'Priority',
   /** Tooltip explaining how priority affects variant matching. */
@@ -160,11 +176,8 @@ const variantsLocaleStrings = {
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
   /** Validation message when priority is not a valid number. */
   'dialog.create.priority.invalid': 'Priority must be a number',
-  /** Title for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.title': 'Conditions',
-  /** Description for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.description':
-    'Add key/value pairs that define when this variant definition applies.',
+  /** Label for the conditions section in the create variant dialog. */
+  'dialog.create.conditions.title': 'Who is this content for:',
   /** Validation message when the conditions match an existing variant definition. */
   'dialog.create.conditions.duplicate':
     'A variant definition with the same conditions already exists: <VariantLink>{{title}}</VariantLink>',
@@ -206,6 +219,8 @@ const variantsLocaleStrings = {
     'This will permanently delete "{{title}}". This action cannot be undone.',
   /** Confirm action for the delete variant confirmation dialog. */
   'dialog.delete.action.confirm': 'Yes, delete variant definition',
+  /** Shown in place of the Variants tool content when the content variants feature check failed. */
+  'unavailable.text': 'Variants are unavailable right now. Try again later.',
 }
 
 /**

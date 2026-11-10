@@ -9,6 +9,7 @@ import {vi} from 'vitest'
 
 import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
 import {type SingleWorkspace, type WorkspaceSummary} from '../../src/core/config/types'
+import type * as UpsellDataModule from '../../src/core/hooks/useUpsellData'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
@@ -21,28 +22,50 @@ import {ResourceCacheProvider} from '../../src/core/store/ResourceCacheProvider'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {CopyPasteProvider} from '../../src/core/studio/copyPaste/CopyPasteProvider'
 import {SourceProvider} from '../../src/core/studio/source'
+import {type UpsellData, type UpsellDataResult} from '../../src/core/studio/upsell/types'
 import {WorkspaceProvider} from '../../src/core/studio/workspace'
 import {route} from '../../src/router/route'
 import {RouterProvider} from '../../src/router/RouterProvider'
 import {type Panes} from '../../src/structure/structureResolvers/useResolvedPanes'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
-// Mock the useUpsellData hook to prevent API calls in tests
-vi.mock('../../src/core/hooks/useUpsellData', () => ({
-  useUpsellData: vi.fn(() => ({
-    upsellData: null,
-    telemetryLogs: {
-      dialogViewed: vi.fn(),
-      dialogDismissed: vi.fn(),
-      dialogPrimaryClicked: vi.fn(),
-      dialogSecondaryClicked: vi.fn(),
-      panelViewed: vi.fn(),
-      panelDismissed: vi.fn(),
-      panelPrimaryClicked: vi.fn(),
-      panelSecondaryClicked: vi.fn(),
-    },
-  })),
-}))
+// Mock the useUpsellData hook to prevent API calls in tests. With no fallback the observable
+// answers at once with "no data"; a fallback (a request disabled until its endpoint exists) is
+// answered as that data. Each observable is cached by identity, like the real hook's memoized one:
+// react-rx caches by observable identity, so a fresh observable per render would resubscribe on
+// every commit.
+vi.mock('../../src/core/hooks/useUpsellData', async (importOriginal) => {
+  const original = await importOriginal<typeof UpsellDataModule>()
+  // `vi.mock` factories are hoisted above this module's imports, so the module is loaded here
+  const {of} = await import('rxjs')
+  const upsellData$ = of<UpsellDataResult>({upsellData: null, hasError: false})
+  // A disabled request settles with its fallback. Cache by the fallback's identity so a stable
+  // fixture (the variants one) keeps one observable, the same way the real hook memoizes it.
+  const fallbacks = new WeakMap<UpsellData, typeof upsellData$>()
+  const telemetryLogs = {
+    dialogViewed: vi.fn(),
+    dialogDismissed: vi.fn(),
+    dialogPrimaryClicked: vi.fn(),
+    dialogSecondaryClicked: vi.fn(),
+    panelViewed: vi.fn(),
+    panelDismissed: vi.fn(),
+    panelPrimaryClicked: vi.fn(),
+    panelSecondaryClicked: vi.fn(),
+  }
+  return {
+    ...original,
+    useUpsellData: vi.fn((options?: {fallbackData?: UpsellData}) => {
+      const fallbackData = options?.fallbackData
+      if (!fallbackData) return {upsellData$, telemetryLogs}
+      let fallback$ = fallbacks.get(fallbackData)
+      if (!fallback$) {
+        fallback$ = of<UpsellDataResult>({upsellData: fallbackData, hasError: false})
+        fallbacks.set(fallbackData, fallback$)
+      }
+      return {upsellData$: fallback$, telemetryLogs}
+    }),
+  }
+})
 
 export interface TestProviderOptions {
   config?: Partial<SingleWorkspace>
@@ -79,7 +102,11 @@ export async function createTestProvider({
   await i18next.init()
 
   const routerState = {}
-  const activeWorkspace = {name: 'default'} as WorkspaceSummary
+  const activeWorkspace = {
+    name: workspace.name,
+    projectId: workspace.projectId,
+    dataset: workspace.dataset,
+  } as WorkspaceSummary
   const history = createMemoryHistory()
   const addonDatasetContextValue = {
     createAddonDataset: async () => Promise.resolve(null),

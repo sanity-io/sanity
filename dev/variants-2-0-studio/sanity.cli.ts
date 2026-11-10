@@ -1,4 +1,5 @@
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import {viteCssModules} from '@repo/css-modules-kit'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
@@ -19,12 +20,14 @@ export default defineCliConfig({
   },
   async vite(viteConfig, {command, mode}) {
     const nextConfig = mergeConfig(viteConfig, {
-      plugins: [vanillaExtractPlugin()],
+      // `sanity dev` resolves `sanity` to its sources, so its Panda CSS `.css.ts` modules are built here (as dev/test-studio does).
+      plugins: command === 'serve' ? studioPandaCss() : [],
       optimizeDeps: {exclude: ['sanity']},
     })
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+        css: viteCssModules,
       })
     }
     return nextConfig

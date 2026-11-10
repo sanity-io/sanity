@@ -1,7 +1,8 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Badge, Box, Button, Card, TextArea} from '@sanity/ui'
+import {type CSSProperties} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -11,7 +12,14 @@ import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
 import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
+import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * The verdict, rendered in place in the timeline: the first bad commit with
@@ -119,10 +127,46 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* About the verdict rather than the issue: why this commit, the fix,
+          a workaround. Same save-on-blur as the description */}
+      <TextArea
+        rows={2}
+        fontSize={1}
+        placeholder="Notes on the verdict — why this commit, the fix, a workaround…"
+        defaultValue={annotations.note ?? ''}
+        onBlur={(event) => {
+          const value = event.currentTarget.value.trim()
+          if (value !== (annotations.note ?? '')) onAnnotate({note: value})
+        }}
+      />
+      {/* How bad — only meaningful once it IS a regression. Clicking the
+          selected step clears it, so an unrated regression stays possible */}
+      {annotations.regression && (
+        <Flex alignItems="center" gap={2} flexWrap="wrap">
+          <Text size={1} muted as="div" trim={true} tone="critical">
+            Severity
+          </Text>
+          {SEVERITIES.map((severity) => {
+            const selected = annotations.severity === severity
+            return (
+              <Button
+                key={severity}
+                mode={selected ? 'default' : 'ghost'}
+                tone={SEVERITY_TONE[severity]}
+                fontSize={0}
+                padding={2}
+                text={SEVERITY_LABEL[severity]}
+                aria-pressed={selected}
+                onClick={() => onAnnotate({severity: selected ? '' : severity})}
+              />
+            )
+          })}
+        </Flex>
+      )}
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
-          <Stack gap={3}>
-            <Text size={1} weight="semibold">
+          <VStack gap={3}>
+            <Text size={1} weight="semibold" as="div" trim={true} tone="caution">
               {/* Two different reasons the range stays untested: a releases-only
                   session never proposes non-release commits (most have builds —
                   the drill-down below tests them), while in a commit-granular
@@ -134,10 +178,15 @@ export function ResultCard(props: {
               — any of these could be the culprit:
             </Text>
             {state.suspects.map((suspect) => (
-              <Text key={suspect.sha} size={1}>
-                <a href={commitUrl(suspect.sha)} target="_blank" rel="noreferrer">
+              <Text key={suspect.sha} size={1} as="div" trim={true} tone="caution">
+                <Link
+                  href={commitUrl(suspect.sha)}
+                  openInNewTab
+                  underlined={false}
+                  style={LINK_IN_TEXT}
+                >
                   <code>{suspect.sha.slice(0, 10)}</code> {suspect.subject}
-                </a>
+                </Link>
               </Text>
             ))}
             {onContinue && (
@@ -150,7 +199,7 @@ export function ResultCard(props: {
                 />
               </Flex>
             )}
-          </Stack>
+          </VStack>
         </Card>
       )}
     </CommitCard>

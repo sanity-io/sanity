@@ -1,9 +1,6 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
  */
-export const SortableItemIdContext = createContext<string | null>(
-  'sanity/_singletons/context/sortable-item-id',
-  null,
-)
+export const SortableItemIdContext = createContext<string | null>(null)

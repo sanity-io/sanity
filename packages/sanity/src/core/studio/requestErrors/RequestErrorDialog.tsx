@@ -1,10 +1,11 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box, Icon, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {reloadStudio} from '../reloadStudio'
 import {type RequestErrorClaim} from './types'
 
 /**
@@ -22,14 +23,14 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
     content: (
       <>
         Check{' '}
-        <a
+        <Link
           href="https://status.sanity.io"
-          rel="noopener noreferrer"
           style={{color: 'var(--card-link-fg-color)'}}
-          target="_blank"
+          openInNewTab
+          underlined={false}
         >
           status.sanity.io
-        </a>{' '}
+        </Link>{' '}
         for ongoing incidents.
       </>
     ),
@@ -39,20 +40,20 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
 function NetworkTroubleshooting() {
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack gap={3}>
-        <Text size={1} weight="medium">
+      <VStack gap={3}>
+        <Text size={1} weight="medium" as="div" trim={true}>
           Troubleshooting
         </Text>
-        <Stack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <VStack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
             <Box as="li" key={tip.key}>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {tip.content}
               </Text>
             </Box>
           ))}
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
@@ -136,7 +137,7 @@ export function RequestErrorDialog(props: {
           ? {
               cancelButton: {
                 text: 'Reload Studio',
-                onClick: () => window.location.reload(),
+                onClick: reloadStudio,
                 tone: 'default',
               },
               confirmButton: {
@@ -148,31 +149,33 @@ export function RequestErrorDialog(props: {
           : {
               confirmButton: {
                 text: 'Reload Studio',
-                onClick: () => window.location.reload(),
+                onClick: reloadStudio,
                 tone: 'default',
               },
             }
       }
     >
-      <Stack gap={4}>
-        <Text>{message}</Text>
+      <VStack gap={4}>
+        <Text as="div" trim={true}>
+          {message}
+        </Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
-          <Text size={1}>
-            <a
+          <Text size={1} as="div" trim={true}>
+            <Link
               href="https://status.sanity.io"
-              rel="noopener noreferrer"
               style={{color: 'var(--card-link-fg-color)'}}
-              target="_blank"
+              openInNewTab
+              underlined={false}
             >
               <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
-                <LaunchIcon />
+                <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
               </Flex>
-            </a>
+            </Link>
           </Text>
         ) : null}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
@@ -210,14 +213,16 @@ function RateLimitedDialog(props: {
         footer={{
           confirmButton: {
             text: 'Reload Studio',
-            onClick: () => window.location.reload(),
+            onClick: reloadStudio,
             tone: 'default',
           },
         }}
       >
-        <Stack gap={4}>
-          <Text>Too many requests at once. Reload the Studio to try again.</Text>
-        </Stack>
+        <VStack gap={4}>
+          <Text as="div" trim={true}>
+            Too many requests at once. Reload the Studio to try again.
+          </Text>
+        </VStack>
       </Dialog>
     )
   }
@@ -244,9 +249,11 @@ function RateLimitedDialog(props: {
         },
       }}
     >
-      <Stack gap={4}>
-        <Text>Too many requests at once. You can try again shortly.</Text>
-      </Stack>
+      <VStack gap={4}>
+        <Text as="div" trim={true}>
+          Too many requests at once. You can try again shortly.
+        </Text>
+      </VStack>
     </Dialog>
   )
 }

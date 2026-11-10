@@ -7,11 +7,12 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {combineLatest, defer, EMPTY, from, merge, type Observable, of, timer} from 'rxjs'
+import {combineLatest, defer, EMPTY, from, merge, Observable, of, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
   filter,
+  finalize,
   map,
   mergeMap,
   scan,
@@ -26,18 +27,24 @@ import {
 
 import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
+import {isRecord} from '../../../util/isRecord'
 import {getVariantId} from '../../../variants/tool/util'
 import {
   type BufferedDocumentEvent,
   createBufferedDocument,
 } from '../buffered-doc/createBufferedDocument'
-import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {
+  type CommitRequest,
+  type CommitRequestOwner,
+} from '../buffered-doc/createObservableBufferedDocument'
 import {
   type DocumentRebaseEvent,
   type MutationPayload,
   type RemoteSnapshotEvent,
 } from '../buffered-doc/types'
 import {
+  type CommitRetriesEndedTelemetryEvent,
   type DocumentStoreExtraOptions,
   getPairListener,
   type InitialSnapshotEvent,
@@ -54,11 +61,10 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
+import {getShardInfo$} from './getShardInfo'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
-
-/** Timeout on request that fetches shard name before reporting latency */
-const FETCH_SHARD_TIMEOUT = 20_000
+import {variantsApiClient} from './utils/variantsApiClient'
 
 /** TTL for unmatched entries in the latency tracking pending array */
 const PENDING_ENTRY_TTL = 60_000
@@ -185,11 +191,12 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
       requireId(mutations.create)
       const createSystem = (mutations.create as SanityDocumentLike)._system
-      if (mutations.create._id === idPair.versionId && createSystem?.variant) {
+      const createVariantRef = getDocumentVersionVariantId({_system: createSystem})
+      if (mutations.create._id === idPair.versionId && createSystem && createVariantRef) {
         return {
           actionType: 'sanity.action.document.variant.create',
           publishedId: idPair.publishedId,
-          variantId: getVariantId(createSystem.variant._ref),
+          variantId: getVariantId(createVariantRef),
           document: mutations.create,
           bundleId: createSystem.bundleId,
         }
@@ -231,12 +238,23 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
   return actions
 }
 
+function isVariantDocumentAction(action: Action): boolean {
+  return action.actionType.startsWith('sanity.action.document.variant.')
+}
+
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
     return commitMutations(client, idPair, mutationParams)
   }
 
-  return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
+  const actions = toActions(idPair, mutationParams)
+  // A variant document action needs the variants API version. That version is newer than the
+  // releases version, so a batch that also contains a plain `document.edit` stays on it.
+  const actionClient = actions.some(isVariantDocumentAction)
+    ? variantsApiClient(client)
+    : actionsApiClient(client, idPair)
+
+  return actionClient.observable.action(actions, {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })
@@ -295,14 +313,54 @@ type CommitAttemptResult =
   | {type: 'failure'; error: unknown}
   | {type: 'cancel'; error: unknown}
 
+// `error` can be any thrown value — guard before using `in`, which throws on
+// primitives.
+function getStatusCode(error: unknown): number | undefined {
+  return typeof error === 'object' &&
+    error !== null &&
+    'statusCode' in error &&
+    typeof error.statusCode === 'number'
+    ? error.statusCode
+    : undefined
+}
+
+/**
+ * The error type from an API error response body
+ * (`{error: {type: 'documentRevisionIDDoesNotMatchError', …}}`), if present.
+ */
+function getResponseErrorType(error: unknown): string | undefined {
+  const body: unknown =
+    isRecord(error) && isRecord(error.response) ? error.response.body : undefined
+  return isRecord(body) && isRecord(body.error) && typeof body.error.type === 'string'
+    ? body.error.type
+    : undefined
+}
+
+/**
+ * Telemetry callbacks for a commit attempt. Each runs right before the outcome is
+ * routed to the mutator, which can synchronously reset the buffer and flip the
+ * pair back to consistent. This is the last moment the state before the
+ * outcome (the mutations about to be dropped, the retries in progress) can be
+ * observed.
+ */
+interface CommitAttemptObserver {
+  beforeSuccess: (request: CommitRequest) => void
+  beforeFailure: (request: CommitRequest, error: unknown) => void
+  beforeCancel: (request: CommitRequest, error: unknown, statusCode: number) => void
+}
+
 function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
   request: CommitRequest,
+  observer: CommitAttemptObserver,
 ): Observable<CommitAttemptResult> {
   return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
-      next: () => request.success(),
+      next: () => {
+        observer.beforeSuccess(request)
+        request.success()
+      },
     }),
     map((result): CommitAttemptResult => ({type: 'success', result})),
     // A failed commit is reported to the mutator via `request.cancel` /
@@ -321,23 +379,17 @@ function submitCommitRequest(
       // Everything else — 5xx, transient 4xx (408/429), unclassified 4xx,
       // session-expiry 401s, network errors — fails, so the mutator keeps
       // the buffer and retries with backoff.
-      // `error` can be any thrown value — guard before using `in`, which
-      // throws on primitives.
-      const statusCode =
-        typeof error === 'object' &&
-        error !== null &&
-        'statusCode' in error &&
-        typeof error.statusCode === 'number'
-          ? error.statusCode
-          : undefined
+      const statusCode = getStatusCode(error)
       if (
         statusCode !== undefined &&
         TERMINAL_COMMIT_STATUSES.has(statusCode) &&
         !isInvalidSessionError(error)
       ) {
+        observer.beforeCancel(request, error, statusCode)
         request.cancel(error)
         return of<CommitAttemptResult>({type: 'cancel', error})
       }
+      observer.beforeFailure(request, error)
       request.failure(error)
       return of<CommitAttemptResult>({type: 'failure', error})
     }),
@@ -388,12 +440,31 @@ export function checkoutPair(
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    onCommitCancelled,
+    onCommitRetriesEnded,
+    onPairTornDownWithPendingMutations,
     snapshotFetchErrorHandler,
     tag,
   } = options
 
+  // Whether any buffered document in the pair holds pending local mutations.
+  // Reads the buffered documents declared below, so only call it once they
+  // exist (all callers run on events or teardown, after checkout).
+  const hasPendingMutations = () =>
+    draft.hasPendingMutations() ||
+    published.hasPendingMutations() ||
+    Boolean(version?.hasPendingMutations())
+
   const listenerEvents$ = getPairListener(client, idPair, {
-    onSyncErrorRecovery,
+    onSyncErrorRecovery: onSyncErrorRecovery
+      ? (error) => {
+          try {
+            onSyncErrorRecovery(error, {hadPendingMutations: hasPendingMutations()})
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())
@@ -431,10 +502,68 @@ export function checkoutPair(
     version ? version.commitRequest$ : EMPTY,
   ).pipe(share())
 
+  // Commit retries are tracked per buffered document instance (the owner of
+  // the failing commit request). Tracking starts with that instance's first
+  // retryable failure and ends with its next success, a terminal cancel, a
+  // fresh snapshot replacing it or the pair's teardown, and is reported once
+  // when it ends. A replaced instance can keep retrying on its own timers,
+  // but those retries are no longer tracked or reported. A terminal cancel of
+  // its commits is still reported, since that drops its mutations.
+  type CommitRetryState = {startedAt: number; failedAttempts: number; lastStatusCode?: number}
+  // Requests without an owner (none are issued today) share one key
+  const unownedRequests: CommitRequestOwner = {
+    isCurrent: () => true,
+  }
+  const commitRetryStates = new Map<CommitRequestOwner, CommitRetryState>()
+
+  const endCommitRetries = (
+    owner: CommitRequestOwner,
+    outcome: CommitRetriesEndedTelemetryEvent['outcome'],
+    lastStatusCode?: number,
+  ) => {
+    const state = commitRetryStates.get(owner)
+    if (!state) return
+    commitRetryStates.delete(owner)
+    try {
+      onCommitRetriesEnded?.({
+        durationMs: Date.now() - state.startedAt,
+        failedAttempts: state.failedAttempts,
+        lastStatusCode: lastStatusCode ?? state.lastStatusCode,
+        outcome,
+      })
+    } catch {
+      // Telemetry callbacks must never kill the document pipeline
+    }
+  }
+
+  const commitAttemptObserver: CommitAttemptObserver = {
+    beforeSuccess: (request) => endCommitRetries(request.owner ?? unownedRequests, 'succeeded'),
+    beforeFailure: (request, error) => {
+      const owner = request.owner ?? unownedRequests
+      if (!onCommitRetriesEnded || !owner.isCurrent()) return
+      const state = commitRetryStates.get(owner)
+      commitRetryStates.set(owner, {
+        startedAt: state?.startedAt ?? Date.now(),
+        failedAttempts: (state?.failedAttempts ?? 0) + 1,
+        lastStatusCode: getStatusCode(error),
+      })
+    },
+    beforeCancel: (request, error, statusCode) => {
+      const owner = request.owner ?? unownedRequests
+      endCommitRetries(owner, 'cancelled', statusCode)
+      if (!onCommitCancelled) return
+      try {
+        onCommitCancelled({statusCode, errorType: getResponseErrorType(error)})
+      } catch {
+        // Telemetry callbacks must never kill the document pipeline
+      }
+    },
+  }
+
   const commitAttemptResults$ = commitRequests$.pipe(
     mergeMap((commitRequest) => {
       const apiRequestSentAt = Date.now()
-      return submitCommitRequest(client, idPair, commitRequest).pipe(
+      return submitCommitRequest(client, idPair, commitRequest, commitAttemptObserver).pipe(
         map((attemptResult): CommitAttemptResult =>
           attemptResult.type === 'success'
             ? {
@@ -502,6 +631,47 @@ export function checkoutPair(
     ),
   ).pipe(startWith(undefined), distinctUntilChanged(), shareReplay({bufferSize: 1, refCount: true}))
 
+  // Success and cancel end the retries from `commitAttemptObserver`, before
+  // the mutator flips the pair back to consistent. Reaching consistency while
+  // retries are still tracked means a fresh snapshot replaced the buffered
+  // document that owns them, and tracking ends there. The replaced document
+  // can keep retrying, but it is no longer reported.
+  const commitRetriesEvents$ = onCommitRetriesEnded
+    ? consistent$.pipe(
+        tap((isConsistent) => {
+          if (!isConsistent) return
+          for (const owner of [...commitRetryStates.keys()]) {
+            if (owner.isCurrent()) continue
+            endCommitRetries(owner, 'reset')
+          }
+        }),
+        finalize(() => {
+          for (const owner of [...commitRetryStates.keys()]) {
+            endCommitRetries(owner, 'torn-down')
+          }
+        }),
+      )
+    : EMPTY
+
+  // Reports pending local mutations when the last subscriber of the pair's
+  // events leaves. Only the mutator's state is read here, nothing is
+  // committed or discarded on its behalf. The events stream restarts when the
+  // pair is subscribed to again, so a pair instance reports at most once.
+  let reportedTeardownWithPendingMutations = false
+  const pendingMutationsAtTeardown$ = onPairTornDownWithPendingMutations
+    ? new Observable<never>(() => () => {
+        if (reportedTeardownWithPendingMutations) return
+        try {
+          if (hasPendingMutations()) {
+            reportedTeardownWithPendingMutations = true
+            onPairTornDownWithPendingMutations()
+          }
+        } catch {
+          // Telemetry callbacks must never kill the document pipeline
+        }
+      })
+    : EMPTY
+
   const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
   const commitResolved$ = merge(pendingEnd$, commits$)
 
@@ -549,6 +719,8 @@ export function checkoutPair(
       slowCommitWarning$,
       rebaseEvents$,
       commitError$,
+      commitRetriesEvents$,
+      pendingMutationsAtTeardown$,
     ),
   ).pipe(
     mergeMap(() => EMPTY),
@@ -594,24 +766,7 @@ function reportLatency(options: {
   onReportMutationPerformance?: (event: MutationPerformanceEvent) => void
 }) {
   const {client, commits$, listenerEvents$, onReportLatency, onReportMutationPerformance} = options
-  // Note: this request happens once and the result is then cached indefinitely
-  let shardInfo: Promise<string | undefined>
-  try {
-    shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
-      signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
-    })
-      .then(async (response) => {
-        const shard = response.headers.get('X-Sanity-Shard') || undefined
-
-        // The ping response is tiny; consuming it lets the browser finish the
-        // H2/H3 stream cleanly and avoids long pending receive/cancel timing.
-        await response.arrayBuffer().catch(() => undefined)
-        return shard
-      })
-      .catch(() => undefined)
-  } catch {
-    shardInfo = Promise.resolve(undefined)
-  }
+  const shardInfo$ = getShardInfo$(client)
 
   const submittedMutations = commits$.pipe(
     map((ev): LatencyTrackingEntry => ({
@@ -680,7 +835,7 @@ function reportLatency(options: {
     ),
     map((state) => state.event),
     filter((event) => !!event),
-    withLatestFrom(from(shardInfo).pipe(startWith(undefined))),
+    withLatestFrom(shardInfo$),
     tap(([event, shard]) => {
       try {
         onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId})

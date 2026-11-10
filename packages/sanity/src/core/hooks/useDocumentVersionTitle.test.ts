@@ -98,7 +98,7 @@ function createVersion({
     _system: {
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
-      ...(variantRef ? {variant: {_ref: variantRef, _weak: true}} : {}),
+      ...(variantRef ? {variants: [{_ref: variantRef, _key: 'k-123'}]} : {}),
       ...(releaseRef ? {release: {_ref: releaseRef, _weak: true}} : {}),
     },
   }
@@ -276,8 +276,8 @@ describe('useDocumentVersionTitle', () => {
         variantsEnabled: true,
       })
 
-      expect(published.current.title).toBe('All users (Default) · Published')
-      expect(draft.current.title).toBe('All users (Default) · Draft')
+      expect(published.current.title).toBe('Default · Published')
+      expect(draft.current.title).toBe('Default · Draft')
     })
 
     it('uses the named variant title when the variant exists', async () => {
@@ -308,7 +308,7 @@ describe('useDocumentVersionTitle', () => {
         variantsEnabled: true,
       })
 
-      expect(result.current.title).toBe('All users (Default) · Published')
+      expect(result.current.title).toBe('Default · Published')
     })
 
     it('ignores variant and release entries without a ref', async () => {
@@ -316,14 +316,14 @@ describe('useDocumentVersionTitle', () => {
         ...createVersion({id: GROUP_ID}),
         _system: {
           group: {_ref: GROUP_ID, _weak: true},
-          variant: {_weak: true},
+          variants: [{_key: 'missing-ref'}],
           release: {_weak: true},
         } as VersionInfoDocumentStub['_system'],
       }
 
       const {result} = await renderTitle({version, variantsEnabled: true})
 
-      expect(result.current.title).toBe('All users (Default) · Published')
+      expect(result.current.title).toBe('Default · Published')
     })
 
     it('uses only the release title when the workspace has variants disabled explicitly', async () => {
@@ -423,8 +423,8 @@ describe('useDocumentVersionTitle', () => {
       })
 
       expect(result.current.isTruncated).toBe(true)
-      expect(result.current.title).toBe(`All users (Default) · ${longTitle.slice(0, 50)}…`)
-      expect(result.current.fullTitle).toBe(`All users (Default) · ${longTitle}`)
+      expect(result.current.title).toBe(`Default · ${longTitle.slice(0, 50)}…`)
+      expect(result.current.fullTitle).toBe(`Default · ${longTitle}`)
     })
 
     it('truncates long release titles without a variant prefix when variants are disabled', async () => {

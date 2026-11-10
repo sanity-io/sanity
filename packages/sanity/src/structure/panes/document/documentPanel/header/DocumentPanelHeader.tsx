@@ -45,18 +45,14 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
-import {INSPECT_ACTION_PREFIX, VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
-import {useDocumentPaneExtension} from '../DocumentPaneExtension'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
-import {CommandsMenuButton} from './CommandsMenuButton'
 import {CopyDocumentActions} from './CopyDocumentActions'
-import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
+import {DocumentGroupInventoryButton} from './DocumentGroupInventoryButton'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {DocumentTargetBadges} from './DocumentTargetBadges'
+import {DocumentPanelNavigation} from './DocumentPanelNavigation/DocumentPanelNavigation'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
-import {usePillsRowBelow} from './hook/usePillsRowBelow'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 export interface DocumentPanelHeaderProps {
@@ -124,60 +120,14 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const showGradient = useChipScrollPosition(scrollContainerRef)
   const telemetry = useTelemetry()
-  const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
   const zIndex = useZIndex()
   const paneHeaderZIndex = Array.isArray(zIndex.paneHeader)
     ? zIndex.paneHeader[1]
     : zIndex.paneHeader
 
-  const compact = paneExtension?.compactHeader === true
-  // PROPOSED (open beta, T2): in a narrow pane a host's pills take their own row below the actions instead of wrapping beside them.
-  const headerRowRef = useRef<HTMLDivElement | null>(null)
-  const pillsScrollerRef = useRef<HTMLDivElement | null>(null)
-  const headerActionsRef = useRef<HTMLDivElement | null>(null)
-  const pillsBelow = usePillsRowBelow({
-    enabled: Boolean(paneExtension?.pills),
-    headerRef: headerRowRef,
-    pillsRef: pillsScrollerRef,
-    actionsRef: headerActionsRef,
-    inset: 24,
-    gap: 12,
-  })
-
-  // Compact: only commands stay in the "..." menu. The inspector entries are tabs (the validation one stays a button, it only shows with problems),
-  // Inline changes is a switch in Review changes, Share is a menu command.
-  const headerMenuItems = useMemo(() => {
-    if (!compact) return menuItems
-    const order = [
-      'compareVersions',
-      'inspect',
-      'production-preview',
-      `${INSPECT_ACTION_PREFIX}${VALIDATION_INSPECTOR_NAME}`,
-    ]
-    return order.flatMap((action) => menuItems.filter((item) => item.action === action))
-  }, [compact, menuItems])
-
   const menuNodes = useMemo(
-    () =>
-      resolveMenuNodes({
-        actionHandler: onMenuAction,
-        fieldActions: compact ? [] : fieldActions,
-        menuItems: headerMenuItems,
-        menuItemGroups,
-      }),
-    [compact, onMenuAction, fieldActions, menuItemGroups, headerMenuItems],
-  )
-  const documentCommandNodes = useMemo(
-    () =>
-      compact
-        ? resolveMenuNodes({
-            actionHandler: onMenuAction,
-            fieldActions,
-            menuItems: [],
-            menuItemGroups: [],
-          })
-        : [],
-    [compact, onMenuAction, fieldActions],
+    () => resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
+    [onMenuAction, fieldActions, menuItemGroups, menuItems],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -267,75 +217,49 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
         />
       ) : (
         <Card
+          // Stable CSS hook for hiding the toolbar. Public contract: do not rename or remove.
+          data-sanity-document-toolbar=""
           hidden={collapsed}
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom
-          borderTop={compact}
         >
-          <Flex
-            gap={3}
-            paddingY={compact ? 0 : 3}
-            // 45 px in all, borders included: a 29 px control, 7 px above and below, and the 1 px borders.
-            style={compact ? {paddingBlock: 7} : undefined}
-            justifyContent="space-between"
-            alignItems="center"
-            data-compact-header={compact ? '' : undefined}
-            data-pills-below={pillsBelow ? '' : undefined}
-            ref={headerRowRef}
-            flexWrap={pillsBelow ? 'wrap' : undefined}
-          >
-            {/* PROPOSED: a host's pills (C2) are drawn in both layouts and then replace the document group inventory row. */}
-            {(!hasDocumentGroupInventory || paneExtension?.pills) && (
-              <HorizontalScroller
-                $showGradient={showGradient}
-                ref={pillsScrollerRef}
-                // Below the actions, the pills' row spans the header (order 1: after the actions, which keep their place on the right).
-                style={pillsBelow ? {order: 1, flexBasis: '100%'} : undefined}
-              >
-                <Flex
-                  flexBasis="0%"
-                  flexGrow={1}
-                  gap={1}
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-perspective-list"
-                  ref={scrollContainerRef}
-                >
-                  {/* PROPOSED: a host's pills replace the stock ones, they do not sit beside them. */}
-                  {paneExtension?.pills ?? <DocumentPerspectiveList />}
-                </Flex>
-              </HorizontalScroller>
-            )}
-            {hasDocumentGroupInventory && !paneExtension?.pills && (
-              <HorizontalScroller $showGradient={false}>
-                <Flex
-                  flexBasis="0%"
-                  flexGrow={1}
-                  gap={2}
-                  alignItems="center"
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-target-badges"
-                  style={{minWidth: 0}}
-                >
-                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                    <DocumentTargetBadges />
-                  </Box>
-                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                    <DocumentGroupInventoryHint />
-                  </Box>
-                </Flex>
-              </HorizontalScroller>
-            )}
+          <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
+            {
+              // Variants switch the inventory on today; checking both keeps the navigation for variants if
+              // that coupling is ever removed.
+              beta?.variants?.enabled === true || hasDocumentGroupInventory ? (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    alignItems="center"
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-panel-navigation"
+                    ref={scrollContainerRef}
+                    style={{minWidth: 0}}
+                  >
+                    <DocumentPanelNavigation />
+                  </Flex>
+                </HorizontalScroller>
+              ) : (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    gap={1}
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-perspective-list"
+                    ref={scrollContainerRef}
+                  >
+                    <DocumentPerspectiveList />
+                  </Flex>
+                </HorizontalScroller>
+              )
+            }
 
-            <Box
-              flexBasis="auto"
-              flexGrow={0}
-              flexShrink={0}
-              paddingRight={3}
-              ref={headerActionsRef}
-              style={pillsBelow ? {marginLeft: 'auto'} : undefined}
-            >
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
               <Flex alignItems="center" gap={1}>
                 {documentLevelPresence.length > 0 && (
                   <Box data-testid="document-level-presence" marginRight={2}>
@@ -355,21 +279,15 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
-                {paneExtension?.headerLead}
-                {!compact && <CopyDocumentActions />}
+                {hasDocumentGroupInventory && <DocumentGroupInventoryButton />}
+                <CopyDocumentActions />
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />
                 ))}
-                {compact && paneExtension?.headerPanels}
                 {editState && (
                   <RenderActionCollectionState group="paneActions">
                     {({states}) => (
                       <DocumentPanelHeaderActionDialogDeferred
-                        commandGroups={
-                          compact
-                            ? groupCommands(contextMenuNodes, documentCommandNodes)
-                            : undefined
-                        }
                         contextMenuNodes={contextMenuNodes}
                         setReferenceElement={setReferenceElement}
                         referenceElement={referenceElement}
@@ -440,24 +358,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   )
 })
 
-/**
- * The compact header's command groups, in the order of the menu: pane commands (Compare versions, Inspect, Open preview), then the document's
- * field commands (Copy and Paste document). Create new task and Share follow, added by the menu itself.
- */
-function groupCommands(
-  paneNodes: _PaneMenuNode[],
-  documentNodes: _PaneMenuNode[],
-): _PaneMenuNode[][] {
-  const flat = paneNodes.flatMap((node) => (node.type === 'group' ? node.children : [node]))
-  return [
-    flat.filter((node) => node.type === 'item'),
-    documentNodes.filter((node) => node.type !== 'divider'),
-  ]
-}
-
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {
-    commandGroups?: _PaneMenuNode[][]
     states: ResolvedAction[]
     setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
     referenceElement: HTMLElement | null
@@ -472,7 +374,6 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
     return (
       <DocumentPanelHeaderActionDialog
-        commandGroups={props.commandGroups}
         setReferenceElement={setReferenceElement}
         referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
@@ -487,48 +388,38 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 )
 
 const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionDialog(props: {
-  commandGroups?: _PaneMenuNode[][]
   states: DocumentActionDescription[]
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
   referenceElement: HTMLElement | null
   contextMenuNodes: _PaneMenuNode[]
 }) {
-  const {states, setReferenceElement, contextMenuNodes, referenceElement, commandGroups} = props
+  const {states, setReferenceElement, contextMenuNodes, referenceElement} = props
 
   const renderActionDialog = useCallback<
     ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
   >(
-    ({handleAction}) => {
-      const actionsNodes =
-        states.length > 0
-          ? states.map((actionState, actionIndex) => (
-              <ActionMenuListItem
-                key={actionState.label}
-                actionState={actionState}
-                disabled={Boolean(actionState.disabled)}
-                index={actionIndex}
-                onAction={handleAction}
-              />
-            ))
-          : undefined
-      if (commandGroups) {
-        return (
-          <div ref={setReferenceElement}>
-            <CommandsMenuButton actionsNodes={actionsNodes} groups={commandGroups} />
-          </div>
-        )
-      }
-      return (
-        <div ref={setReferenceElement}>
-          <PaneContextMenuButton
-            key="context-menu"
-            nodes={contextMenuNodes}
-            actionsNodes={actionsNodes}
-          />
-        </div>
-      )
-    },
-    [commandGroups, contextMenuNodes, setReferenceElement, states],
+    ({handleAction}) => (
+      <div ref={setReferenceElement}>
+        <PaneContextMenuButton
+          key="context-menu"
+          nodes={contextMenuNodes}
+          actionsNodes={
+            states.length > 0
+              ? states.map((actionState, actionIndex) => (
+                  <ActionMenuListItem
+                    key={actionState.label}
+                    actionState={actionState}
+                    disabled={Boolean(actionState.disabled)}
+                    index={actionIndex}
+                    onAction={handleAction}
+                  />
+                ))
+              : undefined
+          }
+        />
+      </div>
+    ),
+    [contextMenuNodes, setReferenceElement, states],
   )
 
   return (

@@ -218,9 +218,11 @@ CI deployment of organization-scoped stacks currently requires a personal user t
 The full `sanity.blueprint.ts` for this recipe:
 
 ```ts
-import {defineBlueprint, defineRobotToken, defineScheduledFunction} from '@sanity/blueprints'
 import 'dotenv/config'
+
 import {env} from 'node:process'
+
+import {defineBlueprint, defineRobotToken, defineScheduledFunction} from '@sanity/blueprints'
 
 const {PROJECT_ID, DATASET, DAYS_SINCE, SLACK_OAUTH_TOKEN, SLACK_CHANNEL, STUDIO_URL} = env
 

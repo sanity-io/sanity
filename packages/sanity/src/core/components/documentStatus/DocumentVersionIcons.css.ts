@@ -1,9 +1,7 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const variantIconCard = style({
-  selectors: {
-    '&&': {
-      backgroundColor: 'transparent',
-    },
+export const variantIconCard = css({
+  '&&': {
+    backgroundColor: 'transparent',
   },
 })

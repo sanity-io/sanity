@@ -8,6 +8,7 @@ export {inferFromSchema} from './inferFromSchema'
 export {hasValidationContext, inferFromSchemaType} from './inferFromSchemaType'
 export {Rule} from './Rule'
 export type {ValidationContext} from './types'
+export {accepts} from '@sanity/util/accepts'
 export {convertToValidationMarker} from './util/convertToValidationMarker'
 export {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 export {pathToString} from './util/pathToString'
@@ -17,6 +18,7 @@ export {
   evaluateDocumentObservable,
   resolveTypeForArrayItem,
   validateDocumentInternal,
+  type ValidationScheduling,
   type ValidateDocumentInternalOptions,
   type ValidateItemOptions,
   validateDocumentObservable,

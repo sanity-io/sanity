@@ -1,7 +1,7 @@
-import {Card, type CardTone, Stack} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ReactNode, useRef} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
@@ -74,7 +74,7 @@ export function RowLayout(props: RowLayoutProps) {
       padding={1}
       tone={tone}
     >
-      <Stack gap={1}>
+      <VStack gap={1}>
         <Flex alignItems="center" gap={1}>
           {dragHandle && <DragHandle paddingY={3} readOnly={readOnly} />}
 
@@ -106,7 +106,7 @@ export function RowLayout(props: RowLayoutProps) {
           )}
         </Flex>
         {footer}
-      </Stack>
+      </VStack>
     </Root>
   )
 }

@@ -1,8 +1,8 @@
 import {type Asset as AssetType, type SanityDocument} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {type HTMLProps, useCallback} from 'react'
+import {Card} from '@sanity/ui'
+import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -23,7 +23,7 @@ export const AssetUsageList = ({
   return (
     <>
       <Card borderBottom={count > 0} marginTop={2} paddingBottom={2} marginBottom={1}>
-        <Text size={1} as="h2" weight="medium">
+        <Text size={1} as="h2" weight="medium" trim={true}>
           <Translate
             t={t}
             i18nKey={`asset-source.usage-list.documents-using-${assetType}`}
@@ -41,17 +41,10 @@ export const AssetUsageList = ({
 
 const DocumentLink = ({document}: {document: SanityDocument}) => {
   const schema = useSchema()
-
-  const LinkComponent = useCallback(
-    (linkProps: Omit<HTMLProps<HTMLAnchorElement>, 'ref'>) => (
-      <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
-    ),
-
-    [document],
-  )
+  const params = useMemo(() => ({id: document._id, type: document._type}), [document])
 
   return (
-    <Card key={document._id} as={LinkComponent} radius={2} data-as="a" tabIndex={0}>
+    <Card as={IntentLink} intent="edit" params={params} radius={2} data-as="a" tabIndex={0}>
       <Flex alignItems="center" gap={2}>
         <Preview
           layout="default"

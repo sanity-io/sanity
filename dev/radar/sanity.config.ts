@@ -47,6 +47,13 @@ export default defineConfig({
                   .defaultOrdering([{field: 'startedAt', direction: 'desc'}]),
               ),
             S.listItem()
+              .title('Engine confidence runs')
+              .child(
+                S.documentTypeList('engineConfidenceRun')
+                  .title('Engine confidence runs')
+                  .defaultOrdering([{field: 'startedAt', direction: 'desc'}]),
+              ),
+            S.listItem()
               .title('Commits')
               .child(
                 S.documentTypeList('gitCommit')
@@ -66,6 +73,13 @@ export default defineConfig({
                 S.documentTypeList('bisectSession')
                   .title('Bisect sessions')
                   .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
+              ),
+            S.listItem()
+              .title('Release lines (end of life)')
+              .child(
+                S.documentTypeList('releaseLine')
+                  .title('Release lines (end of life)')
+                  .defaultOrdering([{field: 'major', direction: 'desc'}]),
               ),
           ]),
     }),

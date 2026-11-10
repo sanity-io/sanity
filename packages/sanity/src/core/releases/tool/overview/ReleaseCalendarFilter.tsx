@@ -50,13 +50,25 @@ const ReleaseCalendarFilterDayWithCardinality = (
   )
 }
 
-export const createReleaseCalendarFilterDay = (
-  cardinalityView: CardinalityView,
-): CalendarProps['renderCalendarDay'] => {
-  function ReleaseCalendarFilterDayComponent(props: CalendarDayProps) {
-    return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView={cardinalityView} />
-  }
-  return ReleaseCalendarFilterDayComponent
+function ReleasesCalendarFilterDay(props: CalendarDayProps) {
+  return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="releases" />
+}
+
+function DraftsCalendarFilterDay(props: CalendarDayProps) {
+  return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="drafts" />
+}
+
+/**
+ * One module-scope day component per cardinality view. `CalendarMonth` mounts `renderCalendarDay`
+ * as a component type, so creating it per render (or per `cardinalityView` through a factory)
+ * would remount every day cell of the calendar whenever the overview re-rendered.
+ */
+export const RELEASE_CALENDAR_FILTER_DAY: Record<
+  CardinalityView,
+  NonNullable<CalendarProps['renderCalendarDay']>
+> = {
+  releases: ReleasesCalendarFilterDay,
+  drafts: DraftsCalendarFilterDay,
 }
 
 const MotionButton = motion.create(Button)

@@ -16,7 +16,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
   // disabled button (which also prevents the click natively) instead of a disabled link.
   if (!blobUrl) {
     return (
-      <Tooltip content={t('result.save-result-as-csv.not-csv-encodable')} placement="top">
+      <Tooltip animate content={t('result.save-result-as-csv.not-csv-encodable')} placement="top">
         <Button
           disabled
           icon={DocumentSheetIcon}

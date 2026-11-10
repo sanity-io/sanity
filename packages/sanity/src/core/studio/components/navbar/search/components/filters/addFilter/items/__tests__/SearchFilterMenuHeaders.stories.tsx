@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text, VStack} from 'ui5'
 
 import {type FilterMenuItemHeader} from '../../../../../types'
 import {MenuItemHeader} from '../MenuItemHeader'
@@ -33,26 +34,26 @@ export const Tones: Story = {
   args: {item: DEFAULT_HEADER},
   render: () => (
     <Card padding={4} style={{maxWidth: 320}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             default
           </Text>
           <MenuItemHeader item={DEFAULT_HEADER} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             caution
           </Text>
           <MenuItemHeader item={CAUTION_HEADER} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             critical
           </Text>
           <MenuItemHeader item={CRITICAL_HEADER} />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

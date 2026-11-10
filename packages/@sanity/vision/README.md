@@ -16,9 +16,9 @@ Vision is a plugin for Sanity Studio for testing GROQ queries. It features:
 ### Configuring
 
 ```ts
+import {visionTool} from '@sanity/vision'
 // `sanity.config.ts` / `sanity.config.js`:
 import {defineConfig} from 'sanity'
-import {visionTool} from '@sanity/vision'
 
 export default defineConfig({
   // ...
@@ -37,9 +37,9 @@ export default defineConfig({
 If you only want the Vision tool available in development (e.g., not in deployed studios), you can import and use the `isDev` constant from the `sanity` package:
 
 ```ts
+import {visionTool} from '@sanity/vision'
 // `sanity.config.ts` / `sanity.config.js`:
 import {defineConfig, isDev} from 'sanity'
-import {visionTool} from '@sanity/vision'
 
 const devOnlyPlugins = [visionTool()]
 
@@ -57,9 +57,9 @@ export default defineConfig({
 If you only want the Vision tool available to administrators, you can use the [Tool API](https://www.sanity.io/docs/studio-tools) to filter out the tool based on role:
 
 ```ts
+import {visionTool} from '@sanity/vision'
 // `sanity.config.ts` / `sanity.config.js`:
 import {defineConfig} from 'sanity'
-import {visionTool} from '@sanity/vision'
 
 export default defineConfig({
   // ... name, title, projectId, dataset, etc.

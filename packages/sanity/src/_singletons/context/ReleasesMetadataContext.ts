@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ReleasesMetadataContextValue} from '../../core/releases/contexts/ReleasesMetadataProvider'
 
@@ -6,7 +6,4 @@ import type {ReleasesMetadataContextValue} from '../../core/releases/contexts/Re
  * @internal
  * @hidden
  */
-export const ReleasesMetadataContext = createContext<ReleasesMetadataContextValue | null>(
-  'sanity/_singletons/context/releases-metadata',
-  null,
-)
+export const ReleasesMetadataContext = createContext<ReleasesMetadataContextValue | null>(null)

@@ -1,10 +1,11 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Card, Dialog, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Inline} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
 import {
+  getDefaultVariant,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getTargetDocument,
@@ -16,11 +17,11 @@ import {
   useDocumentPreviewStore,
   useDocumentVersions,
   usePerspective,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
-import {Box, Grid} from 'ui5'
+import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
-const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
 
 type VersionSnapshot = {
   _id?: string
@@ -90,7 +91,8 @@ function observeSnapshot(
 function useVariantVersionSnapshots(documentId: string) {
   const publishedId = getPublishedId(documentId)
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: publishedId})
-  const {selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {data: releases = []} = useActiveReleases()
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -248,7 +250,7 @@ function observeFullDocument(
   id: string,
 ): Observable<unknown> {
   return documentPreviewStore.unstable_observeDocument(id, {
-    apiVersion: RAW_PERSPECTIVE_CLIENT_OPTIONS.apiVersion,
+    apiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
 }
 
@@ -286,12 +288,12 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
     >
       <Box overflow="auto" padding={4} style={{maxHeight: '70vh'}}>
         {loading && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             Loading document…
           </Text>
         )}
         {!loading && error && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {error}
           </Text>
         )}
@@ -306,7 +308,7 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
 }
 
 function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
-  const client = useClient(RAW_PERSPECTIVE_CLIENT_OPTIONS)
+  const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const dateFormatter = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const formattedUpdatedAt = formatUpdatedAt(dateFormatter, snapshot?._updatedAt)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -342,63 +344,91 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
   return (
     <>
       <Card padding={4} radius={2} shadow={2} tone="default">
-        <Stack gap={3}>
-          <Stack gap={1}>
-            <Text size={2} weight="semibold">
+        <VStack gap={3}>
+          <VStack gap={1}>
+            <Text size={2} weight="semibold" as="div" trim={true}>
               {label}
             </Text>
             {contextTitle && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {contextTitle}
               </Text>
             )}
-          </Stack>
+          </VStack>
           {status === 'loading' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Loading…
             </Text>
           )}
           {status === 'no-variant' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Select a variant in the perspective bar
             </Text>
           )}
           {status === 'no-release' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Select a release in the perspective bar
             </Text>
           )}
           {status === 'not-found' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Not found
             </Text>
           )}
           {status === 'ready' && (
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Inline>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   Title:{' '}
                 </Text>
-                <Text size={1}>{snapshot?.title ?? <Text muted>(empty)</Text>}</Text>
-              </Inline>
-              <Inline>
-                <Text size={1} weight="semibold">
-                  Last updated at:{' '}
+                <Text size={1} as="div" trim={true}>
+                  {snapshot?.title ?? (
+                    <Text muted as="div" trim={true}>
+                      (empty)
+                    </Text>
+                  )}
                 </Text>
-                <Text size={1}>{formattedUpdatedAt ?? <Text muted>(unknown)</Text>}</Text>
               </Inline>
               <Inline>
-                <Text size={1} weight="semibold">
+                <Text size={1} as="div" trim={true}>
+                  <Text size={1} weight="semibold" as="span" trim={true}>
+                    Last updated at:{' '}
+                  </Text>
+                  {formattedUpdatedAt ?? (
+                    <Text muted as="span" trim={true}>
+                      (unknown)
+                    </Text>
+                  )}
+                </Text>
+              </Inline>
+              <Inline>
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   ID:{' '}
                 </Text>
-                <Text size={1}>{snapshot?._id ?? <Text muted>(unknown)</Text>}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {snapshot?._id ?? (
+                    <Text muted as="div" trim={true}>
+                      (unknown)
+                    </Text>
+                  )}
+                </Text>
               </Inline>
               {queryUrl && documentId && (
-                <Stack gap={2}>
-                  <Text size={1}>
-                    <a href={queryUrl} rel="noopener noreferrer" target="_blank">
-                      See document <LaunchIcon />
-                    </a>
+                <VStack gap={2}>
+                  <Text size={1} as="div" trim={true}>
+                    <Link
+                      href={queryUrl}
+                      openInNewTab
+                      underlined={false}
+                      style={{color: 'var(--card-link-color)'}}
+                    >
+                      See document{' '}
+                      <Icon
+                        size={1}
+                        icon={LaunchIcon}
+                        style={{margin: '-0.375rem', display: 'inline'}}
+                      />
+                    </Link>
                   </Text>
                   <Button mode="ghost" onClick={handleOpenDialog} text="View document JSON" />
                   <Button
@@ -409,15 +439,15 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                     tone="critical"
                   />
                   {deleteError && (
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {deleteError}
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               )}
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Card>
       {dialogOpen && documentId && (
         <DocumentJsonDialog documentId={documentId} label={label} onClose={handleCloseDialog} />
@@ -434,34 +464,34 @@ export function VariantVersionsView(props: {documentId: string}) {
   return (
     <Card overflow="auto" style={{minHeight: '100%'}} tone="transparent">
       <Box padding={4}>
-        <Stack gap={4}>
-          <Stack gap={2}>
-            <Text size={3} weight="bold">
+        <VStack gap={4}>
+          <VStack gap={2}>
+            <Text size={3} weight="bold" as="div" trim={true}>
               Variant versions
             </Text>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Document group: {getPublishedId(documentId)}
             </Text>
             {selectedReleaseId && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Selected release: {releaseTitle ?? selectedReleaseId}
               </Text>
             )}
             {selectedVariant ? (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Selected variant: {variantTitle ?? selectedVariant._id}
               </Text>
             ) : (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 No variant selected — variant slots require a variant in the perspective bar.
               </Text>
             )}
             {versionsLoading && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Resolving document versions…
               </Text>
             )}
-          </Stack>
+          </VStack>
           <Grid
             gridTemplateColumns={[
               'repeat(1, minmax(0, 1fr))',
@@ -474,7 +504,7 @@ export function VariantVersionsView(props: {documentId: string}) {
               <VersionSlotCard key={slot.label} {...slot} />
             ))}
           </Grid>
-        </Stack>
+        </VStack>
       </Box>
     </Card>
   )

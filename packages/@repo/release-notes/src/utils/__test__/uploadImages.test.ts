@@ -1,5 +1,5 @@
 import {type SanityImageAssetDocument} from '@sanity/client'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {markdownToPortableText} from '../portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes} from '../pullRequestReleaseNotes'
@@ -31,7 +31,17 @@ const assetDocument = ({id}: {id: string}): SanityImageAssetDocument => ({
 })
 
 describe('uploadImages()', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('uploads images from markdown', async () => {
+    // The images in the fixture are fetched before upload; keep the test off the network.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('image-bytes', {status: 200})),
+    )
+
     const notes = extractReleaseNotes(
       markdownToPortableText(await readFixture('pr-with-images.md'), {
         keyGenerator: keyGenerator(),
@@ -65,17 +75,18 @@ describe('uploadImages()', () => {
           "style": "normal",
         },
         {
-          "_key": "key-8",
+          "_key": "key-9",
+          "_type": "image",
+          "alt": "",
+          "asset": {
+            "_ref": "mocked_image_id_0",
+            "_type": "reference",
+          },
+        },
+        {
+          "_key": "key-8-1",
           "_type": "block",
           "children": [
-            {
-              "_key": "key-9",
-              "_type": "image",
-              "asset": {
-                "_ref": "mocked_image_id_0",
-                "_type": "reference",
-              },
-            },
             {
               "_key": "key-11",
               "_type": "span",
@@ -113,17 +124,18 @@ describe('uploadImages()', () => {
               "marks": [],
               "text": "Some gifs: ",
             },
-            {
-              "_key": "key-15",
-              "_type": "image",
-              "asset": {
-                "_ref": "mocked_image_id_0",
-                "_type": "reference",
-              },
-            },
           ],
           "markDefs": [],
           "style": "normal",
+        },
+        {
+          "_key": "key-15",
+          "_type": "image",
+          "alt": "filterReleaseDocumentsSimplePR",
+          "asset": {
+            "_ref": "mocked_image_id_0",
+            "_type": "reference",
+          },
         },
         {
           "_key": "key-20",

@@ -1,9 +1,9 @@
-import {Flex, Stack} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
+import {Flex, VStack} from 'ui5'
 
 export function MovieTitleInput(props) {
   return (
-    <Stack gap={4}>
+    <VStack gap={4}>
       <Flex>
         <IntentLink intent="approve" params={{foo: 'bar'}}>
           Approve
@@ -11,6 +11,6 @@ export function MovieTitleInput(props) {
       </Flex>
 
       {props.renderDefault(props)}
-    </Stack>
+    </VStack>
   )
 }

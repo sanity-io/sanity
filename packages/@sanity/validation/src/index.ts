@@ -7,9 +7,12 @@ export {
   type ValidationMarkerCode,
   validationMarkerCodes,
 } from './codes'
+export {type ValidationLocaleSource} from './i18n/types'
 export {
   type DocumentValidationResult,
   validateDocument,
+  validateDocuments,
+  type ValidateDocumentsOptions,
   type ValidateDocumentOptions,
   type ValidateDocumentWorkspaceOptions,
   type ValidationClient,
@@ -18,3 +21,4 @@ export {
   type ValidationSchema,
   type ValidationSource,
 } from './validateDocument'
+export {type ReleaseReferenceOptions, withReleaseReferences} from './util/withReleaseReferences'

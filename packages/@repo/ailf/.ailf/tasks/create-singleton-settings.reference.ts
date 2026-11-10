@@ -12,15 +12,21 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
-            S.listItem()
-              .title('Site settings')
-              .id('siteSettings')
-              .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+            S.listItem().singleton('siteSettings'),
             S.divider(),
-            ...S.documentTypeListItems().filter((item) => item.getId() !== 'siteSettings'),
+            // Registered singleton schema types are excluded from the default
+            // type list automatically — no manual filtering needed.
+            ...S.documentTypeListItems(),
           ]),
     }),
   ],
+  document: {
+    // The string shorthand expands to
+    // {id: 'siteSettings', documentId: 'siteSettings', schemaType: 'siteSettings'}.
+    // Registering the singleton also removes the "create new" option and the
+    // "duplicate" action for it automatically.
+    singletons: ['siteSettings'],
+  },
   schema: {
     types: [
       defineType({

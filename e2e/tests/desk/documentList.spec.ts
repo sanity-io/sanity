@@ -54,7 +54,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
 
   // Scroll the items to click into view.
   await page.evaluate(() => {
-    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 250)
+    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 750)
   })
 
   // NOTE: clicks are intentionally not `force: true`: a forced click dispatches

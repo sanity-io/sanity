@@ -1,7 +1,9 @@
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {evaluate, parse} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
+import {createSchema} from '../../schema/createSchema'
 import {DEFAULT_LIMIT} from '../weighted/createSearchQuery'
 import {createSearchQuery} from './createSearchQuery'
 
@@ -76,7 +78,7 @@ describe('createSearchQuery', () => {
       expect(query).toMatchInlineSnapshot(
         `
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `,
       )
 
@@ -110,7 +112,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
     })
   })
@@ -142,7 +144,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score, _updatedAt]} | order(orderings[0] desc,orderings[1] desc) [0...$__limit]"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score, _updatedAt]} | order(orderings[0] desc,orderings[1] desc) [0...$__limit]"
       `)
     })
 
@@ -223,7 +225,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types && ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       expect(query).toContain('| order(orderings[0] desc)')
@@ -253,7 +255,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [location.city]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types && ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))] {_type, _id, _originalId, "orderings": [location.city]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       expect(query).toContain('| order(orderings[0] desc)')
@@ -283,7 +285,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [string::length(title)]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types && ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))] {_type, _id, _originalId, "orderings": [string::length(title)]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       expect(query).toContain('| order(orderings[0] desc)')
@@ -509,7 +511,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField, anotherExampleField, mapWithField]} | order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc) [0...$__limit]"
+        *[_type in $__types && ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))] {_type, _id, _originalId, "orderings": [exampleField, anotherExampleField, mapWithField]} | order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc) [0...$__limit]"
       `)
 
       expect(query).toContain('| order(orderings[0] desc,orderings[1] asc,lower(orderings[2]) asc)')
@@ -559,7 +561,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       // `_score` is added by the upstream `score()` operator and
@@ -644,10 +646,82 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
+        *[_type in $__types] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), ([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score]} | order(orderings[0] desc) [0...$__limit]"
       `)
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')
+    })
+  })
+
+  describe('partial index field paths', () => {
+    const getOrderConfirmationType = () =>
+      createSchema({
+        name: 'partial-index',
+        types: [
+          defineType({
+            name: 'orderConfirmation',
+            type: 'document',
+            preview: {select: {title: 'analytics.pageName', subtitle: 'heading'}},
+            fields: [
+              defineField({name: 'heading', type: 'string'}),
+              defineField({
+                name: 'analytics',
+                type: 'object',
+                fields: [defineField({name: 'pageName', type: 'string'})],
+              }),
+            ],
+          }),
+        ],
+      }).get('orderConfirmation')!
+
+    it('boosts preview fields when no field paths are excluded', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '')
+
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && analytics.pageName match text::query($__query), 10)',
+      )
+    })
+
+    it('does not boost fields excluded from the partial index', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '', {
+        partialIndexFieldPaths: {
+          excludeFieldPaths: ['content', 'content[]', 'analytics', 'analytics[]'],
+          includeFieldPaths: ['content'],
+        },
+      })
+
+      expect(query).not.toContain('analytics.pageName')
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && heading match text::query($__query), 5)',
+      )
+      // Documents are still found through the base match, which covers every indexed field.
+      expect(query).toContain(
+        '([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery))',
+      )
+    })
+
+    it('boosts an excluded field again once it is explicitly included', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '', {
+        partialIndexFieldPaths: {
+          excludeFieldPaths: ['analytics'],
+          includeFieldPaths: ['analytics.pageName'],
+        },
+      })
+
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && analytics.pageName match text::query($__query), 10)',
+      )
+    })
+
+    it('applies the excluded field paths of each query to the same schema type', () => {
+      const type = getOrderConfirmationType()
+      const excluded = createSearchQuery({query: 'order', types: [type]}, '', {
+        partialIndexFieldPaths: {excludeFieldPaths: ['analytics']},
+      })
+      const unrestricted = createSearchQuery({query: 'order', types: [type]}, '')
+
+      expect(excluded.query).not.toContain('analytics.pageName')
+      expect(unrestricted.query).toContain('analytics.pageName')
     })
   })
 
@@ -697,10 +771,94 @@ describe('createSearchQuery', () => {
       )
 
       expect(query).toContain(
-        '([@, _id] match text::query($__query) || references($__rawQuery)) || references($__refIds)',
+        '([@, _id] match text::query($__query) || _id in string::split($__rawQuery, "/") || references($__rawQuery)) || references($__refIds)',
       )
       expect(query).not.toContain('score(')
       expect(query).not.toContain('->')
+    })
+  })
+
+  describe('id path segment match', () => {
+    const ID_PATH_SEGMENT_MATCH = '_id in string::split($__rawQuery, "/")'
+    const getType = () => Schema.compile({types: schemaTypes}).get('basic-schema-test')
+
+    it('adds the id path segment match to the scored base match', () => {
+      const {query} = createSearchQuery({query: '/blog/post-1', types: [getType()]}, '/blog/post-1')
+
+      expect(query).toContain(
+        `([@, _id] match text::query($__query) || ${ID_PATH_SEGMENT_MATCH} || references($__rawQuery))) [_score > 0]`,
+      )
+    })
+
+    it('adds the id path segment match to the filter when the search is unscored', () => {
+      const {query} = createSearchQuery(
+        {query: '/blog/post-1', types: [getType()]},
+        '/blog/post-1',
+        {
+          sort: [{field: 'title', direction: 'asc'}],
+        },
+      )
+
+      expect(query).toContain(
+        `*[_type in $__types && ([@, _id] match text::query($__query) || ${ID_PATH_SEGMENT_MATCH} || references($__rawQuery))]`,
+      )
+    })
+
+    it('splits the raw query rather than the prefixed text query', () => {
+      const {params} = createSearchQuery(
+        {query: '/blog/post-1', types: [getType()]},
+        '/blog/post-1',
+      )
+
+      expect(params.__rawQuery).toBe('/blog/post-1')
+      expect(params.__query).toBe('/blog/post-1*')
+    })
+
+    describe('matching documents', () => {
+      const dataset = [
+        {_id: 'post-1', _type: 'basic-schema-test'},
+        {_id: 'post-2', _type: 'basic-schema-test'},
+        {_id: 'blog', _type: 'basic-schema-test'},
+
+        {_id: 'other-type', _type: 'other'},
+      ]
+
+      // groq-js cannot evaluate `text::query()`, so the text match is disabled to isolate the id
+      // path segment match. The unscored shape is used because groq-js cannot evaluate `score()`.
+      async function matchingIds(rawQuery: string): Promise<string[]> {
+        const {query, params} = createSearchQuery({query: rawQuery, types: [getType()]}, rawQuery, {
+          sort: [{field: '_id', direction: 'asc'}],
+        })
+        const evaluable = query.replace('[@, _id] match text::query($__query)', 'false')
+        const result = await evaluate(parse(evaluable, {params}), {dataset, params})
+        const hits: {_id: string}[] = await result.get()
+        return hits.map(({_id}) => _id)
+      }
+
+      it('matches a document whose id is a segment of a frontend path', async () => {
+        await expect(matchingIds('/posts/post-1')).resolves.toEqual(['post-1'])
+      })
+
+      it('matches every document whose id is a segment of the path', async () => {
+        await expect(matchingIds('/blog/post-2')).resolves.toEqual(['blog', 'post-2'])
+      })
+
+      it('matches a bare document id', async () => {
+        await expect(matchingIds('post-1')).resolves.toEqual(['post-1'])
+      })
+
+      it('only matches whole segments', async () => {
+        await expect(matchingIds('/posts/post')).resolves.toEqual([])
+        await expect(matchingIds('/posts/post-1-and-more')).resolves.toEqual([])
+      })
+
+      it('does not match anything for an empty query', async () => {
+        await expect(matchingIds('')).resolves.toEqual([])
+      })
+
+      it('still restricts matches to the searched types', async () => {
+        await expect(matchingIds('/other-type')).resolves.toEqual([])
+      })
     })
   })
 })

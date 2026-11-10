@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
@@ -15,21 +16,21 @@ export function IncompatibleItemTypeStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               object value
             </Text>
             <IncompatibleItemType value={{_type: 'legacyBlock', title: 'Legacy block'}} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               string value
             </Text>
             <IncompatibleItemType value="legacy-string-item" />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               long type name (ellipsis)
             </Text>
             <div style={{maxWidth: 240}}>
@@ -37,8 +38,8 @@ export function IncompatibleItemTypeStory() {
                 value={{_type: 'legacyMarketingHeroBannerWithCallToActionBlock', title: 'Legacy'}}
               />
             </div>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

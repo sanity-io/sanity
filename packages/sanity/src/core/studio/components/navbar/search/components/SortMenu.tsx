@@ -3,7 +3,6 @@ import {Card} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useId, useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -14,14 +13,11 @@ import {useWorkspace} from '../../../../workspace'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {getOrderings} from '../definitions/getOrderings'
 import {type SearchOrdering} from '../types'
+import {sortMenuContentFlex} from './SortMenu.css'
 
 interface SearchDivider {
   type: 'divider'
 }
-
-const SortMenuContentFlex = styled(Flex)`
-  box-sizing: border-box;
-`
 
 function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDivider {
   return (item as SearchDivider).type === 'divider'
@@ -82,7 +78,13 @@ export function SortMenu() {
 
   return (
     <Card borderBottom>
-      <SortMenuContentFlex alignItems="center" flexBasis="0%" flexGrow={1} padding={2}>
+      <Flex
+        alignItems="center"
+        className={sortMenuContentFlex}
+        flexBasis="0%"
+        flexGrow={1}
+        padding={2}
+      >
         <MenuButton
           button={<Button mode="bleed" icon={SortIcon} text={t(currentMenuItem.titleKey)} />}
           id={menuButtonId || ''}
@@ -105,7 +107,7 @@ export function SortMenu() {
           }
           popover={{placement: 'bottom-start', portal: true, radius: 2}}
         />
-      </SortMenuContentFlex>
+      </Flex>
     </Card>
   )
 }

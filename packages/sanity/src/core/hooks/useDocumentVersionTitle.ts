@@ -4,6 +4,7 @@ import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useAgentBundles} from '../store/agent/useAgentBundles'
 import {useWorkspace} from '../studio/workspace'
+import {getDocumentVersionVariantId} from '../util/getDocumentVersionVariant'
 import {getVersionFilterLabel} from '../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {getVariantTitle} from '../variants/tool/util'
@@ -102,10 +103,10 @@ function buildVersionTitleResult({
  * Returns the version info title, full title, and whether the title is truncated for a given version.
  * It maps the version status to a release and a variant.
  * So for example:
- * - Published default: "All users (Default) · Published"
+ * - Published default: "Default · Published"
  * - Published variant: "Variant name · Published"
  * - Draft variant: "Variant name · Draft"
- * - Release default: "All users (Default) · Release name"
+ * - Release default: "Default · Release name"
  * - Release variant: "Variant name · Release name"
  */
 export function useDocumentVersionTitle({version}: {version: VersionInfoDocumentStub}) {
@@ -133,7 +134,7 @@ export function useDocumentVersionTitle({version}: {version: VersionInfoDocument
     }
   }
 
-  const variantRef = getSystemRef(version._system.variant)
+  const variantRef = getDocumentVersionVariantId(version)
   const releaseRef = getSystemRef(version._system.release)
   const variant = variantRef ? variantsById.get(variantRef) : undefined
   const release = releaseRef ? releasesById.get(releaseRef) : undefined

@@ -1,15 +1,16 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Box, Flex, Icon, type IconProps} from 'ui5'
+
+import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 
 export const STATE_TITLES = {
   'loading': 'Checking…',
   'logged-in': '',
   'logged-out': 'Signed out',
-  'no-access': '',
+  'unknown': '',
 }
 
 type PreviewIconSize = 'small' | 'large'
@@ -42,17 +43,20 @@ export const WorkspacePreviewIcon = ({
   return <Media $size={size}>{iconComponent}</Media>
 }
 
-const createIcon = (Icon: ComponentType | ReactNode) => {
-  if (isValidElementType(Icon)) return <Icon />
-  if (isValidElement(Icon)) return Icon
+const createIcon = (iconSource: ComponentType | ReactNode) => {
+  if (isValidElementType(iconSource)) {
+    const Component = iconSource
+    return <Component />
+  }
+  if (isValidElement(iconSource)) return iconSource
   return undefined
 }
 
 export interface WorkspacePreviewProps {
   icon?: ComponentType | ReactNode
-  iconRight?: ComponentType | ReactNode
+  iconRight?: IconProps['icon']
   selected?: boolean
-  state?: 'loading' | 'logged-in' | 'logged-out' | 'no-access'
+  state?: WorkspaceLoginStatus
   subtitle?: string
   title: string
 }
@@ -60,41 +64,34 @@ export interface WorkspacePreviewProps {
 export function WorkspacePreview(props: WorkspacePreviewProps) {
   const {state, subtitle, selected, title, icon, iconRight} = props
 
-  const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
-
   return (
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
       <WorkspacePreviewIcon icon={icon} size="small" />
 
-      <Stack flex={1} gap={2}>
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+      <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
+        <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
           {title}
         </Text>
 
         {subtitle && (
-          <Text muted size={1} textOverflow="ellipsis">
+          <Text muted size={1} truncate={1} as="div" trim={true}>
             {subtitle}
           </Text>
         )}
-      </Stack>
+      </Flex>
 
       {state && STATE_TITLES[state] && (
         <Box paddingLeft={1}>
-          <Text size={1} muted textOverflow="ellipsis">
+          <Text size={1} muted truncate={1} as="div" trim={true}>
             {STATE_TITLES[state]}
           </Text>
         </Box>
       )}
 
-      {(selected || iconRightComponent) && (
+      {(selected || iconRight) && (
         <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
-          {selected && (
-            <Text>
-              <CheckmarkIcon />
-            </Text>
-          )}
-
-          {iconRightComponent && <Text muted>{iconRightComponent}</Text>}
+          {selected && <Icon icon={CheckmarkIcon} style={{margin: '-0.4375rem'}} />}
+          {iconRight && <Icon muted icon={iconRight} style={{margin: '-0.4375rem'}} />}
         </Flex>
       )}
     </Flex>

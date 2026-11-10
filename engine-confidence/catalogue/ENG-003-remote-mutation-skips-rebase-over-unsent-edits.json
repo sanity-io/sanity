@@ -1,0 +1,12 @@
+{
+  "id": "ENG-003",
+  "title": "A remote mutation arriving while local edits are buffered (not yet committed) skips the rebase and resets the buffer",
+  "severity": "S1",
+  "failureClass": "rebase skipped when a remote mutation lands on top of pending local edits (lost local typing)",
+  "source": "Gap 10 (no multi-editor concurrency at speed) and gap 9 in 01-context.md; SAPP-4626 multiplayer class",
+  "filesTouched": ["packages/@sanity/mutator/src/document/BufferedDocument.ts"],
+  "userVisibleEffect": "Text typed in the last moments before another editor's change arrives is discarded locally and never sent",
+  "notApplicableSuites": [],
+  "expectedCaughtBy": ["unit:mutator", "unit:engine"],
+  "addedOn": "2026-10-16"
+}

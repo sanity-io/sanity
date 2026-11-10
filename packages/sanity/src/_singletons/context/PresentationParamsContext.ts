@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {PresentationParamsContextValue} from '../../presentation/types'
 
 /**
  * @internal
  */
-export const PresentationParamsContext = createContext<PresentationParamsContextValue | null>(
-  'sanity/_singletons/context/presentation/params',
-  null,
-)
+export const PresentationParamsContext = createContext<PresentationParamsContextValue | null>(null)

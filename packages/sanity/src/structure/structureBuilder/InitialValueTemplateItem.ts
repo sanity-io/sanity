@@ -184,6 +184,7 @@ export function defaultInitialValueTemplateItems(
     // Don't list templates that require parameters
     // TODO: this should use the new-document template items instead maybe?
     .filter((tpl) => !tpl.parameters?.length)
+    .filter((tpl) => tpl.singleton === undefined)
     .sort((a, b) => typeNames.indexOf(a.schemaType) - typeNames.indexOf(b.schemaType))
 
   // Create actual template items out of the templates

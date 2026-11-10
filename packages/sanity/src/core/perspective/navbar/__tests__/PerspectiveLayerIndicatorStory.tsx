@@ -1,6 +1,7 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefObject} from 'react'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {
@@ -8,13 +9,9 @@ import {
   activeUndecidedRelease,
 } from '../../../releases/__fixtures__/release.fixture'
 import {LATEST, PUBLISHED} from '../../../releases/util/const'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from '../GlobalPerspectiveMenuItem'
-import {ReleaseTypeMenuSection} from '../ReleaseTypeMenuSection'
-import {type ScrollElement} from '../useScrollIndicatorVisibility'
+import {getRangePosition, ReleasesMenuItem, type LayerRange} from '../releases/ReleasesMenuItem'
+import {ReleaseTypeMenuSection} from '../releases/ReleaseTypeMenuSection'
+import {type ScrollElement} from '../releases/useScrollIndicatorVisibility'
 
 // Layer stack mirrors ReleasesList: published (0) → drafts (1) → asap (2) →
 // undecided (3). No scheduled release, so no relative publish dates.
@@ -33,16 +30,10 @@ function ReleasesMenu({range}: {range: LayerRange}) {
     <Card radius={3} shadow={2}>
       <Menu>
         <Card borderBottom padding={1}>
-          <Stack gap={1}>
-            <GlobalPerspectiveMenuItem
-              rangePosition={getRangePosition(range, 0)}
-              release={PUBLISHED}
-            />
-            <GlobalPerspectiveMenuItem
-              rangePosition={getRangePosition(range, 1)}
-              release={LATEST}
-            />
-          </Stack>
+          <VStack gap={1}>
+            <ReleasesMenuItem rangePosition={getRangePosition(range, 0)} release={PUBLISHED} />
+            <ReleasesMenuItem rangePosition={getRangePosition(range, 1)} release={LATEST} />
+          </VStack>
         </Card>
         <ReleaseTypeMenuSection
           currentGlobalBundleMenuItemRef={SCROLL_REF}
@@ -63,7 +54,7 @@ function ReleasesMenu({range}: {range: LayerRange}) {
 
 /**
  * Chromatic sentinel for the perspective-menu layer line, rendered through
- * the production GlobalPerspectiveMenuItem / ReleaseTypeMenuSection so the
+ * the production ReleasesMenuItem / ReleaseTypeMenuSection so the
  * calibrated indicator offsets line up with the real ui5 IconWrapperBox and
  * label paddings. Covers first / within / last items, the default (pressed)
  * drafts item, and release-type labels inside and outside the range. Menus
@@ -73,20 +64,20 @@ export function PerspectiveLayerIndicatorStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 320}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               drafts perspective (labels outside range)
             </Text>
             <ReleasesMenu range={RANGE_TO_DRAFTS} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               range down to undecided (first / within / last)
             </Text>
             <ReleasesMenu range={RANGE_TO_UNDECIDED} />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

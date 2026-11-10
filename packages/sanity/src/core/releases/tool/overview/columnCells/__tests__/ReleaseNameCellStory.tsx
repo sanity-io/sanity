@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {
@@ -30,9 +31,9 @@ export function ReleaseNameCellStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               active
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={activeASAPRelease} sorting={false} />
@@ -41,15 +42,15 @@ export function ReleaseNameCellStory() {
               datum={activeScheduledRelease}
               sorting={false}
             />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               untitled fallback
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={untitled} sorting={false} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               archived / published (pin disabled)
             </Text>
             <ReleaseNameCell
@@ -58,14 +59,14 @@ export function ReleaseNameCellStory() {
               sorting={false}
             />
             <ReleaseNameCell cellProps={CELL_PROPS} datum={publishedASAPRelease} sorting={false} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               deleted (transparent card)
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={deleted} sorting={false} />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

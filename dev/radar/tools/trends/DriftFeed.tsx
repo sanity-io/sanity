@@ -1,10 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, VStack, type TextProps} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
@@ -19,24 +19,29 @@ function DriftRow(props: {
   onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onClear: () => void
   onFocus: () => void
+  tone?: TextProps['tone']
 }) {
-  const {entry, showBranch, acked, onAck, onClear, onFocus} = props
+  const {entry, showBranch, acked, onAck, onClear, onFocus, tone} = props
   const worst = entry.baseline
   return (
     <Flex alignItems="center" gap={2} flexWrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
-        {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
+        {/* Arrow = which way the value moved; word = what that means for
+            the metric (a UI v5 share that fell is a "↓ regression") */}
+        {entry.baseline.delta > 0 ? '↑' : '↓'} {entry.direction}
       </Badge>
       {/* The metric name navigates to its chart (one pushed history entry, so
           Back returns) — looks like a button, behaves like a link */}
       <Button mode="bleed" padding={1} onClick={onFocus} title="Go to chart" text={entry.title} />
       {showBranch && (
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true} tone={tone}>
           ({entry.branch})
         </Text>
       )}
-      <Text size={1}>{deltaLabel(worst, entry.unit)}</Text>
-      <Text size={0} muted>
+      <Text size={1} as="div" trim={true} tone={tone}>
+        {deltaLabel(worst, entry.unit)}
+      </Text>
+      <Text size={0} muted as="div" trim={true} tone={tone}>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
         {baselineDetail(worst)}
@@ -123,7 +128,7 @@ export function DriftFeed(props: {
       padding={3}
       radius={2}
     >
-      <Stack gap={expanded ? 3 : 0}>
+      <VStack gap={expanded ? 3 : 0}>
         {/* The whole header row is the expander */}
         <Button
           mode="bleed"
@@ -134,14 +139,20 @@ export function DriftFeed(props: {
         >
           <Flex alignItems="center" gap={2} paddingY={1}>
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-            <Text size={1} weight="semibold">
+            <Text
+              size={1}
+              weight="semibold"
+              as="div"
+              trim={true}
+              tone={active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'}
+            >
               {summary}
             </Text>
           </Flex>
         </Button>
 
         {expanded && active.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             {active.map((entry) => (
               <DriftRow
                 key={`${entry.seriesKey}:${entry.branch}`}
@@ -151,12 +162,15 @@ export function DriftFeed(props: {
                 onAck={(state) => drift.ack(entry, state)}
                 onClear={() => drift.clear(entry)}
                 onFocus={() => onFocusMetric(entry.seriesKey)}
+                tone={
+                  active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'
+                }
               />
             ))}
-          </Stack>
+          </VStack>
         )}
         {expanded && silenced.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Button
               mode="bleed"
               fontSize={1}
@@ -178,11 +192,14 @@ export function DriftFeed(props: {
                   onAck={(state) => drift.ack(entry, state)}
                   onClear={() => drift.clear(entry)}
                   onFocus={() => onFocusMetric(entry.seriesKey)}
+                  tone={
+                    active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'
+                  }
                 />
               ))}
-          </Stack>
+          </VStack>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

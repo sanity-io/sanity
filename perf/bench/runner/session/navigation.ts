@@ -1,6 +1,6 @@
 import {type Page} from 'playwright'
 
-import {type BenchScenario} from '../../scenarios/types'
+import {type BenchScenario, scenarioDocument} from '../../scenarios/types'
 import {SessionError} from './errors'
 
 /**
@@ -23,7 +23,8 @@ export function scenarioUrl(studioUrl: string, scenario: BenchScenario): string 
   if (scenario.path) {
     return `${studioUrl}/${workspace}/${scenario.path}`
   }
-  return `${studioUrl}/${workspace}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`
+  const {documentId, documentType} = scenarioDocument(scenario)
+  return `${studioUrl}/${workspace}/intent/edit/id=${encodeURIComponent(documentId)};type=${encodeURIComponent(documentType)}`
 }
 
 export function readySelector(scenario: BenchScenario): string {

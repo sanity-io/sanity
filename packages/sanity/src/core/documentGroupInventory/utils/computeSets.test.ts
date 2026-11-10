@@ -65,7 +65,7 @@ function agentVersion(bundleId: string): VersionInfoDocumentStub {
 function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`drafts.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: 'drafts',
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -73,7 +73,7 @@ function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocum
 // A published variant, outside any release.
 function variantPublished(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`published.${scopeId}.${PUBLISHED_ID}`, {
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -87,7 +87,7 @@ function variantInRelease(
   return stub(`versions.${releaseId}.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: releaseId,
     release: {_ref: getReleaseDocumentIdFromReleaseId(releaseId), _weak: true},
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -187,6 +187,7 @@ describe('computeSets', () => {
         {
           key: 'studio:content-agent',
           name: 'content-agent',
+          bundle: {type: 'agent'},
           variants: [
             {
               id: `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
@@ -198,6 +199,7 @@ describe('computeSets', () => {
         {
           key: 'drafts',
           name: 'release.chip.draft',
+          bundle: {type: 'perspective', perspective: 'drafts'},
           variants: [
             {
               id: `drafts.${PUBLISHED_ID}`,
@@ -222,6 +224,7 @@ describe('computeSets', () => {
         {
           key: 'published',
           name: 'release.chip.published',
+          bundle: {type: 'perspective', perspective: 'published'},
           variants: [
             {
               id: PUBLISHED_ID,
@@ -246,6 +249,7 @@ describe('computeSets', () => {
         {
           key: getReleaseDocumentIdFromReleaseId(RELEASE_ID),
           name: 'My release',
+          bundle: {type: 'perspective', perspective: releaseDocument},
           variants: [
             {
               id: `versions.${RELEASE_ID}.${PUBLISHED_ID}`,
@@ -283,6 +287,7 @@ describe('computeSets', () => {
 
       expect(sets).toHaveLength(1)
       expect(sets[0]?.key).toBe('drafts')
+      expect(sets[0]?.bundle).toEqual({type: 'perspective', perspective: 'drafts'})
       expect(sets[0]?.variants.map(({id}) => id)).toEqual([
         `drafts.${PUBLISHED_ID}`,
         `drafts.scopeA.${PUBLISHED_ID}`,
@@ -309,11 +314,21 @@ describe('computeSets', () => {
 
       expect(sets).toHaveLength(1)
       expect(sets[0]?.key).toBe('published')
+      expect(sets[0]?.bundle).toEqual({type: 'perspective', perspective: 'published'})
       expect(sets[0]?.variants.map(({id}) => id)).toEqual([
         PUBLISHED_ID,
         `published.scopeA.${PUBLISHED_ID}`,
         `published.scopeB.${PUBLISHED_ID}`,
       ])
+    })
+
+    it('falls back to an empty perspective for a release that is not loaded', () => {
+      const meta = createMeta({versions: [releaseVersion(RELEASE_ID)]})
+
+      const sets = computeSets({meta, current: [], t, variantsEnabled: true})
+
+      expect(sets).toHaveLength(1)
+      expect(sets[0]?.bundle).toEqual({type: 'perspective', perspective: ''})
     })
 
     it('groups variants inside a release under that release', () => {
@@ -333,6 +348,7 @@ describe('computeSets', () => {
       expect(sets).toHaveLength(1)
       expect(sets[0]?.key).toBe(getReleaseDocumentIdFromReleaseId(RELEASE_ID))
       expect(sets[0]?.name).toBe('My release')
+      expect(sets[0]?.bundle).toEqual({type: 'perspective', perspective: releaseDocument})
       expect(sets[0]?.variants.map(({name}) => name)).toEqual([
         'document-group.base-variant',
         'Alpha audience',

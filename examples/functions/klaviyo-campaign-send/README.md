@@ -78,10 +78,12 @@ This function is built to be compatible with the [Sanity E-commerce template](ht
 3. **Add configuration to your blueprint**
 
    ```ts
+   import 'dotenv/config'
+
+   import process from 'node:process'
+
    // sanity.blueprint.ts
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
-   import 'dotenv/config'
-   import process from 'node:process'
 
    const {KLAVIYO_API_KEY} = process.env
    if (typeof KLAVIYO_API_KEY !== 'string') {

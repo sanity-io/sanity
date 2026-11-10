@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {commentsUsEnglishLocaleBundle} from '../../../i18n'
@@ -15,12 +16,12 @@ export function MentionsMenuStory() {
   return (
     <TestWrapper i18nBundles={[commentsUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 280}}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             no users
           </Text>
           <MentionsMenu loading={false} onSelect={NOOP} options={[]} />
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -1,10 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {type MouseEvent} from 'react'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
-import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useWorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 interface WorkspaceMenuItemProps {
@@ -14,43 +14,35 @@ interface WorkspaceMenuItemProps {
 }
 
 /**
- * A single row in the workspace switcher menu. Each row probes `/auth/id`
- * on its own: the list renders instantly on open, badges fill in as the
- * probes settle.
- *
- * The `null` initial value is load-bearing:
- * - Closed menus keep their items mounted (`<Activity>`, @sanity/ui v4).
- * - Without an initial value, react-rx subscribes during that hidden
- *   render — putting the `/auth/id` probes on the studio boot path.
- * - With it, the probe first fires on reveal (or via the hover/focus
- *   preload on the menu button).
+ * A single row in the workspace switcher menu. Each row asks its workspace's auth store on its
+ * own: the list renders instantly on open, badges fill in as the answers arrive. Requests go out
+ * when the menu opens, or earlier when hovering or focusing the menu button preloads them (see
+ * `WorkspaceMenuButton`). A closed menu that was never hovered sends none.
  *
  * @internal
  */
 export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: WorkspaceMenuItemProps) {
-  const probe$ = useMemo(
-    () =>
-      probeWorkspaceAuth({
-        projectId: workspace.projectId,
-        dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
-      }),
-    [workspace.apiHost, workspace.dataset, workspace.projectId],
-  )
-  const probe = useObservable(probe$, null)
+  const state = useWorkspaceLoginStatus(workspace)
+  const {setActiveWorkspace} = useActiveWorkspace()
 
-  const state: keyof typeof STATE_TITLES = !probe
-    ? 'loading'
-    : probe.authenticated
-      ? 'logged-in'
-      : workspace.auth.LoginComponent
-        ? 'logged-out'
-        : 'no-access'
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    // The Dashboard renders every workspace in its own iframe. Its bridge prevents the default of a
+    // click on another workspace's link and opens that workspace's iframe, so don't also switch here.
+    if (event.defaultPrevented) return
+
+    if (event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+    setActiveWorkspace(workspace.name)
+  }
 
   return (
     <MenuItem
       as="a"
       href={workspace.basePath}
+      onClick={handleClick}
       badgeText={STATE_TITLES[state] || undefined}
       iconRight={isSelected ? CheckmarkIcon : undefined}
       pressed={isSelected}
@@ -61,6 +53,7 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
       style={{
         marginLeft: '1rem',
         marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+        flexShrink: 0,
       }}
       __unstable_space={0}
     />

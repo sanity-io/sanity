@@ -1,10 +1,21 @@
 import {dequal as isEqual} from 'dequal/lite'
-import {lazy, memo, Suspense} from 'react'
+import {lazy, memo, Suspense, useEffect} from 'react'
+import {
+  recordStructurePaneKind,
+  type StructurePaneKind,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
 import {UnknownPane} from './unknown/UnknownPaneType'
+
+const PANE_KIND_BY_PANE_TYPE = {
+  component: 'other',
+  document: 'document',
+  documentList: 'list',
+  list: 'list',
+} satisfies Record<PaneNode['type'], StructurePaneKind>
 
 interface StructureToolPaneProps {
   active: boolean
@@ -20,15 +31,25 @@ interface StructureToolPaneProps {
   selected: boolean
   siblingIndex: number
   maximized: boolean
+  toolName: string
   onSetMaximizedPane?: () => void
 }
 
-// TODO: audit this creates separate chunks
+// Audited in the production build of dev/test-studio: `list` (3.2 KB gzip) and `component`
+// (1.5 KB gzip) are real chunks. `document` and `documentList` resolve to 0.1 KB re-export shims,
+// because `sanity/structure` exports `DocumentPane` and `DocumentListPane` and the entry imports
+// their chunks statically anyway, so those two lazies only add a request and a `LoadingPane` flash
+// on the first mount of each pane type. Kept lazy for now; dropping them is a separate change.
+const UserComponentPane = lazy(() => import('./userComponent'))
+const DocumentPane = lazy(() => import('./document/pane'))
+const DocumentListPane = lazy(() => import('./documentList/pane'))
+const ListPane = lazy(() => import('./list'))
+
 const paneMap = {
-  component: lazy(() => import('./userComponent')),
-  document: lazy(() => import('./document/pane')),
-  documentList: lazy(() => import('./documentList/pane')),
-  list: lazy(() => import('./list')),
+  component: UserComponentPane,
+  document: DocumentPane,
+  documentList: DocumentListPane,
+  list: ListPane,
 }
 
 /**
@@ -52,10 +73,15 @@ export const StructureToolPane = memo(
       selected,
       siblingIndex,
       maximized,
+      toolName,
       onSetMaximizedPane,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
+
+    useEffect(() => {
+      recordStructurePaneKind(toolName, path, PANE_KIND_BY_PANE_TYPE[pane.type] ?? 'other')
+    }, [toolName, path, pane.type])
 
     return (
       <PaneRouterProvider

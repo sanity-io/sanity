@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useId, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
@@ -33,7 +32,9 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
       onClose={props.onCancel}
     >
       <Box padding={4}>
-        <Text size={1}>{t('confirm-delete-dialog.error.message.text')}</Text>
+        <Text size={1} as="div" trim={true}>
+          {t('confirm-delete-dialog.error.message.text')}
+        </Text>
       </Box>
     </Dialog>
   ) : (

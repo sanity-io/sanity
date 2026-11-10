@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Button, Card, Flex, Spinner, Stack, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Spinner, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -10,7 +10,9 @@ import {
   useState,
   useTransition,
 } from 'react'
-import {Box} from 'ui5'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
+import {catchError, combineLatest, defer, of} from 'rxjs'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {
   fetchAccessRequestStatus,
@@ -63,46 +65,57 @@ export interface RequestAccessFormProps {
  * access, lets the user request it with an optional note, and reflects the
  * request lifecycle (pending, denied, expired, over-limit, SSO-enforced).
  *
- * Fetches the caller's existing requests on mount and suspends while loading;
- * an internal `Suspense` boundary renders a spinner, so hosts can mount it
- * directly. Remount with a `key` when `client` or `resourceId` change.
+ * Fetches the caller's existing requests once it is mounted and suspends while
+ * loading; an internal `Suspense` boundary renders a spinner, so hosts can
+ * mount it directly. The fetch starts when the card commits, not while it
+ * renders, so a host whose own `Suspense` boundary retries around it does not
+ * refetch, and the result is kept while a hidden `<Activity>` conceals the
+ * card. Remount with a `key` when `client` or `resourceId` change.
  *
  * @public
  */
 export function RequestAccessForm(props: RequestAccessFormProps) {
   const {client, resourceType = 'project', resourceId} = props
 
-  // Created once (lazy init): recreating the promise per render would refetch
-  // and re-suspend forever. Callers remount with `key` to reset.
-  const [requestsPromise] = useState(() =>
-    listMyAccessRequests(client).catch((): AccessRequest[] | null => null),
-  )
-  const [statusPromise] = useState(() =>
-    fetchAccessRequestStatus({
-      client,
-      resourceType,
-      resourceId,
-      origin: getRequestUrl(),
+  // Frozen at first render, so a new client for the same resource neither
+  // refetches nor resets the form; hosts remount with `key` to reload. `defer`
+  // keeps the requests out of render: react-rx subscribes once this component
+  // commits, so a render React discards never fetches, and one subscription is
+  // shared across StrictMode's double effects and an `<Activity>` hide/show.
+  // Both requests complete, so the hook never resubscribes the source and
+  // keeps the settled promise for the life of this instance.
+  const [load$] = useState(() =>
+    combineLatest({
+      accessRequestsHistory: defer(() => listMyAccessRequests(client)).pipe(
+        catchError(() => of(null)),
+      ),
+      accessRequestEligibilityState: defer(() =>
+        fetchAccessRequestStatus({client, resourceType, resourceId, origin: getRequestUrl()}),
+      ),
     }),
   )
+  // Read with `use()` in the child below the boundary, never here: suspending
+  // this component would stop the commit that starts the fetch.
+  const loadPromise = useObservablePromise(load$)
 
   return (
     <Card border height="fill" overflow="hidden" radius={3} tone="default">
       <Suspense
         fallback={
-          <Flex align="center" height="fill" justify="center" padding={5}>
+          <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
             <Spinner muted />
           </Flex>
         }
       >
-        <RequestAccessFormContent
-          {...props}
-          requestsPromise={requestsPromise}
-          statusPromise={statusPromise}
-        />
+        <RequestAccessFormContent {...props} loadPromise={loadPromise} />
       </Suspense>
     </Card>
   )
+}
+
+interface LoadedAccessRequestData {
+  accessRequestsHistory: AccessRequest[] | null
+  accessRequestEligibilityState: AccessRequestEligibilityState
 }
 
 /**
@@ -134,10 +147,16 @@ function deriveServerViewState(
   status: AccessRequestEligibilityState,
   labels: RequestAccessLabels,
   providerTitle?: string,
+  signedInWithSso?: boolean,
 ): ViewState | null {
   switch (status.state) {
     case 'saml-required':
-      return ssoEnforcedState({labels, providerTitle, redirectUrl: status.redirectUrl})
+      return ssoEnforcedState({
+        labels,
+        providerTitle,
+        signedInWithSso,
+        redirectUrl: status.redirectUrl,
+      })
     case 'resource-not-available':
       // Nothing was submitted, so the submit-failure copy would misdescribe it.
       return {
@@ -157,14 +176,15 @@ function deriveServerViewState(
 function ssoEnforcedState(options: {
   labels: RequestAccessLabels
   providerTitle?: string
+  signedInWithSso?: boolean
   redirectUrl?: string
 }): ViewState {
-  const {labels, providerTitle, redirectUrl} = options
+  const {labels, providerTitle, signedInWithSso, redirectUrl} = options
   return {
     view: 'sso-enforced',
     title: labels.ssoEnforcedTitle,
     description: null,
-    message: labels.ssoEnforcedMessage({providerTitle}),
+    message: labels.ssoEnforcedMessage({providerTitle, signedInWithSso}),
     redirectUrl,
   }
 }
@@ -176,6 +196,7 @@ function deriveViewState(options: {
   submitAccessRequestResult: SubmitAccessRequestResult | null
   currentUser?: AccessUser | null
   providerTitle?: string
+  signedInWithSso?: boolean
   labels: RequestAccessLabels
 }): ViewState {
   const {
@@ -185,6 +206,7 @@ function deriveViewState(options: {
     submitAccessRequestResult,
     currentUser,
     providerTitle,
+    signedInWithSso,
     labels,
   } = options
   const submitFailure = (message: ReactNode): ViewState => ({
@@ -202,6 +224,7 @@ function deriveViewState(options: {
         return ssoEnforcedState({
           labels,
           providerTitle,
+          signedInWithSso,
           redirectUrl: submitAccessRequestResult.redirectUrl,
         })
       case 'denied':
@@ -221,7 +244,12 @@ function deriveViewState(options: {
   // The server's verdict outranks the request history: a pending request in an
   // enforced org is already dead, so "pending approval" would be a false
   // promise. It answers `eligible` when it has nothing to say.
-  const serverState = deriveServerViewState(accessRequestEligibilityState, labels, providerTitle)
+  const serverState = deriveServerViewState(
+    accessRequestEligibilityState,
+    labels,
+    providerTitle,
+    signedInWithSso,
+  )
   if (serverState) return serverState
 
   // TODO: `pending` and `denied` will be replaced by future content in `accessRequestEligibilityState`
@@ -248,10 +276,7 @@ function deriveViewState(options: {
 }
 
 function RequestAccessFormContent(
-  props: RequestAccessFormProps & {
-    requestsPromise: Promise<AccessRequest[] | null>
-    statusPromise: Promise<AccessRequestEligibilityState>
-  },
+  props: RequestAccessFormProps & {loadPromise: ObservablePromise<LoadedAccessRequestData>},
 ) {
   const {
     client,
@@ -262,13 +287,11 @@ function RequestAccessFormContent(
     onRequestSubmitted,
     preview,
     renderAction,
-    requestsPromise,
-    statusPromise,
+    loadPromise,
   } = props
+  const {accessRequestsHistory, accessRequestEligibilityState} = use(loadPromise)
 
   const labels = {...defaultLabels, ...props.labels}
-  const accessRequestsHistory = use(requestsPromise)
-  const accessRequestEligibilityState = use(statusPromise)
   const titleId = useId()
 
   const [note, setNote] = useState('')
@@ -277,13 +300,15 @@ function RequestAccessFormContent(
   const [isSubmitting, startSubmit] = useTransition()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
+  const signedInWithSso = currentUser?.provider?.startsWith('saml-') === true
   const state = deriveViewState({
     accessRequestsHistory,
     accessRequestEligibilityState,
     resourceId,
     submitAccessRequestResult,
     currentUser,
-    providerTitle,
+    providerTitle: signedInWithSso ? undefined : providerTitle,
+    signedInWithSso,
     labels,
   })
 
@@ -307,28 +332,28 @@ function RequestAccessFormContent(
   }
 
   return (
-    <Flex direction="column" height="fill">
-      <Flex direction="column" flex={1} gap={4} padding={4}>
+    <Flex flexDirection="column" height="100%">
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={4} padding={4}>
         {preview ? (
-          <Flex justify="center" padding={2}>
+          <Flex justifyContent="center" padding={2}>
             {preview}
           </Flex>
         ) : null}
 
-        <Text as="h1" id={titleId} size={2} weight="semibold">
+        <Text as="h1" id={titleId} size={2} weight="semibold" trim={true}>
           {state.title}
         </Text>
 
         {state.description !== null ? (
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true}>
             {state.description}
           </Text>
         ) : null}
 
         {state.view === 'blocked' || state.view === 'sso-enforced' ? (
-          <Stack gap={4}>
+          <VStack gap={4}>
             <Card border padding={3} radius={2} role="alert" tone="caution">
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 {state.message}
               </Text>
             </Card>
@@ -342,19 +367,19 @@ function RequestAccessFormContent(
                 width="fill"
               />
             ) : null}
-          </Stack>
+          </VStack>
         ) : null}
 
         {state.view === 'form' ? (
-          <Stack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
-            <Text as="p" size={1}>
+          <VStack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
+            <Text as="p" size={1} trim={true}>
               {state.expired
                 ? labels.expiredMessage
                 : resourceType === 'organization'
                   ? labels.promptOrganization
                   : labels.promptProject}
             </Text>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <TextArea
                 aria-label={labels.noteAriaLabel}
                 disabled={isSubmitting}
@@ -365,13 +390,13 @@ function RequestAccessFormContent(
                 rows={3}
                 value={note}
               />
-              <Text align="right" muted size={0}>
+              <Text align="right" muted size={0} as="div" trim={true}>
                 {`${note.length}/${MAX_ACCESS_REQUEST_NOTE_LENGTH}`}
               </Text>
-            </Stack>
+            </VStack>
             {submitFailed ? (
               <Card border padding={3} radius={2} role="alert" tone="critical">
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true} tone="critical">
                   {labels.submitFailedMessage}
                 </Text>
               </Card>
@@ -383,7 +408,7 @@ function RequestAccessFormContent(
               type="submit"
               width="fill"
             />
-          </Stack>
+          </VStack>
         ) : null}
 
         {renderAction?.({view: state.view})}
@@ -391,11 +416,11 @@ function RequestAccessFormContent(
 
       {currentUser ? (
         <Card borderTop padding={3}>
-          <Flex align="center" direction="column" gap={3}>
-            <Flex align="center" gap={2} justify="center">
+          <Flex alignItems="center" flexDirection="column" gap={3}>
+            <Flex alignItems="center" gap={2} justifyContent="center">
               <Avatar initials={getInitials(currentUser)} size={0} src={currentUser.profileImage} />
               <Box>
-                <Text muted size={1} textOverflow="ellipsis">
+                <Text muted size={1} truncate={1} as="div" trim={true}>
                   {currentUser.email ?? currentUser.name}
                   {providerTitle ? ` · ${providerTitle}` : ''}
                 </Text>
@@ -409,7 +434,7 @@ function RequestAccessFormContent(
                 padding={2}
                 textWeight="regular"
               >
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {labels.wrongAccount} <strong>{labels.signOut}</strong>
                 </Text>
               </Button>

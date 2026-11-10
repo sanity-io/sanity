@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {UnclaimedProjectState} from '../../core/studio/unclaimedProject/useUnclaimedProject'
 
@@ -9,10 +9,7 @@ export interface UnclaimedProjectContextValue {
 }
 
 /** @internal */
-export const UnclaimedProjectContext = createContext<UnclaimedProjectContextValue>(
-  'sanity/_singletons/context/unclaimed-project',
-  {
-    onClaim: () => undefined,
-    state: undefined,
-  },
-)
+export const UnclaimedProjectContext = createContext<UnclaimedProjectContextValue>({
+  onClaim: () => undefined,
+  state: undefined,
+})

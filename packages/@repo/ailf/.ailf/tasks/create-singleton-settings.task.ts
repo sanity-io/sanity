@@ -19,9 +19,11 @@ export default defineTask({
   referenceSolution: 'tasks/create-singleton-settings.reference.ts',
   prompt: {
     text: `We have one global "Site settings" document. Make the Studio treat it
-as a singleton: a structure item that opens the one settings document directly
-(using the fixed document ID \`siteSettings\`), with the remaining document
-types listed as normal.
+as a singleton using Studio's first-class singleton support
+(\`document.singletons\`): a structure item that opens the one settings
+document directly (using the fixed document ID \`siteSettings\`), with the
+remaining document types listed as normal. Editors should not be able to
+create or duplicate settings documents.
 
 This is the existing Studio configuration:
 
@@ -84,8 +86,8 @@ export default defineConfig({
       template: 'task-completion',
       criteria: [
         {
-          id: 'custom-structure-defined',
-          text: 'The `structureTool` plugin is configured with a custom `structure` resolver.',
+          id: 'singleton-registered',
+          text: 'The `siteSettings` singleton is registered via the `document.singletons` configuration with the document ID `siteSettings`.',
         },
         {
           id: 'singleton-opens-fixed-document',
@@ -100,6 +102,10 @@ export default defineConfig({
           text: 'The `siteSettings` type does not also appear as a regular document type list.',
         },
         {
+          id: 'no-manual-creation-filtering',
+          text: 'Does not add manual `newDocumentOptions` or `document.actions` filtering — registering the singleton handles create and duplicate prevention automatically.',
+        },
+        {
           id: 'exports-studio-configuration',
           text: 'Exports a valid Studio configuration.',
         },
@@ -110,12 +116,16 @@ export default defineConfig({
       template: 'code-correctness',
       criteria: [
         {
-          id: 'uses-structure-builder-api',
-          text: 'Uses the Structure Builder (`S`) methods correctly, e.g. `S.list()`, `S.listItem()`, and `S.document().schemaType(...).documentId(...)` for the singleton.',
+          id: 'uses-singleton-structure-helper',
+          text: 'Uses a singleton Structure Builder helper (`S.listItem().singleton(...)` or `S.document().singleton(...)`) rather than manually wiring `S.document().schemaType(...).documentId(...)`.',
         },
         {
-          id: 'filters-default-list-items',
-          text: 'If default document type list items are reused (e.g. `S.documentTypeListItems()`), the `siteSettings` type is filtered out rather than duplicated.',
+          id: 'no-redundant-type-list-filtering',
+          text: 'Does not manually filter `siteSettings` out of `S.documentTypeListItems()` — registered singleton schema types are excluded from the default type list automatically.',
+        },
+        {
+          id: 'uses-shorthand-or-definition',
+          text: "Registers the singleton either as the string shorthand `'siteSettings'` or as a full definition with `id`, `documentId`, and `schemaType`.",
         },
         {
           id: 'no-deprecated-desk-tool',

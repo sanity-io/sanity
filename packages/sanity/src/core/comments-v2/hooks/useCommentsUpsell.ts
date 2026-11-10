@@ -9,7 +9,7 @@ export function useCommentsUpsell(): CommentsUpsellContextValue {
   if (!value) {
     // Instead of throwing, we return a dummy value to avoid breaking the CommentsField implementation, given the context is optional.
     return {
-      upsellData: null,
+      upsellDataPromise: null,
       handleOpenDialog: () => null,
       handleClose: () => null,
       upsellDialogOpen: false,

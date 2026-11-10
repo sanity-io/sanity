@@ -49,7 +49,7 @@ export function ErrorItem(props: {
         }
       >
         {member.error.type === 'INVALID_ITEM_TYPE' ? (
-          <IncompatibleItemType value={member.error.value} />
+          <IncompatibleItemType value={member.error.value} tone="caution" />
         ) : (
           <div>{t('inputs.array.error.unexpected-error', {error: member.error.type})}</div>
         )}

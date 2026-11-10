@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Heading} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -15,34 +16,17 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
+import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
-import {
-  DOCUMENT_LIST_SECTION_TYPE,
-  useDocumentListArrange,
-} from '../../components/paneItem/DocumentListArrange'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
+import {commandListBox, rootBox, rootBoxMuted} from './DocumentListPaneContent.css'
 import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
-
-const RootBox = styled(Box)<{$opacity?: number}>`
-  position: relative;
-  opacity: ${(props) => props.$opacity || 1};
-  transition: opacity 0.4s;
-`
-
-const CommandListBox = styled(Box)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-`
 
 interface DocumentListPaneContentProps {
   childItemId?: string
@@ -72,15 +56,15 @@ interface DocumentListPaneContentProps {
 
 const SKELETON_ITEMS = [...Array(30).keys()]
 
-function LoadingView(props: {layout?: GeneralPreviewLayoutKey; count?: number}) {
-  const {layout, count} = props
+function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
+  const {layout} = props
 
   return (
-    <Stack paddingX={3} paddingY={2} paddingTop={0} gap={1}>
-      {(count === undefined ? SKELETON_ITEMS : SKELETON_ITEMS.slice(0, count)).map((num) => (
+    <Flex paddingX={3} paddingY={2} paddingTop={0} gap={1} flexDirection="column">
+      {SKELETON_ITEMS.map((num) => (
         <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
-    </Stack>
+    </Flex>
   )
 }
 
@@ -112,16 +96,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   } = props
 
   const schema = useSchema()
-  // PROPOSED: the host may reorder the rows and add section rows (C3 option D, see DocumentListArrange).
-  const arranged = useDocumentListArrange(items)
-  const listItems = arranged?.items ?? items
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
-  // The count of the list last on screen, for the skeleton rows while it reloads (updated during render when a load settles with items; an empty
-  // pass between two lists does not reset it).
-  const [settledCount, setSettledCount] = useState(0)
-  if (!isLoading && items.length > 0 && items.length !== settledCount) setSettledCount(items.length)
   const [shouldRender, setShouldRender] = useState(!collapsed)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -146,14 +123,11 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (item, {activeIndex}) => {
-      if (arranged && item._type === DOCUMENT_LIST_SECTION_TYPE) {
-        return arranged.renderSection(item as DocumentListPaneItem)
-      }
       const publishedId = getPublishedId(item._id)
       const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected
       const selected = isActive && isSelected
-      const isLastItem = activeIndex === listItems.length - 1
+      const isLastItem = activeIndex === items.length - 1
       const showSpinner = isLastItem && isLazyLoading
       const showMaxItemsMessage = isLastItem && hasMaxItems
 
@@ -175,7 +149,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>
-              <Text align="center" muted size={1}>
+              <Text align="center" muted size={1} as="div" trim={true}>
                 {t('panes.document-list-pane.max-items.text', {limit: FULL_LIST_LIMIT})}
               </Text>
             </Box>
@@ -184,10 +158,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     },
     [
-      arranged,
       childItemId,
       isActive,
-      listItems.length,
+      items.length,
       layout,
       schema,
       showIcons,
@@ -204,7 +177,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted>
+              <Text align="center" muted as="div" trim={true}>
                 {t('panes.document-list-pane.no-documents.text')}
               </Text>
             </Box>
@@ -217,7 +190,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
         <Container width={1}>
           <Box paddingX={4} paddingY={5}>
-            <Text align="center" muted>
+            <Text align="center" muted as="div" trim={true}>
               {filterIsSimpleTypeConstraint
                 ? t('panes.document-list-pane.no-documents-of-type.text')
                 : t('panes.document-list-pane.no-matching-documents.text')}
@@ -238,9 +211,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
-            <Stack paddingX={4} paddingY={5} gap={4}>
+            <Flex paddingX={4} paddingY={5} gap={4} flexDirection="column">
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
-              <Text as="p">
+              <Text as="p" trim={true}>
                 {isDev ? (
                   <Translate
                     t={t}
@@ -261,7 +234,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                 isRetrying={isRetrying}
               />
               {canRetry ? (
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true}>
                   {isRetrying
                     ? t('panes.document-list-pane.error.retrying', {count: retryCount})
                     : autoRetry
@@ -273,7 +246,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                         })}
                 </Text>
               ) : null}
-            </Stack>
+            </Flex>
           </Container>
         </Flex>
       )
@@ -281,13 +254,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
     if (isConnected && !isLoading && items.length === 0) {
       return noDocumentsContent
-    }
-
-    // PROPOSED (Studio-wide): a list that was already on screen reloading (a perspective or variant change) shows core's skeleton rows at
-    // once, as many as it had, in place of a blank pane (the spinner variant drew nothing, the initial one waited 300ms). A first load and
-    // a search are unchanged.
-    if (isLoading && settledCount > 0 && !hasSearchQuery && loadingVariant !== 'subtle') {
-      return <LoadingView count={Math.min(settledCount, SKELETON_ITEMS.length)} layout={layout} />
     }
 
     if (loadingVariant === 'initial' && isLoading) {
@@ -306,26 +272,27 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="100%" $opacity={muted ? 0.8 : 1}>
-        <CommandListBox>
+      <Box overflow="hidden" height="100%" className={clsx(rootBox, muted && rootBoxMuted)}>
+        <Box className={commandListBox}>
           <CommandList
             key={key}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
+            className={paneCommandList}
             inputElement={searchInputElement}
             itemHeight={51}
-            items={listItems}
+            items={items}
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}
             paddingBottom={1}
-            paddingX={3}
+            paddingLeft={3}
             renderItem={renderItem}
             wrapAround={false}
           />
-        </CommandListBox>
-      </RootBox>
+        </Box>
+      </Box>
     )
   }, [
     autoRetry,
@@ -333,13 +300,11 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     collapsed,
     error,
     handleEndReached,
-    hasSearchQuery,
     index,
     isConnected,
     isLoading,
     isRetrying,
     items,
-    listItems,
     layout,
     loadingVariant,
     muted,
@@ -349,7 +314,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     renderItem,
     retryCount,
     searchInputElement,
-    settledCount,
     shouldRender,
     t,
   ])

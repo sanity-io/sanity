@@ -1,8 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {
@@ -237,12 +237,12 @@ export function RequestPerformanceReport({
   const handleTimeRangeReset = useCallback(() => setTimeRange(undefined), [])
 
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
         <Heading as="h2" size={1}>
           Recent request timings
         </Heading>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {visibleEntries.length.toLocaleString()} recent samples ·{' '}
           {reportTotalRequests.toLocaleString()} session requests
         </Text>
@@ -250,13 +250,13 @@ export function RequestPerformanceReport({
 
       <Card border data-testid="diagnostics-request-history" padding={4} radius={2}>
         {reportEntries.length === 0 ? (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {excludedEntryCount > 0
               ? 'No session requests outside this diagnostics run are available to plot.'
               : 'No data API requests have been observed for this workspace target in this browser session.'}
           </Text>
         ) : (
-          <Stack gap={4}>
+          <VStack gap={4}>
             <InteractiveChart
               ariaLabel={`Scatter plot of ${chartPointCount} session request timings`}
               chart={chart}
@@ -267,7 +267,7 @@ export function RequestPerformanceReport({
             />
 
             <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {timeRange
                   ? `${formatTime(timeRange.start, useUtc)} to ${formatTime(timeRange.end, useUtc)}`
                   : 'Drag across the chart to focus on a time range.'}
@@ -277,8 +277,8 @@ export function RequestPerformanceReport({
               ) : null}
             </Flex>
 
-            <Stack gap={2}>
-              <Text muted size={1} weight="semibold">
+            <VStack gap={2}>
+              <Text muted size={1} weight="semibold" as="div" trim={true}>
                 {timeRange
                   ? 'Selected range summary'
                   : 'Full session summary (estimated percentiles)'}
@@ -287,27 +287,27 @@ export function RequestPerformanceReport({
                 <thead>
                   <tr>
                     <th scope="col">
-                      <Text muted size={1} weight="semibold">
+                      <Text muted size={1} weight="semibold" as="div" trim={true}>
                         Series
                       </Text>
                     </th>
                     <th scope="col">
-                      <Text muted size={1} weight="semibold">
+                      <Text muted size={1} weight="semibold" as="div" trim={true}>
                         n
                       </Text>
                     </th>
                     <th scope="col">
-                      <Text muted size={1} weight="semibold">
+                      <Text muted size={1} weight="semibold" as="div" trim={true}>
                         Median
                       </Text>
                     </th>
                     <th scope="col">
-                      <Text muted size={1} weight="semibold">
+                      <Text muted size={1} weight="semibold" as="div" trim={true}>
                         p95
                       </Text>
                     </th>
                     <th scope="col">
-                      <Text muted size={1} weight="semibold">
+                      <Text muted size={1} weight="semibold" as="div" trim={true}>
                         Max
                       </Text>
                     </th>
@@ -329,32 +329,40 @@ export function RequestPerformanceReport({
                                 <PointMarker shape={summary.style.marker} />
                               </g>
                             </SeriesMarker>
-                            <Text as="span" size={1} weight="semibold">
+                            <Text as="span" size={1} weight="semibold" trim={true}>
                               {summary.bucket}
                             </Text>
                           </SeriesButton>
                         </td>
                         <td>
-                          <Text size={1}>{summary.count.toLocaleString()}</Text>
+                          <Text size={1} as="div" trim={true}>
+                            {summary.count.toLocaleString()}
+                          </Text>
                         </td>
                         <td>
-                          <Text size={1}>{formatMilliseconds(summary.medianMs)}</Text>
+                          <Text size={1} as="div" trim={true}>
+                            {formatMilliseconds(summary.medianMs)}
+                          </Text>
                         </td>
                         <td>
-                          <Text size={1}>{formatMilliseconds(summary.p95Ms)}</Text>
+                          <Text size={1} as="div" trim={true}>
+                            {formatMilliseconds(summary.p95Ms)}
+                          </Text>
                         </td>
                         <td>
-                          <Text size={1}>{formatMilliseconds(summary.maxMs)}</Text>
+                          <Text size={1} as="div" trim={true}>
+                            {formatMilliseconds(summary.maxMs)}
+                          </Text>
                         </td>
                       </tr>
                     )
                   })}
                 </tbody>
               </SummaryTable>
-            </Stack>
+            </VStack>
 
             {abortedCount > 0 ? (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {abortedCount.toLocaleString()} aborted{' '}
                 {abortedCount === 1 ? 'sample is' : 'samples are'} included in copied output but
                 excluded from summary statistics.
@@ -362,14 +370,14 @@ export function RequestPerformanceReport({
             ) : null}
 
             {history.truncated ? (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Older samples have been omitted because the session limit was reached.
               </Text>
             ) : null}
-          </Stack>
+          </VStack>
         )}
       </Card>
-    </Stack>
+    </VStack>
   )
 }
 
@@ -540,14 +548,14 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
   return (
     <PointTooltipPositioner $x={x} $y={y} role="tooltip">
       <Card border padding={3} radius={2} shadow={2}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Flex alignItems="center" gap={2}>
             <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
               <g fill={style.color} stroke="none">
                 <PointMarker shape={style.marker} />
               </g>
             </SeriesMarker>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {entry.bucket}
             </Text>
           </Flex>
@@ -555,7 +563,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
           <TooltipDetail label="Started" value={formatTime(entry.startedAt, useUtc)} />
           <TooltipDetail label="API version" value={entry.apiVersion} />
           <TooltipDetail label="Status" value={status} />
-        </Stack>
+        </VStack>
       </Card>
     </PointTooltipPositioner>
   )
@@ -564,10 +572,15 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
 function TooltipDetail({label, value}: {label: string; value: string}) {
   return (
     <Flex alignItems="baseline" gap={3} justifyContent="space-between">
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {label}
       </Text>
-      <Text size={1} style={{fontVariantNumeric: 'tabular-nums', textAlign: 'right'}}>
+      <Text
+        size={1}
+        style={{fontVariantNumeric: 'tabular-nums', textAlign: 'right'}}
+        as="div"
+        trim={true}
+      >
         {value}
       </Text>
     </Flex>

@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -26,7 +26,6 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
@@ -88,7 +87,7 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
+const Root = styled(VStack).attrs({forwardedAs: 'fieldset'})`
   border: none;
 
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
@@ -145,6 +144,16 @@ const Content = styled(Box)<{
     }
   `
 })
+
+/* Anchors the collapsible legend's hit area (see FormFieldSetLegend) to the whole row */
+const HeaderRow = styled(Flex)`
+  position: relative;
+`
+
+/* Keeps interactive header items above the legend's hit area */
+const HeaderRowItem = styled(Box)`
+  position: relative;
+`
 
 const EMPTY_ARRAY: never[] = []
 
@@ -225,11 +234,7 @@ export function FormFieldSet(
   return (
     <FormRow
       gutterStartCell={
-        <FormFieldGutter
-          anchor="field"
-          path={path}
-          changedFromBaseVariant={changedFromBaseVariant}
-        />
+        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
       }
     >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
@@ -249,14 +254,8 @@ export function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack gap={3}>
-                {/* PROPOSED: the label line is the group's anchor, so its gutter marks centre on it. */}
-                <Flex
-                  alignItems="center"
-                  style={
-                    Array.isArray(path) ? {anchorName: pathToAnchorIdent('field', path)} : undefined
-                  }
-                >
+              <VStack gap={3}>
+                <HeaderRow alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -273,20 +272,20 @@ export function FormFieldSet(
                     </Box>
                   )}
                   {isArraySchemaType(schemaType) && Array.isArray(path) && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
-                    </Box>
+                    </HeaderRowItem>
                   )}
                   {hasValidationMarkers && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormFieldValidationStatus
                         fontSize={1}
                         placement="top"
                         validation={validation}
                       />
-                    </Box>
+                    </HeaderRowItem>
                   )}
-                </Flex>
+                </HeaderRow>
 
                 {deprecated && (
                   <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
@@ -295,11 +294,17 @@ export function FormFieldSet(
                 )}
 
                 {description && (
-                  <Text muted size={1} id={createDescriptionId(inputId, description)}>
+                  <Text
+                    muted
+                    size={1}
+                    id={createDescriptionId(inputId, description)}
+                    as="div"
+                    trim={true}
+                  >
                     {description}
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             }
           />
           <Content

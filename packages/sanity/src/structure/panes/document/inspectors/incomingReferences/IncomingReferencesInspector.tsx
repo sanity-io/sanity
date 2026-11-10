@@ -14,7 +14,7 @@ export const IncomingReferencesInspector: DocumentInspectorComponent = (
     <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel={t('panel.close-button-aria-label')}
+        closeButtonLabel={t('incoming-references.close-button-aria-label')}
         flex="none"
         onClose={props.onClose}
         title={t('incoming-references.title')}

@@ -8,6 +8,7 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
+  useSetImmediateValidation,
   useSyncState,
   useValidationStatus,
 } from 'sanity'
@@ -23,6 +24,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useDocumentOperation: vi.fn(),
   useDocumentPairPermissions: vi.fn(),
   useEditState: vi.fn(),
+  useSetImmediateValidation: vi.fn(),
   useSyncState: vi.fn(),
   useValidationStatus: vi.fn(),
 }))
@@ -101,7 +103,11 @@ function keystroke(rev: string) {
 
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
-  {syncing = false, validation = []}: {syncing?: boolean; validation?: ValidationMarker[]} = {},
+  {
+    syncing = false,
+    validation = [],
+    isValidating = false,
+  }: {syncing?: boolean; validation?: ValidationMarker[]; isValidating?: boolean} = {},
 ) {
   mockUseDocumentPane.mockReturnValue({
     changesOpen: false,
@@ -113,7 +119,7 @@ function applyKeystroke(
   mockUseEditState.mockReturnValue(state.editState)
   mockUseSyncState.mockReturnValue({isSyncing: syncing})
   mockUseValidationStatus.mockReturnValue({
-    isValidating: false,
+    isValidating,
     validation,
     revision: state.draft._rev,
   })
@@ -188,5 +194,17 @@ describe('usePublishAction', () => {
     applyKeystroke(third)
     rerender(third.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+  })
+
+  it('validates immediately while a publish waits', async () => {
+    const state = keystroke('1')
+    applyKeystroke(state, {isValidating: true})
+    const {result} = await renderPublishAction(state.props)
+    const immediate = () => vi.mocked(useSetImmediateValidation).mock.lastCall?.[3]
+    expect(immediate()).toEqual({enabled: false})
+
+    act(() => result.current?.onHandle?.())
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(immediate()).toEqual({enabled: true})
   })
 })

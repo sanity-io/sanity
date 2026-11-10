@@ -1,5 +1,6 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
+import {Text, Flex, type TextProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -18,17 +19,18 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: CrossDatasetReferenceSchemaType
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
+  tone?: TextProps['tone']
 }) {
-  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo, tone} = props
   const {t} = useTranslation()
   const projectId = useProjectId()
 
   if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
-      </Stack>
+      </Flex>
     )
   }
   const showTypeLabel = type.to.length > 1
@@ -38,8 +40,8 @@ export function PreviewReferenceValue(props: {
 
   if (referenceInfo.result.availability?.available && !refType) {
     return (
-      <Stack gap={2} padding={2}>
-        <Text as="p">
+      <Flex gap={2} padding={2} flexDirection="column">
+        <Text as="p" trim={true} tone={tone}>
           <Translate
             t={t}
             i18nKey="inputs.reference.cross-dataset.invalid-type"
@@ -48,7 +50,7 @@ export function PreviewReferenceValue(props: {
             componentProps={{value}}
           />
         </Text>
-      </Stack>
+      </Flex>
     )
   }
 
@@ -63,6 +65,7 @@ export function PreviewReferenceValue(props: {
       dataset={type.dataset}
       id={value._ref}
       showTypeLabel={showTypeLabel}
+      tone={tone}
     />
   )
 }

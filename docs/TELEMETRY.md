@@ -135,6 +135,7 @@ Components log events using the `useTelemetry()` hook from `@sanity/telemetry/re
 
 ```typescript
 import {useTelemetry} from '@sanity/telemetry/react'
+
 import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
 function MyComponent() {
@@ -200,6 +201,8 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
         screen: { density: 2, height: 1080, width: 1920, innerHeight: 900, innerWidth: 1600 },
         studioVersion: "5.18.0",
         reactVersion: "19.2.3",
+        portableTextEditorVersion: "8.1.5",
+        appSdkVersion: "3.3.0",
         environment: "production",
         connection: { effectiveType: "4g", downlink: 10, rtt: 50, saveData: false },
 
@@ -220,6 +223,15 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
 Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
+
+### Dependency versions
+
+`portableTextEditorVersion` and `appSdkVersion` come from `@portabletext/editor` and `@sanity/sdk-react`'s own `package.json`. The `sanity` npm build leaves that JSON import external, which has two consequences for reading the data:
+
+- A studio built from its own `node_modules` reports the versions it resolved. `sanity` declares both as semver ranges, so these can run ahead of the versions `sanity` was released against.
+- An auto-updating studio reports the versions the CDN bundle was built against. That bundle inlines both manifests, so every studio on a given bundle reports the same pair regardless of what the project installed.
+
+The published ESM therefore carries an `import ... with {type: 'json'}` statement. A studio embedded in another app needs a bundler that supports import attributes; the Sanity CLI's own build does.
 
 ## Consent
 
@@ -251,6 +263,7 @@ In debug mode:
 - Flush interval drops to 1 second
 - Events are logged to `console.log` with `[telemetry]` prefix
 - No network requests are made
+- Every session reports soft navigations (production samples 10%)
 
 ## Event Categories
 
@@ -265,6 +278,8 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Performance CLS Measured`  | Cumulative Layout Shift   | v2               |
 | `Performance TTFB Measured` | Time to First Byte        | v2               |
 | `Performance INP Measured`  | Interaction to Next Paint | v1 (legacy) + v2 |
+
+`Performance Soft Navigation Measured` (v1) carries the LCP, FCP, INP and CLS of one soft navigation (a same-document URL change after a click), in Chromium only. It is sent for 10% of sessions, at most 200 times per session, once the next soft navigation has settled or the page hides. It carries `route` (tool and pane kind) and `change` (what the navigation changed), never the URL.
 
 ### Document Actions
 
@@ -383,6 +398,7 @@ A divergence session starts on the first `Inspected Divergence` event for a docu
 
    ```typescript
    import {useTelemetry} from '@sanity/telemetry/react'
+
    import {MyFeatureUsed} from './__telemetry__/myFeature.telemetry'
 
    function MyFeature() {

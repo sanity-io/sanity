@@ -48,6 +48,7 @@ export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Elem
       onCancel={onCancel}
       notice={<VariantEditNotice variant={initialVariant} />}
       onSubmit={handleSubmit}
+      lockType
       renderCancelButton
     />
   )

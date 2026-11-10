@@ -1,5 +1,5 @@
 import type {ObjectSchemaType} from '@sanity/types'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Entry representing a selected annotation for the combined popover
@@ -30,6 +30,5 @@ export interface SelectedAnnotationsContextValue {
  * @internal
  */
 export const SelectedAnnotationsContext = createContext<SelectedAnnotationsContextValue | null>(
-  'sanity/_singletons/context/selected-annotations',
   null,
 )

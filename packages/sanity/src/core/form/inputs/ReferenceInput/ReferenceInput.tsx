@@ -1,4 +1,4 @@
-import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {
@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -74,7 +75,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {getReferenceInfo} = useReferenceInput({
     path,
     schemaType,
-    value,
   })
 
   const {push} = useToast()
@@ -101,10 +101,16 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // The strengthen-on-publish process is not necessary for documents inside a release, and in
       // fact must be skipped in order for release preflight checks to function.
       //
+      // However, fields declared with `weak: true` have opted out of referential integrity, so
+      // preflight must not treat them as strong. For those fields `_weak` must always be written,
+      // otherwise the reference is published as a strong reference, since Content Lake cannot add
+      // `_weak` back at publish time.
+      //
       // Strengthen-on-publish is still necessary for drafts, and for documents in a bundle
       // *that isn't a release* (this isn't a scenario Studio supports today, but it may need to in
       // the future).
-      const shouldStrengthenOnPublish = typeof selectedReleaseId === 'undefined'
+      const shouldStrengthenOnPublish =
+        typeof selectedReleaseId === 'undefined' || schemaType.weak === true
       const strengthenOnPublishPatches = shouldStrengthenOnPublish ? [set(true, ['_weak'])] : []
 
       // The `_strengthenOnPublish` field is always set, regardless of whether the
@@ -374,22 +380,22 @@ export function ReferenceInput(props: ReferenceInputProps) {
   return (
     <div style={props.elementProps.style}>
       <ReferenceInputPreview {...props}>
-        <Stack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-          <Stack gap={2}>
+        <VStack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <VStack gap={2}>
             {isWeakRefToNonexistent ? (
               <Alert
                 data-testid="alert-nonexistent-document"
                 title={t('inputs.reference.error.nonexistent-document-title')}
                 suffix={
-                  <Stack padding={2}>
+                  <Flex padding={2} flexDirection="column">
                     <Button
                       text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
                       onClick={handleClear}
                     />
-                  </Stack>
+                  </Flex>
                 }
               >
-                <Text size={1}>
+                <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     i18nKey="inputs.reference.error.nonexistent-document-description"
                     t={t}
@@ -435,8 +441,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 />
               )}
             </AutocompleteContainer>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </ReferenceInputPreview>
     </div>
   )

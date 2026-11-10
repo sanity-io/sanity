@@ -1,10 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Layer, Stack, Text} from '@sanity/ui'
+import {Card, Layer, usePortal} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
-import TrapFocus from 'react-focus-lock'
+import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
@@ -12,6 +12,7 @@ import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {type NavbarAction} from '../../../../config/studio/types'
 import {type Tool} from '../../../../config/types'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {GlobalPerspectiveNav} from '../../../../perspective/navbar/GlobalPerspectiveNav'
 import {useColorSchemeSetValue} from '../../../colorScheme'
 import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../../workspace'
@@ -81,18 +82,34 @@ interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
   onClose: () => void
+  /** Renders the global perspective pickers, which the navbar leaves out on narrow screens. */
+  showPerspectives?: boolean
   tools: Tool[]
 }
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
-  const {__internal_actions: actions, activeToolName, isOpen, onClose, tools} = props
+  const {
+    __internal_actions: actions,
+    activeToolName,
+    isOpen,
+    onClose,
+    showPerspectives,
+    tools,
+  } = props
 
   const setScheme = useColorSchemeSetValue()
   const {currentUser} = useWorkspace()
   const workspaces = useWorkspaces()
   const ToolMenu = useToolMenuComponent()
+  const portal = usePortal()
 
   const {t} = useTranslation()
+
+  // Menus and dialogs opened from the drawer (the perspective pickers, the create release dialog)
+  // render in the portal. Without this, tabbing inside such a dialog lets the lock pull focus
+  // back into the drawer.
+  const trapDrawerFocus: ReactFocusLockProps['whiteList'] = (interactionElement) =>
+    !portal.element?.contains(interactionElement)
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -138,7 +155,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <TrapFocus returnFocus>
+        <TrapFocus returnFocus whiteList={trapDrawerFocus}>
           <Root onKeyDown={handleKeyDown}>
             <BackdropMotion
               animate="open"
@@ -161,7 +178,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={INNER_CARD_VARIANTS}
             >
               <Card borderBottom>
-                <Stack gap={3} padding={3}>
+                <Flex gap={3} padding={3} flexDirection="column">
                   <Flex alignItems="center">
                     {/* Current user */}
                     <Flex flexBasis="0%" flexGrow={1} alignItems="center" paddingRight={2}>
@@ -174,7 +191,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                             marginLeft={3}
                             title={currentUser?.name || currentUser?.email}
                           >
-                            <Text size={1} textOverflow="ellipsis" weight="medium">
+                            <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
                               {currentUser?.name || currentUser?.email}
                             </Text>
                           </Box>
@@ -196,8 +213,16 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       <WorkspaceMenuButton />
                     </Flex>
                   )}
-                </Stack>
+                </Flex>
               </Card>
+
+              {showPerspectives && (
+                <Card borderBottom flex="none" padding={3}>
+                  <Flex flexDirection="column" gap={2}>
+                    <GlobalPerspectiveNav fullWidth />
+                  </Flex>
+                </Card>
+              )}
 
               <Flex
                 flexDirection="column"
@@ -221,7 +246,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 <Flex flexDirection="column">
                   {actionNodes && (
                     <Card flex="none" padding={2}>
-                      <Stack gap={1}>{actionNodes}</Stack>
+                      <VStack gap={1}>{actionNodes}</VStack>
                     </Card>
                   )}
 

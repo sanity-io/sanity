@@ -1,8 +1,9 @@
+import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser} from 'playwright'
 
 import {COMMIT_BUCKET_MS, type SettleEntries} from '../../instrumentation/settleShared'
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario} from '../../scenarios/types'
+import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
 import {computeSettle, DEFAULT_SETTLE_WINDOW, type SettleWindowConfig} from '../../stats/settle'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
@@ -10,6 +11,7 @@ import {SessionError} from './errors'
 import {DEFAULT_SESSION_CONFIG, HERMETICITY_HINT, readCpuMetrics} from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
 import {foldLoafAttribution} from './pageLoad'
+import {takePageStyleCensus} from './styles'
 
 /**
  * Settle session: open the scenario, wait for readiness, then measure how
@@ -92,6 +94,12 @@ export interface SettleSessionResult {
    * time) — what the CLI charts as sparklines. Empty when never ready.
    */
   timeline: SettlePollSample[]
+  /**
+   * Style-system census of the page at the verdict (report-only) — see
+   * @repo/utils/style-systems. Taken for ready sessions only: a pane that
+   * never opened has nothing to count. Null otherwise, or without a probe.
+   */
+  styles: StyleCensus | null
 }
 
 export interface SettlePollSample {
@@ -119,15 +127,17 @@ export async function runSettleSession(options: {
   scenario: BenchScenario
   instrumentation: string
   settleInstrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<SettleSessionConfig>
 }): Promise<SettleSessionResult> {
-  const {browser, running, scenario, instrumentation, settleInstrumentation} = options
+  const {browser, running, scenario, instrumentation, settleInstrumentation, styleProbe} = options
   const config = {...DEFAULT_SETTLE_CONFIG, ...options.config}
 
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
@@ -214,6 +224,7 @@ export async function runSettleSession(options: {
     let cpuAfterReadyMs: number | null = null
     let peakCpuUtilization: number | null = null
     const timeline: SettlePollSample[] = []
+    let styles: StyleCensus | null = null
 
     if (ready) {
       // Discard boot activity — settle measures what happens after readiness.
@@ -266,6 +277,9 @@ export async function runSettleSession(options: {
           break
         }
       }
+      // After the verdict, so the DOM walk is never counted as activity
+      // inside the quiet window it is judging
+      if (styleProbe) styles = await takePageStyleCensus(page, styleProbe)
     } else {
       // Never became ready — a hard loop can keep the pane from opening (the
       // customer symptom). Report the activity gathered during the wait; with
@@ -306,6 +320,7 @@ export async function runSettleSession(options: {
       renderMarks,
       loafAttribution: foldLoafAttribution(allLoafs, 5),
       timeline,
+      styles,
     }
   } finally {
     await context.close()

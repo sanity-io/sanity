@@ -13,13 +13,13 @@ import {
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {type Commit} from 'conventional-commits-parser'
 import {format} from 'date-fns/format'
-import {descriptionToCoAuthors} from 'description-to-co-authors'
 import pMap from 'p-map'
 
 import {getClient} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
 import {flattenCallouts} from '../utils/flattenCallouts'
+import {getCoAuthors} from '../utils/getCoAuthors'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
@@ -209,7 +209,7 @@ async function getReleaseNotesMutations(
     breaking,
     subject: cleanSubject,
     header: conventionalCommit.header || '',
-    coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],
+    coAuthors: getCoAuthors(conventionalCommit),
     scope: conventionalCommit.scope || undefined,
     hash: conventionalCommit.hash || undefined,
     type: conventionalCommit.type || undefined,

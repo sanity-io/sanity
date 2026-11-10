@@ -1,13 +1,13 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Grid} from 'ui5'
+import {Text, Flex, Grid} from 'ui5'
 
 import {Button} from '../Button'
 
 // Card and tone-related coverage is prioritized while migrating from
-// styled-components to vanilla-extract and from @sanity/ui to ui5, since tone
+// styled-components to Panda CSS and from @sanity/ui to ui5, since tone
 // changes cascade through every component.
 const TONES: ButtonTone[] = ['default', 'primary', 'positive', 'caution', 'critical']
 const MODES = ['default', 'ghost', 'bleed'] as const
@@ -40,7 +40,7 @@ export const AllVariants: Story = {
     <Stack padding={4} gap={5}>
       {MODES.map((mode) => (
         <Stack key={mode} gap={3}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             mode="{mode}"
           </Text>
           <Grid

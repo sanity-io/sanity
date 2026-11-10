@@ -1,9 +1,8 @@
 import {SortIcon} from '@sanity/icons/Sort'
-import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useId} from 'react'
 import {useGetI18nText, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
@@ -103,7 +102,7 @@ export const DocumentListPaneSearchOrdering = memo(function DocumentListPaneSear
   if (orderings.length === 0) {
     return (
       <Box paddingX={2} paddingBottom={1}>
-        <Text muted size={1} data-testid="document-list-search-ordering">
+        <Text muted size={1} data-testid="document-list-search-ordering" as="div" trim={true}>
           {buttonText}
         </Text>
       </Box>

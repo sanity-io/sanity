@@ -1,4 +1,4 @@
-import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {focusFirstDescendant, Spinner} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,33 +20,14 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
+import {useDocumentTitleField} from '../useDocumentTitleField'
 import {FormHeader} from './FormHeader'
-
-const FOCUSABLE =
-  'input, textarea, select, button, a[href], [contenteditable="true"], [tabindex]:not([tabindex="-1"])'
-
-/**
- * Studio-wide bug fix (also reproduces in stock Studio): opening a document focuses its first FIELD, not the first focusable element.
- * A field's header actions (its comment button and its "⋯" menu) come before its input, so the first focusable element was the first
- * field's action button: the focus revealed the actions (focus-within) and opened its tooltip ("Add comment") with the pointer elsewhere.
- * The header actions are skipped; tabbing still reaches them.
- */
-function focusFirstField(form: HTMLElement) {
-  const target = Array.from(form.querySelectorAll<HTMLElement>(FOCUSABLE)).find(
-    (element) =>
-      element.tabIndex >= 0 &&
-      !element.hasAttribute('disabled') &&
-      !element.closest('[data-actions-visible]'),
-  )
-  if (target) target.focus()
-  else focusFirstDescendant(form)
-}
 
 interface FormViewProps {
   hidden: boolean
@@ -93,6 +74,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
   const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
+  const titleField = useDocumentTitleField()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -206,8 +188,32 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
-      focusFirstField(formRef)
+    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+      return undefined
+    }
+    if (focusFirstDescendant(formRef)) {
+      return undefined
+    }
+    // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
+    // form component loads. Retry when they land, unless focus has moved anywhere since the form
+    // committed: whatever held focus before that (the list item that opened the document) is not
+    // a choice the user made while waiting, but any focus after it is.
+    const {ownerDocument} = formRef
+    let focusMoved = false
+    const handleFocusIn = () => {
+      focusMoved = true
+    }
+    ownerDocument.addEventListener('focusin', handleFocusIn, true)
+    const observer = new MutationObserver(() => {
+      if (focusMoved || focusFirstDescendant(formRef)) {
+        observer.disconnect()
+        ownerDocument.removeEventListener('focusin', handleFocusIn, true)
+      }
+    })
+    observer.observe(formRef, {childList: true, subtree: true})
+    return () => {
+      observer.disconnect()
+      ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 
@@ -253,7 +259,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
               >
                 <Spinner muted />
                 <Box marginTop={3}>
-                  <Text align="center" muted size={1}>
+                  <Text align="center" muted size={1} as="div" trim={true}>
                     {t('document-view.form-view.loading')}
                   </Text>
                 </Box>
@@ -261,7 +267,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
             </Delay>
           ) : formState === null || hidden ? (
             <Box padding={2}>
-              <Text>{t('document-view.form-view.form-hidden')}</Text>
+              <Text as="div" trim={true}>
+                {t('document-view.form-view.form-hidden')}
+              </Text>
             </Box>
           ) : (
             <>
@@ -270,6 +278,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                   documentId={documentId}
                   schemaType={formState.schemaType}
                   title={title}
+                  onTitleClick={titleField.editable && !isReadOnly ? titleField.focus : undefined}
                 />
               </FormRow>
               <FormBuilder

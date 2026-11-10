@@ -47,10 +47,11 @@ export interface IntentLinkProps {
 export function IntentLink(
   props: IntentLinkProps & HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>,
 ) {
-  const {ref, intent, params, target, searchParams, ...restProps} = props
+  const {ref, intent, params, replace, target, searchParams, ...restProps} = props
   const {onClick, href} = useIntentLink({
     intent,
     params,
+    replace,
     target,
     onClick: props.onClick,
     searchParams,

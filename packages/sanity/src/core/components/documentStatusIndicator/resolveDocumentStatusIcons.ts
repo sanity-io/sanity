@@ -2,6 +2,7 @@ import {type PerspectiveBundle} from '../../perspective/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
+import {type VariantId} from '../../variants/types'
 
 export type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
 
@@ -11,6 +12,7 @@ type DocumentStatusIconsOutcome =
   | 'variantDraftOnly'
   | 'defaultPublishedWithDraft'
   | 'defaultPublished'
+  | 'defaultDraftOnly'
   | 'defaultUnpublished'
   | 'inReleaseWithVariant'
   | 'inRelease'
@@ -25,6 +27,7 @@ const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
   variantDraftOnly: ['variant', 'draft'],
   defaultPublishedWithDraft: ['draft', 'published'],
   defaultPublished: ['published'],
+  defaultDraftOnly: ['draft'],
   defaultUnpublished: [],
   inReleaseWithVariant: ['variant', 'release'],
   inRelease: ['release'],
@@ -33,7 +36,7 @@ const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
 
 interface DocumentStatusIconsContext {
   bundle: PerspectiveBundle
-  variantId: string | undefined
+  variantId: VariantId | undefined
   documentVersions: VersionInfoDocumentStub[]
 }
 
@@ -73,9 +76,7 @@ function resolveSystemDefaultOutcome(
     getTargetDocument({bundle: 'published', variant: undefined, documentVersions}),
   )
 
-  const draft =
-    published &&
-    Boolean(getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions}))
+  const draft = Boolean(getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions}))
 
   if (published && draft) {
     return 'defaultPublishedWithDraft'
@@ -83,6 +84,10 @@ function resolveSystemDefaultOutcome(
 
   if (published) {
     return 'defaultPublished'
+  }
+
+  if (draft) {
+    return 'defaultDraftOnly'
   }
 
   return 'defaultUnpublished'

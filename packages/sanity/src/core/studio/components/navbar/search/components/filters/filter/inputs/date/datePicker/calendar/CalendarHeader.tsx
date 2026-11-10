@@ -1,9 +1,9 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Inline, Text} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import upperFirst from 'lodash-es/upperFirst.js'
 import {useCallback} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../../../../../../../../ui-components/button/Button'
 import {useDateTimeFormat} from '../../../../../../../../../../../hooks/useDateTimeFormat'
@@ -28,7 +28,7 @@ export function CalendarHeader(props: {
     <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
       <Inline paddingLeft={2} gap={1}>
         {/* Technically not correct to simply uppercase first here, but simplifying for now */}
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {upperFirst(monthFormatter.format(focusedDate))}
         </Text>
       </Inline>

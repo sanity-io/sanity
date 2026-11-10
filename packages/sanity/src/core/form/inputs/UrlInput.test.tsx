@@ -31,6 +31,20 @@ describe('url-input', () => {
     expect(result.container.querySelector('input')).toHaveAttribute('type', 'text')
   })
 
+  it('renders type equals "text" when only relative urls are allowed', async () => {
+    const {result} = await renderStringInput({
+      fieldDefinition: {
+        name: 'relativeOnlyUrl',
+        title: 'Url',
+        type: 'url',
+        validation: (rule) => rule.uri({relativeOnly: true}),
+      },
+      render: (inputProps) => <UrlInput {...inputProps} />,
+    })
+
+    expect(result.container.querySelector('input')).toHaveAttribute('type', 'text')
+  })
+
   it('renders rules declared by context-aware validation', async () => {
     const {result} = await renderStringInput({
       fieldDefinition: {
@@ -44,5 +58,20 @@ describe('url-input', () => {
     })
 
     expect(result.container.querySelector('input')).toHaveAttribute('type', 'text')
+  })
+
+  it('renders when two-arg validation only calls skip or required (SAPP-3960)', async () => {
+    const {result} = await renderStringInput({
+      fieldDefinition: {
+        name: 'url',
+        title: 'Url',
+        type: 'url',
+        hidden: ({parent}) => parent?.hideFields === true,
+        validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required()),
+      },
+      render: (inputProps) => <UrlInput {...inputProps} />,
+    })
+
+    expect(result.container.querySelector('input')).toHaveAttribute('type', 'url')
   })
 })

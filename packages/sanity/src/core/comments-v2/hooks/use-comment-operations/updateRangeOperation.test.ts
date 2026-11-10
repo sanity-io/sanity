@@ -1,19 +1,15 @@
-import {
-  type CollaborationCommentFieldValue,
-  type CollaborationCommentRange,
-  type SanityClient,
-} from '@sanity/client'
+import {type CollaborationCommentAnchor, type SanityClient} from '@sanity/client'
 import {describe, expect, test, vi} from 'vitest'
 
 import {type CommentUpdatePayload} from '../../types'
 import {updateRangeOperation} from './updateRangeOperation'
 
-const range: CollaborationCommentRange = {
+const anchor: CollaborationCommentAnchor = {
+  type: 'portable-text',
   start: {_key: 'block-1', offset: 1},
   end: {_key: 'block-1', offset: 4},
+  fieldValue: [{_type: 'block', _key: 'block-1', children: []}],
 }
-
-const fieldValue: CollaborationCommentFieldValue = [{_type: 'block', _key: 'block-1', children: []}]
 
 const optimisticUpdate: CommentUpdatePayload = {
   target: {
@@ -36,39 +32,34 @@ function createClient(update: ReturnType<typeof vi.fn>): SanityClient {
 }
 
 describe('updateRangeOperation', () => {
-  test('sends range and fieldValue to the API', async () => {
+  test('sends a portable-text anchor to the API', async () => {
     const update = vi.fn().mockResolvedValue(undefined)
 
     await updateRangeOperation({
       client: createClient(update),
       optimisticUpdate,
-      fieldValue,
+      anchor,
       id: 'comment-1',
-      range,
       transactionId: 'transaction-1',
     })
 
-    expect(update).toHaveBeenCalledWith(
-      'comment-1',
-      {range, fieldValue},
-      {transactionId: 'transaction-1'},
-    )
+    expect(update).toHaveBeenCalledWith('comment-1', {anchor}, {transactionId: 'transaction-1'})
   })
 
-  test('sends null to clear a range', async () => {
+  test('sends null to detach an anchor', async () => {
     const update = vi.fn().mockResolvedValue(undefined)
 
     await updateRangeOperation({
       client: createClient(update),
       optimisticUpdate,
       id: 'comment-1',
-      range: null,
+      anchor: null,
       transactionId: 'transaction-1',
     })
 
     expect(update).toHaveBeenCalledWith(
       'comment-1',
-      {range: null},
+      {anchor: null},
       {transactionId: 'transaction-1'},
     )
   })
@@ -80,10 +71,9 @@ describe('updateRangeOperation', () => {
     await updateRangeOperation({
       client: createClient(update),
       optimisticUpdate,
-      fieldValue,
+      anchor,
       id: 'comment-1',
       onUpdate,
-      range,
       transactionId: 'transaction-1',
     })
 

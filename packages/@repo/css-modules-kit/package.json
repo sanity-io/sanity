@@ -1,0 +1,22 @@
+{
+  "name": "@repo/css-modules-kit",
+  "version": "6.19.0",
+  "private": true,
+  "description": "CSS modules tooling for the monorepo packages: the Lightning CSS scoping their builds share, and css-modules-kit's codegen (`cmk`) for their typings. Its own package because cmk needs the TypeScript 6 compiler API (`@typescript/typescript6`, aliased as `typescript` here), which the TypeScript 7 the rest of the repo runs on does not ship.",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "pnpm run generate:vision && pnpm run generate:test-studio",
+    "generate:test-studio": "cmk --clean --project ../../../dev/test-studio",
+    "generate:vision": "cmk --clean --project ../../@sanity/vision",
+    "prepare": "pnpm run generate"
+  },
+  "devDependencies": {
+    "@css-modules-kit/codegen": "^1.4.0",
+    "@repo/tsconfig": "workspace:*",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}

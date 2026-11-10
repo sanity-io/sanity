@@ -1,9 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {type CurrentUser} from '@sanity/types'
-import {Inline, Text} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Fragment, useCallback} from 'react'
-import {Box} from 'ui5'
+import {Fragment, useMemo} from 'react'
+import {Text, Box, Icon} from 'ui5'
 
 import {useListFormat} from '../hooks/useListFormat'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -31,6 +31,22 @@ export interface InsufficientPermissionsMessageProps {
 
 const EMPTY_ARRAY = [] as never[]
 
+type ListFormatParts = ReturnType<Intl.ListFormat['formatToParts']>
+
+function Roles({parts}: {parts?: ListFormatParts}) {
+  return (
+    <>
+      {parts?.map((part, index) =>
+        part.type === 'element' ? (
+          <code key={`${part.value}-${index}`}>{part.value}</code>
+        ) : (
+          <Fragment key={`${part.value}-${index}`}>{part.value}</Fragment>
+        ),
+      )}
+    </>
+  )
+}
+
 /** @internal */
 export function InsufficientPermissionsMessage({
   currentUser,
@@ -41,35 +57,21 @@ export function InsufficientPermissionsMessage({
   const list = useListFormat({style: 'short', type: 'unit'})
   const roles = currentUser?.roles || EMPTY_ARRAY
 
-  const Roles = useCallback(
-    () => (
-      <>
-        {list
-          .formatToParts(roles.map((role) => role.title || startCase(role.name)))
-          .map((i, index) =>
-            i.type === 'element' ? (
-              <code key={`${i.value}-${index}`}>{i.value}</code>
-            ) : (
-              <Fragment key={`${i.value}-${index}`}>{i.value}</Fragment>
-            ),
-          )}
-      </>
-    ),
+  const roleParts = useMemo(
+    () => list.formatToParts(roles.map((role) => role.title || startCase(role.name))),
     [roles, list],
   )
 
   return (
     <Box>
       <Inline gap={2}>
-        <Text size={0}>
-          <AccessDeniedIcon />
-        </Text>
-        <Text size={1} weight="medium">
+        <Icon size={0} icon={AccessDeniedIcon} style={{margin: '-0.3125rem'}} />
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('insufficient-permissions-message.title')}
         </Text>
       </Inline>
       <Inline marginTop={4}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="insufficient-permissions-message.not-authorized-explanation"
             t={t}
@@ -78,8 +80,13 @@ export function InsufficientPermissionsMessage({
         </Text>
       </Inline>
       <Inline marginTop={4} marginBottom={1}>
-        <Text size={1}>
-          <Translate i18nKey="insufficient-permissions-message.roles" t={t} components={{Roles}} />
+        <Text size={1} as="div" trim={true}>
+          <Translate
+            i18nKey="insufficient-permissions-message.roles"
+            t={t}
+            components={{Roles}}
+            componentProps={{parts: roleParts}}
+          />
         </Text>
       </Inline>
     </Box>

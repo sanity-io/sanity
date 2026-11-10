@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {Text, VStack} from 'ui5'
 
 import {type UpsellData} from '../types'
 import {UpsellPanel} from '../UpsellPanel'
@@ -63,15 +64,15 @@ const FIXTURE_IMAGE: UpsellData['image'] = {
 export function UpsellPanelStory() {
   return (
     <Card padding={4} style={{maxWidth: 560}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             vertical bordered
           </Text>
           <UpsellPanel data={UPSELL_DATA} onPrimaryClick={noop} onSecondaryClick={noop} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             horizontal bordered (image left, copy right)
           </Text>
           <UpsellPanel
@@ -80,9 +81,9 @@ export function UpsellPanelStory() {
             onPrimaryClick={noop}
             onSecondaryClick={noop}
           />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             vertical flush centered
           </Text>
           <UpsellPanel
@@ -92,8 +93,8 @@ export function UpsellPanelStory() {
             onPrimaryClick={noop}
             onSecondaryClick={noop}
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

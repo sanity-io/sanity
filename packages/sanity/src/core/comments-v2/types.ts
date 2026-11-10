@@ -1,6 +1,5 @@
 import {
-  type CollaborationCommentFieldValue,
-  type CollaborationCommentRange,
+  type CollaborationCommentAnchor,
   type CollaborationCommentReactionShortName,
 } from '@sanity/client'
 import {type PortableTextBlock, type WeakGlobalDocumentReferenceValue} from '@sanity/types'
@@ -39,7 +38,8 @@ export interface CommentOperations {
   ) => Promise<void>
   /**
    * Re-anchors an inline comment after its text has moved.
-   * Non-null `range` requires `fieldValue` (editor PT covering the range).
+   * A portable-text `anchor` carries `fieldValue` (editor PT covering the selection).
+   * `anchor: null` detaches it.
    */
   updateRange: (id: string, payload: CommentUpdateRangePayload) => Promise<void>
 }
@@ -182,18 +182,18 @@ export interface CommentReactionItem {
 export type CommentsType = 'field' | 'task'
 
 /**
- * `updateRange` payload. Non-null `range` requires editor PT as `fieldValue`.
+ * `updateRange` payload. A portable-text `anchor` carries the editor PT as
+ * `fieldValue`. `anchor: null` detaches the selection.
  * `optimisticUpdate` is applied to the local comment while the request is in
  * flight; the listener echo replaces it with the server-resolved state.
  */
 export type CommentUpdateRangePayload =
   | {
-      range: CollaborationCommentRange
-      fieldValue: CollaborationCommentFieldValue
+      anchor: CollaborationCommentAnchor
       optimisticUpdate: CommentUpdatePayload
     }
   | {
-      range: null
+      anchor: null
       optimisticUpdate: CommentUpdatePayload
     }
 
@@ -310,14 +310,11 @@ export type CommentFieldCreatePayload = CommentBaseCreatePayload & {
   selection?: CommentPathSelection
 } & (
     | {
-        /** Comments API range for an inline selection */
-        range: CollaborationCommentRange
-        /** Editor Portable Text covering `range` */
-        fieldValue: CollaborationCommentFieldValue
+        /** Comments API anchor for an inline selection. */
+        anchor: CollaborationCommentAnchor
       }
     | {
-        range?: undefined
-        fieldValue?: undefined
+        anchor?: undefined
       }
   )
 

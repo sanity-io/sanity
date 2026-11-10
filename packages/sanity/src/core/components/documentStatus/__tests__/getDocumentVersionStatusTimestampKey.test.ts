@@ -31,7 +31,7 @@ function createVersion({
       bundleId,
       group: {_ref: 'article-1', _weak: true},
       release: releaseRef ? {_ref: releaseRef, _weak: true} : undefined,
-      variant: variantRef ? {_ref: variantRef, _weak: true} : undefined,
+      variants: variantRef ? [{_ref: variantRef, _key: 'k-123'}] : undefined,
     },
   }
 }
@@ -67,16 +67,16 @@ describe('getDocumentVersionStatusTimestampKey', () => {
     )
   })
 
-  it('uses Created for a live-edit published document that has never been edited', () => {
+  it('uses Edited for a live-edit published document that has never been edited', () => {
     expect(
       getDocumentVersionStatusTimestampKey(
         createVersion({id: 'article-1', createdAt: CREATED_AT, updatedAt: CREATED_AT}),
         true,
       ),
-    ).toBe('document-status.created')
+    ).toBe('document-status.edited')
   })
 
-  it('uses Created for a draft that has never been edited', () => {
+  it('uses Edited for a draft that has never been edited', () => {
     expect(
       getDocumentVersionStatusTimestampKey(
         createVersion({
@@ -87,7 +87,7 @@ describe('getDocumentVersionStatusTimestampKey', () => {
         }),
         false,
       ),
-    ).toBe('document-status.created')
+    ).toBe('document-status.edited')
   })
 
   it('uses Edited for a draft that has been updated', () => {
@@ -99,7 +99,7 @@ describe('getDocumentVersionStatusTimestampKey', () => {
     ).toBe('document-status.edited')
   })
 
-  it('uses Created for a release version that has never been edited', () => {
+  it('uses Edited for a release version that has never been edited', () => {
     expect(
       getDocumentVersionStatusTimestampKey(
         createVersion({
@@ -111,7 +111,7 @@ describe('getDocumentVersionStatusTimestampKey', () => {
         }),
         false,
       ),
-    ).toBe('document-status.created')
+    ).toBe('document-status.edited')
   })
 
   it('uses Edited for a release version that has been updated', () => {

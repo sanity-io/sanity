@@ -10,8 +10,8 @@ import {
   getVariantConditionsText,
   getVariantDescription,
   getVariantId,
-  getVariantIdFromDocument,
   getVariantTitle,
+  isDefaultVariant,
   isPublishedBundleId,
   isReleaseBundle,
   variantMatchesConditionFilters,
@@ -21,17 +21,6 @@ describe('variants tool utilities', () => {
   it('derives a display id from a variant document id', () => {
     expect(getVariantId(`${VARIANT_DOCUMENTS_PATH}.audience-a`)).toBe('audience-a')
     expect(getVariantId('audience-a')).toBe('audience-a')
-  })
-
-  it('derives the sticky variant id from a document _system variant ref', () => {
-    expect(
-      getVariantIdFromDocument({
-        _system: {
-          variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true},
-        },
-      }),
-    ).toBe('alpha-audience')
-    expect(getVariantIdFromDocument({})).toBeUndefined()
   })
 
   it('uses metadata title before falling back to the id suffix', () => {
@@ -104,6 +93,25 @@ describe('variants tool utilities', () => {
     expect(filterVariantsForSearch([developerVariant, localeVariant], 'nb-no')).toEqual([
       localeVariant,
     ])
+  })
+
+  it('includes the default variant in the same filtered list', () => {
+    const variant = {
+      ...createMockVariant('developer'),
+      metadata: {title: 'Developer audience', description: []},
+    }
+    const defaultTitle = 'Default'
+
+    const [defaultVariant, listedVariant] = filterVariantsForSearch([variant], '', defaultTitle)
+
+    expect(defaultVariant && isDefaultVariant(defaultVariant) && defaultVariant.title).toBe(
+      defaultTitle,
+    )
+    expect(listedVariant).toBe(variant)
+    expect(filterVariantsForSearch([variant], 'default', defaultTitle)).toEqual([defaultVariant])
+    expect(filterVariantsForSearch([variant], 'developer', defaultTitle)).toEqual([variant])
+    expect(filterVariantsForSearch([variant], 'zzzz', defaultTitle)).toEqual([])
+    expect(isDefaultVariant(variant)).toBe(false)
   })
 
   it('treats undefined and published bundle ids as published', () => {

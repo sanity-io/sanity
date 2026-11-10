@@ -1,0 +1,12 @@
+{
+  "id": "ENG-002",
+  "title": "A retryable commit failure (5xx, network, session expiry, 429) drops the commit instead of re-queuing it",
+  "severity": "S1",
+  "failureClass": "transient commit failure treated as terminal (silent loss of buffered edits)",
+  "source": "INC-448 (App SDK reverted rejected saves with no retry); gap 12a/12b in 01-context.md",
+  "filesTouched": ["packages/@sanity/mutator/src/document/BufferedDocument.ts"],
+  "userVisibleEffect": "After one failed commit the edit stays on screen but is never re-sent; the server never receives it",
+  "notApplicableSuites": ["fuzz:pt"],
+  "expectedCaughtBy": ["unit:engine"],
+  "addedOn": "2026-10-16"
+}

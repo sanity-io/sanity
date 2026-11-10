@@ -1,6 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, useMemo} from 'react'
-import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
+import {CapabilityGate, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {PaneHeader} from '../../../../components/pane/PaneHeader'
@@ -21,7 +21,6 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   const {editState, connectionState, views, documentId, displayed} = useDocumentPane()
   const {features} = useStructureTool()
   const {index, BackLink} = usePaneRouter()
-  const {activeWorkspace} = useActiveWorkspace()
 
   const showTabs = views.length > 1
 
@@ -53,15 +52,10 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   )
 
   const favoriteToggle = (
-    <CapabilityGate capability="comlink" condition="available">
+    <CapabilityGate capability="favorites" condition="available">
       <FavoriteToggle
-        resourceType="studio"
         documentId={displayed?._id ?? documentId}
         documentType={displayed?._type ?? ''}
-        resourceId={[activeWorkspace.projectId, activeWorkspace.dataset].join('.')}
-        schemaName={activeWorkspace.name}
-        projectId={activeWorkspace.projectId}
-        dataset={activeWorkspace.dataset}
         documentExists={
           (editState?.ready &&
             (editState.version ?? editState.draft ?? editState.published) !== null) ??

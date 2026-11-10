@@ -9,7 +9,7 @@ const VARIANT_DOCUMENT_TYPE = 'system.variant'
 // Variant definition actions are only routable on a newer API version than the
 // shared e2e client default (2021-08-31). This matches the version the studio
 // uses for these calls (VARIANTS_STUDIO_CLIENT_OPTIONS).
-const VARIANTS_API_VERSION = 'X'
+const VARIANTS_API_VERSION = 'v2025-08-18'
 
 function getVariantsClient(sanityClient: SanityClient): SanityClient {
   return sanityClient.withConfig({apiVersion: VARIANTS_API_VERSION})

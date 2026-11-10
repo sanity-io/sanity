@@ -1,13 +1,15 @@
-import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {ElementWithChangeBar} from '../ElementWithChangeBar'
 
 /**
- * Vanilla-extract migration sentinel: the change indicator bar was one of the
- * first components migrated from styled-components to vanilla-extract
- * (`ElementWithChangeBar.css.ts`), so this story guards that styling path.
+ * Static-styles migration sentinel: the change indicator bar was one of the
+ * first components migrated from styled-components to `.css.ts` static styles
+ * (`ElementWithChangeBar.css.ts`, now Panda CSS), so this story guards that
+ * styling path.
  * Rendered inside `TestWrapper` because the component needs the review
  * changes context, layers and studio i18n.
  */
@@ -30,32 +32,32 @@ export const States: Story = {
   args: {isChanged: true, children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
-        <Stack gap={2}>
-          <Text muted size={1}>
+      <VStack gap={4}>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             changed
           </Text>
           <ElementWithChangeBar isChanged>
             <TextInput readOnly value="Changed field" />
           </ElementWithChangeBar>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1}>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             changed + focus
           </Text>
           <ElementWithChangeBar hasFocus isChanged>
             <TextInput readOnly value="Changed field with focus" />
           </ElementWithChangeBar>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1}>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             unchanged
           </Text>
           <ElementWithChangeBar isChanged={false}>
             <TextInput readOnly value="Unchanged field" />
           </ElementWithChangeBar>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

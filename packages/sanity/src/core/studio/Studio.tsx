@@ -1,5 +1,3 @@
-import './styles.css'
-
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type Config} from '../config/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
@@ -90,6 +88,11 @@ export interface StudioProps {
    * @hidden
    * @beta */
   unstable_noAuthBoundary?: boolean
+  /**
+   * Overrides the document's `sanity` import map entry, for a studio loaded from the module CDN another way.
+   * @hidden
+   * @beta */
+  unstable_importMapUrl?: string
 }
 
 /**
@@ -104,6 +107,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_globalStyles: globalStyles,
     unstable_history,
     unstable_noAuthBoundary,
+    unstable_importMapUrl,
   } = props
 
   return (
@@ -114,6 +118,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
       scheme={scheme}
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
+      unstable_importMapUrl={unstable_importMapUrl}
     >
       {globalStyles && <GlobalStyle />}
       <StudioLayout />

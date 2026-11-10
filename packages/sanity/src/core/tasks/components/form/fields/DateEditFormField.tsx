@@ -80,6 +80,7 @@ export function DateEditFormField(props: {
   const handleDeactivation = useCallback(() => {
     buttonRef.current?.focus()
   }, [buttonRef])
+  // oxlint-disable-next-line react/purity -- the label format depends on the current calendar year
   const dueDateIsThisYear = deserializedValue?.date?.getFullYear() === new Date().getFullYear()
 
   return (

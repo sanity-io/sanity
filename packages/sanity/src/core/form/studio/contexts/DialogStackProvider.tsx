@@ -153,13 +153,14 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     (targetPath: Path) => {
       onPathOpen(targetPath)
 
-      // Keep only stack entries whose paths are strict ancestors of the target path
-      // (dialogs that should remain open because the target is inside them)
+      // Keep only stack entries whose paths are the target path or an ancestor of it
+      // (dialogs that stay open because the target is, or is inside, the item they edit).
+      // A dialog registers once on mount, so dropping the entry of a dialog that stays
+      // open would leave it mounted but hidden.
       setStack((prev) =>
         prev.filter((entry) => {
           if (!entry.path) return false
-          // Entry must be strictly shorter to be an ancestor
-          if (entry.path.length >= targetPath.length) return false
+          if (entry.path.length > targetPath.length) return false
           return entry.path.every((segment, index) => {
             const targetSegment = targetPath[index]
             return isKeySegment(segment) && isKeySegment(targetSegment)

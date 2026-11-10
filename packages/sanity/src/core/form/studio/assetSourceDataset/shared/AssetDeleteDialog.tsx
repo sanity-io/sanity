@@ -1,8 +1,7 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -69,10 +68,11 @@ export function AssetDeleteDialog({
           <LoadingBlock showText />
         </Box>
       ) : (
-        <Stack
+        <Flex
           paddingX={hasResults ? [2, 3, 4] : 0}
           paddingY={hasResults ? [3, 3, 3, 4] : 0}
           gap={1}
+          flexDirection="column"
         >
           <ConfirmMessage asset={asset} assetType={assetType} hasResults={hasResults} />
 
@@ -83,7 +83,7 @@ export function AssetDeleteDialog({
               assetType={assetType}
             />
           )}
-        </Stack>
+        </Flex>
       )}
     </Dialog>
   )

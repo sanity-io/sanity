@@ -8,9 +8,10 @@ import {
   type ObjectSchemaType,
   type PortableTextBlock,
 } from '@sanity/types'
-import {Card, PortalProvider, Stack, Text, TextInput, usePortal} from '@sanity/ui'
+import {Card, PortalProvider, TextInput, usePortal} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {useMemo, useState} from 'react'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useSchema} from '../../../../hooks/useSchema'
@@ -59,9 +60,9 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
   return (
     <PortableTextMemberSchemaTypesProvider schemaType={schemaType}>
       <EditorProvider initialConfig={initialConfig}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               toolbar (wide)
             </Text>
             <Card border radius={1}>
@@ -75,9 +76,9 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
                 />
               </ToolbarCard>
             </Card>
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               toolbar collapsed below 400px
             </Text>
             <div style={{maxWidth: 360}}>
@@ -93,8 +94,8 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
                 </ToolbarCard>
               </Card>
             </div>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </EditorProvider>
     </PortableTextMemberSchemaTypesProvider>
   )
@@ -111,7 +112,9 @@ function PopoverModal() {
     <PortalProvider __unstable_elements={portalElements} element={portal.element}>
       <div ref={setBoundaryElement} style={{minHeight: 320, position: 'relative'}}>
         <Card border padding={3} radius={2} ref={setReferenceElement} style={{maxWidth: 240}}>
-          <Text size={1}>Image block</Text>
+          <Text size={1} as="div" trim={true}>
+            Image block
+          </Text>
         </Card>
         {referenceElement && (
           <PopoverEditDialog
@@ -121,20 +124,20 @@ function PopoverModal() {
             referenceElement={referenceElement}
             title="Edit Image"
           >
-            <Stack gap={4}>
-              <Stack gap={2}>
-                <Text size={1} weight="medium">
+            <VStack gap={4}>
+              <VStack gap={2}>
+                <Text size={1} weight="medium" as="div" trim={true}>
                   Alternative text
                 </Text>
                 <TextInput defaultValue="A mountain lake at dawn" />
-              </Stack>
-              <Stack gap={2}>
-                <Text size={1} weight="medium">
+              </VStack>
+              <VStack gap={2}>
+                <Text size={1} weight="medium" as="div" trim={true}>
                   Caption
                 </Text>
                 <TextInput defaultValue="" />
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           </PopoverEditDialog>
         )}
       </div>
@@ -149,15 +152,15 @@ function EditorChrome() {
 
   return (
     <Card padding={4} style={{maxWidth: 640}}>
-      <Stack gap={5}>
+      <VStack gap={5}>
         <Toolbars schemaType={schemaType} />
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             popover edit dialog
           </Text>
           <PopoverModal />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

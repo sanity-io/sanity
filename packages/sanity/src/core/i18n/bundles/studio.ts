@@ -36,6 +36,21 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
   /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
+  /** Deprecation warning in About-dialog: the running (or pinned) version is deprecated */
+  'about-dialog.version-info.deprecated.current':
+    'v{{version}} has been deprecated and should no longer be used.',
+  /** Deprecation warning in About-dialog: header */
+  'about-dialog.version-info.deprecated.header': 'Deprecated version',
+  /** Deprecation warning in About-dialog: what to do when the studio is auto-updating but pinned to the deprecated version */
+  'about-dialog.version-info.deprecated.next-step.pinned':
+    'This Studio is pinned to a deprecated version. Choose a different version in Manage.',
+  /** Deprecation warning in About-dialog: what to do when the studio is not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade':
+    'Update the sanity package to a newer version and redeploy the Studio.',
+  /** Deprecation warning in About-dialog: link to the upgrade guide for studios that are not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade.learn-how': 'Learn how to update',
+  /** Deprecation warning in About-dialog: the reason given when the version was deprecated */
+  'about-dialog.version-info.deprecated.reason': 'Reason: {{reason}}',
   /** @deprecated "How to upgrade" link text */
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.how-to-upgrade': 'Update now',
@@ -50,6 +65,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload': 'Reload',
   /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
+  /** "Deprecated" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.deprecated': 'Deprecated',
   /** "Development" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.development': 'Development',
   /** "New version available" tooltip in About-dialog */
@@ -135,6 +152,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.button.cancel': 'Cancel',
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
+  /** Fallback title of the select asset dialog for files, when the input provides none */
+  'asset-source.dialog.default-title_file': 'Select file',
+  /** Fallback title of the select asset dialog for images, when the input provides none */
+  'asset-source.dialog.default-title_image': 'Select image',
+  /** Fallback title of the select asset dialog for videos, when the input provides none */
+  'asset-source.dialog.default-title_video': 'Select video',
   /** Keys shared between both image asset source and file asset source */
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
@@ -204,9 +227,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'See the console for more information.',
   'asset-sources.common.uploader.upload-failed.title': 'Upload failed',
 
+  /** Warning shown when an uploaded file already exists in the selected asset source */
+  'asset-sources.common.warning.file-already-exist.description':
+    'Using the existing file found in this source.',
+  'asset-sources.common.warning.file-already-exist.title': "File: '{{filename}}' already exists",
+
   /** Menu Items for Dataset Asset Source (will be replaced with workspace name by default) */
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
+
+  /** Error message shown when a federated (workbench-brokered) asset source view fails to load */
+  'asset-sources.federated.error.unavailable':
+    'This asset source failed to load. Close the dialog and try again.',
 
   /** Error messages for the Media Library Asset Source  */
   'asset-sources.media-library.error.library-could-not-be-resolved':
@@ -232,15 +264,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the open in source dialog */
   'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
 
+  /** Fallback title of the Media Library select dialog for files, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for images, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for videos, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
   /** Title for the upload dialog (component mode) */
   'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
 
-  /** Warning message shown when uploading already existing files to the Media Library Asset Source */
-  'asset-sources.media-library.warning.file-already-exist.description':
-    'Using the existing file found in the library.',
-  'asset-sources.media-library.warning.file-already-exist.title':
-    "File: '{{filename}}' already exists",
-
+  /** Banner shown on a document when the selected release has been archived */
+  'banners.archived-release-banner.text':
+    "The '<strong>{{title}}</strong>' release has been archived.",
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",
@@ -478,6 +513,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The title of the reconnecting toast */
   'common.reconnecting.toast.title': 'Trying to connect…',
 
+  /** Tooltip when a variant has more than one condition that is not in the configured list. */
+  'conditions.mismatch.multiple':
+    'This variant uses conditions that are no longer configured. Edit the variant to fix it.',
+  /** Tooltip when a stored condition key is not in the configured list. */
+  'conditions.mismatch.unknown-key':
+    'The condition "{{key}}" is not in the configured list. Edit the variant to fix it.',
+  /** Tooltip when a stored condition value is not in the configured list for that key. */
+  'conditions.mismatch.unknown-value':
+    'The value "{{value}}" is not valid for "{{key}}". Edit the variant to fix it.',
+
   /** --- Configuration issues --- */
 
   /** Default label text on configuration issues button */
@@ -530,8 +575,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document inventory --- */
 
-  /** The label shown when dismissing the document group inventory */
-  'document-group-inventory.action.cancel': 'Cancel',
   /** The label for the button that opens the document group inventory */
   'document-group-inventory.action.manage-versions': 'Manage versions',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
@@ -546,22 +589,36 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The document inventory title (plural) */
   'document-group-inventory.title_other': '{{count}} {{subject}}',
   /** The label text that indicates an item in the document group inventory is currently being viewed */
-  'document-group-inventory.viewing-item-label': 'viewing',
+  'document-group-inventory.viewing-item-label': 'Editing',
 
   /** --- Document group --- */
 
   /** The label given to a document group's base variant */
-  'document-group.base-variant': 'All users (Default)',
-  /** The header label for the variant creation flow before a variant definition has been selected */
-  'document-group.create-variant': 'Create variant',
-  /** The header label for the variant creation flow once a variant definition has been selected */
-  'document-group.create-variant.for-target': 'Create variant for {{variantDefinitionName}}',
-  /** The heading for the option to create a variant as a draft */
-  'document-group.create-variant.target-drafts': 'As a draft',
-  /** The label for the list of releases a variant can be created in */
-  'document-group.create-variant.target-releases': 'Into a release',
-  /** The label for the list of existing variants that can be viewed instead of creating a new one */
-  'document-group.create-variant.view-existing-variants': 'Or view existing variants',
+  'document-group.base-variant': 'Default',
+  /** The text of the actions that open the variant creation form and confirm the creation */
+  'document-group.create-variant': 'Create version',
+  /** Describes the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-description': 'What it starts from',
+  /** The label of the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-label': 'Document',
+  /** An option of the variant creation form's picker for the version to start from, while Content Variants is switched on: the version's variant and the draft, release or published bundle it is in */
+  'document-group.create-variant.base-option': '{{variantName}} · {{bundleName}}',
+  /** The default option of the variant creation form's picker for the version to start from, listed first: the version nearest to the picked variant and target, resolved when the version is created */
+  'document-group.create-variant.base-option-nearest': 'Nearest version',
+  /** The text of the button that closes the variant creation form without creating anything */
+  'document-group.create-variant.cancel-button.text': 'Cancel',
+  /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
+  'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
+  /** Placeholder of the filter input in the variant creation form's pickers */
+  'document-group.create-variant.filter-placeholder': 'Find',
+  /** Describes the variant creation form's picker for the draft or release to create the variant in */
+  'document-group.create-variant.target-description': 'Where it lives',
+  /** The label of the variant creation form's picker for the draft or release to create the variant in */
+  'document-group.create-variant.target-label': 'Target',
+  /** Describes the variant creation form's picker for the variant definition to create */
+  'document-group.create-variant.variant-description': 'Who sees this version',
+  /** The label of the variant creation form's picker for the variant definition to create */
+  'document-group.create-variant.variant-label': 'Variant',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -590,10 +647,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (singular) */
-  'document-group.delete.confirm-button.text_one': 'Delete (1)',
-  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action (plural) */
-  'document-group.delete.confirm-button.text_other': 'Delete ({{count}})',
+  /** The label given to the delete action */
+  'document-group.delete.confirm-button.text': 'Delete',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
@@ -621,14 +676,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
-  /** The versions popover: a line's most recent activity when it is an edit (a draft or a release version), "Edited 3 days ago" */
-  'document-group.status.edited-when': 'Edited {{when}}',
-  /** The versions popover's last line, when not every audience fits */
+  /** The label for the action that clears every selected variant in the document group inventory */
+  'document-group.deselect-all': 'Deselect all',
+  /** The number of variants currently selected in the document group inventory */
+  'document-group.selected-count': '{{count}} selected',
+  /** Last line of the document versions popover, counting the versions it does not list (singular) */
   'document-group.status.more_one': 'and {{count}} more version',
-  /** The versions popover's last line, when not every audience fits */
+  /** Last line of the document versions popover, counting the versions it does not list (plural) */
   'document-group.status.more_other': 'and {{count}} more versions',
-  /** The versions popover: a line's most recent activity when it is the published version, "Published 1 day ago" */
-  'document-group.status.published-when': 'Published {{when}}',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
@@ -637,6 +692,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** The label text that indicates a version in the document group is served for the selected perspective and variant */
+  'document-group.version.served': 'Served',
+  /** The label text that indicates a base version in the document group is served because the selected variant has no version */
+  'document-group.version.served-instead': 'Served instead',
+  /** The tooltip for the badges that indicate which version in the document group is served for the selected perspective and variant */
+  'document-group.version.served.tooltip':
+    'A visitor matching the selected perspective will see this version.',
 
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
@@ -798,6 +860,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+  /** Subtitle for the studio version menu item when the running or pinned version is deprecated */
+  'help-resources.studio-version-deprecated': 'v{{version}} is deprecated',
 
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
@@ -807,6 +871,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Version text */
   'help-resources.version': 'v{{version}}',
+  /** Accessibility label for the close button of the incoming references inspector */
+  'incoming-references.close-button-aria-label': 'Close incoming references',
   /**Incoming references inspector title */
   'incoming-references.title': 'Incoming references',
 
@@ -846,14 +912,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_one': 'Show 1 item',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_other': 'Show all {{count}} items',
+  /** Label for collapsing an expanded array back to a limited number of items */
+  'inputs.array.action.show-fewer-items': 'Show fewer items',
   /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
     'You can still move or delete this item, but it cannot be edited since the schema definition for its type is nowhere to be found.',
-  /** Error label for toast when array could not resolve the initial value */
-  'inputs.array.error.cannot-resolve-initial-value-title':
+  /** Error description for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-description':
     'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+  /** Error label for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-title': 'Unable to resolve initial value',
   /** Error label for toast when trying to upload one array item of a type that cannot be converted to array */
   'inputs.array.error.cannot-upload-unable-to-convert_one':
     "The following item can't be uploaded because there's no known conversion from content type to array item:",
@@ -1251,6 +1325,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Tooltip on text whose annotation type is not defined in the schema */
+  'inputs.portable-text.unknown-value.annotation': 'Annotation not defined in the schema: {{name}}',
+  /** Tooltip on a block whose list type is not defined in the schema */
+  'inputs.portable-text.unknown-value.list-item': 'List type not defined in the schema: {{name}}',
+  /** Tooltip on text carrying a mark that is not defined in the schema */
+  'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
+  /** Tooltip on a block whose style is not defined in the schema */
+  'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
   /** Label for the table lane that appends a column */
   'inputs.portable-text.table.add-column': 'Add column at end',
   /** Label for the table lane that appends a row */
@@ -1489,11 +1571,29 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
+  'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
+  /** Default option label when no variant is selected. */
+  'navbar.variant.default': 'Default',
+  /** View all option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.view-all': 'View all',
+  /** Tooltip for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant': 'View audience',
+  /** Accessible label for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant-aria-label': 'View audience {{title}}',
+  /** New audience option label for the menu item dropdown in the variants selection menu. */
+  'navbar.variant.menu.new-audience': 'New audience',
+  /** Placeholder for the variant filter input in the dropdown. */
+  'navbar.variant.filter-placeholder': 'Find audience',
+
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.learn-more-button.text': 'Learn more',
+  /** Tooltip for the link that takes the user to the Sanity documentation about the HTTP1 issue */
+  'network-check.slow-protocol-warning.learn-more-button.tooltip':
+    'Opens the Sanity documentation in a new tab',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
   /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
@@ -1543,6 +1643,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.not-in-a-document': 'Not in a document',
   /** Tooltip content text for presence menu button */
   'presence.tooltip-content': 'Who is here',
+  /** Tooltip text for document previews when one user is editing the document in a release */
+  'presence.tooltip.one':
+    '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
+  /** Tooltip text for document previews when one user is editing a published or draft document */
+  'presence.tooltip.one-without-release': '{{displayName}} is editing this document right now',
+  /** Tooltip text for document previews when multiple users are editing the document */
+  'presence.tooltip.other': '{{count}} people are editing this document right now',
+  /** Release title used in the document preview presence tooltip when the release has no title */
+  'presence.tooltip.untitled-release': 'Untitled',
+
+  /** Accessible name and tooltip for the button that clears the selected global perspective */
+  'perspective.action.clear': 'Clear selection',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',
@@ -1551,6 +1663,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 
+  /** Compact relative time in the past, in days, eg "3 days ago" (singular) */
+  'relative-time.compact.days-ago_one': '{{count}} day ago',
+  /** Compact relative time in the past, in days, eg "3 days ago" (plural) */
+  'relative-time.compact.days-ago_other': '{{count}} days ago',
+  /** Compact relative time in the past, in hours, eg "3 hr ago" */
+  'relative-time.compact.hours-ago': '{{count}} hr ago',
+  /** Compact relative time in the past, in minutes, eg "5 min ago" */
+  'relative-time.compact.minutes-ago': '{{count}} min ago',
+  /** Compact relative time in the past, in months, eg "2 mo ago" */
+  'relative-time.compact.months-ago': '{{count}} mo ago',
+  /** Compact relative time in the past, in weeks, eg "2 wk ago" */
+  'relative-time.compact.weeks-ago': '{{count}} wk ago',
+  /** Compact relative time in the past, in years, eg "1 yr ago" */
+  'relative-time.compact.years-ago': '{{count}} yr ago',
   /* Relative time, just now */
   /** PROPOSED: a compact relative time in the past, as a phrase: "2 days ago" */
   'relative-time.compact.ago': '{{time}} ago',
@@ -1715,6 +1841,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Explanation text shown when the current draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-draft-explanation':
+    'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
+  /** Explanation text shown when the scheduled draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-scheduled-draft-explanation':
+    'Your scheduled draft could not be loaded. Copying it could overwrite your draft with the wrong content.',
   /** Body text for change schedule dialog */
   'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
   /** Confirm button text for change schedule dialog */
@@ -1755,25 +1887,25 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.clear': 'Back to {{perspective}}',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
+  /** Placeholder for the releases perspective filter. */
+  'release.navbar.filter-placeholder': 'Find a version or release',
+  /** Accessible name for the chevron that opens the releases menu */
+  'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
+  /** Accessible label for the link that opens a release's page from the global perspective menu */
+  'release.navbar.view-release-aria-label': 'View release {{title}}',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */
   'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
-  /** The toast description that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
@@ -1799,15 +1931,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been published.',
-  /** The toast description that will be shown when the user has a release perspective which is now published
-   * @deprecated – no longer needed
-   **/
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now deleted
-   * @deprecated – no longer needed
-   **/
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
@@ -1819,10 +1945,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.schedule-publish.error': 'Failed to schedule draft: {{error}}',
   /** Success toast for scheduling a paused draft */
   'release.toast.schedule-publish.success': 'Scheduled draft successfully',
-  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
   'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
@@ -1854,6 +1977,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',
+
+  /** Label for the dataset of the workspace whose schema failed to compile */
+  'schema-errors.location.dataset': 'Dataset',
+  /** Label for the project ID of the workspace whose schema failed to compile */
+  'schema-errors.location.project-id': 'Project ID',
+  /** Label for the source within the workspace whose schema failed to compile */
+  'schema-errors.location.source': 'Source',
+  /** Title for the section naming the workspace whose schema failed to compile */
+  'schema-errors.location.title': 'Error location',
+  /** Label for the workspace whose schema failed to compile */
+  'schema-errors.location.workspace': 'Workspace',
+  /** Title for the schema errors screen */
+  'schema-errors.title': 'Schema errors',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',

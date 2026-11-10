@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import chalk from 'chalk'
 
 import {EXPERIMENT, REFERENCE} from '../../constants'
@@ -15,11 +16,16 @@ import {
   collectPageLoad,
   collectRunMetadata,
   collectSettle,
+  collectSoftNav,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
 import {measureBundleSize} from '../../runner/bundleSize'
-import {bundleInstrumentation, bundleSettleInstrumentation} from '../../runner/inject'
+import {
+  bundleInstrumentation,
+  bundleSettleInstrumentation,
+  bundleStyleProbe,
+} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
 import {SessionError} from '../../runner/session/errors'
@@ -27,7 +33,6 @@ import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
-  runSoakSession,
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
@@ -36,12 +41,16 @@ import {
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
 import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
+import {runSoakSession} from '../../runner/session/soak'
+import {runSoftNavSession} from '../../runner/session/softNav'
+import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
 import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
 import {settleMismatch} from '../../stats/settle'
+import {type SoftNavigationMeasurement} from '../../stats/softNav'
 import {sparkline} from '../../stats/sparkline'
 import {resolveFromInvocation} from '../benchRoot'
 import {type RunArgs} from './run'
@@ -96,6 +105,21 @@ async function withSessionRetries<T>(label: string, run: () => Promise<T>): Prom
   }
 }
 
+/**
+ * One log line for a scenario's style census (the style-migration rows): the
+ * first session's numbers — a build renders the same page every session, so
+ * one is representative — or a warning when every session's probe failed, so
+ * a silently missing row set is visible in the run log.
+ */
+function logStyleCensus(sessions: {styles: StyleCensus | null}[]): void {
+  const census = sessions.find((session) => session.styles !== null)?.styles
+  console.log(
+    census
+      ? `  ${chalk.bold('styles')}: ${describeStyleCensus(census)}`
+      : chalk.yellow('  styles: census unavailable (the style probe failed in every session)'),
+  )
+}
+
 /** Flags stamped into a dist by its build script (absent = pristine build). */
 function readBuildFlags(dist: string): {customizations?: boolean} {
   try {
@@ -131,8 +155,29 @@ export async function runBench(argv: RunArgs): Promise<void> {
       )
       return false
     }
-    if (argv.mode !== 'settle' && scenario.interactions.length === 0) {
-      // Every mode except settle types into interactions[0].
+    if (argv.mode === 'softnav') {
+      if (scenario.softNav === undefined) {
+        console.log(chalk.yellow(`skipping ${scenario.name}: no soft-navigation plan`))
+        return false
+      }
+      return true
+    }
+    if (scenario.softNav !== undefined) {
+      console.log(chalk.yellow(`skipping ${scenario.name}: softnav-only scenario`))
+      return false
+    }
+    if (
+      argv.mode !== 'pageload' &&
+      scenario.load !== undefined &&
+      scenario.interactions.length === 0
+    ) {
+      console.log(chalk.yellow(`skipping ${scenario.name}: pageload-only scenario`))
+      return false
+    }
+    const hasLoadSteps = argv.mode === 'pageload' && scenario.load !== undefined
+    if (argv.mode !== 'settle' && !hasLoadSteps && scenario.interactions.length === 0) {
+      // Every mode except settle types into interactions[0]; pageload runs
+      // the scenario's load steps instead when it declares them.
       console.log(
         chalk.yellow(`skipping ${scenario.name}: no interaction targets (settle-only scenario)`),
       )
@@ -142,12 +187,20 @@ export async function runBench(argv: RunArgs): Promise<void> {
   })
 
   const referenceDist = argv.referenceDist ? resolveFromInvocation(argv.referenceDist) : undefined
+  if (referenceDist && argv.mode === 'softnav') {
+    // The two A/B sides diverge 5-10% on identical builds in this mode
+    console.error('softnav mode runs absolute only: drop --reference-dist')
+    process.exit(1)
+  }
   if (referenceDist && !fs.existsSync(path.join(referenceDist, 'index.html'))) {
     console.error(`No studio build at ${referenceDist}`)
     process.exit(1)
   }
 
   const instrumentation = await bundleInstrumentation()
+  // The style census (UI v5 adoption, styled-components footprint) is taken
+  // once per session in every mode that opens a document
+  const styleProbe = await bundleStyleProbe()
   const running = await startSide(EXPERIMENT, dist)
   const reference = referenceDist ? await startSide(REFERENCE, referenceDist) : undefined
   const browser = await launchBrowser(!argv.headed, (await getBenchTls()).spki)
@@ -191,7 +244,8 @@ export async function runBench(argv: RunArgs): Promise<void> {
         if (first && last) {
           console.log(
             `  heap ${first.heapMb.toFixed(1)} → ${last.heapMb.toFixed(1)} MB, ` +
-              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}`,
+              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}` +
+              ` (steady state from minute ${soak.settleMinute})`,
           )
         }
         scenarioReports.push({
@@ -205,7 +259,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           failures: [],
           interruptions: {experiment: soak.interruptions},
           loafAttribution: [],
-          soak: {minutes: soak.minutes, samples: soak.samples},
+          soak: {minutes: soak.minutes, settleMinute: soak.settleMinute, samples: soak.samples},
         })
       }
     } else if (argv.mode === 'settle') {
@@ -232,6 +286,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               scenario,
               instrumentation,
               settleInstrumentation,
+              styleProbe,
               config: {cpuThrottleRate: argv.throttle},
             }),
           )
@@ -275,6 +330,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
               ? `, time-to-settle p50 ${summarize(settleTimes).median.toFixed(0)}ms`
               : ''),
         )
+        // Only ready sessions take the census; a scenario that never opened
+        // its pane has nothing to count, and that is not a probe failure
+        if (results.some((result) => result.ready)) logStyleCensus(results)
         if (
           settleMismatch({
             expectedToSettle: expected,
@@ -308,6 +366,35 @@ export async function runBench(argv: RunArgs): Promise<void> {
           chalk.red(`\nsettle expectation mismatch:\n  ${expectationMismatches.join('\n  ')}`),
         )
         process.exitCode = 1
+      }
+    } else if (argv.mode === 'softnav') {
+      for (const scenario of scenarios) {
+        console.log(
+          `\n${chalk.cyan(scenario.name)} — soft navigations, ${argv.sessions} session(s)`,
+        )
+        const sessions: SoftNavigationMeasurement[][] = []
+        for (let sessionIndex = 0; sessionIndex < argv.sessions; sessionIndex++) {
+          const navigations = await withSessionRetries(scenario.name, () =>
+            runSoftNavSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          sessions.push(navigations)
+          console.log(
+            `  session ${sessionIndex + 1}/${argv.sessions}: ${navigations.length} soft navigations`,
+          )
+        }
+        const report = collectSoftNav(scenario.name, sessions, scenario.sourceFile)
+        for (const metric of report.metrics) {
+          console.log(
+            `  ${chalk.bold(metric.label)}: p50 ${metric.experiment.summary.median.toFixed(metric.unit === 'cls' ? 3 : 0)}`,
+          )
+        }
+        scenarioReports.push(report)
       }
     } else if (argv.mode === 'inp') {
       for (const scenario of scenarios) {
@@ -382,6 +469,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
                 running: side,
                 scenario,
                 instrumentation,
+                styleProbe,
                 config: {
                   cpuThrottleRate: argv.throttle,
                   ...(argv.networkEmulation ? {} : {network: null}),
@@ -391,12 +479,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             bySide.set(name, [...(bySide.get(name) ?? []), ...samples])
             console.log(
               `  sample ${i + 1}/${argv.sessions} ${name}: ` +
-                samples
-                  .map(
-                    (sample) =>
-                      `${sample.condition} time-to-editable ${sample.timeToEditableMs.toFixed(0)}ms`,
-                  )
-                  .join(', '),
+                samples.map(describeLoadSample).join(', '),
             )
           }
         }
@@ -409,16 +492,24 @@ export async function runBench(argv: RunArgs): Promise<void> {
           const experimentSamples = (bySide.get('experiment') ?? []).filter(
             (sample) => sample.condition === condition,
           )
-          const stats = summarize(experimentSamples.map((sample) => sample.timeToEditableMs))
+          // A scenario may sample only some conditions (BenchScenario.load)
+          if (experimentSamples.length === 0) continue
+          const experimentEditable = editableTimes(experimentSamples)
           console.log(
-            `  ${chalk.bold(condition)} (experiment): time-to-editable p50 ${stats.median.toFixed(0)}ms, ` +
+            `  ${chalk.bold(condition)} (experiment): ` +
+              (experimentEditable.length > 0
+                ? `time-to-editable p50 ${summarize(experimentEditable).median.toFixed(0)}ms, `
+                : '') +
+              [...milestoneTimes(experimentSamples)]
+                .map(([name, times]) => `${name} p50 ${summarize(times).median.toFixed(0)}ms, `)
+                .join('') +
               `fcp p50 ${summarize(experimentSamples.map((s) => s.fcpMs ?? 0)).median.toFixed(0)}ms, ` +
               `lcp p50 ${summarize(experimentSamples.map((s) => s.lcpMs ?? 0)).median.toFixed(0)}ms, ` +
               `cls p50 ${summarize(experimentSamples.map((s) => s.cls)).median.toFixed(3)}, ` +
               `blocking p50 ${summarize(experimentSamples.map((s) => s.blockingMs)).median.toFixed(0)}ms`,
           )
           console.log(
-            `  ${chalk.bold(condition)} auth: ${summarize(experimentSamples.map((s) => s.auth.trips)).median.toFixed(0)} round trip(s) before editable, ` +
+            `  ${chalk.bold(condition)} auth: ${summarize(experimentSamples.map((s) => s.auth.trips)).median.toFixed(0)} round trip(s) before load end, ` +
               `first request p50 ${summarize(experimentSamples.map((s) => s.auth.firstRequestMs ?? 0)).median.toFixed(0)}ms, ` +
               `in flight p50 ${summarize(experimentSamples.map((s) => s.auth.inFlightMs)).median.toFixed(0)}ms`,
           )
@@ -442,15 +533,15 @@ export async function runBench(argv: RunArgs): Promise<void> {
           const referenceSamples = (bySide.get('reference') ?? []).filter(
             (sample) => sample.condition === condition,
           )
-          if (referenceSamples.length > 0) {
+          const referenceEditable = editableTimes(referenceSamples)
+          // Only time to editable is gated; milestone rows are report-only
+          if (referenceEditable.length > 0 && experimentEditable.length > 0) {
             const interval = bootstrapDiffOfMedians({
-              aSessions: referenceSamples.map((sample) => [sample.timeToEditableMs]),
-              bSessions: experimentSamples.map((sample) => [sample.timeToEditableMs]),
+              aSessions: referenceEditable.map((value) => [value]),
+              bSessions: experimentEditable.map((value) => [value]),
               rng: mulberry32(argv.seed),
             })
-            const referenceMedian = summarize(
-              referenceSamples.map((s) => s.timeToEditableMs),
-            ).median
+            const referenceMedian = summarize(referenceEditable).median
             const verdict = gate(interval, referenceMedian, PAGELOAD_THRESHOLDS)
             conditionComparisons.set(condition, {interval, verdict})
             console.log(
@@ -459,6 +550,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             )
           }
         }
+        logStyleCensus(bySide.get('experiment') ?? [])
         scenarioReports.push(
           collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile, {
             experiment: sizesByPath,
@@ -476,6 +568,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             reference,
             experiment: running,
             instrumentation,
+            styleProbe,
             rng: mulberry32(argv.seed),
             config: {
               minSessionsPerSide: argv.sessions,
@@ -494,6 +587,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           console.log(
             `  stopped by: ${result.stoppedBy} (${result.reference.sessions.length}+${result.experiment.sessions.length} sessions, ${result.failures.length} retried failure(s))`,
           )
+          logStyleCensus(result.experiment.sessions)
           scenarioReports.push(collectAbInteraction(result, scenario.sourceFile))
           continue
         }
@@ -507,6 +601,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               running,
               scenario,
               instrumentation,
+              styleProbe,
               config: {cpuThrottleRate: argv.throttle},
             }),
           )
@@ -554,6 +649,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               `blocking p50 ${summarize(results.map((r) => r.blockingMs)).median.toFixed(0)}ms`,
           )
         }
+        logStyleCensus(results)
         scenarioReports.push(
           collectAbsoluteInteraction(scenario.name, results, scenario.sourceFile),
         )
@@ -592,4 +688,31 @@ export async function runBench(argv: RunArgs): Promise<void> {
     await running.close()
     await reference?.close()
   }
+}
+
+function editableTimes(samples: PageLoadSample[]): number[] {
+  return samples.flatMap((sample) =>
+    sample.timeToEditableMs === null ? [] : [sample.timeToEditableMs],
+  )
+}
+
+/** Milestone name → its times across samples, in first-reached order. */
+function milestoneTimes(samples: PageLoadSample[]): Map<string, number[]> {
+  const byName = new Map<string, number[]>()
+  for (const sample of samples) {
+    for (const {name, atMs} of sample.milestones) {
+      byName.set(name, [...(byName.get(name) ?? []), atMs])
+    }
+  }
+  return byName
+}
+
+function describeLoadSample(sample: PageLoadSample): string {
+  const parts = [
+    ...(sample.timeToEditableMs === null
+      ? []
+      : [`time-to-editable ${sample.timeToEditableMs.toFixed(0)}ms`]),
+    ...sample.milestones.map((milestone) => `${milestone.name} ${milestone.atMs.toFixed(0)}ms`),
+  ]
+  return `${sample.condition} ${parts.join(', ')}`
 }

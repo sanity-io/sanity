@@ -1,8 +1,11 @@
-import {useCallback, useEffect, useMemo} from 'react'
+import {use, useCallback, useEffect, useMemo} from 'react'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
 import useSWR from 'swr'
 
 import {useClient} from '../../hooks/useClient'
-import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule, type ScheduleState} from '../types'
 import {sortByExecuteDate} from '../utils/sortByExecuteDate'
 import {
@@ -50,7 +53,13 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   isInitialLoading: boolean
   schedules: Schedule[]
 } {
-  const {mode, enabled} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const hasUsedPromise = use(HasUsedScheduledPublishingPromiseContext)
+  const mode = modePromise ? use(modePromise) : null
+  // A failed feature check settles the answer on its own: the probe is not waited for then
+  const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false
+  // Schedules exist to poll for only once the feature check passed and the dataset has used them
+  const enabled = mode !== null && hasUsed
 
   const swrOptions = useMemo(() => {
     const SWR_OPTIONS = {

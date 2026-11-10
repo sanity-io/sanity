@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
@@ -19,7 +19,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -219,10 +219,10 @@ function IncomingReferencesTypeList({
   )
 
   return (
-    <Stack gap={2} marginBottom={2}>
+    <Flex gap={2} marginBottom={2} flexDirection="column">
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {type.title || schemaType?.title}
           </Text>
         </Box>
@@ -254,7 +254,7 @@ function IncomingReferencesTypeList({
               padding={2}
               hidden={isAdding || Boolean(newReferenceId)}
             >
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {t('incoming-references-input.no-items')}
               </Text>
             </Flex>
@@ -294,6 +294,6 @@ function IncomingReferencesTypeList({
           fieldName={fieldName}
         />
       )}
-    </Stack>
+    </Flex>
   )
 }

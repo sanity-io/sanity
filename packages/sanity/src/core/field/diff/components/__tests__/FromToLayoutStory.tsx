@@ -1,20 +1,21 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {FromTo} from '../FromTo'
 
 function DiffSide({label, detail}: {label: string; detail?: string}) {
   return (
     <Card border padding={3} radius={2}>
-      <Stack gap={2}>
-        <Text size={1} weight="medium">
+      <VStack gap={2}>
+        <Text size={1} weight="medium" as="div" trim={true}>
           {label}
         </Text>
         {detail && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {detail}
           </Text>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -34,38 +35,38 @@ const SHORT_TO = <DiffSide label="Current file" />
 export function FromToLayoutStory() {
   return (
     <Card padding={4} style={{maxWidth: 560}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             inline, align top (default)
           </Text>
           <FromTo from={TALL_FROM} to={SHORT_TO} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             inline, align center
           </Text>
           <FromTo align="center" from={TALL_FROM} to={SHORT_TO} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             grid from and to (FileFieldDiff)
           </Text>
           <FromTo from={TALL_FROM} layout="grid" to={SHORT_TO} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             grid, align center (ImageFieldDiff)
           </Text>
           <FromTo align="center" from={TALL_FROM} layout="grid" to={SHORT_TO} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1} weight="medium">
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             to only
           </Text>
           <FromTo to={<DiffSide label="Added" />} />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

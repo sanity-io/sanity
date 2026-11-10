@@ -1,9 +1,9 @@
-import {Badge, Box, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
 import {useDocumentPreviewStore, useDocumentValues} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 /**
  * Reproduces a document-pane stall caused by list previews creating a new
@@ -39,14 +39,14 @@ function PreviewRow({id}: {id: string}) {
   const {value, isLoading} = useDocumentValues<{title?: string}>(id, ['title'])
   return (
     <Card border padding={3} radius={2}>
-      <Stack gap={2}>
-        <Text size={1} weight="medium">
+      <VStack gap={2}>
+        <Text size={1} weight="medium" as="div" trim={true}>
           {isLoading ? 'Loading…' : value?.title || '(untitled)'}
         </Text>
-        <Text size={0} muted>
+        <Text size={0} muted as="div" trim={true}>
           {id}
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -72,7 +72,7 @@ function RateBadge({running}: {running: boolean}) {
   return (
     <Flex gap={2} alignItems="center">
       <Badge tone={rate > 50 ? 'critical' : 'positive'}>{rate} renders/s</Badge>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         {total} total
       </Text>
     </Flex>
@@ -120,7 +120,13 @@ function DocumentOpenSimulation() {
   }, [])
   return (
     <Card border padding={3} radius={2} tone={mountedAfterMs === null ? 'critical' : 'positive'}>
-      <Text size={1} weight="medium">
+      <Text
+        size={1}
+        weight="medium"
+        as="div"
+        trim={true}
+        tone={mountedAfterMs === null ? 'critical' : 'positive'}
+      >
         {mountedAfterMs === null
           ? 'Document open simulation: mounting… (stalled by the loop)'
           : `Document open simulation: mounted after ${(mountedAfterMs / 1000).toFixed(1)}s`}
@@ -139,13 +145,13 @@ export function RenderLoopRepro() {
   return (
     <Box padding={4}>
       <CacheWarmer />
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Card padding={3} radius={2} tone="caution">
-          <Stack gap={3}>
-            <Text size={1} weight="medium">
+          <VStack gap={3}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="caution">
               useDocumentValues render loop → stalled document open
             </Text>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true} tone="caution">
               The preview rows pass an inline paths array to useDocumentValues. On studio versions
               where the hook memoizes on the array reference, the rows re-render in a tight loop and
               the simulated document open below stays stuck at "mounting…" until the rows remove
@@ -153,17 +159,17 @@ export function RenderLoopRepro() {
               as the loop. With the hardened hook (memo keyed on path contents) the rows settle
               immediately and the mount lands right away.
             </Text>
-          </Stack>
+          </VStack>
         </Card>
         <DocumentOpenSimulation />
         <Flex alignItems="center" justifyContent="space-between">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {loopRunning ? 'Preview rows (looping)' : 'Preview rows removed — loop over'}
           </Text>
           <RateBadge running={loopRunning} />
         </Flex>
         {loopRunning && DOC_IDS.map((id) => <PreviewRow key={id} id={id} />)}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

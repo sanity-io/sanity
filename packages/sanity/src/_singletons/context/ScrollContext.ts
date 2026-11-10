@@ -1,10 +1,7 @@
 import type {PubSub} from 'nano-pubsub'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
  */
-export const ScrollContext = createContext<null | PubSub<Event>>(
-  'sanity/_singletons/context/scroll',
-  null,
-)
+export const ScrollContext = createContext<null | PubSub<Event>>(null)

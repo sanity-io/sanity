@@ -1,16 +1,10 @@
 import {getProviderTitle} from '@sanity/access-ui'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button,
-  // Button with specific styling, user avatar.
-  Card,
-  Stack,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- Button with specific styling, user avatar.
+import {Button, Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -78,15 +72,15 @@ export function UserMenu() {
                 </AvatarBox>
               </Tooltip>
 
-              <Stack gap={2} flex={1}>
-                <Text size={1} weight="medium" textOverflow="ellipsis">
+              <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
+                <Text size={1} weight="medium" truncate={1} as="div" trim={true}>
                   {currentUser?.name}
                 </Text>
 
-                <Text size={1} muted textOverflow="ellipsis">
+                <Text size={1} muted truncate={1} as="div" trim={true}>
                   {currentUser?.email}
                 </Text>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
 

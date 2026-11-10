@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {UserApplication} from '../../core/store/userApplications'
 
@@ -15,10 +15,7 @@ export type LiveUserApplicationContextValue = {
  * @hidden
  * @internal
  */
-export const LiveUserApplicationContext = createContext<LiveUserApplicationContextValue>(
-  'sanity/_singletons/context/live-user-application',
-  {
-    userApplication: undefined,
-    isLoading: true,
-  },
-)
+export const LiveUserApplicationContext = createContext<LiveUserApplicationContextValue>({
+  userApplication: undefined,
+  isLoading: true,
+})

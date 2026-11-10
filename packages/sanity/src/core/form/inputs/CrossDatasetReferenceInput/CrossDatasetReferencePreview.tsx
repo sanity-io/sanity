@@ -4,14 +4,13 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
-import {Badge, Inline, Text} from '@sanity/ui'
+import {Badge, Inline} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, type TextProps, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
 import {type PreviewMediaDimensions} from '../../../components/previews/types'
-import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DocumentAvailability} from '../../../preview/types'
@@ -33,6 +32,7 @@ export function CrossDatasetReferencePreview(props: {
   projectId: string
   refType?: CrossDatasetType
   showTypeLabel: boolean
+  tone?: TextProps['tone']
 }) {
   const {
     refType,
@@ -44,6 +44,7 @@ export function CrossDatasetReferencePreview(props: {
     id,
     dataset,
     projectId,
+    tone,
   } = props
   const notFound = availability?.reason === 'NOT_FOUND'
   const insufficientPermissions = availability?.reason === 'PERMISSION_DENIED'
@@ -77,8 +78,8 @@ export function CrossDatasetReferencePreview(props: {
       }
     }
     if (!refType?.icon) return null
-    const Icon = refType.icon
-    return <Icon />
+    const RefTypeIcon = refType.icon
+    return <RefTypeIcon />
   }, [previewMedia, dataset, projectId, refType?.icon, t])
 
   return (
@@ -101,7 +102,9 @@ export function CrossDatasetReferencePreview(props: {
         <Box flexBasis="0%" flexGrow={1}>
           <Flex alignItems="center">
             <Box flexBasis="0%" flexGrow={1} paddingY={2}>
-              <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
+              <Text muted as="div" trim={true} tone={tone}>
+                {t('inputs.reference.error.document-unavailable-title')}
+              </Text>
             </Box>
           </Flex>
         </Box>
@@ -122,9 +125,11 @@ export function CrossDatasetReferencePreview(props: {
                   {documentId: id},
                 )}
               >
-                <TextWithTone tone="default">
-                  {insufficientPermissions ? <AccessDeniedIcon /> : <HelpCircleIcon />}
-                </TextWithTone>
+                <Icon
+                  icon={insufficientPermissions ? AccessDeniedIcon : HelpCircleIcon}
+                  muted
+                  style={{margin: '-0.4375rem'}}
+                />
               </Tooltip>
             </Box>
           )}
@@ -139,9 +144,12 @@ export function CrossDatasetReferencePreview(props: {
                     : 'input.reference.document-cannot-be-opened.failed-to-resolve-url',
                 )}
               >
-                <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
-                  <LaunchIcon />
-                </TextWithTone>
+                <Icon
+                  size={1}
+                  icon={LaunchIcon}
+                  muted={!hasStudioUrl}
+                  style={{margin: '-0.375rem'}}
+                />
               </Tooltip>
             </Box>
           )}

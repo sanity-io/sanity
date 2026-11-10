@@ -189,7 +189,7 @@ To inspect a **new** build after making changes—while `pnpm devtools:test-stud
 pnpm devtools:test-studio:build
 ```
 
-Builds are not hooked into HMR; `sanity build` must be invoked manually (via the command above) each time you want a new session to inspect. Sessions can be compared against each other in the DevTools UI to diff bundle changes.
+Sessions can be compared against each other in the DevTools UI to diff bundle changes.
 
 How it works:
 
@@ -198,9 +198,17 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Debugging presence with fake users
+
+**Field action (test studio).** Open a `Presence debug` document (`presenceDebug`, under Debug in the structure). Every field has a `Presence` button in its header with **Fake presence here**: pick a user in the dialog and they show up as present at that field. Inside a Portable Text field the user is placed at your last cursor position in that editor, so different users can be put at different spots. **Remove all fake presence** clears them. The plugin lives in `dev/test-studio/plugins/presence-debug` and uses the presence store's `@internal` `debug` API (`fakePresence`, `removeFakePresence`, `ownLocation$`), so the fake sessions go through the real presence code path (user lookup, form routing, overlay docking).
+
+**URL hash flags.** The presence store also reads two older debug flags from the URL hash (`packages/sanity/src/core/store/presence/presence-store.ts`), comma separated after `#_debug_presence=`: `fake_others` (random mock users at fixed paths in a document with `_id: "presence-debug"`) and `show_own` (also show your own session).
+
 ### Profiling studio re-renders with React DevTools (agent-react-devtools)
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
+
+For `useObservable`, `useSyncObservable` and `useObservablePromise` call sites whose observable identity churns, the `react-rx-hook-audit` skill (`.agents/skills/react-rx-hook-audit/SKILL.md`) covers finding them, counting renders and subscriptions at runtime, and the `useValuePreview` refactor and test pattern.
 
 ```bash
 # 1. Start the daemon (port 8097)
@@ -238,7 +246,161 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 ### Auto-updating studio CSS (Lightning CSS `light-dark()`)
 
-The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
+The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. For `styles: 'panda'` the same `css.lightningcss` options list `MADE_WITH_PANDA_SYMBOL` from `@sanity/pandacss-tsdown-plugin` in `unusedSymbols`, which drops the `:root {--made-with-panda: '🐼'}` marker Panda emits into every stylesheet (Panda 2 has no option to omit it, and its `cssgen:done` hook is observe-only), the way the package build's `bundle.css` drops it; `package.bundle.test.ts` guards both config options. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
+
+### Panda CSS
+
+The static styles of the `sanity` package are [Panda CSS](https://panda-css.com) `css()` calls in
+`.css.ts` modules next to the components, imported from the generated `#styled-system/css`
+runtime (`panda codegen` writes it to the gitignored `packages/sanity/styled-system/` directory on
+`pnpm install`, through the package's `prepare` script). `packages/sanity/panda.config.ts` is the
+**only Panda project in the repository** — the `} satisfies Config)` pattern, no presets,
+content-hashed class names with the `sanity-` prefix (`sanity-HgOzd`) and `strictPropertyValues`
+— and `#styled-system` is mapped in that package's manifest alone; nothing outside `packages/sanity`
+writes Panda CSS. The `migrate-styled-components-to-panda-css` skill
+(`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
+`&&` specificity trick, the cascade model, descendant selectors and dynamic values. Styles outside
+the package are CSS modules (`*.module.css`, see [CSS modules](#css-modules) below): all of
+`@sanity/vision`'s, and the test studio's (`plugins/style-outline/styleOutline.module.css`, for
+one). Shared tooling versions live in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`,
+`@sanity/pandacss-tsdown-plugin`); the Vite apps that build the package from source get their
+Panda wiring from `@repo/pandacss` (`packages/@repo/pandacss`, its README says when an app needs
+it) instead of declaring those themselves.
+
+How the CSS reaches a page:
+
+- **The published package:** `panda: {minify: false, cascadeLayers: false}` in `tsdown.config.ts`
+  (the `@sanity/pandacss-tsdown-plugin` options of `@sanity/tsdown-config`; unminified so the
+  diff between two published versions stays readable, see below for the layers) rewrites every
+  `css()` call into its class names at build time, extracts the CSS into `lib/bundle.css`,
+  injects `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional
+  `./bundle.css` export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim).
+  The published code carries no Panda runtime, which is why the manifest resets `imports`
+  under `publishConfig`. A `css()` call the build cannot resolve statically (computed values,
+  loops) makes it warn and bundle the runtime — keep the style objects literal.
+- **Vite apps that build the package from source** (the dev studios through `sanity.cli.ts`,
+  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) resolve the workspace
+  packages to their sources (the `monorepo` export condition), so they bundle the package's
+  `.css.ts` modules themselves and register `sanityPandaCss()` from `@repo/pandacss/vite`
+  (`packages/@repo/pandacss`): `pandacss({cwd: <packages/sanity>, transform: true})` from
+  `@pandacss/vite`, pointed at the package's Panda project (`cwd` resolves the config, its
+  `include` globs and the codegen `outdir` there), and
+  `removeCascadeLayers(['reset', 'base', 'tokens', 'recipes', 'utilities'])` from
+  `@sanity/pandacss-tsdown-plugin/vite`, which gives the generated CSS the shape of `bundle.css`
+  (below). `@pandacss/vite` appends the generated CSS to the CSS module of the build that declares
+  Panda's layers, which is the one-line `@repo/pandacss/panda.css` with the
+  `@layer reset, base, tokens, recipes, utilities;` statement — the dev counterpart of the
+  `sanity/bundle.css` import the built package carries. Storybook's `.storybook/preview.tsx` and
+  `packages/sanity/test/setup/browser.ts` import it directly; a studio's `sanity.cli.ts`
+  (`studioPandaCss()`) and the viewer's `vite.config.ts` (the `entry` option) have the import
+  injected into their entry (`.sanity/runtime/app.js`, `src/main.tsx`) by a tiny transform plugin,
+  registered for dev only. A `sanity build` (and the viewer's build) resolves the built package
+  and its `bundle.css`, so nothing Panda runs there — which is also why a studio that installs
+  `sanity` from npm needs none of this: `bundle.css` is a plain stylesheet that Vite's built-in CSS
+  support loads. The CDN bundle in `@repo/package.bundle` builds the package for publishing and
+  keeps its own `pandacss()` call, `panda.css` and import plugin (it imports the stylesheet from
+  every library entry). The jsdom suites load no stylesheet: `sanity`'s registers `@pandacss/vite`
+  directly, with the same `cwd` and `transform: true`, and `@sanity/vision`'s registers
+  `sanityPandaCss()`; no jsdom test asserts on styles.
+- **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
+  `recipes`, `utilities`), and the studio's CSS ships without them: CSS outside any layer beats
+  every layered rule regardless of specificity, so a layered stylesheet loses its hover, focus and
+  selected states to any unlayered rule that also matches — styled-components output, a reset
+  like Tailwind's preflight, the studio's own `GlobalStyle` (the splash tests and the ui5 team's
+  write-up confirmed it). `cascadeLayers: false` removes the blocks and statements after
+  Lightning CSS has run and orders the rules the way the layers did (a layer's sublayers before
+  its own rules, unlayered rules last), so every selector stays as specific as Panda wrote it and
+  the studio's rules cascade like the vanilla-extract output did: by specificity, then source
+  order. The same pass runs on the dev stylesheets and the CDN bundle through
+  `removeCascadeLayers()`, which removes the named layers (and their sublayers) from every CSS
+  module after `@pandacss/vite` has filled `@repo/pandacss/panda.css` (the CDN bundle's own
+  `panda.css`), and leaves other layers alone — which is why that file declares Panda's default
+  layer names (how `@pandacss/vite` recognizes its root stylesheet) and still ends up without a
+  single `@layer`. Panda's `polyfill` option is
+  not an alternative: it emulates the layer order with `:not(#\#…)` selector chains that inflate
+  every rule's specificity. The studio declares no `@layer` statement of its own either: with
+  `bundle.css` unlayered and `@sanity/ui` ≥ 4.4.8 (the catalog version) shipping its static styles
+  unlayered too ([ui#3235](https://github.com/sanity-io/ui/pull/3235)), the only layer left on a
+  studio page is `ui5`'s `sui`, which unlayered rules beat whatever the order, so there is nothing
+  to order it against — the same situation as before the migration. What this means when
+  authoring: the studio's rules beat `@sanity/ui`'s on the same element by specificity and order
+  alone — a plain class beats a styled-components base rule that loads later only when it is more
+  specific, which is what the `&&` doubling is for.
+- **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
+  `property: value` pair once, grouped by property with the values sorted; a modifier class that
+  must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
+  instead of relying on being declared later, and parent-state selectors key on data attributes
+  the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
+  `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
+
+### CSS modules
+
+Outside `packages/sanity`, components are styled with `*.module.css` files, and no workspace uses
+vanilla-extract. `@sanity/vision` compiles them with `@tsdown/css` (Lightning CSS), through the
+`css` option of its `tsdown.config.ts`, into `lib/bundle.css`; the test studio's are compiled by
+Vite.
+
+- **Every CSS module gets a generated, gitignored `X.module.css.d.ts` under its workspace's
+  `generated/` directory**, written by [css-modules-kit](https://github.com/mizdra/css-modules-kit)'s
+  codegen (`cmk`), and the typings are never committed. `pnpm css:types` regenerates them all: it
+  runs the `generate` script of `packages/@repo/css-modules-kit`, which chains one
+  `cmk --clean --project <workspace>` script per workspace with CSS modules (`generate:vision`,
+  `generate:test-studio`). `pnpm install` generates them (the package's `prepare` script),
+  `pnpm lint` and `pnpm lint:fix` regenerate them before oxlint type-checks, and vision's `build`
+  regenerates its own first (`prebuild: pnpm --filter @repo/css-modules-kit run generate:vision`,
+  before tsdown emits declarations), so a fresh clone, the editor and CI see them without a
+  checked-in copy. Keep a workspace's `prebuild` to its own `generate:<workspace>` script:
+  `cmk --clean` wipes the output directory, so two workspaces regenerating each other's typings
+  while turbo builds them in parallel would race. A new workspace with CSS modules gets a
+  `generate:<workspace>` script there (chained into `generate`) and the `tsconfig.json` settings:
+  the `*.module.css` files in `include` (cmk finds the modules through it; TypeScript skips
+  them), `rootDirs: [".", "generated"]` so `./X.module.css` resolves to its typings, and
+  `cmkOptions` (`enabled`, `container: true` because Lightning CSS exports container names along
+  with the classes and `@keyframes`, and `namedExports: true`). A misspelled `styles.x` then fails
+  `pnpm lint` with `TS2551 … Did you mean …?`. `@repo/css-modules-kit` exists because cmk needs
+  the TypeScript compiler API, which TypeScript 7 does not ship: it pins `typescript` to
+  `@typescript/typescript6`, like `@repo/typedoc`, and cmk resolves it as its peer from there.
+- **Import a CSS module as `import * as styles from './X.module.css'` or with named imports,
+  never as a default import.** The typings have no default export (`namedExports: true`), so a
+  default import is a type error; Lightning CSS can only see which classes a module reads through
+  a namespace or named import, which keeps the door open to dropping unused ones.
+- **Keep the type checker on the generated typings.** Neither workspace declares an ambient
+  `declare module '*.module.css'`, and nothing may add one: `/// <reference types="vite/client" />`
+  does (a default export that accepts any class name), and it hides typos. Without its typings, a
+  vision import fails with TS2307. The test studio's tsconfig includes all of `dev/` like the
+  other dev apps' do, which brings in `vite/client` from those that reference it
+  (`dev/embedded-studio`, for one), so a missing typing falls back to that declaration there; its
+  module has only a default export, so `styles.x` on a namespace import still fails the type
+  check. A `.module.css` import that fails with TS2307 (or TS2339 in the test studio) outside those
+  commands just means the typings have not been generated yet: run `pnpm css:types`. cmk's
+  TypeScript plugin and VS Code extension do nothing here, since the editor runs the TypeScript 7
+  language server (`typescript.experimental.useTsgo`), which does not load plugins; the generated
+  typings are what the editor sees too. oxfmt and oxlint skip the generated files, which carry
+  cmk's own `// @ts-nocheck` and formatting.
+- **Lightning CSS scopes more than classes, per file.** `@keyframes` and container names are
+  hashed and exported alongside the classes (the `cmkOptions` mirror that, and
+  `cssModules.test.ts` checks that the typings declare exactly what Lightning CSS exports), so keep
+  a `@container` query in the module that names the container. Custom properties are not scoped:
+  namespace them (`--vision-result-code-family`) and type the inline `style` that sets them
+  through an interface extending `CSSProperties`. Third-party class names go in `:global(…)`. A
+  value the code also uses (`GRAPH_METRICS`, which positions the result graph) reaches the CSS as
+  a custom property set from that constant, not as a copy. A class that extends another one
+  `composes` it, and exports both names, as Lightning CSS, Vite and `@tsdown/css` all join them.
+- **Do not list selectors that contain `:global()`.** With browser targets, Lightning CSS wraps
+  such a selector list in `:is()`, which gives every selector the specificity of the most
+  specific one. Repeat the rule instead.
+- **Global styles go in a plain `.css` file, with an `export {}` declaration next to it**
+  (`src/styles.css` and `styles.css.d.ts`). `@tsdown/css` drops a CSS module that is only
+  imported for its side effects, styles and all, and TypeScript 7 rejects a side-effect import it
+  cannot resolve (TS2882).
+- **Class names are `[content-hash]_[local]`** (`cssModulesPattern` from `@repo/css-modules-kit`),
+  so a release that changes a file's styles gets new names for them. Every Vite build that
+  compiles vision's sources uses Lightning CSS with the same pattern (`viteCssModules`): the test
+  studio under `sanity dev`, vision's vitest config, and its CDN bundle
+  (`createDefaultConfig({styles: 'css-modules'})` in `package.bundle.ts`). They render exactly the
+  names the package build ships. The test studio's own modules compile with the same settings
+  under `sanity dev` and with Vite's defaults (PostCSS) under `sanity build`: keep them to classes
+  and `composes`, which both scope alike.
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
@@ -253,9 +415,50 @@ pnpm bench:unit                                    # mock-contract + stats unit 
 pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
 ```
 
+The validation microbenchmark externalizes the built package. After switching branches or commits,
+run `pnpm --filter @sanity/validation build` before `pnpm --filter @sanity/validation bench` so it
+does not measure stale output from the previous checkout.
+
 See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
+
+### Engine confidence score (No Auth Required locally)
+
+The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). Each weekly run stores two Stryker mutation scores: `score.ratio`, the total engine score over both mutation runs (`sanity` and `@sanity/mutator`), and `studioScore.ratio`, the core Studio engine score over the `sanity` target alone. Reporting that reads the dataset directly reads those two fields and needs no understanding of how they are computed. `studioScore` is derived from the per-file results of the same run, so it needs no extra Stryker run and no `config.version` change. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
+
+```bash
+pnpm engine-confidence stryker --target mutator --full   # also: --target sanity; omit --full for an incremental run
+pnpm engine-confidence catalogue                         # --suites unit:mutator,unit:engine skips fuzz; --only <ids>; --check-only
+pnpm engine-confidence score                             # writes engine-confidence/reports/engine-confidence-run.json
+pnpm engine-confidence store <file> --dry-run            # prints the document id and body, needs no token
+pnpm engine-confidence pin                               # recomputes config.json's pinnedHash and bumps version when it changed
+pnpm engine-confidence unit                              # the package's unit tests
+```
+
+- **Run it in a disposable checkout.** Stryker's in-place mode rewrites the tier-1 sources until it finishes, and the catalogue applies patches to real sources. A killed run leaves them mutated; the next run refuses a dirty tree. Recover with `git checkout -- packages/sanity/src packages/@sanity/mutator/src`. Run the two Stryker targets one after the other, never at once.
+- **Local recipe:** `pnpm build`, then `stryker --target mutator --full`, `stryker --target sanity --full`, `catalogue`, `score`, and `store reports/engine-confidence-run.json --dry-run` (`pnpm engine-confidence` runs from `engine-confidence/`, so paths are relative to it). `git status --short packages/` must be empty afterwards.
+- **`config.version` is the series-break marker.** Any change to `config.json`, `tier1.json`, `exclusions.json`, `engine-confidence/stryker/`, the vitest-runner patch (it works around a runner bug where tests inside a `describe` never run against a mutant under Vitest 5) or the four `@stryker-mutator/*` specifiers changes the pinned hash. Run `pin` and commit the result; a unit test fails on the pull request when the hash is stale. Catalogue growth is not hashed.
+- **Workflows.** `Engine confidence` (`.github/workflows/engine-confidence.yml`) runs Thursdays 03:00 UTC on `main` only, plus manual dispatch, and stores one document per ISO week. It never runs on pull requests, and only its `store` job holds `RADAR_SANITY_WRITE_TOKEN`. `Engine confidence catalogue` (`.github/workflows/engine-confidence-catalogue.yml`) runs on pull requests that touch engine files or the catalogue and checks that every patch still applies. It is not a required check.
+- **The exclusion register** (`engine-confidence/exclusions.json`) holds reviewed mutants that no test could ever catch. `score` exits 8 when an entry is stale (matches no mutant) or matches a mutant a test detected; fix the entry, never the check. Unreachable code and assumption-based equivalence do not qualify. The README has the rules.
+- **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
+- **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
+
+### Sync tests (No Auth Required)
+
+A sync test runs the real Studio document engine (`checkoutPair`, `getPairListener`, `sequentializeListenerEvents`, the buffered document and `@sanity/mutator`) with two or more clients against an in-memory fake Content Lake, on fake timers and with no browser. Each test ends in the oracles in `packages/sanity/test/sync/oracles.ts`: every client converged on the server copy, revisions agree, no stream errored or stayed locked, and no array item was lost or duplicated. A bench test (`perf/bench`) runs a built studio in a real browser and measures time, and a unit test exercises one piece of code with stub inputs. Never call sync tests "scenarios": bench uses that word for its runs.
+
+```bash
+pnpm --filter @sanity/types build && pnpm --filter @sanity/validation build   # once: createSchema imports their built output
+pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/
+```
+
+- The tests live in `packages/sanity/src/core/store/document/sync/` and are named `*.sync.test.ts`. They count toward the Stryker `sanity` target only while they sit under `store/document/`, and a `*.fuzz.test.*` name drops them from it.
+- The helpers live in `packages/sanity/test/sync/`. `fakeContentLake.ts` holds the documents, the transactions and the per-client controls (held or rejected commits, held, dropped or reordered listener events, disconnect and reconnect). `fakeSanityClient.ts` is the `SanityClient` slice the store calls. `referenceApplier.ts` applies mutations with `@sanity/mutate`, so the server's result never comes from the `@sanity/mutator` code under test. `studioEngine.ts` attaches a client at the pair seam (`checkoutPair`) or the operations seam (`editOperations` and `editState`, with autocommit). `syncTest.ts` runs the steps.
+- A new fault control goes into `fakeContentLake.ts`, never into a second fake server or a hand-rolled listener `Subject`.
+- A test for a known, unfixed bug asserts the correct behaviour and is marked `test.fails`, and the PR that fixes the bug changes it to `test`. Never assert a bug's current behaviour as correct.
+- Test names start with a provisional id (`ARR-`, `LSN-`, `CMT-`, `OPS-`), which would be mapped onto the collaborative editing scenario list once it exists.
+- The store's memo caches key on token and dataset, so every world gets a fresh dataset and every client its own token. A test that reuses a dataset reads another test's cached pair.
 
 ### E2E Tests (Token Required)
 
@@ -347,6 +550,86 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+
+Every declaration that `sanity`, `sanity/structure` or `sanity/router` exports under the
+`@internal` TSDoc release tag is also exported from
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
+an entry whose name spells out its contract: anything on it can change or disappear in any
+release. The public entries still export those symbols today; the entry is the migration target
+for consumers that depend on them, ahead of the public entries dropping them in a future major.
+`packages/@repo/test-dts-exports/test/internals-entry-completeness.test.ts` (part of
+`pnpm test:exports`) fails when an `@internal` export of a public entry is missing from the entry,
+when the two entries export different declarations under one name, or when the entry exports
+something that is not tagged `@internal`.
+
+Rules that follow from this:
+
+- A new `@internal` export on a public barrel needs a matching line in the internals barrel
+  (grouped by source module, `type` specifiers kept). Consumers outside `packages/sanity`
+  (`@sanity/vision`, the dev studios, plugins) import internals from the entry, never from
+  `sanity`. Inside the package, `src/core`, `src/structure` and `src/router` keep importing
+  relatively: the entry re-exports modules from all three areas, so importing it from any of them
+  is an import cycle, and a lazily loaded module that imports the entry drags the whole barrel in
+  with it. The boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the
+  three areas.
+- The entry is generated from the tags, not curated: whether a symbol belongs there is decided by
+  its `@internal` tag. Retagging a symbol (`@internal` → `@beta`/`@public`, or the other way) is
+  the API decision; check sanity.io/docs and the published first-party plugins before demoting a
+  symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
+  studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
+  `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
+  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
+  deliberate exception is `createAuthStore` (deprecated since v3.15.0): it keeps its
+  `@internal @deprecated` tags because those tell customers to stop using it, it stays off the
+  entry so the deprecated `sanity` import remains the only one, and it is listed in
+  `PUBLIC_BY_USAGE` in the completeness test; its removal is governed by the deprecation, not by
+  the internals moving. Do not retag it.
+- The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
+  a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
+  404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
+  regenerates the d.ts fixture for the entry after its export list changes.
+- A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
+  a unit test in the `sanity` project rather than part of `pnpm test:exports`. It imports the
+  entries from `src`, so `pnpm vitest run --project=sanity packages/sanity/test/exports.test.ts -u`
+  regenerates it without a build.
+
+### An entry's type surface is what its barrel exports, nothing more
+
+A bundled `.d.ts` can only name declarations the entry barrel actually exports. Until
+`rolldown-plugin-dts` 0.28.7 that was not true: a bundled `.d.ts` with no bare `export {…}` clause
+hit TypeScript's rule that every top-level declaration of such a declaration file is implicitly
+exported, so private helpers pulled in for a signature became part of the published type surface —
+including `const`s and `function`s that the emitted `.js` never exported, so importing them
+type-checked and then failed to link. 0.28.7 appends an `export {}` scope marker instead
+(["prevent implicit exports of private declarations"](https://github.com/sxzz/rolldown-plugin-dts/commit/004032f)),
+so only explicit exports are public.
+
+That makes `@repo/test-dts-exports` fixtures the authority on the surface, and a fixture listing a
+name no barrel exports is the bug, not the build. When a dts-tooling bump shrinks a fixture, check
+each dropped name before regenerating:
+
+- A **type** the declaring module exports and tags `@public` belongs on the barrel. Add it there as
+  a type-only re-export (`export {type Foo} from '…'`), which leaves the emitted `.js` untouched.
+- A declaration the module keeps private stays private, and a `Name$1` suffix is a bundler dedup
+  artifact that was never API — `sanity/media-library` emitted one because `VideoDefinition` is
+  declared in both `plugin/schemas/index` and `plugin/schemas/types`. When a name is declared
+  twice, pick which one is public by convention, not by which one the old output left unsuffixed:
+  that was decided by bundler ordering. Here the public one is `plugin/schemas/types`, shaped like
+  `ImageDefinition` and `FileDefinition` in `@sanity/types` and accepted by `defineVideoField`,
+  while `plugin/schemas` declares a reduced one for the `IntrinsicDefinitions` augmentation.
+- A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
+  it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
+  more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
+  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+- Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
+  `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
+  `lib-check.test.ts` runs with `skipLibCheck: false`.
+
+Regenerating needs a full `pnpm build` first: the generator reads each package's built
+`lib/**/*.d.ts`.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
@@ -384,6 +667,58 @@ HTML wrappers as strings (eg `{Code: 'code'}`). The in-repo oxlint rule
 this for object literals in the JSX attribute; maps built during render via `useMemo` or factory
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
+
+### Locale namespaces: plugin strings stay inside the plugin
+
+Only `studio`, `validation`, `copy-paste` and `feedback` (plus `comments`, whose plugin is always
+included) are registered in every studio. Every other namespace (`releases`, `tasks`, `canvas`,
+`structure`, ...) is registered by a plugin that a studio can leave out, and a component that
+reads it while that plugin is not loaded renders raw keys. Strings for code that renders outside
+a plugin (core components, form inputs, previews, the navbar) go in the `studio` bundle. Two
+in-repo oxlint rules check this: `@repo/i18n/no-plugin-namespace-outside-plugin` and
+`@repo/i18n/no-missing-translation-key` (keys must exist in the en-US resources of the namespace
+they are read from). Both read the namespace table in
+`packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs`; update it when adding a namespace or
+changing which plugin registers one.
+
+### Locale resources: never delete a key
+
+Never delete a key from an en-US locale resource file (`bundles/studio.ts`, the plugins'
+`i18n/resources.ts`). Studios on older versions still read keys the current code has stopped
+using, and they load translations from the same locale packages, which track these resources.
+Changing a key's value is fine. When a key falls out of use, keep it and add
+`@deprecated no longer in use` to its TSDoc comment, as the existing ones do. Renaming a key
+counts as deleting it: add the new key and deprecate the old one.
+
+### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
+
+React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
+top-level tools when `beta.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
+every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
+
+- Anything that lives only in an effect-created object is lost on reveal unless the effect can
+  rebuild it from render-time data. `@uiw/react-codemirror` destroys its `EditorView` on cleanup
+  and re-creates it from `value`; `VisionCodeMirror` mirrors the latest document into state for
+  that reason. Mount-only effects (`useEffect(..., [])`) run again on every reveal.
+- Loading states come back on reveal unless the code remembers it already loaded. A comlink
+  channel recreated by an effect handshakes as a brand new connection (the presentation machine
+  tracks `overlaysHaveConnected` so that reads as a reconnect, not a first connect); a
+  `startWith(loading)` observable re-emits its initial value when `useObservable` re-subscribes
+  it (`useDocumentLocations` skips the `startWith` once the resolver has emitted); and a context
+  populated by registering in an effect empties out while hidden, unmounting whatever renders
+  from it (`PresentationDocumentProvider` lists its own options at render time).
+- Never reorder keyed siblings that hold an `<iframe>`. React moves the DOM node when the key
+  order changes, and a re-inserted iframe reloads. `useMountedTools` renders tools in workspace
+  order for this reason even though eviction is least-recently-used.
+- `@sanity/ui`'s `useElementSize` (4.2.4) stops reporting after a reveal. Its shared
+  `_elementSizeObserver` keeps one `ResizeObserver` per element and disconnects it when the last
+  subscriber leaves, but never forgets the element, so the effect re-run after a reveal finds the
+  cached entry and creates no new observer: the hook keeps the size from before hiding, also for
+  later resizes. Any layout derived from it inside a tool (Vision's column/stacked breakpoints,
+  `PaneLayout`, `DocumentLayout`, the PTE toolbar) freezes. Vision's redesign measures with its
+  own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
+- Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
+  boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
 
 ### Refs: use `props.ref`, not `forwardRef`
 
@@ -443,6 +778,86 @@ On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test f
 `/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
 the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
 
+#### Types in tests
+
+Applies to every package's `*.test.ts` / `*.test.tsx` (and `*.browser.test.tsx`) files only.
+Do not use `as unknown as T` to force a value into a narrower public type. If a helper's
+return type is not in the union the function accepts, cover that behaviour through a surface
+that already accepts the value, or drop that case from the typed call. Do not widen a public
+union solely so a test type-checks. A single `as T` on a deliberately incomplete object is
+fine when the test is the error path for a missing field. This rule does not apply to
+production source.
+
+#### Prefer real implementations over test-file doubles
+
+Drive the unit through its production API and the same factories production uses.
+Do not add mock functions, stub components, or a parallel compiler to the test file
+just to reach a branch.
+
+- Compile schemas with Studio `createSchema` plus `defineType` / `defineField`
+  (`packages/sanity/src/core/schema/createSchema.ts`). That path validates, parents
+  the builtin schema, and runs `inferValidation`. Do not hand-roll
+  `@sanity/schema` `Schema.compile({types: [...]})` unless the test is about that
+  compiler.
+- Call the production function (`createPrepareFormState()`, an exported mapper)
+  without `vi.fn` decorator spies unless the suite is about call counts.
+- Typed lookups of a production union (`fieldMember`, `errorMember`) are accessors,
+  not doubles. A schema-construction helper for a depth fixture is fine. A second
+  fake form tree, or a local `vi.mock` of the module under test, is not.
+- A harness that needs a mock client and a page of `vi.fn` callbacks is the wrong
+  seam when the unit is a pure function. Prefer the smaller call.
+
+#### Vitest 5 specifics
+
+- Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
+  `.vitest/blob/` (what `test.yml` uploads and `--merge-reports` reads), browser-mode attachments
+  and failure screenshots in `packages/sanity/.vitest/attachments/`.
+- `clearMocks` is on by default: mock call history is cleared before every test, so never assert
+  on calls recorded in `beforeAll` or at module scope.
+- `expect.poll` fails as soon as its `timeout` elapses (no more passing on a late attempt); give it
+  an explicit `timeout` when the polled state is produced behind a debounce or a slow effect.
+- In browser mode, `expect.element(...).toHaveTextContent()` is a full-string equality check and
+  rejects `RegExp`; use `toMatchTextContent()` for substring or regex matches. Locators keep the
+  Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
+  `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
+  matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+- Run the full browser suite through `pnpm --filter sanity test:browser`, not
+  `vitest -c vitest.browser.config.mts`. The script sets `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` so
+  Vitest collects garbage in Chromium after every test file; without it, a Linux run loses a page
+  to "Browser connection was closed while running tests" partway through (the comment above
+  `browser.provider` in the config explains the leak). Single files are fine either way.
+
+#### DOM prop leak guard
+
+`@repo/test-config/vitest/failOnReactDomPropWarnings` is loaded by the `sanity` jsdom and
+browser-mode setup files and by the `@sanity/vision` and `@sanity/access-ui` configs. It fails the
+current test when a non-DOM prop reaches a DOM element: react-dom's development-build warnings
+(`React does not recognize the … prop on a DOM element`, `Received true for a non-boolean
+attribute`, invalid event handler / ARIA names, …, listed in
+`@repo/test-config/vitest/reactDomPropWarnings`), styled-components' `unknown prop … is being
+sent through to the DOM` warning, and any `setAttribute` call that writes an object, an array or a
+`Date` (`params="[object Object]"`, `tags="a,b"` — react-dom renders all-lowercase unknown props
+like `intent` or `params` silently, so the attribute write is the only trace). The failure lists
+the offending prop; fix the component rather than the test: strip the prop before the `{...rest}`
+spread, or make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards
+unknown props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries
+that the component never consumed. A test that leaks a prop on purpose takes the report with
+`takeDomPropWarnings()` from the same module and asserts on it instead of failing;
+`packages/sanity/test/setup/failOnReactDomPropWarnings.test.tsx` checks the guard itself against
+the react-dom and styled-components builds the suite renders with.
+
+The e2e suite has its own guard in `watchForStudioErrors` (`e2e/helpers/studioErrors.ts`), which
+fails a spec at its end when a leak happened during it, on the same react-dom warnings when the
+studio runs `sanity dev`. CI runs the specs against a production `sanity build`, where react-dom
+and styled-components do not warn, so an init script (`e2e/helpers/domPropLeaks/scanner.ts`)
+reads the props React keeps on every element (`__reactProps$…`, kept in production) and checks
+them with a port of react-dom's development validation and styled-components'
+`@emotion/is-prop-valid` check, plus the object and lowercase-name cases React is silent about.
+The report names the components above the element; see "DOM prop leak guard" in
+`e2e/README.md`. When `react-dom` or `@emotion/is-prop-valid` is upgraded,
+`pnpm vitest run --project=e2e` checks the port, and the warning list both guards share, against
+the new versions.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -469,7 +884,18 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   scope — the suspended tree parks forever and `waitFor` times out. Wrap the mount yourself:
   `await act(async () => { renderHook(...) })` (suppress `testing-library/no-unnecessary-act` on
   that line; this is the exception the rule doesn't know about). A `Suspense` wrapper is also
-  required.
+  required. **It is the whole commit's passive effects that are lost, not just the suspended
+  subtree's**: the synchronous `act` splices off the rest of its queue once a render in it has
+  called `use()` on a thenable, so the scheduled passive-effect flush never reaches the real
+  Scheduler and no later `waitFor` or `await act(async () => {})` can recover it. A sibling's
+  `useEffect` then never runs at all, which looks nothing like a suspense problem — a
+  fire-and-forget `useEffect(() => { void check().then(setState) })` anywhere under the mount
+  simply never fires. Any sync-lane update scheduled during the mount commit hides this by
+  forcing a flush, so a test can pass for a while on an unrelated dependency doing that (a
+  `useState` setter used directly as a `ref` is one;
+  `packages/sanity/src/core/releases/tool/detail/__tests__/ReleaseDetail.test.tsx` relied on
+  `@sanity/ui`'s `MenuButton` doing it until
+  [ui#3144](https://github.com/sanity-io/ui/pull/3144) stopped).
 - **Keep the `use()` call sequence stable across the replay.** After the promise settles, React
   _replays_ the suspended render reusing the recorded hook state. If the awaited promise's side
   effect flips the condition guarding a conditional `use()` (e.g. a polyfill import that installs
@@ -477,6 +903,10 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   React throws `Update hook called on initial render` as a recoverable error — which vitest can
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
+- **A click whose state update makes a child suspend has the same problem.** `userEvent.click`
+  runs the handler inside the sync `act` of testing-library's event wrapper, so a dialog leaf
+  that `use()`s a pending promise parks forever; wrap the click:
+  `await act(async () => { await userEvent.click(button) })` (see `useUpsellContext.test.tsx`).
 - **`use()` inside a hidden `<Activity>` tree can trip React's "A component suspended inside an
   `act` scope, but the `act` call was not awaited" warning even when the thenable is already
   fulfilled.** A sync `act` (what `render` uses) stops flushing as soon as a yielded render has
@@ -497,6 +927,177 @@ revealed. Two consequences for Suspense code:
 - For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
   visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
   The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+- A `studio.components.layout` or `navbar` middleware whose tree shape depends on an async check
+  (which providers wrap `renderDefault`, whether a navbar button exists) remounts the whole
+  studio below it when the answer arrives after the first paint. Keep the shape independent of
+  the check instead: render the same tree in every mode and read the answer only in the leaf
+  that renders differently (next bullets). The check itself starts in
+  `studio.components.provider`: `StudioProvider` renders that chain (`PluginProviders`) above
+  `StudioLayout` and its loading screen boundary, so a provider component (small, never
+  `lazy()`) turns an observable into a promise with `useObservablePromise` (for feature flags:
+  `useFeatureEnabledObservable`), starts it on commit with `preloadObservablePromise` in an
+  effect so several checks load in parallel, and publishes the promise through a context
+  (default `null`, read through a hook that throws when missing, or directly where the consumer
+  renders without the plugin too). A layout or navbar that has no way around waiting for an
+  answer before it paints reads the promise with `use()` and suspends up to the studio's own
+  loading screen, with no boundary of its own (a tool, or its `activeToolLayout`, suspends up to
+  the tool's own loading block instead: `RenderTool` in `StudioLayoutComponent` wraps each tool
+  in a `Suspense`). The navbar's `StudioToolMenu` is the one such place: whether the Schedules
+  tool is listed depends on the scheduled publishing feature check and on whether the dataset has
+  ever scheduled anything, so it `use()`s both promises before painting the tool list
+  (`@TODO SAPP-4633` there is to see whether that wait can go by always listing the tool and
+  rendering a placeholder inside it).
+- Derive the published value inside the observable, never with `.then()` on the promise:
+  `useObservablePromise(useMemo(() => features$.pipe(map(toMode)), [features$]))` hands out the
+  `ObservablePromise` that react-rx fulfils in place, so `use()` reads it synchronously once it
+  has settled and a leaf that mounts later (the comments inspector, the tasks sidebar) renders in
+  one pass with no fallback. `featuresPromise.then(toMode)` is a native promise whose `status`
+  React records only after the first `use()` of it has thrown, so every first read suspends once
+  more: one extra attempt of the whole layout tree at boot (3 → 2 in the provider tests) and a
+  fallback flash on the inspector's first open.
+- A context that carries a promise defaults to `null` and never to a pre-settled stand-in
+  (`Object.assign(Promise.resolve(x), {status: 'fulfilled', value: x})` is for tests only). A
+  consumer that cannot work without the provider reads the context through a hook that throws
+  (`useTasksMode`, `useCommentsMode`); one that renders either way checks before reading,
+  `promise ? use(promise) : fallback`, and the fallback is the plain value that case means
+  (`NO_UPSELL_DATA`; `null` for `ScheduledPublishingModePromiseContext`, `false` for
+  `HasUsedScheduledPublishingPromiseContext`), not a promise of it.
+- Whether a feature is enabled and which mode it is in are separate hooks, and a hook never
+  returns a resolved mode: `useXEnabled()` answers the enabled question synchronously
+  (`useCommentsEnabled(): boolean` from the per-document `CommentsEnabledContext`, since
+  `document.comments.enabled` is a config API), and `useXMode()` hands out the mode as a promise
+  (`useTasksMode()`, `useCommentsMode()`: `Promise<'default' | 'upsell' | null>`, from
+  `TasksModePromiseContext`, `CommentsModePromiseContext`; `null` is a failed check). Whatever
+  leaf needs the value calls `use()` on it and suspends under a boundary close to that UI; a
+  provider or a layout never reads it, so the critical path never waits for a mode. Tasks: the
+  sidebar under its own `<Suspense>` in
+  `TasksStudioActiveToolLayout` (the sidebar's spinner as the fallback, since a `?sidebar=tasks`
+  link or the navbar button can open it before the check settles), and `TaskCreateAction`
+  reading it with `use()` when it renders. Comments: the inspector (under the inspector panel's
+  boundary), the upsell dialog leaf, `CommentsField` and `CommentsPortableTextInput` read it with
+  `use()` while rendering; `CommentsProvider` and `CommentsWrapper` only read the synchronous
+  `enabled`. The form's fields and the document actions render under the document pane's
+  boundary, and the check has settled long before a pane renders, so those reads are synchronous
+  in practice; never await the mode in a click handler instead (nothing then has to check whether
+  the document the click was made on is still current when the answer arrives). A `null` mode
+  fails closed:
+  `TaskCreateAction` shows an error toast instead of opening anything, the tasks sidebar and the
+  comments inspector render an unavailable notice with only their close control, the document
+  footer's open-task count stays hidden (`TasksFooterOpenTasks`; the providers are mounted in
+  every mode, so the store can still answer), and a comments button click opens that inspector.
+  A provider whose presence would depend on the mode is
+  mounted in both modes instead, so the tree never changes shape (`TasksUpsellProvider` under
+  `TasksStudioLayout`, `CommentsUpsellProvider` under `CommentsStudioLayout`, like
+  `ReleasesUpsellProvider`, `SchedulePublishingUpsellProvider` in the scheduled publishing
+  plugin's studio provider); the UI that consults it already knows it is in upsell mode, and each
+  provider's dialog leaf (`TasksUpsellDialog`, `CommentsUpsellDialog`,
+  `SchedulePublishingUpsellDialog`, under its own `<Suspense>`) `use()`s the mode once more and
+  renders the dialog only in upsell mode.
+- Scheduled publishing has no single `enabled` answer, so it publishes three contexts from its
+  studio provider (`core/scheduled-publishing/plugin/index.tsx`) and every callsite combines them
+  for its own purpose: `ScheduledPublishingEnabledContext` (`boolean`, the workspace flag, `false`
+  where the plugin is not loaded), `ScheduledPublishingModePromiseContext`
+  (`Promise<'default' | 'upsell' | null>`, from the feature check) and
+  `HasUsedScheduledPublishingPromiseContext` (`Promise<boolean>`, from the "has this dataset ever
+  scheduled anything" probe in `useHasUsedScheduledPublishingObservable`, settled as `true`
+  without probing when the workspace opted in explicitly). The two promises are independent, and
+  every callsite reads the mode first and only `use()`s the probe when the mode is not `null`
+  (`const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false`), so a failed
+  feature check never waits for the probe. The tool menu lists the tool, the tool renders
+  its schedules, `usePollSchedules` polls and `ScheduleAction` exists when
+  `enabled && mode !== null && hasUsed` (the plugin's own components skip the always-true flag);
+  the banner, the context menu, the preview and the schedules panel read only the mode. They
+  already live under the document pane's or the tool's boundary, where `use()` suspends to a
+  loading state that already existed.
+- The upsell content itself follows the same rule. `useUpsellData` returns
+  `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
+  a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
+  into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
+  request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
+  [upsellData$])` (`useUpsellContext` does this for every upsell provider, including
+  `ReleasesUpsellProvider`), and the context values carry the promise as
+  `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
+  just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
+  is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),
+  and each upsell panel (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`,
+  the schedules panels) is a leaf that `use()`s the promise under its own `<Suspense>`. Nothing
+  outside those leaves reads it: a form field or a document action in upsell mode just calls
+  `handleOpenDialog`, so a slow `/journey/*` request can only delay the dialog or a panel, never
+  the form (`CommentsField`, `CommentsPortableTextInput`, `TaskCreateAction`). Where no provider
+  is mounted, the fallback value carries
+  `upsellDataPromise: null` and the leaf reads
+  `upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA`. Because the settled promise is
+  fulfilled in place (stable identity), a provider's
+  context value does not change when the response arrives, so its consumers do not re-render for
+  it. Tests mock `useUpsellData` with a module-scoped `of(result)`
+  (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
+  created per render would resubscribe on every commit.
+- The feature requests start when the plugins' providers commit, once the auth state has settled
+  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
+  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+  `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
+  both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
+- A default plugin's components never check the workspace flag that enables the plugin:
+  `getDefaultPlugins` (`core/config/resolveDefaultPlugins.ts`) only includes `tasks()`,
+  `scheduledPublishing()`, `releases()`, `singleDocRelease()`, `variants()`, `mediaLibrary()`
+  and `canvasIntegration()` when that flag is on, and the workspace carries the same resolved
+  options, so inside the plugin `useWorkspace().tasks.enabled` is always `true`. Only code that
+  renders outside the plugin needs the flag (`StudioToolMenu` reading
+  `ScheduledPublishingEnabledContext`, `DocumentGroupInventory` through `useVariantsStore`),
+  which is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
+  since one of its two versions is always included, and `SingleDocReleaseEnabledProvider`, which
+  keeps reading the source's resolved `scheduledDrafts.enabled` (`useScheduledDraftsEnabled`)
+  because `scheduledDrafts` is a per-source option (`PluginOptions.scheduledDrafts`, reduced per
+  source by `scheduledDraftsEnabledReducer`) while the default plugins are added to every source,
+  nested `unstable_sources` included, from the root workspace's options, so a nested source that
+  opts out still loads the plugin. For the root source the gate agrees with the resolved flag:
+  `getDefaultPluginsOptions` reduces `scheduledDrafts.enabled` across the root config and its
+  plugins the same way (the root's own value winning) before `singleDocRelease()` is included,
+  since a gate reading only the root option would mount a plugin the resolved config disables
+  (`core/config/__tests__/resolveDefaultPlugins.test.ts`). The other flags are root-only options.
+- The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
+  also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
+  `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the
+  tool's own boundary, so a `lazy()` component there that React discovers on render holds the
+  layout or the tool for a chunk round trip. A small component on that path is imported
+  directly (`TasksStudioNavbar`, `VariantsStudioNavbarLayout`, which lazy loads its filters
+  behind its own `Suspense` fallback): a chunk of its own would cost more than it saves. A big
+  one stays lazy, but hold the import function and call it from the provider's effect, next to
+  `preloadObservablePromise`:
+  `const lazyTasksStudioActiveToolLayout = () => import('./TasksStudioActiveToolLayout')`,
+  `const TasksStudioActiveToolLayout = lazy(lazyTasksStudioActiveToolLayout)`,
+  `useEffect(() => { void lazyTasksStudioActiveToolLayout() }, [])`. The chunk then loads in
+  parallel with the feature checks the layout suspends on (see `core/tasks/plugin/index.tsx`).
+  Preloads are fire-and-forget: `void` the promise and do not
+  attach `.catch` handlers. A rejected preload has nothing to report, because the `lazy()` render
+  re-imports the module and surfaces a real failure through the error boundary; a review comment
+  asking to handle that rejection is asking to change the intended shape. In jsdom tests, a
+  preloaded chunk that nothing rendered may still be loading when a test ends, and Vitest would
+  reject it at environment teardown (`EnvironmentTeardownError`) as an unhandled error even though
+  every test passed; the shared `afterEach` in `test/setup/environment.ts` awaits
+  `vi.dynamicImportSettled()` so those imports finish first.
+- Never `lazy()` a `studio.components.provider` or `layout` component, and do not put a
+  `<Suspense>` at its top level. Both render in the studio's first render pass, before any effect
+  could preload them: a provider renders above `StudioLayout`'s boundary, so a lazy one suspends
+  the whole studio to an ancestor fallback; a layout renders under that boundary, so a lazy chunk
+  only delays the loading screen's replacement. `pickLayoutComponent` / `pickProviderComponent`
+  warn about both in development (`warnIfSuspendsOnCriticalPath`). The other slots are not
+  checked, since a bare `import()` preload leaves nothing the check could read.
+- A component that only wraps `renderDefault` in providers is a `studio.components.provider`,
+  not a `layout`. The schedules plugin's `ReleasesStudioProvider`,
+  `SingleDocReleaseStudioProvider` and `SchedulePublishingStudioProvider` are the plugin's
+  providers (declared in the plugin's `index.tsx`, imported directly, nothing to lazy-load) and
+  those plugins define no `layout` at all. Reserve `layout` for a component that renders layout
+  of its own around the studio.
+- A module that is only ever loaded through `lazy()` uses `export default`, so the call site is
+  `lazy(() => import('./TasksStudioNavbar'))` with no `.then` remapping.
+- To unit test a component below one of these providers, provide the promise context directly
+  with a resolved promise (`<TasksModePromiseContext value={Promise.resolve<TasksMode>('default')}>`,
+  see `TasksFooterOpenTasks.test.tsx`). A component that `use()`s it still suspends for a
+  microtask, so mount it inside an awaited async `act` under a `Suspense` boundary (see
+  `TasksStudioProvider.test.tsx`), or hand it an already settled thenable,
+  `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})`, which `use()`
+  reads synchronously.
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first
@@ -512,24 +1113,30 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Vanilla-extract in jsdom tests
+#### Panda CSS and CSS modules in jsdom tests
 
-The `sanity` and `@sanity/vision` jsdom suites import
-[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
-(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
-`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
-into jsdom. Class name identifiers still resolve, but computed styles are not available.
+The static styles of `sanity` are [Panda CSS](https://panda-css.com) `css()` calls in `.css.ts`
+modules (see [Panda CSS](#panda-css) below). The `sanity` jsdom suite registers `@pandacss/vite`
+with `transform: true` (`packages/sanity/vitest.config.mts`), which rewrites those calls to the
+class names the package build ships; no stylesheet is loaded in jsdom, so class name identifiers
+resolve but computed styles are not available. `@sanity/vision`'s suite compiles its CSS modules
+with Lightning CSS and the pattern of the package build (`viteCssModules` and `test.css` in
+`packages/@sanity/vision/vitest.config.mts`), so its class names are the ones `lib/bundle.css`
+ships, and `src/cssModules.test.ts` checks that. The config drops the stylesheet Vitest would
+inject into the document (`cssModulesWithoutStyles()`), so the suite runs without styles like the
+`sanity` one; vision's stylesheet hides parts of the trees its tests query. Its tests also resolve
+`sanity` to source, whose `.css.ts` modules are Panda, so the config registers `sanityPandaCss()`
+from `@repo/pandacss/vite` for them, the way the dev studios do.
 
 Conventions that follow from this:
 
-- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+- **Do not assert on generated class names or computed styles in jsdom tests.** Assert on
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
-  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
-  runtime styles stay enabled.
-- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
-  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
-  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
-  injection, not the transform.
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
+  the generated stylesheet) or the Playwright e2e tests.
+- **A `.css.ts` module exports class name strings, nothing else renders.** A `css()` call outside
+  a `.css.ts` file is neither extracted nor rewritten (the Panda config only `include`s those
+  files), so it evaluates to the right class names at runtime but has no CSS behind them.
 
 #### @sanity/ui overlays stay mounted when closed
 
@@ -538,7 +1145,9 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 - Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
   visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
-  the whole document.
+  the whole document. In browser mode this is a hard failure: a `page.getByText(...)` that also
+  hits a closed tooltip's copy of the text resolves to two elements and trips the locator's
+  strict-mode check, so scope it (`page.getByTestId('field-publishedAt').getByText(...)`).
 - In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
   selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
   nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
@@ -568,7 +1177,7 @@ Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from t
 Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
 (every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
 with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
-authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+authored migration sentinels for `ui-components` and Panda-migrated components, plus
 harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
 component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
 harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
@@ -577,6 +1186,19 @@ third, separate Chromatic project wired in `e2e/studio-visual-test.ts`; nothing 
 belongs under `dev/storybook`, which contains only the shared Storybook, Chromatic, and
 addon-vitest infrastructure. The `sanity-visual-regression` skill's "Which source owns a state"
 table decides where a new snapshot goes.
+
+Both `chromatic.yml` jobs are label-gated on pull requests: add `trigger:chromatic` to run them.
+The label persists, so later pushes re-run them until it is removed, while applying an unrelated
+label neither starts a run nor cancels one in flight. Pushes to `main` are never gated — that is
+what keeps the auto-accepted baselines current for labeled PRs to diff against. The Playwright
+e2e snapshots are uploaded by `e2e.yml` and are not part of this gate.
+
+A Playwright archive captures the DOM as it is at the `takeChromaticSnapshot` call, so wait for
+every region it will show, not just the one the spec is about: the navbar settles long before the
+tool below it, whose panes lazy-load behind a `LoadingPane` spinner. `takeChromaticSnapshot` waits
+out visible `LoadingBlock`s as a backstop. Content that cannot settle under the archive fixture at
+all — document previews, whose listener the fixture's CDP instrumentation breaks — belongs in
+`test.use({ignoreSelectors: [...]})` rather than in a wait that would time out.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
@@ -604,6 +1226,71 @@ Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs captu
 See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
 for how to add coverage, which source owns a state, and determinism rules.
 
+Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
+hooks to `stack` (after-hooks run in reverse registration order) and the Chromatic plugin adapts to
+either ordering: it appends its setup file under `stack` and prepends it under `list`, so the
+automatic snapshot runs before `packages/sanity/test/setup/browser.ts` unmounts the tree in both
+cases; only `parallel` lets them race (partially unmounted, blank, or duplicate captures) and the
+plugin warns about it. `list` is set explicitly so the order is stated in the config, and so that
+`afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
+archive rather than before it. Capture runs also set `retry: 0` (a retried test
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`. Those last two are capture-only: they
+tell Chromatic how to render the uploaded archive (animations paused at their end state, the
+`prefers-reduced-motion: reduce` rules of the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+applied). The browser the tests run in — locally, in the functional `browser-tests.yml` shards
+and during the capture run itself — uses Playwright's default media (no reduced-motion
+emulation), so transitions run at full length there and a test that needs one finished must wait
+for the settled state (`expectStable`, `expect.poll`, `settleChromaticEndState()`); nothing in the
+test setup shortens them. `test/setup/browser.ts` loads `ui5/styles.css` together with
+`@sanity/ui/styles.css` for every test file so `ui5` components are styled in tests whose harness
+does not import the `sanity` entry point.
+
+Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
+time and re-applies those states in its renderer, so the real pointer position and React
+hover/focus state are part of every snapshot. Make them deterministic in the test, never with
+global CSS overrides from the browser setup (no `transition: 0s`, hidden carets, forced
+opacity, or `!important` focus rings — they hide the state the snapshot is meant to show and
+mask real regressions):
+
+- End interactive tests with `settleChromaticEndState()` from
+  `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
+  element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
+  field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
+  offsets. The shared `beforeEach` in `test/setup/browser.ts` mounts that topmost 4×4 park in the
+  bottom-right corner and parks the pointer on it before the test renders anything, and leaves it
+  mounted until the shared `afterEach`, which restores the viewport, parks the pointer on it once
+  more (now back in the default viewport's corner) and then removes it — so every test starts
+  with the pointer on the park rather than over the previous test's last click, its
+  reduced-viewport corner or the harness's first control, and content rendered under that
+  coordinate later never starts out `:hover`ed. Do
+  not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+- Assert the state you want archived right before the end of the test (or before
+  `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
+  `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
+  or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Wait for layout with `expectStable(sample)` (same helpers file): it polls until the sampled
+  geometry / signature is unchanged on several consecutive re-reads. A single re-read that happens
+  to match (`const x = f(); await expect.poll(f).toBe(x)`) is not a stability check — Floating UI
+  and CollapseMenu can agree once and move on the next frame.
+- Assertions on React focus state (`data-focused`, editor `focused`/`blurred` events) are
+  chromium-only in practice: Firefox headless shares one window focus across the pages Vitest runs
+  test files in, so input in another file blurs the editor while `document.activeElement` (and
+  `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
+  on chromium only, so nothing is lost.
+- Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
+  menus stay mounted). The automatic afterEach capture archives whatever the DOM looks like after
+  the test's last statement, so when that end state could race a dismiss, use
+  `configure({disableAutoSnapshot: true})` and `takeSnapshot('state')` at the asserted state
+  instead. `takeSnapshot()` serializes the DOM and its `:hover`/`:focus` ids synchronously when
+  called (only the upload is awaited), so the test may keep exercising behavior afterwards — e.g.
+  the `CommentInput` browser tests snapshot `mentions-menu-open`, then press Enter and assert the
+  mention was accepted. Settle (`settleChromaticEndState()`) and assert the state _before_ the
+  `takeSnapshot()` call; interactions after it never reach that archive.
+- Interaction-only tests whose end state is a loading or error flash should
+  `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+  debug overlay noise shows up in Chromatic archives.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -611,6 +1298,8 @@ pnpm e2e:build              # Build E2E studio
 pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
+
+Playwright `webServer.command` must be `node --run <script>`, never `pnpm`. pnpm 12.6+ (`@pnpm/exe`) detaches the script into its own process group, so Playwright's teardown `kill(-pid)` never reaps vite/sanity, the runner never prints its summary, and the GHA job sits until `timeout-minutes` (auth 15m, embedded 30m). `node --run` stays in the webServer process group and dies with it.
 
 ## Pre-commit Hook
 
@@ -635,7 +1324,7 @@ pnpm add -w -D <package>
 
 Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
 
-The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
+The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.2 depends on `rolldown-plugin-dts@^0.29.0-beta.2`, whose `tsgo` generator needs `typescript@7.1.0-beta`; the workspace override pins `rolldown-plugin-dts` to `0.28.8` so declaration emit keeps using the TypeScript 7.0 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
 
 ### Testing an Unreleased Dependency Fix (pnpm patch)
 
@@ -661,9 +1350,12 @@ Notes:
 
 ### Creating a New Test
 
-1. Create test file next to source: `MyComponent.test.tsx`
-2. Use existing test patterns from similar files
-3. Run `pnpm test -- MyComponent` to verify
+1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
+2. Drive the unit through its production API and the same factories production uses (see Testing > Prefer real implementations over test-file doubles). Do not copy a sibling's `vi.fn` decorator suite or `Schema.compile` factory if a real `createSchema` path exists
+3. Use existing test patterns from similar files when those patterns already do that
+4. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories when `createTestProvider` and the `test/form` input harnesses are the right seam (Studio React context), and when to call `createSchema` plus the production function instead.
 
 ### Updating Snapshots
 
@@ -673,9 +1365,16 @@ When making intentional changes that affect snapshots:
 # Update all snapshots
 pnpm test -- -u
 
-# Update specific test's snapshots
-pnpm test -- -u MyComponent
+# Update a specific test's snapshots — the filter MUST come before -u
+pnpm test -- MyComponent -u
+pnpm vitest run --project=sanity path/to/MyComponent.test.tsx -u
 ```
+
+**`-u` / `--update` swallows the argument that follows it.** Vitest parses it as a flag
+that takes a value, so `-u MyComponent` silently drops the filter and updates every
+snapshot in the repo (`vitest list --filesOnly -u CollapseTabList` lists all 804 files;
+`vitest list --filesOnly CollapseTabList -u` lists one). Put every path or name filter
+before the flag.
 
 Review snapshot changes carefully before committing.
 
@@ -728,21 +1427,21 @@ added new feature                       # missing type and scope
 
 ### 1. Create as Draft PR First
 
-**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team. This applies to every way of opening a PR, not only `gh`: an agent PR tool must be called with its draft option set (`draft: true`).
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
+gh pr create --draft --title "fix(scope): description" --body "..." --label "✨ ai"
 ```
 
-### 2. Apply the "🤖 bot" Label
+### 2. Apply the "✨ ai" Label
 
-**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+**All PRs created by AI agents must be labeled with `✨ ai`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows. Do not use `🤖 bot` — that label is reserved for PRs opened by CI automations and Renovate, not AI agents.
 
 When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
 
 ```bash
-gh pr edit --add-label "🤖 bot"
+gh pr edit --add-label "✨ ai"
 ```
 
 ### 3. Move Out of Draft
@@ -762,9 +1461,10 @@ gh pr ready
 
 | Label                | When to use                                                                          |
 | -------------------- | ------------------------------------------------------------------------------------ |
-| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `✨ ai`              | **Required** on every AI-agent PR (`🤖 bot` is for CI automation and Renovate only)  |
 | `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
 | `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
+| `trigger:chromatic`  | Runs the Chromatic checks in `chromatic.yml` on the PR (maintainer-gated)            |
 | `full-test-suite`    | Forces the full unit test suite to run                                               |
 
 Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
@@ -787,7 +1487,7 @@ When porting or rebasing someone else's PR (community contribution, backport, et
 
 Workflow summary:
 
-1. **Agent creates draft PR** with the `🤖 bot` label
+1. **Agent creates draft PR** with the `✨ ai` label
 2. **Prompter reviews** the draft
 3. **Mark ready for review** once the prompter approves
 4. **Team reviews** and merges
@@ -860,6 +1560,10 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
 
 When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
 
+### Pull requests
+
+Always open pull requests as drafts. Cloud agents create PRs with the agent's PR tool rather than `gh` (which is read-only in the VM), so pass `draft: true` on every create call. Never open a PR ready for review: the prompter marks it ready after reviewing it (see [Pull Request Workflow](#pull-request-workflow)).
+
 ### Services
 
 | Service                                           | Port | Purpose                                          |
@@ -877,9 +1581,12 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
+- **`sanity dev` needs the packages built first, even though studio sources resolve from `src/`.** The CLI loads `sanity.cli.ts` without the `monorepo` export condition, so its `sanity/cli` import resolves to `packages/sanity/lib/cli.js`; on an unbuilt checkout every dev studio exits with `CLI config cannot be loaded … Cannot find module '…/sanity/lib/cli.js'`. Build once (see the Node version and turbo `Exec format error` notes below), then restart `sanity dev`.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
 - **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources).
+  - **Use the suite's failure screenshots for before/after walkthrough artifacts** when the change is only observable in browser mode. Vitest writes a full-viewport PNG of the failing state to the gitignored `src/**/__tests__/__screenshots__/<test file>/` and prints the paths, so running the new (red) test on a stashed fix and again on the applied fix yields a matched pair with no extra tooling. Delete the directory afterwards.
+  - **Firefox and WebKit (the other two CI shards) need host libraries the image lacks.** Worth setting up for a change whose behavior depends on layout or scrolling, since CI runs all three browsers. Install the libraries with `sudo env "PATH=$PATH" node_modules/.bin/playwright install-deps` (passwordless `sudo` is available; a few minutes of apt), then download the browsers with `pnpm --filter sanity exec playwright install firefox webkit`, and run each engine with `SANITY_VITEST_BROWSER=firefox` / `SANITY_VITEST_BROWSER=webkit`. Call the CLI shim directly as shown: `pnpm … exec` under `sudo` re-runs the workspace install as root and leaves hundreds of root-owned files behind in `node_modules` (`sudo chown -R ubuntu:ubuntu node_modules` if that already happened). Firefox launches without the libraries; WebKit does not.
 - **The Storybook addon-vitest suite (`pnpm --filter sanity-storybook test`) dies mid-run in the VM.** After roughly 45 story files the headless chromium page goes away and vitest reports `Browser connection was closed while running tests` as an unhandled error (reproducible on a clean `main`, so it is not your change). Run the suite in chunks of about 20 story files instead: `cd dev/storybook && pnpm exec vitest run <absolute paths...>`. Same Playwright chromium install as above; `pnpm --filter sanity-storybook exec storybook build` (about 20s, no package build needed) is the quick check that every remaining story still compiles into the index.
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 
@@ -890,18 +1597,28 @@ No Docker, databases, or other local services are required for unit tests, lint,
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
+- **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
+- **`pnpm install` skips the `prepare` scripts when `node_modules` is already up to date**, so the generated files they write can be missing or stale after switching branches on an existing install: the CSS module typings (`packages/@sanity/vision/generated` and `dev/test-studio/generated`; oxlint then reports TS2307 for vision's `*.module.css` imports) and the Panda `styled-system` directories. Run `pnpm css:types` (which `pnpm lint` also runs) and `pnpm --filter <package> run prepare` to regenerate them.
 - **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
 - **`isUsingLegacyHttp.test.ts` fails in the VM on any branch.** The "reuses one legacy protocol probe across callers and subscriptions" case resolves `[undefined, undefined, undefined]` instead of `[false, false, false]`. It reproduces on a clean detached `main` with main's own lockfile, and the `Unit tests` job is green on the same commit in CI, so treat it as an environment artifact like the timezone snapshots above rather than a regression in your change.
 - **`pnpm lint:workflows` needs zizmor installed first.** It is not in the image and is not an npm package: `pip3 install --user zizmor`, then run it with `PATH="$HOME/.local/bin:$PATH"`. Baseline before blaming your change — a clean `main` currently reports 11 high-severity findings with zizmor 1.30.1 (CI pins an older version), so compare finding counts with and without your change rather than requiring zero.
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.
-- **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
+- **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files. Read the churn before reverting it, though. After a rebase onto a base that moved a dependency's version elsewhere in the workspace (e.g. `motion` `^13.4.2` → `^13.4.4`), your package's importer entry can point at a `version:` that no longer has a `packages:`/`snapshots:` entry; `pnpm install --frozen-lockfile` accepts that, CI installs nothing for it, and only that package fails (`Cannot find module 'motion/react'` from oxlint and vitest, `Rolldown failed to resolve import` from `sanity build`). In that case the rewrite of the importer entry is the fix: align your `package.json` range with the rest of the workspace and commit the two lockfile lines, leaving the rest of the churn out.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
-- **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
+  - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
+  - The repo-wide check can outgrow the VM's free memory even on its own: its type-aware pass (`tsgolint`) has peaked above 3.5 GB in a VM with about 4.5 GB available. Run it inside a memory-capped cgroup so that only the lint gets killed if it runs out: `sudo mkdir -p /sys/fs/cgroup/lint && echo 3500M | sudo tee /sys/fs/cgroup/lint/memory.max`, then `bash -c 'echo $$ | sudo tee /sys/fs/cgroup/lint/cgroup.procs >/dev/null; exec pnpm check:oxlint'`; `grep oom_kill /sys/fs/cgroup/lint/memory.events` shows whether it was killed. For a change confined to one package, `pnpm exec oxlint --disable-nested-config --quiet packages/<package>` lints and type-checks just that package's files in a few seconds, and CI still runs the full check.
+- **bundledDev serves a lazily imported module's top-level `await` inside a non-async factory the first time it compiles that chunk.** Symptom: `SyntaxError: Unexpected reserved word`, and the browser caches the errored module so retries on that page fail the same way. The served `/@vite/lazy?id=…&rolldown-lazy=1` chunk shows the cause: `registerFactory(id, "esm", (function () { … await … }))`. Classic `sanity dev` (native ESM) and `sanity build` are unaffected. This is upstream vite/rolldown behavior. Vision must not import the `@sanity-labs/groq-wasm` package entry: that browser entry fetches its wasm file while the module evaluates. Format and lint import `@sanity-labs/groq-wasm/lazy` and call `load()` on first use, which has no top-level await. Reintroducing an import of the package entry brings the failure back.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
+- **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:
+  - Use the repo's existing Playwright with the system Chrome (`chromium.launch({channel: 'chrome'})`) so no browser download is needed. Video recording additionally needs `npx playwright install ffmpeg` (~2 MB); `/usr/bin/ffmpeg` handles the webm-to-mp4 conversion afterwards.
+  - Create the context with `recordVideo: {dir, size}` matching the viewport. The video spans the whole context lifetime, so trim the studio load off the front with `ffmpeg -ss`.
+  - Click `data-testid="focus-pane-button-focus"` to maximise the document pane so the form fills the frame instead of competing with the navigation and list panes.
+  - If a control moves after the first interaction (for example a toggle pushed down by expanding content), activate it the second time with `page.keyboard.press('Enter')` instead of clicking. The element keeps focus, and this avoids Playwright's auto-scroll shoving the result off-screen.
+  - Have the script log the state it observes (button labels, bounding boxes) so the run is self-checking rather than relying on reviewing frames.
 
 ### Running e2e (Playwright) tests in the VM
 
@@ -951,3 +1668,5 @@ Debugging notes:
 - The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
 - CI e2e failures publish a plain-markdown digest at `<report-url>/agent-report.md` (same Vercel deployment as the HTML report). Fetch that URL instead of the HTML report — it includes the error, code snippet, `error-context` page snapshot, and a local repro command. The PR comment's **Share with an AI agent** fenced prompt is the paste-ready prompt (one-click copy).
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
+- Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
+- A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.

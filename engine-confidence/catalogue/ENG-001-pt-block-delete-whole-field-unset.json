@@ -1,0 +1,13 @@
+{
+  "id": "ENG-001",
+  "title": "Keyed Portable Text block deletion escalated to a whole-field unset",
+  "severity": "S1",
+  "failureClass": "form layer rewrites a patch from a lagging copy of the value (lost content)",
+  "source": "Axios INC-441; reverts the exemption added in 8118cccf12; gap 5 in 01-context.md",
+  "sourceUrl": "https://github.com/sanity-io/sanity/pull/14747",
+  "filesTouched": ["packages/sanity/src/core/form/members/object/fields/ArrayOfObjectsField.tsx"],
+  "userVisibleEffect": "When the cached field value lags the editor (fast burst, new document), a block removal is sent as unset([field]); the server drops every block while the editor keeps showing them",
+  "notApplicableSuites": ["unit:mutator"],
+  "expectedCaughtBy": ["unit:engine", "fuzz:pt"],
+  "addedOn": "2026-10-16"
+}

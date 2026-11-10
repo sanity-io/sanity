@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
-import {type AssetSource} from '@sanity/types'
+import {type AssetSource, type SchemaAssetSources} from '@sanity/types'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
@@ -22,7 +22,7 @@ export function getDataTestIdPrefix(schemaType: {name?: string; jsonType?: strin
 export interface AssetSourceBrowserProps {
   assetSources: AssetSource[]
   readOnly?: boolean
-  schemaType: {name?: string; jsonType?: string; options?: {sources?: AssetSource[]}}
+  schemaType: {name?: string; jsonType?: string; options?: {sources?: SchemaAssetSources}}
   onSelectAssetSource: (assetSource: AssetSource) => void
   onCloseMenu?: () => void
 }
@@ -52,7 +52,9 @@ export function AssetSourceBrowser(props: AssetSourceBrowserProps) {
     [onCloseMenu, onSelectAssetSource],
   )
 
-  if (sourcesFromSchema?.length === 0) {
+  // Legacy support for `options.sources: []` — hides browsing entirely. Only
+  // the array form can mean this; `.length` on the predicate form is arity.
+  if (Array.isArray(sourcesFromSchema) && sourcesFromSchema.length === 0) {
     return null
   }
 

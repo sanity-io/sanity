@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -22,7 +22,7 @@ export function VariantDefinitionNotFoundBanner({
       tone="caution"
       icon={WarningOutlineIcon}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <Translate
             i18nKey="banners.variant.definition-not-found"
             t={t}

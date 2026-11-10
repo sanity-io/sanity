@@ -2,10 +2,10 @@ import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons/Image'
 import {createImageUrlBuilder} from '@sanity/image-url'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -29,7 +29,7 @@ export const NoImagePreview = () => {
   return (
     <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">
       <Flex alignItems="center" justifyContent="center" height="100%">
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           {t('changes.image.no-image-placeholder')}
         </Text>
       </Flex>
@@ -147,7 +147,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
 
           {(assetIsDeleted || imageError) && (
             <Box paddingY={5}>
-              <Text size={1} muted align="center">
+              <Text size={1} muted align="center" as="div" trim={true}>
                 {t(assetIsDeleted ? 'changes.image.deleted' : 'changes.image.error-loading-image')}
               </Text>
             </Box>

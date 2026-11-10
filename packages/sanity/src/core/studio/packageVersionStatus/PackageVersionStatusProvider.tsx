@@ -6,11 +6,12 @@ import semver from 'semver'
 import {getSanityImportMapUrl} from '../../environment/importMap'
 import {SANITY_VERSION} from '../../version'
 import {
+  type AutoUpdatingVersionInfo,
   fetchLatestAutoUpdatingVersion,
   fetchLatestAvailableVersionForPackage,
   type LatestVersionInfo,
 } from './fetchLatestVersions'
-import {parseImportMapModuleCdnUrl} from './utils'
+import {type DeprecatedVersions, getVersionDeprecation, parseImportMapModuleCdnUrl} from './utils'
 
 // How often to check for new versions
 const POLL_INTERVAL_MS = 1000 * 60 * 15 // check every 15 minutes
@@ -29,13 +30,20 @@ const DEBUG_IMPORT_MAP = false
 const DEBUG_CURRENT_VERSION = false
 const DEBUG_LATEST_VERSION = false
 const DEBUG_AUTO_UPDATE_VERSION = false
+const DEBUG_DEPRECATED_VERSIONS = false
 
 const DEBUG_VALUES = {
-  currentVersion: '4.0.0-pr.10176',
+  currentVersion: '5.20.0',
   // alternative, non-appid based url: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
-  importMapUrl: `https://sanity-cdn.com/v1/modules/by-app/appid123/t${Math.floor(Date.now() / 1000)}/%5E4.5.0/sanity`,
-  autoUpdateVersion: '4.2.0-next.17',
-  latestVersion: '4.5.5',
+  importMapUrl: `https://sanity-cdn.com/v1/modules/by-app/appid123/t${Math.floor(Date.now() / 1000)}/%5E5.20.1/sanity`,
+  autoUpdateVersion: '5.20.1',
+  latestVersion: '6.14.1',
+  // deprecates both the running version and the debug auto-update target, so the warning shows
+  // for the "not auto-updating" case and for the "pinned to a deprecated version" case
+  deprecatedVersions: {
+    [SANITY_VERSION]: {reason: 'Contains a bug that may cause data loss in array inputs'},
+    '4.2.0-next.17': {reason: 'Contains a bug that may cause data loss in array inputs'},
+  } as DeprecatedVersions,
 } as const
 
 const getCurrentVersion = memoize(() =>
@@ -50,13 +58,19 @@ const getSanityImportMapEntryValue = memoize(() =>
 // but for now, we only care about the `sanity`-package
 const REFERENCE_PACKAGE = 'sanity'
 
-export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
+export function PackageVersionStatusProvider({
+  children,
+  importMapUrl,
+}: {
+  children: ReactNode
+  importMapUrl?: string
+}) {
   const importMapInfo = useMemo(() => {
-    const importMapUrl = getSanityImportMapEntryValue()
-    if (!importMapUrl) {
+    const sanityImportMapUrl = importMapUrl ?? getSanityImportMapEntryValue()
+    if (!sanityImportMapUrl) {
       return undefined
     }
-    const result = parseImportMapModuleCdnUrl(importMapUrl)
+    const result = parseImportMapModuleCdnUrl(sanityImportMapUrl)
     if (!result.valid) {
       console.warn(
         new Error(
@@ -68,7 +82,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     return result.valid
       ? {...result, minVersion: semver.coerce(result.minVersion, {includePrerelease: true})!}
       : result
-  }, [])
+  }, [importMapUrl])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
   const isAutoUpdating = Boolean(importMapInfo)
@@ -76,6 +90,13 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
   const lastCheckRef = useRef<number>(undefined)
   const [autoUpdatingVersionRaw, setAutoUpdatingVersionRaw] = useState<string>()
   const [latestTaggedVersionRaw, setLatestTaggedVersionRaw] = useState<string>()
+  const [fetchedDeprecatedVersions, setDeprecatedVersions] = useState<
+    DeprecatedVersions | undefined
+  >()
+  // read the debug value per render (not as initial state) so flipping the flag under HMR takes effect
+  const deprecatedVersions = DEBUG_DEPRECATED_VERSIONS
+    ? DEBUG_VALUES.deprecatedVersions
+    : fetchedDeprecatedVersions
 
   // The version the module CDN will serve for the studio's import map URL on reload (resolved
   // within the URL's version range, including explicitly allowed major jumps). Never base this
@@ -90,6 +111,22 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       latestTaggedVersionRaw ? (semver.parse(latestTaggedVersionRaw) ?? undefined) : undefined,
     [latestTaggedVersionRaw],
   )
+
+  // Only warn when a reload won't fix it: an auto-updating studio is judged by the version a
+  // reload applies (deprecated => pinned to it via manage), a non-auto-updating one by the
+  // version it runs.
+  const versionDeprecation = useMemo(() => {
+    if (isAutoUpdating) {
+      const deprecation = getVersionDeprecation(deprecatedVersions, autoUpdatingVersion)
+      return deprecation && autoUpdatingVersion
+        ? {version: autoUpdatingVersion, reason: deprecation.reason, isPinned: true}
+        : undefined
+    }
+    const deprecation = getVersionDeprecation(deprecatedVersions, currentVersion)
+    return deprecation
+      ? {version: currentVersion, reason: deprecation.reason, isPinned: false}
+      : undefined
+  }, [isAutoUpdating, deprecatedVersions, autoUpdatingVersion, currentVersion])
 
   const [versionCheckStatus, setVersionCheckStatus] = useState<VersionCheckState>({
     lastCheckedAt: null,
@@ -120,7 +157,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
 
     // fetch the current version based on manage/brett configuration for appid
     const resolveAutoUpdatingVersion = DEBUG_AUTO_UPDATE_VERSION
-      ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
+      ? Promise.resolve<AutoUpdatingVersionInfo>({packageVersion: DEBUG_VALUES.autoUpdateVersion})
       : importMapInfo?.valid
         ? importMapInfo.appId
           ? fetchLatestAutoUpdatingVersion({
@@ -130,7 +167,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
             })
           : // if studio is auto-updating but has no appId, the auto-updating version comes from the
             // latest-channel metadata — its `packageVersion` is resolved for the same version range
-            resolveLatestTaggedVersion.then((result) => result?.packageVersion)
+            resolveLatestTaggedVersion
         : undefined
 
     void Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
@@ -139,11 +176,18 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         // than rejecting), so only overwrite state when we actually got a value.
         // This keeps the previously known versions on a transient failure and
         // we try again on the next tick.
-        if (typeof nextAutoUpdatingVersion !== 'undefined') {
-          setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
+        if (nextAutoUpdatingVersion) {
+          setAutoUpdatingVersionRaw(nextAutoUpdatingVersion.packageVersion)
         }
         if (nextLatestVersion?.latest) {
           setLatestTaggedVersionRaw(nextLatestVersion.latest)
+        }
+        // Both endpoints describe the same package, so either response's deprecation list is
+        // authoritative. Only overwrite when a response actually carried the field, so a
+        // response without it (or a failed fetch) keeps the last known list.
+        const nextDeprecated = nextAutoUpdatingVersion?.deprecated ?? nextLatestVersion?.deprecated
+        if (nextDeprecated) {
+          setDeprecatedVersions(nextDeprecated)
         }
       })
       .catch((err) => {
@@ -175,6 +219,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       importMapInfo,
       latestTaggedVersion,
       currentVersion,
+      versionDeprecation,
       checkForUpdates: isAutoUpdating ? fetchNewVersions : noop,
       versionCheckStatus,
     }),
@@ -184,6 +229,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       importMapInfo,
       latestTaggedVersion,
       currentVersion,
+      versionDeprecation,
       fetchNewVersions,
       versionCheckStatus,
     ],

@@ -1,26 +1,23 @@
 import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
-import {act} from 'react'
+import {act, Suspense} from 'react'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
+import {type TasksMode} from '../context/enabled/types'
 import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
 import {TasksProvider} from '../context/tasks/TasksProvider'
 import {useTasksStore} from '../store/useTasksStore'
 import {type TaskDocument} from '../types'
-import {SetActiveDocument} from './structure/SetActiveDocument'
-import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
+import SetActiveDocument from './structure/SetActiveDocument'
+import TasksFooterOpenTasks from './TasksFooterOpenTasks'
 
 vi.mock('react-i18next', async (importOriginal) => ({
   ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
-}))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
@@ -97,22 +94,39 @@ const createTaskMock = ({
   status,
 })
 
-describe('TasksFooterOpenTasks', () => {
-  const wrapper = ({children}: {children?: React.ReactNode}) => {
+// The tasks mode, as `TasksStudioProvider` provides it once the feature check has answered; the
+// footer reads it with `use()` under the boundary the plugin puts around it
+const wrapperFor = (mode: TasksMode) => {
+  const modePromise = Promise.resolve<TasksMode>(mode)
+  return function Wrapper({children}: {children?: React.ReactNode}) {
     return (
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
-          <TasksEnabledProvider>
+          <TasksModePromiseContext value={modePromise}>
             <TasksProvider>
-              <TasksNavigationProvider>{children}</TasksNavigationProvider>
+              <TasksNavigationProvider>
+                <Suspense fallback={null}>{children}</Suspense>
+              </TasksNavigationProvider>
             </TasksProvider>
-          </TasksEnabledProvider>
+          </TasksModePromiseContext>
         </LayerProvider>
       </ThemeProvider>
     )
   }
+}
 
+/** Mounts inside an awaited act, so React resumes the footer once the mode promise has settled */
+async function renderFooter(ui: React.ReactElement, mode: TasksMode = 'default') {
+  let result!: ReturnType<typeof render>
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the footer suspends on the mode promise; React only resumes it inside an awaited act
+  await act(async () => {
+    result = render(ui, {wrapper: wrapperFor(mode)})
+  })
+  return result
+}
+
+describe('TasksFooterOpenTasks', () => {
   const setUpMocks = ({
     tasks = [],
     mediaIndex = 3,
@@ -135,31 +149,50 @@ describe('TasksFooterOpenTasks', () => {
     vi.clearAllMocks()
   })
 
-  it('renders null if there are no pending tasks', () => {
+  it('renders null if there are no pending tasks', async () => {
     setUpMocks({tasks: []})
-    const {container} = render(<TasksFooterOpenTasks />, {wrapper})
+    const {container} = await renderFooter(<TasksFooterOpenTasks />)
     expect(container).toBeEmptyDOMElement()
   })
   it('renders the button if it has tasks and an active document', async () => {
     setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
-    render(
+    await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
+  it('renders nothing when the feature check failed, even with open tasks for the active document', async () => {
+    // The providers are mounted in every mode, so the store can still answer; a `null` mode fails
+    // closed here like the sidebar this button would open
+    setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
+    const {container} = await renderFooter(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="doc1" documentType="author" />
+      </>,
+      null,
+    )
+
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
+  })
   it('should not render the button if it has tasks and no active document', async () => {
     setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
-    const {container} = render(<TasksFooterOpenTasks />, {wrapper})
+    const {container} = await renderFooter(<TasksFooterOpenTasks />)
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(container).toBeEmptyDOMElement()
@@ -167,15 +200,15 @@ describe('TasksFooterOpenTasks', () => {
 
   it('renders button with badge when mediaIndex is less than 3', async () => {
     setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})], mediaIndex: 2})
-    render(
+    await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
 
@@ -187,15 +220,15 @@ describe('TasksFooterOpenTasks', () => {
     setUpMocks({
       tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
     })
-    render(
+    await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(screen.getByRole('button')).toBeInTheDocument()
@@ -205,15 +238,15 @@ describe('TasksFooterOpenTasks', () => {
     setUpMocks({
       tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
     })
-    const {container} = render(
+    const {container} = await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(container).toBeEmptyDOMElement()
@@ -221,15 +254,15 @@ describe('TasksFooterOpenTasks', () => {
 
   it('does not render the button when a version document is active but the task targets the base document', async () => {
     setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
-    const {container} = render(
+    const {container} = await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(container).toBeEmptyDOMElement()
@@ -239,15 +272,15 @@ describe('TasksFooterOpenTasks', () => {
     setUpMocks({
       tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
     })
-    const {container} = render(
+    const {container} = await renderFooter(
       <>
         <TasksFooterOpenTasks />
         <SetActiveDocument documentId="versions.rRelease2.doc1" documentType="author" />
       </>,
-      {wrapper},
     )
 
-    act(() => {
+    // Awaited: the footer calls `use()` while re-rendering, which a sync act would stop flushing on
+    await act(async () => {
       vi.advanceTimersByTime(1000)
     })
     expect(container).toBeEmptyDOMElement()

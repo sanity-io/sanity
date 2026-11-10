@@ -1,6 +1,6 @@
 import {type PortableTextEditor} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {useMemo} from 'react'
+import {createContext, useContext, useMemo} from 'react'
 import {type EditorChange, type InputProps, type PortableTextInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -16,49 +16,50 @@ interface InputHarnessProps {
   ptInputProps?: Partial<PortableTextInputProps>
 }
 
-function InputHarness(props: InputHarnessProps) {
-  const {editorRef, ptInputProps} = props
+const InputHarnessContext = createContext<InputHarnessProps>({})
 
-  const schemaTypes = useMemo(
-    () => [
-      defineType({
-        type: 'document',
-        name: 'test',
-        title: 'Test',
-        fields: [
-          defineField({
-            type: 'array',
-            name: 'body',
-            of: [
-              defineArrayMember({
-                type: 'block',
-              }),
-            ],
-            components: {
-              input: (inputProps: InputProps) => {
-                const editorProps = {
-                  ...inputProps,
-                  ...ptInputProps,
-                  editorRef,
-                } as PortableTextInputProps
-                return (
-                  <div data-testid="pt-input-with-editor-ref">
-                    {inputProps.renderDefault(editorProps)}
-                  </div>
-                )
-              },
-            },
+function PTInputWithEditorRef(inputProps: InputProps) {
+  const {editorRef, ptInputProps} = useContext(InputHarnessContext)
+  const editorProps = {
+    ...inputProps,
+    ...ptInputProps,
+    editorRef,
+  } as PortableTextInputProps
+  return <div data-testid="pt-input-with-editor-ref">{inputProps.renderDefault(editorProps)}</div>
+}
+
+const schemaTypes = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
           }),
         ],
+        components: {
+          input: PTInputWithEditorRef,
+        },
       }),
     ],
-    [ptInputProps, editorRef],
-  )
+  }),
+]
+
+function InputHarness(props: InputHarnessProps) {
+  const {editorRef, ptInputProps} = props
+  const contextValue = useMemo(() => ({editorRef, ptInputProps}), [editorRef, ptInputProps])
 
   return (
-    <TestWrapper schemaTypes={schemaTypes}>
-      <TestForm />
-    </TestWrapper>
+    <InputHarnessContext.Provider value={contextValue}>
+      <TestWrapper schemaTypes={schemaTypes}>
+        <TestForm />
+      </TestWrapper>
+    </InputHarnessContext.Provider>
   )
 }
 
@@ -74,7 +75,7 @@ describe('Portable Text Input', () => {
 
       // Assertion: Show correct text on keyboard focus
       await $activeOverlay.element().focus()
-      await expect.element($activeOverlay).toHaveTextContent('Click or press space to activate')
+      await expect.element($activeOverlay).toMatchTextContent('Click or press space to activate')
     })
 
     it('Show call to action on hover', async () => {
@@ -84,7 +85,7 @@ describe('Portable Text Input', () => {
 
       // Assertion: Show correct text on pointer hover
       await userEvent.hover($activeOverlay)
-      await expect.element($activeOverlay).toHaveTextContent('Click to activate')
+      await expect.element($activeOverlay).toMatchTextContent('Click to activate')
     })
 
     it("Immediately activate on mount when 'initialActive' is true", async () => {
@@ -107,7 +108,8 @@ describe('Portable Text Input', () => {
   describe('Placeholder', () => {
     it('Displays placeholder text and removes it when typed into', async () => {
       void render(<InputHarness />)
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
       const $pte = await getFocusedPortableTextEditor('field-body')
       // Scope to the field rather than the textbox locator: the placeholder
       // lives inside the contenteditable, where the role-based locator doesn't
@@ -115,17 +117,25 @@ describe('Portable Text Input', () => {
       const $placeholder = page.getByTestId('field-body').getByTestId('pt-input-placeholder')
       // Assertion: placeholder is there
       await expect.element($placeholder).toBeVisible()
-      await expect.element($placeholder).toHaveTextContent('Empty')
+      await expect.element($placeholder).toMatchTextContent('Empty')
       // Write some text
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
       await expect.element($placeholder).not.toBeInTheDocument()
+      await expect.element($pte).toMatchTextContent('Hello there')
+      // Keep focus and force Normal — blurring flipped Normal ↔ No style between
+      // identical-code Chromatic captures (focus-ring avoidance is handled by
+      // settle parking the pointer instead).
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 
   describe('Editor Ref', () => {
     it('Editor can be controlled from outside the Input using the editorRef prop', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       let editorIstance: PortableTextEditor | undefined
       void render(
@@ -140,17 +150,29 @@ describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
       expect(editorIstance?.schemaTypes.block).toBeDefined()
+      // Same empty-editor CollapseMenu race as onEditorChange: wait for Normal
+      // + inline Strong/Italic before Chromatic archives.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 
   describe('onEditorChange', () => {
     it('Supports own handler of editor changes through props', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       const changes: EditorChange[] = []
       const pushChange = (change: EditorChange) => changes.push(change)
       void render(<InputHarness ptInputProps={{onEditorChange: pushChange}} />)
       await getFocusedPortableTextEditor('field-body')
       expect(changes.length).toBeGreaterThan(0)
+      // Empty caret reports "Normal"; CollapseMenu must finish measuring so
+      // Strong/Italic are inline rather than overflow "..." before Chromatic.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 

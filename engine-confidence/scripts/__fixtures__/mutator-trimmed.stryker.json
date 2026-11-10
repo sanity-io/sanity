@@ -1,0 +1,771 @@
+{
+  "schemaVersion": "1.0",
+  "projectRoot": "/repo/packages/@sanity/mutator",
+  "files": {
+    "src/util.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "2859",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 3
+            },
+            "start": {
+              "column": 77,
+              "line": 1
+            }
+          }
+        },
+        {
+          "id": "2861",
+          "mutatorName": "ConditionalExpression",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 10,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2860",
+          "mutatorName": "ConditionalExpression",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 12,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 10,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2864",
+          "mutatorName": "EqualityOperator",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 24,
+              "line": 2
+            },
+            "start": {
+              "column": 10,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2862",
+          "mutatorName": "LogicalOperator",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 12,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 10,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2866",
+          "mutatorName": "EqualityOperator",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 28,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2867",
+          "mutatorName": "StringLiteral",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 45,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2865",
+          "mutatorName": "ConditionalExpression",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 12,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 53,
+              "line": 2
+            },
+            "start": {
+              "column": 28,
+              "line": 2
+            }
+          }
+        },
+        {
+          "id": "2863",
+          "mutatorName": "ConditionalExpression",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 74,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "11",
+            "12",
+            "103",
+            "104",
+            "105",
+            "106",
+            "107",
+            "111",
+            "112",
+            "113",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "233",
+            "234",
+            "241",
+            "243",
+            "249",
+            "251",
+            "275",
+            "276",
+            "278",
+            "279",
+            "280",
+            "281"
+          ],
+          "location": {
+            "end": {
+              "column": 24,
+              "line": 2
+            },
+            "start": {
+              "column": 10,
+              "line": 2
+            }
+          }
+        }
+      ]
+    },
+    "src/patch/UnsetPatch.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "2774",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "9",
+            "12",
+            "72",
+            "73",
+            "74",
+            "75",
+            "76",
+            "77",
+            "78",
+            "79",
+            "80",
+            "81",
+            "82",
+            "83"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 13
+            },
+            "start": {
+              "column": 41,
+              "line": 10
+            }
+          }
+        },
+        {
+          "id": "2775",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "9",
+            "12",
+            "72",
+            "73",
+            "74",
+            "75",
+            "76",
+            "77",
+            "78",
+            "79",
+            "80",
+            "81",
+            "82"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 31
+            },
+            "start": {
+              "column": 80,
+              "line": 15
+            }
+          }
+        },
+        {
+          "id": "2776",
+          "mutatorName": "ConditionalExpression",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["12", "73", "74", "75", "78", "79", "80", "81"],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 20
+            },
+            "start": {
+              "column": 7,
+              "line": 18
+            }
+          }
+        },
+        {
+          "id": "2777",
+          "mutatorName": "StringLiteral",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 2,
+          "coveredBy": [
+            "9",
+            "12",
+            "72",
+            "73",
+            "74",
+            "75",
+            "76",
+            "77",
+            "78",
+            "79",
+            "80",
+            "81",
+            "82"
+          ],
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 18
+            },
+            "start": {
+              "column": 12,
+              "line": 18
+            }
+          }
+        },
+        {
+          "id": "2778",
+          "mutatorName": "ConditionalExpression",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["9", "72", "76", "77"],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 25
+            },
+            "start": {
+              "column": 7,
+              "line": 21
+            }
+          }
+        },
+        {
+          "id": "2779",
+          "mutatorName": "StringLiteral",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["9", "72", "76", "77", "82"],
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 21
+            },
+            "start": {
+              "column": 12,
+              "line": 21
+            }
+          }
+        },
+        {
+          "id": "2781",
+          "mutatorName": "BlockStatement",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": ["9", "72", "76", "77"],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 24
+            },
+            "start": {
+              "column": 37,
+              "line": 22
+            }
+          }
+        },
+        {
+          "id": "2782",
+          "mutatorName": "ConditionalExpression",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 2,
+          "coveredBy": ["82"],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 28
+            },
+            "start": {
+              "column": 7,
+              "line": 26
+            }
+          }
+        }
+      ]
+    }
+  },
+  "testFiles": {
+    "test/extractWithPath.test.ts": {
+      "tests": [
+        {
+          "id": "0",
+          "name": "basic extraction"
+        }
+      ],
+      "source": "import {expect, test} from 'vitest'\n\nimport {extractWithPath} from '../src/jsonpath'\n\ntest('basic extraction', () => {\n  expect(\n    extractWithPath('..[_weak == true]._ref', {reference: {_ref: '123', _weak: true}}),\n  ).toEqual([{path: ['reference', '_ref'], value: '123'}])\n})\n"
+    },
+    "test/BufferedDocument.test.ts": {
+      "tests": [
+        {
+          "id": "1",
+          "name": "simple edit cycle"
+        },
+        {
+          "id": "2",
+          "name": "simple remote edit"
+        },
+        {
+          "id": "3",
+          "name": "simple edit cycle with remote edits causing rebase"
+        },
+        {
+          "id": "4",
+          "name": "document being deleted by remote"
+        },
+        {
+          "id": "5",
+          "name": "document being created with `createOrReplace`"
+        },
+        {
+          "id": "6",
+          "name": "document being created with `createIfNotExists`"
+        },
+        {
+          "id": "7",
+          "name": "document being created with `create`"
+        },
+        {
+          "id": "8",
+          "name": "document being deleted by local"
+        },
+        {
+          "id": "9",
+          "name": "no-op-patch only changes _rev of target document"
+        },
+        {
+          "id": "10",
+          "name": "remotely created documents has _rev"
+        },
+        {
+          "id": "11",
+          "name": "remote patch touching an out-of-range index arrives while local edits are pending"
+        },
+        {
+          "id": "12",
+          "name": "pending local patch on an array index removed by a remote patch rebases cleanly"
+        }
+      ],
+      "source": "import {expect, test} from 'vitest'\n\nimport {BufferedDocumentTester} from './util/BufferedDocumentTester'\n\ntest('simple edit cycle', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    title: 'Hello',\n  })\n    .hasNoLocalEdits()\n    .stage('when applying first local edit')\n    .localPatch({\n      id: 'a',\n      set: {\n        title: 'Good bye',\n      },\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .stage('when applying second local edit')\n    .localPatch({\n      id: 'a',\n      set: {\n        body: 'My friend',\n      },\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('title', 'Good bye')\n    .assertEDGE('title', 'Hello')\n    .stage('when committing local edits')\n    .commit()\n    .onMutationDidNotFire()\n    .hasPendingCommit()\n    .hasNoLocalEdits()\n    .assertHEAD('title', 'Hello')\n    .assertEDGE('title', 'Good bye')\n    .assertLOCAL('title', 'Good bye')\n    .stage('when commit suceeds')\n    .commitSucceeds()\n    .onMutationDidNotFire()\n    .assertALL('title', 'Good bye')\n    .assertALL('body', 'My friend')\n    .isConsistent()\n})\n\ntest('simple remote edit', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    numbers: [0],\n  })\n    .hasNoLocalEdits()\n    .stage('when remote patch appear')\n    .remotePatch('1', '2', {\n      id: 'a',\n      insert: {\n        before: 'numbers[0]',\n        items: [-1],\n      },\n    })\n    .onMutationFired()\n    .didNotRebase()\n    .hasNoLocalEdits()\n    .assertLOCAL('numbers', [-1, 0])\n    .assertEDGE('numbers', [-1, 0])\n    .isConsistent()\n})\n\ntest('simple edit cycle with remote edits causing rebase', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    numbers: [0],\n  })\n    .hasNoLocalEdits()\n    .stage('when applying first local edit')\n    .localPatch({\n      id: 'a',\n      insert: {\n        after: 'numbers[-1]',\n        items: [1],\n      },\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('numbers', [0, 1])\n    .stage('when remote patch appear')\n    .remotePatch('1', '2', {\n      id: 'a',\n      insert: {\n        before: 'numbers[0]',\n        items: [-1],\n      },\n    })\n    .didRebase()\n    .hasLocalEdits()\n    .assertLOCAL('numbers', [-1, 0, 1])\n    .assertEDGE('numbers', [-1, 0])\n    .stage('when committing local edits')\n    .commit()\n    .onMutationDidNotFire()\n    .didNotRebase()\n    .assertLOCAL('numbers', [-1, 0, 1])\n    .assertEDGE('numbers', [-1, 0, 1])\n    .assertHEAD('numbers', [-1, 0])\n    .stage('when commit suceeds')\n    .commitSucceeds()\n    .onMutationDidNotFire()\n    .assertALL('numbers', [-1, 0, 1])\n    .isConsistent()\n})\n\ntest('document being deleted by remote', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .stage('when applying first local edit')\n    .localPatch({\n      id: 'a',\n      set: {\n        text: 'goodbye',\n      },\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('text', 'goodbye')\n    .stage('when remote delete patch appear')\n    .remoteMutation('1', '2', {\n      delete: {id: 'a'},\n    })\n    .didRebase()\n    .onDeleteDidFire()\n    .hasNoLocalEdits()\n    .assertALLDeleted()\n    .stage('when local user creates document')\n    .localMutation(undefined, '3', {\n      create: {_id: 'a', _type: 't', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'},\n    })\n    .assert((bufDoc) => {\n      expect(typeof bufDoc?.LOCAL?._createdAt).toBe('string') // 'New documents must have a _createdAt time'\n    })\n    .assertLOCAL('text', 'good morning')\n    .assertLOCAL('_rev', '3')\n    .assertHEADDeleted()\n    .assertEDGEDeleted()\n    .stage('when committing local create')\n    .commit()\n    .assertHEADDeleted()\n    .assertEDGE('text', 'good morning')\n    .stage('when commit succeeds')\n    .commitSucceeds()\n    .assertALL('text', 'good morning')\n})\n\ntest('document being created with `createOrReplace`', () => {\n  const createdAt = '2018-01-25T15:18:12.114Z'\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .stage('when applying createOrReplace mutation')\n    .localMutation(undefined, '2', {\n      createOrReplace: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('_createdAt', createdAt)\n    .assertLOCAL('_rev', '2')\n})\n\ntest('document being created with `createIfNotExists`', () => {\n  const createdAt = '2018-01-25T15:18:12.114Z'\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .localMutation('1', '2', {\n      delete: {id: 'a'},\n    })\n    .stage('when applying createIfNotExists mutation')\n    .localMutation(undefined, '3', {\n      createIfNotExists: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('_rev', '3')\n    .assertLOCAL('_createdAt', createdAt)\n})\n\ntest('document being created with `create`', () => {\n  const createdAt = '2018-01-25T15:18:12.114Z'\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .localMutation('1', '2', {\n      delete: {id: 'a'},\n    })\n    .stage('when applying create mutation')\n    .localMutation(undefined, '2', {\n      create: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},\n    })\n    .onMutationFired()\n    .hasLocalEdits()\n    .assertLOCAL('_createdAt', createdAt)\n})\n\ntest('document being deleted by local', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .stage('when local deletes document')\n    .localMutation('1', '2', {\n      delete: {id: 'a'},\n    })\n    .onMutationFired()\n    .onDeleteDidFire()\n    .hasLocalEdits()\n    .stage('when local commits delete')\n    .commit()\n    .onMutationDidNotFire()\n    .stage('when local delete commits succeed, but the txn arrives before commit completes')\n    .commitSucceedsButMutationArriveDuringCommitProcess()\n    .onMutationDidNotFire()\n    .assertALLDeleted()\n})\n\ntest('no-op-patch only changes _rev of target document', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    text: 'hello',\n  })\n    .hasNoLocalEdits()\n    .stage('when local fires a no-op patch')\n    .localMutation('1', '2', {\n      patch: {\n        id: 'a',\n        unset: ['nonExistent'],\n      },\n    })\n    .assertLOCAL('_rev', '2')\n    .assertEDGE('_rev', '1')\n    .assertHEAD('_rev', '1')\n    .onMutationFired()\n    .hasLocalEdits()\n    .stage('when no-op patch commits')\n    .commit()\n})\n\ntest('remotely created documents has _rev', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n  })\n    .remoteMutation('1', '2', {\n      delete: {id: 'a'},\n    })\n    .remoteMutation(undefined, '2', {\n      create: {\n        _id: 'a',\n        _type: 't',\n      },\n    })\n    .assertHEAD('_rev', '2')\n})\n\ntest('remote patch touching an out-of-range index arrives while local edits are pending', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    body: [{_key: 'a', _type: 'block', children: [{_key: 'a1', _type: 'span', text: 'hello'}]}],\n  })\n    .stage('when applying local edit')\n    .localPatch({\n      id: 'a',\n      set: {'body[0].children[0].text': 'hello world'},\n    })\n    .hasLocalEdits()\n    .stage('when remote patch touching an out-of-range index arrives')\n    .remotePatch('1', '2', {\n      id: 'a',\n      set: {'body[4].children[0].text': 'x'},\n    })\n    .assertLOCAL('body[0].children[0].text', 'hello world')\n    .assertHEAD('_rev', '2')\n    .stage('when the next remote patch arrives')\n    .remotePatch('2', '3', {\n      id: 'a',\n      set: {title: 'still alive'},\n    })\n    .assertHEAD('title', 'still alive')\n    .assertLOCAL('title', 'still alive')\n    .assertLOCAL('body[0].children[0].text', 'hello world')\n})\n\ntest('pending local patch on an array index removed by a remote patch rebases cleanly', () => {\n  new BufferedDocumentTester({\n    _id: 'a',\n    _type: 't',\n    _rev: '1',\n    items: [{title: 'one'}, {title: 'two'}, {title: 'three'}],\n  })\n    .stage('when applying local edit to the third item')\n    .localPatch({\n      id: 'a',\n      set: {'items[2].title': 'three edited'},\n    })\n    .hasLocalEdits()\n    .assertLOCAL('items[2].title', 'three edited')\n    .stage('when a remote patch removes the last two items')\n    .remotePatch('1', '2', {\n      id: 'a',\n      unset: ['items[1:3]'],\n    })\n    .didRebase()\n    .assertLOCAL('items', [{title: 'one'}])\n})\n"
+    }
+  }
+}

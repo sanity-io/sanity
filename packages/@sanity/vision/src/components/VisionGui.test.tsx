@@ -15,6 +15,8 @@ const theme = buildTheme()
 const sanityMocks = vi.hoisted(() => ({
   usePerspective: vi.fn(),
   useClient: vi.fn(),
+  // The workspace the tool runs in: variants on, as the tests of the navbar variant need
+  workspace: {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}},
 }))
 
 class ResizeObserverMock {
@@ -43,14 +45,15 @@ vi.mock('sanity', () => ({
   useClient: sanityMocks.useClient,
   useActiveReleases: vi.fn(() => ({data: [], loading: false})),
   useScheduledDraftsEnabled: vi.fn(() => false),
-  useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
+  useWorkspace: () => sanityMocks.workspace,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
   getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
   isCardinalityOneRelease: () => false,
   sortReleases: <T,>(releases: T[]) => releases,
+  getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
 }))
 
 vi.mock('./QueryRecall', () => ({
@@ -95,7 +98,11 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'published',
   selectedPerspectiveName: 'published',
   selectedReleaseId: undefined,
+  selectedVariantNames: [],
+  selectedVariants: [],
+  // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariantName: undefined,
+  // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariant: undefined,
   bundle: 'published',
 }
@@ -188,38 +195,72 @@ describe('VisionGui pinned release and variant', () => {
   beforeEach(() => {
     localStorage.clear()
     sanityMocks.usePerspective.mockReturnValue(BASE_PERSPECTIVE)
+    sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
   })
 
-  it('switches to pinned release and locks vX when the navbar has a variant', async () => {
+  it('does not attach a variant where the workspace has variants switched off', async () => {
+    // The same flag the studio hides its own variant UI behind, the navbar's selector included
+    sanityMocks.workspace = {
+      document: {drafts: {enabled: true}},
+      beta: {variants: {enabled: false}},
+    }
+    seedVisionStorage({perspective: 'pinnedRelease', apiVersion: 'v2025-02-19'})
+
+    // A variant the URL still carries for the navbar is not one the studio shows
+    const {fetchConfigs} = renderVision({
+      ...BASE_PERSPECTIVE,
+      selectedVariantNames: ['french'],
+    })
+
+    expect(getPerspectiveSelector().value).toBe('pinnedRelease')
+    // Nothing locks the API version to vX
+    expect(getApiVersionSelector().value).toBe('v2025-02-19')
+    expect(getApiVersionSelector().disabled).toBe(false)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    await waitFor(() => {
+      expect(getQueryUrl()).toContain('/v2025-02-19/')
+      expect(getQueryUrlParams().get('variant')).toBeNull()
+      expect(getQueryUrlParams().get('perspective')).toBe('published')
+    })
+
+    expect(fetchConfigs.at(-1)).toEqual(
+      expect.objectContaining({apiVersion: 'v2025-02-19', perspective: ['published']}),
+    )
+    expect(fetchConfigs.at(-1)?.variant).toBeUndefined()
+  })
+
+  it('switches to pinned release and locks the variants version when the navbar has a variant', async () => {
     seedVisionStorage({apiVersion: 'v2025-02-19'})
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantName: 'french',
+      selectedVariantNames: ['french'],
     })
 
     await waitFor(() => {
       expect(getPerspectiveSelector().value).toBe('pinnedRelease')
-      expect(getApiVersionSelector().value).toBe('vX')
+      expect(getApiVersionSelector().value).toBe('v2025-08-18')
       expect(getApiVersionSelector().disabled).toBe(true)
     })
 
     await waitFor(() => {
-      expect(getQueryUrl()).toContain('/vX/')
+      expect(getQueryUrl()).toContain('/v2025-08-18/')
       expect(getQueryUrlParams().get('variant')).toBe('french')
       expect(getQueryUrlParams().get('perspective')).toBe('published')
     })
 
     expect(fetchConfigs.at(-1)).toEqual(
       expect.objectContaining({
-        apiVersion: 'vX',
+        apiVersion: 'v2025-08-18',
         perspective: ['published'],
         variant: 'french',
       }),
     )
   })
 
-  it('forces vX over a stored custom API version when a navbar variant is active', async () => {
+  it('forces the variants version over a stored custom API version when a navbar variant is active', async () => {
     seedVisionStorage({
       perspective: 'pinnedRelease',
       apiVersion: 'v2022-08-08',
@@ -227,19 +268,19 @@ describe('VisionGui pinned release and variant', () => {
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantName: 'french',
+      selectedVariantNames: ['french'],
     })
 
-    expect(getApiVersionSelector().value).toBe('vX')
+    expect(getApiVersionSelector().value).toBe('v2025-08-18')
     expect(getApiVersionSelector().disabled).toBe(true)
     expect(screen.queryByDisplayValue('v2022-08-08')).toBeNull()
 
     await waitFor(() => {
-      expect(getQueryUrl()).toContain('/vX/')
+      expect(getQueryUrl()).toContain('/v2025-08-18/')
       expect(getQueryUrlParams().get('variant')).toBe('french')
     })
 
-    expect(fetchConfigs.at(-1)?.apiVersion).toBe('vX')
+    expect(fetchConfigs.at(-1)?.apiVersion).toBe('v2025-08-18')
   })
 
   it('does not attach a variant while Vision is on a local perspective', async () => {
@@ -253,7 +294,7 @@ describe('VisionGui pinned release and variant', () => {
       perspectiveStack: [],
       selectedPerspectiveName: undefined,
       selectedPerspective: 'drafts',
-      selectedVariantName: 'french',
+      selectedVariantNames: ['french'],
     })
 
     expect(getPerspectiveSelector().value).toBe('raw')
@@ -282,7 +323,7 @@ describe('VisionGui pinned release and variant', () => {
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantName: 'french',
+      selectedVariantNames: ['french'],
     })
 
     await waitFor(() => {

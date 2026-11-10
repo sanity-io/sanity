@@ -13,6 +13,7 @@ import {map, mergeMap} from 'rxjs/operators'
 import {isDev} from '../../environment'
 import {getDraftId, getPublishedId, getVersionFromId, getIdPair} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
+import {type VariantVersionInfo} from '../../variants/documents/getVariantVersionInfo'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
 import {Timeline} from './history/Timeline'
 import {TimelineController} from './history/TimelineController'
@@ -64,6 +65,13 @@ export interface HistoryStore {
 interface RestoreOptions {
   fromDeleted: boolean
   useServerDocumentActions?: boolean
+  /**
+   * Set when the target is a variant-scoped version. Variant version ids share the
+   * `versions.<scope>.<id>` shape with release versions, so the caller derives this from the
+   * version snapshot's `_system` (see `getVariantVersionInfo`). Variant documents keep the raw-id
+   * draft actions; the `document.version.*` actions are for release versions only.
+   */
+  variant?: VariantVersionInfo
 }
 
 const documentRevisionCache: Record<string, Promise<SanityDocument | undefined> | undefined> =
@@ -270,18 +278,38 @@ function restore(
         isDraftId(targetDocumentId as DocumentId) || isVersionId(targetDocumentId as DocumentId)
 
       if (options?.useServerDocumentActions && canUseServerAction) {
-        const replaceDraftAction: Action = {
-          actionType: 'sanity.action.document.replaceDraft',
-          publishedId: documentId,
-          attributes: restoredDraft,
-        }
-        return actionsApiClient(
+        const actionsClient = actionsApiClient(
           client,
           // The pair derives from the *target* id: `documentId` is always the published group id
           // (its bundle segment is always undefined), while the target may be a version document
           // (release or variant scoped) whose actions require the versioned API client.
           getIdPair(documentId, {version: getVersionFromId(targetDocumentId)}),
-        ).observable.action(
+        )
+
+        // Release versions are not drafts. `document.create` + `replaceDraft` with a version
+        // `_id` trips the one-version-per-published-id guard (409 documentAlreadyExistsError).
+        // Variant-scoped versions are excluded: they have no `document.variant.replace` action
+        // and are addressed by the draft actions at their raw version id.
+        if (isVersionId(targetDocumentId as DocumentId) && !options.variant) {
+          const versionAction: Action = options.fromDeleted
+            ? {
+                actionType: 'sanity.action.document.version.create',
+                publishedId: documentId,
+                document: restoredDraft,
+              }
+            : {
+                actionType: 'sanity.action.document.version.replace',
+                document: restoredDraft,
+              }
+          return actionsClient.observable.action(versionAction)
+        }
+
+        const replaceDraftAction: Action = {
+          actionType: 'sanity.action.document.replaceDraft',
+          publishedId: documentId,
+          attributes: restoredDraft,
+        }
+        return actionsClient.observable.action(
           options.fromDeleted
             ? [
                 {

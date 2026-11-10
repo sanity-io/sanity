@@ -2,12 +2,11 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
-import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
+import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
@@ -17,10 +16,10 @@ import {useId} from '../useId'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
+import {resolvePreviewLocationRoute} from './resolvePreviewLocationRoute'
 import {SharePreviewMenu} from './SharePreviewMenu'
 
 /** @public */
-import {PreviewHeaderExtension} from './PreviewHeaderExtension'
 export interface PreviewHeaderProps extends PreviewProps {
   iframeRef: RefObject<HTMLIFrameElement | null>
   renderDefault: (props: PreviewHeaderProps) => React.JSX.Element
@@ -37,6 +36,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     onPathChange,
     onRefresh,
     openPopup,
+    openPreviewUrlRef,
     overlaysConnection,
     presentationRef,
     perspective,
@@ -84,12 +84,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     (state) => state.context.visualEditingOverlaysEnabled,
   )
 
-  const previewLocationRoute = useMemo(() => {
-    const previewURL = new URL(previewUrl || '/', targetOrigin)
-    const {pathname, search} = withoutSecretSearchParams(previewURL)
-
-    return `${pathname}${search}`
-  }, [previewUrl, targetOrigin])
+  const previewLocationRoute = useMemo(
+    () => resolvePreviewLocationRoute(previewUrl, targetOrigin),
+    [previewUrl, targetOrigin],
+  )
 
   const perspectiveToggleTooltipId = useId()
 
@@ -100,7 +98,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   const previewUrlBusy = useSelector(previewUrlRef, (state) => state.hasTag('busy'))
 
   return (
-    <Flex align="center" gap={1} paddingX={1} style={{width: '100%'}}>
+    <Flex alignItems="center" gap={1} paddingX={1} style={{width: '100%'}}>
       {toggleNavigator && (
         <Button
           aria-label={t('preview-frame.navigator.toggle-button.aria-label')}
@@ -109,7 +107,11 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           onClick={toggleNavigator}
           selected={navigatorEnabled}
           tooltipProps={{
-            content: <Text size={1}>{t('preview-frame.navigator.toggle-button.tooltip')}</Text>,
+            content: (
+              <Text size={1} as="div" trim={true}>
+                {t('preview-frame.navigator.toggle-button.tooltip')}
+              </Text>
+            ),
             fallbackPlacements: ['bottom-start'],
             placement: 'bottom',
           }}
@@ -119,9 +121,9 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       <Tooltip
         animate
         content={
-          <Flex align="center" style={{whiteSpace: 'nowrap'}}>
+          <Flex alignItems="center" style={{whiteSpace: 'nowrap'}}>
             <Box padding={1}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {t('preview-frame.overlay.toggle-button.tooltip', {
                   context: overlaysEnabled ? 'disable' : 'enable',
                 })}
@@ -148,7 +150,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           }}
           tone={overlaysEnabled ? 'transparent' : undefined}
         >
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <div style={{margin: -4}}>
               <Switch
                 indeterminate={!isLoaded}
@@ -158,7 +160,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
               />
             </div>
             <Box>
-              <Text muted={!overlaysEnabled} size={1} weight="medium">
+              <Text muted={!overlaysEnabled} size={1} weight="medium" as="div" trim={true}>
                 {t('preview-frame.overlay.toggle-button.text')}
               </Text>
             </Box>
@@ -174,7 +176,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
               <Tooltip
                 animate
                 content={
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     {isLoaded
                       ? t('preview-frame.refresh-button.tooltip')
                       : t('preview-frame.status', {
@@ -208,6 +210,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             <Box padding={1}>
               <OpenPreviewButton
                 openPopup={openPopup}
+                openPreviewUrlRef={openPreviewUrlRef}
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
                 perspective={perspective}
@@ -220,19 +223,14 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
         />
       </Box>
 
-      {/* PROPOSED slot: a host's dimension / variant control (see PreviewHeaderExtension). */}
-      <Flex align="center" flex="none" gap={1}>
-        <PreviewHeaderExtension />
-      </Flex>
-
-      <Flex align="center" flex="none" gap={1}>
+      <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
         <Tooltip
           animate
           ref={(node) => {
             node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
           }}
           content={
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               {t('preview-frame.viewport-button.tooltip', {
                 context: viewport === 'desktop' ? 'narrow' : 'full',
               })}
@@ -255,7 +253,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       </Flex>
 
       {canSharePreviewAccess && (
-        <Flex align="center" flex="none" gap={1}>
+        <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
           <SharePreviewMenu
             canToggleSharePreviewAccess={canToggleSharePreviewAccess}
             canUseSharedPreviewAccess={canUseSharedPreviewAccess}
@@ -287,7 +285,7 @@ export function PreviewHeader(
 
   return (
     <Card flex="none" padding={2} borderBottom style={{position: 'relative'}}>
-      <Flex align="center" style={{minHeight: 0}}>
+      <Flex alignItems="center" style={{minHeight: 0}}>
         {header}
       </Flex>
     </Card>

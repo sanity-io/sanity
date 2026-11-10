@@ -1,5 +1,5 @@
 import {type ReferenceSchemaType} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -31,8 +31,8 @@ export function ReferenceFinalizeAlertStrip({
       status="info"
       data-testid="alert-reference-published"
     >
-      <Stack gap={3}>
-        <Text as="p" muted size={1}>
+      <VStack gap={3}>
+        <Text as="p" muted size={1} trim={true} tone="positive">
           <Translate
             t={t}
             i18nKey={
@@ -49,7 +49,7 @@ export function ReferenceFinalizeAlertStrip({
           text={t('inputs.reference.incomplete-reference.strengthen-button-label')}
           tone="positive"
         />
-      </Stack>
+      </VStack>
     </AlertStrip>
   )
 }

@@ -10,6 +10,7 @@ import {styled} from 'styled-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
 import {useSchema} from '../../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useUser} from '../../../../store/user/hooks'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
@@ -84,7 +85,8 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   const documentId = target.document._ref
   const documentType = target.documentType
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,

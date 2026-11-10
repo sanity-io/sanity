@@ -1,18 +1,12 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {type Placement, Stack, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {type Placement} from '@sanity/ui'
+import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {statusIconWrapper, styledStack} from './FormFieldValidationStatus.css'
 import {StatusIcon} from './ValidationStatusIcon'
-
-const StatusIconWrapper = styled.div`
-  left: 8px;
-  position: relative;
-  width: 25px;
-`
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -28,15 +22,11 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number
+  fontSize?: TextProps['size']
   placement?: Placement
 }
 
 const EMPTY_ARRAY: never[] = []
-
-const StyledStack = styled(Stack)`
-  max-width: 200px;
-`
 
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
@@ -50,7 +40,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack gap={3}>
+        <VStack className={styledStack} gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -61,17 +51,15 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
               ))}
             </>
           )}
-        </StyledStack>
+        </VStack>
       }
       portal
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <StatusIconWrapper>
-        <Text size={fontSize} weight="medium">
-          <StatusIcon status={status} />
-        </Text>
-      </StatusIconWrapper>
+      <div className={statusIconWrapper}>
+        <StatusIcon size={fontSize} status={status} style={{margin: '-0.375rem'}} />
+      </div>
     </Tooltip>
   )
 }
@@ -82,12 +70,12 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={1} weight="medium">
-          <StatusIcon status={validation.level} />
-        </Text>
+        <StatusIcon size={1} status={validation.level} style={{margin: '-0.375rem'}} />
       </Box>
       <Box flexBasis="0%" flexGrow={1}>
-        <Text size={1}>{validation.message}</Text>
+        <Text size={1} as="div" trim={true}>
+          {validation.message}
+        </Text>
       </Box>
     </Flex>
   )
@@ -118,8 +106,12 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
     hasWarnings && t('form.validation.summary.warnings-count', {count: warningCount})
 
   return errorText && warningText ? (
-    <Text size={1}>{listFormatter.format([errorText, warningText])}</Text>
+    <Text size={1} as="div" trim={true}>
+      {listFormatter.format([errorText, warningText])}
+    </Text>
   ) : (
-    <Text size={1}>{errorText || warningText}</Text>
+    <Text size={1} as="div" trim={true}>
+      {errorText || warningText}
+    </Text>
   )
 }

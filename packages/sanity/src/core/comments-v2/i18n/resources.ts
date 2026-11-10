@@ -82,6 +82,9 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text shown in the inline comment button */
   'inline-add-comment-button.title': 'Add comment',
 
+  /** The text shown in the comments inspector when the feature check failed, so comments cannot be used */
+  'inspector.unavailable.text': 'Comments are unavailable right now. Try again later.',
+
   /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
   'list-item.breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
   /** The button tooltip content for the add reaction button */

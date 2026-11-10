@@ -16,6 +16,15 @@ effect of merged work; secondary: leads scanning health weekly.
   series, `runner.calibrationMs`, git sha. Written by `bench store`
   (perf/bench/report/storeToSanity.ts); stored shape defined by
   perf/bench/report/storeShape.ts and mirrored by schemaTypes/benchRun.ts.
+- **Soak series.** A daily run stores two soak reports: `singleString`
+  (typing only) and `article` (typing into the Portable Text body between
+  menus, a tooltip and document switches, with live presence). The soak
+  charts follow the `singleString` report by name (`SOAK_SERIES_SCENARIO`),
+  since the stored scenario order is not stable; the `article` soak is stored
+  but not charted yet. Slopes are least-squares fits from the run's
+  `soak.settleMinute` on (minute 2 for runs stored before the field existed,
+  `@repo/utils/soak-settle`), because the first minutes race the studio's
+  lazy mount. End-of-run values and the in-run minute charts use every sample.
 - Volume is tiny (≤366 docs/year) but documents are heavy (per-session sample
   arrays) — **dashboard queries must project summaries, never fetch
   `sessions`**.
@@ -38,7 +47,9 @@ effect of merged work; secondary: leads scanning health weekly.
   health; PR verdicts live in PR comments.
 - **Git history as data.** One `gitCommit` document per main-branch commit
   and one `gitTag` document per `v*` release tag, coverage starting at
-  v5.0.0.
+  v3.0.0 (it started at v5.0.0; extending the tags back was free, since
+  the npm enrichment is three package-wide requests, and the commit chain
+  back to v3 is a one-time backfill dispatch).
 
   Commit documents are metadata only: sha, first-parent sha (the exact
   mainline chain link the Bisect tool walks — `committedAt` ordering has
@@ -46,9 +57,12 @@ effect of merged work; secondary: leads scanning health weekly.
   conventional-commit parse plus PR number. Tag documents carry the
   dereferenced sha, a weak reference to their commit, and parsed semver so
   interleaved release lines group by major. Tags also carry npm data
-  (`publishedAt`, `distTags`, `weeklyDownloads`), collected on releases, the
-  daily cron, and dispatches — the cron is the floor because dist-tags
-  re-point and download counts roll without commits.
+  (`publishedAt`, `distTags`, `weeklyDownloads`, and `deprecated`, the npm
+  deprecation message, present only while it applies), collected on
+  releases, the daily cron, and dispatches — the cron is the floor because
+  dist-tags re-point, download counts roll and versions get deprecated
+  without commits. Every npm-collecting run rewrites every synced tag, so a
+  new npm field needs no backfill and a lifted deprecation clears itself.
 
   Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
   main re-upserts the last 50 commits — deterministic ids + createOrReplace
@@ -86,6 +100,39 @@ effect of merged work; secondary: leads scanning health weekly.
    tabs. The full unmerged per-shard strip lives in the Calibration tab.
    Suppressed on non-time metrics (counts/bytes/CLS don't move with a slow
    host) and when comparing branches.
+
+   **SQRL banner.** Above the grid sits the SQRL banner (`SqrlBanner.tsx`):
+   one score for studio quality, higher is better, recorded for every main
+   commit the nightly bench measures as a `sqrlScore` document (shape and formula: "SQRL score" below). It shows the latest score on main by `git.committedAt` with
+   its change since 30 days ago, measured against the last score at or before
+   that instant (no earlier score reads "no earlier score", never a guess), and
+   the commit and date it reflects. Beside it a compact visx line chart of the
+   score over time (the 7-commit median as the line, each commit's own
+   `scoreCommit` as faint points, a dashed 100 reference, the same release
+   ticks the charts use) that follows the Trends `?range=` picker; the deltas
+   ignore the range since they need history the range may hide. That is all
+   the banner shows **collapsed, which is the default**, to keep the page's
+   first screen for the charts. A red "N regressed" pill next to the title
+   appears whenever any input's `trend` is `regression` and stays visible
+   collapsed (there is no score lock, so a regression must not hide behind a
+   fold); clicking it expands. A "Show breakdown" / "Hide breakdown" button
+   toggles the rest, mirrored to `?sqrl=open` so a shared link opens expanded:
+   the six pillar scores (INP, Responsiveness, Load, CPU & rendering, Memory &
+   weight, Reliability), in red the inputs whose `trend` is `regression` with
+   their contribution in points (the drift rule's last 7 vs prior 21 runs, from
+   `perf/bench/stats/gate.ts`; with none, a muted line says so and nothing is
+   red), and the footer: "higher is better, 100 is the late-June 2026
+   reference", a chart key, and the host note. The score is host-adjusted to a
+   7.0 ms reference calibration; the note shows the commit's own calibration
+   and CPU model and the unadjusted `scoreRaw`, then repeats
+   `CALIBRATION_EXPLAINER`, so the honesty constraint holds for a number that
+   is itself a host-normalised model estimate. Data is two realtime queries, never `inputs` for the series:
+   the series projects only `{score, scoreCommit, git{sha, committedAt}}` and a
+   separate query reads the latest document's full fields. Empty (no
+   `sqrlScore` documents yet), loading and error states are explicit. The
+   banner reads no `?source=` of its own: the `sqrl*` debug sources pick its
+   dataset (see Architecture).
+
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
    Today's run popover already carries the investigation hand-offs: the
@@ -327,9 +374,46 @@ effect of merged work; secondary: leads scanning health weekly.
    endpoints, current bounds, every visited commit and the one under test,
    with the runs in between collapsed into gap rows labelled by what the
    bisect has already deduced (broken / untested / working), each linking to
-   the GitHub compare of the span. Sessions can be deleted from the session
+   the GitHub compare of the span. A gap row expands in place to list its
+   commits, and every listed or visited commit (bar the endpoints and a
+   concluded verdict) has a Test action that opens the same card as the
+   proposed step — preview build at the repro path, checkout/install chips,
+   good/bad/skip — so a suspicious commit can be checked out of turn. Such a mark joins the same log (last
+   mark per sha wins); one that contradicts the bounds surfaces as the usual
+   conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
-   here).
+   here). A confirmed regression carries a **severity** — minor, major or
+   critical, a human call on the verdict card (or when reporting by hand),
+   shown wherever the regression is listed and editable from the release's
+   regressions dialog; unrated is allowed. A session carries a **description**
+   of the issue (asked for at creation, editable on the verdict card), and a
+   verdict carries a **note** (`result.note`: why this commit, the fix, a
+   workaround — about the finding, not the issue), shown under the verdict
+   wherever the regression is listed. A session can
+   **refine** another (`refines`, a weak reference): the "bisect these
+   commits" drill-down from a releases-only verdict creates the new session
+   linked to the one it narrows down and hands the description along. A
+   refinement chain is ONE regression, resolved in `tools/bisect/
+   sessionChains.ts` and shared by the sessions list and the Releases tool:
+   the deepest converged session names the commit (a refinement still in
+   progress does not un-name what its parent found), the regression flag
+   counts if set anywhere in the chain, the severity is the worst rated
+   anywhere in it (a parent and its refinement may both rate the same
+   regression — the chain shows the union), and each text annotation
+   (description, note, Linear issue, fix release) is the deepest one set.
+   The bisect overview shows that union once per box, on the root row:
+   affected releases (earliest start to latest end across the chain),
+   outcome, severity. Each session's own verdict card edits its own values.
+   Among several
+   refinements of one session the converged one is followed, newest first
+   among equals; the others are abandoned branches, listed but never counted.
+   Removing the regression from the Releases tool deletes the whole tree
+   under the root, abandoned branches included — deleting only the followed
+   path would resurface a sibling refinement as a regression of its own, and
+   deleting only the refinement would resurface its parent one step less
+   precise. Severity and fix release set from that tool are written to every
+   session in the tree for the same reason: the row shows the union, so a
+   change to one session alone could be outvoted by another and snap back.
 
 8. **Studio releases** — every synced release tag in semver order (newest
    version first, prereleases below their release — a version list, not a
@@ -339,17 +423,215 @@ effect of merged work; secondary: leads scanning health weekly.
    document in the structure tool. The changelog link is derived from the
    release's base version — the previous release on the first-parent chain,
    the same value release automation computes — so off-mainline releases
-   (maintenance lines) may lack it. Each release also shows the count of
-   confirmed regressions bisect sessions have attributed to it, blamed on the
-   release that FIRST shipped the offending commit. Regressions found outside
-   a bisect (user reports) are added by hand via "Add regression", stored as
-   a born-converged releases-only bisectSession (base release → blamed
-   release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged. A path field under the header holds a
+   (maintenance lines) may lack it. Each release also shows the confirmed
+   regressions bisect sessions have attributed to it, along the span a
+   regression covers: **introduced** (this release FIRST shipped the
+   offending commit — the blame, a count with a bug icon toned by the worst
+   rated severity among them: red for critical, amber for major or while
+   unrated, plain for minor),
+   **inherited** (introduced by an earlier release and not fixed yet when
+   this one shipped — an amber count with a warning icon, red when one of them is rated critical, so every release inside the
+   span reads as affected without looking like a fresh break) and **fixed**
+   (a green count on the release named in `result.fixedIn`). Whether a
+   later release still carries a regression is ancestry, like the blame: it
+   inherits when its first-parent chain contains the culprit but not the
+   fix release's commit; an unfixed regression therefore marks every
+   release after the introducing one. A fix tag whose commit is off the
+   synced chain falls back to semver (every release at or above it counts as
+   fixed) so a recorded fix is never silently ignored. Regressions found outside
+   a bisect (user reports) are added by hand via "Add regression" — from the
+   header with a release picker, or from a release's own row with that
+   release preselected — stored as a born-converged releases-only
+   bisectSession (base release → blamed release, the commits between as
+   suspects) so attribution and the bisect drill-down work unchanged. The
+   counts on a row open the list behind them, sectioned the same way
+   (introduced here / inherited, each naming its introducing release /
+   fixed here) — what broke, who recorded it, a link into the Bisect tool —
+   where each entry can be marked fixed in a later release
+   (`result.fixedIn`, a tag name; the candidates are the synced releases
+   newer than the INTRODUCING one, also when the entry is viewed from a
+   release that only inherited it) or removed, which
+   deletes its session (the session is the regression; there is no separate
+   record to unpin). The count on the introducing release does not drop when
+   a fix ships — it answers "what did this release break", not "what is
+   still broken". A path field under the header holds a
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
-   row.
+   row. Rows are grouped into release lines, one heading per major with its
+   release and introduced-regression counts. A line can be marked **end of
+   life** from that heading (a `releaseLine` document keyed by major,
+   user-owned and liveEdit like `driftAck`; its existence is the mark and
+   "Reinstate" deletes it). An EOL line folds into its heading — when and by
+   whom it was marked, with a disclosure to show the releases anyway — so the
+   list stays about the lines anyone still runs, while the data underneath
+   (tags, npm state, regression spans) is untouched and keeps syncing. The
+   line holding the `latest` dist-tag cannot be marked. Its own type rather
+   than a flag on `gitTag` because the sync replaces tag documents whole.
+   EOL releases are left out of every release picker — bisect endpoints,
+   the blamed release and the fix release of a hand-reported regression,
+   the "fixed in" candidates — but stay in attribution: the chain walks do
+   not care, and hiding an EOL release from them would misplace blame.
+   Next to its version a release shows what was broken in it — one badge
+   per severity over the regressions present in it, introduced there or
+   inherited, not the ones it fixed, worst first with unrated last:
+   "1 critical · 2 major · 1 minor · 1 unrated". The counts below tell
+   origin apart and are toned by it: the introduced count by the worst
+   regression this release caused (amber while unrated), the inherited
+   count red only when it carries a critical one, so a release that merely
+   carries a critical regression never reads as having caused it. A
+   deprecated release folds to its first line (version, npm badges, date)
+   with a disclosure to expand it; its severity badges wait behind the
+   disclosure too — nobody should install it, so its bugs are history, not
+   a warning. Neighbouring releases deprecated with the same message (npm
+   deprecations are usually stamped on a whole span at once) fold further
+   into one line — the version range, the count, the deprecation — that
+   expands to the releases themselves.
+
+9. **Style migration** — the Trends tab that tracks the studio's two styling
+   migrations, per scenario, on the same runs that record INP and LCP: **UI v5
+   adoption** (rendered `@sanity/ui` v5 components as a share of all
+   `@sanity/ui` components — the headline — with the v5 and v4 counts behind
+   it) and the **styled-components** escape hatch (rendered nodes, distinct
+   components, `<style data-styled>` tags, CSS rules and bytes inserted at
+   runtime, share of all CSS rules), alongside the page's **CSS weight** — all
+   the CSS it holds, whatever wrote it (bytes and rules across linked
+   stylesheets, `<style>` tags and constructed sheets, then the `<style>` tag
+   part alone), so the drop shows when a runtime-styled library leaves, not
+   only its own share. The bench takes a style census of each
+   session's page once it has gone quiet (perf/bench README, "Style migration
+   census") and stores it as ordinary metric rows, so nothing here is a new
+   document shape: the rows flow through `buildSeries` like every other metric
+   and get drift, acks, deep links, the run popover and its bisect hand-offs
+   for free. What is specific:
+
+   - **The metric registry is shared, not mirrored.** `STYLE_METRICS` in
+     `@repo/utils/style-systems` holds the labels (the join key with the
+     bench), units, direction and descriptions; `describeSeries` consults it
+     first, before any mode. The same module owns the DOM fingerprints the
+     test studio's "Style migrations" widget draws from, so the widget, the
+     bench and this tab cannot count three different things. A registry entry
+     can be `charted: false` — recorded on the document, never a series: the
+     `<style data-styled>` tag count is one on every page (two would mean a
+     second styled-components runtime, which the document still shows), and a
+     flat line of ones tells no story.
+   - **Keyed per scenario, not per mode.** The census rides on the interaction,
+     pageload and settle reports alike, and the shards of one scenario count
+     the same page, so their rows share a `styles:<scenario>:<label>` key and
+     merge into one point per commit (the `mergeRunsPerCommit` median) rather
+     than drawing two series that say the same thing.
+   - **The two majors share a chart.** The three UI rows (`UI v5 share`,
+     `UI v5 instances`, `UI v4 instances`) become paired series per scenario
+     (`UI_PAIRS`), each drawing v5 and v4 as two lines in the style systems'
+     own colors — the migration reads as a crossing, v5 climbing past v4, that
+     two single-line charts never show. Only the **share** pair is charted:
+     its v4 line is the complement of the stored v5 share (they sum to 100% by
+     construction). The **instances** pair is the same picture before the
+     division, so it is built `hidden` (`TrendSeries.hidden`: no card, no
+     drift row, no deep link) and exists to be summed. This is the first series
+     with several measured lines per branch, hence `TrendLine.label` /
+     `color` / `secondary`: the v4 line is secondary — drawn for the crossing,
+     but the card's latest value, the drift verdict and the baseline overlay
+     read the v5 line only (judging both would flag every move twice, once per
+     direction). Legends and tooltips name lines by label, and by branch too
+     when several branches' pairs share a chart, where the second branch
+     dashes because the color already means the major.
+   - **The overview score.** The UI v5 adoption view leads with one full-width
+     card, `all scenarios · UI v5 vs v4 share` (`UI_OVERVIEW_KEY`): every
+     scenario's hidden instance counts summed per commit, then divided —
+     Σ v5 ÷ Σ (v5 + v4) — so it is weighted by how much each page renders,
+     not an average of the pages' percentages. Built by `aggregateStyleSeries`
+     from the full history as well, so it is judged like any chart and a batch
+     of migrated components badges the score the day it lands. The
+     per-scenario share cards follow as its breakdown. The styled-components
+     view leads the same way: an "All scenarios" grid with one summed card per
+     metric (instances, components, CSS rules, CSS bytes; the rule share
+     weighted by rules), so the whole escape hatch is readable before the
+     per-scenario sections.
+   - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
+     makes a drop the regression and a rise the improvement (drift.ts
+     `classify`); the badge arrow follows the value's direction and its tone the
+     verdict, so a falling share reads "↓ regression". Shares are stored 0–100
+     (`unit: 'percent'`) and drawn on a **fixed 0–100 axis**: the distance to
+     100% (or to 0%) is the story, and an auto-scaled axis would make 35%
+     look nearly done. The drift floor for a share is one whole point.
+   - **Not applicable is absent, never zero.** A build without `@sanity/ui` v5
+     (studio before v6.10) records no `UI v5 …` rows, so a backfill or bisect
+     into that era leaves the adoption series empty where v5 did not exist
+     instead of drawing a 0% floor; the styled-components rows cover every era.
+     The scenario's `styles.experiment.ui5Available` says which case it was,
+     and `styledComponentsVersion` names the runtime — surfaced on style points
+     (tooltip, popover) because a step in the CSS rows that lands with a
+     version bump is the library changing its output, not a migration.
+   - **Three sub-views plus "Per week".** UI v5 adoption (the two paired
+     sections), styled-components and CSS weight (a section per registry
+     metric, `track` in the registry says which) each lay out like the Vitals
+     tab, a card per scenario; CSS weight leads with summed "All scenarios"
+     cards like styled-components does. The load scenarios take the census
+     too, so CSS weight reads per step: the login screen (`loginReady`), a
+     tool without a document (`toolReady`, `emptyToolReady`) and a settled
+     document form (`synthetic`). "Per week" redraws the
+     headline series as weekly histograms modelled on Linear's "StyleX adoption
+     per week" chart (`WeeklyBars.tsx`, buckets from `weekly.ts`): a
+     100%-stacked bar per Monday-start UTC week for the shares (the filled part
+     climbing to the top is the celebration), plain bars for the counts and
+     sizes that should sink. It leads with **every scenario summed** and then
+     repeats the set per scenario, one scrolling page and no picker: the
+     aggregate (`aggregateStyleSeries`) sums the per-scenario points per
+     commit (rendered styled nodes, inserted bytes) and recomputes the shares
+     from the summed counts (Σ v5 ÷ Σ (v5 + v4); Σ inserted rules ÷ Σ readable
+     rules, the totals recovered from each scenario's rule count and share)
+     rather than averaging percentages. Sums count shared studio chrome once
+     per scenario page, so they read "across the benchmark's pages"; a failed
+     shard leaves a commit's sum short, which the weekly median absorbs. A bar
+     is the **median of that week's points**, an empty week stays a gap
+     (interpolating would claim a measurement nobody took), and a bar opens
+     the week's newest run in the same popover the trend charts use, so the
+     histogram is a bisect surface too. Colors are the style systems' own,
+     shared with the widget's donut and outlines.
+
+## Engine confidence
+
+The Engine confidence score is Stryker's mutation score over the tier-1 engine files: the weekly share of planted bugs in the document sync engine that a test fails on. It is the Engine confidence tab in Trends (`?tab=engine`), and it reads a different document type from the bench series.
+
+- Each ISO week has one `engineConfidenceRun` document, id `engine-confidence-run-<iso week>` (`engineConfidenceRunId` in `@repo/utils/radar-ids`). `engine-confidence/` builds it and `engine-confidence.yml` writes it every Thursday from main with `RADAR_SANITY_WRITE_TOKEN`. A re-run in the same week replaces the document. The stored shape is `EngineConfidenceRunDocument` in `@repo/utils/engine-confidence`, mirrored by `schemaTypes/engineConfidenceRun.ts`. Ratios are fractions and the tab multiplies them by 100 for the `percent` unit.
+- Each run stores two scores, and reporting reads their `ratio`. `score` is the total engine score over both Stryker targets. `studioScore` is the core Studio engine score over the `sanity` target only, the document store and form patch code in `packages/sanity`, and leaves out `@sanity/mutator`. Both are (killed + timeout) / (killed + timeout + survived + no coverage) from the same run, and `studioScore` sums the `sanity` entries of `score.files`. Documents with `schemaVersion` 1 have no `studioScore`, so the Studio card leaves a gap for those weeks. Mutants ignored by rule (error messages, log calls) or excluded after review (`engine-confidence/exclusions.json`) are outside the ratio. The score cannot reach 100% because some planted bugs change no behaviour. A run that scored no mutants is stored as `{status: 'not-measured', reason}` and draws no point, so a gap is a gap and never a zero.
+- The known-bug catalogue is stored as `knownBugs` (`activeEntries`, `caughtEntries`, per-entry suite results). It is supporting detail ("X of N known bugs caught", an entry counts as caught when at least one suite catches it) and never feeds either score.
+- `ENGINE_CONFIDENCE_QUERY` projects every run without the per-file and per-entry arrays. `ENGINE_CONFIDENCE_DETAIL_QUERY` fetches only the newest run, with those arrays, for the two tables. Both go through `listenQuery` in their own streams, so a failure here does not blank the bench tabs.
+- `config.version` changes whenever the pinned measurement config changes. The weekly card draws a dashed rule labelled `config vN` at the first week on the new version (`configBreaks`), and scores either side of it are not comparable.
+- The engine series sets `drift: {recentRuns: 2, baselineRuns: 4, minimumRuns: 4}`, so it compares the last 2 weeks with the 4 before them. Bench series keep 7, 21 and 10. Drift never compares across the newest break: only the points after it count. Mutation scores barely move week to week, so the noise term is near zero and the 1-point `percent` floor decides.
+- The tab renders two weekly `share` cards (caught against missed), "Total engine confidence" (`engine:score`) and "Core Studio engine confidence" (`engine:studio-score`), beside a latest-week summary. The summary shows the week, the config version, both scores, the ignored and excluded mutant counts, "Known bugs caught: X of N (not part of the score)", and whether each Stryker target ran `full` or `incremental` with its reused mutants. Below them are "Missed bugs by file" (the ten files with the most missed mutants, with ignored and excluded columns) and "Known bug catalogue" (severity, id and title per entry, a status chip per suite). A score that was never measured in the range shows a not-measured card in place of its weekly card. `?range=` filters runs on `startedAt`. Drift is judged on the full history, as for the bench series.
+- `generateDebugEngineConfidenceRuns` in `debugData.ts` returns valid stored documents: 20 weeks for `demo` (a config bump at week 12, a flat stretch, a catalogue growing from 5 to 7 entries), 4 weeks with a gap for `sparse`, one for `single-run` and none for `empty`.
+- In `demo` only, a real `engineConfidenceRun` JSON in `tools/trends/__local__/` (gitignored) replaces the newest generated week. It is relabelled to that week and config version so the timeline has no phantom gap or break.
+
+## SQRL score
+
+The plain-language overview is `sqrl/README.md`; this section is the formula reference.
+
+SQRL (Studio Quality: Reliability & Latency) is one number per measured main commit, higher is better, stored as a `sqrlScore` document (`sqrl-score-<sha>`). The engine is `sqrl/` (pure, tested in the `radar` vitest project against golden per-commit scores recorded when formula version 1 was agreed) and `scripts/sqrl.ts` writes the documents. Radar reads the latest document by `git.committedAt` for the banner and a projected `{score, scoreCommit, git{sha, committedAt}}` series for its graph, never `inputs`.
+
+**Formula (version 1).** SQRL = 100 × the weighted geometric mean over inputs of reference ÷ current. Every input is lower-is-better and there are no targets, anchors or ceilings. Each input's reference is its median over the first 7 commits of the series (28 Jun to 18 Jul 2026), and the composite is rebased so the per-commit score over that window has a median of exactly 100.
+
+- **Pillars.** INP (article and singleString) weighs 0.35. Responsiveness (keystroke median and p75), Load, CPU & rendering, Memory & weight and Reliability share the other 0.65 equally, and inputs split their pillar equally. `SQRL_INPUTS` in `sqrl/inputs.ts` is the list.
+- **Memory & weight** includes soak heap growth (least-squares MB per minute over minutes 2-10, floored at 0, plus k = 0.109) and the interaction scenarios' request count. Minutes 0 and 1 are left out because they race the studio's mount. It also has three article soak leak guards: least-squares heap growth (MB per minute), listener growth and DOM node growth (per minute) from the article soak's `settleMinute` (2 when absent) to the end, each floored at 0, plus k = 0.905, 3.103 and 8.077. Each soak is picked by scenario name, `singleString` or `article`, since a run can carry both in any order. Main history has no article soak, so these three inputs chain-link in at their first commit with zero jump and every earlier score is unchanged.
+- **Excluded.** Settle documentActions and listenQueryPane are red by design and debugLoop is the detector's self-test. Settle LoAF after ready (21% per-commit noise) and latencyP50 drift (8ms quantisation) are too noisy to carry weight.
+- **Smoothing offsets.** CLS takes +0.01, settle commits +1 per scenario, soak growth +k and the reliability count +1, since each can reach 0. Stored values and references include the offset, so `ratio` is always referenceValue ÷ value.
+
+**Host adjustment.** Each timing value is normalised to a 7.0ms calibration host as value × (7.0 ÷ the scenario shard's calibration)^beta before anything else. Betas are 1.0 for INP, 1.2 for keystrokes, 0.85 for time to editable, 0.65 for tool visible and login clickable, and the within-sha re-run fit clamped to [0, 1.5] for FCP, LCP, blocking and the CPU inputs. Bytes and counts are not adjusted. `scoreRaw` is the same commit with no adjustment, rebased the same way, so the size of the adjustment is visible next to the headline.
+
+**Merging and smoothing.** Re-runs of a sha merge by median. `scoreCommit` is that commit alone and `score`, the headline, replaces each input with the median of its last 7 measured commits first. An input that starts later than the first commit is chain-linked: the composite adds weighted log changes step by step, so a new input enters with zero jump and only its later movement counts.
+
+**Reliability.** Events come from `gitTag` documents only: one per npm deprecation cluster (grouped by deprecation message, dated at the first deprecated version) and one per patch published within 72h of its minor. The patch that fixes a cluster is not an event, and a hot-patch that was itself deprecated counts once with its cluster. The input is (reference + 1) ÷ (count + 1) over the trailing 13 weeks, against the window ending 2 Apr 2026, which held 4 events.
+
+**Contribution points.** `contributionPoints` split `score - 100` across inputs as weight × ln(reference-window value ÷ current value), scaled to points, with the chain-linking residual spread by weight so they add up exactly. Reliability is measured against its count over the reference window here, since the rebase already holds its head start over the Jan-Apr reference.
+
+**Pillar scores.** Each pillar is chain-linked over its own inputs at equal weight and rebased like the headline, so its per-commit score over the reference window has a median of 100. A pillar above 100 is better than the reference window and agrees in sign with its inputs' points. Reliability reads 100 today because the trailing count (2) matches the window's, while its input `ratio` of 1.667 is against the Jan-Apr reference.
+
+**Trend.** Each input carries the drift feed's verdict (`computeDrift` in `tools/trends/drift.ts`, last 7 commits against the prior 21, on per-commit host-adjusted values) as `trend`. Fewer than 10 commits of history reads `insufficient`. The banner shows regressions in red and there is no regression lock on the score.
+
+**Versioning.** Betas, k and the reliability reference count are frozen constants of `formulaVersion` 1, measured on the 150 main runs up to 15 Oct 2026, so new runs never re-fit them. Soak k is max(same-sha re-run sigma of the floored slope, 1% of the median end-of-run level per soak minute). The article soak k values use that rule on 5 re-runs of the article soak from 16 Oct 2026: the re-run sigma sets heap, and 1% of the end-of-run level sets listeners and DOM nodes. Any change to the formula bumps `FORMULA_VERSION`. A formula change, a later npm deprecation and a backfilled benchRun all change old scores, and the next run of the `sqrl-score` job writes them, since it rewrites every commit.
+
+**Writes.** The `sqrl-score` job in `bench.yml` runs whenever `track-main` stored its benchRun, including on days a settle mismatch fails `track-main` after the store. A run from `main` or a release tag upserts every commit's document, about 150 documents in batches of 50, since the whole series is recomputed anyway. A dispatch from any other branch prints the scores and writes nothing. Locally, `pnpm --filter radar sqrl -- --dry-run` reads with `SANITY_AUTH_TOKEN` or the `sanity login` token and writes nothing.
 
 ## Architecture
 
@@ -366,7 +648,12 @@ effect of merged work; secondary: leads scanning health weekly.
   sparse/single/empty sets, plus synthetic release tags with two interleaved
   majors and a deliberate label collision) selectable in the toolbar, so the
   charts, the drift feed and every encoding layer are testable without live
-  data.
+  data. The SQRL banner has its own synthetic scores
+  (`tools/trends/sqrlDebugData.ts`): `sqrl` (a climb with an August-style dip
+  and recovery, also what the other non-empty sources show), `sqrl-climb` (a
+  steady climb), `sqrl-regressed` (regressed inputs listed in red) and
+  `sqrl-empty` (and `empty`) for the no-documents state. The `sqrl*` sources
+  leave the rest of the page on the demo runs.
 - **Charts: visx** (`@visx/scale`, `@visx/shape`, `@visx/group`,
   `@visx/axis`, `@visx/responsive`) — low-level primitives, no chart-library
   opinions to fight inside `@sanity/ui` layout.

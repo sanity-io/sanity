@@ -1,11 +1,12 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Spinner, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Spinner, useClickOutsideEvent} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -20,6 +21,7 @@ import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseActionsResolver} from '../../../components/ReleaseActionsResolver'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useCustomReleaseActions} from '../../../hooks/useCustomReleaseActions'
+import {useWorkspaceReleaseLimitGuard} from '../../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -92,6 +94,7 @@ export const ReleaseMenuButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
   const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
   const {document} = useWorkspace()
@@ -163,7 +166,7 @@ export const ReleaseMenuButton = ({
             title: (
               // toast children need access to the router
               <RouterContext.Provider value={router}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <Translate
                     t={t}
                     components={toastComponents}
@@ -185,7 +188,7 @@ export const ReleaseMenuButton = ({
             toast.push({
               status: 'error',
               title: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey={actionValues.toastFailureI18nKey}
@@ -221,6 +224,17 @@ export const ReleaseMenuButton = ({
     ],
   )
 
+  const handleConfirmAction = useCallback(
+    (action: ReleaseAction) => {
+      if (action === 'duplicate' && blockAtWorkspaceReleaseLimit()) {
+        setSelectedAction(undefined)
+        return
+      }
+      void handleAction(action)
+    },
+    [blockAtWorkspaceReleaseLimit, handleAction],
+  )
+
   /** in some instances, immediately execute the action without requiring confirmation */
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
@@ -247,7 +261,7 @@ export const ReleaseMenuButton = ({
           confirmButton: {
             text: t(confirmDialog.dialogConfirmButtonI18nKey),
             tone: confirmDialog.confirmButtonTone,
-            onClick: () => handleAction(selectedAction),
+            onClick: () => handleConfirmAction(selectedAction),
             loading: isPerformingOperation,
             disabled: isPerformingOperation,
           },
@@ -256,10 +270,10 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack gap={4} paddingX={4} paddingBottom={4}>
+        <Flex gap={4} paddingX={4} paddingBottom={4} flexDirection="column">
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey={confirmDialog.dialogDescriptionI18nKey}
@@ -269,7 +283,7 @@ export const ReleaseMenuButton = ({
               />
             </Text>
           )}
-        </Stack>
+        </Flex>
       </Dialog>
     )
   }, [
@@ -279,7 +293,7 @@ export const ReleaseMenuButton = ({
     isPerformingOperation,
     release,
     documentsCount,
-    handleAction,
+    handleConfirmAction,
   ])
 
   const closePopover = useCallback(() => {

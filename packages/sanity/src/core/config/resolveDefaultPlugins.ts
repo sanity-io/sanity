@@ -9,6 +9,7 @@ import {schedules, SCHEDULES_NAME} from '../schedules/plugin'
 import {SINGLE_DOC_RELEASE_NAME, singleDocRelease} from '../singleDocRelease/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {variants, VARIANTS_NAME} from '../variants/plugin'
+import {scheduledDraftsEnabledReducer} from './configPropertyReducers'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
@@ -100,7 +101,16 @@ export function getDefaultPluginsOptions(
       },
     },
     mediaLibrary: workspace?.mediaLibrary,
-    scheduledDrafts: workspace.scheduledDrafts ?? {enabled: true},
+    scheduledDrafts: {
+      ...workspace.scheduledDrafts,
+      // Reduced across the workspace's plugins, like the resolved `Source.scheduledDrafts.enabled`
+      // (the root's own value wins), so a plugin that turns scheduled drafts off also leaves the
+      // single-doc release plugin out and the plugin never has to re-check the flag itself
+      enabled: scheduledDraftsEnabledReducer({
+        config: workspace as PluginOptions,
+        initialValue: true,
+      }),
+    },
     variants: {
       enabled: false,
       ...workspace.beta?.variants,

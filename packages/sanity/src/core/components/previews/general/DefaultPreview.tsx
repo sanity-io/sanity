@@ -1,7 +1,7 @@
-import {Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -67,15 +67,20 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
+
     return (
       <Root
-        align="center"
+        alignItems="center"
         className={styles?.placeholder}
         data-testid="default-preview"
         padding={2}
         paddingLeft={media ? 2 : 3}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && (
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Skeleton
@@ -87,10 +92,16 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             </Box>
           )}
 
-          <Stack data-testid="default-preview__heading" flex={1} gap={2}>
+          <Flex
+            data-testid="default-preview__heading"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            flexDirection="column"
+          >
             <TitleSkeleton delay={SKELETON_DELAY} />
-            <SubtitleSkeleton delay={SKELETON_DELAY} />
-          </Stack>
+            {showSubtitleSkeleton && <SubtitleSkeleton delay={SKELETON_DELAY} />}
+          </Flex>
 
           <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
             {statusNode}
@@ -102,13 +113,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
   return (
     <Root
-      align="center"
+      alignItems="center"
       className={rootClassName}
       data-testid="default-preview"
       padding={2}
       paddingLeft={media ? 2 : 3}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
           <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Media
@@ -120,7 +131,14 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           </Box>
         )}
 
-        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} gap={2}>
+        <Flex
+          className={styles?.heading}
+          data-testid="default-preview__header"
+          flexBasis="0%"
+          flexGrow={1}
+          gap={2}
+          flexDirection="column"
+        >
           {isUploading && <LinearProgress value={progress} />}
           {!isUploading && (
             <>
@@ -128,8 +146,10 @@ export function DefaultPreview(props: DefaultPreviewProps) {
                 className={styles?.title}
                 size={1}
                 style={{color: 'inherit'}}
-                textOverflow="ellipsis"
+                truncate={1}
                 weight="medium"
+                as="div"
+                trim={true}
               >
                 {title && renderPreviewNode(title, 'default')}
                 {!title && (
@@ -140,13 +160,21 @@ export function DefaultPreview(props: DefaultPreviewProps) {
               </Text>
 
               {subtitle && (
-                <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
+                <Text
+                  muted
+                  size={1}
+                  truncate={1}
+                  className={styles?.subtitle}
+                  as="div"
+                  trim={true}
+                  style={{color: 'var(--card-muted-fg-color)'}}
+                >
                   {renderPreviewNode(subtitle, 'default')}
                 </Text>
               )}
             </>
           )}
-        </Stack>
+        </Flex>
 
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           {statusNode}

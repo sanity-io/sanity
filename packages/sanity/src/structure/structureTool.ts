@@ -9,9 +9,11 @@ import {useHistoryRestoreAction} from './documentActions/HistoryRestoreAction'
 import {usePublishAction} from './documentActions/PublishAction'
 import {useUnpublishAction} from './documentActions/UnpublishAction'
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
+import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
+import {documentGroupInspector} from './panes/document/inspectors/documentGroup'
 import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
@@ -31,6 +33,8 @@ const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', '
 const documentBadges = [useLiveEditBadge]
 
 const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
+
+const StructureTool = lazy(() => import('./components/structureTool'))
 
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within
@@ -109,15 +113,21 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         // we need to check whether the document actions already exist in the Studio config
         return [...otherActions, ...destructiveActions]
       },
-      badges: (prevBadges) => {
+      badges: (prevBadges, {singleton}) => {
+        const singletonBadge = singleton ? [useSingletonBadge] : []
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document badges already exist in the Studio config
-        return Array.from(new Set([...prevBadges, ...documentBadges]))
+        return Array.from(new Set([...prevBadges, ...documentBadges, ...singletonBadge]))
       },
-      inspectors: (prevInspectors) => {
+      inspectors: (prevInspectors, context) => {
+        const structureInspectors = context.beta?.documentGroupInventory?.enabled
+          ? [...inspectors, documentGroupInspector]
+          : inspectors
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the inspectors already exist in the Studio config
-        return Array.from(new Set([...prevInspectors, ...inspectors]))
+        return Array.from(new Set([...prevInspectors, ...structureInspectors]))
       },
     },
 
@@ -126,7 +136,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
-        component: lazy(() => import('./components/structureTool')),
+        component: StructureTool,
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)
           if (intent === 'edit') return canHandleEditIntent(params)

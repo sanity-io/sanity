@@ -9,7 +9,7 @@ export type VariantCreateBaseDocument = {
 /**
  * Resolves which existing document to copy when creating a variant-scoped version.
  *
- * Matches version stubs whose `_system.variant._ref` equals the selected variant id.
+ * Matches version stubs whose `_system.variants[0]._ref` equals the selected variant id.
  *
  * 1. Drafts variant sibling, then published variant sibling.
  * 2. The provided fallback (typically the document currently shown in the pane).

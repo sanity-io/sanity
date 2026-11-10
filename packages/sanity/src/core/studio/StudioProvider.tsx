@@ -15,11 +15,12 @@ import {UserColorManagerProvider} from '../user-color/provider'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
-import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
+import {DashboardRouteHandler} from './components/DashboardRouteHandler'
 import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
+import {PluginProviders} from './PluginProviders'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
 import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
 import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
@@ -54,6 +55,7 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
+  unstable_importMapUrl: importMapUrl,
 }: StudioProviderProps) {
   // Run in an effect to keep render pure; both calls are idempotent and buffer/guard
   // their own work, so StrictMode's double mount is safe.
@@ -80,16 +82,18 @@ export function StudioProvider({
             ConfigErrorsComponent={ConfigErrorsScreen}
           >
             <LocaleProvider>
-              <PackageVersionStatusProvider>
+              <PackageVersionStatusProvider importMapUrl={importMapUrl}>
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
-                      <ComlinkRouteHandler />
+                      <DashboardRouteHandler />
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>
                           <DocumentLimitUpsellProvider>
                             <AssetLimitUpsellProvider>
-                              <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+                              <UnclaimedProjectProvider>
+                                <PluginProviders>{children}</PluginProviders>
+                              </UnclaimedProjectProvider>
                             </AssetLimitUpsellProvider>
                           </DocumentLimitUpsellProvider>
                         </GlobalPerspectiveProvider>
@@ -103,7 +107,7 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children],
+    [children, importMapUrl],
   )
 
   return (

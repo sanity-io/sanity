@@ -1,5 +1,6 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
+import {VStack} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -17,7 +18,7 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
 
   return (
     <Card borderTop padding={3} tone="transparent">
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Code size={0} weight="medium">
           Filter
         </Code>
@@ -31,7 +32,7 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
         <Code size={0} style={{whiteSpace: 'normal'}}>
           value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
         </Code>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

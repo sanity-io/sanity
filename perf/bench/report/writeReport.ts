@@ -29,9 +29,10 @@ export function toAbsolute(run: BenchRunDocument): BenchRunDocument {
         const {reference, comparison, ...rest} = metric
         return rest
       }),
-      // Reference-side interruptions/resources drop with the reference side
+      // Reference-side interruptions/resources/style context drop with the reference side
       interruptions: {experiment: scenario.interruptions.experiment},
       ...(scenario.resources ? {resources: {experiment: scenario.resources.experiment}} : {}),
+      ...(scenario.styles ? {styles: {experiment: scenario.styles.experiment}} : {}),
     })),
     // A/B bundle carries both sides; keep only experiment
     ...(run.bundle ? {bundle: {experiment: run.bundle.experiment}} : {}),

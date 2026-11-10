@@ -1,10 +1,11 @@
-import {Card, Text, type Theme} from '@sanity/ui'
+import {Card, type Theme} from '@sanity/ui'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {useCalendar} from './contexts/useDatePicker'
 
@@ -65,6 +66,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
 
   const isCurrentMonth = isSameMonth(date, focusedDate)
   const isFocused = focusedDate && isSameDay(date, focusedDate)
+  // oxlint-disable-next-line react/purity -- the today marker follows the current date
   const isToday = isSameDay(date, new Date())
 
   const isWithinRange =
@@ -112,6 +114,9 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         muted={!isSelected && !isCurrentMonth}
         size={1}
         weight={isCurrentMonth ? 'medium' : 'regular'}
+        as="div"
+        trim={true}
+        style={{color: `var(--card${!isSelected && !isCurrentMonth ? '-muted' : ''}-fg-color)`}}
       >
         {date.getDate()}
       </Text>

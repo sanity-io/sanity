@@ -1,5 +1,5 @@
 import type {Path} from '@sanity/types'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
@@ -10,7 +10,4 @@ export type GetFormValueContextValue = (path: Path) => unknown
 /**
  * @internal
  */
-export const GetFormValueContext = createContext<GetFormValueContextValue | null>(
-  'sanity/_singletons/context/get-form-value',
-  null,
-)
+export const GetFormValueContext = createContext<GetFormValueContextValue | null>(null)

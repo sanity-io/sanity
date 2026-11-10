@@ -3,7 +3,10 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
+import {createLegacyAuthStore as _createAuthStorePublic} from '../core/store/auth/legacy/createLegacyAuthStore'
+
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -45,6 +48,7 @@ export {type CommentsSelectedPath} from '../core/comments/context/selected-path/
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 export {useComments} from '../core/comments/hooks/useComments'
 export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
+export {useCommentsMode} from '../core/comments/hooks/useCommentsMode'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {
@@ -80,8 +84,10 @@ export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comm
 export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
 export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
 export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
+export {useCommentsMode as useCommentsModeV2} from '../core/comments-v2/hooks/useCommentsMode'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,
@@ -239,6 +245,7 @@ export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createConfig, defineConfig} from '../core/config/defineConfig'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
@@ -301,13 +308,14 @@ export {
   resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
   type LogoProps,
   type NavbarAction,
   type NavbarProps,
+  type ProviderProps,
   type StudioComponents,
   type StudioComponentsPluginOptions,
   type ToolMenuProps,
@@ -339,6 +347,8 @@ export {
   type DocumentLanguageFilterResolver,
   type DocumentLayoutProps,
   type DocumentPluginOptions,
+  type FederatedAssetSourcesConfig,
+  type FederatedAssetSourceViewInfo,
   type FormBuilderComponentResolverContext,
   type GroupableActionDescription,
   type MediaLibraryConfig,
@@ -355,12 +365,22 @@ export {
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
   type SchemaPluginOptions,
+  type SingletonDefinition,
+  type SingletonsResolver,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type UnresolvedSingletonDefinition,
+  type VariantConditionMap,
+  type VariantConditions,
+  type VariantConditionsContext,
+  type VariantConditionValue,
+  type VariantTypeConfig,
+  type VariantTypeContext,
+  type VariantTypesConfig,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
@@ -374,9 +394,13 @@ export {
 export {useDivergenceNavigator} from '../core/divergence/divergenceNavigator'
 export {
   DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
-export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryFeedbackActionProps,
+} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryComponents,
@@ -932,6 +956,7 @@ export {type DocumentField, useReferringDocuments} from '../core/hooks/useReferr
 export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useSchema} from '../core/hooks/useSchema'
+export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
 export {type SyncState, useSyncState} from '../core/hooks/useSyncState'
 export {
@@ -947,6 +972,7 @@ export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTarg
 export {useTemplates} from '../core/hooks/useTemplates'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useTools} from '../core/hooks/useTools'
 export {
   type FormattableMeasurementUnit,
@@ -966,6 +992,7 @@ export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
+export {InlineCode} from '../core/i18n/components/InlineCode'
 export {
   defineLocale,
   defineLocaleResourceBundle,
@@ -1006,11 +1033,10 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
-export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 // PROPOSED: keep the navbar's tone neutral whatever the perspective (Variants 2.0 test studio).
 export {NavbarNeutralProvider} from '../core/studio/components/navbar/NavbarNeutral'
 // PROPOSED: extension point for the navbar's perspective control (Variants 2.0 test studio).
-export {GlobalPerspectiveMenu} from '../core/perspective/navbar/GlobalPerspectiveMenu'
 export {
   type PerspectiveMenuExtension,
   PerspectiveMenuExtensionProvider,
@@ -1039,6 +1065,7 @@ export {
 } from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
+export {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 export {usePerspective} from '../core/perspective/usePerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
@@ -1158,6 +1185,7 @@ export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
+export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
 export {createSchema} from '../core/schema/createSchema'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
@@ -1165,6 +1193,7 @@ export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {isPerspectiveRaw} from '../core/search/common/isPerspectiveRaw'
 export {
+  type PartialIndexFieldPaths,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
@@ -1197,16 +1226,20 @@ export {
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
 export {
-  _createAuthStore,
+  _createLegacyAuthStore as _createAuthStore,
   type AuthStoreOptions,
-  createAuthStore,
   type CreateAuthStoreOptions,
-  type RequestFailureDiagnostics,
-} from '../core/store/authStore/createAuthStore'
+} from '../core/store/auth/legacy/createLegacyAuthStore'
+export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
+/**
+ * @internal
+ * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
+ */
+export const createAuthStore = _createAuthStorePublic
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
-} from '../core/store/authStore/createMockAuthStore'
+} from '../core/store/auth/mock/createMockAuthStore'
 export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
@@ -1214,11 +1247,9 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
-} from '../core/store/authStore/types'
-export {
-  isAuthStore,
-  isCookielessCompatibleLoginMethod,
-} from '../core/store/authStore/utils/asserters'
+} from '../core/store/auth/types'
+export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
+export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,
@@ -1361,6 +1392,7 @@ export {
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
   isPublishDocumentVersionEvent,
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
@@ -1536,6 +1568,8 @@ export {
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
+  type SearchPartialIndexSettings,
+  // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
@@ -1544,6 +1578,7 @@ export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   type BaseOptions,
@@ -1677,6 +1712,7 @@ export {
 } from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,
@@ -1743,6 +1779,7 @@ export {
 export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
 export {type DocumentVariantType, getDocumentVariantType} from '../core/util/getDocumentVariantType'
+export {getDocumentVersionVariantId} from '../core/util/getDocumentVersionVariant'
 export {getErrorMessage} from '../core/util/getErrorMessage'
 export {getReferencePaths} from '../core/util/getReferencePaths'
 export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTargetDocument'
@@ -1784,6 +1821,10 @@ export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
 export {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../core/util/validateStructureNodeId'
+export {
   isDraftVersion,
   isPublishedVersion,
   isReleaseVersion,
@@ -1799,6 +1840,13 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
+export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
+export {
+  filterVariantsForSearch,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../core/variants/tool/util'
+export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {
   type UseVariantDetailExtension,
   type VariantDetailExtension,
@@ -1820,7 +1868,6 @@ export {
   type VariantEditNoticeComponent,
   VariantEditNoticeProvider,
 } from '../core/variants/components/dialog/VariantEditNotice'
-export {getVariantTitle} from '../core/variants/tool/util'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {

@@ -13,6 +13,7 @@ interface OperatorFunctionMatchers<Type = unknown> {
 }
 
 declare module 'vitest' {
-  interface Assertion<T = any> extends OperatorFunctionMatchers<T> {}
-  interface AsymmetricMatchersContaining extends OperatorFunctionMatchers {}
+  // Vitest 5 reads custom matchers from `Matchers<R, T>` (R: matcher return type, T: received
+  // type), which feeds `Assertion`, `AsymmetricMatchersContaining` and `expect.extend` at once.
+  interface Matchers<R, T> extends OperatorFunctionMatchers<T> {}
 }

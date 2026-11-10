@@ -5,8 +5,6 @@ import {
   type RuleTypeConstraint,
   type UriValidationOptions,
 } from '@sanity/types'
-import cloneDeep from 'lodash-es/cloneDeep.js'
-import isObject from 'lodash-es/isObject.js'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -14,6 +12,7 @@ import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
 import {ValidationError} from '../sanity/validation/ValidationError'
+import {isObject} from '../utils/isObject'
 
 const builtinSchema = Schema.compile({
   name: 'studio',
@@ -26,29 +25,53 @@ const unavailableValidator: CustomValidator & MediaValidator = () => {
   )
 }
 
-export function createSchemaFromManifestTypes(schemaDef: {name: string; types: unknown[]}) {
-  const validated = validateSchema(schemaDef.types).getTypes()
-  const validation = groupProblems(validated)
-  const problems = validation.filter((group) =>
-    group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),
-  )
+export interface CreateSchemaFromManifestTypesOptions {
+  /**
+   * Clone manifest types before converting serialized validation rules.
+   *
+   * Set this to `false` only when the caller owns the input and accepts that it will be mutated.
+   * Defaults to `true`.
+   */
+  cloneTypes?: boolean
+  /**
+   * Validate manifest types before compiling them.
+   *
+   * Set this to `false` only for manifests that have already passed schema validation.
+   * Defaults to `true`.
+   */
+  validate?: boolean
+}
 
-  if (problems.length > 0) {
-    throw new ValidationError(problems)
+export function createSchemaFromManifestTypes(
+  schemaDef: {name: string; types: unknown[]},
+  options: CreateSchemaFromManifestTypesOptions = {},
+) {
+  if (options.validate !== false) {
+    const validated = validateSchema(schemaDef.types, {parentTypes: builtinTypes}).getTypes()
+    const validation = groupProblems(validated)
+    const problems = validation.filter((group) =>
+      group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),
+    )
+
+    if (problems.length > 0) {
+      throw new ValidationError(problems)
+    }
   }
 
   return Schema.compile({
     name: schemaDef.name,
-    types: schemaDef.types.map(coerceType).filter(Boolean),
+    types: schemaDef.types
+      .map((type) => coerceType(type, options.cloneTypes !== false))
+      .filter(Boolean),
     parent: builtinSchema,
   })
 }
 
 // coerceType attempts to coerce a json schema into a Sanity schema type. This mainly involves
 // converting a json normalized rule into an actual '@sanity/schema' Rule.
-function coerceType(obj: unknown) {
+function coerceType(obj: unknown, clone: boolean) {
   if (!isObject(obj)) return undefined
-  const typ = cloneDeep(obj)
+  const typ = clone ? structuredClone(obj) : obj
   traverse(typ)
   return typ
 }

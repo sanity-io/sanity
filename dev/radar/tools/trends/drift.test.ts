@@ -66,6 +66,58 @@ test('improvement fires as improvement', () => {
 })
 
 // Below the relative floor: 320 → 330 is ~3% < 5%
+// A higher-is-better series (UI v5 adoption share): the same rise that is a
+// regression on a latency chart is the improvement here, and a drop regresses
+test('higher-is-better series read a rise as an improvement and a drop as a regression', () => {
+  const rise = [...Array.from({length: 21}, () => 30), ...Array.from({length: 9}, () => 42)]
+  const up = computeDrift([series(rise, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(up)).toHaveLength(1)
+  expect(up[0].direction).toBe('improvement')
+  expect(up[0].baseline.delta).toBe(12)
+
+  const drop = [...Array.from({length: 21}, () => 42), ...Array.from({length: 9}, () => 30)]
+  const down = computeDrift([series(drop, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(down)).toHaveLength(1)
+  expect(down[0].direction).toBe('regression')
+  expect(down[0].baseline.delta).toBe(-12)
+})
+
+// A paired chart judges its headline line only: the v4 complement of a
+// climbing v5 share falls by the same amount, and judging both would flag one
+// move twice, once in each direction
+test('secondary lines of a paired chart are drawn, not judged', () => {
+  const rise = [...Array.from({length: 21}, () => 30), ...Array.from({length: 9}, () => 42)]
+  const paired = series(rise, {unit: 'percent', goal: 'higher'})
+  paired.lines = [
+    {...paired.lines[0], label: '@sanity/ui v5', color: '#3fb950'},
+    {
+      branch: 'main',
+      label: '@sanity/ui v4',
+      color: '#e2604f',
+      secondary: true,
+      points: paired.lines[0].points.map((point) => ({...point, value: 100 - point.value})),
+    },
+  ]
+  const drift = computeDrift([paired])
+  expect(drift).toHaveLength(1)
+  expect(drift[0].direction).toBe('improvement')
+  expect(drift[0].branch).toBe('main')
+})
+
+// One whole point is the floor for a share, at any level: a 0.5-point move on
+// a 35% share clears it on neither side, while a 3-point drop from 80% must
+// flag — a relative floor would have swallowed it (5% of 80 is 4 points)
+test('percent metric needs a whole point to move, with no relative floor', () => {
+  const tiny = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 35.5)]
+  expect(flagged(computeDrift([series(tiny, {unit: 'percent', goal: 'higher'})]))).toHaveLength(0)
+  const point = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 37)]
+  expect(flagged(computeDrift([series(point, {unit: 'percent', goal: 'higher'})]))).toHaveLength(1)
+  const highDrop = [...Array.from({length: 21}, () => 80), ...Array.from({length: 9}, () => 77)]
+  const drift = computeDrift([series(highDrop, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(drift)).toHaveLength(1)
+  expect(drift[0].direction).toBe('regression')
+})
+
 test('sub-threshold move stays quiet', () => {
   const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 330)]
   const drift = computeDrift([series(values)])
@@ -428,4 +480,84 @@ test('deltaLabel shows a signed percentage for finite baselines', () => {
   expect(deltaLabel(up[0].baseline, 'ms')).toBe('+25%')
   const down = computeDrift([series([...Array(21).fill(400), ...Array(9).fill(300)])])
   expect(deltaLabel(down[0].baseline, 'ms')).toBe('−25%')
+})
+
+// A series built only to derive others from (the paired UI instances behind
+// the adoption score) is never shown, so it must never produce a finding that
+// points at a chart nobody can open
+test('hidden series are not judged', () => {
+  const rise = [...Array.from({length: 21}, () => 300), ...Array.from({length: 9}, () => 420)]
+  expect(computeDrift([series(rise, {unit: 'count', goal: 'higher', hidden: true})])).toEqual([])
+  expect(computeDrift([series(rise, {unit: 'count', goal: 'higher'})])).toHaveLength(1)
+})
+
+const WEEK = 7 * DAY
+
+function weeklySeries(values: number[], overrides: Partial<TrendSeries> = {}): TrendSeries {
+  const points: TrendPoint[] = values.map((value, index) => ({
+    date: new Date(START + index * WEEK),
+    value,
+    sha: `sha${index}`,
+    runId: `run-${index}`,
+  }))
+  return {
+    key: 'engine:test',
+    title: 'engine metric',
+    unit: 'percent',
+    description: '',
+    goal: 'higher',
+    group: 'engine',
+    drift: {recentRuns: 2, baselineRuns: 4, minimumRuns: 4},
+    lines: [{branch: 'main', points}],
+    ...overrides,
+  }
+}
+
+test('weekly windows flag a 2-point drop over the 2 recent weeks as a regression', () => {
+  const drift = computeDrift([weeklySeries([72, 72, 72, 72, 70, 70])])
+  expect(drift).toHaveLength(1)
+  expect(drift[0].direction).toBe('regression')
+  expect(drift[0].baseline.recentPointsMs).toHaveLength(2)
+  expect(drift[0].baseline.baselinePointsMs).toHaveLength(4)
+})
+
+test('weekly windows flag a 2-point gain as an improvement on a higher-is-better series', () => {
+  const drift = computeDrift([weeklySeries([70, 70, 70, 70, 72, 72])])
+  expect(drift[0].direction).toBe('improvement')
+})
+
+test('weekly windows stay quiet below the 1-point floor', () => {
+  const drift = computeDrift([weeklySeries([72, 72, 72, 72, 71.6, 71.6])])
+  expect(drift).toHaveLength(1)
+  expect(drift[0].direction).toBe('neutral')
+})
+
+test('weekly windows need only the series minimum before comparing', () => {
+  expect(computeDrift([weeklySeries([72, 72, 70])])).toHaveLength(0)
+  expect(computeDrift([weeklySeries([72, 72, 70, 70])])).toHaveLength(1)
+})
+
+test('drift ignores points before the newest series break', () => {
+  const breaks = [{date: new Date(START + 4 * WEEK), label: 'config v2'}]
+  // The 10-point drop sits entirely before the break
+  const beforeBreak = computeDrift([weeklySeries([80, 80, 70, 70, 70, 70, 70, 70], {breaks})])
+  expect(beforeBreak).toHaveLength(1)
+  expect(beforeBreak[0].direction).toBe('neutral')
+  expect(beforeBreak[0].baseline.baselinePointsMs.every((ms) => ms >= START + 4 * WEEK)).toBe(true)
+  // Too few points after the break to compare at all
+  expect(computeDrift([weeklySeries([80, 80, 80, 80, 70, 70], {breaks})])).toHaveLength(0)
+  // A move after the break still flags
+  const afterBreak = computeDrift([
+    weeklySeries([80, 80, 80, 80, 72, 72, 72, 72, 70, 70], {breaks}),
+  ])
+  expect(afterBreak[0].direction).toBe('regression')
+})
+
+test('a series without drift windows keeps the bench defaults of 7 and 21 runs', () => {
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 7}, () => 400)]
+  const drift = computeDrift([series(values)])
+  expect(drift[0].baseline.recentPointsMs).toHaveLength(7)
+  expect(drift[0].baseline.baselinePointsMs).toHaveLength(21)
+  expect(computeDrift([series(Array.from({length: 9}, () => 320))])).toHaveLength(0)
+  expect(computeDrift([series(Array.from({length: 10}, () => 320))])).toHaveLength(1)
 })

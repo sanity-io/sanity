@@ -4,6 +4,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useClient} from '../../../hooks/useClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
 import {type VersionInfoDocumentStub} from '../../store/types'
 import {useCopyToDrafts} from '../useCopyToDrafts'
 import {useDocumentVersions} from '../useDocumentVersions'
@@ -86,7 +87,7 @@ const variantVersion: VersionInfoDocumentStub = {
   _system: {
     bundleId: 'release1',
     release: {_ref: '_.releases.release1', _weak: true},
-    variant: {_ref: '_.variants.test', _weak: true},
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'opaque-variant-scope',
   },
@@ -100,7 +101,7 @@ const variantDraftVersion: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     bundleId: 'drafts',
-    variant: {_ref: '_.variants.test', _weak: true},
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'opaque-variant-draft-scope',
   },
@@ -110,6 +111,10 @@ describe('useCopyToDrafts', () => {
   const mockAction = vi.fn()
   const mockClient = {
     action: mockAction,
+  } as unknown as SanityClient
+  const mockVariantsAction = vi.fn()
+  const mockVariantsClient = {
+    action: mockVariantsAction,
   } as unknown as SanityClient
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -121,8 +126,12 @@ describe('useCopyToDrafts', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseClient.mockReturnValue(mockClient)
+    mockUseClient.mockImplementation(((options?: {apiVersion?: string}) =>
+      options?.apiVersion === VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion
+        ? mockVariantsClient
+        : mockClient) as () => SanityClient)
     mockAction.mockResolvedValue(undefined)
+    mockVariantsAction.mockResolvedValue(undefined)
     mockUseDocumentVersions.mockReturnValue({
       data: [],
       versions: [publishedVersion, releaseVersion, opaqueAgentVersion],
@@ -297,7 +306,8 @@ describe('useCopyToDrafts', () => {
     })
 
     expect(onConfirmationRequest).not.toHaveBeenCalled()
-    expect(mockAction).toHaveBeenCalledWith(
+    expect(mockAction).not.toHaveBeenCalled()
+    expect(mockVariantsAction).toHaveBeenCalledWith(
       [
         {
           actionType: 'sanity.action.document.variant.create',
@@ -346,7 +356,8 @@ describe('useCopyToDrafts', () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
     })
 
-    expect(mockAction).toHaveBeenCalledWith(
+    expect(mockAction).not.toHaveBeenCalled()
+    expect(mockVariantsAction).toHaveBeenCalledWith(
       [
         {
           actionType: 'sanity.action.document.variant.delete',

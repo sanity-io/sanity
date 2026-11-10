@@ -2,7 +2,7 @@ import {type MouseEvent, useCallback, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
 interface PositionProps {
-  position: 'left' | 'right'
+  $position: 'left' | 'right'
 }
 
 const Root = styled.div<PositionProps>`
@@ -13,8 +13,8 @@ const Root = styled.div<PositionProps>`
   z-index: 201;
   cursor: ew-resize;
 
-  ${({position}) =>
-    position === 'right'
+  ${({$position}) =>
+    $position === 'right'
       ? css`
           right: -4px;
         `
@@ -28,8 +28,8 @@ const Root = styled.div<PositionProps>`
     border-left: 1px solid var(--card-border-color);
     position: absolute;
     top: 0;
-    ${({position}) =>
-      position === 'right'
+    ${({$position}) =>
+      $position === 'right'
         ? css`
             right: 4px;
           `
@@ -45,8 +45,8 @@ const Root = styled.div<PositionProps>`
     display: block;
     position: absolute;
     top: 0;
-    ${({position}) =>
-      position === 'right'
+    ${({$position}) =>
+      $position === 'right'
         ? css`
             right: 0px;
           `
@@ -100,7 +100,7 @@ export function Resizer(props: {
   )
 
   return (
-    <Root onMouseDown={handleMouseDown} position={position}>
+    <Root $position={position} onMouseDown={handleMouseDown}>
       {/* Hover effect */}
       <span />
 

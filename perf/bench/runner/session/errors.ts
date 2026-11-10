@@ -13,6 +13,8 @@ export type SessionFailureReason =
   | 'sample-count-mismatch'
   | 'readback-mismatch'
   | 'unexpected-endpoint'
+  | 'soak-excursion'
+  | 'paint-attribution'
 
 export class SessionError extends Error {
   constructor(

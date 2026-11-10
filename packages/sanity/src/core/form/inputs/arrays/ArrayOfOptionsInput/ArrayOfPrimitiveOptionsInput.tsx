@@ -1,9 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Checkbox, Text} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo} from 'react'
-import {Grid, Flex, Box} from 'ui5'
+import {Text, Grid, Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'
@@ -101,7 +101,9 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               />
 
               <Box padding={2}>
-                <Text>{option.title}</Text>
+                <Text as="div" trim={true}>
+                  {option.title}
+                </Text>
               </Box>
 
               {!optionType && (

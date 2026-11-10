@@ -23,8 +23,8 @@ import type {
   CommentsContext,
   CommentsContextV2,
   CommentsEnabledContext,
-  CommentsEnabledContextV2,
   CommentsIntentContext,
+  CommentsModePromiseContext,
   CommentsOnboardingContext,
   CommentsOnboardingContextV2,
   CommentsSelectedPathContext,
@@ -45,14 +45,18 @@ import type {
   DocumentDivergencesContextValue,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
+  DocumentHistoryContext,
   DocumentIdContext,
   DocumentIdContextValue,
   DocumentLimitUpsellContext,
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  DocumentTableSelectionContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
+  EnhancedObjectDialogScrollContext,
+  EnhancedObjectDialogScrollToTop,
   EventsContext,
   FeedbackContext,
   FeedbackContextValue,
@@ -61,11 +65,13 @@ import type {
   FormBuilderContext,
   FormCallbacksContext,
   FormFieldPresenceContext,
+  FormRowGutterSuppressedContext,
   FormValueContext,
   FreeTrialContext,
   FullscreenPTEContext,
   GetFormValueContext,
   GetFormValueContextValue,
+  HasUsedScheduledPublishingPromiseContext,
   HoveredFieldContext,
   HoveredFieldContextValue,
   IsLastPaneContext,
@@ -77,6 +83,7 @@ import type {
   LoggedOutReasonContext,
   MediaLibraryIdsContext,
   MentionUserContext,
+  MountedToolsContext,
   NavbarContext,
   PackageVersionInfoContext,
   PackageVersionInfoContextValue,
@@ -99,6 +106,7 @@ import type {
   PresentationDisplayedDocumentContext,
   PresentationDocumentContext,
   PresentationNavigateContext,
+  PresentationPaneLinksContext,
   PresentationPanelsContext,
   PresentationParamsContext,
   PresentationSharedStateContext,
@@ -115,7 +123,7 @@ import type {
   RouterContext,
   RouterHistoryContext,
   ScheduledPublishingEnabledContext,
-  ScheduledPublishingEnabledContextValue,
+  ScheduledPublishingModePromiseContext,
   SchedulePublishUpsellContext,
   SchedulePublishUpsellContextValue,
   SchedulesContext,
@@ -137,14 +145,17 @@ import type {
   StudioErrorHandlerContext,
   TableContext,
   TasksContext,
-  TasksEnabledContext,
+  TasksModePromiseContext,
   TasksNavigationContext,
   TasksUpsellContext,
   UnclaimedProjectContext,
   UnclaimedProjectContextValue,
+  UpsellDescriptionSerializerContext,
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
+  VariantsModePromiseContext,
+  VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
   VisibleWorkspacesContext,
   WorkspaceContext,
@@ -215,11 +226,11 @@ describe('sanity/_singletons', () => {
   test('CommentsEnabledContext', () => {
     expectTypeOf<typeof CommentsEnabledContext>().not.toBeNever()
   })
-  test('CommentsEnabledContextV2', () => {
-    expectTypeOf<typeof CommentsEnabledContextV2>().not.toBeNever()
-  })
   test('CommentsIntentContext', () => {
     expectTypeOf<typeof CommentsIntentContext>().not.toBeNever()
+  })
+  test('CommentsModePromiseContext', () => {
+    expectTypeOf<typeof CommentsModePromiseContext>().not.toBeNever()
   })
   test('CommentsOnboardingContext', () => {
     expectTypeOf<typeof CommentsOnboardingContext>().not.toBeNever()
@@ -281,6 +292,9 @@ describe('sanity/_singletons', () => {
   test('DocumentFieldActionsContextValue', () => {
     expectTypeOf<DocumentFieldActionsContextValue>().toBeObject()
   })
+  test('DocumentHistoryContext', () => {
+    expectTypeOf<typeof DocumentHistoryContext>().not.toBeNever()
+  })
   test('DocumentIdContext', () => {
     expectTypeOf<typeof DocumentIdContext>().not.toBeNever()
   })
@@ -299,11 +313,20 @@ describe('sanity/_singletons', () => {
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
   })
+  test('DocumentTableSelectionContext', () => {
+    expectTypeOf<typeof DocumentTableSelectionContext>().not.toBeNever()
+  })
   test('EditDialogOuterBoundaryContext', () => {
     expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogScrollContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogScrollContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogScrollToTop', () => {
+    expectTypeOf<EnhancedObjectDialogScrollToTop>().not.toBeNever()
   })
   test('EventsContext', () => {
     expectTypeOf<typeof EventsContext>().not.toBeNever()
@@ -329,6 +352,9 @@ describe('sanity/_singletons', () => {
   test('FormFieldPresenceContext', () => {
     expectTypeOf<typeof FormFieldPresenceContext>().not.toBeNever()
   })
+  test('FormRowGutterSuppressedContext', () => {
+    expectTypeOf<typeof FormRowGutterSuppressedContext>().not.toBeNever()
+  })
   test('FormValueContext', () => {
     expectTypeOf<typeof FormValueContext>().not.toBeNever()
   })
@@ -343,6 +369,9 @@ describe('sanity/_singletons', () => {
   })
   test('GetFormValueContextValue', () => {
     expectTypeOf<GetFormValueContextValue>().not.toBeNever()
+  })
+  test('HasUsedScheduledPublishingPromiseContext', () => {
+    expectTypeOf<typeof HasUsedScheduledPublishingPromiseContext>().not.toBeNever()
   })
   test('HoveredFieldContext', () => {
     expectTypeOf<typeof HoveredFieldContext>().not.toBeNever()
@@ -376,6 +405,9 @@ describe('sanity/_singletons', () => {
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()
+  })
+  test('MountedToolsContext', () => {
+    expectTypeOf<typeof MountedToolsContext>().not.toBeNever()
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()
@@ -443,6 +475,9 @@ describe('sanity/_singletons', () => {
   test('PresentationNavigateContext', () => {
     expectTypeOf<typeof PresentationNavigateContext>().not.toBeNever()
   })
+  test('PresentationPaneLinksContext', () => {
+    expectTypeOf<typeof PresentationPaneLinksContext>().not.toBeNever()
+  })
   test('PresentationPanelsContext', () => {
     expectTypeOf<typeof PresentationPanelsContext>().not.toBeNever()
   })
@@ -491,8 +526,8 @@ describe('sanity/_singletons', () => {
   test('ScheduledPublishingEnabledContext', () => {
     expectTypeOf<typeof ScheduledPublishingEnabledContext>().not.toBeNever()
   })
-  test('ScheduledPublishingEnabledContextValue', () => {
-    expectTypeOf<ScheduledPublishingEnabledContextValue>().not.toBeNever()
+  test('ScheduledPublishingModePromiseContext', () => {
+    expectTypeOf<typeof ScheduledPublishingModePromiseContext>().not.toBeNever()
   })
   test('SchedulePublishUpsellContext', () => {
     expectTypeOf<typeof SchedulePublishUpsellContext>().not.toBeNever()
@@ -557,8 +592,8 @@ describe('sanity/_singletons', () => {
   test('TasksContext', () => {
     expectTypeOf<typeof TasksContext>().not.toBeNever()
   })
-  test('TasksEnabledContext', () => {
-    expectTypeOf<typeof TasksEnabledContext>().not.toBeNever()
+  test('TasksModePromiseContext', () => {
+    expectTypeOf<typeof TasksModePromiseContext>().not.toBeNever()
   })
   test('TasksNavigationContext', () => {
     expectTypeOf<typeof TasksNavigationContext>().not.toBeNever()
@@ -572,6 +607,9 @@ describe('sanity/_singletons', () => {
   test('UnclaimedProjectContextValue', () => {
     expectTypeOf<UnclaimedProjectContextValue>().toBeObject()
   })
+  test('UpsellDescriptionSerializerContext', () => {
+    expectTypeOf<typeof UpsellDescriptionSerializerContext>().not.toBeNever()
+  })
   test('UserApplicationCacheContext', () => {
     expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()
   })
@@ -580,6 +618,12 @@ describe('sanity/_singletons', () => {
   })
   test('ValidationContext', () => {
     expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  })
+  test('VariantsModePromiseContext', () => {
+    expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()
+  })
+  test('VariantsUpsellContext', () => {
+    expectTypeOf<typeof VariantsUpsellContext>().not.toBeNever()
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()

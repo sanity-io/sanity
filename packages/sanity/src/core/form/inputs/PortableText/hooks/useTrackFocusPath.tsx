@@ -13,6 +13,28 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
+/**
+ * Whether `element` can be brought fully into view: its height against the shortest of the
+ * viewport and every ancestor that clips its content vertically — the same frames
+ * `scrollIntoView` scrolls, so all of them have to be able to show it.
+ */
+function fitsInScrollport(element: HTMLElement): boolean {
+  const {defaultView, documentElement} = element.ownerDocument
+  let scrollportHeight = defaultView?.visualViewport?.height ?? documentElement.clientHeight
+
+  for (let node = element.parentElement; node; node = node.parentElement) {
+    // An ancestor that isn't overflowed shows all of its content whatever its overflow is, so
+    // it constrains nothing.
+    if (node.clientHeight >= node.scrollHeight) continue
+    const overflowY = defaultView?.getComputedStyle(node).overflowY
+    if (overflowY && overflowY !== 'visible' && overflowY !== 'clip') {
+      scrollportHeight = Math.min(scrollportHeight, node.clientHeight)
+    }
+  }
+
+  return element.getBoundingClientRect().height <= scrollportHeight
+}
+
 interface Props {
   focusPath: Path
   ptInputPath: Path
@@ -127,16 +149,27 @@ export function useTrackFocusPath(props: Props): void {
 
     if (relatedEditorItem && elementRef) {
       if (boundaryElement) {
-        // Scroll the boundary element into view (the scrollable element itself)
-        scrollIntoView(boundaryElement, {
-          scrollMode: 'if-needed',
-          block: 'start',
-          inline: 'start',
-        })
-        // Scroll the member into view (the member within the scroll-boundary)
+        // The boundary element is the editor's own scroll container. Aligning its top is what
+        // brings the editor into view when focus arrives from outside it (a validation marker,
+        // the Presentation tool), leaving the member scroll below to move the editor's own
+        // scroll only. An editor styled to grow with its content (`height: auto`,
+        // `overflow: visible`) is taller than the scroll container around it, so aligning its
+        // top scrolls the member being revealed out of view instead — and the bounded member
+        // scroll cannot correct that, as the editor no longer scrolls internally (SAPP-4475).
+        // Reveal the member across every scrollable ancestor in that case.
+        const revealEditor = fitsInScrollport(boundaryElement)
+
+        if (revealEditor) {
+          scrollIntoView(boundaryElement, {
+            scrollMode: 'if-needed',
+            block: 'start',
+            inline: 'start',
+          })
+        }
+
         scrollIntoView(elementRef, {
           scrollMode: 'if-needed',
-          boundary: boundaryElement,
+          boundary: revealEditor ? boundaryElement : null,
           block: 'nearest',
           inline: 'start',
         })

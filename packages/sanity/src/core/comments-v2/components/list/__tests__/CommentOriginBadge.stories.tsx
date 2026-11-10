@@ -6,8 +6,8 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {CommentOriginBadge} from '../CommentOriginBadge'
 
 /**
- * Draft vs published origin pills on comments-v2 list items. Chromatic
- * sentinel for `--card-icon-color` on the ring / dot (ui5 `Icon` greys them).
+ * Draft vs published origin pills on comments-v2 list items. Chromatic sentinel for caution /
+ * positive badge dot colors on the ring and disc (`--icon-color` on the svg).
  */
 const meta = {
   title: 'Comments (v2)/Origin Badge',

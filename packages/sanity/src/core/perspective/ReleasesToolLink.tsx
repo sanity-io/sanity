@@ -9,7 +9,7 @@ import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../releases/components/ReleaseAvatar'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
-import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
+import {SCHEDULES_TOOL_NAME} from '../schedules/constants'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
 import {oversizedButtonStyle} from './styles'
 import {usePerspective} from './usePerspective'
@@ -26,8 +26,8 @@ const OversizedButton = styled(ToolLink)`
 `
 
 /**
- * represents the calendar icon for the releases tool.
- * It will be hidden if users have turned off releases.
+ * The releases-tool control in the classic navbar pill.
+ * Hidden when the workspace has no releases tool.
  */
 export function ReleasesToolLink(): React.JSX.Element {
   const {t} = useTranslation()
@@ -49,7 +49,7 @@ export function ReleasesToolLink(): React.JSX.Element {
         name={SCHEDULES_TOOL_NAME}
         data-as="a"
         fontSize={2}
-        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} />}
+        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} fontSize={2} />}
         mode="bleed"
         padding={2}
         radius="full"

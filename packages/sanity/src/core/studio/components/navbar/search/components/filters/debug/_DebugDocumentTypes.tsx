@@ -1,5 +1,6 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
+import {VStack} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -19,7 +20,7 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
 
   return (
     <Card borderTop padding={3} tone="transparent">
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Code size={0} weight="medium">
           Document types
         </Code>
@@ -28,7 +29,7 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
             ? fieldDefinition.documentTypes?.join(', ')
             : '(all)'}
         </Code>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

@@ -1,5 +1,6 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
-import {useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -23,14 +24,13 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {VariantBannerReplacedContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -52,9 +52,10 @@ import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
+import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
-import {useDocumentPaneExtension} from './DocumentPaneExtension'
+import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
@@ -66,24 +67,6 @@ interface DocumentPanelProps {
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
-
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -110,10 +93,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   } = useDocumentPane()
 
   const {params} = usePaneRouter()
-  // PROPOSED: a host may add banners and a row of version pills to the pane.
-  const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
-  // PROPOSED: the host draws its own missing-variant banner, so the stock one is not drawn (one banner, not two).
-  const replacesVariantBanner = useContext(VariantBannerReplacedContext)
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
@@ -313,7 +292,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     // creates the document at the server-advertised id — matching the base draft/published
     // experience where editing the published fallback creates the draft.
     if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
-      return replacesVariantBanner ? null : <DocumentNotInVariantBanner />
+      return <DocumentNotInVariantBanner />
     }
 
     if (targetDocumentState.status === 'variant-definition-document-not-found') {
@@ -393,6 +372,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <CanvasLinkedBanner />
         {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
+        <SeeDraftBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
           isPinnedDraftOrPublished={isPinnedDraftOrPublish}
@@ -400,7 +380,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       </>
     )
   }, [
-    replacesVariantBanner,
     params?.historyVersion,
     archivedScheduledDraftRelease,
     selectedPerspective,
@@ -426,6 +405,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
+
+  const inspectorPortalElements = {
+    ...parentPortal.elements,
+    [DOCUMENT_PANEL_PORTAL_ELEMENT]: showFormView ? portalElement : parentPortal.element,
+  }
+
   return (
     <PaneContent>
       <Flex height="100%">
@@ -436,14 +421,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         >
           <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
-              {paneExtension?.banners}
               {banners}
-              {/* PROPOSED: the compact header drops the title row; the form names the document. A row of view tabs stays. */}
-              {paneExtension?.compactHeader && views.length <= 1 ? null : (
-                <DocumentPanelSubHeader />
-              )}
+              <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flexBasis="0%" flexGrow={2}>
+            <Box className={documentBox} flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane
                   (between the sticky header and footer): popovers that escape dialogs use it as
                   their boundary, see PortalBoundaryProvider. */}
@@ -454,8 +435,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                       scrollElement={documentScrollElement}
                       containerElement={formContainerElement}
                     >
-                      <Scroller
-                        $disabled={layoutCollapsed || false}
+                      <ScrollContainer
+                        className={clsx(scroller, !layoutCollapsed && scrollerEnabled)}
                         data-testid="document-panel-scroller"
                         ref={setDocumentScrollElement}
                       >
@@ -465,7 +446,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                           ref={formContainerElement}
                         />
                         {activeViewNode}
-                      </Scroller>
+                      </ScrollContainer>
 
                       {inspectDialog}
 
@@ -474,18 +455,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   </BoundaryElementProvider>
                 </PortalProvider>
               </PortalBoundaryProvider>
-            </DocumentBox>
+            </Box>
 
             {footer}
           </Flex>
         </div>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
+            <PortalProvider
+              element={parentPortal.element}
+              __unstable_elements={inspectorPortalElements}
+            >
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </PortalProvider>
           </BoundaryElementProvider>
         )}
       </Flex>

@@ -2,7 +2,6 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Reference, type SanityDocument} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {type ComponentType, memo, useCallback, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -18,6 +17,7 @@ import {
   useTargetScopeId,
   useTranslation,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -179,7 +179,7 @@ const ReferenceChangedBannerComponent: ComponentType = () => {
       }
       data-testid="reference-changed-banner"
       content={
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true} tone="caution">
           {parentReferenceInfo.result?.refValue
             ? t('banners.reference-changed-banner.reason-changed.text')
             : t('banners.reference-changed-banner.reason-removed.text')}

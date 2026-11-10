@@ -28,6 +28,22 @@ export interface UserStore {
 }
 
 /**
+ * The signed-in user as the `User` record the user store answers `me`, and the user's own id,
+ * with. Components that already hold the current user can render it directly instead of asking
+ * the store and waiting for the same record.
+ *
+ * @internal
+ */
+export function getUserFromCurrentUser(currentUser: CurrentUser): User {
+  return {
+    id: currentUser.id,
+    displayName: currentUser.name,
+    imageUrl: currentUser.profileImage,
+    sanityUserId: currentUser.sanityUserId ?? undefined,
+  }
+}
+
+/**
  * Given a `client` and a `currentUser` creates a datastore that handles
  * fetching, batch fetching, and caching users.
  *
@@ -65,12 +81,7 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
     },
   )
 
-  const userFromCurrentUser: User | null = currentUser && {
-    id: currentUser.id,
-    displayName: currentUser.name,
-    imageUrl: currentUser.profileImage,
-    sanityUserId: currentUser.sanityUserId ?? undefined,
-  }
+  const userFromCurrentUser = currentUser && getUserFromCurrentUser(currentUser)
 
   userLoader.prime('me', userFromCurrentUser)
 

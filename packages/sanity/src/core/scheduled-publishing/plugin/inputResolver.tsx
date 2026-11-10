@@ -1,9 +1,7 @@
-import {type ComponentType} from 'react'
-
 import {type InputProps} from '../../form/types/inputProps'
 import {ScheduledDocumentInput} from '../components/documentWrapper/ScheduledDocumentInput'
 
-export const DocumentBannerInput: ComponentType<InputProps> = (props) => {
+export default function DocumentBannerInput(props: InputProps) {
   const {schemaType} = props
   const rootType = getRootType(schemaType)
   if (rootType.name === 'document') {

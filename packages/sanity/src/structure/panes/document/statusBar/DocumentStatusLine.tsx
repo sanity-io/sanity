@@ -2,7 +2,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Skeleton,
-  Text,
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
@@ -20,7 +19,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
@@ -81,11 +80,12 @@ const DocumentStatusButton = ({
     >
       <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
         {author && (
-          <div style={{margin: -5}}>
-            <UserAvatar user={author} size={0} />
+          // Flex, so the tooltip's inline-block wrapper does not add line height below the avatar
+          <div style={{display: 'flex', margin: -5}}>
+            <UserAvatar user={author} size={0} withTooltip />
           </div>
         )}
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t(translationKey)} {relativeTime}
         </Text>
       </Flex>

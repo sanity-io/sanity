@@ -3,9 +3,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {useCallback, useContext, type RefAttributes} from 'react'
-import {DocumentInspectorTabsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
+import {useCallback, type RefAttributes} from 'react'
 import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -14,12 +12,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
-
-const Root = styled(Card)({
-  position: 'relative',
-  zIndex: '1',
-  lineHeight: '0',
-})
+import {root} from './CommentsInspectorHeader.css'
 
 interface CommentsInspectorHeaderProps {
   onClose: () => void
@@ -33,21 +26,17 @@ export function CommentsInspectorHeader(
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {ref, onClose, onViewChange, view, mode} = props
-  // PROPOSED: a host's tab row names the panel and closes it, so the header keeps only the status filter.
-  const tabsActive = useContext(DocumentInspectorTabsContext)
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
 
   return (
-    <Root ref={ref}>
+    <Card className={root} ref={ref}>
       <Flex padding={2}>
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2} padding={3}>
-          {tabsActive ? null : (
-            <Text as="h1" size={1} weight="medium" trim={true}>
-              {t('feature-name')}
-            </Text>
-          )}
+          <Text as="h1" size={1} weight="medium" trim={true}>
+            {t('feature-name')}
+          </Text>
         </Flex>
 
         <Flex flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} gap={2}>
@@ -87,17 +76,15 @@ export function CommentsInspectorHeader(
             popover={{placement: 'bottom-end'}}
           />
 
-          {tabsActive ? null : (
-            <Button
-              aria-label={t('close-pane-button-text-aria-label')}
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={onClose}
-              tooltipProps={{content: t('close-pane-button-text')}}
-            />
-          )}
+          <Button
+            aria-label={t('close-pane-button-text-aria-label')}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={onClose}
+            tooltipProps={{content: t('close-pane-button-text')}}
+          />
         </Flex>
       </Flex>
-    </Root>
+    </Card>
   )
 }

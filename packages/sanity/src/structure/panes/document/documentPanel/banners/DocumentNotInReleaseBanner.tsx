@@ -1,12 +1,10 @@
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isAgentBundleName,
   LATEST,
-  RELEASES_INTENT,
   ReleaseTitle,
   type SystemBundle,
   type TargetPerspective,
@@ -14,11 +12,9 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
-  ReleaseAvatarIcon,
-  useCurrentLocale,
   VersionInlineBadge,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
+import {Text, type TextProps} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -31,61 +27,23 @@ type VersionCreateState = {
   lastUpdate: Date
 }
 
-/** A chip and the word before it ("release", "on"), on one line: a line never breaks between them (Chrome breaks before an inline chip even after a non-breaking space). */
-function WithLead({lead, children}: {lead?: string; children: ReactNode}) {
-  if (!lead) return <>{children}</>
-  return (
-    <span style={{whiteSpace: 'nowrap'}}>
-      {lead}
-      {'\u00a0'}
-      {children}
-    </span>
-  )
-}
-
 function VersionBadge({
   children,
   currentRelease,
   fallbackTitle,
-  releaseLead,
 }: {
-  releaseLead?: string
   children?: React.ReactNode
   currentRelease?: Exclude<TargetPerspective, SystemBundle>
   fallbackTitle?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
-  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do. It is the release's name only:
-  // a date is its own chip in the sentence (it is set elsewhere).
-  const icon = <ReleaseAvatarIcon release={currentRelease ?? LATEST} />
   if (typeof currentRelease === 'string' || !currentRelease) {
-    return (
-      <WithLead lead={releaseLead}>
-        <VersionInlineBadge $tone={tone} icon={icon}>
-          {children}
-        </VersionInlineBadge>
-      </WithLead>
-    )
+    return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
   }
   return (
     <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
-      {() => (
-        <WithLead lead={releaseLead}>
-          <VersionInlineBadge $tone={tone} icon={icon}>
-            {children}
-          </VersionInlineBadge>
-        </WithLead>
-      )}
+      {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
     </ReleaseTitle>
-  )
-}
-
-/** A date in the banner's sentence: a neutral display chip, set elsewhere (the release's schedule). */
-function DateBadge({children, dateLead}: {children?: ReactNode; dateLead?: string}) {
-  return (
-    <WithLead lead={dateLead}>
-      <VersionInlineBadge $tone="default">{children}</VersionInlineBadge>
-    </WithLead>
   )
 }
 
@@ -103,7 +61,6 @@ export function DocumentNotInReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
-  const {navigateIntent} = useRouter()
 
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
@@ -120,8 +77,7 @@ export function DocumentNotInReleaseBanner({
         : getReleaseIdFromReleaseDocumentId(currentRelease._id)
 
       try {
-        // PROPOSED: in place: the studio already shows this release, so there is nowhere to go.
-        await createVersion(bundleId, documentId, {navigate: false})
+        await createVersion(bundleId, documentId)
         setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
@@ -153,77 +109,35 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
-  const releaseKind =
-    typeof currentRelease === 'object' ? currentRelease?.metadata.releaseType : undefined
-  // The locked release's publish date and time, in the Studio's locale, for its own chip in the sentence.
-  const locale = useCurrentLocale().id
-  const publishAtIso =
-    typeof currentRelease === 'object'
-      ? (currentRelease?.publishAt ?? currentRelease?.metadata.intendedPublishAt)
-      : undefined
-  const publishAt = publishAtIso
-    ? new Intl.DateTimeFormat(locale, {
-        day: 'numeric',
-        month: 'short',
-        hour: 'numeric',
-        minute: '2-digit',
-      }).format(new Date(publishAtIso))
-    : ''
-
   return (
     <Banner
-      // PROPOSED: release banners are neutral; the release chip and the button keep the release tone (Faheem, 23 Oct).
-      tone="neutral"
+      tone={tone}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
           <Translate
-            // PROPOSED: a scheduled release says why nothing can be added, and where to go (Unschedule is in the Releases tool).
-            // PROPOSED: the release's kind is a word in the sentence ("the ASAP release", "the undecided release"); the chip is its identity.
-            i18nKey={
-              isScheduledRelease
-                ? 'banners.release.scheduled-locked'
-                : releaseKind === 'asap'
-                  ? 'banners.release.not-in-release-asap'
-                  : releaseKind === 'undecided'
-                    ? 'banners.release.not-in-release-undecided'
-                    : 'banners.release.not-in-release'
-            }
+            i18nKey="banners.release.not-in-release"
             t={t}
             values={{
               title: releaseTitle,
-              date: publishAt,
             }}
-            components={{VersionBadge, DateBadge}}
+            components={{VersionBadge}}
             componentProps={{
               currentRelease,
               fallbackTitle: tCore('release.placeholder-untitled-release'),
-              releaseLead: t('banners.release.lead.release'),
-              dateLead: t('banners.release.lead.on'),
             }}
           />
         </Text>
       }
-      // Adding to a scheduled release is not allowed. PROPOSED: its banner opens the release instead, where it can be unscheduled.
+      // Adding to a scheduled release is not allowed
       action={
         isScheduledRelease
-          ? isAnonymousBundle
-            ? undefined
-            : {
-                text: t('banners.release.action.open-release'),
-                mode: 'ghost',
-                onClick: () =>
-                  navigateIntent(RELEASES_INTENT, {
-                    id: getReleaseIdFromReleaseDocumentId(currentRelease._id),
-                  }),
-              }
+          ? undefined
           : {
               text: isAgentBundleName(currentRelease)
                 ? t('banners.release.action.add-to-bundle')
                 : t('banners.release.action.add-to-release'),
               tone: tone,
               disabled: Boolean(versionCreateState),
-              // PROPOSED: the button says it is working until the version arrives and the banner goes.
-              ...(versionCreateState ? {text: t('banners.release.action.adding')} : {}),
               onClick: handleAddToRelease,
               mode: 'default',
             }
@@ -233,7 +147,7 @@ export function DocumentNotInReleaseBanner({
 }
 
 function useCurrentTime(updateIntervalMs: number): Date {
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentTime(new Date())

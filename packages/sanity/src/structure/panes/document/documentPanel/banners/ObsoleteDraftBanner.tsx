@@ -1,9 +1,9 @@
 import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useState} from 'react'
 import {
+  getDefaultVariant,
   getTargetSiblings,
   type ObjectSchemaType,
   Translate,
@@ -11,7 +11,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -45,7 +45,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
-  const {selectedVariant} = usePerspective()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {targetDocumentState} = useDocumentPane()
   const siblings = getTargetSiblings(targetDocumentState)
   const publishedId = siblings?.published?._id
@@ -65,21 +66,24 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     : undefined
 
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
-  const publishDisabledReason = publish.disabled
-    ? t(PUBLISH_DISABLED_REASON[publish.disabled])
+  // Publishing the leftover draft is how this banner resolves a live-edit mismatch, so the
+  // operation's live-edit reason does not block it here.
+  const publishDisabled = publish.disabled === 'LIVE_EDIT_ENABLED' ? false : publish.disabled
+  const publishDisabledReason = publishDisabled
+    ? t(PUBLISH_DISABLED_REASON[publishDisabled])
     : undefined
   const discardDisabledReason = discardChanges.disabled
     ? t(DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled])
     : undefined
 
   const handlePublish = useCallback(() => {
-    if (publish.disabled) {
+    if (publishDisabled) {
       return
     }
     publish.execute()
     setActionRequested('publish')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
-  }, [publish, telemetry])
+  }, [publish, publishDisabled, telemetry])
 
   const handleDiscard = useCallback(() => {
     if (discardChanges.disabled) {
@@ -110,7 +114,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     <Banner
       content={
         <Flex alignItems="center" justifyContent="space-between" gap={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
           </Text>
           <Button
@@ -126,7 +130,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
-            disabled={Boolean(actionRequested) || Boolean(publish.disabled)}
+            disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
             tooltipProps={
               publishDisabledReason
                 ? {content: publishDisabledReason}

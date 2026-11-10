@@ -324,8 +324,7 @@ describe('editState — release/scope classification', () => {
       _updatedAt: '2024-01-01T00:00:00Z',
       _system: {
         bundleId: 'drafts',
-        // @ts-expect-error -- pre-existing, fix later
-        variant: {_ref: '_.variants.alpha'},
+        variants: [{_ref: '_.variants.alpha', _key: 'k-123'}],
         group: {_ref: 'any', _weak: true},
         scopeId: 'varscope',
       },
@@ -373,8 +372,7 @@ describe('editState — release/scope classification', () => {
       _system: {
         bundleId: 'rSummer',
         release: {_ref: '_.releases.rSummer', _weak: true},
-        // @ts-expect-error -- pre-existing, fix later
-        variant: {_ref: '_.variants.alpha'},
+        variants: [{_ref: '_.variants.alpha', _key: 'k-123'}],
         group: {_ref: 'any', _weak: true},
         scopeId: 'varscope',
       },

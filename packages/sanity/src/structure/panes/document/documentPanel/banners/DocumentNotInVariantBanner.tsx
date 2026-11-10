@@ -1,7 +1,7 @@
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
+  getDefaultVariant,
   getVariantTitle,
   isDraftPerspective,
   isPublishedPerspective,
@@ -14,6 +14,7 @@ import {
   useTranslation,
   useVariantDocumentOperations,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -30,7 +31,8 @@ export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {value, documentId, schemaType} = useDocumentPane()
-  const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {versions} = useDocumentVersions({documentId})
 
   const {createVariantDocument} = useVariantDocumentOperations()
@@ -113,6 +115,7 @@ export function DocumentNotInVariantBanner() {
     value,
     selectedVariant,
     createPerspective,
+    setStatus,
     t,
     toast,
     versions,
@@ -134,7 +137,7 @@ export function DocumentNotInVariantBanner() {
     <Banner
       tone="suggest"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone="suggest">
           <Translate
             i18nKey="banners.variant.not-in-variant"
             t={t}

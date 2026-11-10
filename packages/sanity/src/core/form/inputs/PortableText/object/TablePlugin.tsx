@@ -12,12 +12,12 @@ import {
 } from '@portabletext/plugin-table/ui'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Switch, Text, usePortal} from '@sanity/ui'
+import {Switch, usePortal} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
 import {createGlobalStyle, useTheme} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -101,8 +101,9 @@ export function PortableTextTablePlugin(props: {containers?: TableContainers}): 
   )
 }
 
-// The trash button and table menu are portaled into the
-// `document-panel-portal`, the same place the input's own popovers render.
+// From the root portal the trash chips lose to any host layer wrapping
+// the editor (a dialog) and paint beneath the table's own chrome, so they
+// portal into the editor's stacking context instead.
 function StudioTable(props: ContainerRenderProps): React.JSX.Element {
   const portal = usePortal()
   const {t} = useTranslation()
@@ -111,7 +112,7 @@ function StudioTable(props: ContainerRenderProps): React.JSX.Element {
     <Table
       {...props}
       icons={tableIcons}
-      portalElement={portal.element}
+      portalElement={portal.elements?.editor ?? portal.element}
       tokens={tokens}
       labels={{
         'add-column': t('inputs.portable-text.table.add-column'),
@@ -203,7 +204,7 @@ function StudioTableMenu(props: TableMenuProps): React.JSX.Element {
           <label style={{cursor: 'pointer'}}>
             <Flex alignItems="center" gap={3} padding={3}>
               <Switch checked={props.hasHeader} onChange={props.onToggleHeader} />
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('inputs.portable-text.table.header-row')}
               </Text>
             </Flex>

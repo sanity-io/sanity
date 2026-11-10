@@ -1,10 +1,11 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDescriptionText} from '../../../util/getDescriptionText'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 // Cap the description height and let it scroll internally past this point, so the dialog stays a
@@ -118,7 +119,7 @@ export function TitleDescriptionForm({
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
           title: metadata.title,
-          description: metadata.description,
+          description: getDescriptionText(metadata.description),
         }),
         [],
       ),
@@ -174,7 +175,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <TitleTextArea
         ref={titleRef}
         onChange={handleTitleChange}
@@ -205,6 +206,6 @@ export function TitleDescriptionForm({
           readOnly={!isReleaseOpen}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

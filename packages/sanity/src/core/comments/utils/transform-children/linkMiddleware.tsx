@@ -1,5 +1,6 @@
 import {type MouseEvent, type ReactNode} from 'react'
 
+import {DashboardLink} from '../../../components/DashboardLink'
 import {type Middleware} from './types'
 
 const URL_REGEX = /\b(https?:\/\/[^\s,()]+(?:\.[^\s,()]+)*|www\.[^\s,()]+\.[^\s,()]{2,})\b/g
@@ -12,9 +13,15 @@ function createLinkElement(url: string): ReactNode {
   const href = url.startsWith('http') ? url : `https://${url}`
 
   return (
-    <a key={url} href={href} target="_blank" rel="noopener noreferrer" onClick={onClick}>
+    <DashboardLink
+      key={url}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick}
+    >
       {url}
-    </a>
+    </DashboardLink>
   )
 }
 
