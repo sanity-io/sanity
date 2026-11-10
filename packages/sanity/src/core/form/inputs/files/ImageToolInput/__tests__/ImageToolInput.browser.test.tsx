@@ -154,6 +154,9 @@ function WideImageToolInputHarness({options}: {options: ImageValueOptions}) {
   )
 }
 
+const UNSAVED_HINT = 'Not saved yet. Edit the crop to save it.'
+const UNSAVED_READ_ONLY_HINT = 'Not saved.'
+
 function getCropSize() {
   return page.getByTestId('image-tool-crop-size')
 }
@@ -201,7 +204,7 @@ describe('image tool input', () => {
     await expect
       .element(getCropSize())
       .toHaveTextContent(
-        '1000 × 1000 pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px',
+        `1000 × 1000 pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px${UNSAVED_HINT}`,
       )
     ;(cropRect.element() as SVGRectElement).focus()
     const modifier = getModifierKey()
@@ -312,7 +315,7 @@ describe('image tool input', () => {
       minDimensions: {width: 800, height: 450},
     })
 
-    function PortraitHarness(props: {crop?: ImageValue['crop']}) {
+    function PortraitHarness(props: {crop?: ImageValue['crop']; readOnly?: boolean}) {
       const document: SanityDocument = {
         ...DOCUMENT,
         image: {
@@ -323,7 +326,7 @@ describe('image tool input', () => {
       }
       return (
         <TestWrapper schemaTypes={WIDESCREEN_SCHEMA}>
-          <TestForm document={document} focusPath={HOTSPOT_FOCUS_PATH} />
+          <TestForm document={document} focusPath={HOTSPOT_FOCUS_PATH} readOnly={props.readOnly} />
         </TestWrapper>
       )
     }
@@ -367,6 +370,28 @@ describe('image tool input', () => {
 
       await waitForFixtureImage()
       expect(await readDrawnSourceRatio()).toBeCloseTo(16 / 9, 2)
+    })
+
+    test('says the crop it proposes is not saved until the editor edits it', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(<PortraitHarness />)
+
+      await waitForFixtureImage()
+      await expect.element(getCropSize()).toMatchTextContent(UNSAVED_HINT)
+
+      const cropRect = await findCropRect()
+      cropRect.focus()
+      await userEvent.keyboard('{ArrowDown}')
+      await waitForDocumentState((documentState) => Boolean(documentState?.image?.crop))
+      await expect.element(getCropSize()).not.toMatchTextContent(UNSAVED_HINT)
+    })
+
+    test('says the crop it proposes is not saved, without offering to save it, when read-only', async () => {
+      void render(<PortraitHarness readOnly />)
+
+      await waitForFixtureImage()
+      await expect.element(getCropSize()).toMatchTextContent(UNSAVED_READ_ONLY_HINT)
+      await expect.element(getCropSize()).not.toMatchTextContent(UNSAVED_HINT)
     })
 
     test('commits a crop that passes the ratio when the editor moves the box', async () => {

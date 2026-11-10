@@ -105,8 +105,13 @@ function LoadStatus(props: {children: ReactNode}) {
   )
 }
 
-function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions | undefined}) {
-  const {dimensions, options} = props
+function CropSize(props: {
+  dimensions: ImageCropDimensions
+  options: ImageOptions | undefined
+  unsaved: boolean
+  readOnly: boolean | undefined
+}) {
+  const {dimensions, options, unsaved, readOnly} = props
   const {t} = useTranslation()
   const {t: tValidation} = useTranslation(validationLocaleNamespace)
   const {tone, threshold} = getCropSizeStatus(dimensions, options)
@@ -139,6 +144,13 @@ function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions
       {tone === 'caution' ? (
         <Text size={1} tone={tone}>
           {tValidation('object.image-below-recommended-dimensions', {...threshold})}
+        </Text>
+      ) : null}
+      {unsaved ? (
+        <Text size={1} muted>
+          {readOnly
+            ? t('inputs.imagetool.crop-size.unsaved-read-only')
+            : t('inputs.imagetool.crop-size.unsaved')}
         </Text>
       ) : null}
     </Flex>
@@ -196,6 +208,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const hasFocus = focusPath[0] === imageToolPath[0]
 
   const hotspotPreviews = getHotspotPreviews(schemaType.options)
+
+  const isCropProposed = getInitialToolCrop(value, cropConstraints.aspectRatio) !== value?.crop
 
   const cropSize = hasCropSizeReadout(schemaType.options)
     ? getCroppedImageDimensions({asset: value?.asset, crop: localValue.crop})
@@ -335,7 +349,14 @@ export function ImageToolInput(props: ImageToolInputProps) {
           </ChangeIndicator>
         </Card>
 
-        {cropSize ? <CropSize dimensions={cropSize} options={schemaType.options} /> : null}
+        {cropSize ? (
+          <CropSize
+            dimensions={cropSize}
+            options={schemaType.options}
+            unsaved={isCropProposed}
+            readOnly={readOnly}
+          />
+        ) : null}
 
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
