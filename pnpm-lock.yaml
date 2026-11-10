@@ -1173,6 +1173,110 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.6)
 
+  examples/studios/blog-studio:
+    dependencies:
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+
+  examples/studios/clean-studio:
+    dependencies:
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+
+  examples/studios/ecommerce-studio:
+    dependencies:
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-barcode:
+        specifier: ^1.6.1
+        version: 1.6.1(react@19.3.1)
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.20(react-dom@19.3.1)(react@19.3.1)'
+    devDependencies:
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+
+  examples/studios/intents-and-routing:
+    dependencies:
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../../packages/@sanity/vision
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+      react-dom:
+        specifier: ^19.3.1
+        version: 19.3.1(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.20(react-dom@19.3.1)(react@19.3.1)'
+
+  examples/studios/movies-studio:
+    dependencies:
+      '@sanity/google-maps-input':
+        specifier: ^6.1.17
+        version: 6.1.17(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      react-icons:
+        specifier: ^5.7.0
+        version: 5.7.0(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+    devDependencies:
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+
   packages/@repo/ailf:
     devDependencies:
       '@repo/tsconfig':
@@ -12936,6 +13040,9 @@ packages:
     resolution: {integrity: sha512-yzzNtgczwgoVHNigCyKTXcQJU4Y8t/ikU4UxXW0BvrLfHTGWZhsNcOT2s/a7vn81/4KqVnNmHjaUEPlvWnNwVw==}
     hasBin: true
 
+  jsbarcode@3.12.3:
+    resolution: {integrity: sha512-CuHU9hC6dPsHF5oVFMo8NW76uQVjH4L22CsP4hW+dNnGywJHC/B0ThA1CTDVLnxKLrrpYdicBLnd2xsgTfRnvg==}
+
   jsdom@28.1.0:
     resolution: {integrity: sha512-0+MoQNYyr2rBHqO1xilltfDjV9G7ymYGlAUazgcDLQaUf8JDHbuGwsxN6U9qWaElZ4w1B2r7yEGIL3GdeW3Rug==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
@@ -14631,6 +14738,11 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
+
+  react-barcode@1.6.1:
+    resolution: {integrity: sha512-pc4ftnO5syHa/UjCruEeRsomlhoxKSugIgTA8T4dH0fvc89UMHL+/1Sp25IAphqG44pJkE5hMXhv89iS09jQyw==}
+    peerDependencies:
+      react: 16 - 19
 
   react-clientside-effect@1.2.8:
     resolution: {integrity: sha512-ma2FePH0z3px2+WOu6h+YycZcEvFmmxIlAb62cF52bG86eMySciO/EQZeQMXd07kPCYB0a1dWDT5J+KE9mCDUw==}
@@ -27248,6 +27360,8 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
+  jsbarcode@3.12.3: {}
+
   jsdom@28.1.0(@noble/hashes@2.4.0)(supports-color@8.1.1):
     dependencies:
       '@acemir/cssom': 0.9.32
@@ -29280,6 +29394,12 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+
+  react-barcode@1.6.1(react@19.3.1):
+    dependencies:
+      jsbarcode: 3.12.3
+      prop-types: 15.8.1
+      react: 19.3.1
 
   react-clientside-effect@1.2.8(react@19.3.1):
     dependencies:

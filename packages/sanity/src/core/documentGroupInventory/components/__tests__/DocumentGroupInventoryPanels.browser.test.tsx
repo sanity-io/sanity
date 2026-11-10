@@ -1,9 +1,10 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
-import {Card, PortalProvider, Text} from '@sanity/ui'
+import {Card, PortalProvider} from '@sanity/ui'
 import {type ComponentType, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
+import {Text} from 'ui5'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -170,17 +171,23 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
   DocTitle: ({document}) => <>{document._id === PUBLISHED_ID ? 'Ursula K. Le Guin' : 'Untitled'}</>,
   ReferencePreviewLink: ({value}) => (
     <Card padding={2} radius={2} data-testid={`reference-${value._id}`}>
-      <Text size={1}>{value._id}</Text>
+      <Text size={1} as="div" trim={true}>
+        {value._id}
+      </Text>
     </Card>
   ),
   VersionsPreviewList: ({documentVersions}) => (
     <Card padding={3} radius={2} border data-testid="versions-preview-list">
-      <Text size={1}>{documentVersions.join(', ')}</Text>
+      <Text size={1} as="div" trim={true}>
+        {documentVersions.join(', ')}
+      </Text>
     </Card>
   ),
   CompareVersionsAction: () => (
     <Card padding={2} radius={2} border data-testid="compare-versions-action">
-      <Text size={1}>Compare versions</Text>
+      <Text size={1} as="div" trim={true}>
+        Compare versions
+      </Text>
     </Card>
   ),
 }

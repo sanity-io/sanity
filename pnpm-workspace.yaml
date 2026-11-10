@@ -3,6 +3,7 @@ packages:
   - perf/*
   - engine-confidence
   - examples/*
+  - examples/studios/*
   - scripts
   - e2e
   - packages/@repo/*

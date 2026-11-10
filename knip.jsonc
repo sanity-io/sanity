@@ -207,6 +207,9 @@
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
     },
+    "examples/studios/movies-studio": {
+      "ignoreFiles": ["resolveProductionUrl.ts"],
+    },
     "engine-confidence": {
       "entry": ["scripts/*.ts", "stryker/*.{mjs,mts,ts}"],
       "project": ["**/*.{ts,mts,mjs}"],
