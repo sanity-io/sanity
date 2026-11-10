@@ -182,6 +182,25 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
+  test('refetches when the listener welcomes again after a reconnect', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+    const values: unknown[] = []
+    const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+    listener$.next({type: 'reconnect'})
+    await vi.advanceTimersByTimeAsync(1000)
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+
+    // Welcome, reconnect, welcome again.
+    expect(fetch).toHaveBeenCalledTimes(3)
+    expect(values).toEqual([{n: 1}, {n: 2}, {ok: true}])
+
+    sub.unsubscribe()
+  })
+
   test('delays the refetch when a mutation is not query-visible', async () => {
     const values: unknown[] = []
     const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
