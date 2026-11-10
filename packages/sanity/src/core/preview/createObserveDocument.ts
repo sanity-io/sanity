@@ -10,6 +10,7 @@ import {
   OutOfSyncError,
   sequentializeListenerEvents,
 } from '../store/document/utils/sequentializeListenerEvents'
+import {retryTransientFetch} from '../util/fetchErrors'
 import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
 
@@ -53,7 +54,12 @@ export function createObserveDocument({
       function batchFetchDocuments(ids: [string][]) {
         return _client.observable
           .fetch(`*[_id in $ids]`, {ids: uniq(ids.flat())}, {tag: 'preview.observe-document'})
-          .pipe(map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))))
+          .pipe(
+            // A failed fetch would error every document in the batch, and they would stop
+            // following the listener.
+            retryTransientFetch(),
+            map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))),
+          )
       }
       return debounceCollect(batchFetchDocuments, 100)
     },

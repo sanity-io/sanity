@@ -5,6 +5,7 @@ import {filter, map} from 'rxjs/operators'
 import {LISTENER_RESET_DELAY} from '../../preview/constants'
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
+import {reconnectListener} from '../../util/reconnectListener'
 
 /**
  * The Studio's shared listener on every document in the dataset. `globalListener` and
@@ -103,6 +104,7 @@ export function createGlobalListenerStore({
       },
     )
     .pipe(
+      reconnectListener(),
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
         resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
