@@ -1,6 +1,7 @@
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useState} from 'react'
 import {of} from 'rxjs'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -11,6 +12,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {ResourceCacheProvider, useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type VariantStore} from '../../../store/createVariantsStore'
 import {type VariantStoreState} from '../../../store/reducer'
@@ -32,6 +34,13 @@ const VARIANTS_STORE: VariantStore = {
   initialState: LOADED_STATE,
   dispatch: noop,
 }
+
+// The variants plugin's provider is not mounted here; a settled mode lets the overview read it
+// with `use()` without suspending.
+const DEFAULT_MODE = Object.assign(Promise.resolve<VariantsMode>('default'), {
+  status: 'fulfilled' as const,
+  value: 'default' as const,
+})
 
 function SeededVariantsStore(props: {children: ReactNode}) {
   const {children} = props
@@ -60,7 +69,9 @@ function VariantsOverviewHarness() {
       <ResourceCacheProvider>
         <SeededVariantsStore>
           <RouterProvider router={router} state={{}} onNavigate={noop}>
-            <VariantsOverview />
+            <VariantsModePromiseContext value={DEFAULT_MODE}>
+              <VariantsOverview />
+            </VariantsModePromiseContext>
           </RouterProvider>
         </SeededVariantsStore>
       </ResourceCacheProvider>

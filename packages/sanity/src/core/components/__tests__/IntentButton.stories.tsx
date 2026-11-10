@@ -1,6 +1,7 @@
 import {EditIcon} from '@sanity/icons/Edit'
-import {type ButtonTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {IntentButton} from '../IntentButton'
@@ -44,7 +45,7 @@ export const AllVariants: Story = {
         {TONES.map((tone) => (
           <Stack gap={3} key={tone}>
             <IntentButton intent="edit" params={PARAMS} text="Edit" tone={tone} />
-            <Text align="center" muted size={0}>
+            <Text align="center" muted size={0} as="div" trim={true}>
               {tone}
             </Text>
           </Stack>
@@ -53,13 +54,13 @@ export const AllVariants: Story = {
       <Flex align="center" gap={4}>
         <Stack gap={3}>
           <IntentButton intent="edit" mode="ghost" params={PARAMS} text="Edit author" />
-          <Text align="center" muted size={0}>
+          <Text align="center" muted size={0} as="div" trim={true}>
             enabled: anchor with href
           </Text>
         </Stack>
         <Stack gap={3}>
           <IntentButton disabled intent="edit" mode="ghost" params={PARAMS} text="Edit author" />
-          <Text align="center" muted size={0}>
+          <Text align="center" muted size={0} as="div" trim={true}>
             disabled: aria-disabled link
           </Text>
         </Stack>
@@ -67,10 +68,10 @@ export const AllVariants: Story = {
       <Card padding={2} radius={2} shadow={1} style={{maxWidth: 420}}>
         <Flex align="center" gap={3} paddingLeft={2}>
           <Stack flex={1} gap={2}>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               Author
             </Text>
-            <Text size={1} textOverflow="ellipsis" weight="medium">
+            <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
               Leo Tolstoy
             </Text>
           </Stack>

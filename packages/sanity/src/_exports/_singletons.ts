@@ -198,6 +198,8 @@ export {
   type UnclaimedProjectContextValue,
 } from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
+export {VariantsModePromiseContext} from '../_singletons/context/VariantsModePromiseContext'
+export {VariantsUpsellContext} from '../_singletons/context/VariantsUpsellContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
 export {WorkspaceContext} from '../_singletons/context/WorkspaceContext'

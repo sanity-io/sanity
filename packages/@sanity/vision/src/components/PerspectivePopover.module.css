@@ -6,6 +6,7 @@
 .perspectivePopoverLink {
   cursor: pointer;
   margin-right: auto;
+  color: var(--card-link-color);
 }
 
 .dot {
