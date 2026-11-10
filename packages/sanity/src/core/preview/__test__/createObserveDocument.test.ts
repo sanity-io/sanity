@@ -5,7 +5,7 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {filter, firstValueFrom, of, skip, Subject, throwError} from 'rxjs'
+import {filter, firstValueFrom, map, of, skip, Subject, throwError} from 'rxjs'
 import {take} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
@@ -104,9 +104,12 @@ function observeThroughGlobalListener() {
     client,
     mutationChannel: createGlobalListener(client).pipe(
       filter(
-        (event): event is MutationEvent | WelcomeEvent =>
-          event.type === 'mutation' || event.type === 'welcome',
+        (event, index) =>
+          event.type === 'mutation' ||
+          event.type === 'welcome' ||
+          (index === 0 && event.type === 'reconnect'),
       ),
+      map((event) => (event.type === 'mutation' ? event : {type: 'connected' as const})),
     ),
   })
 
@@ -166,7 +169,7 @@ function observeThroughGlobalListener() {
 }
 
 describe(createObserveDocument.name, () => {
-  it('fetches the current version of the document when receiving welcome event', async () => {
+  it('fetches the current version of the document when receiving a connected event', async () => {
     const mockedClient = createClient({
       projectId: 'abc',
       dataset: 'production',
@@ -179,7 +182,7 @@ describe(createObserveDocument.name, () => {
     )
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -188,7 +191,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
 
     expect(await initial).toEqual({_id: 'foo', fetched: true})
   })
@@ -204,7 +207,7 @@ describe(createObserveDocument.name, () => {
     vi.spyOn(mockedClient.observable, 'fetch').mockImplementation(() => of([]) as any)
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -213,7 +216,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
 
     expect(await initial).toEqual(undefined)
   })
@@ -241,7 +244,7 @@ describe(createObserveDocument.name, () => {
     )
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -250,7 +253,7 @@ describe(createObserveDocument.name, () => {
 
     const final = firstValueFrom(observeDocument('1c32390c').pipe(skip(1), take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
     mutationChannel.next({
       type: 'mutation',
       documentId: '1c32390c',
