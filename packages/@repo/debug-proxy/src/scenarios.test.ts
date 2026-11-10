@@ -1,8 +1,9 @@
-import {firstValueFrom, from, toArray} from 'rxjs'
+import {defer, firstValueFrom, from, Subject, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type Message, type ProxyRequest, type ProxyResponse} from './proxy'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   expiredToken,
@@ -10,14 +11,15 @@ import {
   randomLatency,
   refusedRefreshToken,
   sendReset,
+  withholdWelcome,
 } from './scenarios'
 
 function mutation(id: string): Message {
   return {type: 'message', message: {event: 'mutation', id, data: '{}'}}
 }
 
-function welcome(): Message {
-  return {type: 'message', message: {event: 'welcome', data: '{}'}}
+function welcome(event: 'welcome' | 'welcomeback' | 'reset' = 'welcome'): Message {
+  return {type: 'message', message: {event, data: '{}'}}
 }
 
 describe('dropMutations', () => {
@@ -39,6 +41,84 @@ describe('duplicateMutations', () => {
     const input = [welcome(), mutation('a')]
     const out = await firstValueFrom(from(input).pipe(duplicateMutations(1), toArray()))
     expect(out).toEqual([welcome(), mutation('a'), mutation('a')])
+  })
+})
+
+function subscribeWithChannelError(afterMs: number) {
+  const upstream = new Subject<Message>()
+  const out: unknown[] = []
+  let completed = false
+  upstream.pipe(channelErrorAfterWelcome(afterMs)).subscribe({
+    next: (event) => out.push(event),
+    complete: () => {
+      completed = true
+    },
+  })
+  return {upstream, out, completed: () => completed}
+}
+
+describe('channelErrorAfterWelcome', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  const failureEvents = [
+    {
+      type: 'message',
+      message: {event: 'channelError', data: '{"error":{"description":"Internal error"}}'},
+    },
+    {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+  ]
+
+  // A resumed listener (`enableResume`) opens with welcomeback, or reset when it cannot resume
+  const welcomes = ['welcome', 'welcomeback', 'reset'] as const
+
+  test.each(welcomes)(
+    'passes events through until the delay after %s, then fails and closes',
+    async (event) => {
+      const {upstream, out, completed} = subscribeWithChannelError(1_000)
+      upstream.next(welcome(event))
+      upstream.next(mutation('a'))
+      await vi.advanceTimersByTimeAsync(1_000)
+      upstream.next(mutation('b'))
+
+      expect(out).toEqual([welcome(event), mutation('a'), ...failureEvents])
+      expect(completed()).toBe(true)
+    },
+  )
+
+  test.each(welcomes)('fails instead of sending %s with a delay of 0', async (event) => {
+    const {upstream, out, completed} = subscribeWithChannelError(0)
+    upstream.next(welcome(event))
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(out).toEqual(failureEvents)
+    expect(completed()).toBe(true)
+  })
+
+  test('subscribes once to a source that emits synchronously', async () => {
+    let subscriptions = 0
+    const upstream = defer(() => {
+      subscriptions++
+      return from([welcome(), mutation('a')])
+    })
+    const out = firstValueFrom(upstream.pipe(channelErrorAfterWelcome(1_000), toArray()))
+    await vi.advanceTimersByTimeAsync(1_000)
+
+    expect(await out).toEqual([welcome(), mutation('a'), ...failureEvents])
+    expect(subscriptions).toBe(1)
+  })
+})
+
+describe('withholdWelcome', () => {
+  test('withholds every message and keeps comments flowing', async () => {
+    const keepalive = {type: 'comment' as const, comment: ''}
+    const input = [welcome(), keepalive, mutation('a')]
+    const out = await firstValueFrom(from(input).pipe(withholdWelcome(), toArray()))
+    expect(out).toEqual([keepalive])
   })
 })
 
