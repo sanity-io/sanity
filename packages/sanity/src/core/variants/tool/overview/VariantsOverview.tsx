@@ -1,11 +1,12 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card} from '@sanity/ui'
+import {Card, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {use, useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Tab} from '../../../../ui-components/tab/Tab'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
@@ -23,6 +24,7 @@ import {
   getVariantId,
   variantMatchesConditionFilters,
 } from '../util'
+import {VariantVersionsView} from '../versions/VariantVersionsView'
 import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
@@ -47,6 +49,8 @@ export function VariantsOverview(): React.JSX.Element {
   const {data: variants, error, loading} = useAllVariants()
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
+  // Definitions (the default) or every version across documents (the Document lens).
+  const [view, setView] = useState<'definitions' | 'versions'>('definitions')
 
   const handleCreateVariant = useCallback(() => {
     if (mode === null) {
@@ -199,7 +203,28 @@ export function VariantsOverview(): React.JSX.Element {
             </Flex>
           </Card>
 
-          {error && (
+          <Card flex="none" paddingBottom={3}>
+            <TabList gap={1}>
+              <Tab
+                aria-controls="variants-overview-view"
+                data-testid="variants-view-definitions"
+                id="variants-view-definitions"
+                label={t('overview.view.definitions')}
+                onClick={() => setView('definitions')}
+                selected={view === 'definitions'}
+              />
+              <Tab
+                aria-controls="variants-overview-view"
+                data-testid="variants-view-versions"
+                id="variants-view-versions"
+                label={t('overview.view.versions')}
+                onClick={() => setView('versions')}
+                selected={view === 'versions'}
+              />
+            </TabList>
+          </Card>
+
+          {error && view === 'definitions' && (
             <Card flex="none" marginBottom={4} padding={3} tone="critical">
               <Text size={1} as="div" trim={true} tone="critical">
                 {t('overview.error')}
@@ -212,35 +237,39 @@ export function VariantsOverview(): React.JSX.Element {
       {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
           the command lane and per-row actions. (Multi-select is supported by the component but not
           wired here yet — bulk operations ship separately once transactional batching lands.) */}
-      <DocumentTable<TableVariant>
-        alwaysShowCommandLane
-        columnDefs={columnDefs}
-        // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
-        // bulk toolbar) never shifts the table.
-        commandLaneMinHeight={47}
-        emptyState={tableEmptyState}
-        filterTabs={
-          // VariantConditionFilters renders nothing when there are no condition facets; passing the
-          // element unconditionally would still read as "tabs present" to DocumentTable and strand a
-          // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
-          facets.length > 0 ? (
-            <VariantConditionFilters
-              facets={facets}
-              onChange={setConditionFilters}
-              value={conditionFilters}
-            />
-          ) : undefined
-        }
-        filterTabsScroll={false}
-        getRowKey={getRowKey}
-        id="variant-definitions-table"
-        loading={loading}
-        rowActions={renderRowActions}
-        rowId={VARIANT_TABLE_ROW_ID}
-        rows={rows}
-        searchPlaceholder={t('overview.search.placeholder')}
-        searchPredicate={searchPredicate}
-      />
+      {view === 'versions' ? (
+        <VariantVersionsView />
+      ) : (
+        <DocumentTable<TableVariant>
+          alwaysShowCommandLane
+          columnDefs={columnDefs}
+          // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
+          // bulk toolbar) never shifts the table.
+          commandLaneMinHeight={47}
+          emptyState={tableEmptyState}
+          filterTabs={
+            // VariantConditionFilters renders nothing when there are no condition facets; passing the
+            // element unconditionally would still read as "tabs present" to DocumentTable and strand a
+            // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
+            facets.length > 0 ? (
+              <VariantConditionFilters
+                facets={facets}
+                onChange={setConditionFilters}
+                value={conditionFilters}
+              />
+            ) : undefined
+          }
+          filterTabsScroll={false}
+          getRowKey={getRowKey}
+          id="variant-definitions-table"
+          loading={loading}
+          rowActions={renderRowActions}
+          rowId={VARIANT_TABLE_ROW_ID}
+          rows={rows}
+          searchPlaceholder={t('overview.search.placeholder')}
+          searchPredicate={searchPredicate}
+        />
+      )}
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog

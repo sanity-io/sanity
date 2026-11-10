@@ -69,6 +69,49 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /** Overview tab listing the variant definitions. */
+  'overview.view.definitions': 'Definitions',
+  /** Overview tab listing every stored version across documents. */
+  'overview.view.versions': 'Versions',
+  /** Version table column: the variant definition a version belongs to. */
+  'versions.table.definition': 'Definition',
+  /** Version table column: the version (published, draft or release). */
+  'versions.table.version': 'Version',
+  /** Label for versions that belong to no variant definition. */
+  'versions.definition.default': 'Default',
+  /** Version state: published. */
+  'versions.state.published': 'Published',
+  /** Version state: draft. */
+  'versions.state.draft': 'Draft',
+  /** Version state: in a release (shown when the release title is unknown). */
+  'versions.state.release': 'In a release',
+  /** Type filter option that shows every document type. */
+  'versions.filter.type.all': 'All types',
+  /** Definition filter option that shows every definition, including Default. */
+  'versions.filter.definition.all': 'All definitions',
+  /** Release filter option that shows every release. */
+  'versions.filter.release.all': 'All releases',
+  /** State filter option that shows every state. */
+  'versions.filter.state.all': 'All states',
+  /** Sort option: most recently edited first. */
+  'versions.sort.last-edited': 'Last edited',
+  /** Sort option: Published, Drafts, then releases. */
+  'versions.sort.version-order': 'Version order',
+  /** Grouping option: no grouping. */
+  'versions.group.none': 'No grouping',
+  /** Grouping option: group by document. */
+  'versions.group.document': 'Group by document',
+  /** Grouping option: group by variant definition. */
+  'versions.group.definition': 'Group by definition',
+  /** Search placeholder in the versions table. */
+  'versions.search.placeholder': 'Search versions',
+  /** Empty state of the versions table. */
+  'versions.no-versions': 'No versions match these filters',
+  /** Shown when the versions could not be loaded. */
+  'versions.error': 'Unable to load versions',
+  /** Shown when more versions exist than the table reads. */
+  'versions.truncated':
+    'Showing the {{limit}} most recently edited versions. Pick a type to narrow the list.',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
