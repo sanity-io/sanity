@@ -132,7 +132,7 @@ describe('editOperations and editState, live-edit document', () => {
     title: 'Hello',
   }
 
-  test.fails('OPS-LIVE-EDIT-NO-NET-CHANGE-DELETE: a delete completes after an edit and its revert inside one autocommit window', async () => {
+  test('OPS-LIVE-EDIT-NO-NET-CHANGE-DELETE: a delete completes after an edit and its revert inside one autocommit window', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'OPS-LIVE-EDIT-NO-NET-CHANGE-DELETE',
       title:

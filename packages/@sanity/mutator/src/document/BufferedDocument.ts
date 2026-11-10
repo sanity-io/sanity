@@ -140,9 +140,6 @@ export class BufferedDocument {
 
   // Add a change to the buffer
   add(mutation: Mutation): void {
-    if (this.onConsistencyChanged) {
-      this.onConsistencyChanged(false)
-    }
     debug('Staged local mutation')
     this.buffer.add(mutation)
     const oldLocal = this.LOCAL
@@ -157,6 +154,12 @@ export class BufferedDocument {
       if (this.LOCAL === null && this.onDelete) {
         this.onDelete(this.LOCAL)
       }
+    }
+    // The buffer drops operations that restore its basis, so an add can leave nothing to commit
+    if (this.hasLocalChanges()) {
+      this.onConsistencyChanged?.(false)
+    } else {
+      this.handleDocConsistencyChanged(this.document.isConsistent())
     }
   }
 
@@ -294,26 +297,24 @@ export class BufferedDocument {
   }
 
   handleDocMutation(msg: {mutation: Mutation; document: Doc | null; remote: boolean}): void {
-    // If we have no local changes, we can just pass this on to the client
-    if (this.commits.length === 0 && !this.buffer.hasChanges()) {
-      debug('Document mutated from remote with no local changes')
-      this.LOCAL = this.document.EDGE
-      this.buffer = new SquashingBuffer(this.LOCAL)
-      if (this.onMutation) {
-        this.onMutation(msg)
+    if (this.hasLocalChanges()) {
+      debug('Document mutated from remote with local changes')
+
+      // If there are local edits, and the document was deleted, we need to purge those local edits now
+      if (this.document.EDGE === null) {
+        this.handleDocumentDeleted()
       }
+
+      this.rebase([msg.mutation], [])
       return
     }
 
-    debug('Document mutated from remote with local changes')
-
-    // If there are local edits, and the document was deleted, we need to purge those local edits now
-    if (this.document.EDGE === null) {
-      this.handleDocumentDeleted()
+    debug('Document mutated from remote with no local changes')
+    this.LOCAL = this.document.EDGE
+    this.buffer = new SquashingBuffer(this.LOCAL)
+    if (this.onMutation) {
+      this.onMutation(msg)
     }
-
-    // We had local changes, so need to signal rebase
-    this.rebase([msg.mutation], [])
   }
 
   rebase(remoteMutations: Mutation[], localMutations: Mutation[]): void {
@@ -346,14 +347,14 @@ export class BufferedDocument {
       return
     }
 
-    const hasLocalChanges = this.commits.length > 0 || this.buffer.hasChanges()
-
-    if (isConsistent && !hasLocalChanges) {
-      this.onConsistencyChanged(true)
+    if (isConsistent && this.hasLocalChanges()) {
+      return
     }
 
-    if (!isConsistent) {
-      this.onConsistencyChanged(false)
-    }
+    this.onConsistencyChanged(isConsistent)
+  }
+
+  private hasLocalChanges(): boolean {
+    return this.commits.length > 0 || this.buffer.hasChanges()
   }
 }
