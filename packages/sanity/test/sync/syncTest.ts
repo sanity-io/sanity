@@ -62,6 +62,8 @@ export interface World {
 export interface RunOptions {
   schema?: Schema
   typeName?: string
+  /** `hidden` opens the clients in a background tab */
+  initialDocumentVisibility?: DocumentVisibilityState
 }
 
 let worldCounter = 0
@@ -79,8 +81,8 @@ async function advanceTimers(ms: number): Promise<void> {
  * listener gate, which is enabled as with `beta.releaseBackgroundListeners`. While the page is
  * visible, the gate lets every listener connect.
  */
-function createDocumentVisibility() {
-  let visibility: DocumentVisibilityState = 'visible'
+function createDocumentVisibility(initialVisibility: DocumentVisibilityState) {
+  let visibility = initialVisibility
   const visibilitySpy = vi
     .spyOn(document, 'visibilityState', 'get')
     .mockImplementation(() => visibility)
@@ -122,7 +124,9 @@ export async function createWorld(
   options: RunOptions = {},
 ): Promise<World> {
   vi.useFakeTimers()
-  const documentVisibility = createDocumentVisibility()
+  const documentVisibility = createDocumentVisibility(
+    options.initialDocumentVisibility ?? 'visible',
+  )
   worldCounter += 1
   const dataset = `sync-${worldCounter}`
   const lake = new FakeContentLake(definition.initial)
