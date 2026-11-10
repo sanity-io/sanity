@@ -50,10 +50,14 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         tag: 'preview.observe-document-set.listen',
       })
       .pipe(
-        mergeMap((event) => {
-          return event.type === 'welcome'
-            ? fetchFilter().pipe(map((result) => ({type: 'fetch' as const, result})))
-            : of(event)
+        mergeMap((event, index) => {
+          const live = event.type === 'welcome'
+          // A reconnect before welcome: the listener is down before it delivered anything, so the
+          // set is fetched without it, and fetched again once the listener welcomes.
+          if (live || (index === 0 && event.type === 'reconnect')) {
+            return fetchFilter().pipe(map((result) => ({type: 'fetch' as const, result, live})))
+          }
+          return of(event)
         }),
         scan(
           (
@@ -68,7 +72,15 @@ export function createDocumentIdSetObserver(client: SanityClient) {
               }
             }
             if (event.type === 'fetch') {
-              return {...state, status: 'connected' as const, documentIds: event.result}
+              // A fetch made while the listener was down never replaces what a live one loaded.
+              if (!event.live && state?.status === 'connected') {
+                return state
+              }
+              return {
+                ...state,
+                status: event.live ? ('connected' as const) : ('reconnecting' as const),
+                documentIds: event.result,
+              }
             }
             if (event.type === 'mutation') {
               if (event.transition === 'update') {
