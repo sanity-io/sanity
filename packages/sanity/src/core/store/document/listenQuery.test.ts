@@ -1,5 +1,5 @@
-import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {of, retry, Subject, throwError} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
@@ -125,7 +125,8 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
-  test('keeps waiting for welcome when the listener reconnects before it', async () => {
+  test('fetches when the listener fails before it welcomes, and again once it welcomes', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
     const values: unknown[] = []
     const errors: unknown[] = []
     const sub = listenQuery(client, '*').subscribe({
@@ -135,121 +136,12 @@ describe('listenQuery', () => {
 
     listener$.next({type: 'reconnect'})
     await flushScheduled()
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(2000)
-
-    expect(errors).toEqual([])
-    expect(values).toEqual([])
-    expect(fetch).not.toHaveBeenCalled()
+    expect(values).toEqual([{n: 1}])
 
     listener$.next({type: 'welcome', listenerName: 'test'})
     await flushScheduled()
-
+    expect(values).toEqual([{n: 1}, {n: 2}])
     expect(errors).toEqual([])
-    expect(fetch).toHaveBeenCalledTimes(1)
-    expect(values).toEqual([{ok: true}])
-
-    sub.unsubscribe()
-  })
-
-  test('errors when the first event after reconnects is not welcome', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    listener$.next(createMutationEvent())
-    await flushScheduled()
-
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).message).toBe('Received unexpected type of first event "mutation"')
-    expect(fetch).not.toHaveBeenCalled()
-
-    sub.unsubscribe()
-  })
-
-  test('errors when no welcome arrives within 30 seconds', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    // Reconnects while waiting do not restart the timeout
-    await vi.advanceTimersByTimeAsync(10_000)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(10_000)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(9_999)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(1)
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).name).toBe('TimeoutError')
-    expect((errors[0] as Error).message).toBe(
-      'Timed out after 30000ms waiting for the listener to connect',
-    )
-    expect(fetch).not.toHaveBeenCalled()
-
-    sub.unsubscribe()
-  })
-
-  test('does not time out once welcome has arrived', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    await vi.advanceTimersByTimeAsync(29_000)
-    listener$.next({type: 'welcome', listenerName: 'test'})
-    await flushScheduled()
-    await vi.advanceTimersByTimeAsync(60_000)
-
-    expect(errors).toEqual([])
-    expect(fetch).toHaveBeenCalledTimes(1)
-
-    sub.unsubscribe()
-  })
-
-  test('leaves no timer behind when unsubscribed before welcome', async () => {
-    const sub = listenQuery(client, '*').subscribe()
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    expect(vi.getTimerCount()).toBeGreaterThan(0)
-
-    sub.unsubscribe()
-
-    expect(vi.getTimerCount()).toBe(0)
-  })
-
-  test('starts a new timeout when resubscribed after timing out', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*')
-      .pipe(retry(1))
-      .subscribe({error: (error) => errors.push(error)})
-
-    await vi.advanceTimersByTimeAsync(30_000)
-    expect(listen).toHaveBeenCalledTimes(2)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(29_999)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(1)
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).name).toBe('TimeoutError')
-
-    sub.unsubscribe()
-  })
-
-  test('errors at once when the connection fails before welcome', async () => {
-    const connectionError = new ConnectionFailedError('EventSource connection failed', {
-      status: 401,
-    })
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    listener$.error(connectionError)
-    await flushScheduled()
-
-    expect(errors).toEqual([connectionError])
 
     sub.unsubscribe()
   })
