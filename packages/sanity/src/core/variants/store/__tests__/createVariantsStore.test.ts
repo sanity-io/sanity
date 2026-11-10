@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {defer, filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {createGlobalListenerStore} from '../../../store/globalListener/createGlobalListenerStore'
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../constants'
 import {createVariantsStore} from '../createVariantsStore'
@@ -33,7 +33,7 @@ function createMockClient() {
 function createStore(client: SanityClient, enabled: boolean) {
   return createVariantsStore({
     client,
-    previewStore: createDocumentPreviewStore({client}),
+    globalListenerStore: createGlobalListenerStore({client}),
     enabled,
   })
 }
@@ -90,7 +90,7 @@ describe('createVariantsStore', () => {
     expect(Array.from(values[2].variants.values())).toEqual([variant])
   })
 
-  it("follows the preview store's global listener instead of opening its own", async () => {
+  it('follows the global listener instead of opening its own', async () => {
     const {client, fetch, connections, listener$} = createMockClient()
     fetch.mockReturnValue(of([]))
 

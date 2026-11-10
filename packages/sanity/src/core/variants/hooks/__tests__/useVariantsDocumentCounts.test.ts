@@ -4,7 +4,7 @@ import {defer, firstValueFrom, type Observable, of, Subject, take, toArray} from
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {createGlobalListenerStore} from '../../../store/globalListener/createGlobalListenerStore'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {type VariantStoreState} from '../../store/reducer'
 import {type SystemVariant} from '../../types'
@@ -53,14 +53,10 @@ function mutation(documentId: string): ListenerEvent {
   return {type: 'mutation', documentId, transition: 'update', visibility: 'query'}
 }
 
-/** The counts of the variants in `variantsState$`, following a real preview store's global listener */
+/** The counts of the variants in `variantsState$`, following a real global listener store */
 function observeCounts(client: SanityClient, variantsState$: Observable<VariantStoreState>) {
-  const previewStore = createDocumentPreviewStore({client})
-  return getVariantsDocumentCounts(
-    client,
-    previewStore.unstable_invalidationChannel,
-    variantsState$,
-  )
+  const {invalidationChannel} = createGlobalListenerStore({client})
+  return getVariantsDocumentCounts(client, invalidationChannel, variantsState$)
 }
 
 async function flushScheduled() {

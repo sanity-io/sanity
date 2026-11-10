@@ -26,7 +26,6 @@ import {
   type DocumentStackAvailability,
   type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
-  type InvalidationChannelEvent,
   type ObservePathsFn,
   type PreparedSnapshot,
   type Previewable,
@@ -178,18 +177,6 @@ export interface DocumentPreviewStore {
     ids: string[],
     clientConfig?: ObserveDocumentAPIConfig,
   ) => Observable<(SanityDocument | undefined)[]>
-
-  /**
-   * The events of the store's shared global listener: `{type: 'connected'}` once it has
-   * connected, then a mutation event for every change to a document in the dataset. A new
-   * subscriber gets `connected` right away while the listener stays connected, and every
-   * subscriber gets it again after a reconnect.
-   *
-   * Lets other stores refetch on changes without opening a listener of their own.
-   *
-   * @internal
-   */
-  unstable_invalidationChannel: Observable<InvalidationChannelEvent>
 }
 
 /** @internal */
@@ -298,6 +285,5 @@ export function createDocumentPreviewStore({
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
     unstable_observeDocumentStackAvailability: observeDocumentStackAvailability,
     unstable_observePathsDocumentPair: observePathsDocumentPair,
-    unstable_invalidationChannel: invalidationChannel,
   }
 }

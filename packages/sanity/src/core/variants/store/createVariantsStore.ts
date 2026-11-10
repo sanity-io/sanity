@@ -3,8 +3,8 @@ import {type Dispatch} from 'react'
 import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
 import {isVariantId, type SystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
@@ -44,8 +44,8 @@ export interface VariantStore {
 
 /**
  * The variants store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of variants, and fetch it again whenever the preview store's shared global
- * listener reports a change to a variant definition document.
+ * fetch a list of variants, and fetch it again whenever the global listener reports a change to a
+ * variant definition document.
  *
  * The store is not disposed of when all subscriptions are closed. After it has been initialised,
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
@@ -53,10 +53,10 @@ export interface VariantStore {
  */
 export function createVariantsStore(context: {
   client: SanityClient
-  previewStore: DocumentPreviewStore
+  globalListenerStore: GlobalListenerStore
   enabled: boolean
 }): VariantStore {
-  const {client, previewStore, enabled} = context
+  const {client, globalListenerStore, enabled} = context
 
   if (!enabled) {
     const disabledState: VariantStoreState = {
@@ -88,7 +88,7 @@ export function createVariantsStore(context: {
   }).pipe(
     concatWith(
       listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
-        invalidationChannel: previewStore.unstable_invalidationChannel,
+        invalidationChannel: globalListenerStore.invalidationChannel,
         shouldRefetch: ({documentId}) => isVariantId(documentId),
         fetchTag: 'variants.store.fetch',
       }).pipe(
