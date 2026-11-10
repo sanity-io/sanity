@@ -23,6 +23,7 @@ import {createRequestProxy, createSSEProxy} from './proxy'
 import {intermittentServiceErrors} from './requestScenarios'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   invalidSession,
@@ -31,6 +32,7 @@ import {
   refusedRefreshToken,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
@@ -163,6 +165,34 @@ const flags = run(
     org401: repeatableFlag('--org-401', {
       description: message`make the get-org-id endpoint return 401`,
     }),
+    listenerErrorProbability: withDefault(
+      option('--listener-error-probability', probability(), {
+        description: message`like --error-probability, but only for listen requests: each one fails with a random 5xx at this probability while every other request still works`,
+      }),
+      0,
+    ),
+    // or() makes the parser itself reject passing both flags: withholding the welcome would also
+    // withhold the channelError and disconnect, leaving a silently closed stream
+    listenerFault: optional(
+      or(
+        mapValue(
+          option('--listener-channel-error', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`end every listener SECONDS after its welcome (welcome, welcomeback or reset) with the channelError (Internal error) and disconnect the API sends when a listener fails, and close it. Use 0 to fail every listener instead of welcoming it, as when the API cannot set one up`,
+          }),
+          (seconds) => ({kind: 'channelError' as const, afterMs: seconds * 1000}),
+        ),
+        // Like repeatableFlag(), but {min: 1} so that or() only picks it when it is passed
+        mapValue(
+          multiple(
+            option('--withhold-welcome', {
+              description: message`keep listen requests open without ever welcoming them, as when the API hangs while setting a listener up. Mutually exclusive with --listener-channel-error`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'withholdWelcome' as const}),
+        ),
+      ),
+    ),
     // or() makes the parser itself reject passing both flags
     tokenFault: optional(
       or(
@@ -217,6 +247,15 @@ const ENABLE_SSE_FAULTS = flags.sseFaults
 const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
 const RESET_PROBABILITY = flags.resetProbability
 const FORCE_ORG_401 = flags.org401
+const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
+const LISTENER_CHANNEL_ERROR_AFTER_MS =
+  flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
+const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+// Any scenario that changes what the listen endpoint answers
+const LISTENER_FAULTS =
+  LISTENER_ERROR_PROBABILITY > 0 ||
+  LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
+  WITHHOLD_WELCOME
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
@@ -386,9 +425,16 @@ const listenEndpointProxy = createSSEProxy((events$) =>
           dropMutations(DROPPED_MUTATION_PROBABILITY),
         )
       : tap(),
+    LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
+      ? tap()
+      : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
+    WITHHOLD_WELCOME ? withholdWelcome() : tap(),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
+
+// --listener-error-probability fails listen requests only, before they reach the upstream
+const faultListenRequests = intermittentServiceErrors(LISTENER_ERROR_PROBABILITY)
 
 const orgEndpointProxy = createRequestProxy({
   transformHeaders: (headers$) =>
@@ -514,8 +560,13 @@ const routes = [
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
   // handler (which is still subject to --flap and --latency)
-  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: withNetworkScenarios(listenEndpointProxy)}]
+  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0 || LISTENER_FAULTS
+    ? [
+        {
+          match: isListenEndpoint(),
+          handler: withNetworkScenarios(faultListenRequests(listenEndpointProxy)),
+        },
+      ]
     : []),
 ]
 
@@ -567,6 +618,24 @@ if (ERROR_PROBABILITY > 0) {
   console.info(
     `Simulated incident: ${Math.round(ERROR_PROBABILITY * 100)}% of requests fail with a random 5xx (500/502/503/504)`,
   )
+}
+
+if (LISTENER_ERROR_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(LISTENER_ERROR_PROBABILITY * 100)}% of listen requests fail with a random 5xx`,
+  )
+}
+
+if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
+  console.info(
+    LISTENER_CHANNEL_ERROR_AFTER_MS === 0
+      ? 'Failing listeners: every listener gets a channelError (Internal error) instead of its welcome'
+      : `Failing listeners: every listener gets a channelError (Internal error) ${LISTENER_CHANNEL_ERROR_AFTER_MS / 1000}s after its welcome`,
+  )
+}
+
+if (WITHHOLD_WELCOME) {
+  console.info('Failing listeners: listen requests stay open and are never welcomed')
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
