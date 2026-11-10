@@ -1,6 +1,7 @@
 import {
   BehaviorSubject,
   combineLatest,
+  concat,
   defer,
   distinctUntilChanged,
   fromEvent,
@@ -42,6 +43,14 @@ export interface PauseWhileDocumentHiddenOptions<P> {
    * hidden at subscription, since the listener has not connected yet.
    */
   onPause?: () => P
+  /**
+   * Returns a value to emit when a listener connects after having been paused, before any event
+   * of the new connection, such as `{type: 'reconnect'}` for a consumer that only resyncs on that.
+   * That includes the first connection of a subscription made while paused (a page opened in the
+   * background): a consumer that fetched its data when it subscribed may have missed changes
+   * since then.
+   */
+  onResume?: () => P
 }
 
 /**
@@ -156,19 +165,27 @@ export function createListenerGate(options: ListenerGateOptions = {}): ListenerG
   function pauseWhileDocumentHidden<T, P = never>(
     pauseOptions: PauseWhileDocumentHiddenOptions<P> = {},
   ): OperatorFunction<T, T | P> {
-    const {onPause} = pauseOptions
+    const {onPause, onResume} = pauseOptions
     return (source) =>
       defer(() => {
         // A source that completes by itself (a listener rejected for an invalid session) is
         // done: it must not connect again the next time the page is shown.
         const sourceCompleted$ = new Subject<void>()
+        // Per subscription. A listener that never connected has nothing to report when it pauses,
+        // but one that waited for its first connection may have missed changes, like any resume.
+        let hasConnected = false
+        let wasPaused = false
         return active$.pipe(
-          switchMap((active, index): Observable<T | P> => {
-            if (active) {
-              return source.pipe(tap({complete: () => sourceCompleted$.next()}))
+          switchMap((active): Observable<T | P> => {
+            if (!active) {
+              wasPaused = true
+              return hasConnected && onPause ? of(onPause()) : NEVER
             }
-            // `active$` only emits changes, so a pause after the first value follows a connection
-            return index > 0 && onPause ? of(onPause()) : NEVER
+            const resumed = wasPaused
+            wasPaused = false
+            hasConnected = true
+            const connection = source.pipe(tap({complete: () => sourceCompleted$.next()}))
+            return resumed && onResume ? concat(of(onResume()), connection) : connection
           }),
           takeUntil(sourceCompleted$),
         )

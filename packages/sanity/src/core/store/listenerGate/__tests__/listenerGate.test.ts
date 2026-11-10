@@ -248,6 +248,66 @@ describe('pauseWhileDocumentHidden', () => {
     subscription.unsubscribe()
   })
 
+  it('emits the onResume value when it connects again, before the events of the new connection', () => {
+    const {gate, listener, events} = setupPauseWhileDocumentHidden()
+    const subscription = listener.source
+      .pipe(gate.pauseWhileDocumentHidden({onResume: () => ({type: 'reconnect' as const})}))
+      .subscribe((event) => events.push(event))
+
+    setVisibility('hidden')
+    vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+    expect(events).toEqual([{type: 'welcome'}])
+
+    setVisibility('visible')
+    expect(events).toEqual([{type: 'welcome'}, {type: 'reconnect'}, {type: 'welcome'}])
+    subscription.unsubscribe()
+  })
+
+  it('emits the onResume value when a page hidden from the start is first shown', () => {
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    const {gate, listener, events} = setupPauseWhileDocumentHidden()
+    const onResume = vi.fn(() => ({type: 'reconnect' as const}))
+    const subscription = listener.source
+      .pipe(gate.pauseWhileDocumentHidden({onResume}))
+      .subscribe((event) => events.push(event))
+    expect(onResume).not.toHaveBeenCalled()
+
+    setVisibility('visible')
+    expect(onResume).toHaveBeenCalledTimes(1)
+    expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    subscription.unsubscribe()
+  })
+
+  it('emits the onResume value when a subscription made while paused first connects', () => {
+    const {gate, listener, events} = setupPauseWhileDocumentHidden()
+    const active = observeActive(gate)
+    setVisibility('hidden')
+    vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+    expect(active.latest).toBe(false)
+
+    const subscription = listener.source
+      .pipe(gate.pauseWhileDocumentHidden({onResume: () => ({type: 'reconnect' as const})}))
+      .subscribe((event) => events.push(event))
+    expect(listener.state.connections).toBe(0)
+
+    setVisibility('visible')
+    expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    subscription.unsubscribe()
+    active.unsubscribe()
+  })
+
+  it('does not emit the onResume value when a subscription connects right away', () => {
+    const {gate, listener, events} = setupPauseWhileDocumentHidden()
+    const onResume = vi.fn(() => ({type: 'reconnect' as const}))
+    const subscription = listener.source
+      .pipe(gate.pauseWhileDocumentHidden({onResume}))
+      .subscribe((event) => events.push(event))
+
+    expect(onResume).not.toHaveBeenCalled()
+    expect(events).toEqual([{type: 'welcome'}])
+    subscription.unsubscribe()
+  })
+
   it('does not connect, or emit the onPause value, on a page hidden from the start', () => {
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     const {gate, listener, events} = setupPauseWhileDocumentHidden()
