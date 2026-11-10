@@ -1,10 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {concat, firstValueFrom, NEVER, type Observable, of} from 'rxjs'
+import {concat, firstValueFrom, NEVER, type Observable, of, Subject} from 'rxjs'
 import {createSearch, type SearchSort} from 'sanity'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {listenSearchQuery, resolveSearchOrdering} from '../listenSearchQuery'
+import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -16,6 +16,13 @@ vi.mock('sanity', async (importOriginal) => ({
 const mockCreateSearch = vi.mocked(createSearch)
 
 const CONFIGURED_SORT: SearchSort[] = [{field: '_updatedAt', direction: 'desc'}]
+
+function subscribeToStates(states$: Observable<SearchQueryState>) {
+  const states: SearchQueryState[] = []
+  const subscription = states$.subscribe((state) => states.push(state))
+  onTestFinished(() => subscription.unsubscribe())
+  return states
+}
 
 describe('resolveSearchOrdering', () => {
   it('keeps the configured order and skips score sorting when there is no search term', () => {
@@ -153,7 +160,7 @@ describe('listenSearchQuery', () => {
 
     // The client emits `reconnect` before `welcome` when the listen request fails, and keeps
     // retrying it on its own.
-    it.fails('lists the documents the search finds', async () => {
+    it('lists the documents the search finds', async () => {
       const {states$} = listBooks(() => concat(of({type: 'reconnect'}), NEVER), 'bookUnreachable')
 
       expect(await firstValueFrom(states$)).toEqual({
@@ -161,6 +168,37 @@ describe('listenSearchQuery', () => {
         fromCache: false,
         documents: [book],
       })
+    })
+
+    it('searches again and goes live once the listener connects', async () => {
+      const listener = new Subject<{type: string}>()
+      const {search, states$} = listBooks(() => listener, 'bookConnectsLate')
+      const states = subscribeToStates(states$)
+
+      listener.next({type: 'reconnect'})
+      await vi.waitFor(() => expect(states).toHaveLength(1))
+      listener.next({type: 'welcome'})
+      await vi.waitFor(() => expect(states).toHaveLength(2))
+
+      expect(search).toHaveBeenCalledTimes(2)
+      expect(states.map(({connected}) => connected)).toEqual([false, true])
+    })
+
+    it('keeps the listed documents without searching again when a live listener goes down', async () => {
+      const listener = new Subject<{type: string}>()
+      const {search, states$} = listBooks(() => listener, 'bookGoesDown')
+      const states = subscribeToStates(states$)
+
+      listener.next({type: 'welcome'})
+      await vi.waitFor(() => expect(states).toHaveLength(1))
+      listener.next({type: 'reconnect'})
+      await vi.waitFor(() => expect(states).toHaveLength(2))
+
+      expect(search).toHaveBeenCalledTimes(1)
+      expect(states).toEqual([
+        {connected: true, fromCache: false, documents: [book]},
+        {connected: false, fromCache: false, documents: [book]},
+      ])
     })
   })
 })
