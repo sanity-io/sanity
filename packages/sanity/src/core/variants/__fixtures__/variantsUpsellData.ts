@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
+import {of} from 'rxjs'
 
-import {type UpsellData} from '../../../studio/upsell/types'
+import {type UpsellData, type UpsellDataResult} from '../../studio/upsell/types'
 
 const DESCRIPTION: PortableTextBlock[] = [
   {
@@ -28,23 +29,11 @@ const DESCRIPTION: PortableTextBlock[] = [
   },
 ]
 
-// Stand-in cover. `UpsellDialog`'s close button is white and sits on this image; a real asset
-// replaces it when the journey endpoint publishes the content.
-const IMAGE: UpsellData['image'] = {
-  asset: {
-    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect width='100%25' height='100%25' fill='%23111827'/%3E%3C/svg%3E",
-    altText: 'Content variants',
-  },
-}
-
 /**
- * Temporary content variants upsell content. `useUpsellData` settles with it while the
- * `/journey/content-variants` request is disabled. Drop the fallback and enable the request once
- * the endpoint publishes this document.
- *
- * @internal
+ * Stand-in for the `/journey/content-variants` document. Tests that render the upsell panel or
+ * dialog feed this through the mocked `useUpsellData` hook.
  */
-export const VARIANTS_UPSELL_DATA = {
+export const variantsUpsellData = {
   _createdAt: '2024-01-01T00:00:00.000Z',
   _id: 'upsell-content-variants',
   _rev: '1',
@@ -56,9 +45,15 @@ export const VARIANTS_UPSELL_DATA = {
   },
   descriptionText: DESCRIPTION,
   id: 'upsell-content-variants',
-  image: IMAGE,
+  image: null,
   secondaryButton: {
     text: 'Learn more',
     url: 'https://www.sanity.io/docs/content-variants?ref=content-variants-studio-upsell',
   },
 } satisfies UpsellData
+
+/** Stable, like the real hook's memoized observable, so react-rx keeps one cache entry. */
+export const variantsUpsellData$ = of<UpsellDataResult>({
+  upsellData: variantsUpsellData,
+  hasError: false,
+})

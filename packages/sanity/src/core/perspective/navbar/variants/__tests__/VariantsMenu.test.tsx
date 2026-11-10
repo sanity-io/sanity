@@ -6,8 +6,10 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
+import {useUpsellData} from '../../../../hooks/useUpsellData'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
+import {variantsUpsellData$} from '../../../../variants/__fixtures__/variantsUpsellData'
 import {type VariantsMode} from '../../../../variants/contexts/mode/types'
 import {VariantsUpsellProvider} from '../../../../variants/contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
@@ -44,6 +46,21 @@ vi.mock('../../../../variants/store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+// `createTestProvider` mocks `useUpsellData` with no content. The upsell-mode test renders the
+// dialog, so it answers with the journey document the endpoint publishes.
+const useUpsellDataMock = vi.mocked(useUpsellData)
+
+const telemetryLogs = {
+  dialogViewed: vi.fn(),
+  dialogDismissed: vi.fn(),
+  dialogPrimaryClicked: vi.fn(),
+  dialogSecondaryClicked: vi.fn(),
+  panelViewed: vi.fn(),
+  panelDismissed: vi.fn(),
+  panelPrimaryClicked: vi.fn(),
+  panelSecondaryClicked: vi.fn(),
+}
+
 async function renderMenuInMode(mode: VariantsMode) {
   const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
   const settledMode = Object.assign(Promise.resolve(mode), {
@@ -70,6 +87,7 @@ async function renderMenuInMode(mode: VariantsMode) {
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useUpsellDataMock.mockReturnValue({upsellData$: variantsUpsellData$, telemetryLogs})
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
