@@ -15,7 +15,7 @@ describe('withDefaultCrop', () => {
   test('writes the default crop right after the patch that sets an off-ratio asset', () => {
     const {patches} = withDefaultCrop(
       [unset(['crop']), setAsset(WIDE_REF), set(100, ['_upload', 'progress'])],
-      1,
+      {aspectRatio: 1},
     )
     expect(patches.map(({path}) => path.join('.'))).toEqual([
       'crop',
@@ -30,12 +30,14 @@ describe('withDefaultCrop', () => {
   })
 
   test('accepts a single patch and a patch event', () => {
-    expect(withDefaultCrop(setAsset(WIDE_REF), 1).patches).toHaveLength(2)
-    expect(withDefaultCrop(PatchEvent.from(setAsset(WIDE_REF)), 1).patches).toHaveLength(2)
+    expect(withDefaultCrop(setAsset(WIDE_REF), {aspectRatio: 1}).patches).toHaveLength(2)
+    expect(
+      withDefaultCrop(PatchEvent.from(setAsset(WIDE_REF)), {aspectRatio: 1}).patches,
+    ).toHaveLength(2)
   })
 
   test('clears the crop when the asset already fits', () => {
-    const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], 1)
+    const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], {aspectRatio: 1})
     expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
       'set asset',
       'unset crop',
@@ -52,6 +54,6 @@ describe('withDefaultCrop', () => {
       set(WIDE_REF, ['asset', '_ref']),
       unset(['asset']),
     ]
-    expect(withDefaultCrop(patches, 1).patches).toEqual(patches)
+    expect(withDefaultCrop(patches, {aspectRatio: 1}).patches).toEqual(patches)
   })
 })

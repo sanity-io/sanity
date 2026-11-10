@@ -1,4 +1,4 @@
-import {type ImageAspectRatio} from '@sanity/types'
+import {type ImageOptions} from '@sanity/types'
 import {getDefaultImageCrop} from '@sanity/util/image'
 
 import {set, unset} from '../../../../patch/patch'
@@ -16,25 +16,25 @@ export function getSetAssetRef(patch: FormPatch): string | undefined {
 /** A patch writing the default crop for a newly set asset, or clearing a stale one when the asset already fits; none without an aspect ratio. */
 export function getDefaultCropPatches(
   assetRef: string | undefined,
-  aspectRatio: ImageAspectRatio | undefined,
+  options: ImageOptions | undefined,
 ): FormPatch[] {
-  if (assetRef === undefined || aspectRatio === undefined) {
+  if (assetRef === undefined || options?.aspectRatio === undefined) {
     return []
   }
-  const crop = getDefaultImageCrop(assetRef, aspectRatio)
+  const crop = getDefaultImageCrop(assetRef, options.aspectRatio, options.minDimensions)
   return [crop ? set(crop, ['crop']) : unset(['crop'])]
 }
 
 /** Adds the default crop to every patch that sets a new asset, in the same change. */
 export function withDefaultCrop(
   patch: FormPatch | FormPatch[] | PatchEvent,
-  aspectRatio: ImageAspectRatio | undefined,
+  options: ImageOptions | undefined,
 ): PatchEvent {
   const {patches} = PatchEvent.from(patch)
   return PatchEvent.from(
     patches.flatMap((current) => [
       current,
-      ...getDefaultCropPatches(getSetAssetRef(current), aspectRatio),
+      ...getDefaultCropPatches(getSetAssetRef(current), options),
     ]),
   )
 }

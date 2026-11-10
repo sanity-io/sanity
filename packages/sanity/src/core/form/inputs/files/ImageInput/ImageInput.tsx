@@ -81,10 +81,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
-  const aspectRatio = schemaType.options?.aspectRatio
+  const imageOptions = schemaType.options
   const handleAssetChange = useCallback(
-    (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(withDefaultCrop(patch, aspectRatio)),
-    [aspectRatio, onChange],
+    (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(withDefaultCrop(patch, imageOptions)),
+    [imageOptions, onChange],
   )
 
   const {
@@ -183,17 +183,17 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
             unset(['crop']),
             unset(['media']),
             // Last, so the crop unset above does not clear it
-            ...getDefaultCropPatches(uploadedAssetRef, aspectRatio),
+            ...getDefaultCropPatches(uploadedAssetRef, imageOptions),
           ])
           setIsUploading(false)
         },
       })
     },
     [
-      aspectRatio,
       cancelUpload,
       clearUploadStatus,
       client,
+      imageOptions,
       onChange,
       push,
       schemaType,

@@ -81,14 +81,16 @@ export function defaultCropRect(
 }
 
 /**
- * The crop to write when the image asset `ref` is set on a field with `aspectRatio`. `undefined`
- * when the field has no ratio, the asset cannot be cropped, or its ratio already fits.
+ * The crop to write when the image asset `ref` is set on a field with `aspectRatio`, at a listed
+ * ratio that holds `minDimensions` when one can. `undefined` when the field has no ratio, the
+ * asset cannot be cropped, or its ratio already fits.
  *
  * @internal
  */
 export function getDefaultImageCrop(
   ref: string,
   aspectRatio: ImageAspectRatio | undefined,
+  minDimensions?: ImageCropDimensions,
 ): ImageCrop | undefined {
   const source = getImageRefDimensions(ref)
   if (aspectRatio === undefined || source === undefined) {
@@ -98,5 +100,5 @@ export function getDefaultImageCrop(
   if (ratioMatchesConstraint(source.width / source.height, constraint)) {
     return undefined
   }
-  return pixelRectToCrop(defaultCropRect(source, constraint), source)
+  return pixelRectToCrop(defaultCropRect(source, constraint, minDimensions), source)
 }

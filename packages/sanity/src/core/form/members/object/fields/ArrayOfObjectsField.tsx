@@ -384,9 +384,7 @@ export function ArrayOfObjectsField(props: {
       handleSelectAssetFromSourceShared({
         assetsFromSource: assets,
         onChange: (patches) =>
-          handleChange(
-            withDefaultCrop(patches, schemaType.options?.aspectRatio).prefixAll({_key: key}),
-          ),
+          handleChange(withDefaultCrop(patches, schemaType.options).prefixAll({_key: key})),
         type: schemaType,
         resolveUploader,
         uploadWith: undefined,
@@ -474,7 +472,7 @@ export function ArrayOfObjectsField(props: {
             schemaType,
             onChange: (patches) => {
               handleChange(
-                withDefaultCrop(patches as PatchEvent, schemaType.options?.aspectRatio).prefixAll({
+                withDefaultCrop(patches as PatchEvent, schemaType.options).prefixAll({
                   _key: key,
                 }),
               )
