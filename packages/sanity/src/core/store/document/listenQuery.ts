@@ -56,7 +56,9 @@ const listen = (
       includeAllVersions: true,
       tag: options.tag,
     }),
-  ).pipe(reconnectListener()) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
+  ).pipe(reconnectListener({projectId: client.config().projectId})) as Observable<
+    ReconnectEvent | WelcomeEvent | MutationEvent
+  >
 
 /**
  * The listener failed before it welcomed: the query is fetched for it as it is for `welcome`, and

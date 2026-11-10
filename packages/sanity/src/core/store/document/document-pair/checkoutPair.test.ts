@@ -10,6 +10,7 @@ const mockedDataRequest = vi.fn(() => of({}))
 const mockedActionRequest = vi.fn(() => of({}))
 
 const client = {
+  config: () => ({projectId: 'test-project'}),
   observable: {
     listen: () => of({type: 'welcome'}).pipe(delay(0)),
     getDocuments: (ids: string[]) => of(ids.map((id) => ({_id: id, _type: 'any', _rev: 'any'}))),

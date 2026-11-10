@@ -1,13 +1,16 @@
 import {type ReconnectEvent} from '@sanity/client'
 import {
+  asapScheduler,
   defer,
   filter,
   finalize,
   ignoreElements,
   merge,
+  observeOn,
   type OperatorFunction,
   retry,
   Subject,
+  take,
   takeUntil,
   tap,
   throwError,
@@ -15,6 +18,11 @@ import {
 } from 'rxjs'
 
 import {isTransientListenerError} from './listenerErrors'
+import {
+  createListenerOutages,
+  type ListenerOutages,
+  listenerOutagesForProject,
+} from './listenerOutages'
 
 /** @internal */
 export interface ReconnectListenerOptions {
@@ -31,6 +39,13 @@ export interface ReconnectListenerOptions {
   maxClientReconnects?: number
   /** How long a connection may take to open before an outage starts. */
   welcomeTimeoutMs?: number
+  /**
+   * The project the listener belongs to. Listeners of the same project share their outages.
+   * Without it, the listener shares its outages with no other listener.
+   */
+  projectId?: string
+  /** Where the listener shares its outages, in place of the ones of `projectId` */
+  outages?: ListenerOutages
 }
 
 /**
@@ -86,6 +101,10 @@ export function reconnectDelay(
  *   answers the listen request before it sets the listener up, and sends nothing the client
  *   surfaces until `welcome`, so a listener whose setup hangs would otherwise leave the consumers
  *   waiting with no end. The connection is kept, and opening late ends the outage.
+ * - the listeners of a project share their outages (`projectId`): while any of them is down, a
+ *   connection that has not opened starts its outage right away instead of waiting out the
+ *   timeout, so the consumers load what they can without it. The first listener of the project
+ *   that connects again clears the shared state.
  *
  * Any other error is passed on. Place the operator right after `client.listen()`, before the
  * listener is shared, so that a single recovery serves every subscriber.
@@ -95,14 +114,20 @@ export function reconnectDelay(
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000} = options
+  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000, projectId} = options
+  const outages =
+    options.outages ??
+    (projectId === undefined ? createListenerOutages() : listenerOutagesForProject(projectId))
   return (listener$) =>
     defer(() => {
       let attempt = 0
       let reconnecting = false
       const outageStarts = new Subject<ReconnectEvent>()
+      // Identifies this listener in the shared outages.
+      const token = {}
 
       function startOutage() {
+        outages.start(token)
         if (reconnecting) return
         reconnecting = true
         outageStarts.next(RECONNECT)
@@ -121,9 +146,11 @@ export function reconnectListener<T extends {type: string}>(
               attempt = 0
               reconnecting = false
               clientReconnects = 0
+              outages.connected()
             } else if (event.type === 'reconnect') {
               const announced = reconnecting
               reconnecting = true
+              outages.start(token)
               clientReconnects += 1
               // A connection opened with backoff is replaced as soon as it fails.
               if (clientReconnects >= (attempt === 0 ? maxClientReconnects : 1)) {
@@ -137,7 +164,13 @@ export function reconnectListener<T extends {type: string}>(
           finalize(() => connectionEnds.next()),
         )
 
-        const welcomeTimeout$ = timer(welcomeTimeoutMs).pipe(
+        const welcomeTimeout$ = merge(
+          timer(welcomeTimeoutMs),
+          // Another listener is down: the outage starts without waiting. Delivered on a microtask,
+          // so a consumer never receives it while it is still subscribing.
+          outages.down$.pipe(filter(Boolean), observeOn(asapScheduler)),
+        ).pipe(
+          take(1),
           // A listener that ends is passed on as it ends, without waiting for the timeout.
           takeUntil(connectionEnds),
           filter(() => !opened),
@@ -165,7 +198,10 @@ export function reconnectListener<T extends {type: string}>(
             return timer(delayMs)
           },
         }),
-        finalize(() => outageStarts.complete()),
+        finalize(() => {
+          outages.end(token)
+          outageStarts.complete()
+        }),
       )
 
       return merge(outageStarts, events$)

@@ -2,6 +2,7 @@ import {ChannelError, ConnectionFailedError, DisconnectError} from '@sanity/clie
 import {defer, EMPTY, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createListenerOutages} from '../listenerOutages'
 import {
   reconnectDelay,
   reconnectListener,
@@ -28,8 +29,8 @@ function internalError() {
   return new ChannelError('Internal error', {error: {description: 'Internal error'}})
 }
 
-// No jitter: every delay is its full ceiling.
-const noJitter = {random: () => 1}
+// No jitter: every delay is its full ceiling. Every test shares outages within itself only.
+let noJitter: ReconnectListenerOptions = {random: () => 1}
 
 function subscribe(options: ReconnectListenerOptions = noJitter) {
   const listener = createListener()
@@ -45,6 +46,7 @@ function subscribe(options: ReconnectListenerOptions = noJitter) {
 describe('reconnectListener', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    noJitter = {random: () => 1, outages: createListenerOutages()}
   })
   afterEach(() => {
     vi.useRealTimers()
@@ -315,6 +317,116 @@ describe('reconnectListener', () => {
       // The closed connection's timeout would have ended now.
       await vi.advanceTimersByTimeAsync(60_000)
       expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    })
+  })
+
+  describe('when another listener is down', () => {
+    it('starts the outage of a new connection right away, and keeps the connection', async () => {
+      const down = subscribe()
+      down.current().error(internalError())
+
+      const late = subscribe()
+      expect(late.events).toEqual([])
+      await vi.advanceTimersByTimeAsync(0)
+      expect(late.events).toEqual([{type: 'reconnect'}])
+      expect(late.connections[0].observed).toBe(true)
+
+      late.current().next({type: 'welcome'})
+      expect(late.events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    })
+
+    it('starts the outage of a connection that is waiting to open', async () => {
+      const waiting = subscribe()
+      await vi.advanceTimersByTimeAsync(1_000)
+
+      subscribe().current().next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(0)
+      expect(waiting.events).toEqual([{type: 'reconnect'}])
+    })
+
+    it('leaves connections that are open alone', async () => {
+      const open = subscribe()
+      open.current().next({type: 'welcome'})
+
+      subscribe().current().error(internalError())
+      await vi.advanceTimersByTimeAsync(0)
+      expect(open.events).toEqual([{type: 'welcome'}])
+    })
+
+    it('waits out the timeout again once a listener connects', async () => {
+      const down = subscribe()
+      down.current().error(internalError())
+      await vi.advanceTimersByTimeAsync(1_000)
+      down.current().next({type: 'welcome'})
+
+      const late = subscribe()
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(late.events).toEqual([])
+      await vi.advanceTimersByTimeAsync(1)
+      expect(late.events).toEqual([{type: 'reconnect'}])
+    })
+
+    it('waits out the timeout again once every listener that is down has gone', async () => {
+      const down = subscribe()
+      down.current().error(internalError())
+      down.subscription.unsubscribe()
+
+      const late = subscribe()
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(late.events).toEqual([])
+    })
+
+    it('is down again when a listener fails after another one connected', async () => {
+      const down = subscribe()
+      down.current().error(internalError())
+      subscribe().current().next({type: 'welcome'})
+
+      // The listener that was down is still down, and its next attempt fails too.
+      await vi.advanceTimersByTimeAsync(1_000)
+      down.current().error(internalError())
+
+      const late = subscribe()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(late.events).toEqual([{type: 'reconnect'}])
+    })
+  })
+
+  describe('sharing outages by project', () => {
+    let projectCounter = 0
+    // Each test gets projects of its own: the registry of a project outlives a test.
+    const uniqueProject = () => `project-${(projectCounter += 1)}`
+
+    it('starts the outage of a new connection right away while a listener of its project is down', async () => {
+      const projectId = uniqueProject()
+      subscribe({random: () => 1, projectId})
+        .current()
+        .error(internalError())
+
+      const late = subscribe({random: () => 1, projectId})
+      await vi.advanceTimersByTimeAsync(0)
+      expect(late.events).toEqual([{type: 'reconnect'}])
+    })
+
+    it('waits out the timeout while only a listener of another project is down', async () => {
+      subscribe({random: () => 1, projectId: uniqueProject()})
+        .current()
+        .error(internalError())
+
+      const other = subscribe({random: () => 1, projectId: uniqueProject()})
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(other.events).toEqual([])
+      await vi.advanceTimersByTimeAsync(1)
+      expect(other.events).toEqual([{type: 'reconnect'}])
+    })
+
+    it('shares nothing without a project', async () => {
+      subscribe({random: () => 1})
+        .current()
+        .error(internalError())
+
+      const late = subscribe({random: () => 1})
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(late.events).toEqual([])
     })
   })
 

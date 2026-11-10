@@ -11,8 +11,9 @@ import {
   throwError,
   timer,
 } from 'rxjs'
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, vi} from 'vitest'
 
+import {test} from '../../../../test/testUtils/listenerOutagesTest'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
@@ -77,8 +78,9 @@ const draftDoc = {
   _updatedAt: '2024-01-01T00:00:00Z',
 }
 
-function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
+function createMockClient(listenerEvents$: Subject<ListenerEvent>, projectId: string) {
   const client = {
+    config: () => ({projectId}),
     observable: {
       listen: vi.fn(() => listenerEvents$),
       getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
@@ -110,9 +112,9 @@ describe('getPairListener', () => {
   let listener$: Subject<ListenerEvent>
   let client: SanityClient
 
-  beforeEach(() => {
+  test.beforeEach(({projectId}) => {
     listener$ = new Subject<ListenerEvent>()
-    client = createMockClient(listener$)
+    client = createMockClient(listener$, projectId)
   })
   afterEach(() => {
     listener$.complete()
@@ -267,7 +269,7 @@ describe('getPairListener', () => {
   })
 
   describe('OutOfSyncError recovery', () => {
-    test('calls onSyncErrorRecovery and retries on OutOfSyncError', async () => {
+    test('calls onSyncErrorRecovery and retries on OutOfSyncError', async ({projectId}) => {
       const onSyncErrorRecovery = vi.fn()
 
       // Use a fresh subject for each subscription attempt so we can control events per attempt
@@ -276,6 +278,7 @@ describe('getPairListener', () => {
       const attempt2$ = new Subject<ListenerEvent>()
 
       const mockClient = {
+        config: () => ({projectId}),
         observable: {
           listen: vi.fn(() => {
             attemptCount++
@@ -322,10 +325,11 @@ describe('getPairListener', () => {
       attempt2$.complete()
     })
 
-    test('non-OutOfSyncError errors propagate to subscriber', async () => {
+    test('non-OutOfSyncError errors propagate to subscriber', async ({projectId}) => {
       const error = new Error('some other error')
       const errorListener$ = new Subject<ListenerEvent>()
       const mockClient = {
+        config: () => ({projectId}),
         observable: {
           listen: vi.fn(() => errorListener$),
           getDocuments: vi.fn(() => {
@@ -517,9 +521,10 @@ describe('getPairListener', () => {
       return throwError(() => new ConnectionFailedError('EventSource connection failed', {status}))
     }
 
-    function createFailingClient(connectImpl: () => Observable<unknown>) {
+    function createFailingClient(projectId: string, connectImpl: () => Observable<unknown>) {
       const connect = vi.fn(connectImpl)
       const mockClient = {
+        config: () => ({projectId}),
         observable: {
           listen: vi.fn(() => defer(connect)),
           getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
@@ -539,12 +544,14 @@ describe('getPairListener', () => {
     // client lets the auth store sort the credential out (it renews once, or ends the session),
     // and the listener reconnects with whatever credential the client holds afterwards.
     function createReconnectingClient(
+      projectId: string,
       connectImpl: () => Observable<unknown>,
       requestImpl: () => Observable<unknown>,
     ) {
       const connect = vi.fn(connectImpl)
       const request = vi.fn(requestImpl)
       const mockClient = {
+        config: () => ({projectId}),
         observable: {
           listen: vi.fn(() => defer(connect)),
           getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
@@ -557,7 +564,9 @@ describe('getPairListener', () => {
       return {client: mockClient, connect, request}
     }
 
-    test('a 401 reconnects once a request through the client has restored the credential', async () => {
+    test('a 401 reconnects once a request through the client has restored the credential', async ({
+      projectId,
+    }) => {
       const second$ = new Subject<ListenerEvent>()
       let attempt = 0
       const {
@@ -565,6 +574,7 @@ describe('getPairListener', () => {
         connect,
         request,
       } = createReconnectingClient(
+        projectId,
         () => (++attempt === 1 ? rejectedConnection(401) : second$),
         () => of({}),
       )
@@ -593,8 +603,11 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a 401 completes the stream when the credential cannot be restored', async () => {
+    test('a 401 completes the stream when the credential cannot be restored', async ({
+      projectId,
+    }) => {
       const {client: mockClient, connect} = createReconnectingClient(
+        projectId,
         () => rejectedConnection(401),
         () => throwError(() => new ConnectionFailedError('still rejected', {status: 401})),
       )
@@ -618,12 +631,15 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a 401 reconnects when the credential check fails for another reason', async () => {
+    test('a 401 reconnects when the credential check fails for another reason', async ({
+      projectId,
+    }) => {
       // A network error, a timeout or a 5xx says nothing about the credential. Completing here
       // would leave the editor read-only while the user is still signed in.
       const second$ = new Subject<ListenerEvent>()
       let attempt = 0
       const {client: mockClient, connect} = createReconnectingClient(
+        projectId,
         () => (++attempt === 1 ? rejectedConnection(401) : second$),
         () => throwError(() => new Error('network error')),
       )
@@ -646,8 +662,11 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('gives up after repeated 401s even when the credential check keeps passing', async () => {
+    test('gives up after repeated 401s even when the credential check keeps passing', async ({
+      projectId,
+    }) => {
       const {client: mockClient, connect} = createReconnectingClient(
+        projectId,
         () => rejectedConnection(401),
         () => of({}),
       )
@@ -665,10 +684,13 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('keeps recovering from 401s as long as each reconnect is welcomed', async () => {
+    test('keeps recovering from 401s as long as each reconnect is welcomed', async ({
+      projectId,
+    }) => {
       // A long session rotates its token many times. Only 401s in a row count towards the limit.
       const open$ = new Subject<ListenerEvent>()
       const {client: mockClient, connect} = createReconnectingClient(
+        projectId,
         () =>
           connect.mock.calls.length <= 4
             ? concat(of({type: 'welcome'} as ListenerEvent), rejectedConnection(401))
@@ -690,9 +712,9 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('other listener errors still propagate', async () => {
+    test('other listener errors still propagate', async ({projectId}) => {
       const error = new Error('channel error')
-      const {client: mockClient} = createFailingClient(() => throwError(() => error))
+      const {client: mockClient} = createFailingClient(projectId, () => throwError(() => error))
       const errors: unknown[] = []
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
@@ -701,10 +723,13 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('other listener errors still propagate after recovering from a 401', async () => {
+    test('other listener errors still propagate after recovering from a 401', async ({
+      projectId,
+    }) => {
       const error = new Error('channel error')
       let attempt = 0
       const {client: mockClient} = createReconnectingClient(
+        projectId,
         () => (++attempt === 1 ? rejectedConnection(401) : throwError(() => error)),
         () => of({}),
       )
@@ -717,8 +742,8 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a connection rejected with another 4xx also propagates', async () => {
-      const {client: mockClient} = createFailingClient(() => rejectedConnection(403))
+    test('a connection rejected with another 4xx also propagates', async ({projectId}) => {
+      const {client: mockClient} = createFailingClient(projectId, () => rejectedConnection(403))
       const errors: unknown[] = []
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
@@ -727,11 +752,13 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a connection rejected with a 5xx is reopened with backoff, and loads the snapshots meanwhile', async () => {
+    test('a connection rejected with a 5xx is reopened with backoff, and loads the snapshots meanwhile', async ({
+      projectId,
+    }) => {
       vi.useFakeTimers()
       try {
         // The EventSource reports a rejected connection asynchronously.
-        const {client: mockClient, connect} = createFailingClient(() =>
+        const {client: mockClient, connect} = createFailingClient(projectId, () =>
           timer(0).pipe(mergeMap(() => rejectedConnection(500))),
         )
         const events: ListenerEvent[] = []
@@ -753,10 +780,12 @@ describe('getPairListener', () => {
       }
     })
 
-    test('a channel error is reopened with backoff instead of failing the document', async () => {
+    test('a channel error is reopened with backoff instead of failing the document', async ({
+      projectId,
+    }) => {
       vi.useFakeTimers()
       try {
-        const {client: mockClient, connect} = createFailingClient(() =>
+        const {client: mockClient, connect} = createFailingClient(projectId, () =>
           throwError(
             () => new ChannelError('Internal error', {error: {description: 'Internal error'}}),
           ),

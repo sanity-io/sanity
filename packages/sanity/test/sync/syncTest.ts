@@ -87,6 +87,9 @@ export async function createWorld(
   vi.useFakeTimers()
   worldCounter += 1
   const dataset = `sync-${worldCounter}`
+  // The listeners of a project share their outages for as long as the test file runs, so a world
+  // that leaves a listener down must not reach the next one.
+  const projectId = `sync-${worldCounter}`
   const lake = new FakeContentLake(definition.initial)
   definition.listenersDown?.forEach((clientId) => lake.client(clientId).breakListener())
   const clients = Object.fromEntries(
@@ -94,7 +97,7 @@ export async function createWorld(
       clientId,
       createEngineClient(
         definition.seam,
-        {lake, clientId, idPair: definition.idPair, dataset},
+        {lake, clientId, idPair: definition.idPair, projectId, dataset},
         options,
       ),
     ]),

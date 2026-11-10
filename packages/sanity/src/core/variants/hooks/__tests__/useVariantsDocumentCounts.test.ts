@@ -42,6 +42,7 @@ function createMockClient() {
   })
   const client = {
     listen,
+    config: () => ({projectId: 'test-project'}),
     observable: {fetch},
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
