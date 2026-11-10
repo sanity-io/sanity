@@ -139,7 +139,8 @@ function setSessionId(id: string) {
 const DOCUMENT_PRESENCE_GRACE = 5_000
 
 /** @internal */
-export const SESSION_ID = getSessionId() || setSessionId(generate())
+export const SESSION_ID =
+  typeof window === 'undefined' ? '' : getSessionId() || setSessionId(generate())
 
 const isBifurError = (error: unknown): error is RpcError | WebSocketError =>
   error instanceof RpcError || error instanceof WebSocketError
