@@ -14,9 +14,12 @@ import {
 } from '@sanity/util/image'
 import {describe, expect, test} from 'vitest'
 
+import {prepareI18n} from '../../../../../i18n/i18nConfig'
+import {validationLocaleNamespace} from '../../../../../i18n/localeNamespaces'
+import {type LocaleResourceRecord} from '../../../../../i18n/types'
 import {createSchema} from '../../../../../schema/createSchema'
 import {
-  describeCropAspectRatio,
+  getCropAspectRatioMessageOptions,
   getCropSizeStatus,
   getHotspotPreviews,
   getImageToolPath,
@@ -292,17 +295,50 @@ describe('crop size readout', () => {
   })
 })
 
-describe('describeCropAspectRatio', () => {
+describe('getCropAspectRatioMessageOptions', () => {
+  const MESSAGE_KEY = 'validation:object.image-aspect-ratio-mismatch'
+
+  async function createValidationT(overrides: LocaleResourceRecord) {
+    const {i18next} = prepareI18n({
+      projectId: 'test',
+      dataset: 'test',
+      name: 'test',
+      i18n: {
+        bundles: [{locale: 'en-US', namespace: validationLocaleNamespace, resources: overrides}],
+      },
+    })
+    await i18next.init()
+    await i18next.loadNamespaces(validationLocaleNamespace)
+    return i18next.t
+  }
+
   test.each([
     {name: 'a fixed ratio', aspectRatio: 16 / 9, expected: '16:9'},
     {name: 'a range', aspectRatio: {min: 4 / 3, max: 16 / 9}, expected: 'between 4:3 and 16:9'},
     {name: 'a list', aspectRatio: [1, 4 / 3, 16 / 9], expected: '1:1, 4:3 or 16:9'},
-  ])('words $name the way the validation message does', ({aspectRatio, expected}) => {
-    expect(describeCropAspectRatio({aspectRatio})).toBe(expected)
+  ])('words $name the way the validation message does', async ({aspectRatio, expected}) => {
+    const t = await createValidationT({})
+    expect(t(MESSAGE_KEY, getCropAspectRatioMessageOptions({aspectRatio}))).toBe(
+      `Cropped image aspect ratio must be ${expected}`,
+    )
   })
 
-  test('describes nothing without an aspect ratio', () => {
-    expect(describeCropAspectRatio({minDimensions: {width: 10, height: 10}})).toBeUndefined()
-    expect(describeCropAspectRatio(undefined)).toBeUndefined()
+  test('leaves the words around a range and a list to the locale', async () => {
+    const t = await createValidationT({
+      'object.image-aspect-ratio-mismatch_list':
+        'Seitenverhältnis {{ratios, list(type: unit)}} oder {{lastRatio}}',
+      'object.image-aspect-ratio-mismatch_range': 'Seitenverhältnis zwischen {{min}} und {{max}}',
+    })
+    const range = getCropAspectRatioMessageOptions({aspectRatio: {min: 4 / 3, max: 16 / 9}})
+    const list = getCropAspectRatioMessageOptions({aspectRatio: [1, 4 / 3, 16 / 9]})
+    expect(t(MESSAGE_KEY, range)).toBe('Seitenverhältnis zwischen 4:3 und 16:9')
+    expect(t(MESSAGE_KEY, list)).toBe('Seitenverhältnis 1:1, 4:3 oder 16:9')
+  })
+
+  test('states nothing without an aspect ratio', () => {
+    expect(
+      getCropAspectRatioMessageOptions({minDimensions: {width: 10, height: 10}}),
+    ).toBeUndefined()
+    expect(getCropAspectRatioMessageOptions(undefined)).toBeUndefined()
   })
 })

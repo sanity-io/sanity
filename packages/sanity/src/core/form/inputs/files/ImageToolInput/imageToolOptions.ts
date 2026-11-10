@@ -8,10 +8,11 @@ import {
 } from '@sanity/types'
 import {
   defaultCropRect,
-  describeAspectRatio,
   dimensionsAtLeast,
   dimensionsMatchConstraint,
+  type AspectRatioMessageOptions,
   formatAspectRatio,
+  getAspectRatioMessageOptions,
   getCroppedImageDimensions,
   getImageRefDimensions,
   pixelRectToCrop,
@@ -84,11 +85,13 @@ export function hasCropSizeReadout(options: ImageOptions | undefined): boolean {
   )
 }
 
-/** The field's required aspect ratio in the words the validation message uses, when it has one. */
-export function describeCropAspectRatio(options: ImageOptions | undefined): string | undefined {
+/** The options the validation message states the field's required aspect ratio with, when it has one. */
+export function getCropAspectRatioMessageOptions(
+  options: ImageOptions | undefined,
+): AspectRatioMessageOptions | undefined {
   return options?.aspectRatio === undefined
     ? undefined
-    : describeAspectRatio(resolveAspectRatio(options.aspectRatio))
+    : getAspectRatioMessageOptions(resolveAspectRatio(options.aspectRatio))
 }
 
 export type CropSizeStatus =

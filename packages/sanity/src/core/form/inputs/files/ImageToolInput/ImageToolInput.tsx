@@ -42,7 +42,7 @@ import {type CropConstraints} from './imagetool/types'
 import {constrainHotspotToCrop} from './imagetool/utils'
 import {placeholder} from './ImageToolInput.css'
 import {
-  describeCropAspectRatio,
+  getCropAspectRatioMessageOptions,
   getCropSizeStatus,
   getHotspotPreviews,
   getImageToolPath,
@@ -115,7 +115,7 @@ function CropSize(props: {
   const {t} = useTranslation()
   const {t: tValidation} = useTranslation(validationLocaleNamespace)
   const {tone, threshold} = getCropSizeStatus(dimensions, options)
-  const aspectRatio = describeCropAspectRatio(options)
+  const aspectRatioMessage = getCropAspectRatioMessageOptions(options)
   const minDimensions = options?.minDimensions
   const minimumTone = tone === 'critical' ? tone : undefined
 
@@ -131,9 +131,9 @@ function CropSize(props: {
       <Text size={1} weight="medium" tone={tone}>
         {t('inputs.imagetool.crop-size.dimensions', {...dimensions})}
       </Text>
-      {aspectRatio ? (
+      {aspectRatioMessage ? (
         <Text size={1} muted>
-          {tValidation('object.image-aspect-ratio-mismatch', {aspectRatio})}
+          {tValidation('object.image-aspect-ratio-mismatch', aspectRatioMessage)}
         </Text>
       ) : null}
       {minDimensions ? (
