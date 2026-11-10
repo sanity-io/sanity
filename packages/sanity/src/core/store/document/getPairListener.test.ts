@@ -518,6 +518,34 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('a 401 reconnects when the credential check fails for another reason', async () => {
+      // A network error, a timeout or a 5xx says nothing about the credential. Completing here
+      // would leave the editor read-only while the user is still signed in.
+      const second$ = new Subject<ListenerEvent>()
+      let attempt = 0
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : second$),
+        () => throwError(() => new Error('network error')),
+      )
+
+      const errors: unknown[] = []
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        error: (e) => errors.push(e),
+        complete: () => {
+          completed = true
+        },
+      })
+      await nextTick()
+      await nextTick()
+
+      expect(connect).toHaveBeenCalledTimes(2)
+      expect(completed).toBe(false)
+      expect(errors).toEqual([])
+      second$.complete()
+      sub.unsubscribe()
+    })
+
     test('gives up after repeated 401s even when the credential check keeps passing', async () => {
       const {client: mockClient, connect} = createReconnectingClient(
         () => rejectedConnection(401),
