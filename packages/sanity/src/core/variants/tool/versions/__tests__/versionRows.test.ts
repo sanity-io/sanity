@@ -1,6 +1,10 @@
 import {describe, expect, it} from 'vitest'
 
-import {buildInventoryIndex} from '../../../../inventoryModel/buildInventoryIndex'
+import {
+  buildInventoryIndex,
+  toVersionStub,
+  type VersionStubSource,
+} from '../../../../inventoryModel/buildInventoryIndex'
 import {type VersionStub} from '../../../../inventoryModel/types'
 import {type VariantId} from '../../../types'
 import {
@@ -122,6 +126,45 @@ describe('toDocumentLensRows', () => {
       sort: 'version-order',
     })
     expect(ids(result)).toEqual(['versions.german.boots', 'drafts.jacket'])
+  })
+})
+
+describe('raw version shapes', () => {
+  // The shapes Content Lake returns today: only variant versions carry `_system.group`.
+  function raw(id: string, system: VersionStubSource['_system']): VersionStubSource {
+    return {_id: id, _type: 'product', _updatedAt: '2026-11-01T00:00:00Z', _system: system}
+  }
+  const index = buildInventoryIndex({
+    versions: [
+      raw('boots', {base: {id: 'boots', rev: 'r1'}} as VersionStubSource['_system']),
+      raw('drafts.boots', null),
+      raw('versions.rSpring.boots', null),
+      raw('versions.agent-12334.boots', {
+        base: {id: 'boots', rev: 'r1'},
+      } as VersionStubSource['_system']),
+    ].flatMap((source) => {
+      const stub = toVersionStub(source)
+      return stub ? [stub] : []
+    }),
+    releases: new Map(),
+  })
+  const rowsFor = (filters: Parameters<typeof toDocumentLensRows>[0]['filters']) =>
+    ids(toDocumentLensRows({groupIds: ['boots'], index, filters, sort: 'version-order'}))
+
+  it('lists the classic draft and the plain release version, without the agent version', () => {
+    expect(rowsFor({})).toEqual(['boots', 'drafts.boots', 'versions.rSpring.boots'])
+  })
+
+  it('keeps them through the Drafts, In a release and Release filters', () => {
+    expect(rowsFor({state: 'draft'})).toEqual(['drafts.boots'])
+    expect(rowsFor({state: 'release'})).toEqual(['versions.rSpring.boots'])
+    expect(rowsFor({release: SPRING})).toEqual(['versions.rSpring.boots'])
+    expect(rowsFor({state: 'published'})).toEqual(['boots'])
+    expect(rowsFor({definition: DEFAULT_DEFINITION})).toEqual([
+      'boots',
+      'drafts.boots',
+      'versions.rSpring.boots',
+    ])
   })
 })
 
