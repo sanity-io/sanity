@@ -124,17 +124,23 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
-  test('errors when the first event is a reconnect', async () => {
+  test('fetches when the listener fails before it welcomes, and again once it welcomes', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+    const values: unknown[] = []
     const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+    const sub = listenQuery(client, '*').subscribe({
+      next: (value) => values.push(value),
+      error: (error) => errors.push(error),
+    })
 
     listener$.next({type: 'reconnect'})
     await flushScheduled()
+    expect(values).toEqual([{n: 1}])
 
-    expect(errors).toHaveLength(1)
-    expect(errors[0]).toBeInstanceOf(Error)
-    expect((errors[0] as Error).message).toBe('Could not establish EventSource connection')
-    expect(fetch).not.toHaveBeenCalled()
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+    expect(values).toEqual([{n: 1}, {n: 2}])
+    expect(errors).toEqual([])
 
     sub.unsubscribe()
   })
