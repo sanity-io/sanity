@@ -382,7 +382,10 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -554,7 +557,10 @@ function getAuthStore(
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -566,7 +572,8 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  return createLegacyAuthStore({
+  // The store creates its clients, so their request handlers read it lazily.
+  const authStore: AuthStore = createLegacyAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
@@ -574,7 +581,12 @@ function getAuthStore(
       client = clientFactory({
         ...config,
         ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
+          ? {
+              requestHandler: createStudioRequestHandler(
+                () => client,
+                () => authStore,
+              ),
+            }
           : {}),
       })
       return client
@@ -586,6 +598,7 @@ function getAuthStore(
     dataset,
     projectId,
   })
+  return authStore
 }
 
 interface ResolveSourceOptions {

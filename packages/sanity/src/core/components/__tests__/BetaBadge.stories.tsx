@@ -1,5 +1,6 @@
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {BetaBadge} from '../BetaBadge'
 
@@ -38,7 +39,7 @@ export const AllVariants: Story = {
         {FONT_SIZES.map((fontSize) => (
           <Stack gap={3} key={fontSize} style={{textAlign: 'center'}}>
             <BetaBadge fontSize={fontSize} />
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               fontSize {fontSize}
             </Text>
           </Stack>
@@ -46,7 +47,7 @@ export const AllVariants: Story = {
       </Flex>
       <Card padding={3} radius={2} shadow={1} style={{maxWidth: 320}}>
         <Inline gap={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             Content Releases
           </Text>
           <BetaBadge />

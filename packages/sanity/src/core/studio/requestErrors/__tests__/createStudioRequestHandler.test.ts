@@ -2,6 +2,7 @@ import {ClientError, createClient, ServerError} from '@sanity/client'
 import {filter, firstValueFrom, take} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
+import {type AuthStore} from '../../../store/auth/types'
 import {
   createRequestPerformanceTracker,
   studioRequestPerformance,
@@ -212,6 +213,25 @@ describe('createStudioRequestHandler', () => {
       type: 'unauthorized',
       projectId: 'abc123',
     })
+  })
+
+  it('names the auth store of the client on an invalid-session claim', async () => {
+    // Workspaces of one project can have different auth stores (an OAuth workspace next to legacy
+    // ones), so the project alone doesn't say which store to log out.
+    const channel = createRequestErrorChannel()
+    const authStore = {logout: () => Promise.resolve()} as AuthStore
+    const error = new ClientError(responseShape(401, {errorCode: 'SIO-401-ANF'}))
+    const handler = createStudioRequestHandler({channel, getAuthStore: () => authStore})
+
+    void handler(request, vi.fn().mockRejectedValue(error))
+
+    const claim = await firstValueFrom(
+      channel.claim$.pipe(
+        filter((current) => current !== undefined),
+        take(1),
+      ),
+    )
+    expect(claim).toMatchObject({type: 'unauthorized', authStore})
   })
 
   it('leaves caller-domain errors unchanged', async () => {
