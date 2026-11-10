@@ -11,6 +11,7 @@ import {
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {type SystemVariant} from '../c1/model'
+import {rankDefinitions} from '../c1/rank'
 import {useCorpus} from '../c5/useCorpus'
 import {createPerspectiveMatch} from '../data/matchCore'
 import {CmdClickOpensBeside, ListMarkStyles, ReviewHeader, ReviewSetHeader} from '../list/ListParts'
@@ -25,6 +26,8 @@ import {useOptionState, useOption} from '../options/store'
 
 const HAS = '__section-has-variant'
 const NONE = '__section-no-variant'
+const DEF_PREFIX = '__section-def-'
+const DEF_BASE = '__base'
 const HEADER = '__section-review-header'
 const SET_HEADER = '__section-review-set'
 
@@ -122,6 +125,8 @@ export function ListArrangeProvider(props: {
   const option = useOption('c3')
   // D and E arrange the list in sections when a perspective is active; E's rows carry the flyout (see RowOverride).
   const groupsRows = option === 'd' || option === 'e'
+  // H (GA): with a perspective active the list is in one section per matching definition, in the ADR-3 rank order (c1/rank.ts), then the base.
+  const byDefinition = option === 'h'
   const {listWhenPerspective} = useOptionState()
   const listMark = useOption('listMark')
   const reviewPass = useOption('reviewPass')
@@ -139,6 +144,53 @@ export function ListArrangeProvider(props: {
   const arrange = useMemo<DocumentListArrange | null>(() => {
     // reviewSet (M3, M4): a header line over the plain list, with no variant perspective.
     if (reviewSet !== 'a' && !perspective.active) return arrangeWithSetHeader
+    if (byDefinition && perspective.active && corpus) {
+      const ranked = rankDefinitions(chosen, [...definitions])
+      const idOf = (v: SystemVariant) => v._id.replace(/^_\.variants\./, '')
+      const variantsOf = new Map(corpus.docs.map((d) => [d.id, d.variantIds]))
+      return (items) => {
+        const section = (id: string) => ({
+          _id: id,
+          _type: DOCUMENT_LIST_SECTION_TYPE,
+          _createdAt: '',
+          _updatedAt: '',
+          _rev: '',
+          hasPublished: false,
+          hasDraft: false,
+        })
+        // Each document sits under the first ranked definition that has a version of it (the per-document fall-through), else under the base.
+        const placed = new Map<string, typeof items>()
+        for (const item of items) {
+          const have = variantsOf.get(getPublishedId(item._id)) ?? []
+          const winner = ranked.find((v) => have.includes(idOf(v)))
+          const key = winner ? idOf(winner) : DEF_BASE
+          placed.set(key, [...(placed.get(key) ?? []), item])
+        }
+        const order = [...ranked.map(idOf), DEF_BASE].filter((key) => placed.has(key))
+        return {
+          items: order.flatMap((key) => [
+            section(`${DEF_PREFIX}${key}`),
+            ...(placed.get(key) ?? []),
+          ]),
+          renderSection: (item) => {
+            const key = item._id.slice(DEF_PREFIX.length)
+            const def = ranked.find((v) => idOf(v) === key)
+            const rank = def ? ranked.indexOf(def) + 1 : 0
+            return (
+              <SectionRow
+                count={placed.get(key)?.length ?? 0}
+                testId={`list-section-def-${key}`}
+                title={
+                  def
+                    ? `${def.metadata?.title ?? key} · closest match ${rank}`
+                    : 'Base document · no matching variant'
+                }
+              />
+            )
+          },
+        }
+      }
+    }
     if ((!groupsRows && reviewPass === 'a') || !perspective.active || !corpus) return null
     const variantsOf = new Map(corpus.docs.map((d) => [d.id, d.variantIds]))
     return (items) => {
@@ -220,6 +272,7 @@ export function ListArrangeProvider(props: {
     listWhenPerspective,
     noneCollapsed,
     toggle,
+    byDefinition,
     reviewPass,
     listMark,
     chosen,
