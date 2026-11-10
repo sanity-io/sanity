@@ -1,8 +1,8 @@
-import {type SanityClient} from '@sanity/client'
+import {ChannelError, type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {concat, firstValueFrom, NEVER, type Observable, of, Subject} from 'rxjs'
+import {concat, defer, firstValueFrom, NEVER, type Observable, of, Subject} from 'rxjs'
 import {createSearch, type SearchSort} from 'sanity'
-import {describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
@@ -199,6 +199,75 @@ describe('listenSearchQuery', () => {
         {connected: true, fromCache: false, documents: [book]},
         {connected: false, fromCache: false, documents: [book]},
       ])
+    })
+
+    describe('when the listener fails', () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      // Searches and their results are delivered on the async scheduler, one tick each.
+      const settle = () => vi.advanceTimersByTimeAsync(10)
+
+      function createConnections() {
+        const connections: Subject<{type: string}>[] = []
+        const listen = () =>
+          defer(() => {
+            const connection = new Subject<{type: string}>()
+            connections.push(connection)
+            return connection
+          })
+        return {connections, listen, current: () => connections[connections.length - 1]}
+      }
+
+      it('lists the documents and reconnects after a channel error', async () => {
+        const {connections, listen, current} = createConnections()
+        const {search, states$} = listBooks(listen, 'bookChannelError')
+        const states = subscribeToStates(states$)
+
+        current().error(
+          new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+        )
+        await settle()
+        expect(states).toEqual([{connected: false, fromCache: false, documents: [book]}])
+
+        await vi.advanceTimersByTimeAsync(1_000)
+        expect(connections).toHaveLength(2)
+        current().next({type: 'welcome'})
+        await settle()
+
+        expect(search).toHaveBeenCalledTimes(2)
+        expect(states.at(-1)).toEqual({connected: true, fromCache: false, documents: [book]})
+      })
+
+      it('lists the documents when the listener does not welcome in time', async () => {
+        const {listen} = createConnections()
+        const {states$} = listBooks(listen, 'bookNoWelcome')
+        const states = subscribeToStates(states$)
+
+        await vi.advanceTimersByTimeAsync(9_000)
+        expect(states).toEqual([])
+        await vi.advanceTimersByTimeAsync(1_000)
+        await settle()
+        expect(states).toEqual([{connected: false, fromCache: false, documents: [book]}])
+      })
+
+      it('still fails on an error in the query', async () => {
+        const {listen, current} = createConnections()
+        const {states$} = listBooks(listen, 'bookBadQuery')
+        const errors: unknown[] = []
+        const subscription = states$.subscribe({error: (error) => errors.push(error)})
+        onTestFinished(() => subscription.unsubscribe())
+
+        const error = new ChannelError('Bad query', {error: {type: 'queryParseError'}})
+        current().error(error)
+        await settle()
+
+        expect(errors).toEqual([error])
+      })
     })
   })
 })
