@@ -102,13 +102,25 @@ export function buildDocumentLensFilter({
     params.variantId = getVariantId(filters.definition)
   }
   if (filters.release) {
-    clauses.push('_system.release._ref == $releaseRef')
+    // Variant versions in a release carry `_system.release`; plain release versions only carry
+    // the release name in their id (`versions.<release>.<id>`), so both forms are matched.
+    clauses.push(
+      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".*"))',
+    )
     params.releaseRef = filters.release
+    params.releaseName = toReleaseId(filters.release)
   }
   if (filters.state === 'published') {
-    clauses.push('!defined(_system.bundleId) && !defined(_system.release)')
+    // Classic drafts and plain release versions have no `_system.bundleId` either, so they are
+    // excluded by id. Published variant versions live under `versions.**` too, and keep their
+    // variant reference, so they stay in.
+    clauses.push(
+      '!defined(_system.bundleId) && !defined(_system.release) && !(_id in path("drafts.**")) && ' +
+        '(!(_id in path("versions.**")) || defined(_system.variants[0]) || defined(_system.variant))',
+    )
   } else if (filters.state === 'draft') {
-    clauses.push('_system.bundleId == "drafts"')
+    // Variant drafts carry `_system.bundleId`; classic drafts only their `drafts.` id.
+    clauses.push('(_system.bundleId == "drafts" || _id in path("drafts.**"))')
   } else if (filters.state === 'release') {
     clauses.push('defined(_system.release)')
   }

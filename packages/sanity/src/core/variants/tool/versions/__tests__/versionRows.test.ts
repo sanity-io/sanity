@@ -139,9 +139,34 @@ describe('buildDocumentLensFilter', () => {
     })
     expect(filter).toContain('_type == $type')
     expect(filter).toContain('sanity::partOfVariant($variantId)')
-    expect(filter).toContain('_system.release._ref == $releaseRef')
     expect(filter).toContain('defined(_system.release)')
-    expect(params).toEqual({type: 'product', variantId: 'german', releaseRef: SPRING})
+    expect(params).toEqual({
+      type: 'product',
+      variantId: 'german',
+      releaseRef: SPRING,
+      releaseName: 'rSpring',
+    })
+  })
+
+  it('matches a release by reference and by the release name in the id', () => {
+    const {filter, params} = buildDocumentLensFilter({type: undefined, filters: {release: SPRING}})
+    expect(filter).toContain(
+      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".*"))',
+    )
+    expect(params).toEqual({releaseRef: SPRING, releaseName: 'rSpring'})
+  })
+
+  it('tells published from classic drafts and release versions by id', () => {
+    const {filter} = buildDocumentLensFilter({type: undefined, filters: {state: 'published'}})
+    expect(filter).toContain('!(_id in path("drafts.**"))')
+    expect(filter).toContain(
+      '(!(_id in path("versions.**")) || defined(_system.variants[0]) || defined(_system.variant))',
+    )
+  })
+
+  it('counts classic drafts as drafts', () => {
+    const {filter} = buildDocumentLensFilter({type: undefined, filters: {state: 'draft'}})
+    expect(filter).toContain('(_system.bundleId == "drafts" || _id in path("drafts.**"))')
   })
 
   it('reads Default as no definition', () => {
