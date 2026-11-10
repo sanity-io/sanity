@@ -129,8 +129,20 @@ const variantsLocaleStrings = {
   'detail.half.missing': 'Missing ({{total}})',
   /** Type picker option: compare against the document types that already have a version for the variant definition. */
   'detail.missing.type-picker.default': 'Types with a version',
-  /** Row action that creates the missing version of a document for the variant definition. */
-  'detail.missing.create': 'Create version',
+  /** Row action that creates the missing version of a document for the variant definition, naming where it goes: a release title, Drafts or Published. */
+  'detail.missing.create-in': 'Create in {{destination}}',
+  /** Destination of a new version: Drafts. */
+  'detail.missing.destination.drafts': 'Drafts',
+  /** Destination of a new version for live-edit types: Published. */
+  'detail.missing.destination.published': 'Published',
+  /** Tooltip when the selected release is scheduled, so the version goes elsewhere. */
+  'detail.missing.fallback.scheduled':
+    '{{release}} is scheduled, so this creates in {{destination}}',
+  /** Tooltip when the selected release can no longer change (archived or published), so the version goes elsewhere. */
+  'detail.missing.fallback.locked':
+    '{{release}} can no longer change, so this creates in {{destination}}',
+  /** Fallback name for a release without a title. */
+  'detail.missing.untitled-release': 'Untitled release',
   /** Error toast title when creating a missing version fails. */
   'detail.missing.create.error': 'Unable to create version',
   /** Shown in the Missing tab when every document of the chosen type has a version. */

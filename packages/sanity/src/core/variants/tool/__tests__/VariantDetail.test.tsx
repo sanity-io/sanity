@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
+import {activeASAPRelease, scheduledRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {type VariantDefinitionLens} from '../../hooks/useVariantDefinitionLens'
@@ -20,8 +21,11 @@ vi.mock('../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => mockedSetVariant),
 }))
 
+const perspectiveMock = vi.hoisted(() => ({selectedPerspective: undefined as unknown}))
+
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => ({
+    selectedPerspective: perspectiveMock.selectedPerspective,
     selectedVariant: undefined,
   })),
 }))
@@ -150,6 +154,7 @@ describe('VariantDetail', () => {
     vi.clearAllMocks()
     lensMock.value = EMPTY_LENS
     lensMock.calls = []
+    perspectiveMock.selectedPerspective = undefined
     createVariantDocumentMock.mockResolvedValue({transactionId: 'tx'})
     mockedSetVariant.mockClear()
     variantsMock.data = []
@@ -625,7 +630,7 @@ describe('VariantDetail', () => {
         'Types with a version',
       )
 
-      await userEvent.click(screen.getByRole('button', {name: 'Create version'}))
+      await userEvent.click(screen.getByRole('button', {name: 'Create in Drafts'}))
 
       await waitFor(() => expect(createVariantDocumentMock).toHaveBeenCalledTimes(1))
       // The new variant starts from the document's draft and lands in drafts.
@@ -638,6 +643,51 @@ describe('VariantDetail', () => {
       })
     })
 
+    it('creates in the selected release when it can take changes', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = lensWithMissing
+      perspectiveMock.selectedPerspective = activeASAPRelease
+
+      await renderDetail()
+      await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
+      await userEvent.click(
+        await screen.findByRole('button', {name: 'Create in active asap Release'}),
+      )
+
+      await waitFor(() => expect(createVariantDocumentMock).toHaveBeenCalledTimes(1))
+      // No version in the release yet, so it starts from the draft.
+      expect(createVariantDocumentMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseId: 'drafts.boots',
+          selectedPerspective: activeASAPRelease,
+        }),
+      )
+    })
+
+    it('falls back to Drafts when the selected release is scheduled, and says why', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = lensWithMissing
+      perspectiveMock.selectedPerspective = scheduledRelease
+
+      await renderDetail()
+      await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
+      const button = await screen.findByRole('button', {name: 'Create in Drafts'})
+      await userEvent.hover(button)
+
+      expect(
+        await screen.findByText('scheduled Release is scheduled, so this creates in Drafts'),
+      ).toBeInTheDocument()
+
+      await userEvent.click(button)
+      await waitFor(() =>
+        expect(createVariantDocumentMock).toHaveBeenCalledWith(
+          expect.objectContaining({selectedPerspective: 'drafts'}),
+        ),
+      )
+    })
+
     it('shows an error toast when creating the missing version fails', async () => {
       routerState.variantId = getVariantId(variantAlphaAudience._id)
       setVariants([variantAlphaAudience])
@@ -646,7 +696,7 @@ describe('VariantDetail', () => {
 
       await renderDetail()
       await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
-      await userEvent.click(await screen.findByRole('button', {name: 'Create version'}))
+      await userEvent.click(await screen.findByRole('button', {name: 'Create in Drafts'}))
 
       await waitFor(() =>
         expect(toastMock.push).toHaveBeenCalledWith(
