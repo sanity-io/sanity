@@ -8,6 +8,7 @@ import {usePane} from '../../../../components/pane/usePane'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
+import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -18,7 +19,7 @@ import {FavoriteToggle} from './FavoriteToggle'
  * This component will render inside the document panel and not with the DocumentPanelHeader
  */
 export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
-  const {editState, connectionState, views, documentId, displayed} = useDocumentPane()
+  const {editState, views, documentId, displayed} = useDocumentPane()
   const {features} = useStructureTool()
   const {index, BackLink} = usePaneRouter()
 
@@ -67,7 +68,7 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
 
   return (
     <PaneHeader
-      loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
+      loading={isDocumentLoading(editState)}
       title={title}
       tabs={tabs}
       tabIndex={tabIndex}
