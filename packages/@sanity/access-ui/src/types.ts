@@ -87,6 +87,12 @@ export type AccessRequestEligibilityState =
   | {state: 'eligible'}
   | {state: 'saml-required'; redirectUrl?: string}
   | {state: 'resource-not-available'}
+  | {state: 'already-member'}
+  | {state: 'pending'}
+  | {state: 'recently-declined'}
+  | {state: 'requests-disabled'}
+  | {state: 'saml-roles-managed'; redirectUrl?: string}
+  | {state: 'temporarily-unavailable'}
 
 /**
  * The current user rendered in the request-access screen. A structural subset of
