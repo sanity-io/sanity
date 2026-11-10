@@ -2,6 +2,7 @@ import {type ImageCropDimensions} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {resolveAspectRatio} from '../aspectRatio'
+import {croppedDimensions} from '../cropDimensions'
 import {defaultCropRect, largestRectForRatio, largestSizeForRatio} from '../defaultCrop'
 
 const RANGE = resolveAspectRatio({min: 4 / 3, max: 16 / 9})
@@ -91,6 +92,34 @@ describe('defaultCropRect', () => {
 
   it('picks a wider listed ratio for a wide source', () => {
     expect(ratioOf(defaultCropRect({width: 3000, height: 1000}, SNAP))).toBeCloseTo(16 / 9)
+  })
+
+  it('passes over the nearest listed ratio when its crop is below minDimensions', () => {
+    const portraitOrWide = resolveAspectRatio([3 / 4, 16 / 9])
+    const rect = defaultCropRect({width: 1300, height: 1500}, portraitOrWide, {
+      width: 1200,
+      height: 675,
+    })
+    expect(croppedDimensions(rect)).toEqual({width: 1300, height: 731})
+    expect(rect.y).toBeCloseTo((1500 - rect.height) / 2)
+  })
+
+  it('keeps the nearest listed ratio when its crop holds minDimensions', () => {
+    const portraitOrWide = resolveAspectRatio([3 / 4, 16 / 9])
+    const rect = defaultCropRect({width: 1300, height: 1500}, portraitOrWide, {
+      width: 1100,
+      height: 675,
+    })
+    expect(croppedDimensions(rect)).toEqual({width: 1125, height: 1500})
+  })
+
+  it('keeps the nearest listed ratio when no listed ratio holds minDimensions', () => {
+    const portraitOrWide = resolveAspectRatio([3 / 4, 16 / 9])
+    const rect = defaultCropRect({width: 1300, height: 1500}, portraitOrWide, {
+      width: 1400,
+      height: 675,
+    })
+    expect(croppedDimensions(rect)).toEqual({width: 1125, height: 1500})
   })
 })
 

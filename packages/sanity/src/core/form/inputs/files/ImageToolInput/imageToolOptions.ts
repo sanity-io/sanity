@@ -1,5 +1,10 @@
 import {isHotspotEnabled} from '@sanity/schema/_internal'
-import {type Image, type ImageCrop, type ImageOptions} from '@sanity/types'
+import {
+  type Image,
+  type ImageCrop,
+  type ImageCropDimensions,
+  type ImageOptions,
+} from '@sanity/types'
 import {
   defaultCropRect,
   dimensionsMatchConstraint,
@@ -22,12 +27,14 @@ export function getImageToolPath(options: ImageOptions | undefined): string[] {
 
 /**
  * The crop the tool starts from. A crop that is missing or fails the aspect ratio becomes the
- * largest centered crop at the allowed ratio, so the first box the editor sees, and anything they
- * commit from it, passes validation. Without a ratio or a source size the stored crop is kept.
+ * largest centered crop at the allowed ratio, at a listed ratio that holds `minDimensions` when
+ * one can, so the first box the editor sees, and anything they commit from it, passes validation.
+ * Without a ratio or a source size the stored crop is kept.
  */
 export function getInitialToolCrop(
   value: Partial<Image> | undefined,
   constraint: ResolvedImageAspectRatio | undefined,
+  minDimensions?: ImageCropDimensions,
 ): ImageCrop | undefined {
   const source = getImageRefDimensions(value?.asset?._ref)
   if (constraint === undefined || source === undefined) {
@@ -35,5 +42,5 @@ export function getInitialToolCrop(
   }
   return dimensionsMatchConstraint(getCroppedImageDimensions(value) ?? source, constraint)
     ? value?.crop
-    : pixelRectToCrop(defaultCropRect(source, constraint), source)
+    : pixelRectToCrop(defaultCropRect(source, constraint, minDimensions), source)
 }

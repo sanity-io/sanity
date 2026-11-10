@@ -164,6 +164,13 @@ describe('getInitialToolCrop', () => {
     expect(dimensions).toEqual({width: 1333, height: 1000})
   })
 
+  test('starts from a listed ratio that holds minDimensions when the nearest one does not', () => {
+    const list = resolveAspectRatio([3 / 4, 16 / 9])
+    const value = imageValue('1300x1500')
+    const crop = getInitialToolCrop(value, list, {width: 1200, height: 675})
+    expect(getCroppedImageDimensions(withCrop(value, crop))).toEqual({width: 1300, height: 731})
+  })
+
   test('replaces a stored crop that is not one of the listed ratios', () => {
     const list = resolveAspectRatio([1, 16 / 9])
     const value = imageValue('1200x1800', cropOf(0, 0, 0.5, 0))

@@ -4,6 +4,7 @@ import {getFallbackLocaleSource, validateDocumentInternal} from '@sanity/validat
 import {describe, expect, test} from 'vitest'
 
 import {createSchema} from '../../../../../../schema/createSchema'
+import {getInitialToolCrop} from '../../imageToolOptions'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '../constants'
 import {type Crop, type CropConstraints, type Rect, type Size, type ToolHandleType} from '../types'
 import {handleCropHandleResize} from '../utils'
@@ -26,6 +27,10 @@ const FIELD_OPTIONS: Record<string, ImageOptions> = {
     hotspot: true,
     aspectRatio: [1, 16 / 9],
     minDimensions: {width: 800, height: 450},
+  },
+  snapPortraitLandscapeMinimumImage: {
+    aspectRatio: [3 / 4, 16 / 9],
+    minDimensions: {width: 1200, height: 675},
   },
   squareCropOnlyImage: {aspectRatio: 1, minDimensions: {width: 600, height: 600}},
 }
@@ -50,6 +55,7 @@ const SOURCES: Size[] = [
   {width: 4032, height: 3024},
   {width: 1000, height: 1000},
   {width: 1201, height: 1799},
+  {width: 1300, height: 1500},
 ]
 
 const HANDLES: ToolHandleType[] = [
@@ -88,11 +94,11 @@ function constraintsFor(options: ImageOptions): CropConstraints {
   }
 }
 
-function imageValue(source: Size, crop: Crop | undefined) {
+function imageValue(source: Size, crop?: Crop) {
   return {
     _type: 'image',
     asset: {_type: 'reference', _ref: assetRef(source)},
-    ...(crop && {crop: {_type: 'sanity.imageCrop', ...crop}}),
+    ...(crop && {crop: {_type: 'sanity.imageCrop' as const, ...crop}}),
   }
 }
 
@@ -185,6 +191,26 @@ describe('crops written by the constrained crop tool pass the inferred validatio
       ),
     )
     expect(failing.every((count) => count > 0)).toBe(true)
+  })
+
+  test('the starting crop clears the error for every field on every source that holds its minimum', async () => {
+    const results = await Promise.all(
+      FIELD_NAMES.flatMap((fieldName) =>
+        SOURCES.filter((source) => sourceHoldsMinimum(FIELD_OPTIONS[fieldName], source)).map(
+          async (source) => {
+            const {aspectRatio, minDimensions} = constraintsFor(FIELD_OPTIONS[fieldName])
+            const crop = getInitialToolCrop(imageValue(source), aspectRatio, minDimensions)
+            const errors = await errorsFor(fieldName, source, crop)
+            return {
+              label: `${fieldName} ${source.width}x${source.height}`,
+              crop,
+              errors: errors.map((error) => error.message),
+            }
+          },
+        ),
+      ),
+    )
+    expect(results.filter((result) => result.errors.length > 0)).toEqual([])
   })
 
   test('one handle drag from the uncropped image clears the error for every field', async () => {

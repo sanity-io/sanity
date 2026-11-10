@@ -1,12 +1,7 @@
 import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {
-  getImageRefDimensions,
-  isSvgImageRef,
-  type ResolvedImageAspectRatio,
-  resolveAspectRatio,
-} from '@sanity/util/image'
+import {getImageRefDimensions, isSvgImageRef, resolveAspectRatio} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -71,10 +66,11 @@ const DEFAULT_VALUE: Partial<Image> = {
 
 function getToolValue(
   value: Partial<Image> | undefined,
-  constraint: ResolvedImageAspectRatio | undefined,
+  aspectRatio: CropConstraints['aspectRatio'],
+  minDimensions: CropConstraints['minDimensions'],
 ): Partial<Image> {
   const base = value || DEFAULT_VALUE
-  const crop = getInitialToolCrop(value, constraint)
+  const crop = getInitialToolCrop(value, aspectRatio, minDimensions)
   if (crop === undefined || crop === base.crop) {
     return base
   }
@@ -126,7 +122,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   )
 
   const [localValue, setLocalValue] = useState(() =>
-    getToolValue(value, cropConstraints.aspectRatio),
+    getToolValue(value, cropConstraints.aspectRatio, cropConstraints.minDimensions),
   )
 
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
@@ -143,8 +139,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setLocalValue(getToolValue(value, cropConstraints.aspectRatio))
-  }, [value, cropConstraints.aspectRatio])
+    setLocalValue(getToolValue(value, cropConstraints.aspectRatio, cropConstraints.minDimensions))
+  }, [value, cropConstraints.aspectRatio, cropConstraints.minDimensions])
 
   const hasFocus = focusPath[0] === imageToolPath[0]
 

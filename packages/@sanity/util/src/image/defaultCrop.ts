@@ -1,7 +1,7 @@
 import {type ImageCropDimensions} from '@sanity/types'
 
 import {nearestAllowedRatio, type ResolvedImageAspectRatio} from './aspectRatio'
-import {type ImagePixelRect} from './cropDimensions'
+import {croppedDimensions, dimensionsAtLeast, type ImagePixelRect} from './cropDimensions'
 
 /**
  * The largest size at `ratio` that fits inside `bounds`, matching `bounds` exactly on the axis that
@@ -41,13 +41,30 @@ export function largestRectForRatio(source: ImageCropDimensions, ratio: number):
 
 /**
  * The largest centered crop at the allowed ratio nearest the source's own. A source ratio inside a
- * range keeps the whole image.
+ * range keeps the whole image. With listed ratios and `minDimensions`, a nearest ratio whose crop
+ * is too small gives way to the nearest listed ratio whose crop is large enough, when there is one.
  *
  * @internal
  */
 export function defaultCropRect(
   source: ImageCropDimensions,
   constraint: ResolvedImageAspectRatio,
+  minDimensions?: ImageCropDimensions,
 ): ImagePixelRect {
-  return largestRectForRatio(source, nearestAllowedRatio(source.width / source.height, constraint))
+  const sourceRatio = source.width / source.height
+  const nearest = largestRectForRatio(source, nearestAllowedRatio(sourceRatio, constraint))
+  const holdsMinimum = (rect: ImagePixelRect) =>
+    minDimensions === undefined || dimensionsAtLeast(croppedDimensions(rect), minDimensions)
+  if (constraint.snapRatios === undefined || holdsMinimum(nearest)) {
+    return nearest
+  }
+  const roomyRatios = constraint.snapRatios.filter((ratio) =>
+    holdsMinimum(largestRectForRatio(source, ratio)),
+  )
+  return roomyRatios.length > 0
+    ? largestRectForRatio(
+        source,
+        nearestAllowedRatio(sourceRatio, {...constraint, snapRatios: roomyRatios}),
+      )
+    : nearest
 }
