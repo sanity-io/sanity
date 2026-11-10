@@ -101,8 +101,8 @@ function getStart(axis: Axis, anchor: number, length: number): number {
  * corner reads its ratio from the pointer unless `lockRatio` is set.
  *
  * The result stays inside the image, keeps its ratio within the constraint (snapping to the
- * nearest listed ratio when there are any) and does not shrink below `minimum`, unless the room
- * left between the anchor and the image edge is smaller than that.
+ * nearest listed ratio that leaves room for `minimum`, when there are any) and does not shrink
+ * below `minimum`, unless the room left between the anchor and the image edge is smaller than that.
  */
 export function resizeCropRect(
   rect: ImagePixelRect,
@@ -145,7 +145,13 @@ export function resizeCropRect(
   )
 
   const askedRatio = getAskedRatio({rect, direction, lockRatio, pointerWidth, pointerHeight})
-  const ratio = nearestAllowedRatio(askedRatio, aspectRatio)
+  const ratio = pickRatio({
+    askedRatio,
+    currentRatio: rect.width / rect.height,
+    aspectRatio,
+    minimum,
+    available: {width: availableWidth, height: availableHeight},
+  })
 
   const targetWidth = direction.dx === 0 ? pointerHeight * ratio : pointerWidth
   const fitted = fitToAvailable(targetWidth, ratio, availableWidth, availableHeight)
@@ -164,6 +170,35 @@ export function resizeCropRect(
     width,
     height,
   }
+}
+
+function holdsMinimum(ratio: number, minimum: Size, available: Size): boolean {
+  const width = Math.max(minimum.width, minimum.height * ratio)
+  return width <= available.width && width / ratio <= available.height
+}
+
+/**
+ * The allowed ratio nearest `askedRatio`. With listed ratios, one that cannot hold `minimum` in the
+ * room left by the anchor gives way to the nearest one that can, or to the crop's current ratio.
+ */
+function pickRatio(params: {
+  askedRatio: number
+  currentRatio: number
+  aspectRatio: ResolvedImageAspectRatio | undefined
+  minimum: Size
+  available: Size
+}): number {
+  const {askedRatio, currentRatio, aspectRatio, minimum, available} = params
+  const nearest = nearestAllowedRatio(askedRatio, aspectRatio)
+  if (aspectRatio?.snapRatios === undefined || holdsMinimum(nearest, minimum, available)) {
+    return nearest
+  }
+  const roomyRatios = aspectRatio.snapRatios.filter((ratio) =>
+    holdsMinimum(ratio, minimum, available),
+  )
+  return roomyRatios.length > 0
+    ? nearestAllowedRatio(askedRatio, {...aspectRatio, snapRatios: roomyRatios})
+    : nearestAllowedRatio(currentRatio, aspectRatio)
 }
 
 function getAskedRatio(params: {

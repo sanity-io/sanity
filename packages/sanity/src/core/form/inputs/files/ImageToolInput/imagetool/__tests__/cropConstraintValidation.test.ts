@@ -1,5 +1,5 @@
 import {type ImageOptions, type SanityDocument} from '@sanity/types'
-import {resolveAspectRatio} from '@sanity/util/image'
+import {pixelRectToCrop, resolveAspectRatio} from '@sanity/util/image'
 import {getFallbackLocaleSource, validateDocumentInternal} from '@sanity/validation/_internal'
 import {describe, expect, test} from 'vitest'
 
@@ -22,6 +22,11 @@ const FIELD_OPTIONS: Record<string, ImageOptions> = {
     recommendedDimensions: {width: 1600, height: 900},
   },
   snapAspectRatioImage: {hotspot: true, aspectRatio: [1, 4 / 3, 16 / 9]},
+  snapAspectRatioMinimumImage: {
+    hotspot: true,
+    aspectRatio: [1, 16 / 9],
+    minDimensions: {width: 800, height: 450},
+  },
   squareCropOnlyImage: {aspectRatio: 1, minDimensions: {width: 600, height: 600}},
 }
 
@@ -155,6 +160,18 @@ function dragFrom(initialCrop: Crop, dragCase: DragCase): Crop {
   }).crop
 }
 
+function centeredMinimumCrop(source: Size, minimum: Size): Crop {
+  return pixelRectToCrop(
+    {
+      x: (source.width - minimum.width) / 2,
+      y: (source.height - minimum.height) / 2,
+      width: minimum.width,
+      height: minimum.height,
+    },
+    source,
+  )
+}
+
 function describeCase({fieldName, source, handle, screenDelta, modifiers}: DragCase): string {
   return `${fieldName} ${source.width}x${source.height} ${handle} ${screenDelta}px ${JSON.stringify(modifiers)}`
 }
@@ -189,6 +206,20 @@ describe('crops written by the constrained crop tool pass the inferred validatio
         const errors = await errorsFor(dragCase.fieldName, dragCase.source, crop)
         return {label: describeCase(dragCase), crop, errors: errors.map((error) => error.message)}
       }),
+    )
+    expect(results.filter((result) => result.errors.length > 0)).toEqual([])
+  })
+
+  test('a drag from a centred crop at the minimum size keeps the error cleared', async () => {
+    const results = await Promise.all(
+      DRAG_CASES.filter((dragCase) => FIELD_OPTIONS[dragCase.fieldName].minDimensions).map(
+        async (dragCase) => {
+          const minimum = FIELD_OPTIONS[dragCase.fieldName].minDimensions as Size
+          const crop = dragFrom(centeredMinimumCrop(dragCase.source, minimum), dragCase)
+          const errors = await errorsFor(dragCase.fieldName, dragCase.source, crop)
+          return {label: describeCase(dragCase), crop, errors: errors.map((error) => error.message)}
+        },
+      ),
     )
     expect(results.filter((result) => result.errors.length > 0)).toEqual([])
   })

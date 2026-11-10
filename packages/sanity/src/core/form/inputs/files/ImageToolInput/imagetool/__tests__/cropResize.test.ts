@@ -341,4 +341,19 @@ describe('resizeCropRect', () => {
     expect(ratioOf(toTwoThirds)).toBeCloseTo(2 / 3)
     expect(toTwoThirds.width).toBeCloseTo(1000)
   })
+
+  test('skips a listed ratio whose minimum does not fit the room left by the anchor', () => {
+    const square: Size = {width: 1000, height: 1000}
+    const minimum = getMinimumCropSize(square, {width: 800, height: 450})
+    const wide: ImagePixelRect = {x: 100, y: 403, width: 800, height: 450}
+    const next = resizeCropRect(wide, HANDLE_DIRECTIONS['crop-bottom'], {x: 500, y: 1000}, square, {
+      aspectRatio: resolveAspectRatio([1, 16 / 9]),
+      minimum,
+    })
+    expect(ratioOf(next)).toBeCloseTo(16 / 9)
+    expect(next.width).toBeGreaterThanOrEqual(800 - EPSILON)
+    expect(next.height).toBeGreaterThanOrEqual(450 - EPSILON)
+    expect(next.y).toBeCloseTo(403)
+    expectInsideSource(next, square)
+  })
 })
