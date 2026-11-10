@@ -657,6 +657,16 @@ Two rules follow:
   when it depends on the observable's parameters (`useEditState`), since react-rx captures
   `initialValue` once per hook instance.
 
+### Text inside selectable `@sanity/ui` v4 items follows the card tone
+
+A v4 `MenuItem`, `Button` or `Card` used as a button swaps `--card-fg-color` and
+`--card-muted-fg-color` when it is hovered or selected, but `ui5` `Text` (muted or not) keeps its
+own static color and can become unreadable on the selected background. In custom children, set
+`style={{color: 'var(--card-fg-color)'}}` on the title and
+`style={{color: 'var(--card-muted-fg-color)'}}` on secondary text, as the title and subtitle of
+`ui-components/menuItem/MenuItem.tsx` do. `ResourcesMenuItems.browser.test.tsx` covers the help
+menu's version row selected in light and dark mode.
+
 ### Translate: never define `components` inline
 
 Components passed to `<Translate>`'s `components` map must be stable, module-scope components —
