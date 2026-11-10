@@ -5,6 +5,7 @@ import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/opera
 
 import {type SourceClientOptions} from '../config/types'
 import {versionedClient} from '../studioClient'
+import {reconnectListener} from '../util/reconnectListener'
 
 export type DocumentIdSetObserverState = {
   status: 'reconnecting' | 'connected'
@@ -50,6 +51,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         tag: 'preview.observe-document-set.listen',
       })
       .pipe(
+        reconnectListener({projectId: client.config().projectId}),
         mergeMap((event, index) => {
           const live = event.type === 'welcome'
           // A reconnect before welcome: the listener is down before it delivered anything, so the

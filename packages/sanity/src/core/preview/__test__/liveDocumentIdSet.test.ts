@@ -1,4 +1,4 @@
-import {createClient, type ListenEvent} from '@sanity/client'
+import {ChannelError, createClient, type ListenEvent} from '@sanity/client'
 import {defer, delay, type Observable, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
@@ -35,11 +35,13 @@ function setup(projectId: string, fetchResults: (string[] | Observable<string[]>
   }) as never)
 
   const states: DocumentIdSetObserverState[] = []
-  const subscription = createDocumentIdSetObserver(client)('_type == "book"').subscribe((state) =>
-    states.push(state),
-  )
+  const errors: unknown[] = []
+  const subscription = createDocumentIdSetObserver(client)('_type == "book"').subscribe({
+    next: (state) => states.push(state),
+    error: (error) => errors.push(error),
+  })
   onTestFinished(() => subscription.unsubscribe())
-  return {connections, current: () => connections[connections.length - 1], fetch, states}
+  return {connections, current: () => connections[connections.length - 1], fetch, states, errors}
 }
 
 const welcome = {type: 'welcome', listenerName: 'test'} as Event
@@ -102,5 +104,39 @@ describe('createDocumentIdSetObserver while its listener is down', () => {
     current().next(mutation('book-1', 'disappear'))
 
     expect(states.at(-1)).toEqual({status: 'connected', documentIds: ['book-2']})
+  })
+
+  it('fetches the set and reconnects after a channel error', async ({projectId}) => {
+    const {connections, current, states, errors} = setup(projectId, [
+      ['book-1'],
+      ['book-1', 'book-2'],
+    ])
+
+    current().error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(states).toEqual([{status: 'reconnecting', documentIds: ['book-1']}])
+
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(connections).toHaveLength(2)
+    current().next(welcome)
+
+    expect(errors).toEqual([])
+    expect(states.at(-1)).toEqual({status: 'connected', documentIds: ['book-1', 'book-2']})
+  })
+
+  it('fetches the set when the listener does not welcome in time', async ({projectId}) => {
+    const {states} = setup(projectId, [['book-1']])
+
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(states).toEqual([{status: 'reconnecting', documentIds: ['book-1']}])
+  })
+
+  it('still fails on an error in the query', ({projectId}) => {
+    const {current, errors} = setup(projectId, [])
+    const error = new ChannelError('Bad query', {error: {type: 'queryParseError'}})
+
+    current().error(error)
+
+    expect(errors).toEqual([error])
   })
 })
