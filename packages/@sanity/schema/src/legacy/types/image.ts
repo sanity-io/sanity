@@ -1,3 +1,4 @@
+import {type ImageOptions} from '@sanity/types'
 import pick from 'lodash-es/pick.js'
 import startCase from 'lodash-es/startCase.js'
 
@@ -19,6 +20,13 @@ const IMAGE_CORE = {
 
 const DEFAULT_OPTIONS = {}
 
+function getImageToolFields(options: ImageOptions | undefined) {
+  return [
+    isHotspotEnabled(options) ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
+    isImageToolEnabled(options) ? CROP_FIELD : {...CROP_FIELD, hidden: true},
+  ]
+}
+
 export const ImageType = {
   get() {
     return IMAGE_CORE
@@ -26,39 +34,36 @@ export const ImageType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    const hotspotFields = [
-      isHotspotEnabled(options) ? HOTSPOT_FIELD : {...HOTSPOT_FIELD, hidden: true},
-      isImageToolEnabled(options) ? CROP_FIELD : {...CROP_FIELD, hidden: true},
-    ]
-
     const fields = [
       ASSET_FIELD,
       MEDIA_LIBRARY_ASSET_FIELD,
-      ...hotspotFields,
+      ...getImageToolFields(options),
       ...(rawSubTypeDef.fields || []),
     ]
     const subTypeDef = {...rawSubTypeDef, fields}
+
+    const compileField = (fieldDef: any) => {
+      const {name, fieldset, ...rest} = fieldDef
+
+      const compiledField = {
+        name,
+        fieldset,
+        isCustomized: Boolean(rawSubTypeDef.fields),
+      }
+
+      return lazyGetter(compiledField, 'type', () => {
+        return createMemberType({
+          ...rest,
+          title: fieldDef.title || startCase(name),
+        })
+      })
+    }
 
     const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : IMAGE_CORE.title),
       options: options,
-      fields: subTypeDef.fields.map((fieldDef: any) => {
-        const {name, fieldset, ...rest} = fieldDef
-
-        const compiledField = {
-          name,
-          fieldset,
-          isCustomized: Boolean(rawSubTypeDef.fields),
-        }
-
-        return lazyGetter(compiledField, 'type', () => {
-          return createMemberType({
-            ...rest,
-            title: fieldDef.title || startCase(name),
-          })
-        })
-      }),
+      fields: subTypeDef.fields.map(compileField),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
@@ -96,6 +101,15 @@ export const ImageType = {
           const current = Object.assign({}, parent, ownProps, {
             type: parent,
           })
+          if (ownProps.options) {
+            // The hotspot and crop fields follow the options in effect, which replace the parent's
+            const toolFields = getImageToolFields(ownProps.options).map(compileField)
+            current.fields = parent.fields.map(
+              (field: any) =>
+                toolFields.find((toolField) => toolField.name === field.name) ?? field,
+            )
+            lazyGetter(current, 'fieldsets', () => createFieldsets(subTypeDef, current.fields))
+          }
           hiddenGetter(current, OWN_PROPS_NAME, ownProps)
           return subtype(current)
         },
