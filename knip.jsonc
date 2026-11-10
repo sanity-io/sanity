@@ -168,11 +168,11 @@
       // The redesign is switched off so `@sanity-labs/groq-wasm` stays out of the bundle
       // (see the comment in SanityVision.tsx). The code stays until that switch comes
       // back; remove these ignores when it does. Knip has no per-export ignore, so the
-      // unused `getVistaLayout` export is covered by ignoring unused exports in its file.
+      // unused `getVisionLayout` export is covered by ignoring unused exports in its file.
       "ignoreIssues": {
         // Only mounted from SanityVision, which no longer imports it
-        "src/vista/components/RedesignToast.tsx": ["files"],
-        "src/vista/components/VistaGui.tsx": ["exports"],
+        "src/redesign/components/RedesignToast.tsx": ["files"],
+        "src/redesign/components/VisionRedesign.tsx": ["exports"],
       },
     },
     "packages/@sanity/util": {

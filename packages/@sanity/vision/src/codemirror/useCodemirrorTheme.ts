@@ -65,17 +65,17 @@ function createTheme(theme: Theme) {
       '.cm-panel.cm-panel-lint ul [aria-selected] .cm-diagnostic': {color: card.fg},
 
       // Function documentation on hover and next to completions, and the extract button
-      '.cm-vista-function-doc, .cm-vista-extract-button': {
+      '.cm-vision-function-doc, .cm-vision-extract-button': {
         fontFamily: fonts.text.family,
         fontSize: rem(fonts.text.sizes[1].fontSize),
       },
-      '.cm-vista-function-code, .cm-vista-function-doc code': {
+      '.cm-vision-function-code, .cm-vision-function-doc code': {
         fontFamily: fonts.code.family,
         fontSize: rem(fonts.code.sizes[1].fontSize),
       },
-      '.cm-vista-function-note': {color: card.muted.fg},
-      '.cm-vista-function-link': {color: card.link.fg},
-      '.cm-vista-extract-button:hover, .cm-vista-extract-button:focus-visible': {
+      '.cm-vision-function-note': {color: card.muted.fg},
+      '.cm-vision-function-link': {color: card.link.fg},
+      '.cm-vision-extract-button:hover, .cm-vision-extract-button:focus-visible': {
         backgroundColor: selection,
       },
       '.cm-tooltip.cm-tooltip-autocomplete > ul': {fontFamily: fonts.code.family},

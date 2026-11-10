@@ -7,9 +7,9 @@ import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {writeRedesignPreference} from './redesign/redesignPreference'
 import SanityVision from './SanityVision'
 import {type VisionConfig} from './types'
-import {writeRedesignPreference} from './vista/redesignPreference'
 
 const theme = buildTheme()
 
@@ -58,9 +58,9 @@ vi.mock('./components/VisionGui', () => ({
 
 // The factories only run when something imports the module, so they record whether the
 // redesign or its WebAssembly dependency was loaded
-vi.mock('./vista/components/VistaGui', () => {
-  loadedModules.add('VistaGui')
-  return {VistaGui: () => <div data-testid="vista" />}
+vi.mock('./redesign/components/VisionRedesign', () => {
+  loadedModules.add('VisionRedesign')
+  return {VisionRedesign: () => <div data-testid="vision" />}
 })
 
 vi.mock('@sanity-labs/groq-wasm', () => {
@@ -95,7 +95,7 @@ describe('SanityVision with the redesign switched off', () => {
   it('renders the classic tool without an invitation when the beta flag is off', () => {
     renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByText('vista.redesign.toast.title')).toBeNull()
+    expect(screen.queryByText('vision.redesign.toast.title')).toBeNull()
     expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
   })
 
@@ -114,7 +114,7 @@ describe('SanityVision with the redesign switched off', () => {
       renderTool({beta: {redesign: {enabled: true}}})
     })
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByTestId('vista')).toBeNull()
+    expect(screen.queryByTestId('vision')).toBeNull()
   })
 
   it('never loads the redesign or groq-wasm', async () => {
