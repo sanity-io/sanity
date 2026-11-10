@@ -5,6 +5,11 @@ import {
   type ImageValue,
   type SanityDocument,
 } from '@sanity/types'
+import {
+  getCroppedImageDimensions,
+  dimensionsMatchConstraint,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -19,6 +24,10 @@ import {ImageToolInput} from '../ImageToolInput'
 const IMAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 const IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-jpg'
 const WIDE_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-2000x1000-jpg'
+const PORTRAIT_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1200x1800-jpg'
+const PORTRAIT_WIDTH = 1200
+const PORTRAIT_HEIGHT = 1800
+const WIDESCREEN = resolveAspectRatio(16 / 9)
 const DOCUMENT: SanityDocument = {
   _id: 'image-tool-input',
   _type: 'test',
@@ -105,6 +114,7 @@ const CROP_ONLY_DOCUMENT: SanityDocument = {
 }
 
 const CROP_FOCUS_PATH = ['image', 'crop']
+const HOTSPOT_FOCUS_PATH = ['image', 'hotspot']
 
 const CROP_ONLY_SCHEMA = createImageSchema({
   aspectRatio: 1,
@@ -165,12 +175,94 @@ describe('image tool input', () => {
     await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
 
     const state = await waitForDocumentState((documentState) => Boolean(documentState?.image?.crop))
-    // One step on the right edge of a 2000 × 1000 image fits the 1:1 ratio to the full height.
-    expect(state.image.crop.right).toBeCloseTo(0.5)
-    expect(state.image.crop.left).toBeCloseTo(0)
-    expect(state.image.crop.top).toBeCloseTo(0)
-    expect(state.image.crop.bottom).toBeCloseTo(0)
+    const dimensions = getCroppedImageDimensions(state.image) ?? {width: 0, height: 0}
+    expect(dimensionsMatchConstraint(dimensions, resolveAspectRatio(1))).toBe(true)
+    expect(dimensions.width).toBeLessThan(1000)
+    expect(dimensions.width).toBeGreaterThanOrEqual(600)
     expect(state.image.hotspot).toBeUndefined()
     await settleChromaticEndState()
+  })
+
+  describe('on a portrait image in a 16:9 field', () => {
+    const WIDESCREEN_SCHEMA = createImageSchema({
+      hotspot: true,
+      aspectRatio: 16 / 9,
+      minDimensions: {width: 800, height: 450},
+    })
+
+    function PortraitHarness(props: {crop?: ImageValue['crop']}) {
+      const document: SanityDocument = {
+        ...DOCUMENT,
+        image: {
+          _type: 'image',
+          asset: {_type: 'reference', _ref: PORTRAIT_IMAGE_REF},
+          ...(props.crop && {crop: props.crop}),
+        },
+      }
+      return (
+        <TestWrapper schemaTypes={WIDESCREEN_SCHEMA}>
+          <TestForm document={document} focusPath={HOTSPOT_FOCUS_PATH} />
+        </TestWrapper>
+      )
+    }
+
+    async function findCropRect() {
+      const {findBySelector} = testHelpers()
+      const cropRect = await findBySelector(
+        {element: () => document.body},
+        'rect[data-handle="crop"][tabindex]',
+      )
+      return cropRect.element() as SVGRectElement
+    }
+
+    async function readDrawnSourceRatio() {
+      const {findBySelector} = testHelpers()
+      const background = await findBySelector({element: () => document.body}, 'svg > image')
+      const backgroundImage = background.element() as SVGImageElement
+      const cropRect = await findCropRect()
+      const widthFraction = cropRect.width.baseVal.value / backgroundImage.width.baseVal.value
+      const heightFraction = cropRect.height.baseVal.value / backgroundImage.height.baseVal.value
+      return (widthFraction * PORTRAIT_WIDTH) / (heightFraction * PORTRAIT_HEIGHT)
+    }
+
+    test('draws an uncropped image at the required ratio without editing the document', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(<PortraitHarness />)
+
+      await waitForFixtureImage()
+      expect(await readDrawnSourceRatio()).toBeCloseTo(16 / 9, 2)
+      const state = await waitForDocumentState((documentState) => Boolean(documentState?.image))
+      expect(state.image.crop).toBeUndefined()
+      expect(state.image.hotspot).toBeUndefined()
+    })
+
+    test('draws a stored crop at the wrong ratio at the required ratio', async () => {
+      void render(
+        <PortraitHarness
+          crop={{_type: 'sanity.imageCrop', top: 0, bottom: 1 / 3, left: 0, right: 0}}
+        />,
+      )
+
+      await waitForFixtureImage()
+      expect(await readDrawnSourceRatio()).toBeCloseTo(16 / 9, 2)
+    })
+
+    test('commits a crop that passes the ratio when the editor moves the box', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(<PortraitHarness />)
+
+      await waitForFixtureImage()
+      const cropRect = await findCropRect()
+      cropRect.focus()
+      await userEvent.keyboard('{ArrowDown}')
+
+      const state = await waitForDocumentState((documentState) =>
+        Boolean(documentState?.image?.crop),
+      )
+      const dimensions = getCroppedImageDimensions(state.image) ?? {width: 0, height: 0}
+      expect(dimensionsMatchConstraint(dimensions, WIDESCREEN)).toBe(true)
+      expect(dimensions.width).toBeGreaterThanOrEqual(800)
+      expect(dimensions.height).toBeGreaterThanOrEqual(450)
+    })
   })
 })

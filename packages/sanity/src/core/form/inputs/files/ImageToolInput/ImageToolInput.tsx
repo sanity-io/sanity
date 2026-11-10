@@ -1,7 +1,12 @@
 import {isHotspotEnabled} from '@sanity/schema/_internal'
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {getImageRefDimensions, isSvgImageRef, resolveAspectRatio} from '@sanity/util/image'
+import {
+  getImageRefDimensions,
+  isSvgImageRef,
+  type ResolvedImageAspectRatio,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -29,7 +34,7 @@ import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
 import {type CropConstraints} from './imagetool/types'
 import {placeholder} from './ImageToolInput.css'
-import {getImageToolPath} from './imageToolOptions'
+import {getImageToolPath, getInitialToolCrop} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -63,6 +68,15 @@ const DEFAULT_VALUE: Partial<Image> = {
   hotspot: DEFAULT_HOTSPOT,
 }
 
+function getToolValue(
+  value: Partial<Image> | undefined,
+  constraint: ResolvedImageAspectRatio | undefined,
+): Partial<Image> {
+  const base = value || DEFAULT_VALUE
+  const crop = getInitialToolCrop(value, constraint)
+  return crop ? {...base, crop} : base
+}
+
 function LoadStatus(props: {children: ReactNode}) {
   return (
     <Flex
@@ -94,13 +108,6 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const ref = useRef<HTMLDivElement | null>(null)
   useImperativeHandle(forwardRef, () => ref.current)
 
-  const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
-
-  const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
-
-  const hotspotEnabled = isHotspotEnabled(schemaType.options)
-  const imageToolPath = getImageToolPath(schemaType.options)
-
   const {aspectRatio, minDimensions} = schemaType.options ?? {}
   const cropConstraints = useMemo<CropConstraints>(
     () => ({
@@ -109,6 +116,15 @@ export function ImageToolInput(props: ImageToolInputProps) {
     }),
     [aspectRatio, minDimensions],
   )
+
+  const [localValue, setLocalValue] = useState(() =>
+    getToolValue(value, cropConstraints.aspectRatio),
+  )
+
+  const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
+
+  const hotspotEnabled = isHotspotEnabled(schemaType.options)
+  const imageToolPath = getImageToolPath(schemaType.options)
 
   const assetRef = value?.asset?._ref
   const sourceSize = useMemo(() => getImageRefDimensions(assetRef), [assetRef])
@@ -119,8 +135,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setLocalValue(value || DEFAULT_VALUE)
-  }, [value])
+    setLocalValue(getToolValue(value, cropConstraints.aspectRatio))
+  }, [value, cropConstraints.aspectRatio])
 
   const hasFocus = focusPath[0] === imageToolPath[0]
 
