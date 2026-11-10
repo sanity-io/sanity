@@ -3,6 +3,7 @@ import {vi} from 'vitest'
 
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
 import {type IdPair} from '../../src/core/store/document/types'
+import {listenerGate} from '../../src/core/store/listenerGate/listenerGate'
 import {FakeContentLake} from './fakeContentLake'
 import {
   createStudioOperationsClient,
@@ -30,6 +31,7 @@ export type Step =
   | {client: string; do: 'restoreListener'}
   | {client: string; do: 'failListener'}
   | {do: 'outside'; mutations: MutationPayload[]}
+  | {do: 'setDocumentVisibility'; visibility: DocumentVisibilityState}
   | {do: 'advance'; ms: number}
   | {do: 'settle'}
 
@@ -51,6 +53,9 @@ export interface World {
   idPair: IdPair
   advance: (ms: number) => Promise<void>
   settle: () => Promise<void>
+  /** Whether the listener gate lets listeners connect (`beta.releaseBackgroundListeners`) */
+  listenersActive: () => boolean
+  setDocumentVisibility: (visibility: DocumentVisibilityState) => void
   teardown: () => void
 }
 
@@ -67,6 +72,36 @@ const SETTLE_QUIET_ROUNDS = 2
 
 async function advanceTimers(ms: number): Promise<void> {
   await vi.advanceTimersByTimeAsync(ms)
+}
+
+/**
+ * Every client of a world runs on the same page, so hiding it hides them all, and they share the
+ * listener gate, which is enabled as with `beta.releaseBackgroundListeners`. While the page is
+ * visible, the gate lets every listener connect.
+ */
+function createDocumentVisibility() {
+  let visibility: DocumentVisibilityState = 'visible'
+  const visibilitySpy = vi
+    .spyOn(document, 'visibilityState', 'get')
+    .mockImplementation(() => visibility)
+  const releaseListenerGate = listenerGate.enable()
+  let listenersActive = true
+  const gateSubscription = listenerGate.active$.subscribe((active) => {
+    listenersActive = active
+  })
+
+  return {
+    setVisibility: (next: DocumentVisibilityState) => {
+      visibility = next
+      document.dispatchEvent(new Event('visibilitychange'))
+    },
+    listenersActive: () => listenersActive,
+    teardown: () => {
+      gateSubscription.unsubscribe()
+      releaseListenerGate()
+      visibilitySpy.mockRestore()
+    },
+  }
 }
 
 function createEngineClient(
@@ -87,6 +122,7 @@ export async function createWorld(
   options: RunOptions = {},
 ): Promise<World> {
   vi.useFakeTimers()
+  const documentVisibility = createDocumentVisibility()
   worldCounter += 1
   const dataset = `sync-${worldCounter}`
   const lake = new FakeContentLake(definition.initial)
@@ -125,6 +161,7 @@ export async function createWorld(
 
   function teardown(): void {
     Object.values(clients).forEach((client) => client.teardown())
+    documentVisibility.teardown()
     vi.useRealTimers()
   }
 
@@ -134,6 +171,8 @@ export async function createWorld(
     idPair: definition.idPair,
     advance: advanceTimers,
     settle,
+    listenersActive: documentVisibility.listenersActive,
+    setDocumentVisibility: documentVisibility.setVisibility,
     teardown,
   }
   // Listener welcome and snapshot fetch land on the first timer tick.
@@ -152,6 +191,10 @@ async function runStep(world: World, step: Step): Promise<void> {
   if (step.do === 'settle') return world.settle()
   if (step.do === 'outside') {
     world.lake.mutateFromOutside(step.mutations)
+    return world.advance(0)
+  }
+  if (step.do === 'setDocumentVisibility') {
+    world.setDocumentVisibility(step.visibility)
     return world.advance(0)
   }
   const client = world.clients[step.client]
