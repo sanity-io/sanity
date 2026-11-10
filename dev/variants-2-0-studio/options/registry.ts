@@ -31,6 +31,7 @@ import {ICONOGRAPHY_GROUP, MARK_SELECTED} from './iconography'
 import {INSPECTOR_SWITCHER} from './inspectorSwitcher'
 import {LOCALIZATION, LOCALIZATION_GROUP} from './localization'
 import presets from './presets.json'
+import {SERVED_LABELS} from './servedLabels'
 
 export type {ComponentDef, OptionStatus}
 export {getComponent}
@@ -481,6 +482,7 @@ COMPONENTS.push(
   MARK_SELECTED,
   INSPECTOR_SWITCHER,
   DOC_TABS,
+  SERVED_LABELS,
   ADDRESS_PICKER,
   VARIANT_DETAIL_HEADER,
   VERSION_SORTING,
@@ -664,7 +666,13 @@ defineDesignOptions({
     },
     {
       label: 'Other explorations',
-      ids: ['inspectorSwitcher', 'docTabs', ...LOCALIZATION_GROUP.ids, ...ICONOGRAPHY_GROUP.ids],
+      ids: [
+        'inspectorSwitcher',
+        'docTabs',
+        'servedLabels',
+        ...LOCALIZATION_GROUP.ids,
+        ...ICONOGRAPHY_GROUP.ids,
+      ],
       collapsed: true,
     },
   ],

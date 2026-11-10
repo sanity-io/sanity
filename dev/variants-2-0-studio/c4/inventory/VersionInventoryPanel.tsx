@@ -48,16 +48,28 @@ import {usePerspective} from '../../../../packages/sanity/src/core/perspective/u
 import {ReleaseAvatarIcon} from '../../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../../../packages/sanity/src/core/releases/store/types'
 import {getReleaseTone} from '../../../../packages/sanity/src/core/releases/util/getReleaseTone'
+import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
 import {MenuButton} from '../../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Popover} from '../../../../packages/sanity/src/ui-components/popover/Popover'
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
+import {rankDefinitions} from '../../c1/rank'
+import {useOption} from '../../options/store'
 import {CreateVariantForm} from './CreateVariantForm'
 import {CreateVariantIcon} from './CreateVariantIcon'
 import {DateSpanPicker} from './DateSpanPicker'
-import {documentsFor, FIXTURE_NOW, variantsOn, worldDocument, worldVariants} from './fixtures'
+import {
+  documentsFor,
+  FIXTURE_NOW,
+  type InventoryEntry,
+  type InventoryWorld,
+  variantsOn,
+  type Visitor,
+  worldDocument,
+  worldVariants,
+} from './fixtures'
 import {AddFilterMenu, NOT_DESIGNED, SortMenu, ViewSettingsMenu, ViewsMenu} from './InventoryMenus'
 import {
   deleteFallbackText,
@@ -66,6 +78,7 @@ import {
   filterLabel,
   type InventoryGroup,
   type InventoryRow,
+  shortVariantId,
   useInventoryConcepts,
 } from './model'
 
@@ -747,14 +760,17 @@ function EditedSubtitle({editedAt, detail}: {editedAt: string; detail: string}) 
 }
 
 function Row({row}: {row: InventoryRow}) {
-  const {selectEntry, toggleSelected, answer, world, release} = useInventoryConcepts()
+  const {selectEntry, toggleSelected, answer, world, release, exactVariant, visitor} =
+    useInventoryConcepts()
   // The row a visitor gets carries a label; the row keeps the list's highlights (Andrej,
   // 2026-10-21: "Can only the served label be green").
-  const served = row.isShown && variantsOn(world)
+  const labelsOption = useOption('servedLabels')
+  const served = row.isShown && variantsOn(world) && labelsOption !== 'b'
   const label = served
     ? servedLabel(
         answer,
         world.releases.find((doc) => doc.name === release),
+        {exact: exactVariant, entry: row.entry, visitor, world, release},
       )
     : undefined
   const highlighted = row.isHere || row.isSelected
@@ -876,15 +892,34 @@ function Row({row}: {row: InventoryRow}) {
 function servedLabel(
   answer: ServedAnswer,
   release: TargetPerspective | undefined,
+  context: {
+    exact: SystemVariant | undefined
+    entry: InventoryEntry
+    visitor: Visitor
+    world: InventoryWorld
+    release: string
+  },
 ): {kind: 'match' | 'instead'; text: string; tone: BadgeTone; tooltip: string} {
-  if (matchesBar(answer)) {
-    return {
-      kind: 'match',
-      text: 'Served',
-      tone: 'positive',
-      tooltip:
-        'A visitor matching this perspective gets served this variant with highest priority.',
+  const {exact, entry, visitor, world} = context
+  // Served: the visitor gets the variant the bar names. That is also so when the variant has no draft and a
+  // published version is read, since drafts are never served; and the bar's own version, when nothing is missing.
+  const namesBar = exact !== undefined && entry.variantId === shortVariantId(exact)
+  if (matchesBar(answer) || namesBar) {
+    const notes: string[] = ['Visitors who match the perspective bar get this version.']
+    if (context.release === 'drafts' && entry.group === 'published') {
+      notes.push('Drafts are never served, so visitors get the published version.')
     }
+    // A release bar reads as if it had gone out: a variant in Published beats the release's base version.
+    if (
+      entry.variantId &&
+      entry.group === 'published' &&
+      context.release !== 'published' &&
+      context.release !== 'drafts' &&
+      world.entries.some((e) => e.group === context.release && !e.variantId)
+    ) {
+      notes.push("A variant in Published beats the release's base version.")
+    }
+    return {kind: 'match', text: 'Served', tone: 'positive', tooltip: notes.join(' ')}
   }
   const missing = answer.missing
   const tone =
@@ -893,13 +928,33 @@ function servedLabel(
       : missing?.kind === 'version'
         ? 'suggest'
         : 'caution'
-  return {
-    kind: 'instead',
-    text: 'Served instead',
-    tone,
-    tooltip:
-      'No variant matches this perspective. A visitor matching it gets this variant instead.',
+  const notes: string[] = []
+  if (exact) {
+    // The definition exists, this document has no version of it: the next-ranked definition is served.
+    notes.push(
+      `${exact.metadata?.title ?? shortVariantId(exact)} exists but has no version of this document. Visitors get the closest match: this version.`,
+    )
+  } else {
+    notes.push(
+      'Nothing exists for this exact combination. Visitors who match it get the closest match: this version.',
+    )
   }
+  // A tie in the number of conditions is decided by priority, not by the order of the dimensions.
+  const ranked = rankDefinitions(visitor, worldVariants(world))
+  const served = ranked.find((v) => shortVariantId(v) === entry.variantId)
+  const tied = served
+    ? ranked.filter(
+        (v) =>
+          v !== served &&
+          Object.keys(v.conditions).length === Object.keys(served.conditions).length,
+      )
+    : []
+  if (served && tied.length > 0) {
+    notes.push(
+      `Definitions with the same number of conditions are ranked by priority, not by dimension order. This one has priority ${served.priority ?? 0}.`,
+    )
+  }
+  return {kind: 'instead', text: 'Served instead', tone, tooltip: notes.join(' ')}
 }
 
 /**
