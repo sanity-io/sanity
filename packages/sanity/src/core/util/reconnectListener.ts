@@ -1,11 +1,14 @@
 import {type ReconnectEvent} from '@sanity/client'
 import {
   defer,
+  filter,
   finalize,
+  ignoreElements,
   merge,
   type OperatorFunction,
   retry,
   Subject,
+  takeUntil,
   tap,
   throwError,
   timer,
@@ -26,6 +29,8 @@ export interface ReconnectListenerOptions {
    * connection is replaced by one opened with backoff.
    */
   maxClientReconnects?: number
+  /** How long a connection may take to open before an outage starts. */
+  welcomeTimeoutMs?: number
 }
 
 /**
@@ -77,6 +82,10 @@ export function reconnectDelay(
  *   every connection opened during the outage is replaced after its first failed attempt. A
  *   connection opened this way cannot resume from the last event, so it opens with `welcome`
  *   rather than `welcomeback`, which makes the consumers refetch.
+ * - an outage also starts when a connection has not opened within `welcomeTimeoutMs`. The API
+ *   answers the listen request before it sets the listener up, and sends nothing the client
+ *   surfaces until `welcome`, so a listener whose setup hangs would otherwise leave the consumers
+ *   waiting with no end. The connection is kept, and opening late ends the outage.
  *
  * Any other error is passed on. Place the operator right after `client.listen()`, before the
  * listener is shared, so that a single recovery serves every subscriber.
@@ -86,34 +95,62 @@ export function reconnectDelay(
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  const {maxClientReconnects = 2} = options
+  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000} = options
   return (listener$) =>
     defer(() => {
       let attempt = 0
       let reconnecting = false
-      let clientReconnects = 0
       const outageStarts = new Subject<ReconnectEvent>()
 
-      const events$ = listener$.pipe(
-        tap({
-          subscribe: () => {
-            clientReconnects = 0
-          },
-          next: (event) => {
+      function startOutage() {
+        if (reconnecting) return
+        reconnecting = true
+        outageStarts.next(RECONNECT)
+      }
+
+      // A single connection: subscribing to it opens it, and the retry below opens a new one.
+      const connection$ = defer(() => {
+        let opened = false
+        let clientReconnects = 0
+        const connectionEnds = new Subject<void>()
+
+        const events$ = listener$.pipe(
+          filter((event) => {
             if (CONNECTED_EVENT_TYPES.has(event.type)) {
+              opened = true
               attempt = 0
               reconnecting = false
               clientReconnects = 0
             } else if (event.type === 'reconnect') {
+              const announced = reconnecting
               reconnecting = true
               clientReconnects += 1
               // A connection opened with backoff is replaced as soon as it fails.
               if (clientReconnects >= (attempt === 0 ? maxClientReconnects : 1)) {
                 throw new ClientReconnectsExceededError()
               }
+              // The outage has been announced already (the welcome timeout, an earlier attempt).
+              return !announced
             }
-          },
-        }),
+            return true
+          }),
+          finalize(() => connectionEnds.next()),
+        )
+
+        const welcomeTimeout$ = timer(welcomeTimeoutMs).pipe(
+          // A listener that ends is passed on as it ends, without waiting for the timeout.
+          takeUntil(connectionEnds),
+          filter(() => !opened),
+          tap(startOutage),
+          ignoreElements(),
+        )
+
+        // The timeout is subscribed first, so it also learns of a listener that ends as soon as it
+        // is subscribed.
+        return merge(welcomeTimeout$, events$)
+      })
+
+      const events$ = connection$.pipe(
         retry({
           delay: (error) => {
             if (
@@ -122,10 +159,7 @@ export function reconnectListener<T extends {type: string}>(
             ) {
               return throwError(() => error)
             }
-            if (!reconnecting) {
-              reconnecting = true
-              outageStarts.next(RECONNECT)
-            }
+            startOutage()
             const delayMs = reconnectDelay(attempt, options)
             attempt += 1
             return timer(delayMs)

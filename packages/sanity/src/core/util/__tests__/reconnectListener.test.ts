@@ -1,5 +1,5 @@
 import {ChannelError, ConnectionFailedError, DisconnectError} from '@sanity/client'
-import {defer, Subject} from 'rxjs'
+import {defer, EMPTY, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {
@@ -240,6 +240,81 @@ describe('reconnectListener', () => {
       expect(connections[0].observed).toBe(true)
       current().next({type: 'reconnect'})
       expect(connections[0].observed).toBe(false)
+    })
+  })
+
+  describe('when a connection does not open', () => {
+    it('starts an outage after 10s and keeps the connection', async () => {
+      const {connections, current, events} = subscribe()
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(events).toEqual([])
+      await vi.advanceTimersByTimeAsync(1)
+      expect(events).toEqual([{type: 'reconnect'}])
+      expect(connections).toHaveLength(1)
+      expect(connections[0].observed).toBe(true)
+
+      // Opening late ends the outage.
+      current().next({type: 'welcome'})
+      current().error(internalError())
+      expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}, {type: 'reconnect'}])
+    })
+
+    it('does not announce the outage again when the client then fails to reconnect', async () => {
+      const {connections, current, events} = subscribe({...noJitter, maxClientReconnects: 3})
+      await vi.advanceTimersByTimeAsync(10_000)
+      current().next({type: 'reconnect'})
+      current().next({type: 'reconnect'})
+
+      expect(events).toEqual([{type: 'reconnect'}])
+      expect(connections[0].observed).toBe(true)
+
+      current().next({type: 'welcome'})
+      expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    })
+
+    it.each(['welcome', 'welcomeback', 'reset'] as const)(
+      'does not start an outage when the connection opens with %s in time',
+      async (type) => {
+        const {current, events} = subscribe()
+        await vi.advanceTimersByTimeAsync(9_999)
+        current().next({type})
+        await vi.advanceTimersByTimeAsync(60_000)
+        expect(events).toEqual([{type}])
+      },
+    )
+
+    it('honours welcomeTimeoutMs', async () => {
+      const {events} = subscribe({...noJitter, welcomeTimeoutMs: 2_000})
+      await vi.advanceTimersByTimeAsync(2_000)
+      expect(events).toEqual([{type: 'reconnect'}])
+    })
+
+    it.each([
+      ['after it welcomes', of<ListenerEvent>({type: 'welcome'})],
+      ['before it welcomes', EMPTY],
+    ])('completes as soon as the listener completes %s', (_, listener$) => {
+      const events: unknown[] = []
+      let completed = false
+      listener$.pipe(reconnectListener(noJitter)).subscribe({
+        next: (event) => events.push(event),
+        complete: () => {
+          completed = true
+        },
+      })
+      expect(completed).toBe(true)
+      expect(events).toEqual(listener$ === EMPTY ? [] : [{type: 'welcome'}])
+    })
+
+    it('times each connection separately', async () => {
+      const {current, events} = subscribe()
+      await vi.advanceTimersByTimeAsync(5_000)
+      current().error(internalError())
+      await vi.advanceTimersByTimeAsync(1_000)
+      current().next({type: 'welcome'})
+
+      // The closed connection's timeout would have ended now.
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
     })
   })
 
