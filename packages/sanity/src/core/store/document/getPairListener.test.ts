@@ -404,6 +404,25 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('passes the welcome on before its snapshots', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      expect(events.map((e) => e.type)).toEqual([
+        // once per stream: draft, published and version
+        'welcome',
+        'welcome',
+        'welcome',
+        'snapshot',
+        'snapshot',
+      ])
+
+      sub.unsubscribe()
+    })
+
     test('welcomeback event does NOT trigger snapshot fetch', async () => {
       const getDocuments = (
         client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
@@ -421,6 +440,62 @@ describe('getPairListener', () => {
 
       // welcomeback means resume succeeded — no snapshot fetch needed
       expect(getDocuments.mock.calls.length).toBe(fetchCountAfterWelcome)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener down before it welcomes', () => {
+    function getDocumentsOf(mockClient: SanityClient) {
+      return (mockClient as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}})
+        .observable.getDocuments
+    }
+
+    test('fetches the snapshots after a reconnect that comes before any welcome', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+      // The reconnect goes first, so the snapshots are not mistaken for a live connection.
+      expect(events.map((e) => e.type)).toEqual([
+        'reconnect',
+        'reconnect',
+        'reconnect',
+        'snapshot',
+        'snapshot',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches the snapshots again once the listener welcomes', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+
+    test('does not fetch the snapshots again when a live listener goes down', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
 
       sub.unsubscribe()
     })

@@ -37,8 +37,7 @@ afterEach(() => {
 })
 
 describe('a pair listener that is down before it welcomes', () => {
-  // B only fetches its snapshots on `welcome`, so it shows nothing until its listener comes back.
-  test.fails('LSN-DOWN-BEFORE-WELCOME: B loads the documents while its listener is down', async () => {
+  test('LSN-DOWN-BEFORE-WELCOME: B loads the documents while its listener is down', async () => {
     world = await runSyncTest(listenerDownBeforeWelcome)
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Draft title')
     expect(world.clients.B.localDocument(PUBLISHED_ID)?.title).toBe('Published title')

@@ -470,7 +470,19 @@ export function checkoutPair(
   }).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
-    filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),
+    filter(
+      (ev) =>
+        ev.type === 'reconnect' ||
+        ev.type === 'welcome' ||
+        ev.type === 'welcomeback' ||
+        ev.type === 'reset',
+    ),
+    // A subscriber to the document events that arrives after the listener connected (a form that
+    // mounts after the pair was checked out) learns the current connection state from the latest
+    // connection event. The pair keeps its events subscribed for as long as it is checked out, and
+    // they subscribe to this first, so a connection event the listener delivers as soon as it is
+    // subscribed is recorded too.
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   const draft = createBufferedDocument(
@@ -732,7 +744,7 @@ export function checkoutPair(
     commitError$,
     draft: {
       ...draft,
-      events: merge(combinedEvents, connectionChangeEvents$, draft.events).pipe(
+      events: merge(connectionChangeEvents$, combinedEvents, draft.events).pipe(
         map(setVersion('draft')),
       ),
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
@@ -742,7 +754,7 @@ export function checkoutPair(
       : {
           version: {
             ...version,
-            events: merge(combinedEvents, connectionChangeEvents$, version.events).pipe(
+            events: merge(connectionChangeEvents$, combinedEvents, version.events).pipe(
               map(setVersion('version')),
             ),
             remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
@@ -750,7 +762,7 @@ export function checkoutPair(
         }),
     published: {
       ...published,
-      events: merge(combinedEvents, connectionChangeEvents$, published.events).pipe(
+      events: merge(connectionChangeEvents$, combinedEvents, published.events).pipe(
         map(setVersion('published')),
       ),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),

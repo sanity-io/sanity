@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {type Observable, of, timer} from 'rxjs'
-import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
+import {type Observable, of, type OperatorFunction, timer} from 'rxjs'
+import {distinctUntilChanged, filter, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 
 import {useDocumentStore} from '../store/datastores'
 import {type DocumentStore} from '../store/document/document-store'
@@ -10,6 +10,30 @@ import {type DocumentStore} from '../store/document/document-store'
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
 const INITIAL: ConnectionState = 'connecting'
+
+// The events the document's listener opens a connection with, and the one it loses it with.
+const CONNECTION_EVENT_TYPES = new Set(['welcome', 'welcomeback', 'reset', 'reconnect'])
+
+/**
+ * Derives the connection state from a document's events. Only the listener's connection events
+ * count: the document's snapshots also load while the listener is down, so a snapshot says
+ * nothing about whether the document is live.
+ *
+ * @internal
+ */
+export function toConnectionState(): OperatorFunction<{type: string}, ConnectionState> {
+  return (events$) =>
+    events$.pipe(
+      filter((event) => CONNECTION_EVENT_TYPES.has(event.type)),
+      map((event) => event.type !== 'reconnect'),
+      switchMap((isConnected): Observable<ConnectionState> =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
+      ),
+      startWith(INITIAL),
+      distinctUntilChanged(),
+    )
+}
 
 /**
  * The realtime connection state for a document, derived from its listener
@@ -24,16 +48,9 @@ export function connectionState(
   docTypeName: string,
   version?: string,
 ): Observable<ConnectionState> {
-  return documentStore.pair.documentEvents(publishedDocId, docTypeName, version).pipe(
-    map((ev: {type: string}) => ev.type),
-    map((eventType) => eventType !== 'reconnect'),
-    switchMap((isConnected): Observable<ConnectionState> =>
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
-    ),
-    startWith(INITIAL),
-    distinctUntilChanged(),
-  )
+  return documentStore.pair
+    .documentEvents(publishedDocId, docTypeName, version)
+    .pipe(toConnectionState())
 }
 
 /** @internal */
