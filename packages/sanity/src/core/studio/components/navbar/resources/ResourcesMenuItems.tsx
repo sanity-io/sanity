@@ -167,6 +167,7 @@ function StudioVersion({
             tone={deprecatedVersion ? 'caution' : undefined}
             as="div"
             trim={true}
+            style={deprecatedVersion ? undefined : {color: 'var(--card-fg-color)'}}
           >
             {t('help-resources.studio')}
           </Text>
@@ -183,7 +184,7 @@ function StudioVersion({
               </TextWithTone>
             </Flex>
           ) : (
-            <Text muted size={1} as="div" trim={true}>
+            <Text muted size={1} as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
               {subtitle}
             </Text>
           )}
