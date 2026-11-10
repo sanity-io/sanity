@@ -21,6 +21,8 @@ import {
   createSearch,
   createSWR,
   getSearchableTypes,
+  reconnectListener,
+  retryTransientFetch,
   type SanityDocumentLike,
   type Schema,
   type SearchFactoryOptions,
@@ -157,6 +159,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       tag: 'listen-search-query',
     })
   }).pipe(
+    reconnectListener(),
     mergeMap((ev, i) => {
       // When a connection is successfully established, the first event will be 'welcome'
       if (i > 0 || ev.type === 'welcome') {
@@ -200,7 +203,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       // If we have a static list of types, we can skip fetching the types and use the static list.
       const typeNames$ = staticTypeNames
         ? of(staticTypeNames)
-        : client.observable.fetch(`array::unique(*[${groqFilter}][]._type)`, params)
+        : client.observable
+            .fetch(`array::unique(*[${groqFilter}][]._type)`, params)
+            .pipe(retryTransientFetch())
 
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
@@ -254,6 +259,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             }
 
             return search(searchTerms, searchOptions).pipe(
+              // A failed fetch would end the list, close its listener and show the error screen.
+              retryTransientFetch(),
               map((result) => result.hits.map(({hit}) => hit)),
               map((hits) => ({
                 type: 'result' as const,

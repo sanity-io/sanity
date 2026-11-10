@@ -567,6 +567,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  reconnectListener,
+  ReconnectListenerOptions,
   recordStructurePaneKind,
   recordStructureTool,
   Rect,
@@ -609,6 +611,7 @@ import type {
   ResourceCacheProvider,
   ResourceCacheProviderProps,
   RetryingStatus,
+  retryTransientFetch,
   RevertChangesButton,
   RevertChangesConfirmDialog,
   RouterContext,
@@ -2605,6 +2608,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
+  })
   test('recordStructurePaneKind', () => {
     expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()
   })
@@ -2731,6 +2740,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('RetryingStatus', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
+  })
+  test('retryTransientFetch', () => {
+    expectTypeOf<typeof retryTransientFetch>().toBeFunction()
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().toBeFunction()

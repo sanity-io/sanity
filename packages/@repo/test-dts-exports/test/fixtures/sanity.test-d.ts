@@ -1245,6 +1245,8 @@ import type {
   readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
+  reconnectListener,
+  ReconnectListenerOptions,
   Rect,
   Reference,
   ReferenceAutocomplete,
@@ -1334,6 +1336,7 @@ import type {
   ResourceCacheProvider,
   ResourceCacheProviderProps,
   RetryingStatus,
+  retryTransientFetch,
   RevertChangesButton,
   RevertChangesConfirmDialog,
   Role,
@@ -5636,6 +5639,12 @@ describe('sanity', () => {
   test('ReconnectEvent', () => {
     expectTypeOf<ReconnectEvent>().not.toBeNever()
   })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
+  })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()
   })
@@ -5904,6 +5913,9 @@ describe('sanity', () => {
   })
   test('RetryingStatus', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
+  })
+  test('retryTransientFetch', () => {
+    expectTypeOf<typeof retryTransientFetch>().toBeFunction()
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().toBeFunction()

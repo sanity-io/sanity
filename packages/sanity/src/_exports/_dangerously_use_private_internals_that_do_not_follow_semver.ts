@@ -1049,6 +1049,8 @@ export {isString} from '../core/util/isString'
 export {isTruthy} from '../core/util/isTruthy'
 export {measureFirstEmission, measureFirstMatch} from '../core/util/measureFirstEmission'
 export {type PartialExcept} from '../core/util/PartialExcept'
+export {retryTransientFetch} from '../core/util/fetchErrors'
+export {reconnectListener, type ReconnectListenerOptions} from '../core/util/reconnectListener'
 export {
   type CardinalityOneRelease,
   isCardinalityOnePerspective,
