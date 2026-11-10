@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {firstValueFrom, of} from 'rxjs'
+import {concat, firstValueFrom, NEVER, type Observable, of} from 'rxjs'
 import {createSearch, type SearchSort} from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -125,5 +125,42 @@ describe('listenSearchQuery', () => {
       expect.anything(),
       expect.objectContaining({variant: undefined}),
     )
+  })
+
+  describe('while the list listener is down', () => {
+    const book = {_id: 'book-1', _type: 'book'}
+
+    // Each test lists its own type: the list caches its last result per query across calls.
+    function listBooks(listen: () => Observable<unknown>, typeName: string) {
+      const search = vi.fn(() => of({hits: [{hit: book}]}))
+      mockCreateSearch.mockReturnValue(search as never)
+      const client = {
+        listen: vi.fn(listen),
+        observable: {fetch: vi.fn(() => of([typeName]))},
+      } as unknown as SanityClient
+      const states$ = listenSearchQuery({
+        client,
+        filter: `_type == "${typeName}"`,
+        limit: 25,
+        params: {},
+        schema: {} as Schema,
+        searchQuery: '',
+        sort: {by: [{field: '_updatedAt', direction: 'desc'}]},
+        staticTypeNames: [typeName],
+      })
+      return {client, search, states$}
+    }
+
+    // The client emits `reconnect` before `welcome` when the listen request fails, and keeps
+    // retrying it on its own.
+    it.fails('lists the documents the search finds', async () => {
+      const {states$} = listBooks(() => concat(of({type: 'reconnect'}), NEVER), 'bookUnreachable')
+
+      expect(await firstValueFrom(states$)).toEqual({
+        connected: false,
+        fromCache: false,
+        documents: [book],
+      })
+    })
   })
 })
