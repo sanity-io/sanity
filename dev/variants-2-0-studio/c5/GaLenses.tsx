@@ -51,7 +51,7 @@ interface MatrixRow {
  * Dimension lens (GA): a coverage matrix. One row per document, one column per definition that uses the chosen dimension
  * (cells: published, draft, in a release, no version), a summary row with "n of m documents", and one empty column for
  * each declared value that has no definition yet. Declared values come from a FIXTURE (./dimensionConfig.ts): there is
- * no dimension config on the server. Read only; a column header or a cell opens the Definition lens for that definition.
+ * no dimension config on the server (mocked in ../mocks/serverGrounds.ts). Read only; a column header or a cell opens the Definition lens for that definition.
  */
 export function DimensionMatrix(props: {
   corpus: Corpus
@@ -183,7 +183,7 @@ export function DimensionMatrix(props: {
         </Text>
         {columnsOf.declared.length ? (
           <Badge data-testid="dimension-fixture" tone="caution">
-            Fixture: declared values need a server-side dimension config
+            Mocked server data: the declared values come from a mocked dimension document
           </Badge>
         ) : null}
       </Flex>
