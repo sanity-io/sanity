@@ -508,6 +508,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
+  /** The description of the reconnecting toast, explaining why documents can't be edited */
+  'common.reconnecting.toast.description':
+    'Documents are read-only until the connection is restored.',
   /** The title of the reconnecting toast */
   'common.reconnecting.toast.title': 'Trying to connect…',
 
