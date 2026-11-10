@@ -1,9 +1,16 @@
-import {ChannelError, ClientError, type SanityClient, ServerError} from '@sanity/client'
+import {
+  ChannelError,
+  ClientError,
+  createClient,
+  type SanityClient,
+  ServerError,
+} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {concat, defer, firstValueFrom, NEVER, type Observable, of, Subject, throwError} from 'rxjs'
-import {createSearch, type SearchSort} from 'sanity'
+import {concat, defer, firstValueFrom, NEVER, Observable, of, Subject, throwError} from 'rxjs'
+import {createSearch, LISTENER_PAUSE_GRACE_PERIOD, listenerGate, type SearchSort} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../../test/testUtils/documentVisibility'
 import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -14,6 +21,9 @@ vi.mock('sanity', async (importOriginal) => ({
 }))
 
 const mockCreateSearch = vi.mocked(createSearch)
+
+// `LISTENER_PAUSE_GRACE_PERIOD_STORAGE_KEY`, which `sanity` does not export
+const GRACE_PERIOD_STORAGE_KEY = '_sanity_listenerPauseGracePeriod'
 
 const CONFIGURED_SORT: SearchSort[] = [{field: '_updatedAt', direction: 'desc'}]
 
@@ -79,6 +89,50 @@ describe('resolveSearchOrdering', () => {
     ).toEqual({skipSortByScore: true, sort: chosenSort})
   })
 })
+
+function createGatedClient() {
+  const connections = {opened: 0, open: 0, current: null as Subject<unknown> | null}
+  const client = createClient({
+    projectId: 'abc',
+    dataset: 'production',
+    apiVersion: '2025-02-19',
+    useCdn: false,
+  })
+  vi.spyOn(client, 'listen').mockImplementation(
+    () =>
+      new Observable((subscriber) => {
+        const connection = new Subject<unknown>()
+        connections.opened++
+        connections.open++
+        connections.current = connection
+        const subscription = connection.subscribe(subscriber)
+        return () => {
+          connections.open--
+          subscription.unsubscribe()
+        }
+      }) as never,
+  )
+  return {client, connections}
+}
+
+function subscribeToList(client: SanityClient, searchQuery: string) {
+  const states: Array<Pick<SearchQueryState, 'connected' | 'documents'>> = []
+  const errors: unknown[] = []
+  const subscription = listenSearchQuery({
+    client,
+    filter: '_type == "author"',
+    limit: 25,
+    params: {},
+    schema: {} as Schema,
+    searchQuery,
+    sort: {by: [{field: '_updatedAt', direction: 'desc'}]},
+    staticTypeNames: ['author'],
+  }).subscribe({
+    next: ({connected, documents}) => states.push({connected, documents}),
+    error: (error) => errors.push(error),
+  })
+  return {states, errors, subscription}
+}
 
 describe('listenSearchQuery', () => {
   function runListenSearchQuery(variant?: string) {
@@ -381,6 +435,161 @@ describe('listenSearchQuery', () => {
 
       expect(errors).toEqual([denied])
       expect(searchRequest.requests()).toBe(1)
+    })
+  })
+
+  describe('on a hidden page', () => {
+    afterEach(() => {
+      localStorage.removeItem(GRACE_PERIOD_STORAGE_KEY)
+      listenerGate.setEnabled(false)
+      vi.useRealTimers()
+      vi.restoreAllMocks()
+    })
+
+    it('shows the list as reconnecting while paused, and searches again when shown', async () => {
+      vi.useFakeTimers()
+      listenerGate.setEnabled(true)
+      const documentVisibility = stubDocumentVisibility()
+      const connections = {opened: 0, open: 0}
+      const client = createClient({
+        projectId: 'abc',
+        dataset: 'production',
+        apiVersion: '2025-02-19',
+        useCdn: false,
+      })
+      vi.spyOn(client, 'listen').mockImplementation(
+        () =>
+          new Observable((subscriber) => {
+            connections.opened++
+            connections.open++
+            subscriber.next({type: 'welcome'})
+            return () => {
+              connections.open--
+            }
+          }) as never,
+      )
+      const search = vi
+        .fn()
+        .mockReturnValueOnce(of({hits: [{hit: {_id: 'a', _type: 'author'}}]}))
+        .mockReturnValueOnce(
+          of({hits: [{hit: {_id: 'a', _type: 'author'}}, {hit: {_id: 'b', _type: 'author'}}]}),
+        )
+      mockCreateSearch.mockReturnValue(search as never)
+
+      const states: Array<Pick<SearchQueryState, 'connected' | 'documents'>> = []
+      const subscription = listenSearchQuery({
+        client,
+        filter: '_type == "author"',
+        limit: 25,
+        params: {},
+        schema: {} as Schema,
+        searchQuery: 'hidden-page',
+        sort: {by: [{field: '_updatedAt', direction: 'desc'}]},
+        staticTypeNames: ['author'],
+      }).subscribe(({connected, documents}) => states.push({connected, documents}))
+      await vi.advanceTimersByTimeAsync(0)
+
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(connections.open).toBe(0)
+
+      documentVisibility.set('visible')
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(connections).toEqual({opened: 2, open: 1})
+      expect(states).toEqual([
+        {connected: true, documents: [{_id: 'a', _type: 'author'}]},
+        {connected: false, documents: [{_id: 'a', _type: 'author'}]},
+        {
+          connected: true,
+          documents: [
+            {_id: 'a', _type: 'author'},
+            {_id: 'b', _type: 'author'},
+          ],
+        },
+      ])
+      subscription.unsubscribe()
+    })
+
+    it('shows the list as connected when the page is shown right after a mutation and a pause', async () => {
+      vi.useFakeTimers()
+      listenerGate.setEnabled(true)
+      const documentVisibility = stubDocumentVisibility()
+      const {client, connections} = createGatedClient()
+      mockCreateSearch.mockReturnValue(
+        vi.fn(() => of({hits: [{hit: {_id: 'a', _type: 'author'}}]})) as never,
+      )
+
+      const {states, errors, subscription} = subscribeToList(client, 'pause-after-mutation')
+      connections.current!.next({type: 'welcome'})
+      await vi.advanceTimersByTimeAsync(0)
+
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(LISTENER_PAUSE_GRACE_PERIOD - 500)
+      // A mutation in the last second before the pause opens a throttle window
+      connections.current!.next({type: 'mutation', visibility: 'query'})
+      await vi.advanceTimersByTimeAsync(500)
+      expect(connections.open).toBe(0)
+
+      documentVisibility.set('visible')
+      connections.current!.next({type: 'welcome'})
+      await vi.advanceTimersByTimeAsync(5_000)
+
+      expect(errors).toEqual([])
+      expect(connections).toMatchObject({opened: 2, open: 1})
+      expect(states.at(-1)).toEqual({connected: true, documents: [{_id: 'a', _type: 'author'}]})
+      subscription.unsubscribe()
+    })
+
+    it('does not time out while a page opened in the background has not been shown', async () => {
+      vi.useFakeTimers()
+      listenerGate.setEnabled(true)
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const {client, connections} = createGatedClient()
+      mockCreateSearch.mockReturnValue(
+        vi.fn(() => of({hits: [{hit: {_id: 'a', _type: 'author'}}]})) as never,
+      )
+
+      const {states, errors, subscription} = subscribeToList(client, 'opened-in-background')
+      await vi.advanceTimersByTimeAsync(5 * 60_000)
+      expect(errors).toEqual([])
+      expect(connections.opened).toBe(0)
+
+      documentVisibility.set('visible')
+      connections.current!.next({type: 'welcome'})
+      await vi.advanceTimersByTimeAsync(1)
+
+      expect(errors).toEqual([])
+      expect(states).toEqual([{connected: true, documents: [{_id: 'a', _type: 'author'}]}])
+      subscription.unsubscribe()
+    })
+
+    it('does not time out while paused before the first welcome, and times out each connection on its own', async () => {
+      vi.useFakeTimers()
+      // A grace period shorter than the welcome timeout pauses the listener before it can time out
+      localStorage.setItem(GRACE_PERIOD_STORAGE_KEY, '1000')
+      listenerGate.setEnabled(true)
+      const documentVisibility = stubDocumentVisibility()
+      const {client, connections} = createGatedClient()
+      mockCreateSearch.mockReturnValue(
+        vi.fn(() => of({hits: [{hit: {_id: 'a', _type: 'author'}}]})) as never,
+      )
+
+      const {states, errors, subscription} = subscribeToList(client, 'paused-before-welcome')
+      await vi.advanceTimersByTimeAsync(5_000)
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(connections.open).toBe(0)
+      expect(errors).toEqual([])
+      expect(states).toEqual([])
+
+      documentVisibility.set('visible')
+      // The new connection gets the full welcome timeout, after which the list is fetched without it
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(states).toEqual([])
+      await vi.advanceTimersByTimeAsync(1 + 10)
+      expect(errors).toEqual([])
+      expect(states).toEqual([{connected: false, documents: [{_id: 'a', _type: 'author'}]}])
+      subscription.unsubscribe()
     })
   })
 })
