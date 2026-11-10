@@ -170,6 +170,79 @@ describe('reconnectListener', () => {
     expect(connections).toHaveLength(1)
   })
 
+  describe('when the client keeps failing to reconnect on its own', () => {
+    it('leaves a single failed attempt to the client', async () => {
+      const {connections, current, events} = subscribe()
+      current().next({type: 'welcome'})
+      current().next({type: 'reconnect'})
+      current().next({type: 'welcome'})
+      current().next({type: 'reconnect'})
+
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(connections).toHaveLength(1)
+      expect(connections[0].observed).toBe(true)
+      expect(events).toEqual([
+        {type: 'welcome'},
+        {type: 'reconnect'},
+        {type: 'welcome'},
+        {type: 'reconnect'},
+      ])
+    })
+
+    it('replaces the connection with one opened with backoff after the second failed attempt', async () => {
+      const {connections, current, events} = subscribe()
+      current().next({type: 'welcome'})
+      current().next({type: 'reconnect'})
+      current().next({type: 'reconnect'})
+
+      // The client's own connection is closed, so its fixed-interval retries stop.
+      expect(connections[0].observed).toBe(false)
+      await vi.advanceTimersByTimeAsync(999)
+      expect(connections).toHaveLength(1)
+      await vi.advanceTimersByTimeAsync(1)
+      expect(connections).toHaveLength(2)
+      expect(events).toEqual([{type: 'welcome'}, {type: 'reconnect'}])
+    })
+
+    it('replaces connections opened with backoff after their first failed attempt', async () => {
+      const {connections, current, events} = subscribe()
+      current().next({type: 'reconnect'})
+      current().next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(1_000)
+
+      current().next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(1_999)
+      expect(connections).toHaveLength(2)
+      await vi.advanceTimersByTimeAsync(1)
+      expect(connections).toHaveLength(3)
+
+      current().next({type: 'welcome'})
+      expect(events).toEqual([{type: 'reconnect'}, {type: 'welcome'}])
+    })
+
+    it('leaves failed attempts to the client again once a connection opens', async () => {
+      const {connections, current} = subscribe()
+      current().next({type: 'reconnect'})
+      current().next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(1_000)
+      current().next({type: 'welcome'})
+
+      current().next({type: 'reconnect'})
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(connections).toHaveLength(2)
+      expect(connections[1].observed).toBe(true)
+    })
+
+    it('honours maxClientReconnects', async () => {
+      const {connections, current} = subscribe({...noJitter, maxClientReconnects: 3})
+      current().next({type: 'reconnect'})
+      current().next({type: 'reconnect'})
+      expect(connections[0].observed).toBe(true)
+      current().next({type: 'reconnect'})
+      expect(connections[0].observed).toBe(false)
+    })
+  })
+
   it('keeps the backoff of each subscription separate', async () => {
     const listener = createListener()
     const recovered$ = listener.listener$.pipe(reconnectListener(noJitter))

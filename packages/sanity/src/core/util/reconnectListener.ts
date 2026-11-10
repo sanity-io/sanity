@@ -21,6 +21,22 @@ export interface ReconnectListenerOptions {
   maxDelayMs?: number
   /** Source of the jitter, a number in `[0, 1)`. */
   random?: () => number
+  /**
+   * How many `reconnect` events the listener may emit without opening a connection before its
+   * connection is replaced by one opened with backoff.
+   */
+  maxClientReconnects?: number
+}
+
+/**
+ * Raised when the client keeps failing to reconnect on its own, to hand the reconnect over to the
+ * backoff.
+ */
+class ClientReconnectsExceededError extends Error {
+  constructor() {
+    super('The listener failed to reconnect')
+    this.name = 'ClientReconnectsExceededError'
+  }
 }
 
 const RECONNECT: ReconnectEvent = {type: 'reconnect'}
@@ -54,6 +70,13 @@ export function reconnectDelay(
  *   react to when the client reconnects on its own: the document form turns read-only, document
  *   lists mark themselves as not live. A `reconnect` the listener emitted itself starts the outage
  *   too, so an outage never emits more than one.
+ * - the client retries a failed listen request on its own, at a fixed interval and for as long as
+ *   it keeps failing (every 3s after a network failure, every 1s after a 5xx), emitting a
+ *   `reconnect` for each attempt. Once it has emitted `maxClientReconnects` of them without
+ *   opening a connection, its connection is closed and replaced by one opened with backoff, and
+ *   every connection opened during the outage is replaced after its first failed attempt. A
+ *   connection opened this way cannot resume from the last event, so it opens with `welcome`
+ *   rather than `welcomeback`, which makes the consumers refetch.
  *
  * Any other error is passed on. Place the operator right after `client.listen()`, before the
  * listener is shared, so that a single recovery serves every subscriber.
@@ -63,24 +86,40 @@ export function reconnectDelay(
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
+  const {maxClientReconnects = 2} = options
   return (listener$) =>
     defer(() => {
       let attempt = 0
       let reconnecting = false
+      let clientReconnects = 0
       const outageStarts = new Subject<ReconnectEvent>()
 
       const events$ = listener$.pipe(
-        tap((event) => {
-          if (CONNECTED_EVENT_TYPES.has(event.type)) {
-            attempt = 0
-            reconnecting = false
-          } else if (event.type === 'reconnect') {
-            reconnecting = true
-          }
+        tap({
+          subscribe: () => {
+            clientReconnects = 0
+          },
+          next: (event) => {
+            if (CONNECTED_EVENT_TYPES.has(event.type)) {
+              attempt = 0
+              reconnecting = false
+              clientReconnects = 0
+            } else if (event.type === 'reconnect') {
+              reconnecting = true
+              clientReconnects += 1
+              // A connection opened with backoff is replaced as soon as it fails.
+              if (clientReconnects >= (attempt === 0 ? maxClientReconnects : 1)) {
+                throw new ClientReconnectsExceededError()
+              }
+            }
+          },
         }),
         retry({
           delay: (error) => {
-            if (!isTransientListenerError(error)) {
+            if (
+              !(error instanceof ClientReconnectsExceededError) &&
+              !isTransientListenerError(error)
+            ) {
               return throwError(() => error)
             }
             if (!reconnecting) {
