@@ -1225,7 +1225,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.20(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       rimraf:
         specifier: 'catalog:'
@@ -1250,7 +1250,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.20(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
 
   examples/studios/movies-studio:
     dependencies:
