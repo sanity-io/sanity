@@ -681,6 +681,15 @@ they are read from). Both read the namespace table in
 `packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs`; update it when adding a namespace or
 changing which plugin registers one.
 
+### Locale resources: never delete a key
+
+Never delete a key from an en-US locale resource file (`bundles/studio.ts`, the plugins'
+`i18n/resources.ts`). Studios on older versions still read keys the current code has stopped
+using, and they load translations from the same locale packages, which track these resources.
+Changing a key's value is fine. When a key falls out of use, keep it and add
+`@deprecated no longer in use` to its TSDoc comment, as the existing ones do. Renaming a key
+counts as deleting it: add the new key and deprecate the old one.
+
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
