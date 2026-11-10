@@ -1,4 +1,4 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {type Observable, timer} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -11,18 +11,20 @@ import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
  * `invalidationChannel` are served by one connection, which opens on the first subscription and
  * closes `LISTENER_RESET_DELAY` after the last subscriber has left.
  *
- * Both start with an event that means "fetch now": `welcome` on `globalListener`, `connected` on
- * `invalidationChannel`. Fetch when it arrives rather than when you subscribe, since a fetch made
- * before the listener has connected can miss the changes made until it does. A new subscriber
- * gets the event right away while the listener stays connected, and every subscriber gets it
- * again once the listener has reconnected after losing its connection: changes may have been
- * missed in between, so fetch again.
+ * Both start with `{type: 'connected'}`, which means "fetch now". Fetch when it arrives rather
+ * than when you subscribe, since a fetch made before the listener has connected can miss the
+ * changes made until it does. A new subscriber gets the event right away while the listener stays
+ * connected, and every subscriber gets it again once the listener has reconnected after losing its
+ * connection: changes may have been missed in between, so fetch again. A subscriber that arrives
+ * while the listener is down gets it right away too, since it has nothing loaded yet, and again
+ * once the listener connects. A subscriber that has loaded keeps what it loaded while the listener
+ * is down.
  *
  * @internal
  */
 export interface GlobalListenerStore {
   /**
-   * The listener's own events: `welcome`, then a `mutation` event with its mendoza effects for
+   * `{type: 'connected'}`, then the listener's `mutation` event with its mendoza effects for
    * every change to a document in the dataset, for keeping a local copy of documents in sync, or
    * whenever the changed document's id is not enough. The preview store's
    * `unstable_observeDocument` keeps a whole document in sync this way.
@@ -33,14 +35,14 @@ export interface GlobalListenerStore {
    * const releaseIds$ = globalListenerStore.globalListener.pipe(
    *   filter(
    *     (event) =>
-   *       event.type === 'welcome' ||
+   *       event.type === 'connected' ||
    *       (event.documentId.startsWith('_.releases.') && event.transition !== 'update'),
    *   ),
    *   switchMap(() => client.observable.fetch<string[]>('*[_id in path("_.releases.*")]._id')),
    * )
    * ```
    */
-  globalListener: Observable<WelcomeEvent | MutationEvent>
+  globalListener: Observable<{type: 'connected'} | MutationEvent>
   /**
    * `{type: 'connected'}`, then a mutation event for every change to a document in the dataset.
    * Fetch on `connected`, the first time and again after every reconnect. A mutation event carries
@@ -107,17 +109,21 @@ export function createGlobalListenerStore({
       }),
     )
 
+  // A subscriber first sees the latest `welcome` or `reconnect` the listener replays, or the first
+  // one after it subscribed. Either makes it load from scratch (`connected`): a `reconnect` there
+  // means the listener is down and the subscriber has nothing loaded yet, and it loads again once
+  // the listener welcomes. A later `reconnect` is ignored, the subscriber keeps what it loaded.
   const globalListener = listener.pipe(
     filter(
-      (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now until we've verified that downstream consumers can handle them
-        event.type === 'mutation' || event.type === 'welcome',
+      (event, index) =>
+        event.type === 'mutation' ||
+        event.type === 'welcome' ||
+        (index === 0 && event.type === 'reconnect'),
+    ),
+    map((event): {type: 'connected'} | MutationEvent =>
+      event.type === 'mutation' ? event : {type: 'connected'},
     ),
   )
 
-  const invalidationChannel = globalListener.pipe(
-    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
-  )
-
-  return {globalListener, invalidationChannel}
+  return {globalListener, invalidationChannel: globalListener}
 }

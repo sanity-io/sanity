@@ -1,4 +1,4 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 import uniq from 'lodash-es/uniq.js'
@@ -43,7 +43,8 @@ export function createObserveDocument({
   client,
 }: {
   client: SanityClient
-  mutationChannel: Observable<WelcomeEvent | ListenerMutationEventLike>
+  /** `connected` loads the document from scratch, see `InvalidationChannelEvent` */
+  mutationChannel: Observable<{type: 'connected'} | ListenerMutationEventLike>
 }) {
   const getBatchFetcher = memoize(
     function getBatchFetcher(apiConfig: {dataset: string; projectId: string; apiVersion: string}) {
@@ -70,7 +71,7 @@ export function createObserveDocument({
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(
       concatMap((event): Observable<DocumentEvent> => {
-        if (event.type === 'welcome') {
+        if (event.type === 'connected') {
           return fetchDocument(id).pipe(
             map((document) => ({type: 'snapshot' as const, document: document ?? null})),
           )
