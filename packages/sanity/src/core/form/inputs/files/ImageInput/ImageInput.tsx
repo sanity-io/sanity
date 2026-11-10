@@ -82,9 +82,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const uploadSubscription = useRef<null | Subscription>(null)
 
   const imageOptions = schemaType.options
+  const storedHotspot = value?.hotspot
   const handleAssetChange = useCallback(
-    (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(withDefaultCrop(patch, imageOptions)),
-    [imageOptions, onChange],
+    (patch: FormPatch | FormPatch[] | PatchEvent) =>
+      onChange(withDefaultCrop(patch, imageOptions, storedHotspot)),
+    [imageOptions, onChange, storedHotspot],
   )
 
   const {

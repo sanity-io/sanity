@@ -48,6 +48,48 @@ describe('withDefaultCrop', () => {
     expect(withDefaultCrop([setAsset(WIDE_REF)], undefined).patches).toHaveLength(1)
   })
 
+  test('moves the stored hotspot inside the crop it writes', () => {
+    const hotspot = {
+      _type: 'sanity.imageHotspot' as const,
+      x: 0.15,
+      y: 0.5,
+      width: 0.1,
+      height: 0.1,
+    }
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {aspectRatio: 1}, hotspot)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'set crop',
+      'set hotspot',
+    ])
+    expect(patches[2]).toMatchObject({
+      value: {_type: 'sanity.imageHotspot', x: 0.3, y: 0.5, width: 0.1, height: 0.1},
+    })
+  })
+
+  test('leaves the hotspot alone when the asset already fits', () => {
+    const hotspot = {x: 0.15, y: 0.5, width: 0.1, height: 0.1}
+    const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], {aspectRatio: 1}, hotspot)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'unset crop',
+    ])
+  })
+
+  test('does not bring back a hotspot the same change clears', () => {
+    const hotspot = {x: 0.15, y: 0.5, width: 0.1, height: 0.1}
+    const {patches} = withDefaultCrop(
+      [unset(['hotspot']), setAsset(WIDE_REF)],
+      {aspectRatio: 1},
+      hotspot,
+    )
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'unset hotspot',
+      'set asset',
+      'set crop',
+    ])
+  })
+
   test('leaves patches that do not set the asset alone', () => {
     const patches = [
       set({_type: 'reference', _ref: WIDE_REF}, ['media']),

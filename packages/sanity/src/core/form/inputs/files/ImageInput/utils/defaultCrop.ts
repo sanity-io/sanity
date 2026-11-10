@@ -1,9 +1,10 @@
-import {type ImageOptions} from '@sanity/types'
+import {type ImageHotspot, type ImageOptions} from '@sanity/types'
 import {getDefaultImageCrop} from '@sanity/util/image'
 
 import {set, unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
 import {type FormPatch} from '../../../../patch/types'
+import {constrainHotspotToCrop} from '../../ImageToolInput/imagetool/utils'
 
 /** The asset reference a patch sets on the image, if it sets one. */
 export function getSetAssetRef(patch: FormPatch): string | undefined {
@@ -13,28 +14,47 @@ export function getSetAssetRef(patch: FormPatch): string | undefined {
   return typeof ref === 'string' ? ref : undefined
 }
 
-/** A patch writing the default crop for a newly set asset, or clearing a stale one when the asset already fits; none without an aspect ratio. */
+function isHotspotUnset(patch: FormPatch): boolean {
+  return patch.type === 'unset' && patch.path.length === 1 && patch.path[0] === 'hotspot'
+}
+
+/**
+ * Patches writing the default crop for a newly set asset, and moving `hotspot` inside it, or
+ * clearing a stale crop when the asset already fits; none without an aspect ratio.
+ */
 export function getDefaultCropPatches(
   assetRef: string | undefined,
   options: ImageOptions | undefined,
+  hotspot?: ImageHotspot,
 ): FormPatch[] {
   if (assetRef === undefined || options?.aspectRatio === undefined) {
     return []
   }
   const crop = getDefaultImageCrop(assetRef, options.aspectRatio, options.minDimensions)
-  return [crop ? set(crop, ['crop']) : unset(['crop'])]
+  if (crop === undefined) {
+    return [unset(['crop'])]
+  }
+  const hotspotPatches = hotspot
+    ? [set({...hotspot, ...constrainHotspotToCrop(hotspot, crop)}, ['hotspot'])]
+    : []
+  return [set(crop, ['crop']), ...hotspotPatches]
 }
 
-/** Adds the default crop to every patch that sets a new asset, in the same change. */
+/**
+ * Adds the default crop to every patch that sets a new asset, in the same change, and moves the
+ * stored `hotspot` inside it unless the change clears the hotspot.
+ */
 export function withDefaultCrop(
   patch: FormPatch | FormPatch[] | PatchEvent,
   options: ImageOptions | undefined,
+  hotspot?: ImageHotspot,
 ): PatchEvent {
   const {patches} = PatchEvent.from(patch)
+  const keptHotspot = patches.some(isHotspotUnset) ? undefined : hotspot
   return PatchEvent.from(
     patches.flatMap((current) => [
       current,
-      ...getDefaultCropPatches(getSetAssetRef(current), options),
+      ...getDefaultCropPatches(getSetAssetRef(current), options, keptHotspot),
     ]),
   )
 }

@@ -9,6 +9,8 @@ import {
   type AssetSource,
   type AssetSourceComponentProps,
   type AssetSourceUploadFile,
+  type ImageCrop,
+  type ImageHotspot,
   type ImageOptions,
   type SchemaType,
 } from '@sanity/types'
@@ -122,6 +124,8 @@ describe('ImageInput with asset', () => {
 describe('ImageInput default crop', () => {
   const WIDE_REF = 'image-26db46ec62059d6cd491b4343afaecc92ff1b4d5-2000x1000-jpg'
   const SQUARE_REF = 'image-26db46ec62059d6cd491b4343afaecc92ff1b4d5-1000x1000-jpg'
+  const PORTRAIT_REF = 'image-26db46ec62059d6cd491b4343afaecc92ff1b4d5-1200x1800-jpg'
+  const PANORAMA_REF = 'image-26db46ec62059d6cd491b4343afaecc92ff1b4d5-4000x1000-jpg'
   const CENTERED_SQUARE_CROP = {
     _type: 'sanity.imageCrop',
     top: 0,
@@ -259,6 +263,47 @@ describe('ImageInput default crop', () => {
     await waitFor(() => {
       expect(cropAfterAsset(onChange)).toMatchObject({type: 'unset'})
     })
+  })
+
+  it('moves the hotspot inside the crop it writes when an upload replaces the asset', async () => {
+    const value = {
+      _type: 'image',
+      asset: {_type: 'reference', _ref: PORTRAIT_REF},
+      hotspot: {_type: 'sanity.imageHotspot', x: 0.15, y: 0.5, width: 0.1, height: 0.1},
+    }
+    const assetSource: AssetSource = {
+      ...createMockAssetSourceWithMediaLibraryUploader({name: 'patching-source'}),
+      Uploader: createPatchingUploader(PANORAMA_REF),
+    }
+    const {onChange} = await renderWithOptions(
+      {hotspot: true, aspectRatio: 16 / 9, minDimensions: {width: 800, height: 450}},
+      {assetSources: [assetSource], value},
+    )
+
+    await userEvent.click(screen.getByTestId('options-menu-button'))
+    const [uploadButton] = await screen.findAllByTestId('file-input-upload-button')
+    await userEvent.click(uploadButton, {pointerEventsCheck: 0})
+    await userEvent.upload(
+      await screen.findByTestId('open-file-picker-input'),
+      new File(['content'], 'panorama.jpg', {type: 'image/jpeg'}),
+    )
+
+    await waitFor(() => {
+      expect(cropAfterAsset(onChange)).toMatchObject({type: 'set'})
+    })
+    const change = changePatches(onChange).find((patches) =>
+      patches.some((patch) => patch.path.join('.') === 'asset' && patch.type === 'set'),
+    )
+    const valueAt = (field: string) =>
+      change?.findLast((patch) => patch.type === 'set' && patch.path.join('.') === field)
+    const crop = (valueAt('crop') as {value: ImageCrop} | undefined)?.value
+    const hotspot =
+      (valueAt('hotspot') as {value: ImageHotspot} | undefined)?.value ?? value.hotspot
+    expect(crop).toBeDefined()
+    expect(hotspot.x - hotspot.width / 2).toBeGreaterThanOrEqual(crop?.left ?? 0)
+    expect(hotspot.x + hotspot.width / 2).toBeLessThanOrEqual(1 - (crop?.right ?? 0))
+    expect(hotspot.y - hotspot.height / 2).toBeGreaterThanOrEqual(crop?.top ?? 0)
+    expect(hotspot.y + hotspot.height / 2).toBeLessThanOrEqual(1 - (crop?.bottom ?? 0))
   })
 
   it('writes no crop without an aspect ratio', async () => {
