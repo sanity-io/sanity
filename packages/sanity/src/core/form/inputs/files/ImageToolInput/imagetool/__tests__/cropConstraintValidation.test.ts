@@ -104,6 +104,7 @@ async function errorsFor(fieldName: string, source: Size, crop: Crop | undefined
     document,
     schema,
     environment: 'studio',
+    validateReferenceTypes: false,
     i18n: getFallbackLocaleSource(),
     getClient: () => {
       throw new Error('crop validation needs no client')
