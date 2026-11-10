@@ -141,7 +141,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const hasFocus = focusPath[0] === imageToolPath[0]
 
   const hotspotPreviews =
-    (typeof schemaType.options?.hotspot === 'object' && schemaType.options.hotspot.previews) ||
+    (hotspotEnabled &&
+      typeof schemaType.options?.hotspot === 'object' &&
+      schemaType.options.hotspot.previews) ||
     DEFAULT_PREVIEWS
 
   useDidUpdate(hasFocus, (hadFocus) => {

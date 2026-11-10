@@ -130,6 +130,21 @@ function CropOnlyImageToolInputHarness() {
   )
 }
 
+const NULL_HOTSPOT: unknown = null
+
+const NULL_HOTSPOT_SCHEMA = createImageSchema({
+  hotspot: NULL_HOTSPOT,
+  aspectRatio: 1,
+} as ImageValueOptions)
+
+function NullHotspotImageToolInputHarness() {
+  return (
+    <TestWrapper schemaTypes={NULL_HOTSPOT_SCHEMA}>
+      <TestForm document={CROP_ONLY_DOCUMENT} focusPath={CROP_FOCUS_PATH} />
+    </TestWrapper>
+  )
+}
+
 describe('image tool input', () => {
   test('renders the hotspot and crop tool', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -180,6 +195,16 @@ describe('image tool input', () => {
     expect(dimensions.width).toBeLessThan(1000)
     expect(dimensions.width).toBeGreaterThanOrEqual(600)
     expect(state.image.hotspot).toBeUndefined()
+    await settleChromaticEndState()
+  })
+
+  test('renders the crop alone when the hotspot option is null', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<NullHotspotImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Crop', {exact: true})).toBeVisible()
+    expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
     await settleChromaticEndState()
   })
 
