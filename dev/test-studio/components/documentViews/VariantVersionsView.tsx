@@ -422,7 +422,12 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                       underlined={false}
                       style={{color: 'var(--card-link-color)'}}
                     >
-                      See document <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
+                      See document{' '}
+                      <Icon
+                        size={1}
+                        icon={LaunchIcon}
+                        style={{margin: '-0.375rem', display: 'inline'}}
+                      />
                     </Link>
                   </Text>
                   <Button mode="ghost" onClick={handleOpenDialog} text="View document JSON" />

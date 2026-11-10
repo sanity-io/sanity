@@ -1,6 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ComponentType, lazy, Suspense, use, useState} from 'react'
 import {defineField, defineType, type StringInputProps} from 'sanity'
+import {Text} from 'ui5'
 
 const SUSPEND_MS = 1_500
 
@@ -23,7 +24,9 @@ function CachedPromiseInput(props: StringInputProps) {
   const label = use(getCachedLabel(props.schemaType.name))
   return (
     <Card padding={2} tone="positive" border>
-      <Text size={1}>{label}</Text>
+      <Text size={1} as="div" trim={true} tone="positive">
+        {label}
+      </Text>
       {props.renderDefault(props)}
     </Card>
   )
@@ -34,7 +37,9 @@ function PerInstancePromiseInput(props: StringInputProps) {
   const label = use(promise)
   return (
     <Card padding={2} tone="caution" border>
-      <Text size={1}>{label}</Text>
+      <Text size={1} as="div" trim={true} tone="caution">
+        {label}
+      </Text>
       {props.renderDefault(props)}
     </Card>
   )
@@ -45,7 +50,9 @@ function WrappedPerInstancePromiseInput(props: StringInputProps) {
     <Suspense
       fallback={
         <Card padding={2} border>
-          <Text size={1}>Loading inside the input's own Suspense boundary…</Text>
+          <Text size={1} as="div" trim={true}>
+            Loading inside the input's own Suspense boundary…
+          </Text>
         </Card>
       }
     >
@@ -59,7 +66,9 @@ const LazyInput = lazy<ComponentType<StringInputProps>>(() =>
     default: function LazyLoadedInput(props: StringInputProps) {
       return (
         <Card padding={2} tone="primary" border>
-          <Text size={1}>Loaded through React.lazy</Text>
+          <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+            Loaded through React.lazy
+          </Text>
           {props.renderDefault(props)}
         </Card>
       )

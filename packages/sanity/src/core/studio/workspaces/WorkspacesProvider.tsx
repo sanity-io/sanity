@@ -184,11 +184,12 @@ export function WorkspacesProvider({
   )
 
   const createStudioRequestHandler = useCallback(
-    (getClient: () => SanityClient) =>
+    (getClient: () => SanityClient, getAuthStore?: () => AuthStore | undefined) =>
       createStudioRequestHandlerFactory({
         channel: requestErrorChannel,
         diagnostics: requestFailureDiagnostics,
         getClient,
+        getAuthStore,
         waitForCorsRetry: async () => {
           await firstValueFrom(corsRetry.pipe(take(1)))
           setCorsError(undefined)
@@ -341,15 +342,19 @@ function WorkspacesClaimProvider({
   const handleLogout = useEffectEvent(
     (unauthorizedClaim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) => {
       if (!workspaces) return
-      // Auth is project-scoped — any source matching the projectId has the
-      // right credentials and the right logout endpoint. First match wins;
-      // in practice all sources for the same project share an auth store
-      // anyway. Nested `unstable_sources` can point at another project, and
+      // The claim names the auth store when the rejected request went
+      // through one of its clients, which matters when workspaces of one
+      // project have different stores (an OAuth workspace keeps its own
+      // session). Otherwise, the first source matching the projectId: legacy
+      // sessions are project-scoped, so any of them has the right logout.
+      // Nested `unstable_sources` can point at another project, and
       // `prepareConfig` wires this channel into their auth stores too, so
       // the search covers every source, not only the root one.
-      const auth = unauthorizedClaim.projectId
-        ? findAuthStoreForProject(workspaces, unauthorizedClaim.projectId)
-        : workspaces[0]?.auth
+      const auth =
+        unauthorizedClaim.authStore ??
+        (unauthorizedClaim.projectId
+          ? findAuthStoreForProject(workspaces, unauthorizedClaim.projectId)
+          : workspaces[0]?.auth)
       if (!auth?.logout) return
       auth.logout().catch((logoutErr) => {
         // The logout request itself failed (likely network). The channel's
