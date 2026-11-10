@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {of, Subject, throwError} from 'rxjs'
+import {ChannelError, ClientError, type SanityClient, ServerError} from '@sanity/client'
+import {defer, NEVER, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
@@ -43,6 +43,33 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
     withConfig: client.withConfig,
   }
 }
+
+// Every subscription opens a new connection, as `client.listen()` does.
+function openConnections(listen: ReturnType<typeof vi.fn>) {
+  const connections: Subject<ListenerEvent>[] = []
+  listen.mockImplementation(() =>
+    defer(() => {
+      const connection = new Subject<ListenerEvent>()
+      connections.push(connection)
+      return connection
+    }),
+  )
+  return {connections, current: () => connections[connections.length - 1]}
+}
+
+function responseError(statusCode: number) {
+  const res = {
+    statusCode,
+    headers: {},
+    body: {},
+    url: 'https://example.api.sanity.io',
+    method: 'GET',
+  }
+  return statusCode >= 500 ? new ServerError(res) : new ClientError(res)
+}
+
+// The longest first retry delay (`reconnectDelay(0)`), plus the scheduler ticks that deliver it.
+const FIRST_RETRY_MS = 1000 + 10
 
 async function flushScheduled() {
   // exhaustMapWithTrailing schedules work on RxJS asyncScheduler (setInterval(0)).
@@ -354,6 +381,54 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
+  describe('when the listener fails', () => {
+    test('fetches after a channel error, and again once a new connection welcomes', async () => {
+      const {connections, current} = openConnections(listen)
+      fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      current().error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}])
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(connections).toHaveLength(2)
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}, {n: 2}])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches when the listener does not welcome in time', async () => {
+      listen.mockImplementation(() => NEVER)
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      // The fetch is subscribed and delivered on two further async scheduler ticks.
+      await vi.advanceTimersByTimeAsync(10_000 + 10)
+      expect(values).toEqual([{ok: true}])
+
+      sub.unsubscribe()
+    })
+
+    test('still errors on an error in the query', async () => {
+      const {current} = openConnections(listen)
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+
+      const error = new ChannelError('Bad query', {error: {type: 'queryParseError'}})
+      current().error(error)
+      await flushScheduled()
+
+      expect(errors).toEqual([error])
+      expect(fetch).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
+  })
+
   test('propagates a fetch error after welcome', async () => {
     const fetchError = new Error('GROQ failed')
     fetch.mockReturnValueOnce(throwError(() => fetchError))
@@ -366,6 +441,89 @@ describe('listenQuery', () => {
     expect(errors).toEqual([fetchError])
 
     sub.unsubscribe()
+  })
+
+  describe('when a fetch fails', () => {
+    test.each([
+      ['a 503', () => responseError(503)],
+      ['a 429', () => responseError(429)],
+      ['a network failure', () => new TypeError('Failed to fetch')],
+    ])('retries after %s, and keeps refetching on mutations', async (_, createError) => {
+      fetch
+        .mockReturnValueOnce(of({n: 1}))
+        .mockReturnValueOnce(throwError(createError))
+        .mockReturnValueOnce(of({n: 2}))
+        .mockReturnValueOnce(of({n: 3}))
+      const values: unknown[] = []
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({
+        next: (value) => values.push(value),
+        error: (error) => errors.push(error),
+      })
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      listener$.next(createMutationEvent())
+      await flushScheduled()
+      // The last result stays in place while the fetch fails.
+      expect(values).toEqual([{n: 1}])
+
+      await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+      expect(values).toEqual([{n: 1}, {n: 2}])
+
+      // The listener is still subscribed and still drives refetches.
+      listener$.next(createMutationEvent({transactionId: 'tx-2'}))
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(values).toEqual([{n: 1}, {n: 2}, {n: 3}])
+      expect(errors).toEqual([])
+
+      sub.unsubscribe()
+    })
+
+    test('backs off between retries while the fetch keeps failing', async () => {
+      fetch.mockReturnValue(throwError(() => responseError(503)))
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Ceilings of 1s, 2s and 4s: by 7s at most three retries have run, and at least two.
+      await vi.advanceTimersByTimeAsync(7000)
+      expect(fetch.mock.calls.length).toBeGreaterThanOrEqual(3)
+      expect(fetch.mock.calls.length).toBeLessThanOrEqual(4)
+      expect(errors).toEqual([])
+
+      sub.unsubscribe()
+    })
+
+    test('stops retrying on unsubscribe', async () => {
+      fetch.mockReturnValue(throwError(() => responseError(503)))
+      const sub = listenQuery(client, '*').subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      sub.unsubscribe()
+
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    test.each([400, 403])('errors without retrying on a %d', async (status) => {
+      const error = responseError(status)
+      fetch.mockReturnValueOnce(throwError(() => error))
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (err) => errors.push(err)})
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+
+      expect(errors).toEqual([error])
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      sub.unsubscribe()
+    })
   })
 })
 
@@ -449,6 +607,24 @@ describe('listenQueryOnGlobalListener', () => {
     })
     await flushScheduled()
     expect(fetch).toHaveBeenCalledTimes(2)
+
+    sub.unsubscribe()
+  })
+
+  test('retries a fetch that fails transiently', async () => {
+    fetch.mockReturnValueOnce(throwError(() => responseError(502))).mockReturnValueOnce(of({n: 1}))
+    const values: unknown[] = []
+    const errors: unknown[] = []
+    const sub = listenQueryOnGlobalListener(client, '*', {
+      invalidationChannel,
+      shouldRefetch: () => true,
+    }).subscribe({next: (value) => values.push(value), error: (error) => errors.push(error)})
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+
+    expect(values).toEqual([{n: 1}])
+    expect(errors).toEqual([])
 
     sub.unsubscribe()
   })

@@ -5,6 +5,8 @@ import {filter, mergeMap, share, throttleTime} from 'rxjs/operators'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {versionedClient} from '../../studioClient'
+import {retryTransientFetch} from '../../util/fetchErrors'
+import {reconnectListener} from '../../util/reconnectListener'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
@@ -56,7 +58,7 @@ const listen = (
       includeAllVersions: true,
       tag: options.tag,
     }),
-  ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
+  ).pipe(reconnectListener()) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
 /**
  * The listener failed before it welcomed: the query is fetched for it as it is for `welcome`, and
@@ -80,6 +82,10 @@ type FetchTrigger = ListenQueryEvent | InvalidationChannelEvent
  * Fetches on every `immediate$` event, and on `throttled$` events at most once per `throttleMs`
  * (leading and trailing). One fetch runs at a time: events that arrive during a fetch queue one
  * more after it.
+ *
+ * A fetch that fails transiently (see `isTransientFetchError`) is retried with backoff until it
+ * succeeds, so the result stays live, and the last result stays in place meanwhile. Any other
+ * failure is passed on.
  */
 function fetchOnEvents<Result>(
   immediate$: Observable<FetchTrigger>,
@@ -87,6 +93,8 @@ function fetchOnEvents<Result>(
   doFetch: () => Observable<Result>,
   throttleMs: number,
 ): Observable<Result> {
+  const fetchWithRetry = () => doFetch().pipe(retryTransientFetch())
+
   return merge(
     immediate$,
     throttled$.pipe(throttleTime(throttleMs, asyncScheduler, {leading: true, trailing: true})),
@@ -96,9 +104,9 @@ function fetchOnEvents<Result>(
         // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
         // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
         // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
-        return timer(1200).pipe(mergeMap(doFetch))
+        return timer(1200).pipe(mergeMap(fetchWithRetry))
       }
-      return doFetch()
+      return fetchWithRetry()
     }),
   )
 }
