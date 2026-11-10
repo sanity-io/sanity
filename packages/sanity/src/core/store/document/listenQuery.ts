@@ -1,7 +1,7 @@
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, merge, type Observable, of, partition, throwError, timer} from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {filter, mergeMap, share, skipWhile, take, throttleTime, timeout} from 'rxjs/operators'
+import {filter, mergeMap, share, skipWhile, throttleTime, timeout} from 'rxjs/operators'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {versionedClient} from '../../studioClient'
@@ -145,7 +145,9 @@ export function listenQuery(
   }
 
   return fetchOnEvents(
-    welcome$.pipe(take(1)),
+    // Every `welcome` refetches: a listener that welcomes again after a reconnect has missed the
+    // mutations made while it was disconnected.
+    welcome$,
     mutationAndReconnect$.pipe(filter(isRelevantEvent)),
     () => fetch(client, fetchQuery, params, options),
     options.throttleTime || DEFAULT_THROTTLE_TIME,
