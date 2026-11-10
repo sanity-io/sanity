@@ -6,7 +6,7 @@ import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rx
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
-import {isConnectionSessionError} from '../../util/apiErrors'
+import {isConnectionSessionError, isUnauthorizedError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
@@ -341,11 +341,16 @@ export function getPairListener(
           client.observable.request({url: '/users/me', tag: 'document.pair.reauthorize'}).pipe(
             // Only the check: errors from the reconnected listener take the usual paths above.
             catchError((checkError: unknown) => {
-              debug(
-                'Listener credential could not be restored, terminating: %s',
-                checkError instanceof Error ? checkError.message : checkError,
-              )
-              return EMPTY
+              const message = checkError instanceof Error ? checkError.message : checkError
+              // Only a rejected credential ends the listener. Any other failure (network, timeout,
+              // 5xx) says nothing about the credential, so reconnect anyway; the limit above still
+              // applies if the listener keeps rejecting it.
+              if (isUnauthorizedError(checkError) || isConnectionSessionError(checkError)) {
+                debug('Listener credential could not be restored, terminating: %s', message)
+                return EMPTY
+              }
+              debug('Listener credential check failed, reconnecting anyway: %s', message)
+              return of(undefined)
             }),
             mergeMap(() => caught$),
           ),
