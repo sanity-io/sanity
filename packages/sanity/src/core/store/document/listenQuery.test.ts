@@ -2,13 +2,17 @@ import {ChannelError, ClientError, type SanityClient, ServerError} from '@sanity
 import {defer, NEVER, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
 import {test} from '../../../../test/testUtils/listenerErrorHandlerTest'
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../listenerGate/listenerGate'
 import {listenQuery, listenQueryOnGlobalListener} from './listenQuery'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 type ListenerEvent = WelcomeEvent | ReconnectEvent | MutationEvent
+
+let releaseListenerGate: (() => void) | undefined
 
 function createMutationEvent(overrides: Partial<MutationEvent> = {}): MutationEvent {
   return {
@@ -549,6 +553,54 @@ describe('listenQuery', () => {
       expect(errors).toEqual([error])
       expect(fetch).toHaveBeenCalledTimes(1)
 
+      sub.unsubscribe()
+    })
+  })
+
+  describe('on a hidden page', () => {
+    beforeEach(() => {
+      releaseListenerGate = listenerGate.enable()
+    })
+
+    afterEach(() => {
+      releaseListenerGate?.()
+      vi.restoreAllMocks()
+    })
+
+    test('disconnects while paused, keeps the last result, and fetches again when shown', async () => {
+      const documentVisibility = stubDocumentVisibility()
+      fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(listener$.observed).toBe(false)
+      expect(values).toEqual([{n: 1}])
+
+      documentVisibility.set('visible')
+      expect(listen).toHaveBeenCalledTimes(2)
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(values).toEqual([{n: 1}, {n: 2}])
+      sub.unsubscribe()
+    })
+
+    test('does not connect on a page opened in the background until it is shown', async () => {
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const sub = listenQuery(client, '*').subscribe()
+      expect(listen).not.toHaveBeenCalled()
+
+      documentVisibility.set('visible')
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      expect(listen).toHaveBeenCalledTimes(1)
+      expect(fetch).toHaveBeenCalledTimes(1)
       sub.unsubscribe()
     })
   })
