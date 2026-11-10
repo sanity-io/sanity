@@ -3,12 +3,14 @@ import {firstValueFrom, of, Subject} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {describe, expect, it, vi} from 'vitest'
 
+import {getNearestBaseVersion} from '../../../documentGroupInventory/components/CreateVariant/getNearestBaseVersion'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type VariantId} from '../../types'
 import {
   buildDefinitionInventoryQueries,
   type DefinitionInventorySource,
   listenDefinitionInventory,
+  type RawVersionStub,
   toVariantDefinitionLens,
 } from '../useVariantDefinitionLens'
 
@@ -89,6 +91,82 @@ describe('toVariantDefinitionLens', () => {
     expect(lens.present.map((row) => row.groupId)).toEqual(['home'])
     expect(lens.missing.map((row) => row.groupId)).toEqual(['jacket'])
     expect(lens.typesWithVersions).toEqual(['page'])
+  })
+})
+
+// The shapes Content Lake returns today: only variant versions carry `_system.group`.
+function raw(id: string, system: RawVersionStub['_system']): RawVersionStub {
+  return {
+    _id: id,
+    _rev: `rev-${id}`,
+    _type: 'product',
+    _createdAt: '2026-11-01T00:00:00Z',
+    _updatedAt: '2026-11-01T00:00:00Z',
+    _system: system,
+  }
+}
+
+describe('raw version shapes', () => {
+  const publishedBoots = raw('boots', {base: {id: 'boots', rev: 'r1'}} as RawVersionStub['_system'])
+  const draftBoots = raw('drafts.boots', null)
+  const releaseBoots = raw('versions.rSpring.boots', null)
+  const source: DefinitionInventorySource = {
+    loading: false,
+    error: null,
+    versions: [germanDraft('jacket')],
+    universe: [
+      raw('jacket', null),
+      germanDraft('jacket'),
+      publishedBoots,
+      draftBoots,
+      releaseBoots,
+    ],
+    types: ['product'],
+  }
+
+  it('groups published, classic draft and release versions under the published id', () => {
+    const lens = toVariantDefinitionLens(source, GERMAN)
+
+    expect(lens.present.map((row) => row.groupId)).toEqual(['jacket'])
+    expect(lens.missing).toHaveLength(1)
+    expect(lens.missing[0]).toMatchObject({groupId: 'boots', _type: 'product'})
+    expect(lens.missing[0]!.versions.map((version) => version._id)).toEqual([
+      'boots',
+      'drafts.boots',
+      'versions.rSpring.boots',
+    ])
+    // Every version now has the `_system` its id implies.
+    expect(lens.missing[0]!.versions.map((version) => version._system.bundleId)).toEqual([
+      undefined,
+      'drafts',
+      'rSpring',
+    ])
+  })
+
+  it('starts a new version from the classic draft, or from the release version', () => {
+    const {versions} = toVariantDefinitionLens(source, GERMAN).missing[0]!
+
+    expect(
+      getNearestBaseVersion({variantId: GERMAN, bundle: {type: 'drafts'}, versions})?._id,
+    ).toBe('drafts.boots')
+    expect(
+      getNearestBaseVersion({
+        variantId: GERMAN,
+        bundle: {type: 'release', releaseId: '_.releases.rSpring'},
+        versions,
+      })?._id,
+    ).toBe('versions.rSpring.boots')
+  })
+
+  it('starts from the published version when there is no draft', () => {
+    const lens = toVariantDefinitionLens({...source, universe: [publishedBoots]}, GERMAN)
+    expect(
+      getNearestBaseVersion({
+        variantId: GERMAN,
+        bundle: {type: 'drafts'},
+        versions: lens.missing[0]!.versions,
+      })?._id,
+    ).toBe('boots')
   })
 })
 

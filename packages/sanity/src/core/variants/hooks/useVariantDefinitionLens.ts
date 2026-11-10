@@ -16,8 +16,11 @@ import {buildInventoryIndex, toVersionStub} from '../../inventoryModel/buildInve
 import {type DefinitionLensRow, definitionLens} from '../../inventoryModel/lenses'
 import {type VersionStub} from '../../inventoryModel/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {
+  type RawDocumentSystem,
+  resolveVersionSystem,
+} from '../../releases/util/resolveVersionSystem'
 import {listenQuery, type ListenQueryParams} from '../../store/document/listenQuery'
-import {getPublishedId} from '../../util/draftUtils'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {getVariantId} from '../tool/util'
 import {type VariantId} from '../types'
@@ -55,6 +58,27 @@ export function buildDefinitionInventoryQueries(): DefinitionInventoryQueries {
 }
 
 /**
+ * A version as the queries return it. `_system` may be partial or missing: Content Lake only
+ * stores `_system.group` on variant versions, so published documents carry `{base}` at most,
+ * classic drafts carry `null`, and release versions lack the group.
+ *
+ * @internal
+ */
+export type RawVersionStub = Omit<VersionInfoDocumentStub, '_system'> & {
+  _system?: RawDocumentSystem | null
+}
+
+/**
+ * Gives a raw version the `_system` its id implies (group, bundle, release), the same way the
+ * shared version model does, so grouping and picking a base version work for every shape.
+ *
+ * @internal
+ */
+export function resolveVersionStub(raw: RawVersionStub): VersionInfoDocumentStub {
+  return {...raw, _system: resolveVersionSystem(raw, undefined)}
+}
+
+/**
  * What the Definition lens is computed from. This is the seam: today it comes from two live
  * queries ({@link listenDefinitionInventory}); the paged inventory feed can produce the same shape.
  *
@@ -64,9 +88,9 @@ export interface DefinitionInventorySource {
   loading: boolean
   error: Error | null
   /** The version stubs that belong to the definition. */
-  versions: VersionInfoDocumentStub[]
+  versions: RawVersionStub[]
   /** The version stubs of every document of `types`. */
-  universe: VersionInfoDocumentStub[]
+  universe: RawVersionStub[]
   /** The document types the universe was read for. */
   types: string[]
 }
@@ -74,7 +98,7 @@ export interface DefinitionInventorySource {
 interface ReadState {
   loading: boolean
   error: Error | null
-  data: VersionInfoDocumentStub[]
+  data: RawVersionStub[]
 }
 
 const LOADING: ReadState = {loading: true, error: null, data: []}
@@ -90,7 +114,7 @@ function listenStubs(
     perspective: 'raw',
     tag,
   }).pipe(
-    map((data: VersionInfoDocumentStub[] | null): ReadState => ({
+    map((data: RawVersionStub[] | null): ReadState => ({
       loading: false,
       error: null,
       data: data ?? [],
@@ -111,7 +135,7 @@ function listenStubs(
  *
  * @internal
  */
-export function getTypesWithVersions(versions: VersionInfoDocumentStub[]): string[] {
+export function getTypesWithVersions(versions: Pick<RawVersionStub, '_type'>[]): string[] {
   return [...new Set(versions.map((version) => version._type))].toSorted()
 }
 
@@ -201,10 +225,6 @@ export interface VariantDefinitionLens {
   typesWithVersions: string[]
 }
 
-function getGroupId(stub: VersionInfoDocumentStub): string {
-  return stub._system?.group?._ref ?? getPublishedId(stub._id)
-}
-
 /**
  * Splits a {@link DefinitionInventorySource} into the present and missing halves with the shared
  * {@link definitionLens}. Missing = the universe's documents minus those with a version.
@@ -223,8 +243,10 @@ export function toVariantDefinitionLens(
   const index = buildInventoryIndex({versions: stubs, releases: new Map()})
 
   const universeByGroup = new Map<string, VersionInfoDocumentStub[]>()
-  for (const stub of source.universe) {
-    const groupId = getGroupId(stub)
+  for (const stub of source.universe.map(resolveVersionStub)) {
+    // A resolved `_system` always has a group: the published id.
+    const groupId = stub._system.group?._ref
+    if (!groupId) continue
     const group = universeByGroup.get(groupId)
     if (group) {
       group.push(stub)
