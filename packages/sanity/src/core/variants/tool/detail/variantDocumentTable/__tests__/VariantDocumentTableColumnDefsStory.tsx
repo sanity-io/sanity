@@ -11,6 +11,7 @@ import {type DocumentPreviewStore} from '../../../../../preview/documentPreviewS
 import {activeASAPRelease} from '../../../../../releases/__fixtures__/release.fixture'
 import {TableProvider} from '../../../../../releases/tool/components/Table/TableProvider'
 import {type InjectedTableProps} from '../../../../../releases/tool/components/Table/types'
+import {useGlobalListenerStore} from '../../../../../store/datastores'
 import {ResourceCacheProvider, useResourceCache} from '../../../../../store/ResourceCacheProvider'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {variantsLocaleNamespace, variantsUsEnglishLocaleBundle} from '../../../../i18n'
@@ -48,13 +49,14 @@ const STUB_PREVIEW_STORE: Pick<DocumentPreviewStore, 'observeForPreview'> = {
 function SeededPreviewStore(props: {children: ReactNode}) {
   const {children} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
   // Seeded during the first render so `useDocumentPreviewStore` in the cells finds the stub
   // instead of creating the real store.
   useState(() => {
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: STUB_PREVIEW_STORE,
     })
     return null

@@ -1,21 +1,18 @@
-import {
-  type MutationEvent,
-  type QueryParams,
-  type SanityClient,
-  type StackablePerspective,
-  type WelcomeEvent,
-} from '@sanity/client'
+import {type QueryParams, type SanityClient, type StackablePerspective} from '@sanity/client'
 import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
-import {distinctUntilChanged, filter, map} from 'rxjs/operators'
+import {distinctUntilChanged, map} from 'rxjs/operators'
 
+import {
+  createGlobalListenerStore,
+  type GlobalListenerStore,
+} from '../store/globalListener/createGlobalListenerStore'
 import {isRecord} from '../util/isRecord'
 import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,
 } from './availability'
 import {DOCUMENT_SYSTEM_FIELD} from './constants'
-import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
@@ -198,25 +195,22 @@ export interface DocumentPreviewStore {
 /** @internal */
 export interface DocumentPreviewStoreOptions {
   client: SanityClient
+  /**
+   * The listener that keeps previews up to date. Pass the workspace's to share its connection
+   * with the rest of the Studio; when left out, the store opens a listener of its own.
+   */
+  globalListenerStore?: GlobalListenerStore
 }
 
 /** @internal */
 export function createDocumentPreviewStore({
   client,
+  globalListenerStore = createGlobalListenerStore({client}),
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '2025-02-19'})
-  const globalListener = createGlobalListener(versionedClient).pipe(
-    filter(
-      (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now until we've verified that downstream consumers can handle them
-        event.type === 'mutation' || event.type === 'welcome',
-    ),
-  )
-  const invalidationChannel = globalListener.pipe(
-    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
-  )
+  const {mutationChannel, invalidationChannel} = globalListenerStore
 
-  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
+  const observeDocument = createObserveDocument({client, mutationChannel})
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 

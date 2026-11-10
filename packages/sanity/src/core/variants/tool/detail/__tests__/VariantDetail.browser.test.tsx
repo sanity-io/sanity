@@ -12,7 +12,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useClient} from '../../../../hooks/useClient'
 import {LocaleProvider} from '../../../../i18n/components/LocaleProvider'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
-import {useDocumentPreviewStore} from '../../../../store/datastores'
+import {useDocumentPreviewStore, useGlobalListenerStore} from '../../../../store/datastores'
 import {ResourceCacheProvider, useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -146,6 +146,7 @@ function SeededStores(props: {children: ReactNode}) {
   const {children} = props
   const workspace = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
   // The preview stub has to be cached before `useDocumentPreviewStore` below, so the variants
   // store is keyed on that same stub. `useVariantsStore` includes the preview store in its cache
@@ -153,7 +154,7 @@ function SeededStores(props: {children: ReactNode}) {
   useState(() => {
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: STUB_PREVIEW_STORE,
     })
     return null
