@@ -1,7 +1,8 @@
 export {
-  describeAspectRatio,
+  type AspectRatioMessageOptions,
   dimensionsMatchConstraint,
   formatAspectRatio,
+  getAspectRatioMessageOptions,
   nearestAllowedRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,

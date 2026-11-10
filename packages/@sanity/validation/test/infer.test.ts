@@ -3,6 +3,7 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {createInstance} from 'i18next'
 import has from 'lodash-es/has.js'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -14,6 +15,7 @@ import {
   type ValidateDocumentInternalOptions,
   validateDocumentInternal,
 } from '../src/_internal'
+import {validationLocaleStrings} from '../src/i18n/resources'
 import {assetMatchesAccept} from '../src/validators/assetAcceptValidator'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
@@ -800,6 +802,53 @@ describe('image crop option inference', () => {
         code: validationMarkerCodes.imageAspectRatioMismatch,
         message: 'Cropped image aspect ratio must be 1:1, 4:3 or 16:9',
       },
+    ])
+  })
+
+  test('words a ratio range and a ratio list in the locale of the message', async () => {
+    const german = createInstance({
+      initAsync: false,
+      interpolation: {escapeValue: false},
+      lng: 'de-DE',
+      ns: ['validation'],
+      resources: {
+        'de-DE': {
+          validation: {
+            ...validationLocaleStrings,
+            'object.image-aspect-ratio-mismatch_list':
+              'Seitenverhältnis muss {{ratios, list(type: unit)}} oder {{lastRatio}} sein',
+            'object.image-aspect-ratio-mismatch_range':
+              'Seitenverhältnis muss zwischen {{min}} und {{max}} liegen',
+          },
+        },
+      },
+    })
+    await german.init()
+    const markers = await validateDocumentInternal({
+      document: {
+        _id: 'cropDocument',
+        _type: 'cropDocument',
+        _createdAt: '2021-08-26T18:47:55.497Z',
+        _updatedAt: '2021-08-26T18:47:55.497Z',
+        _rev: 'example-rev',
+        requiredCrop: imageValue(WIDE),
+        range: imageValue(SQUARE),
+        snap: imageValue(THREE_BY_TWO),
+      },
+      environment: 'studio',
+      validateReferenceTypes: false,
+      getClient,
+      getDocumentExists: () => Promise.resolve(true),
+      i18n: {
+        currentLocale: {id: 'de-DE'},
+        loadNamespaces: (namespaces) => german.loadNamespaces(namespaces),
+        t: german.t,
+      },
+      schema,
+    })
+    expect(markers.map(({path, message}) => [path.join('.'), message])).toEqual([
+      ['range', 'Seitenverhältnis muss zwischen 4:3 und 16:9 liegen'],
+      ['snap', 'Seitenverhältnis muss 1:1, 4:3 oder 16:9 sein'],
     ])
   })
 

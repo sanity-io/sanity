@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest'
 
 import {
-  describeAspectRatio,
   dimensionsMatchConstraint,
   formatAspectRatio,
+  getAspectRatioMessageOptions,
   nearestAllowedRatio,
   ratioMatchesConstraint,
   resolveAspectRatio,
@@ -141,21 +141,33 @@ describe('formatAspectRatio', () => {
   })
 })
 
-describe('describeAspectRatio', () => {
-  it('describes a fixed ratio', () => {
-    expect(describeAspectRatio(resolveAspectRatio(16 / 9))).toBe('16:9')
+describe('getAspectRatioMessageOptions', () => {
+  it('states a fixed ratio', () => {
+    expect(getAspectRatioMessageOptions(resolveAspectRatio(16 / 9))).toEqual({aspectRatio: '16:9'})
   })
 
-  it('describes a range', () => {
-    expect(describeAspectRatio(resolveAspectRatio(RANGE))).toBe('between 4:3 and 16:9')
+  it('states the bounds of a range', () => {
+    expect(getAspectRatioMessageOptions(resolveAspectRatio(RANGE))).toEqual({
+      context: 'range',
+      min: '4:3',
+      max: '16:9',
+    })
   })
 
-  it('lists every member of a snap list', () => {
-    expect(describeAspectRatio(resolveAspectRatio([16 / 9, 1, 4 / 3]))).toBe('1:1, 4:3 or 16:9')
-    expect(describeAspectRatio(resolveAspectRatio([1, 16 / 9]))).toBe('1:1 or 16:9')
+  it('lists every member of a snap list, the last one apart', () => {
+    expect(getAspectRatioMessageOptions(resolveAspectRatio([16 / 9, 1, 4 / 3]))).toEqual({
+      context: 'list',
+      ratios: ['1:1', '4:3'],
+      lastRatio: '16:9',
+    })
+    expect(getAspectRatioMessageOptions(resolveAspectRatio([1, 16 / 9]))).toEqual({
+      context: 'list',
+      ratios: ['1:1'],
+      lastRatio: '16:9',
+    })
   })
 
-  it('describes a one-member snap list as a fixed ratio', () => {
-    expect(describeAspectRatio(resolveAspectRatio([1]))).toBe('1:1')
+  it('states a one-member snap list as a fixed ratio', () => {
+    expect(getAspectRatioMessageOptions(resolveAspectRatio([1]))).toEqual({aspectRatio: '1:1'})
   })
 })

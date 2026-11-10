@@ -122,17 +122,33 @@ export function formatAspectRatio(ratio: number): string {
 }
 
 /**
- * Describes a resolved constraint: `16:9`, `between 4:3 and 16:9`, or `1:1, 4:3 or 16:9`.
+ * The i18n options of a message that states a resolved constraint: the `aspectRatio` of a fixed
+ * ratio, the `min` and `max` of a range (`context: 'range'`), or the leading `ratios` and the
+ * `lastRatio` of a list (`context: 'list'`).
  *
  * @internal
  */
-export function describeAspectRatio({range, snapRatios}: ResolvedImageAspectRatio): string {
+export type AspectRatioMessageOptions =
+  | {aspectRatio: string}
+  | {context: 'range'; min: string; max: string}
+  | {context: 'list'; ratios: string[]; lastRatio: string}
+
+/**
+ * The options to translate a message that states a resolved constraint with, so the locale words
+ * a range or a list.
+ *
+ * @internal
+ */
+export function getAspectRatioMessageOptions({
+  range,
+  snapRatios,
+}: ResolvedImageAspectRatio): AspectRatioMessageOptions {
   if (snapRatios && snapRatios.length > 1) {
     const labels = snapRatios.map(formatAspectRatio)
-    return `${labels.slice(0, -1).join(', ')} or ${labels[labels.length - 1]}`
+    return {context: 'list', ratios: labels.slice(0, -1), lastRatio: labels[labels.length - 1]}
   }
   if (range.min === range.max) {
-    return formatAspectRatio(range.min)
+    return {aspectRatio: formatAspectRatio(range.min)}
   }
-  return `between ${formatAspectRatio(range.min)} and ${formatAspectRatio(range.max)}`
+  return {context: 'range', min: formatAspectRatio(range.min), max: formatAspectRatio(range.max)}
 }

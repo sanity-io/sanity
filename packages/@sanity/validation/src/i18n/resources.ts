@@ -26,6 +26,10 @@ export const validationLocaleStrings = {
   'object.asset-required_file': 'File is required',
   'object.asset-required_image': 'Image is required',
   'object.image-aspect-ratio-mismatch': 'Cropped image aspect ratio must be {{aspectRatio}}',
+  'object.image-aspect-ratio-mismatch_list':
+    'Cropped image aspect ratio must be {{ratios, list(type: unit)}} or {{lastRatio}}',
+  'object.image-aspect-ratio-mismatch_range':
+    'Cropped image aspect ratio must be between {{min}} and {{max}}',
   'object.image-below-min-dimensions': 'Cropped image must be at least {{width}} × {{height}} px',
   'object.image-below-recommended-dimensions':
     'Cropped image should be at least {{width}} × {{height}} px',

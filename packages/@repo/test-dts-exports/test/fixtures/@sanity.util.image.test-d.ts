@@ -3,12 +3,13 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
+  AspectRatioMessageOptions,
   croppedDimensions,
   cropToPixelRect,
-  describeAspectRatio,
   dimensionsAtLeast,
   dimensionsMatchConstraint,
   formatAspectRatio,
+  getAspectRatioMessageOptions,
   getCroppedImageDimensions,
   getImageRefDimensions,
   ImagePixelRect,
@@ -23,14 +24,14 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/util/image', () => {
+  test('AspectRatioMessageOptions', () => {
+    expectTypeOf<AspectRatioMessageOptions>().not.toBeNever()
+  })
   test('croppedDimensions', () => {
     expectTypeOf<typeof croppedDimensions>().toBeFunction()
   })
   test('cropToPixelRect', () => {
     expectTypeOf<typeof cropToPixelRect>().toBeFunction()
-  })
-  test('describeAspectRatio', () => {
-    expectTypeOf<typeof describeAspectRatio>().toBeFunction()
   })
   test('dimensionsAtLeast', () => {
     expectTypeOf<typeof dimensionsAtLeast>().toBeFunction()
@@ -40,6 +41,9 @@ describe('@sanity/util/image', () => {
   })
   test('formatAspectRatio', () => {
     expectTypeOf<typeof formatAspectRatio>().toBeFunction()
+  })
+  test('getAspectRatioMessageOptions', () => {
+    expectTypeOf<typeof getAspectRatioMessageOptions>().toBeFunction()
   })
   test('getCroppedImageDimensions', () => {
     expectTypeOf<typeof getCroppedImageDimensions>().toBeFunction()

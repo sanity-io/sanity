@@ -7,9 +7,9 @@ import {
   type ValidationError,
 } from '@sanity/types'
 import {
-  describeAspectRatio,
   dimensionsAtLeast,
   dimensionsMatchConstraint,
+  getAspectRatioMessageOptions,
   getCroppedImageDimensions,
   resolveAspectRatio,
 } from '@sanity/util/image'
@@ -57,9 +57,10 @@ function checkAspectRatio(
     {
       code: validationMarkerCodes.imageAspectRatioMismatch,
       details: {actual: {...dimensions, aspectRatio: actualRatio}, required: {aspectRatio}},
-      message: context.i18n.t('validation:object.image-aspect-ratio-mismatch', {
-        aspectRatio: describeAspectRatio(resolved),
-      }),
+      message: context.i18n.t(
+        'validation:object.image-aspect-ratio-mismatch',
+        getAspectRatioMessageOptions(resolved),
+      ),
     },
   ]
 }
