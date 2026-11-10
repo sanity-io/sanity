@@ -469,15 +469,7 @@ export function checkoutPair(
           }
         }
       : undefined,
-    onListenerStall: onListenerStall
-      ? (details) => {
-          try {
-            onListenerStall(details)
-          } catch {
-            // Telemetry callbacks must never kill the document pipeline
-          }
-        }
-      : undefined,
+    onListenerStall,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())

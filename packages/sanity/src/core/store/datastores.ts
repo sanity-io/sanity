@@ -198,7 +198,11 @@ export function useDocumentStore(): DocumentStore {
 
   const handleListenerStall = useCallback(
     (details: ListenerStallDetails) => {
-      telemetry.log(DocumentListenerStalled, details)
+      try {
+        telemetry.log(DocumentListenerStalled, details)
+      } catch {
+        // runs inside getPairListener's catchError; throwing here would replace the restart with an error
+      }
     },
     [telemetry],
   )
