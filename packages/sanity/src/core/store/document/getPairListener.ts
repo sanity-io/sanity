@@ -8,6 +8,7 @@ import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {isConnectionSessionError, isUnauthorizedError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
+import {reconnectListener} from '../../util/reconnectListener'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
 import {
@@ -204,6 +205,7 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
+      reconnectListener(),
       tap((event) => {
         if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
       }),

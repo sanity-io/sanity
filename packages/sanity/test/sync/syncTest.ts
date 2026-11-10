@@ -26,6 +26,7 @@ export type Step =
   | {client: string; do: 'reconnect'; resume: boolean}
   | {client: string; do: 'breakListener'}
   | {client: string; do: 'restoreListener'}
+  | {client: string; do: 'failListener'}
   | {do: 'outside'; mutations: MutationPayload[]}
   | {do: 'advance'; ms: number}
   | {do: 'settle'}
@@ -193,6 +194,9 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'restoreListener':
       controls.restoreListener()
+      break
+    case 'failListener':
+      controls.failListener()
       break
     default:
       throw new Error(`Unknown step ${JSON.stringify(step)}`)

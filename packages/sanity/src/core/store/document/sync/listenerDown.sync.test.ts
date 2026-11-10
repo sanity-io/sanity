@@ -30,6 +30,21 @@ const listenerDownBeforeWelcome: SyncTestDefinition = {
   steps: [],
 }
 
+const channelErrorWhileEditing: SyncTestDefinition = {
+  id: 'LSN-CHANNEL-ERROR',
+  title: "B's listener ends with a channel error, A edits while B reconnects",
+  seam: 'pair',
+  initial: [document(PUBLISHED_ID, 'Published title'), document(DRAFT_ID, 'Draft title')],
+  idPair,
+  clients: ['A', 'B'],
+  steps: [
+    {client: 'B', do: 'failListener'},
+    {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'Edited by A'}}]},
+    {client: 'A', do: 'commit'},
+    {do: 'settle'},
+  ],
+}
+
 let world: World | undefined
 afterEach(() => {
   world?.teardown()
@@ -54,6 +69,15 @@ describe('a pair listener that is down before it welcomes', () => {
         {do: 'settle'},
       ],
     })
+    expectConverged(world)
+    expectHealthy(world)
+    expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
+  })
+})
+
+describe('a pair listener that ends with a channel error', () => {
+  test('LSN-CHANNEL-ERROR: B reconnects and catches up without an error', async () => {
+    world = await runSyncTest(channelErrorWhileEditing)
     expectConverged(world)
     expectHealthy(world)
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')

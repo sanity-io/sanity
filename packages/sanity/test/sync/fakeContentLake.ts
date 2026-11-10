@@ -1,4 +1,4 @@
-import {type Action, ClientError} from '@sanity/client'
+import {type Action, ChannelError, ClientError} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
 
@@ -47,6 +47,7 @@ interface Connection {
   clientId: string
   ids: Set<string>
   emit: (event: RawListenerEvent) => void
+  fail: (error: unknown) => void
   held: MutationEvent[]
   missedWhileDisconnected: MutationEvent[]
   disconnected: boolean
@@ -71,6 +72,11 @@ export interface ClientControls {
   breakListener: () => void
   /** Brings the listener back: every connection welcomes as a new connection (no resume). */
   restoreListener: () => void
+  /**
+   * Ends the client's open connections with the `channelError` the API sends when it fails to set
+   * a listener up (an unclassified error, `Internal error`). A new connection welcomes as usual.
+   */
+  failListener: () => void
 }
 
 const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
@@ -163,6 +169,7 @@ export class FakeContentLake {
       reconnect: (options) => this.reconnect(clientId, options),
       breakListener: () => this.breakListener(clientId),
       restoreListener: () => this.restoreListener(clientId),
+      failListener: () => this.failListener(clientId),
     }
     this.controls.set(clientId, controls)
     return controls
@@ -197,6 +204,7 @@ export class FakeContentLake {
         clientId,
         ids: new Set(ids),
         emit: (event) => subscriber.next(event),
+        fail: (error) => subscriber.error(error),
         held: [],
         missedWhileDisconnected: [],
         disconnected: false,
@@ -437,6 +445,13 @@ export class FakeContentLake {
       connection.missedWhileDisconnected.length = 0
       this.welcomeCounter += 1
       connection.emit({type: 'welcome', listenerName: `fake-listener-${this.welcomeCounter}`})
+    })
+  }
+
+  private failListener(clientId: string): void {
+    this.connectionsOf(clientId).forEach((connection) => {
+      this.connections.delete(connection)
+      connection.fail(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
     })
   }
 

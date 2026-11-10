@@ -1,5 +1,16 @@
-import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {concat, defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
+import {ChannelError, ConnectionFailedError, type SanityClient} from '@sanity/client'
+import {
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  mergeMap,
+  type Observable,
+  of,
+  Subject,
+  throwError,
+  timer,
+} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -476,8 +487,6 @@ describe('getPairListener', () => {
 
       listener$.next({type: 'reconnect'})
       await nextTick()
-      listener$.next({type: 'reconnect'})
-      await nextTick()
       expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
 
       listener$.next({type: 'welcome', listenerName: 'test'})
@@ -708,14 +717,61 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a non-401 rejected connection also propagates (listen only 401s in practice)', async () => {
-      const {client: mockClient} = createFailingClient(() => rejectedConnection(500))
+    test('a connection rejected with another 4xx also propagates', async () => {
+      const {client: mockClient} = createFailingClient(() => rejectedConnection(403))
       const errors: unknown[] = []
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
       expect(errors).toHaveLength(1)
       expect(errors[0]).toBeInstanceOf(ConnectionFailedError)
       sub.unsubscribe()
+    })
+
+    test('a connection rejected with a 5xx is reopened with backoff, and loads the snapshots meanwhile', async () => {
+      vi.useFakeTimers()
+      try {
+        // The EventSource reports a rejected connection asynchronously.
+        const {client: mockClient, connect} = createFailingClient(() =>
+          timer(0).pipe(mergeMap(() => rejectedConnection(500))),
+        )
+        const events: ListenerEvent[] = []
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({
+          next: (e) => events.push(e),
+          error: (e) => errors.push(e),
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(errors).toEqual([])
+        expect(events.filter((e) => e.type === 'snapshot')).toHaveLength(2)
+        await vi.advanceTimersByTimeAsync(1_000)
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    test('a channel error is reopened with backoff instead of failing the document', async () => {
+      vi.useFakeTimers()
+      try {
+        const {client: mockClient, connect} = createFailingClient(() =>
+          throwError(
+            () => new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+          ),
+        )
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+        await vi.advanceTimersByTimeAsync(1_000)
+
+        expect(errors).toEqual([])
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 
