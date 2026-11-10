@@ -88,7 +88,13 @@ export function buildDocumentLensFilter({
   type: string | undefined
   filters: VersionFilters
 }): {filter: string; params: ListenQueryParams} {
-  const clauses = ['!(_id in path("_.**"))', '!string::startsWith(_type, "sanity.")']
+  const clauses = [
+    '!(_id in path("_.**"))',
+    '!string::startsWith(_type, "sanity.")',
+    // Agent versions (`versions.agent-<id>.<id>`), which every lens leaves out. A path() glob
+    // does not match these ids, so they are matched by prefix.
+    '!string::startsWith(_id, "versions.agent-")',
+  ]
   const params: ListenQueryParams = {}
 
   if (type) {
@@ -122,7 +128,12 @@ export function buildDocumentLensFilter({
     // Variant drafts carry `_system.bundleId`; classic drafts only their `drafts.` id.
     clauses.push('(_system.bundleId == "drafts" || _id in path("drafts.**"))')
   } else if (filters.state === 'release') {
-    clauses.push('defined(_system.release)')
+    // Plain release versions have `_system: null`, so they are matched by id: under
+    // `versions.**` without a variant reference (agent versions are excluded above).
+    clauses.push(
+      '(defined(_system.release) || (_id in path("versions.**") && ' +
+        '!defined(_system.variants[0]) && !defined(_system.variant)))',
+    )
   }
 
   return {filter: clauses.join(' && '), params}

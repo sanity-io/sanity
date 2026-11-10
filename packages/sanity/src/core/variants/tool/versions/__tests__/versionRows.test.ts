@@ -13,6 +13,7 @@ import {
   orderVersions,
   toDocumentLensRows,
   VERSION_INVENTORY_INSPECTOR_NAME,
+  type VersionFilters,
 } from '../versionRows'
 
 const GERMAN = '_.variants.german' as VariantId
@@ -127,7 +128,9 @@ describe('toDocumentLensRows', () => {
 describe('buildDocumentLensFilter', () => {
   it('reads content documents only when nothing is filtered', () => {
     expect(buildDocumentLensFilter({type: undefined, filters: {}})).toEqual({
-      filter: '!(_id in path("_.**")) && !string::startsWith(_type, "sanity.")',
+      filter:
+        '!(_id in path("_.**")) && !string::startsWith(_type, "sanity.") && ' +
+        '!string::startsWith(_id, "versions.agent-")',
       params: {},
     })
   })
@@ -162,6 +165,30 @@ describe('buildDocumentLensFilter', () => {
     expect(filter).toContain(
       '(!(_id in path("versions.**")) || defined(_system.variants[0]) || defined(_system.variant))',
     )
+  })
+
+  it('matches plain release versions, which have no _system, by id', () => {
+    const {filter} = buildDocumentLensFilter({type: undefined, filters: {state: 'release'}})
+    expect(filter).toContain(
+      '(defined(_system.release) || (_id in path("versions.**") && ' +
+        '!defined(_system.variants[0]) && !defined(_system.variant)))',
+    )
+  })
+
+  it('leaves agent versions out of every filter', () => {
+    const filters: VersionFilters[] = [
+      {},
+      {definition: DEFAULT_DEFINITION},
+      {state: 'published'},
+      {state: 'draft'},
+      {state: 'release'},
+      {release: SPRING},
+    ]
+    for (const versionFilters of filters) {
+      expect(buildDocumentLensFilter({type: undefined, filters: versionFilters}).filter).toContain(
+        '!string::startsWith(_id, "versions.agent-")',
+      )
+    }
   })
 
   it('counts classic drafts as drafts', () => {
