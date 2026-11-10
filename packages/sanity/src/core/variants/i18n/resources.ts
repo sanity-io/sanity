@@ -97,21 +97,12 @@ const variantsLocaleStrings = {
   'versions.sort.last-edited': 'Last edited',
   /** Sort option: Published, Drafts, then releases. */
   'versions.sort.version-order': 'Version order',
-  /** Grouping option: no grouping. */
-  'versions.group.none': 'No grouping',
-  /** Grouping option: group by document. */
-  'versions.group.document': 'Group by document',
-  /** Grouping option: group by variant definition. */
-  'versions.group.definition': 'Group by definition',
   /** Search placeholder in the versions table. */
   'versions.search.placeholder': 'Search versions',
   /** Empty state of the versions table. */
   'versions.no-versions': 'No versions match these filters',
   /** Shown when the versions could not be loaded. */
   'versions.error': 'Unable to load versions',
-  /** Shown when more versions exist than the table reads. */
-  'versions.truncated':
-    'Showing the {{limit}} most recently edited versions. Pick a type to narrow the list.',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */

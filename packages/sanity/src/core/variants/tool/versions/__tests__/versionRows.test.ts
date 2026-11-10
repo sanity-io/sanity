@@ -1,14 +1,17 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
+import {buildInventoryIndex} from '../../../../inventoryModel/buildInventoryIndex'
 import {type VersionStub} from '../../../../inventoryModel/types'
 import {type VariantId} from '../../../types'
 import {
+  buildDocumentLensFilter,
+  createVisibleRowTracker,
   DEFAULT_DEFINITION,
   filterVersions,
-  getReleaseOptions,
   getVersionLinkTarget,
+  getVisibleRange,
   orderVersions,
+  toDocumentLensRows,
   VERSION_INVENTORY_INSPECTOR_NAME,
 } from '../versionRows'
 
@@ -76,45 +79,104 @@ describe('filterVersions', () => {
 })
 
 describe('orderVersions', () => {
+  const jacket = rows.filter((item) => item.groupId === 'jacket')
+
   it('keeps the shared version order, or puts the last edit first', () => {
-    expect(ids(orderVersions(rows, {sort: 'version-order', grouping: 'none'}))).toEqual(ids(rows))
-    expect(ids(orderVersions(rows, {sort: 'last-edited', grouping: 'none'}))).toEqual([
-      'drafts.jacket',
-      'versions.german.boots',
-      'boots',
-      'versions.rSpring.jacket',
-      'jacket',
-    ])
-  })
-
-  it('groups by document, groups in the order of their first row', () => {
-    expect(ids(orderVersions(rows, {sort: 'last-edited', grouping: 'document'}))).toEqual([
+    expect(ids(orderVersions(jacket, 'version-order'))).toEqual(ids(jacket))
+    expect(ids(orderVersions(jacket, 'last-edited'))).toEqual([
       'drafts.jacket',
       'versions.rSpring.jacket',
       'jacket',
-      'versions.german.boots',
-      'boots',
-    ])
-  })
-
-  it('groups by definition with Default first', () => {
-    expect(ids(orderVersions(rows, {sort: 'last-edited', grouping: 'definition'}))).toEqual([
-      'drafts.jacket',
-      'boots',
-      'versions.rSpring.jacket',
-      'jacket',
-      'versions.german.boots',
     ])
   })
 })
 
-describe('getReleaseOptions', () => {
-  it('lists the releases that hold a row, with their titles', () => {
-    const releases = new Map([
-      [SPRING, {_id: SPRING, metadata: {title: 'Spring'}} as ReleaseDocument],
+describe('toDocumentLensRows', () => {
+  const index = buildInventoryIndex({versions: rows, releases: new Map()})
+
+  it('lists loaded documents in feed order, with a placeholder for each unloaded one', () => {
+    const result = toDocumentLensRows({
+      groupIds: ['boots', 'hat', 'jacket'],
+      index,
+      filters: {},
+      sort: 'version-order',
+    })
+
+    expect(ids(result)).toEqual([
+      'boots',
+      'versions.german.boots',
+      'placeholder.hat',
+      'jacket',
+      'drafts.jacket',
+      'versions.rSpring.jacket',
     ])
-    expect(getReleaseOptions(rows, releases)).toEqual([{id: SPRING, title: 'Spring'}])
-    expect(getReleaseOptions(rows, new Map())).toEqual([{id: SPRING, title: 'rSpring'}])
+    expect(result[2]).toMatchObject({groupId: 'hat', placeholder: true})
+  })
+
+  it('keeps only the versions that match the filters', () => {
+    const result = toDocumentLensRows({
+      groupIds: ['boots', 'jacket'],
+      index,
+      filters: {state: 'draft'},
+      sort: 'version-order',
+    })
+    expect(ids(result)).toEqual(['versions.german.boots', 'drafts.jacket'])
+  })
+})
+
+describe('buildDocumentLensFilter', () => {
+  it('reads content documents only when nothing is filtered', () => {
+    expect(buildDocumentLensFilter({type: undefined, filters: {}})).toEqual({
+      filter: '!(_id in path("_.**")) && !string::startsWith(_type, "sanity.")',
+      params: {},
+    })
+  })
+
+  it('narrows to documents with a version matching every filter', () => {
+    const {filter, params} = buildDocumentLensFilter({
+      type: 'product',
+      filters: {definition: GERMAN, release: SPRING, state: 'release'},
+    })
+    expect(filter).toContain('_type == $type')
+    expect(filter).toContain('sanity::partOfVariant($variantId)')
+    expect(filter).toContain('_system.release._ref == $releaseRef')
+    expect(filter).toContain('defined(_system.release)')
+    expect(params).toEqual({type: 'product', variantId: 'german', releaseRef: SPRING})
+  })
+
+  it('reads Default as no definition', () => {
+    expect(
+      buildDocumentLensFilter({type: undefined, filters: {definition: DEFAULT_DEFINITION}}).filter,
+    ).toContain('!defined(_system.variants[0]) && !defined(_system.variant)')
+  })
+})
+
+describe('visible range', () => {
+  it('covers the documents of the visible rows', () => {
+    const groupIds = ['a', 'b', 'c', 'd', 'e']
+    expect(getVisibleRange(groupIds, ['d', 'b', 'c'])).toEqual({start: 1, end: 4})
+    expect(getVisibleRange(groupIds, ['unknown'])).toBeUndefined()
+  })
+
+  it('reports the mounted rows once per batch', () => {
+    const reports: string[][] = []
+    const flushes: (() => void)[] = []
+    const tracker = createVisibleRowTracker(
+      (groupIds) => reports.push(groupIds),
+      (flush) => flushes.push(flush),
+    )
+
+    const untrackA = tracker.track('a')
+    tracker.track('a')
+    tracker.track('b')
+    expect(flushes).toHaveLength(1)
+    flushes[0]!()
+    expect(reports).toEqual([['a', 'b']])
+
+    // A document stays visible while any of its rows is mounted.
+    untrackA()
+    flushes[1]!()
+    expect(reports.at(-1)).toEqual(['a', 'b'])
   })
 })
 

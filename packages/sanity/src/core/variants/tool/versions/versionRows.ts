@@ -1,10 +1,15 @@
-import {type ReleaseDocument} from '@sanity/client'
-
-import {type VersionKind, type VersionStub} from '../../../inventoryModel/types'
+import {type VersionFeedRange} from '../../../inventoryModel/feed/createVersionFeed'
+import {documentLens} from '../../../inventoryModel/lenses'
+import {
+  type InventoryIndex,
+  type VersionKind,
+  type VersionStub,
+} from '../../../inventoryModel/types'
 import {
   getReleaseIdFromReleaseDocumentId,
   isReleaseDocumentId,
 } from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type ListenQueryParams} from '../../../store/document/listenQuery'
 import {type VariantId} from '../../types'
 import {encodeVariantLinkParam} from '../../util/variantSelection'
 import {getVariantId} from '../util'
@@ -39,9 +44,6 @@ export interface VersionFilters {
 /** @internal */
 export type VersionSort = 'last-edited' | 'version-order'
 
-/** @internal */
-export type VersionGrouping = 'none' | 'document' | 'definition'
-
 /**
  * Keeps the rows that match every set filter.
  *
@@ -59,57 +61,170 @@ export function filterVersions(rows: VersionStub[], filters: VersionFilters): Ve
   )
 }
 
-function groupKey(row: VersionStub, grouping: VersionGrouping): string {
-  if (grouping === 'document') return row.groupId
-  // Default first: an empty key sorts before any definition id.
-  if (grouping === 'definition') return row.variantId ?? ''
-  return ''
-}
-
 /**
- * Orders the rows. `rows` must come in the shared version order (as `documentLens` returns them),
- * which `version-order` keeps; `last-edited` puts the most recent edit first. Grouping keeps the
- * rows of one document (or definition) together, groups in the order of their first row, with the
- * Default definition first.
+ * Orders the versions of one document. `rows` must come in the shared version order (as
+ * `documentLens` returns them), which `version-order` keeps; `last-edited` puts the most recent
+ * edit first.
  *
  * @internal
  */
-export function orderVersions(
-  rows: VersionStub[],
-  {sort, grouping}: {sort: VersionSort; grouping: VersionGrouping},
-): VersionStub[] {
-  const sorted =
-    sort === 'last-edited'
-      ? rows.toSorted((left, right) => Date.parse(right._updatedAt) - Date.parse(left._updatedAt))
-      : rows
-  if (grouping === 'none') return sorted
+export function orderVersions(rows: VersionStub[], sort: VersionSort): VersionStub[] {
+  return sort === 'last-edited'
+    ? rows.toSorted((left, right) => Date.parse(right._updatedAt) - Date.parse(left._updatedAt))
+    : rows
+}
 
-  const groupRanks = new Map<string, number>()
-  for (const row of sorted) {
-    const key = groupKey(row, grouping)
-    if (!groupRanks.has(key))
-      groupRanks.set(key, grouping === 'definition' && key === '' ? -1 : groupRanks.size)
+/**
+ * The GROQ filter that picks the feed's documents: those with at least one version matching every
+ * set filter. The feed then loads every version of those documents, and {@link filterVersions}
+ * keeps the matching rows. Content only: no system documents and no assets.
+ *
+ * @internal
+ */
+export function buildDocumentLensFilter({
+  type,
+  filters,
+}: {
+  type: string | undefined
+  filters: VersionFilters
+}): {filter: string; params: ListenQueryParams} {
+  const clauses = ['!(_id in path("_.**"))', '!string::startsWith(_type, "sanity.")']
+  const params: ListenQueryParams = {}
+
+  if (type) {
+    clauses.push('_type == $type')
+    params.type = type
   }
-  return sorted.toSorted(
-    (left, right) =>
-      groupRanks.get(groupKey(left, grouping))! - groupRanks.get(groupKey(right, grouping))!,
-  )
+  if (filters.definition === DEFAULT_DEFINITION) {
+    clauses.push('!defined(_system.variants[0]) && !defined(_system.variant)')
+  } else if (filters.definition) {
+    clauses.push('sanity::partOfVariant($variantId)')
+    params.variantId = getVariantId(filters.definition)
+  }
+  if (filters.release) {
+    clauses.push('_system.release._ref == $releaseRef')
+    params.releaseRef = filters.release
+  }
+  if (filters.state === 'published') {
+    clauses.push('!defined(_system.bundleId) && !defined(_system.release)')
+  } else if (filters.state === 'draft') {
+    clauses.push('_system.bundleId == "drafts"')
+  } else if (filters.state === 'release') {
+    clauses.push('defined(_system.release)')
+  }
+
+  return {filter: clauses.join(' && '), params}
 }
 
 /**
- * The releases that hold at least one of the rows, for the release filter.
+ * A row of the Document lens: a version, or a placeholder for a document whose page has not
+ * loaded yet. Placeholders keep the table as long as the feed's document list, so it scrolls to
+ * documents that are not loaded and the feed loads them.
  *
  * @internal
  */
-export function getReleaseOptions(
-  rows: VersionStub[],
-  releases: Map<string, ReleaseDocument>,
-): {id: string; title: string}[] {
-  const ids = [...new Set(rows.filter((row) => row.kind === 'release').map((row) => row.bundle))]
-  return ids.map((id) => ({
-    id,
-    title: releases.get(id)?.metadata?.title || toReleaseId(id),
-  }))
+export type DocumentLensRow = VersionStub & {placeholder?: true}
+
+function placeholderRow(groupId: string): DocumentLensRow {
+  return {
+    _id: `placeholder.${groupId}`,
+    _type: '',
+    _updatedAt: '',
+    groupId,
+    variantId: undefined,
+    kind: 'published',
+    bundle: '',
+    goingToUnpublish: false,
+    placeholder: true,
+  }
+}
+
+/**
+ * The rows of the Document lens, in the feed's document order: each loaded document's versions
+ * (from the shared `documentLens`, filtered and ordered), or one placeholder per document that is
+ * not loaded.
+ *
+ * @internal
+ */
+export function toDocumentLensRows({
+  groupIds,
+  index,
+  filters,
+  sort,
+}: {
+  groupIds: string[]
+  index: InventoryIndex
+  filters: VersionFilters
+  sort: VersionSort
+}): DocumentLensRow[] {
+  const byGroup = new Map<string, VersionStub[]>()
+  for (const row of documentLens(index)) {
+    const group = byGroup.get(row.groupId)
+    if (group) {
+      group.push(row)
+    } else {
+      byGroup.set(row.groupId, [row])
+    }
+  }
+
+  return groupIds.flatMap((groupId): DocumentLensRow[] => {
+    if (!index.byGroup.has(groupId)) return [placeholderRow(groupId)]
+    return orderVersions(filterVersions(byGroup.get(groupId) ?? [], filters), sort)
+  })
+}
+
+/**
+ * The feed range covering the documents on screen, from the group ids of the visible rows.
+ *
+ * @internal
+ */
+export function getVisibleRange(
+  groupIds: string[],
+  visibleGroupIds: Iterable<string>,
+): VersionFeedRange | undefined {
+  const positions = new Map(groupIds.map((groupId, position) => [groupId, position]))
+  let start = Infinity
+  let end = -Infinity
+  for (const groupId of visibleGroupIds) {
+    const position = positions.get(groupId)
+    if (position === undefined) continue
+    start = Math.min(start, position)
+    end = Math.max(end, position + 1)
+  }
+  return Number.isFinite(start) ? {start, end} : undefined
+}
+
+/**
+ * Collects the documents whose rows are mounted. The table only mounts the rows on screen (plus a
+ * few), so this is what is visible; it reports once per batch of mounts and unmounts.
+ *
+ * @internal
+ */
+export function createVisibleRowTracker(
+  onChange: (groupIds: string[]) => void,
+  schedule: (flush: () => void) => void = (flush) => setTimeout(flush, 50),
+): {track: (groupId: string) => () => void} {
+  const counts = new Map<string, number>()
+  let scheduled = false
+  const flush = () => {
+    scheduled = false
+    onChange([...counts.keys()])
+  }
+  const change = (groupId: string, delta: number) => {
+    const count = (counts.get(groupId) ?? 0) + delta
+    if (count > 0) counts.set(groupId, count)
+    else counts.delete(groupId)
+    if (!scheduled) {
+      scheduled = true
+      schedule(flush)
+    }
+  }
+  return {
+    track: (groupId) => {
+      change(groupId, 1)
+      return () => change(groupId, -1)
+    },
+  }
 }
 
 /**
