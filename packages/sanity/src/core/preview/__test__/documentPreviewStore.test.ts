@@ -1,4 +1,4 @@
-import {createClient, type ListenEvent} from '@sanity/client'
+import {ChannelError, createClient, type ListenEvent} from '@sanity/client'
 import {defer, type Observable, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
@@ -117,5 +117,28 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
 
     expect(fetchesTagged('preview.observe-document')).toHaveLength(2)
     expect(documents).toEqual([{_id: 'author', _type: 'book', _rev: 'rev'}])
+  })
+
+  it('loads documents and reconnects after a channel error', async () => {
+    const {store, listener, connections, fetchesTagged} = setup()
+    const documents = collect(store.unstable_observeDocument('book'))
+
+    listener.error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+    expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
+
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(connections).toHaveLength(2)
+    listener.next(welcome)
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+    expect(fetchesTagged('preview.observe-document')).toHaveLength(2)
+  })
+
+  it('loads documents when the listener does not welcome in time', async () => {
+    const {store} = setup()
+    const documents = collect(store.unstable_observeDocument('book'))
+
+    await vi.advanceTimersByTimeAsync(10_000 + BATCH_DEBOUNCE_MS)
+    expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
   })
 })

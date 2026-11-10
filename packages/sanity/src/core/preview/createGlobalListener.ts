@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {timer} from 'rxjs'
 
+import {reconnectListener} from '../util/reconnectListener'
 import {LISTENER_RESET_DELAY} from './constants'
 import {shareReplayLatest} from './utils/shareReplayLatest'
 
@@ -25,6 +26,7 @@ export function createGlobalListener(client: SanityClient) {
       },
     )
     .pipe(
+      reconnectListener(),
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
         resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
