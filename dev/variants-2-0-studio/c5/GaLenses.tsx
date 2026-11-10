@@ -3,7 +3,7 @@ import {useMemo, useState} from 'react'
 
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
-import {rankDefinitions} from '../c1/rank'
+import {rankDefinitions, serveDocument} from '../c1/rank'
 import {usePerspectiveState} from '../c1/state'
 import {StateDot, type StateKind} from '../c3/StateGlyph'
 import {type Column, DataTable} from './DataTable'
@@ -209,7 +209,7 @@ export function VisitorResolution(props: {
   dimensions: DimensionSpec[]
 }) {
   const {corpus, definitions, dimensions} = props
-  const {chosen: visitor} = usePerspectiveState()
+  const {chosen: visitor, version} = usePerspectiveState()
   const openVersion = useOpenVersion()
   const meets = matching(visitor, definitions)
   const label = Object.entries(visitor)
@@ -220,20 +220,28 @@ export function VisitorResolution(props: {
     .join(' · ')
 
   const rows = corpus.docs.map((doc) => {
-    const served = meets.find((v) =>
-      doc.list.some((r) => r.variantId === shortId(v._id) && r.bundle === 'published'),
+    const result = serveDocument(
+      meets,
+      doc.list.map((r) => ({variantId: r.variantId, bundle: r.bundle})),
+      version,
     )
-    const unpublished = !served
-      ? meets.find((v) => doc.list.some((r) => r.variantId === shortId(v._id)))
+    const served = result.variantId
+      ? meets.find((v) => shortId(v._id) === result.variantId)
       : undefined
+    const unpublished =
+      !served && result.via !== 'base-in-release'
+        ? meets.find((v) => doc.list.some((r) => r.variantId === shortId(v._id)))
+        : undefined
     const others = doc.list
       .filter(
         (r) =>
           (r.variantId
             ? meets.some((v) => shortId(v._id) === r.variantId) &&
-              r.variantId !== (served && shortId(served._id))
+              !(r.variantId === result.variantId && r.bundle === result.bundle)
             : false) ||
-          (served && !r.variantId && r.bundle === 'published'),
+          (!r.variantId &&
+            !(result.variantId === null && r.bundle === result.bundle) &&
+            r.bundle !== 'drafts'),
       )
       .map((r) => {
         const def = r.variantId
@@ -243,19 +251,25 @@ export function VisitorResolution(props: {
           r.bundle === 'published' ? 'published' : r.bundle === 'drafts' ? 'draft' : 'in a release'
         return `${def ? definitionTitle(def) : 'Base document'} · ${state}`
       })
+    const where = result.bundle === 'published' ? 'Published' : `the release`
     return {
       id: doc.id,
       type: doc.type,
       title: doc.title,
-      servedId: served ? shortId(served._id) : null,
-      kind: (served ? 'published' : 'absent') as StateKind,
+      servedId: result.variantId,
+      kind: (result.via === 'none'
+        ? 'absent'
+        : result.bundle === 'published'
+          ? 'published'
+          : 'release') as StateKind,
       served: served ? definitionTitle(served) : 'Base document',
+      pending: result.pending,
       why: served
-        ? `Closest match: ${Object.keys(served.conditions).length} ${Object.keys(served.conditions).length === 1 ? 'condition' : 'conditions'}, priority ${served.priority ?? 0}${meets.length > 1 ? `; ${meets.length - 1} other matching ${meets.length === 2 ? 'definition ranks' : 'definitions rank'} lower` : ''}`
+        ? `Closest match: ${Object.keys(served.conditions).length} ${Object.keys(served.conditions).length === 1 ? 'condition' : 'conditions'}, priority ${served.priority ?? 0}${result.fellThrough ? `; the closer ${meets.length > 1 ? 'definitions have' : 'definition has'} no version of this document` : meets.length > 1 ? `; ${meets.length - 1} other matching ${meets.length === 2 ? 'definition ranks' : 'definitions rank'} lower` : ''} · from ${where}`
         : unpublished
           ? `${definitionTitle(unpublished)} exists but is not published`
           : meets.length
-            ? 'No matching definition has a version of this document'
+            ? `No matching definition has a version of this document · base from ${where}`
             : 'No definition matches this visitor',
       others: others.length ? others.join(' · ') : 'Nothing else',
     }
@@ -296,7 +310,23 @@ export function VisitorResolution(props: {
               </Flex>
             ),
           },
-          {key: 'why', title: 'Why', width: 320, render: (r) => muted(r.why)},
+          {
+            key: 'why',
+            title: 'Why',
+            width: 320,
+            render: (r) => (
+              <Stack gap={2}>
+                {muted(r.why)}
+                {r.pending ? (
+                  <Box>
+                    <Badge data-testid="visitor-pending" tone="caution">
+                      Pending engineering: a lower-ranked definition has a version in this release
+                    </Badge>
+                  </Box>
+                ) : null}
+              </Stack>
+            ),
+          },
           {key: 'others', title: 'Could be served', width: 380, render: (r) => muted(r.others)},
           {
             key: 'open',

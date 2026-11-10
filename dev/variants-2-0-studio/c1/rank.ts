@@ -61,3 +61,84 @@ export function firstWithVersion<T extends Ranked>(
 ): T | null {
   return ranked.find(has) ?? null
 }
+
+/** A stored version, as far as serving cares: which definition (null = the base document) and where it sits. */
+export interface ServedVersion {
+  variantId: string | null
+  /** `published`, `drafts` or a release name. */
+  bundle: string
+}
+
+export interface Served {
+  /** The definition served (its short id), or null for the base document. */
+  variantId: string | null
+  /** Where the served version sits: `published` or the release it is read from. */
+  bundle: string
+  /** Why: the version won as the base, as a variant in Published, in the release, or nothing at all (no version is published). */
+  via:
+    | 'variant-in-release'
+    | 'variant-in-published'
+    | 'base-in-release'
+    | 'base-in-published'
+    | 'none'
+  /** The top-ranked definition has no version that can be served, and a lower-ranked one was served instead. */
+  fellThrough: boolean
+  /**
+   * Open question (1) with engineering: in a release preview, a higher-ranked definition's Published version beat a
+   * lower-ranked definition's version in the release. Built as the ADR text reads; shown as pending.
+   */
+  pending: boolean
+}
+
+const shortName = (v: Ranked) => nameOf(v)
+
+/**
+ * What a visitor is served for ONE document, as the ADR reads. `perspective` is `published`, `drafts` or a release name.
+ * Drafts are never served, so `drafts` reads as `published`; a release bar reads as if the release had gone out.
+ * Per definition in rank order: its version in the release, then its version in Published. Only then the release's base version,
+ * then Published's base. A variant beats a release ("variant beats release").
+ */
+export function serveDocument(
+  ranked: Ranked[],
+  versions: ServedVersion[],
+  perspective: string,
+): Served {
+  const release = perspective === 'published' || perspective === 'drafts' ? null : perspective
+  const has = (variantId: string | null, bundle: string) =>
+    versions.some((v) => v.variantId === variantId && v.bundle === bundle)
+  const top = ranked[0] ? shortName(ranked[0]) : null
+  for (const definition of ranked) {
+    const id = shortName(definition)
+    const fellThrough = top !== null && id !== top
+    if (release && has(id, release)) {
+      return {
+        variantId: id,
+        bundle: release,
+        via: 'variant-in-release',
+        fellThrough,
+        pending: false,
+      }
+    }
+    if (has(id, 'published')) {
+      // Contested: a lower-ranked definition holds a version in the release that this Published one beat.
+      const pending =
+        release !== null &&
+        ranked.slice(ranked.indexOf(definition) + 1).some((lower) => has(shortName(lower), release))
+      return {variantId: id, bundle: 'published', via: 'variant-in-published', fellThrough, pending}
+    }
+  }
+  const fellThrough = false
+  if (release && has(null, release)) {
+    return {variantId: null, bundle: release, via: 'base-in-release', fellThrough, pending: false}
+  }
+  if (has(null, 'published')) {
+    return {
+      variantId: null,
+      bundle: 'published',
+      via: 'base-in-published',
+      fellThrough,
+      pending: false,
+    }
+  }
+  return {variantId: null, bundle: 'published', via: 'none', fellThrough, pending: false}
+}

@@ -1,7 +1,7 @@
 // The cases of gradient's pkg/documents/variant/resolver_test.go (origin/main, 10 Nov 2026), plus the per-document fall-through.
 import {describe, expect, it} from 'vitest'
 
-import {firstWithVersion, MAX_RESOLVED, rankDefinitions, type Ranked} from './rank'
+import {firstWithVersion, MAX_RESOLVED, rankDefinitions, type Ranked, serveDocument} from './rank'
 
 const cand = (
   name: string,
@@ -131,5 +131,65 @@ describe('firstWithVersion (per-document fall-through)', () => {
   })
   it('serves the base when no ranked definition has a version', () => {
     expect(firstWithVersion(ranked, () => false)).toBeNull()
+  })
+})
+
+describe('serveDocument (release perspective order)', () => {
+  const ranked = [
+    cand('french-premium', 0, 't1', {locale: 'fr', tier: 'premium'}),
+    cand('french', 0, 't2', {locale: 'fr'}),
+  ]
+  const v = (variantId: string | null, bundle: string) => ({variantId, bundle})
+
+  it('published: the top definition wins when it has a published version', () => {
+    const s = serveDocument(
+      ranked,
+      [v('french-premium', 'published'), v('french', 'published'), v(null, 'published')],
+      'published',
+    )
+    expect(s).toMatchObject({
+      variantId: 'french-premium',
+      via: 'variant-in-published',
+      fellThrough: false,
+    })
+  })
+
+  it('falls through to the next-ranked definition that has a version, not to the base', () => {
+    const s = serveDocument(ranked, [v('french', 'published'), v(null, 'published')], 'published')
+    expect(s).toMatchObject({variantId: 'french', fellThrough: true})
+  })
+
+  it('drafts are never served: a draft-only variant falls through to the published base', () => {
+    const s = serveDocument(ranked, [v('french-premium', 'drafts'), v(null, 'published')], 'drafts')
+    expect(s).toMatchObject({variantId: null, via: 'base-in-published'})
+  })
+
+  it('a variant in the release beats the release base', () => {
+    const s = serveDocument(ranked, [v('french', 'r1'), v(null, 'r1'), v(null, 'published')], 'r1')
+    expect(s).toMatchObject({variantId: 'french', bundle: 'r1', via: 'variant-in-release'})
+  })
+
+  it('variant beats release: a variant in Published beats the release base version', () => {
+    const s = serveDocument(
+      ranked,
+      [v('french', 'published'), v(null, 'r1'), v(null, 'published')],
+      'r1',
+    )
+    expect(s).toMatchObject({variantId: 'french', bundle: 'published', via: 'variant-in-published'})
+  })
+
+  it('no variant: the release base, then the published base', () => {
+    expect(serveDocument(ranked, [v(null, 'r1'), v(null, 'published')], 'r1')).toMatchObject({
+      via: 'base-in-release',
+    })
+    expect(serveDocument(ranked, [v(null, 'published')], 'r1')).toMatchObject({
+      via: 'base-in-published',
+    })
+    expect(serveDocument(ranked, [], 'published')).toMatchObject({via: 'none'})
+  })
+
+  it('marks the open case: a higher definition in Published against a lower one in the release', () => {
+    const s = serveDocument(ranked, [v('french-premium', 'published'), v('french', 'r1')], 'r1')
+    expect(s).toMatchObject({variantId: 'french-premium', bundle: 'published', pending: true})
   })
 })
