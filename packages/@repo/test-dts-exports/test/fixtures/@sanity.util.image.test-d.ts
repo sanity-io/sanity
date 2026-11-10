@@ -6,6 +6,7 @@ import type {
   AspectRatioMessageOptions,
   croppedDimensions,
   cropToPixelRect,
+  defaultCropRect,
   dimensionsAtLeast,
   dimensionsMatchConstraint,
   formatAspectRatio,
@@ -15,6 +16,8 @@ import type {
   ImagePixelRect,
   isCroppableImageRef,
   isSvgImageRef,
+  largestRectForRatio,
+  largestSizeForRatio,
   nearestAllowedRatio,
   pixelRectToCrop,
   ratioMatchesConstraint,
@@ -32,6 +35,9 @@ describe('@sanity/util/image', () => {
   })
   test('cropToPixelRect', () => {
     expectTypeOf<typeof cropToPixelRect>().toBeFunction()
+  })
+  test('defaultCropRect', () => {
+    expectTypeOf<typeof defaultCropRect>().toBeFunction()
   })
   test('dimensionsAtLeast', () => {
     expectTypeOf<typeof dimensionsAtLeast>().toBeFunction()
@@ -59,6 +65,12 @@ describe('@sanity/util/image', () => {
   })
   test('isSvgImageRef', () => {
     expectTypeOf<typeof isSvgImageRef>().toBeFunction()
+  })
+  test('largestRectForRatio', () => {
+    expectTypeOf<typeof largestRectForRatio>().toBeFunction()
+  })
+  test('largestSizeForRatio', () => {
+    expectTypeOf<typeof largestSizeForRatio>().toBeFunction()
   })
   test('nearestAllowedRatio', () => {
     expectTypeOf<typeof nearestAllowedRatio>().toBeFunction()
