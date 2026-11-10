@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {Observable, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type MutationEvent} from '../../../store/document/types'
+import {type VersionStubSource} from '../../buildInventoryIndex'
 import {
   createVersionFeed,
   getWindowPages,
@@ -19,44 +19,66 @@ function groupId(index: number): string {
   return `doc-${String(index).padStart(4, '0')}`
 }
 
-function version(
-  id: string,
-  group: string,
-  system: Partial<VersionInfoDocumentStub['_system']> = {},
-): VersionInfoDocumentStub {
-  return {
+type RawVersion = VersionStubSource & {_rev: string; _createdAt: string}
+
+function raw(id: string, system: RawVersion['_system']): RawVersion {
+  const document: RawVersion = {
     _id: id,
     _rev: 'rev',
     _type: 'product',
     _createdAt: '2026-11-01T00:00:00Z',
     _updatedAt: '2026-11-01T00:00:00Z',
-    _system: {group: {_ref: group, _weak: true}, ...system},
   }
+  // A missing `_system` key and `_system: null` both occur in raw query results.
+  return system === undefined ? document : {...document, _system: system}
 }
 
-// 1,240 documents with a published version, a draft and ten release versions: 14,880 versions.
-function versionsOf(group: string): VersionInfoDocumentStub[] {
+// `base` is not part of the typed _system, as in a raw query result.
+function publishedSystem(id: string) {
+  const system = {base: {id, rev: 'rev'}}
+  return system
+}
+
+// The shapes Content Lake returns today, where only variant versions carry `_system.group`: a
+// published document (`_system: {base}`), a classic draft (`_system: null`), ten release versions
+// without `_system`, and one variant draft with the full `_system`. 1,240 documents, 16,120
+// versions.
+function versionsOf(group: string): RawVersion[] {
   return [
-    version(group, group),
-    version(`drafts.${group}`, group, {bundleId: 'drafts'}),
+    raw(group, publishedSystem(group)),
+    raw(`drafts.${group}`, null),
     ...Array.from({length: RELEASES_PER_DOCUMENT}, (_, release) =>
-      version(`versions.r${release}.${group}`, group, {
-        bundleId: `r${release}`,
-        release: {_ref: `_.releases.r${release}`, _weak: true},
-      }),
+      raw(`versions.r${release}.${group}`, undefined),
     ),
+    raw(`drafts.scopeDe.${group}`, {
+      group: {_ref: group, _weak: true},
+      bundleId: 'drafts',
+      variants: [{_ref: '_.variants.german', _key: 'k'}],
+    }),
   ]
 }
 
+const VERSIONS_PER_DOCUMENT = 2 + RELEASES_PER_DOCUMENT + 1
+
+function pageGroupIds(params: Record<string, unknown>): string[] {
+  return Object.keys(params)
+    .filter((key) => /^g\d+$/.test(key))
+    .toSorted((left, right) => Number(left.slice(1)) - Number(right.slice(1)))
+    .map((key) => String(params[key]))
+}
+
+function isPageQuery(query: string): boolean {
+  return query.startsWith('*[sanity::versionOf(')
+}
+
 const GROUP_IDS_QUERY = buildFeedGroupIdsQuery('_type == "product"')
-const PAGE_QUERY = buildFeedPageQuery()
 
 /**
  * A client whose listeners are tracked: how many are open, for which query, and a way to push a
  * mutation into each. Fetches answer from an in-memory dataset.
  */
 function createMockClient() {
-  const dataset = new Map<string, VersionInfoDocumentStub[]>()
+  const dataset = new Map<string, RawVersion[]>()
   for (let index = DOCUMENT_COUNT - 1; index >= 0; index--) {
     dataset.set(groupId(index), versionsOf(groupId(index)))
   }
@@ -65,11 +87,11 @@ function createMockClient() {
   let opened = 0
   let failFetch = false
 
-  const fetch = vi.fn((query: string, params: {groupIds?: string[]}) => {
+  const fetch = vi.fn((query: string, params: Record<string, unknown>) => {
     if (failFetch) return throwError(() => new Error('fetch failed'))
     if (query === GROUP_IDS_QUERY.fetch) return of([...dataset.keys()])
-    if (query === PAGE_QUERY.fetch) {
-      return of((params.groupIds ?? []).flatMap((group) => dataset.get(group) ?? []))
+    if (isPageQuery(query)) {
+      return of(pageGroupIds(params).flatMap((group) => dataset.get(group) ?? []))
     }
     return throwError(() => new Error(`unexpected query ${query}`))
   })
@@ -108,7 +130,7 @@ function createMockClient() {
     failFetches: () => {
       failFetch = true
     },
-    pageListeners: () => [...open].filter(({query}) => query === PAGE_QUERY.listen),
+    pageListeners: () => [...open].filter(({query}) => isPageQuery(query)),
   }
 }
 
@@ -193,16 +215,24 @@ describe('createVersionFeed', () => {
     // Sorted by group id, whatever order the query answered in.
     expect(state.groupIds?.slice(0, 2)).toEqual([groupId(0), groupId(1)])
     expect(state.pages.map(({index}) => index)).toEqual([0])
-    expect(state.versions).toHaveLength(50 * (2 + RELEASES_PER_DOCUMENT))
+    expect(state.versions).toHaveLength(50 * VERSIONS_PER_DOCUMENT)
     expect(state.loading).toBe(false)
     expect(mock.open.size).toBe(2)
     expect(mock.opened).toBe(2)
 
     // The page asks for its documents by group id, and only those.
-    const pageFetch = mock.fetch.mock.calls.find(([query]) => query === PAGE_QUERY.fetch)
-    expect(pageFetch?.[1]).toEqual({
-      groupIds: Array.from({length: 50}, (_, index) => groupId(index)),
-    })
+    const pageFetch = mock.fetch.mock.calls.find(([query]) => isPageQuery(query))
+    expect(pageFetch?.[0]).toBe(buildFeedPageQuery(pageGroupIds(pageFetch?.[1] ?? {})).fetch)
+    expect(pageGroupIds(pageFetch?.[1] ?? {})).toEqual(
+      Array.from({length: 50}, (_, index) => groupId(index)),
+    )
+    // Every version of every document is read, though only the variant draft stores its group.
+    expect(state.versions.filter(({kind}) => kind === 'published')).toHaveLength(50)
+    expect(state.versions.filter(({kind}) => kind === 'draft')).toHaveLength(100)
+    expect(state.versions.filter(({kind}) => kind === 'release')).toHaveLength(
+      50 * RELEASES_PER_DOCUMENT,
+    )
+    expect(new Set(state.versions.map(({groupId: group}) => group)).size).toBe(50)
 
     subscription.unsubscribe()
     await flush()
@@ -226,7 +256,7 @@ describe('createVersionFeed', () => {
     // One list listener, plus at most the visible pages (two at a page boundary) and one
     // overscan page each side.
     expect(Math.max(...listenerCounts)).toBeLessThanOrEqual(1 + 4)
-    expect(Math.max(...versionCounts)).toBeLessThanOrEqual(4 * 50 * (2 + RELEASES_PER_DOCUMENT))
+    expect(Math.max(...versionCounts)).toBeLessThanOrEqual(4 * 50 * VERSIONS_PER_DOCUMENT)
     // The last page is loaded at the end, and the first pages are long gone.
     expect(latest().pages.map(({index}) => index)).toEqual([23, 24])
     expect(latest().versions.some((stub) => stub.groupId === groupId(0))).toBe(false)
@@ -243,7 +273,7 @@ describe('createVersionFeed', () => {
     await flush()
     const pageOneListener = mock
       .pageListeners()
-      .find(({params}) => (params.groupIds as string[])[0] === groupId(50))
+      .find(({params}) => pageGroupIds(params)[0] === groupId(50))
     expect(pageOneListener).toBeDefined()
     const openedBefore = mock.opened
 
@@ -263,19 +293,13 @@ describe('createVersionFeed', () => {
     await flush()
 
     const group = groupId(3)
-    mock.dataset.set(group, [
-      ...versionsOf(group),
-      version(`versions.rNew.${group}`, group, {
-        bundleId: 'rNew',
-        release: {_ref: '_.releases.rNew', _weak: true},
-      }),
-    ])
+    mock.dataset.set(group, [...versionsOf(group), raw(`versions.rNew.${group}`, undefined)])
     const [pageListener] = mock.pageListeners()
     pageListener.events.next(mutation(`versions.rNew.${group}`, 'appear'))
     await flush()
 
     expect(latest().versions.filter((stub) => stub.groupId === group)).toHaveLength(
-      3 + RELEASES_PER_DOCUMENT,
+      VERSIONS_PER_DOCUMENT + 1,
     )
     // Live, not reloaded: still one list listener and one page listener.
     expect(mock.open.size).toBe(2)

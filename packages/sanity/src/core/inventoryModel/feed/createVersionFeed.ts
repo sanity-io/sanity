@@ -11,9 +11,8 @@ import {
   switchMap,
 } from 'rxjs/operators'
 
-import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {listenQuery, type ListenQueryParams} from '../../store/document/listenQuery'
-import {toVersionStub} from '../buildInventoryIndex'
+import {toVersionStub, type VersionStubSource} from '../buildInventoryIndex'
 import {type VersionStub} from '../types'
 import {buildFeedGroupIdsQuery, buildFeedPageQuery} from './versionFeedQueries'
 
@@ -168,20 +167,19 @@ export function createVersionFeed(client: SanityClient, options: VersionFeedOpti
   // One shared stream per page, keyed by the page's documents. When the window moves, the pages
   // that stay are re-subscribed before the delayed reset fires, so their listeners stay open.
   const pageStreams = new Map<string, Observable<Omit<VersionFeedPage, 'index'>>>()
-  const pageQuery = buildFeedPageQuery()
 
   function getPageStream(groupIds: string[]): Observable<Omit<VersionFeedPage, 'index'>> {
     const key = groupIds.join(',')
     const existing = pageStreams.get(key)
     if (existing) return existing
 
-    const stream = listenQuery(
-      client,
-      pageQuery,
-      {groupIds},
-      {tag: `${tag}.page`, perspective: 'raw', throttleTime},
-    ).pipe(
-      map((documents: VersionInfoDocumentStub[] | null) => ({
+    const {params: pageParams, ...pageQuery} = buildFeedPageQuery(groupIds)
+    const stream = listenQuery(client, pageQuery, pageParams, {
+      tag: `${tag}.page`,
+      perspective: 'raw',
+      throttleTime,
+    }).pipe(
+      map((documents: VersionStubSource[] | null) => ({
         groupIds,
         versions: (documents ?? []).flatMap((document) => {
           const stub = toVersionStub(document)

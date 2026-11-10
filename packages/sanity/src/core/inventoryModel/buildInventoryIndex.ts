@@ -1,4 +1,5 @@
 import {type VersionInfoDocumentStub} from '../releases/store/types'
+import {type RawDocumentSystem, resolveVersionSystem} from '../releases/util/resolveVersionSystem'
 import {getVersionFromId} from '../util/draftUtils'
 import {getDocumentVersionVariantId} from '../util/getDocumentVersionVariant'
 import {readVersionType} from '../util/versionsUtils'
@@ -7,14 +8,36 @@ import {type InventoryIndex, type InventoryIndexInput, type VersionStub} from '.
 import {createVersionRanker} from './versionOrder'
 
 /**
- * Reduces a document stub to a {@link VersionStub}. Groups by `_system.group`, never by parsing
- * the id, so variant versions (`versions.<scopeId>.<groupId>`) land with their document.
+ * A version document as a query returns it. `_system` may be partial or missing: Content Lake
+ * only stores `_system.group` on variant versions today, so published documents carry `{base}` at
+ * most, classic drafts carry `null`, and release versions lack the group.
  *
  * @internal
  */
-export function toVersionStub(document: VersionInfoDocumentStub): VersionStub | undefined {
+export type VersionStubSource = Pick<VersionInfoDocumentStub, '_id' | '_type' | '_updatedAt'> & {
+  _system?: RawDocumentSystem | null
+}
+
+/**
+ * Reduces a document stub to a {@link VersionStub}. Groups by `_system.group`, never by parsing
+ * the id, so variant versions (`versions.<scopeId>.<groupId>`) land with their document. A
+ * document without `_system.group` gets the `_system` its id implies (see
+ * {@link resolveVersionSystem}): `drafts.<id>` is a draft, `versions.<release>.<id>` a release
+ * version (or an agent version), and anything else is published, all grouped under the
+ * published id.
+ *
+ * @internal
+ */
+export function toVersionStub(source: VersionStubSource): VersionStub | undefined {
+  const document: VersionInfoDocumentStub = {
+    _rev: '',
+    _createdAt: source._updatedAt,
+    ...source,
+    // Without releases: a version names its release in its id, and the release may not be loaded.
+    _system: resolveVersionSystem(source, undefined),
+  }
   const kind = readVersionType(document)
-  const groupId = document._system?.group?._ref
+  const groupId = document._system.group?._ref
   if (!kind || !groupId) {
     return undefined
   }
