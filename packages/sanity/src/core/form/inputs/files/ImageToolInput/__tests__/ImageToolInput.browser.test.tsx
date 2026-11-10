@@ -25,6 +25,7 @@ const IMAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 const IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-jpg'
 const WIDE_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-2000x1000-jpg'
 const PORTRAIT_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1200x1800-jpg'
+const SQUARE_IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1000x1000-jpg'
 const PORTRAIT_WIDTH = 1200
 const PORTRAIT_HEIGHT = 1800
 const WIDESCREEN = resolveAspectRatio(16 / 9)
@@ -289,5 +290,38 @@ describe('image tool input', () => {
       expect(dimensions.width).toBeGreaterThanOrEqual(800)
       expect(dimensions.height).toBeGreaterThanOrEqual(450)
     })
+  })
+
+  test('saves the hotspot inside the crop it swaps in for a crop that breaks the ratio', async () => {
+    const {findBySelector, waitForDocumentState} = testHelpers()
+    const rangeSchema = createImageSchema({hotspot: true, aspectRatio: {min: 4 / 3, max: 16 / 9}})
+    const squareDocument: SanityDocument = {
+      ...DOCUMENT,
+      image: {
+        _type: 'image',
+        asset: {_type: 'reference', _ref: SQUARE_IMAGE_REF},
+        crop: {_type: 'sanity.imageCrop', top: 0, bottom: 0, left: 0, right: 0},
+        hotspot: {_type: 'sanity.imageHotspot', x: 0.5, y: 0.05, width: 0.3, height: 0.08},
+      },
+    }
+    void render(
+      <TestWrapper schemaTypes={rangeSchema}>
+        <TestForm document={squareDocument} focusPath={HOTSPOT_FOCUS_PATH} />
+      </TestWrapper>,
+    )
+
+    await waitForFixtureImage()
+    const cropArea = await findBySelector(
+      {element: () => document.body},
+      'svg[data-handle="crop"] > rect[data-handle="crop"]',
+    )
+    await userEvent.click(cropArea)
+
+    const state = await waitForDocumentState((documentState) => documentState?.image?.crop?.top > 0)
+    const {crop, hotspot} = state.image
+    expect(hotspot.y - hotspot.height / 2).toBeGreaterThanOrEqual(crop.top)
+    expect(hotspot.y + hotspot.height / 2).toBeLessThanOrEqual(1 - crop.bottom)
+    expect(hotspot.x - hotspot.width / 2).toBeGreaterThanOrEqual(crop.left)
+    expect(hotspot.x + hotspot.width / 2).toBeLessThanOrEqual(1 - crop.right)
   })
 })

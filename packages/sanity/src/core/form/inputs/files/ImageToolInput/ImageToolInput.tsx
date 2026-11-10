@@ -33,6 +33,7 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
 import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
 import {type CropConstraints} from './imagetool/types'
+import {constrainHotspotToCrop} from './imagetool/utils'
 import {placeholder} from './ImageToolInput.css'
 import {getImageToolPath, getInitialToolCrop} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
@@ -74,7 +75,14 @@ function getToolValue(
 ): Partial<Image> {
   const base = value || DEFAULT_VALUE
   const crop = getInitialToolCrop(value, constraint)
-  return crop ? {...base, crop} : base
+  if (crop === undefined || crop === base.crop) {
+    return base
+  }
+  const hotspot = {
+    ...base.hotspot,
+    ...constrainHotspotToCrop(base.hotspot || DEFAULT_HOTSPOT, crop),
+  }
+  return {...base, crop, hotspot}
 }
 
 function LoadStatus(props: {children: ReactNode}) {
