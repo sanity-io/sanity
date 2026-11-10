@@ -9,8 +9,13 @@ import {defineType, type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import {Observable, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../../../../../test/testUtils/documentVisibility'
 import {LISTENER_RESET_DELAY} from '../../../../../../preview/constants'
 import {createSchema} from '../../../../../../schema/createSchema'
+import {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  listenerGate,
+} from '../../../../../../store/listenerGate/listenerGate'
 import {isRecord} from '../../../../../../util/isRecord'
 import {type GlobalDocumentReferenceInfo} from '../../../../../inputs/GlobalDocumentReferenceInput/types'
 import {createGlobalDocumentReferenceStore} from '../createGlobalDocumentReferenceStore'
@@ -377,6 +382,47 @@ describe('createGlobalDocumentReferenceStore', () => {
       type: undefined,
       availability: {available: false, reason: 'NOT_FOUND'},
       preview: {published: undefined},
+    })
+  })
+
+  describe('on a hidden page', () => {
+    beforeEach(() => {
+      listenerGate.setEnabled(true)
+    })
+
+    afterEach(() => {
+      listenerGate.setEnabled(false)
+      vi.restoreAllMocks()
+    })
+
+    test('closes the listener while paused, and fetches the previews again when shown', async () => {
+      const documentVisibility = stubDocumentVisibility()
+      const blog = createFakeResource({
+        'book-1': createDocument('book-1', 'book', {title: 'Before'}),
+      })
+      const store = createStore({'project.blog': blog})
+      const preview = observe(store.getReferenceInfo({_id: 'book-1'}, bookReferenceType))
+      blog.events.next(WELCOME)
+      await vi.advanceTimersByTimeAsync(BATCH_FETCH_WAIT)
+      expect(preview.latest()?.preview.published?.title).toBe('Before')
+
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(blog.connections).toEqual({opened: 1, active: 0})
+      expect(preview.latest()?.preview.published?.title).toBe('Before')
+
+      blog.documents['book-1'] = createDocument('book-1', 'book', {
+        _rev: 'book-1-rev-2',
+        title: 'After',
+      })
+      documentVisibility.set('visible')
+      expect(blog.connections).toEqual({opened: 2, active: 1})
+      blog.events.next(WELCOME)
+      await vi.advanceTimersByTimeAsync(BATCH_FETCH_WAIT)
+
+      expect(blog.fetchedIds).toEqual([['book-1'], ['book-1']])
+      expect(preview.latest()?.preview.published?.title).toBe('After')
+      preview.unsubscribe()
     })
   })
 })
