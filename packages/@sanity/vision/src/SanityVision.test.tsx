@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
-import {act, cleanup, render, screen} from '@testing-library/react'
+import {act, cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -56,15 +56,21 @@ vi.mock('./components/VisionGui', () => ({
   ),
 }))
 
-// The factories only run when something imports the module, so they record whether the
-// redesign or its WebAssembly dependency was loaded
-vi.mock('./redesign/components/VisionRedesign', () => {
-  loadedModules.add('VisionRedesign')
-  return {VisionRedesign: () => <div data-testid="vision" />}
-})
+vi.mock('./redesign/components/VisionRedesign', () => ({
+  VisionRedesign: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
+    <button data-testid="vision" onClick={onSwitchToClassic} type="button">
+      Vision
+    </button>
+  ),
+}))
 
+// The factories run only when something imports the package. The redesign must not import it.
 vi.mock('@sanity-labs/groq-wasm', () => {
   loadedModules.add('@sanity-labs/groq-wasm')
+  return {}
+})
+vi.mock('@sanity-labs/groq-wasm/lazy', () => {
+  loadedModules.add('@sanity-labs/groq-wasm/lazy')
   return {}
 })
 
@@ -81,15 +87,19 @@ function renderTool(options: Partial<VisionConfig>) {
   )
 }
 
-describe('SanityVision with the redesign switched off', () => {
+describe('SanityVision experience switch', () => {
   beforeEach(() => {
+    loadedModules.clear()
     localStorage.clear()
     // The preference module caches per project; start every test from a known state
     writeRedesignPreference('switch-project', {optedIn: false, dismissed: false})
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     cleanup()
+    await vi.dynamicImportSettled()
+    expect(loadedModules.has('@sanity-labs/groq-wasm')).toBe(false)
+    expect(loadedModules.has('@sanity-labs/groq-wasm/lazy')).toBe(false)
   })
 
   it('renders the classic tool without an invitation when the beta flag is off', () => {
@@ -99,30 +109,82 @@ describe('SanityVision with the redesign switched off', () => {
     expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
   })
 
-  it('renders the classic tool without an invitation when the beta flag is on', async () => {
-    await act(async () => {
-      renderTool({beta: {redesign: {enabled: true}}})
-    })
-    expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
-    expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
-  })
-
-  it('renders the classic tool for a project that opted in before the switch-off', async () => {
+  it('renders the classic tool even for a stored opt-in when the beta flag is off', () => {
     writeRedesignPreference('switch-project', {optedIn: true})
-    await act(async () => {
-      renderTool({beta: {redesign: {enabled: true}}})
-    })
+    renderTool({beta: {redesign: {enabled: false}}})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
     expect(screen.queryByTestId('vision')).toBeNull()
   })
 
-  it('never loads the redesign or groq-wasm', async () => {
-    writeRedesignPreference('switch-project', {optedIn: true})
+  it('invites through a toast and switches to the redesign when accepted', async () => {
+    renderTool({beta: {redesign: {enabled: true}}})
+    expect(screen.getByTestId('classic-vision')).toBeTruthy()
+
+    const accept = await screen.findByTestId('vision-redesign-accept')
     await act(async () => {
-      renderTool({beta: {redesign: {enabled: true}}})
+      fireEvent.click(accept)
     })
-    await vi.dynamicImportSettled()
-    expect([...loadedModules]).toEqual([])
+
+    await waitFor(() => expect(screen.getByTestId('vision')).toBeTruthy())
+    expect(screen.queryByTestId('classic-vision')).toBeNull()
+    // The toast animates out, so it leaves the DOM a moment later
+    await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
+    expect(
+      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
+    ).toEqual({
+      optedIn: true,
+      dismissed: false,
+    })
+  })
+
+  it('remembers a dismissed invitation', async () => {
+    renderTool({beta: {redesign: {enabled: true}}})
+    const dismiss = await screen.findByTestId('vision-redesign-dismiss')
+    await act(async () => {
+      fireEvent.click(dismiss)
+    })
+
+    await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
+    expect(screen.getByTestId('classic-vision')).toBeTruthy()
+
+    cleanup()
+    renderTool({beta: {redesign: {enabled: true}}})
+    expect(screen.getByTestId('classic-vision')).toBeTruthy()
+    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
+  })
+
+  it('keeps the redesign one click away in the classic tool after the invitation is dismissed', async () => {
+    writeRedesignPreference('switch-project', {dismissed: true})
+    renderTool({beta: {redesign: {enabled: true}}})
+    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('classic-try-redesign'))
+    })
+    await waitFor(() => expect(screen.getByTestId('vision')).toBeTruthy())
+    expect(
+      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
+    ).toEqual({optedIn: true, dismissed: false})
+
+    // Back in the classic tool, the invitation shows again
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('vision'))
+    })
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+    expect(screen.getByTestId('classic-try-redesign')).toBeTruthy()
+  })
+
+  it('opens the redesign directly for an opted-in project and can switch back', async () => {
+    writeRedesignPreference('switch-project', {optedIn: true})
+    renderTool({beta: {redesign: {enabled: true}}})
+    const visionRedesign = await screen.findByTestId('vision')
+
+    await act(async () => {
+      fireEvent.click(visionRedesign)
+    })
+
+    await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())
+    // The invitation shows again so the redesign stays one click away
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
   })
 })

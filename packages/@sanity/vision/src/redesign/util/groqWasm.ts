@@ -1,14 +1,21 @@
-import type * as GroqWasm from '@sanity-labs/groq-wasm'
-
 /**
- * Lazy wrapper around `@sanity-labs/groq-wasm`: the WebAssembly build of the `groq-format`
- * formatter and the `groq-lint` rules from sanity-labs/sanity-lint. Evaluating that module fetches
- * and instantiates some 340 KB of WebAssembly, so it is only loaded when a query is first
- * formatted or linted, not with the tool. Parse errors carry UTF-8 byte offsets from Rust;
- * everything returned from here is an index into the query string, as the editor understands it.
+ * Lazy wrapper around the WebAssembly build of the `groq-format` formatter and the `groq-lint`
+ * rules. The runtime comes from the `@sanity-labs/groq-wasm/lazy` entry, which has no top-level
+ * await and fetches its bytes only in `load()`, so the module loads on the first format or lint,
+ * not with the tool. Do not import the package entry: its browser build fetches the bytes while
+ * the module evaluates, and some bundlers then fail to parse it.
+ * Parse errors carry UTF-8 byte offsets from Rust; everything returned from here is an index into
+ * the query string, as the editor understands it.
  */
 
-type GroqWasmModule = typeof GroqWasm
+interface GroqWasmModule {
+  DEFAULT_WIDTH: number
+  format: (query: string, config?: {width?: number}) => string
+  lint: (query: string) => WasmFinding[]
+  extractParams: (
+    query: string,
+  ) => Array<{name: string; references: Array<{start: number; end: number}>}>
+}
 
 export type GroqFindingSeverity = 'error' | 'warning' | 'info'
 
@@ -21,7 +28,7 @@ export interface GroqFinding {
   to: number
 }
 
-/** The runtime shape of a `@sanity-labs/groq-wasm` finding; its declared type is not shipped */
+/** The runtime shape of a finding from `@sanity-labs/groq-wasm`'s `lint` */
 export interface WasmFinding {
   ruleId: string
   message: string
@@ -53,11 +60,17 @@ export interface GroqQueryParam {
 let groqWasm: Promise<GroqWasmModule> | undefined
 
 function loadGroqWasm(): Promise<GroqWasmModule> {
-  groqWasm ??= import('@sanity-labs/groq-wasm').catch((error: unknown) => {
-    // Offline or blocked WebAssembly: forget the failed attempt so the next call retries
-    groqWasm = undefined
-    throw error
-  })
+  groqWasm ??= import('@sanity-labs/groq-wasm/lazy')
+    .then(async (api) => {
+      await api.load()
+      return api
+    })
+    .catch((error: unknown) => {
+      // The fetch or the WebAssembly compile failed: forget the attempt so the next format or
+      // lint tries again
+      groqWasm = undefined
+      throw error
+    })
   return groqWasm
 }
 
