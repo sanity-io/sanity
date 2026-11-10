@@ -4,6 +4,7 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {filter, mergeMap, share, throttleTime} from 'rxjs/operators'
 
 import {versionedClient} from '../../studioClient'
+import {reconnectListener} from '../../util/reconnectListener'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
@@ -55,7 +56,7 @@ const listen = (
       includeAllVersions: true,
       tag: options.tag,
     }),
-  ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
+  ).pipe(reconnectListener()) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
 /**
  * The listener failed before it welcomed: the query is fetched for it as it is for `welcome`, and
