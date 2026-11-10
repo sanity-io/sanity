@@ -30,6 +30,21 @@ const listenerDownBeforeWelcome: SyncTestDefinition = {
   steps: [],
 }
 
+const channelErrorWhileEditing: SyncTestDefinition = {
+  id: 'LSN-CHANNEL-ERROR',
+  title: "B's listener ends with a channel error, A edits while B reconnects",
+  seam: 'pair',
+  initial: [document(PUBLISHED_ID, 'Published title'), document(DRAFT_ID, 'Draft title')],
+  idPair,
+  clients: ['A', 'B'],
+  steps: [
+    {client: 'B', do: 'failListener'},
+    {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'Edited by A'}}]},
+    {client: 'A', do: 'commit'},
+    {do: 'settle'},
+  ],
+}
+
 // B goes down while A edits, and the snapshot fetch B makes when it comes back is held: B must not
 // read as connected (the form is editable once it does) while it still holds the stale draft.
 function comesBackWithAFetchHeld(
@@ -114,4 +129,13 @@ describe('a pair listener that comes back without resuming', () => {
       expectHealthy(world)
     },
   )
+})
+
+describe('a pair listener that ends with a channel error', () => {
+  test('LSN-CHANNEL-ERROR: B reconnects and catches up without an error', async () => {
+    world = await runSyncTest(channelErrorWhileEditing)
+    expectConverged(world)
+    expectHealthy(world)
+    expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
+  })
 })
