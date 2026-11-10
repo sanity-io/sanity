@@ -347,6 +347,7 @@ export type TrendGroup =
   | 'styles'
   | 'soak'
   | 'settle'
+  | 'stall'
   | 'engine'
   | 'environment'
 
@@ -496,6 +497,16 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'customization build (perf/bench/studio-customizations). Lower is better on every series.',
   },
   {
+    id: 'stall',
+    title: 'Listener stall',
+    description:
+      'Two editors on one document: the studio’s realtime listener stays connected but stops ' +
+      'delivering changes, a peer deletes the Portable Text paragraph the studio is typing into, ' +
+      'and the studio keeps typing. Its saves are accepted as no-ops, so the text is lost until ' +
+      'the studio notices it is out of date and refetches the document. Lower is better. A ' +
+      'value at the 90s cap means the studio never recovered.',
+  },
+  {
     id: 'engine',
     title: 'Engine confidence',
     description: ENGINE_CONFIDENCE_EXPLAINER,
@@ -506,6 +517,10 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
     description: `${CALIBRATION_EXPLAINER} Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.`,
   },
 ]
+
+function seriesPrefix(scenario: {kind: string; mode?: string | null}): string {
+  return scenario.mode === 'settle' || scenario.mode === 'stall' ? scenario.mode : scenario.kind
+}
 
 /**
  * Plain-English description per metric so a first-time viewer can read the
@@ -578,6 +593,16 @@ function describeSeries(
     }
     // A new nav metric must never silently vanish from the dashboard
     return {group: 'navigation', description: label, goal: 'lower'}
+  }
+  if (mode === 'stall') {
+    return {
+      group: 'stall',
+      description:
+        'From the peer deleting the paragraph until the studio stops showing it, while the ' +
+        'studio types into it with a stalled listener. Capped at 90s: a session at the cap never ' +
+        'recovered.',
+      goal: 'lower',
+    }
   }
   if (mode === 'settle') {
     if (label === 'sessions not settled') {
@@ -1476,9 +1501,9 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
           continue
         }
         push(
-          // Settle reuses kind 'pageload'; the mode keeps its keys from ever
-          // colliding with a real pageload metric of the same scenario.
-          `${isStyleRow ? 'styles' : scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
+          // Settle and stall reuse the kinds; the mode keeps their keys from
+          // ever colliding with a real metric of the same scenario.
+          `${isStyleRow ? 'styles' : seriesPrefix(scenario)}:${scenario.scenario}:${metric.label}`,
           `${scenario.scenario} · ${metric.label}`,
           metric.unit,
           {

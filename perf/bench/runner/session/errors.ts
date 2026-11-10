@@ -15,6 +15,7 @@ export type SessionFailureReason =
   | 'unexpected-endpoint'
   | 'soak-excursion'
   | 'paint-attribution'
+  | 'stall-precondition'
 
 export class SessionError extends Error {
   constructor(

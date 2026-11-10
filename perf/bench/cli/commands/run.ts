@@ -34,9 +34,13 @@ export const runCommand = command(
       }),
     ),
     mode: withDefault(
-      option('--mode', choice(['interaction', 'pageload', 'soak', 'inp', 'settle', 'softnav']), {
-        description: message`What to measure`,
-      }),
+      option(
+        '--mode',
+        choice(['interaction', 'pageload', 'soak', 'inp', 'settle', 'softnav', 'stall']),
+        {
+          description: message`What to measure`,
+        },
+      ),
       'interaction' as const,
     ),
     minutes: withDefault(
@@ -103,7 +107,7 @@ export const runCommand = command(
     ),
   }),
   {
-    description: message`Run benchmarks against the built studio (interaction, pageload, soak, inp, settle, or softnav)`,
+    description: message`Run benchmarks against the built studio (interaction, pageload, soak, inp, settle, softnav, or stall)`,
   },
 )
 
