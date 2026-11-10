@@ -155,6 +155,39 @@ describe('buildInventoryIndex', () => {
     expect(ordered.versions.map(({_id}) => _id)).toEqual(['asap', 'early', 'late', 'u', 'missing'])
   })
 
+  describe('scheduled drafts', () => {
+    const scheduledDraft = {
+      ...release('rScheduledDraft', 'scheduled', {publishAt: '2026-12-10T00:00:00Z'}),
+      metadata: {
+        title: 'rScheduledDraft',
+        releaseType: 'scheduled',
+        intendedPublishAt: '2026-12-10T00:00:00Z',
+        cardinality: 'one',
+      },
+    } as ReleaseDocument
+    const withScheduledDraft = new Map([...releases, [scheduledDraft._id, scheduledDraft]])
+    const versions = [
+      stub({_id: 'u', groupId: 'g', kind: 'release', bundle: '_.releases.rUndecided'}),
+      stub({_id: 'sd', groupId: 'g', kind: 'release', bundle: '_.releases.rScheduledDraft'}),
+      stub({_id: 'late', groupId: 'g', kind: 'release', bundle: '_.releases.rLate'}),
+      stub({_id: 'early', groupId: 'g', kind: 'release', bundle: '_.releases.rEarly'}),
+    ]
+
+    it('sorts them among the scheduled releases by date by default', () => {
+      const ordered = buildInventoryIndex({versions, releases: withScheduledDraft})
+      expect(ordered.versions.map(({_id}) => _id)).toEqual(['early', 'sd', 'late', 'u'])
+    })
+
+    it('moves them after every other release with afterReleases', () => {
+      const ordered = buildInventoryIndex({
+        versions,
+        releases: withScheduledDraft,
+        scheduledDrafts: 'afterReleases',
+      })
+      expect(ordered.versions.map(({_id}) => _id)).toEqual(['early', 'late', 'u', 'sd'])
+    })
+  })
+
   it('records which documents have a version for each definition', () => {
     expect([...(index.groupsByVariant.get(GERMAN) ?? [])]).toEqual(['shell', 'jacket'])
     expect([...(index.groupsByVariant.get(STUDENTS) ?? [])]).toEqual(['shell'])

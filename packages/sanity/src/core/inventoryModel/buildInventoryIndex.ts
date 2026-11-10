@@ -51,8 +51,12 @@ function getBundle(document: VersionInfoDocumentStub, kind: VersionStub['kind'])
  *
  * @internal
  */
-export function buildInventoryIndex({versions, releases}: InventoryIndexInput): InventoryIndex {
-  const rank = createVersionRanker(releases)
+export function buildInventoryIndex({
+  versions,
+  releases,
+  scheduledDrafts,
+}: InventoryIndexInput): InventoryIndex {
+  const rank = createVersionRanker(releases, {scheduledDrafts})
   const ordered = versions.toSorted(
     (left, right) =>
       rank(left) - rank(right) ||
