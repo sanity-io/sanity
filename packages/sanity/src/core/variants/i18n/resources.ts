@@ -219,6 +219,8 @@ const variantsLocaleStrings = {
     'This will permanently delete "{{title}}". This action cannot be undone.',
   /** Confirm action for the delete variant confirmation dialog. */
   'dialog.delete.action.confirm': 'Yes, delete variant definition',
+  /** Shown in place of the Variants tool content when the content variants feature check failed. */
+  'unavailable.text': 'Variants are unavailable right now. Try again later.',
 }
 
 /**

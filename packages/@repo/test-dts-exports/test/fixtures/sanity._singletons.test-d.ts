@@ -154,6 +154,8 @@ import type {
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
+  VariantsModePromiseContext,
+  VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
   VisibleWorkspacesContext,
   WorkspaceContext,
@@ -616,6 +618,12 @@ describe('sanity/_singletons', () => {
   })
   test('ValidationContext', () => {
     expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  })
+  test('VariantsModePromiseContext', () => {
+    expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()
+  })
+  test('VariantsUpsellContext', () => {
+    expectTypeOf<typeof VariantsUpsellContext>().not.toBeNever()
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()

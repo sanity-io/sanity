@@ -7,7 +7,7 @@ import {
   type SchemaType,
   type StringSchemaType,
 } from '@sanity/types'
-import {accepts} from '@sanity/validation/_internal'
+import {accepts} from '@sanity/util/accepts'
 import {type FocusEvent, useCallback, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {filter, map, tap} from 'rxjs/operators'
