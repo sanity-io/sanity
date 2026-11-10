@@ -6,6 +6,8 @@ import {
   defer,
   EMPTY,
   filter,
+  first,
+  map,
   merge,
   mergeMap,
   type MonoTypeOperatorFunction,
@@ -14,6 +16,7 @@ import {
   type OperatorFunction,
   retry,
   scan,
+  takeUntil,
   tap,
   throwError,
   timer,
@@ -34,6 +37,8 @@ export interface ReconnectListenerOptions {
    * connection is replaced by one opened with backoff.
    */
   maxClientReconnects?: number
+  /** How long a connection may take to open before an outage starts. */
+  welcomeTimeoutMs?: number
 }
 
 /**
@@ -136,6 +141,10 @@ export function reconnectDelay(
  *   every connection opened during the outage is replaced after its first failed attempt. A
  *   connection opened this way cannot resume from the last event, so it opens with `welcome`
  *   rather than `welcomeback`, which makes the consumers refetch.
+ * - an outage also starts when a connection has not opened within `welcomeTimeoutMs`. The API
+ *   answers the listen request before it sets the listener up, and sends nothing the client
+ *   surfaces until `welcome`, so a listener whose setup hangs would otherwise leave the consumers
+ *   waiting with no end. The connection is kept, and opening late ends the outage.
  *
  * Any other error is passed on. Place the operator right after `client.listen()`, before the
  * listener is shared, so that a single recovery serves every subscriber.
@@ -145,15 +154,25 @@ export function reconnectDelay(
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  const {maxClientReconnects = 2} = options
+  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000} = options
   return (listener$) => {
     // A single connection: subscribing to it opens it. `connect` subscribes every branch before
     // the listener, so they all see the events of a listener that emits as soon as it is
     // subscribed, and in this order.
-    function openConnection(openedWithBackoff: boolean): Observable<T> {
+    function openConnection(openedWithBackoff: boolean): Observable<T | ReconnectEvent> {
       return listener$.pipe(
         connect((events$) =>
-          merge(clientReconnectsExceeded(events$, maxClientReconnects, openedWithBackoff), events$),
+          merge(
+            // Starts an outage when the connection has not opened in time. The connection is kept,
+            // and opening late ends the outage.
+            timer(welcomeTimeoutMs).pipe(
+              // Emits as the connection opens, or ends without opening.
+              takeUntil(events$.pipe(first(isConnected, null))),
+              map(() => RECONNECT),
+            ),
+            clientReconnectsExceeded(events$, maxClientReconnects, openedWithBackoff),
+            events$,
+          ),
         ),
       )
     }
