@@ -34,6 +34,7 @@ import {type AuthStore} from '../store/auth/types'
 import {isAuthStore} from '../store/auth/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {createStudioResolveFetch} from '../studio/diagnostics/requestActivity'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {type RequestFailureDiagnostics} from '../studio/requestErrors/diagnoseRequestFailure'
@@ -574,7 +575,11 @@ function getAuthStore(
       client = clientFactory({
         ...config,
         ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
+          ? {
+              requestHandler: createStudioRequestHandler(() => client),
+              // Lets the diagnostics panel see this tab's open listeners and waiting requests
+              resolveFetch: createStudioResolveFetch(config.resolveFetch),
+            }
           : {}),
       })
       return client
