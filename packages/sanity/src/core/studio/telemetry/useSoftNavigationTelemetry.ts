@@ -16,14 +16,15 @@ const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
 // The last nav's LCP is only finalised on visibilitychange, which can fire after our pagehide flush.
 const SOFT_LCP_OPTIONS = {...SOFT_NAVIGATION_OPTIONS, reportAllChanges: true}
 
-// Module scope so a page load rolls once, not again on remount or workspace switch.
-const isPageLoadSampled = Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
+// Cache the first roll so remounts and workspace switches keep the same sample.
+let isPageLoadSampled: boolean | undefined
 const MAX_TRACKED_URLS = 50
 
 function shouldReportSoftNavigations(): boolean {
   const supportsSoftNavigations =
     globalThis.PerformanceObserver?.supportedEntryTypes?.includes('soft-navigation') ?? false
   // Debug telemetry only logs to the console, so it reports every session to make soft navs testable.
+  isPageLoadSampled ??= Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
   return supportsSoftNavigations && (isDebugTelemetryEnabled() || isPageLoadSampled)
 }
 

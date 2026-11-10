@@ -1,11 +1,31 @@
+import {uuid} from '@sanity/uuid'
 import {renderHook} from '@testing-library/react'
 import {useRouterState} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useClient} from '../../hooks/useClient'
 import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
 import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
+
+vi.mock('@sanity/uuid', async (importOriginal) => {
+  const actual = await importOriginal<{uuid: typeof uuid}>()
+  return {...actual, uuid: vi.fn(actual.uuid)}
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+it('does not request randomness when imported without a window', async () => {
+  vi.resetModules()
+  vi.mocked(uuid).mockClear()
+  vi.stubGlobal('window', undefined)
+
+  await import('../hooks/useStudioFeedbackTags')
+
+  expect(uuid).not.toHaveBeenCalled()
+})
 
 vi.mock('../../hooks/useClient', () => ({useClient: vi.fn()}))
 vi.mock('../../hooks/useProjectSubscriptions', () => ({
@@ -71,6 +91,19 @@ describe('useStudioFeedbackTags', () => {
 
     vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
       selector({tool: 'desk'})) as never)
+  })
+
+  it('initializes the session on first use and reuses it across hook instances', () => {
+    const {result: firstResult, rerender} = renderHook(() => useStudioFeedbackTags())
+    const {result: secondResult} = renderHook(() => useStudioFeedbackTags())
+    const sessionId = firstResult.current.baseTags.sessionId
+
+    rerender()
+
+    expect(sessionId).toBeTruthy()
+    expect(firstResult.current.baseTags.sessionId).toBe(sessionId)
+    expect(secondResult.current.baseTags.sessionId).toBe(sessionId)
+    expect(uuid).toHaveBeenCalledTimes(1)
   })
 
   it('returns base tags with expected static values', () => {
