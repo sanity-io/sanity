@@ -3,6 +3,7 @@ import {useMemo, useState} from 'react'
 
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
+import {rankDefinitions} from '../c1/rank'
 import {usePerspectiveState} from '../c1/state'
 import {StateDot, type StateKind} from '../c3/StateGlyph'
 import {type Column, DataTable} from './DataTable'
@@ -191,22 +192,16 @@ export function DimensionMatrix(props: {
   )
 }
 
-/** The winner for a visitor: the matching definitions, highest priority first, then the most specific. */
+/** The definitions that match the visitor, best first (c1/rank.ts: the rule Content Lake runs). */
 function matching(visitor: Record<string, string>, definitions: SystemVariant[]): SystemVariant[] {
-  return definitions
-    .filter((v) => Object.entries(v.conditions).every(([k, val]) => visitor[k] === val))
-    .sort(
-      (a, b) =>
-        (b.priority ?? 0) - (a.priority ?? 0) ||
-        Object.keys(b.conditions).length - Object.keys(a.conditions).length,
-    )
+  return rankDefinitions(visitor, definitions)
 }
 
 /**
  * Visitor lens (GA): for the visitor chosen in the perspective bar (the panel never asks for its own visitor), per
  * document: what is served, why (which definition, at which rank) and what else exists. RESOLUTION IS COMPUTED IN THIS
- * BROWSER from the stored definitions and versions: no resolution API exists, so this is a model of the rule (highest
- * priority published match wins, otherwise the base document), not the real delivery result.
+ * BROWSER from the stored definitions and versions: no resolution API exists, so this is a model of the rule (the first ranked
+ * definition that has a published version wins, otherwise the base document), not the real delivery result.
  */
 export function VisitorResolution(props: {
   corpus: Corpus
@@ -256,7 +251,7 @@ export function VisitorResolution(props: {
       kind: (served ? 'published' : 'absent') as StateKind,
       served: served ? definitionTitle(served) : 'Base document',
       why: served
-        ? `Priority ${served.priority ?? 0}${meets.length > 1 ? `, beats ${meets.length - 1} other matching ${meets.length === 2 ? 'definition' : 'definitions'}` : ''}`
+        ? `Closest match: ${Object.keys(served.conditions).length} ${Object.keys(served.conditions).length === 1 ? 'condition' : 'conditions'}, priority ${served.priority ?? 0}${meets.length > 1 ? `; ${meets.length - 1} other matching ${meets.length === 2 ? 'definition ranks' : 'definitions rank'} lower` : ''}`
         : unpublished
           ? `${definitionTitle(unpublished)} exists but is not published`
           : meets.length

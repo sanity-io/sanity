@@ -430,6 +430,8 @@ export function matchVariant(variant: SystemVariant | undefined, visitor: Visito
   return agrees ? {kind: 'conditions', count: conditions.length} : {kind: 'none'}
 }
 
+const compareText = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+
 function tier(match: Match): number {
   if (match.kind === 'conditions') return 1000 + match.count
   return match.kind === 'default' ? 100 : 0
@@ -670,7 +672,8 @@ function filterMatches(
  * perspective and show the fallback variants in order of priority under each other").
  *
  * The rule is an assumption until Pedro or Jordan say how the query resolves. The best-matching
- * variant wins: more conditions first, ties broken on priority, the base last. Only a version a
+ * variant wins (ADR-3, c1/rank.ts): more conditions first, then priority, then the earlier _createdAt, then
+ * the _id; the base last. Only a version a
  * visitor can get is served: a published version, or one in the release or scheduled draft the bar
  * previews, which goes out when it publishes. Each variant serves its version in that release, else
  * its published version. A draft is never served (Andrej, 2026-10-20: "drafts are never served.
@@ -703,9 +706,10 @@ function rankIn(
   bundles: string[],
   exclude: ReadonlySet<string> = new Set(),
 ): InventoryEntry[] {
-  // Variants that tie on match and priority keep the fixture's order, and each keeps its versions
-  // together.
-  const variantOrder = [...new Set(world.entries.map((entry) => entry.variantId ?? ''))]
+  // The rule Content Lake runs (ADR-3, c1/rank.ts): more conditions, then priority, then the earlier
+  // `_createdAt`, then the `_id`. A variant's versions stay together, in the order of `bundles`.
+  const createdAtOf = (entry: InventoryEntry) => variantFor(world, entry)?._createdAt ?? ''
+  const idOf = (entry: InventoryEntry) => entry.variantId ?? ''
   return world.entries
     .filter((entry) => !exclude.has(entry.key) && bundles.includes(entry.group))
     .map((entry) => ({entry, match: matchVariant(variantFor(world, entry), visitor)}))
@@ -714,8 +718,8 @@ function rankIn(
       (a, b) =>
         tier(b.match) - tier(a.match) ||
         priorityOf(world, b.entry) - priorityOf(world, a.entry) ||
-        variantOrder.indexOf(a.entry.variantId ?? '') -
-          variantOrder.indexOf(b.entry.variantId ?? '') ||
+        compareText(createdAtOf(a.entry), createdAtOf(b.entry)) ||
+        compareText(idOf(a.entry), idOf(b.entry)) ||
         bundles.indexOf(a.entry.group) - bundles.indexOf(b.entry.group),
     )
     .map(({entry}) => entry)

@@ -2,6 +2,7 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
+import {rankDefinitions} from '../c1/rank'
 import {type Column, DataTable} from './DataTable'
 import {type Corpus, type DocRow} from './useCorpus'
 
@@ -15,23 +16,38 @@ const muted = (value: ReactNode) => (
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 const variantTitle = (v: SystemVariant) => v.metadata?.title ?? shortId(v._id)
 const dateLabel = (iso: string) =>
-  iso ? new Intl.DateTimeFormat('en-GB', {day: 'numeric', hour: '2-digit', minute: '2-digit', month: 'short'}).format(new Date(iso)) : ''
+  iso
+    ? new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        month: 'short',
+      }).format(new Date(iso))
+    : ''
 
-/** The winner for an address: of the definitions whose conditions all match, the highest priority, then the most specific. */
-function resolve(address: Record<string, string>, definitions: SystemVariant[]): SystemVariant | null {
-  const matching = definitions.filter((v) => Object.entries(v.conditions).every(([k, val]) => address[k] === val))
-  matching.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || Object.keys(b.conditions).length - Object.keys(a.conditions).length)
-  return matching[0] ?? null
+/** The winner for an address: the first of the ranking (c1/rank.ts, the rule Content Lake runs: most conditions, then priority, then earlier creation, then id). */
+function resolve(
+  address: Record<string, string>,
+  definitions: SystemVariant[],
+): SystemVariant | null {
+  return rankDefinitions(address, definitions)[0] ?? null
 }
 
 /** Sample addresses: which definition wins for the empty address, each value, and pairs of the first values. */
-export function ResolutionSamples({definitions, dimensions}: {definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
+export function ResolutionSamples({
+  definitions,
+  dimensions,
+}: {
+  definitions: SystemVariant[]
+  dimensions: DimensionSpec[]
+}) {
   const addresses = useMemo(() => {
     const out: Record<string, string>[] = [{}]
     for (const d of dimensions) for (const [key] of d.values) out.push({[d.name]: key})
     const firsts = dimensions.slice(0, 3).map((d) => [d.name, d.values[0]?.[0]] as const)
     for (let i = 0; i < firsts.length; i++) {
-      for (let j = i + 1; j < firsts.length; j++) out.push({[firsts[i][0]]: firsts[i][1], [firsts[j][0]]: firsts[j][1]})
+      for (let j = i + 1; j < firsts.length; j++)
+        out.push({[firsts[i][0]]: firsts[i][1], [firsts[j][0]]: firsts[j][1]})
     }
     return out
   }, [dimensions])
@@ -81,12 +97,36 @@ export function ReleaseLens({corpus}: {corpus: Corpus}) {
   return (
     <DataTable
       columns={[
-        {key: 'title', title: 'Release', width: 260, render: (r) => text(r.title), sort: (a, b) => a.title.localeCompare(b.title)},
+        {
+          key: 'title',
+          title: 'Release',
+          width: 260,
+          render: (r) => text(r.title),
+          sort: (a, b) => a.title.localeCompare(b.title),
+        },
         {key: 'type', title: 'Type', width: 130, render: (r) => muted(r.type)},
         {key: 'state', title: 'State', width: 130, render: (r) => muted(r.state)},
-        {key: 'at', title: 'Publishes', width: 170, render: (r) => (r.at ? muted(dateLabel(r.at)) : muted('Not scheduled')), sort: (a, b) => (a.at < b.at ? -1 : 1)},
-        {key: 'docs', title: 'Documents', width: 120, render: (r) => text(r.docs), sort: (a, b) => a.docs - b.docs},
-        {key: 'variants', title: 'Variants', width: 110, render: (r) => text(r.variants), sort: (a, b) => a.variants - b.variants},
+        {
+          key: 'at',
+          title: 'Publishes',
+          width: 170,
+          render: (r) => (r.at ? muted(dateLabel(r.at)) : muted('Not scheduled')),
+          sort: (a, b) => (a.at < b.at ? -1 : 1),
+        },
+        {
+          key: 'docs',
+          title: 'Documents',
+          width: 120,
+          render: (r) => text(r.docs),
+          sort: (a, b) => a.docs - b.docs,
+        },
+        {
+          key: 'variants',
+          title: 'Variants',
+          width: 110,
+          render: (r) => text(r.variants),
+          sort: (a, b) => a.variants - b.variants,
+        },
       ]}
       empty="No releases."
       rows={rows}

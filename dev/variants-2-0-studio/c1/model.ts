@@ -14,6 +14,8 @@ export interface SystemVariant {
   _id: string
   conditions: Record<string, string>
   priority: number
+  /** The definition's `_createdAt`: the third tiebreak of the ranking (c1/rank.ts). */
+  _createdAt?: string
   metadata?: {title?: string}
 }
 
