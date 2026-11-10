@@ -166,13 +166,23 @@ export function resizeCropRect(
     availableHeight * ratio,
   )
   const width = Math.max(fitted.width, requiredWidth)
-  const height = width > fitted.width ? width / ratio : fitted.height
+  const size = atLeastAPixel(
+    {width, height: width > fitted.width ? width / ratio : fitted.height},
+    source,
+  )
 
   return {
-    x: getStart(xAxis, anchorX, width),
-    y: getStart(yAxis, anchorY, height),
-    width,
-    height,
+    x: clamp(getStart(xAxis, anchorX, size.width), 0, source.width - size.width),
+    y: clamp(getStart(yAxis, anchorY, size.height), 0, source.height - size.height),
+    ...size,
+  }
+}
+
+// On a tiny source, a ratio far from its own would otherwise round one axis to zero pixels.
+function atLeastAPixel({width, height}: Size, source: Size): Size {
+  return {
+    width: clamp(width, MIN_CROP_PIXELS, source.width),
+    height: clamp(height, MIN_CROP_PIXELS, source.height),
   }
 }
 

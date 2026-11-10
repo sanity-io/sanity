@@ -379,3 +379,46 @@ describe('resizeCropRect', () => {
     expectInsideSource(next, square)
   })
 })
+
+const TINY_CONSTRAINTS = [
+  {name: 'no ratio', aspectRatio: undefined},
+  {name: '2.35:1', aspectRatio: resolveAspectRatio(2.35)},
+  {name: '1:2.35', aspectRatio: resolveAspectRatio(1 / 2.35)},
+  {name: 'a 1:3 to 3:1 range', aspectRatio: resolveAspectRatio({min: 1 / 3, max: 3})},
+  {name: 'a 1:4 or 4:1 list', aspectRatio: resolveAspectRatio([1 / 4, 4])},
+]
+
+describe.each([
+  {width: 1, height: 1},
+  {width: 2, height: 1},
+])('resizeCropRect on a $width × $height source', (source) => {
+  test.each(TINY_CONSTRAINTS)(
+    'keeps every handle at least a pixel on each axis with $name',
+    ({aspectRatio}) => {
+      const minimum = getMinimumCropSize(source)
+      const start = {x: 0, y: 0, width: source.width, height: source.height}
+      const pointers = [
+        {x: -1, y: -1},
+        {x: 0, y: 0},
+        {x: source.width / 2, y: source.height / 2},
+        {x: source.width, y: source.height},
+        {x: source.width + 1, y: source.height + 1},
+      ]
+      DIRECTIONS.forEach(([handle, direction]) => {
+        MODIFIERS.forEach(({options}) => {
+          pointers.forEach((pointer) => {
+            const resized = resizeCropRect(start, direction, pointer, source, {
+              aspectRatio,
+              minimum,
+              ...options,
+            })
+            const label = `${handle} ${JSON.stringify(options)} ${JSON.stringify(pointer)}`
+            expect(Math.round(resized.width), label).toBeGreaterThanOrEqual(1)
+            expect(Math.round(resized.height), label).toBeGreaterThanOrEqual(1)
+            expectInsideSource(resized, source)
+          })
+        })
+      })
+    },
+  )
+})
