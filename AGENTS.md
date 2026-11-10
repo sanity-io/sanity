@@ -476,6 +476,7 @@ pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/
 - A test for a known, unfixed bug asserts the correct behaviour and is marked `test.fails`, and the PR that fixes the bug changes it to `test`. Never assert a bug's current behaviour as correct.
 - Test names start with a provisional id (`ARR-`, `LSN-`, `CMT-`, `OPS-`), which would be mapped onto the collaborative editing scenario list once it exists.
 - The store's memo caches key on token and dataset, so every world gets a fresh dataset and every client its own token. A test that reuses a dataset reads another test's cached pair.
+- Every client of a world runs on one page, with the listener gate enabled (see [Listeners: pause in hidden tabs](#listeners-pause-in-hidden-tabs)). The `setDocumentVisibility` step (`visibility: 'hidden'` or `'visible'`) hides and shows it, `createWorld(definition, {initialDocumentVisibility: 'hidden'})` opens it in a background tab, `world.listenersActive()` reads the gate, and `lake.openListeners(clientId)` / `lake.openedListeners(clientId)` count connections. Hiding the page pauses every client at once and a pending mutation holds them all, so an edit made while a client is paused comes from `outside`.
 
 ### E2E Tests (Token Required)
 
@@ -746,6 +747,43 @@ every effect cleanup in the subtree and showing runs the effects again, without 
   own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
+
+### Listeners: pause in hidden tabs
+
+Browsers cap the connections a site can hold open, and every Studio tab shares the cap. With
+`beta.releaseBackgroundListeners`, a page hidden for `LISTENER_PAUSE_GRACE_PERIOD` (30 s) closes
+its listener connections and a page opened in the background connects nothing until it is first
+shown. The gate is `core/store/listenerGate/listenerGate.ts`, a page-level singleton that
+`ListenerGateController` (`core/studio/listenerGate/`, mounted in `StudioProvider`) turns on for
+the active workspace from a layout effect, before any listener subscribes.
+
+- **Every long-lived connection goes through `pauseWhileDocumentHidden()`** (`client.listen`,
+  `client.observable.listen`, `client.live.events`, `client.collaboration.comments.listen`).
+  Code in `src/core` imports it relatively, `src/structure` and `src/presentation` from
+  `'sanity'` (it is `@internal`). Explicit user actions, like Vision's listen mode and the
+  diagnostics' listen test, stay ungated.
+- **Put it where a fresh subscription resyncs the consumer.** A resume is a new subscription,
+  so its first event is the new connection's `welcome`. Gate the raw listener when the consumer
+  refetches on every `welcome` (`getPairListener`, `listenSearchQuery`), or the whole stream when
+  it only fetches on the first one (`listenQuery`, which uses `welcome$.pipe(take(1))`).
+- **Tell the consumer what it missed.** `onPause` emits a value when the connection closes,
+  usually `{type: 'reconnect'}` for a consumer that already treats a dropped connection that way
+  (the pair, the comments and tasks stores). `onResume` emits one before the events of any
+  connection made after a pause, for a consumer that fetches when it subscribes and resyncs only
+  on a reset (`useLiveEvents`, the shared-secret watcher, `SharePreviewMenu`). It also fires on
+  the first connection of a subscription made while paused (a page opened in the background),
+  since that consumer's initial fetch may be stale by the time the page is shown. `onPause` does
+  not fire for a listener that never connected.
+- **A pending mutation holds every listener open.** `checkoutPair` acquires
+  `listenerGate.acquireHold()` while the pair is not consistent, because commits are confirmed
+  by the listener. Any other code that needs its listener to finish something calls the same API.
+- **Testing:** stub visibility with `stubDocumentVisibility()` (`test/testUtils/documentVisibility.ts`),
+  turn the gate on with `releaseListenerGate = listenerGate.enable()` (and call the release in
+  `afterEach`; enabling is reference-counted like holds, so a missed release leaks pausing into
+  later tests), and use fake
+  timers for the grace period. In a browser or e2e run, the `_sanity_listenerPauseGracePeriod`
+  `localStorage` key overrides the grace period in milliseconds
+  (`e2e/tests/listeners/pauseWhenDocumentHidden.spec.ts`).
 
 ### Refs: use `props.ref`, not `forwardRef`
 
