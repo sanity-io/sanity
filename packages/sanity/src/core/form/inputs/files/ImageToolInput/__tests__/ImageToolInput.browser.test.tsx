@@ -198,7 +198,11 @@ describe('image tool input', () => {
     )
     expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
 
-    await expect.element(getCropSize()).toHaveTextContent('1000 × 1000 px')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        '1000 × 1000 pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px',
+      )
     ;(cropRect.element() as SVGRectElement).focus()
     const modifier = getModifierKey()
     await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
@@ -211,7 +215,9 @@ describe('image tool input', () => {
     expect(state.image.hotspot).toBeUndefined()
     await expect
       .element(getCropSize())
-      .toHaveTextContent(`${dimensions.width} × ${dimensions.height} px`)
+      .toHaveTextContent(
+        `${dimensions.width} × ${dimensions.height} pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px`,
+      )
     await expect.element(getCropSize()).toHaveAttribute('data-tone', 'default')
     await settleChromaticEndState()
   })
@@ -257,6 +263,24 @@ describe('image tool input', () => {
     await expect
       .element(getCropSize())
       .toHaveTextContent('2000 × 1000 pxCropped image must be at least 2400 × 600 px')
+    await settleChromaticEndState()
+  })
+
+  test('states the aspect ratio and flags the minimum when the crop is below it', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{hotspot: true, aspectRatio: 2, minDimensions: {width: 2400, height: 1200}}}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        '2000 × 1000 pxCropped image aspect ratio must be 2:1Cropped image must be at least 2400 × 1200 px',
+      )
     await settleChromaticEndState()
   })
 

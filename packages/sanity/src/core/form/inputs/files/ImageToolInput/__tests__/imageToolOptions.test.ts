@@ -16,6 +16,7 @@ import {describe, expect, test} from 'vitest'
 
 import {createSchema} from '../../../../../schema/createSchema'
 import {
+  describeCropAspectRatio,
   getCropSizeStatus,
   getHotspotPreviews,
   getImageToolPath,
@@ -288,5 +289,20 @@ describe('crop size readout', () => {
 
   test('flags nothing without a size option', () => {
     expect(getCropSizeStatus({width: 1, height: 1}, {aspectRatio: 1}).tone).toBeUndefined()
+  })
+})
+
+describe('describeCropAspectRatio', () => {
+  test.each([
+    {name: 'a fixed ratio', aspectRatio: 16 / 9, expected: '16:9'},
+    {name: 'a range', aspectRatio: {min: 4 / 3, max: 16 / 9}, expected: 'between 4:3 and 16:9'},
+    {name: 'a list', aspectRatio: [1, 4 / 3, 16 / 9], expected: '1:1, 4:3 or 16:9'},
+  ])('words $name the way the validation message does', ({aspectRatio, expected}) => {
+    expect(describeCropAspectRatio({aspectRatio})).toBe(expected)
+  })
+
+  test('describes nothing without an aspect ratio', () => {
+    expect(describeCropAspectRatio({minDimensions: {width: 10, height: 10}})).toBeUndefined()
+    expect(describeCropAspectRatio(undefined)).toBeUndefined()
   })
 })

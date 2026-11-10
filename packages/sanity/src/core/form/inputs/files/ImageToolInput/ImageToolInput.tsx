@@ -42,6 +42,7 @@ import {type CropConstraints} from './imagetool/types'
 import {constrainHotspotToCrop} from './imagetool/utils'
 import {placeholder} from './ImageToolInput.css'
 import {
+  describeCropAspectRatio,
   getCropSizeStatus,
   getHotspotPreviews,
   getImageToolPath,
@@ -109,6 +110,9 @@ function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions
   const {t} = useTranslation()
   const {t: tValidation} = useTranslation(validationLocaleNamespace)
   const {tone, threshold} = getCropSizeStatus(dimensions, options)
+  const aspectRatio = describeCropAspectRatio(options)
+  const minDimensions = options?.minDimensions
+  const minimumTone = tone === 'critical' ? tone : undefined
 
   return (
     <Flex
@@ -122,9 +126,14 @@ function CropSize(props: {dimensions: ImageCropDimensions; options: ImageOptions
       <Text size={1} weight="medium" tone={tone}>
         {t('inputs.imagetool.crop-size.dimensions', {...dimensions})}
       </Text>
-      {tone === 'critical' ? (
-        <Text size={1} tone={tone}>
-          {tValidation('object.image-below-min-dimensions', {...threshold})}
+      {aspectRatio ? (
+        <Text size={1} muted>
+          {tValidation('object.image-aspect-ratio-mismatch', {aspectRatio})}
+        </Text>
+      ) : null}
+      {minDimensions ? (
+        <Text size={1} muted={minimumTone === undefined} tone={minimumTone}>
+          {tValidation('object.image-below-min-dimensions', {...minDimensions})}
         </Text>
       ) : null}
       {tone === 'caution' ? (
