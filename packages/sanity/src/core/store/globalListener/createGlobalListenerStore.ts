@@ -1,4 +1,4 @@
-import {type MutationEvent, type SanityClient} from '@sanity/client'
+import {type MutationEvent, type ReconnectEvent, type SanityClient} from '@sanity/client'
 import {type Observable, timer} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -6,6 +6,7 @@ import {LISTENER_RESET_DELAY} from '../../preview/constants'
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {reconnectListener} from '../../util/reconnectListener'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 
 /**
  * The Studio's shared listener on every document in the dataset. `globalListener` and
@@ -105,6 +106,9 @@ export function createGlobalListenerStore({
     )
     .pipe(
       reconnectListener(),
+      // `reconnect` replaces the replayed `welcome`, so a subscriber that arrives while the
+      // listener is paused waits for the new connection instead of trusting the old one
+      pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
         resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
