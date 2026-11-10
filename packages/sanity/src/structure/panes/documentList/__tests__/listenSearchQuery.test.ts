@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {concat, firstValueFrom, NEVER, type Observable, of, Subject} from 'rxjs'
 import {createSearch, type SearchSort} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
@@ -16,6 +16,13 @@ vi.mock('sanity', async (importOriginal) => ({
 const mockCreateSearch = vi.mocked(createSearch)
 
 const CONFIGURED_SORT: SearchSort[] = [{field: '_updatedAt', direction: 'desc'}]
+
+function subscribeToStates(states$: Observable<SearchQueryState>) {
+  const states: SearchQueryState[] = []
+  const subscription = states$.subscribe((state) => states.push(state))
+  onTestFinished(() => subscription.unsubscribe())
+  return states
+}
 
 describe('resolveSearchOrdering', () => {
   it('keeps the configured order and skips score sorting when there is no search term', () => {
@@ -153,7 +160,7 @@ describe('listenSearchQuery', () => {
 
     // The client emits `reconnect` before `welcome` when the listen request fails, and keeps
     // retrying it on its own.
-    it.fails('lists the documents the search finds', async () => {
+    it('lists the documents the search finds', async () => {
       const {states$} = listBooks(() => concat(of({type: 'reconnect'}), NEVER), 'bookUnreachable')
 
       expect(await firstValueFrom(states$)).toEqual({
@@ -162,137 +169,36 @@ describe('listenSearchQuery', () => {
         documents: [book],
       })
     })
-  })
-})
 
-describe('listenSearchQuery before welcome', () => {
-  type ListenerEvent = {type: 'welcome'} | {type: 'reconnect'} | {type: 'mutation'}
+    it('searches again and goes live once the listener connects', async () => {
+      const listener = new Subject<{type: string}>()
+      const {search, states$} = listBooks(() => listener, 'bookConnectsLate')
+      const states = subscribeToStates(states$)
 
-  let listener$: Subject<ListenerEvent>
-  let filterCounter = 0
+      listener.next({type: 'reconnect'})
+      await vi.waitFor(() => expect(states).toHaveLength(1))
+      listener.next({type: 'welcome'})
+      await vi.waitFor(() => expect(states).toHaveLength(2))
 
-  beforeEach(() => {
-    vi.useFakeTimers()
-    listener$ = new Subject<ListenerEvent>()
-    mockCreateSearch.mockReturnValue(
-      vi.fn(() => of({hits: [{hit: {_id: 'a', _type: 'author'}}]})) as never,
-    )
-  })
+      expect(search).toHaveBeenCalledTimes(2)
+      expect(states.map(({connected}) => connected)).toEqual([false, true])
+    })
 
-  afterEach(() => {
-    listener$.complete()
-    vi.useRealTimers()
-  })
+    it('keeps the listed documents without searching again when a live listener goes down', async () => {
+      const listener = new Subject<{type: string}>()
+      const {search, states$} = listBooks(() => listener, 'bookGoesDown')
+      const states = subscribeToStates(states$)
 
-  // The SWR cache is shared by every call, so each test listens with its own filter.
-  function uniqueFilter() {
-    filterCounter += 1
-    return `_type == "author" && $n == ${filterCounter}`
-  }
+      listener.next({type: 'welcome'})
+      await vi.waitFor(() => expect(states).toHaveLength(1))
+      listener.next({type: 'reconnect'})
+      await vi.waitFor(() => expect(states).toHaveLength(2))
 
-  function subscribe(groqFilter: string) {
-    const client = {
-      listen: vi.fn(() => listener$),
-      observable: {fetch: vi.fn(() => of(['author']))},
-    } as unknown as SanityClient
-
-    const values: SearchQueryState[] = []
-    const errors: unknown[] = []
-    const subscription = listenSearchQuery({
-      client,
-      filter: groqFilter,
-      limit: 25,
-      params: {},
-      schema: {} as Schema,
-      searchQuery: '',
-      sort: {by: [{field: '_updatedAt', direction: 'desc'}]},
-      staticTypeNames: ['author'],
-    }).subscribe({next: (value) => values.push(value), error: (error) => errors.push(error)})
-
-    return {values, errors, subscription}
-  }
-
-  it('keeps waiting for welcome when the listener reconnects before it', async () => {
-    const {values, errors, subscription} = subscribe(uniqueFilter())
-
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(2000)
-
-    expect(errors).toEqual([])
-    expect(values).toEqual([])
-
-    listener$.next({type: 'welcome'})
-    await vi.advanceTimersByTimeAsync(1)
-
-    expect(errors).toEqual([])
-    expect(values).toEqual([
-      {connected: true, fromCache: false, documents: [{_id: 'a', _type: 'author'}]},
-    ])
-
-    subscription.unsubscribe()
-  })
-
-  it('keeps the cached documents while the listener reconnects before welcome', async () => {
-    const groqFilter = uniqueFilter()
-    const first = subscribe(groqFilter)
-    listener$.next({type: 'welcome'})
-    await vi.advanceTimersByTimeAsync(1)
-    first.subscription.unsubscribe()
-
-    const {values, errors, subscription} = subscribe(groqFilter)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(2000)
-
-    expect(errors).toEqual([])
-    expect(values).toEqual([
-      {connected: true, fromCache: true, documents: [{_id: 'a', _type: 'author'}]},
-    ])
-
-    subscription.unsubscribe()
-  })
-
-  it('errors when no welcome arrives within 30 seconds', async () => {
-    const {errors, subscription} = subscribe(uniqueFilter())
-
-    // Reconnects while waiting do not restart the timeout
-    await vi.advanceTimersByTimeAsync(15_000)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(14_999)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(1)
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).name).toBe('TimeoutError')
-    expect((errors[0] as Error).message).toBe(
-      'Timed out after 30000ms waiting for the listener to connect',
-    )
-
-    subscription.unsubscribe()
-  })
-
-  it('does not time out once welcome has arrived', async () => {
-    const {errors, subscription} = subscribe(uniqueFilter())
-
-    await vi.advanceTimersByTimeAsync(29_000)
-    listener$.next({type: 'welcome'})
-    await vi.advanceTimersByTimeAsync(60_000)
-
-    expect(errors).toEqual([])
-
-    subscription.unsubscribe()
-  })
-
-  it('errors when the first event after reconnects is not welcome', async () => {
-    const {errors, subscription} = subscribe(uniqueFilter())
-
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(1)
-    listener$.next({type: 'mutation'})
-    await vi.advanceTimersByTimeAsync(1)
-
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).message).toBe('Received unexpected type of first event "mutation"')
-
-    subscription.unsubscribe()
+      expect(search).toHaveBeenCalledTimes(1)
+      expect(states).toEqual([
+        {connected: true, fromCache: false, documents: [book]},
+        {connected: false, fromCache: false, documents: [book]},
+      ])
+    })
   })
 })
