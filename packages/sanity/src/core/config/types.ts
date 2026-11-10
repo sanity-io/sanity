@@ -1843,4 +1843,22 @@ export interface BetaFeatures {
   reactActivityMode?: {
     enabled?: boolean
   }
+  /**
+   * Close the Studio's real-time listener connections while its browser tab is in the background,
+   * and open them again when the tab is shown.
+   *
+   * Browsers limit how many connections a site can keep open at once, and every Studio tab
+   * counts against the same limit. With many Studio tabs open, listeners in the tab you are
+   * working in can fail to connect. With this switched on, a tab that has been hidden for 30
+   * seconds gives its listener connections up, and a tab opened in the background does not
+   * connect until it is first shown. When the tab is shown again, the Studio reconnects and
+   * refreshes whatever changed in the meantime. A document with changes that have not been
+   * saved yet keeps every listener connected until the changes are saved.
+   *
+   * This feature is not ready for production yet. Only enable it to test in development and
+   * staging environments.
+   */
+  releaseBackgroundListeners?: {
+    enabled?: boolean
+  }
 }

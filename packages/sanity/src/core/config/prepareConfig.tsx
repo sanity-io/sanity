@@ -92,6 +92,7 @@ import {
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  releaseBackgroundListenersEnabledReducer,
   reactActivityModeEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
@@ -985,6 +986,9 @@ function resolveSource({
     },
     reactActivityMode: {
       enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
+    },
+    releaseBackgroundListeners: {
+      enabled: releaseBackgroundListenersEnabledReducer({config, initialValue: false}),
     },
   }
 
