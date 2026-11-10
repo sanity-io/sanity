@@ -2,9 +2,12 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
+import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {type VariantDefinitionLens} from '../../hooks/useVariantDefinitionLens'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {type SystemVariant} from '../../types'
@@ -97,9 +100,57 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   })),
 }))
 
+const EMPTY_LENS: VariantDefinitionLens = {
+  loading: false,
+  error: null,
+  present: [],
+  missing: [],
+  types: [],
+  typesWithVersions: [],
+}
+
+const lensMock = vi.hoisted(() => ({
+  value: undefined as unknown,
+  calls: [] as {types: string[] | undefined}[],
+}))
+
+vi.mock('../../hooks/useVariantDefinitionLens', () => ({
+  useVariantDefinitionLens: vi.fn((options: {types: string[] | undefined}) => {
+    lensMock.calls.push({types: options.types})
+    return lensMock.value
+  }),
+}))
+
+const createVariantDocumentMock = vi.hoisted(() => vi.fn())
+
+vi.mock('../../hooks/useVariantDocumentOperations', () => ({
+  useVariantDocumentOperations: vi.fn(() => ({createVariantDocument: createVariantDocumentMock})),
+}))
+
+vi.mock('../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  useDocumentPreviewValues: vi.fn(({documentId}: {documentId: string}) => ({
+    isLoading: false,
+    value: {title: `Preview of ${documentId}`},
+  })),
+}))
+
+function stub(id: string, groupId: string, bundleId?: string): VersionInfoDocumentStub {
+  return {
+    _id: id,
+    _rev: `rev-${id}`,
+    _type: 'author',
+    _createdAt: '2026-11-01T00:00:00Z',
+    _updatedAt: '2026-11-01T00:00:00Z',
+    _system: {group: {_ref: groupId, _weak: true}, ...(bundleId ? {bundleId} : {})},
+  }
+}
+
 describe('VariantDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    lensMock.value = EMPTY_LENS
+    lensMock.calls = []
+    createVariantDocumentMock.mockResolvedValue({transactionId: 'tx'})
     mockedSetVariant.mockClear()
     variantsMock.data = []
     variantsMock.byId = new Map()
@@ -511,5 +562,116 @@ describe('VariantDetail', () => {
     })
 
     expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+  describe('has a version and missing halves', () => {
+    setupVirtualListEnv()
+
+    const lensWithMissing: VariantDefinitionLens = {
+      loading: false,
+      error: null,
+      present: [
+        {groupId: 'jacket', state: 'draft'},
+        {groupId: 'hat', state: 'published'},
+      ],
+      missing: [
+        {
+          groupId: 'boots',
+          state: 'absent',
+          _type: 'author',
+          versions: [stub('boots', 'boots'), stub('drafts.boots', 'boots', 'drafts')],
+        },
+      ],
+      types: ['author'],
+      typesWithVersions: ['author'],
+    }
+
+    it('shows both halves with their counts', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = lensWithMissing
+
+      await renderDetail()
+
+      expect(await screen.findByTestId('variant-half-tab-present')).toHaveTextContent(
+        'Has a version (2)',
+      )
+      expect(screen.getByTestId('variant-half-tab-missing')).toHaveTextContent('Missing (1)')
+      // "Has a version" is the default half: the existing documents table.
+      expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
+      // Until the editor picks a type, the Missing half uses the types that have a version.
+      expect(lensMock.calls.at(-1)).toEqual({types: undefined})
+    })
+
+    it('shows a placeholder count while the halves are loading', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = {...EMPTY_LENS, loading: true}
+
+      await renderDetail()
+
+      expect(await screen.findByTestId('variant-half-tab-missing')).toHaveTextContent('Missing (…)')
+    })
+
+    it('lists missing documents and creates the missing version for one', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = lensWithMissing
+
+      await renderDetail()
+      await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
+
+      expect(await screen.findByText('Preview of boots')).toBeInTheDocument()
+      expect(screen.getByTestId('variant-missing-type-picker')).toHaveTextContent(
+        'Types with a version',
+      )
+
+      await userEvent.click(screen.getByRole('button', {name: 'Create version'}))
+
+      await waitFor(() => expect(createVariantDocumentMock).toHaveBeenCalledTimes(1))
+      // The new variant starts from the document's draft and lands in drafts.
+      expect(createVariantDocumentMock).toHaveBeenCalledWith({
+        baseId: 'drafts.boots',
+        ifBaseRevisionId: 'rev-drafts.boots',
+        documentGroupId: 'boots',
+        variant: variantAlphaAudience,
+        selectedPerspective: 'drafts',
+      })
+    })
+
+    it('shows an error toast when creating the missing version fails', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+      lensMock.value = lensWithMissing
+      createVariantDocumentMock.mockRejectedValueOnce(new Error('Permission denied'))
+
+      await renderDetail()
+      await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
+      await userEvent.click(await screen.findByRole('button', {name: 'Create version'}))
+
+      await waitFor(() =>
+        expect(toastMock.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: 'error',
+            title: 'Unable to create version',
+            description: 'Permission denied',
+          }),
+        ),
+      )
+    })
+
+    it('asks for a type when nothing has a version yet', async () => {
+      routerState.variantId = getVariantId(variantAlphaAudience._id)
+      setVariants([variantAlphaAudience])
+
+      await renderDetail()
+      await userEvent.click(await screen.findByTestId('variant-half-tab-missing'))
+
+      expect(
+        await screen.findByText(
+          'Pick a document type to see which documents are missing a version',
+        ),
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('variant-half-tab-missing')).toHaveTextContent('Missing (0)')
+    })
   })
 })
