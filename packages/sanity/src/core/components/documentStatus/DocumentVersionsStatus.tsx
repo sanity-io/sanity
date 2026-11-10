@@ -1,6 +1,6 @@
 import {type ReleaseType} from '@sanity/client'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -64,7 +64,14 @@ const byGlyphOrder = (left: DocumentVersionStatusItem, right: DocumentVersionSta
  *
  * @internal
  */
-export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
+export function DocumentVersionsStatus({
+  documentGroupId,
+  footer,
+}: {
+  documentGroupId: string
+  /** Closes the list below a divider, for a hint that depends on where the list is shown. */
+  footer?: ReactNode
+}) {
   const {t} = useTranslation()
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
@@ -152,6 +159,14 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
             {t('document-group.status.more', {count: more})}
           </Text>
         </Card>
+      ) : null}
+      {footer ? (
+        <Box
+          data-testid="document-versions-status-footer"
+          style={{boxShadow: 'inset 0 1px 0 var(--card-hairline-soft-color)'}}
+        >
+          {footer}
+        </Box>
       ) : null}
     </Stack>
   )

@@ -22,3 +22,6 @@ export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-ref
 
 // timeline
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+
+/** The name of the document group inventory's inspector. The Design Studio's inspector is `variants-inventory` (main's is `sanity/structure/document-group`). */
+export const DOCUMENT_GROUP_INSPECTOR_NAME = 'variants-inventory'
