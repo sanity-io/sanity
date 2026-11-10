@@ -7,7 +7,7 @@ import {Menu} from '@sanity/ui/menu'
 import {type TFunction} from 'i18next'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Container, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -334,6 +334,16 @@ export function VariantVersionsView(): React.JSX.Element {
 
   return (
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+      {sort === 'last-edited' && (
+        // The feed pages by document, so documents keep the feed's order whatever the sort.
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
+          <Box paddingX={3} paddingBottom={2}>
+            <Text data-testid="versions-sort-hint" muted size={1} as="div" trim={true}>
+              {t('versions.sort.last-edited.hint')}
+            </Text>
+          </Box>
+        </Container>
+      )}
       <DocumentTable<VersionRow>
         alwaysShowCommandLane
         columnDefs={columnDefs}

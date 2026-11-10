@@ -97,6 +97,9 @@ const variantsLocaleStrings = {
   'versions.sort.last-edited': 'Last edited',
   /** Sort option: Published, Drafts, then releases. */
   'versions.sort.version-order': 'Version order',
+  /** Hint shown with the Last edited sort: documents keep a fixed order, versions are sorted within each one. */
+  'versions.sort.last-edited.hint':
+    'Documents are listed in a fixed order. Versions in each document are sorted by last edit.',
   /** Search placeholder in the versions table. */
   'versions.search.placeholder': 'Search versions',
   /** Empty state of the versions table. */

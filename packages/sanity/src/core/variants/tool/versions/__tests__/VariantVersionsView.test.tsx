@@ -114,6 +114,24 @@ describe('VariantVersionsView', () => {
     expect(href).toContain('variant=variant:alpha-audience')
   })
 
+  it('explains the Last edited sort, and hides the hint for Version order', async () => {
+    await renderView()
+
+    expect(await screen.findByTestId('versions-sort-hint')).toHaveTextContent(
+      'Documents are listed in a fixed order. Versions in each document are sorted by last edit.',
+    )
+
+    await userEvent.click(screen.getByTestId('versions-sort'))
+    const [openMenu] = [
+      ...document.querySelectorAll<HTMLElement>('[data-ui="MenuButton__popover"]'),
+    ].filter((popover) => popover.style.display !== 'none')
+    await userEvent.click(
+      within(openMenu!).getByRole('menuitem', {name: 'Version order', hidden: true}),
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('versions-sort-hint')).not.toBeInTheDocument())
+  })
+
   it('passes the state filter to the feed', async () => {
     await renderView()
     await screen.findAllByTestId('version-row-link')
