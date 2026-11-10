@@ -33,7 +33,7 @@ const DESCRIPTION: PortableTextBlock[] = [
  * Stand-in for the `/journey/content-variants` document. Tests that render the upsell panel or
  * dialog feed this through the mocked `useUpsellData` hook.
  */
-export const variantsUpsellData = {
+const variantsUpsellData = {
   _createdAt: '2024-01-01T00:00:00.000Z',
   _id: 'upsell-content-variants',
   _rev: '1',
