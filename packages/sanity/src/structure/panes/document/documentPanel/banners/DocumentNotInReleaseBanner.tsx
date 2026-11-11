@@ -37,7 +37,7 @@ function VersionBadge({
   children?: React.ReactNode
   currentRelease?: Exclude<TargetPerspective, SystemBundle>
   fallbackTitle?: string
-  /** PROPOSED: the type word before the chip ("release"), kept on one line with it, so the chip is only ever a name. */
+  /** The type word before the chip ("release"), kept next to the chip's first word. */
   lead?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
@@ -50,10 +50,11 @@ function VersionBadge({
       </ReleaseTitle>
     )
   if (!lead) return badge
+  // A no-break space ties the lead to the start of the chip; the chip itself can still wrap, so a long release name never overflows the text column.
   return (
-    <span style={{whiteSpace: 'nowrap'}}>
-      {lead} {badge}
-    </span>
+    <>
+      {lead}&nbsp;{badge}
+    </>
   )
 }
 
@@ -118,7 +119,7 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
-  // PROPOSED: the release's kind is a word in the sentence ("the ASAP release [X]"), and the chip is its name.
+  // The release's kind is a word in the sentence ("the ASAP release [X]"), and the chip is its name.
   const releaseType = isAnonymousBundle ? undefined : currentRelease?.metadata?.releaseType
   const i18nKey =
     releaseType === 'asap'
@@ -129,7 +130,7 @@ export function DocumentNotInReleaseBanner({
 
   return (
     <Banner
-      // PROPOSED: neutral with the info icon, as every release banner; the chip carries the release's colour.
+      // Neutral with the info icon, as every release banner; the chip carries the release's colour.
       tone="neutral"
       icon={InfoOutlineIcon}
       content={

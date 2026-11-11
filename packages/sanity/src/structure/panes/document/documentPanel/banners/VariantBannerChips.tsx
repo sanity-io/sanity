@@ -3,7 +3,6 @@ import {type ReactNode} from 'react'
 import {VersionInlineBadge} from 'sanity'
 
 import {VariantMark} from '../../../../../ui-components/variantMark'
-import {keep} from './VariantBannerChips.css'
 
 /**
  * The props `<Translate>` forwards to every chip in a variant banner's sentence (it passes the
@@ -21,10 +20,11 @@ export interface VariantBannerChipProps {
 
 function Lead({lead, children}: {lead?: string; children: ReactNode}) {
   if (!lead) return children
+  // A no-break space ties the lead to the start of the chip; the chip can still wrap, so a long name never overflows the text column.
   return (
-    <span className={keep}>
-      {lead} {children}
-    </span>
+    <>
+      {lead}&nbsp;{children}
+    </>
   )
 }
 

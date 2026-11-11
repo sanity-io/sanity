@@ -169,7 +169,9 @@ const versionStub = (
 
 async function expectBannerMessage(expected: string) {
   await waitFor(() => {
-    expect(screen.getByTestId('document-not-in-variant-banner').textContent).toBe(expected)
+    expect(
+      screen.getByTestId('document-not-in-variant-banner').textContent?.replaceAll('\u00a0', ' '),
+    ).toBe(expected)
   })
 }
 

@@ -234,7 +234,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
   /**
-   * PROPOSED: the word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it on one line
+   * The word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it on one line
    * with the name, so the sentences leave it out.
    */
   'banners.release.lead.release': 'release',
@@ -249,10 +249,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release':
     "This document isn't in the <VersionBadge>{{title}}</VersionBadge> yet.",
-  /** PROPOSED: the not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's name */
+  /** The not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's name */
   'banners.release.not-in-release-asap':
     "This document isn't in the ASAP <VersionBadge>{{title}}</VersionBadge> yet.",
-  /** PROPOSED: the not-in-release banner for an undecided release */
+  /** The not-in-release banner for an undecided release */
   'banners.release.not-in-release-undecided':
     "This document isn't in the undecided <VersionBadge>{{title}}</VersionBadge> yet.",
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
