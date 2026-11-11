@@ -146,6 +146,35 @@ describe('studio tab lock', () => {
     ])
   })
 
+  it('keeps republishing after a lock request is rejected', async () => {
+    vi.spyOn(fakeLocks.locks, 'request').mockRejectedValueOnce(
+      new DOMException('The document is not fully active', 'InvalidStateError'),
+    )
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    listenerCount.openListener()
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.held).toEqual([
+      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:1`,
+    ])
+  })
+
+  it('republishes at least once a second while the count keeps changing', async () => {
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    const releases = Array.from({length: 11}, () => listenerCount.openListener())
+    await releases.reduce(async (previous, release) => {
+      await previous
+      release()
+      await vi.advanceTimersByTimeAsync(100)
+    }, Promise.resolve())
+
+    expect(fakeLocks.requested.length).toBeGreaterThan(1)
+  })
+
   it('skips republishing when the count ends where it started', async () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()

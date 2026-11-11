@@ -7,6 +7,7 @@ const TAB_LOCK_PREFIX = 'sanity-listener-tab:'
 const TAB_CHANNEL_NAME = 'sanity-studio-tabs'
 const TAB_OPENED_MESSAGE = 'opened'
 const REPUBLISH_DEBOUNCE_MS = 250
+const REPUBLISH_MAX_WAIT_MS = 1000
 const UNKNOWN_SCOPE = 'unknown'
 
 /** @internal */
@@ -115,7 +116,11 @@ export function startTrackingStudioTabs(scope: string): void {
     void sampleOpenTabs()
     channel.postMessage(TAB_OPENED_MESSAGE)
   })
-  subscribeListenerCounts(debounce(() => void publishListenerCount(scope), REPUBLISH_DEBOUNCE_MS))
+  subscribeListenerCounts(
+    debounce(() => void publishListenerCount(scope), REPUBLISH_DEBOUNCE_MS, {
+      maxWait: REPUBLISH_MAX_WAIT_MS,
+    }),
+  )
 }
 
 function publishListenerCount(scope: string): Promise<void> {
@@ -140,7 +145,10 @@ async function replaceTabLock(scope: string): Promise<void> {
 // The browser releases the lock when the tab closes or crashes, so a held lock is an open tab.
 function holdLock(name: string): Promise<() => void> {
   return new Promise((resolveHeld) => {
-    void navigator.locks.request(name, () => new Promise<void>((release) => resolveHeld(release)))
+    navigator.locks
+      .request(name, () => new Promise<void>((release) => resolveHeld(release)))
+      // A rejected request (a detached document) must not stall every later republish.
+      .catch(() => resolveHeld(() => undefined))
   })
 }
 

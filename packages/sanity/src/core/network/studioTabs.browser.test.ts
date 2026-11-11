@@ -53,8 +53,16 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-afterEach(() => {
+async function heldTabLockCount(): Promise<number> {
+  const {held = []} = await navigator.locks.query()
+  return held.filter((lock) => parseStudioTabLock(lock.name ?? '')).length
+}
+
+// A removed frame's locks are released asynchronously, and every test's peak counts tabs across
+// all scopes, so each test starts only once the previous test's tabs are gone.
+afterEach(async () => {
   openFrames.splice(0).forEach((frame) => frame.remove())
+  await expect.poll(heldTabLockCount).toBe(0)
 })
 
 describe('studio tab locks (real Web Locks)', () => {
