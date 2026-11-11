@@ -1,5 +1,5 @@
-import {createClient} from '@sanity/client'
 import {createBatchedStore, createSessionId} from '@sanity/telemetry'
+import {DeferredTelemetryProvider, TelemetryProvider} from '@sanity/telemetry/react'
 import {render} from '@testing-library/react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
@@ -16,14 +16,6 @@ function createFakeLocks(): {locks: LockManager; held: string[]} {
   return {locks: locks as unknown as LockManager, held}
 }
 
-const protocolCheckClient = createClient({
-  projectId: 'abc123',
-  dataset: 'production',
-  apiVersion: '2025-03-01',
-  apiHost: 'https://api.sanity.io',
-  useCdn: false,
-})
-
 beforeEach(() => {
   vi.useFakeTimers()
 })
@@ -33,7 +25,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-it('logs every calibration field from its documented source when a boot stall is classified', async () => {
+async function setUpStall() {
   vi.resetModules()
   const fakeLocks = createFakeLocks()
   vi.stubGlobal('navigator', {...navigator, locks: fakeLocks.locks})
@@ -42,7 +34,8 @@ it('logs every calibration field from its documented source when a boot stall is
     vi.fn(() => new Promise(() => undefined)),
   )
 
-  const {ListenerStallTelemetry} = await import('../ListenerStallTelemetry')
+  const {ListenerStallTelemetry, ListenerStallWorkspaceTelemetry} =
+    await import('../ListenerStallTelemetry')
   const {resolveListenerCountingFetch} = await import('../../../network/listenerCount')
   const {startTrackingStudioTabs} = await import('../../../network/studioTabs')
   const {ListenerLimitMessageShown} = await import('../../__telemetry__/listeners.telemetry')
@@ -52,33 +45,100 @@ it('logs every calibration field from its documented source when a boot stall is
     sendEvents: () => Promise.resolve(),
     sendBeacon: () => true,
   })
-  const logSpy = vi.spyOn(store.logger, 'log')
 
-  render(
-    <ListenerStallTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />,
+  return {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch: resolveListenerCountingFetch(),
+    startTrackingStudioTabs,
+    store,
+  }
+}
+
+const expectedBootStallEvent = {
+  kind: 'not-listener-limit',
+  listenersAllTabs: 0,
+  listenersThisTab: 0,
+  listenersOtherTabs: 0,
+  knownStudioTabs: 1,
+  unknownStudioTabs: 0,
+  stalledListenersThisTab: 1,
+  stalledOtherTabs: 0,
+  isBootStall: true,
+  stallOccurrence: 1,
+  stalledForMs: expect.any(Number),
+  protocol: 'unknown',
+  budget: 80,
+}
+
+it('buffers a boot stall detected before any workspace store mounts, and sends it once one does', async () => {
+  const {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch,
+    startTrackingStudioTabs,
+    store,
+  } = await setUpStall()
+  const resumeSpy = vi.spyOn(store.logger, 'resume')
+
+  const {rerender} = render(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+    </DeferredTelemetryProvider>,
   )
 
   startTrackingStudioTabs('api.sanity.io')
   await vi.runAllTimersAsync()
 
-  const countingFetch = resolveListenerCountingFetch()
   void countingFetch('https://abc123.api.sanity.io/v1/users/me')
   await vi.advanceTimersByTimeAsync(10_000)
-  await vi.waitFor(() => expect(logSpy).toHaveBeenCalled())
+  expect(resumeSpy).not.toHaveBeenCalled()
 
-  expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, {
-    kind: 'not-listener-limit',
-    listenersAllTabs: 0,
-    listenersThisTab: 0,
-    listenersOtherTabs: 0,
-    knownStudioTabs: 1,
-    unknownStudioTabs: 0,
-    stalledListenersThisTab: 1,
-    stalledOtherTabs: 0,
-    isBootStall: true,
-    stallOccurrence: 1,
-    stalledForMs: expect.any(Number),
-    protocol: 'unknown',
-    budget: 80,
-  })
+  rerender(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      <TelemetryProvider store={store}>
+        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+      </TelemetryProvider>
+    </DeferredTelemetryProvider>,
+  )
+
+  await vi.waitFor(() =>
+    expect(resumeSpy).toHaveBeenCalledWith([
+      expect.objectContaining({event: ListenerLimitMessageShown, data: expectedBootStallEvent}),
+    ]),
+  )
+})
+
+it('logs straight to the workspace store once it has mounted', async () => {
+  const {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch,
+    startTrackingStudioTabs,
+    store,
+  } = await setUpStall()
+  const logSpy = vi.spyOn(store.logger, 'log')
+
+  render(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      <TelemetryProvider store={store}>
+        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+      </TelemetryProvider>
+    </DeferredTelemetryProvider>,
+  )
+
+  startTrackingStudioTabs('api.sanity.io')
+  await vi.runAllTimersAsync()
+
+  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+  await vi.advanceTimersByTimeAsync(10_000)
+
+  await vi.waitFor(() =>
+    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+  )
 })

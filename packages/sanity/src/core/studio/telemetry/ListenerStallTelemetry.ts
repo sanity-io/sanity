@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
 import {type TelemetryLogger} from '@sanity/telemetry'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect} from 'react'
 
 import {classifyStall, LISTENER_STALL_BUDGET} from '../../network/classifyStall'
@@ -11,40 +11,61 @@ import {
   LISTENER_STALL_TRIGGER_MS,
   subscribeListenerStall,
 } from '../../network/listenerStall'
-import {getStudioTabScope} from '../../network/studioTabs'
 import {ListenerLimitMessageShown} from '../__telemetry__/listeners.telemetry'
+
+const workspaceTelemetry: {logger: TelemetryLogger<unknown> | undefined} = {logger: undefined}
 
 /**
  * Classifies each listener stall detected in this tab and logs `ListenerLimitMessageShown` once
- * per occurrence. Render it inside the `TelemetryProvider` it logs to, alongside
- * `ListenerPeakTelemetry` - both read the same `protocolCheckClient`.
+ * per occurrence. Render it directly inside `DeferredTelemetryProvider`, above `AuthBoundary`, so
+ * a stall during boot is buffered until a workspace's telemetry store mounts.
  *
  * @internal
  */
-export function ListenerStallTelemetry(props: {
+export function ListenerStallTelemetry(): null {
+  const deferredTelemetry = useTelemetry()
+
+  useEffect(
+    () =>
+      subscribeListenerStall((stall) => {
+        void reportListenerStall({stall, fallbackTelemetry: deferredTelemetry})
+      }),
+    [deferredTelemetry],
+  )
+
+  return null
+}
+
+/**
+ * Sends `ListenerStallTelemetry`'s events straight to `telemetry` while mounted. Render it inside
+ * the workspace's `TelemetryProvider`: the deferred buffer is drained only once, when that
+ * provider mounts, so later events logged to it would never send.
+ *
+ * @internal
+ */
+export function ListenerStallWorkspaceTelemetry(props: {
   telemetry: TelemetryLogger<unknown>
-  protocolCheckClient: SanityClient
 }): null {
-  const {telemetry, protocolCheckClient} = props
+  const {telemetry} = props
 
   useEffect(() => {
-    const scope = getStudioTabScope(protocolCheckClient.config().apiHost)
-    return subscribeListenerStall((stall) => {
-      void reportListenerStall({stall, scope, telemetry})
-    })
-  }, [telemetry, protocolCheckClient])
+    workspaceTelemetry.logger = telemetry
+    return () => {
+      if (workspaceTelemetry.logger === telemetry) workspaceTelemetry.logger = undefined
+    }
+  }, [telemetry])
 
   return null
 }
 
 async function reportListenerStall(options: {
   stall: DetectedStall
-  scope: string
-  telemetry: TelemetryLogger<unknown>
+  fallbackTelemetry: TelemetryLogger<unknown>
 }): Promise<void> {
-  const {stall, scope, telemetry} = options
-  const ledgerSnapshot = await snapshot(scope)
-  const protocol = getMeasuredApiProtocol(scope)
+  const {stall, fallbackTelemetry} = options
+  const ledgerSnapshot = await snapshot(stall.host)
+  const protocol = getMeasuredApiProtocol(stall.host)
+  const telemetry = workspaceTelemetry.logger ?? fallbackTelemetry
 
   telemetry.log(ListenerLimitMessageShown, {
     kind: classifyStall({snapshot: ledgerSnapshot, protocol}),
