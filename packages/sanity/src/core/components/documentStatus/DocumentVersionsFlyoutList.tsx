@@ -160,18 +160,14 @@ function AudienceRow({
 }
 
 /**
- * Whether a document has versions beyond its base, which is when its list row gets a flyout: a
- * version for an audience, or one in a release.
+ * Whether a document has two or more versions (for example published and draft, or a draft and a
+ * version in a release), which is when its list row gets a flyout.
  *
  * @internal
  */
-export function useHasVersionsBeyondBase(documentGroupId: string): boolean {
+export function useHasMultipleVersions(documentGroupId: string): boolean {
   const {groups} = useDocumentVersionStatusGroups(documentGroupId)
-  return groups.some(
-    (group) =>
-      Boolean(group.variantId) ||
-      group.items.some((item) => readVersionType(item.version) === 'release'),
-  )
+  return groups.reduce((count, group) => count + group.items.length, 0) >= 2
 }
 
 /**
