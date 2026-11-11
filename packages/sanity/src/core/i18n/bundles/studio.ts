@@ -676,6 +676,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
+  /** The last row of the versions flyout on a document list row, opening the document group inventory (singular) */
+  'document-group.flyout.see-all_one': 'See {{count}} version in inventory',
+  /** The last row of the versions flyout on a document list row, opening the document group inventory (plural) */
+  'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
+  /** Accessible name of the versions flyout on a document list row */
+  'document-group.flyout.title': 'Versions',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */

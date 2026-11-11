@@ -177,6 +177,7 @@ export function PaneItem(props: PaneItemProps) {
       as={ChildLink as FIXME}
       childId={id}
       data-as="a"
+      data-pane-item-row=""
       margin={margin}
       marginBottom={marginBottom}
       marginTop={marginTop}

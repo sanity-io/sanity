@@ -114,6 +114,10 @@ export {Delay} from '../core/components/Delay'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
+export {
+  DocumentVersionsFlyoutList,
+  useHasVersionsBeyondBase,
+} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
