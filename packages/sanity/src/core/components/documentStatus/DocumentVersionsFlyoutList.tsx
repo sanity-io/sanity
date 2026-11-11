@@ -1,4 +1,5 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Card} from '@sanity/ui'
 import {type ReactNode, type SVGProps} from 'react'
 import {Icon, Text} from 'ui5'
 
@@ -156,11 +157,15 @@ export function DocumentVersionsFlyoutList(props: {
   const total = groups.reduce((count, group) => count + group.items.length, 0)
 
   return (
-    <div
+    <Card
       aria-label={t('document-group.flyout.title')}
+      border
       className={root}
       data-testid="document-versions-flyout"
+      radius={2}
       role="menu"
+      // Flush with the list: square corners on the side that touches the pane.
+      style={{borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden'}}
     >
       {groups.slice(0, MAX_AUDIENCES).map((group) => (
         <AudienceRow
@@ -180,6 +185,6 @@ export function DocumentVersionsFlyoutList(props: {
         title={t('document-group.flyout.see-all', {count: total})}
         trailing={<Icon icon={ChevronRightIcon} size={1} />}
       />
-    </div>
+    </Card>
   )
 }

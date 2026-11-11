@@ -262,7 +262,8 @@ export function PaneItemVersionsFlyout(props: {
           radius={2}
           referenceBoundary={document.body}
           referenceElement={row}
-          shadow={2}
+          shadow={0}
+          style={{borderBottomLeftRadius: 0, borderTopLeftRadius: 0, overflow: 'hidden'}}
         />
       )}
     </>
