@@ -1346,6 +1346,7 @@ exports[`exports snapshot 1`] = `
     "ArrayItemRootElementContext": "object",
     "ArrayValidationContext": "object",
     "AssetLimitUpsellContext": "object",
+    "BaseVariantComparisonContext": "object",
     "CalendarContext": "object",
     "ChangeIndicatorTrackerContextGetSnapshot": "object",
     "ChangeIndicatorTrackerContextStore": "object",
