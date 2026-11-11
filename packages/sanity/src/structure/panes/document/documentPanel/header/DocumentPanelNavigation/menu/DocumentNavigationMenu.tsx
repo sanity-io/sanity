@@ -6,7 +6,9 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../../../../ui-components/menuButton/useMenuOverflow'
 import {useStableMenuWidth} from '../../../../../../../ui-components/menuButton/useStableMenuWidth'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {documentNavigationMenu} from './DocumentNavigationMenu.css'
@@ -81,6 +83,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
   const menuId = useId()
   const focusSearchField = useFocusSearchOnOpen()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
 
   const isFiltering = filterQuery.trim().length > 0
   const visibleSections = sections.filter(
@@ -123,17 +126,17 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
           </Box>
           {hasMatches ? (
             <Flex
+              className={menuOverflowScroller}
               flexDirection="column"
               flexGrow={1}
               flexShrink={1}
               minHeight="0"
               overflowY="auto"
-              paddingX={1}
-              paddingBottom={1}
+              ref={scrollerRef}
             >
               {/* Menu items are flex children with min-height: 0, so they collapse when they sit
               directly in this scroller. Keep them in a column that sizes to its content. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1}>
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingBottom={1} paddingX={1}>
                 {leadingItems}
                 {visibleSections.map((section) => (
                   <MenuSection
