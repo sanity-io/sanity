@@ -40,8 +40,31 @@ export const VariantSetEntry = styled.div(({theme}) => {
       background-color: var(--card-muted-bg-color);
     }
 
+    /*
+     * A checked row (or set header) is filled with the focus ring colour. Everything on it takes
+     * the inverse of the card colour, the way a selected menu item does: the text, the muted
+     * secondary line, and the status icons. A badge keeps its shape but loses its tone: a tinted
+     * fill would vanish into the blue, so it is outlined in the same colour instead.
+     */
     &:has(:checked) {
       background-color: ${color.focusRing};
+      color: ${color.bg};
+      --card-fg-color: ${color.bg};
+      --card-muted-fg-color: color-mix(in srgb, ${color.bg} 72%, transparent);
+
+      /* The status icons set their tone colour inline on the svg, so only !important wins. */
+      [data-testid='version-status'] svg {
+        --card-icon-color: ${color.bg} !important;
+        --icon-color: ${color.bg} !important;
+        color: ${color.bg} !important;
+      }
+
+      [data-ui='Badge'] {
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1px ${color.bg};
+        color: ${color.bg};
+        --card-fg-color: ${color.bg};
+      }
     }
   `
 })
