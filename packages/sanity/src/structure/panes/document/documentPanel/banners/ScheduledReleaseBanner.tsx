@@ -33,6 +33,7 @@ export function ScheduledReleaseBanner({
   return (
     <Banner
       tone={tone}
+      neutralAction
       icon={LockIcon}
       data-testid="scheduled-release-banner"
       content={

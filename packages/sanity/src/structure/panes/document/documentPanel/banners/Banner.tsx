@@ -26,10 +26,27 @@ interface BannerProps {
   icon?: ComponentType
   tone?: CardTone
   paddingY?: number
+  /**
+   * Puts the action on a neutral card, so it is the default primary (black in light mode, white in
+   * dark) whatever the banner's tint. Without it, a default-tone filled action takes its colours
+   * from the banner's card, a purple foreground in a purple banner.
+   */
+  neutralAction?: boolean
 }
 
+/** The card that resets a banner's tint around its action: no fill of its own. */
+const NEUTRAL_ACTION_STYLE = {background: 'transparent', boxShadow: 'none', flex: 'none'} as const
+
 export function Banner(props: BannerProps) {
-  const {action, content, icon: BannerIcon, tone = 'transparent', paddingY = 2, ...rest} = props
+  const {
+    action,
+    content,
+    icon: BannerIcon,
+    neutralAction,
+    tone = 'transparent',
+    paddingY = 2,
+    ...rest
+  } = props
   const iconTone =
     tone === 'default' || tone === 'inherit' || tone === 'primary' || tone === 'transparent'
       ? undefined
@@ -63,7 +80,21 @@ export function Banner(props: BannerProps) {
             </div>
             {action && (
               <div className={actionSlot}>
-                <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
+                {neutralAction ? (
+                  <Card tone="default" style={NEUTRAL_ACTION_STYLE}>
+                    <Button
+                      {...action}
+                      mode={action.mode || 'ghost'}
+                      tone={action.tone || 'default'}
+                    />
+                  </Card>
+                ) : (
+                  <Button
+                    {...action}
+                    mode={action.mode || 'ghost'}
+                    tone={action.tone || 'default'}
+                  />
+                )}
               </div>
             )}
           </div>

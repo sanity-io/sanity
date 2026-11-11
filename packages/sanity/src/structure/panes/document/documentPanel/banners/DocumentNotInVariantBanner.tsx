@@ -136,6 +136,7 @@ export function DocumentNotInVariantBanner() {
   return (
     <Banner
       tone="suggest"
+      neutralAction
       content={
         <Text size={1} as="div" trim={true} tone="suggest">
           <Translate
