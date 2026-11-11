@@ -16,7 +16,7 @@ import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../panes/document/constants'
 import {insideTriangle, type Point} from './hoverIntent'
 
 /** Attribute on the row of a document list item the flyout opens from. */
-export const PANE_ITEM_ROW_ATTRIBUTE = 'data-pane-item-row'
+const PANE_ITEM_ROW_ATTRIBUTE = 'data-pane-item-row'
 
 /** How long the pointer rests on a row before its flyout opens, so sweeping down a list shows none. */
 export const OPEN_DELAY = 300
