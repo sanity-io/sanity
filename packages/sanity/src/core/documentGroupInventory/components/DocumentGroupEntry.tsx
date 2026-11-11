@@ -146,10 +146,9 @@ function EditedLine({
   const schema = useSchema()
   const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
   const timeAgo = useCompactTimeAgo(version._updatedAt)
+  const status = t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
 
-  return neverPublished
-    ? t('document-status.edited-not-published', {date: timeAgo})
-    : t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
+  return neverPublished ? t('document-group.version.not-published-yet', {status}) : status
 }
 
 /**
