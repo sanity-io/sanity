@@ -37,7 +37,7 @@ function VersionBadge({
   children?: React.ReactNode
   currentRelease?: Exclude<TargetPerspective, SystemBundle>
   fallbackTitle?: string
-  /** The type word before the chip ("release"), kept on one line with it, so the chip is only ever a name. */
+  /** The type word before the chip ("release"), kept next to the chip's first word. */
   lead?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
@@ -50,10 +50,11 @@ function VersionBadge({
       </ReleaseTitle>
     )
   if (!lead) return badge
+  // A no-break space ties the lead to the start of the chip; the chip itself can still wrap, so a long release name never overflows the text column.
   return (
-    <span style={{whiteSpace: 'nowrap'}}>
-      {lead} {badge}
-    </span>
+    <>
+      {lead}&nbsp;{badge}
+    </>
   )
 }
 
