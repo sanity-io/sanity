@@ -12,11 +12,19 @@ import {
 import {useAllReleasesMockReturn} from '../../releases/store/__tests__/__mocks/useAllReleases.mock'
 import {useReleaseOperationsMockReturn} from '../../releases/store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {useScheduleDraftOperations} from './useScheduleDraftOperations'
+import {
+  type ScheduledDraftVariantSource,
+  useScheduleDraftOperations,
+} from './useScheduleDraftOperations'
 
 const mockLog = vi.fn()
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => ({log: mockLog})),
+}))
+
+const mockCreateVariantDocument = vi.fn()
+vi.mock('../../variants/hooks/useVariantDocumentOperations', () => ({
+  useVariantDocumentOperations: vi.fn(() => ({createVariantDocument: mockCreateVariantDocument})),
 }))
 
 vi.mock('../../releases/store/useReleaseOperations', () => ({
@@ -70,6 +78,7 @@ describe('useScheduleDraftOperations', () => {
       'drafts.documentId',
       undefined,
     )
+    expect(mockCreateVariantDocument).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
       mockReleaseId,
       mockPublishAt,
@@ -77,6 +86,35 @@ describe('useScheduleDraftOperations', () => {
     )
     expect(releaseDocumentId).toBe(mockReleaseId)
     expect(mockLog).toHaveBeenCalledWith(expect.objectContaining({name: 'Scheduled Draft Created'}))
+  })
+
+  it('creates the scheduled version of a draft variant through the variant create action', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+    const variant: ScheduledDraftVariantSource = {
+      baseId: 'versions.scope-loyal.documentId',
+      variantId: '_.variants.loyal',
+    }
+
+    await act(async () => {
+      await result.current.createScheduledDraft('documentId', mockPublishAt, undefined, variant)
+    })
+
+    expect(mockCreateVariantDocument).toHaveBeenCalledWith({
+      baseId: 'versions.scope-loyal.documentId',
+      documentGroupId: 'documentId',
+      variant: {_id: '_.variants.loyal'},
+      selectedPerspective: getReleaseIdFromReleaseDocumentId(mockReleaseId),
+    })
+    expect(useReleaseOperationsMockReturn.createVersion).not.toHaveBeenCalled()
+    expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
+      mockReleaseId,
+      mockPublishAt,
+      undefined,
+    )
+    expect(mockCreateVariantDocument.mock.invocationCallOrder[0]).toBeLessThan(
+      useReleaseOperationsMockReturn.schedule.mock.invocationCallOrder[0],
+    )
   })
 
   it('should create scheduled draft with default title when no title provided', async () => {

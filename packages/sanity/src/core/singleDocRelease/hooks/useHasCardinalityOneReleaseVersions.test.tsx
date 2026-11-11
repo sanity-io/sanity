@@ -6,6 +6,7 @@ import {
   activeASAPRelease,
   activeScheduledRelease,
 } from '../../releases/__fixtures__/release.fixture'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useHasCardinalityOneReleaseVersions} from './useHasCardinalityOneReleaseVersions'
 
 vi.mock('../../releases/hooks/useDocumentVersions')
@@ -32,10 +33,39 @@ const mockActiveReleasesReturn = {
   byId: new Map<string, ReleaseDocument>(),
 }
 
-const mockDocumentVersionsReturn = {
-  loading: false,
-  error: null,
+const VARIANT_ID = '_.variants.loyal'
+
+function createStub(
+  _id: string,
+  system: Omit<VersionInfoDocumentStub['_system'], 'group'> = {},
+): VersionInfoDocumentStub {
+  return {
+    _id,
+    _rev: 'rev',
+    _createdAt: '2026-01-01T00:00:00.000Z',
+    _updatedAt: '2026-01-01T00:00:00.000Z',
+    _type: 'article',
+    _system: {group: {_ref: 'test-document', _weak: true}, ...system},
+  }
 }
+
+function mockDocumentVersions(versions: VersionInfoDocumentStub[]) {
+  useDocumentVersions.mockReturnValue({
+    loading: false,
+    error: null,
+    data: versions.map((version) => version._id),
+    versions,
+  })
+}
+
+const baseScheduledVersion = createStub('versions.scheduled-draft.test-document', {
+  bundleId: 'scheduled-draft',
+})
+const variantScheduledVersion = createStub('versions.scope-loyal.test-document', {
+  bundleId: 'scheduled-draft',
+  scopeId: 'scope-loyal',
+  variants: [{_ref: VARIANT_ID, _key: 'loyal'}],
+})
 
 describe('useHasCardinalityOneReleaseVersions', () => {
   const mockDocumentId = 'test-document'
@@ -49,11 +79,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [],
     })
-    // @ts-expect-error -- pre-existing, fix later
-    useDocumentVersions.mockReturnValue({
-      ...mockDocumentVersionsReturn,
-      data: [],
-    })
+    mockDocumentVersions([])
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
@@ -66,11 +92,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       data: [activeASAPRelease], // This has cardinality 'many'
       byId: new Map([[activeASAPRelease._id, activeASAPRelease]]),
     })
-    // @ts-expect-error -- pre-existing, fix later
-    useDocumentVersions.mockReturnValue({
-      ...mockDocumentVersionsReturn,
-      data: ['versions.rASAP.test-document'],
-    })
+    mockDocumentVersions([createStub('versions.rASAP.test-document', {bundleId: 'rASAP'})])
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
@@ -83,11 +105,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       data: [cardinalityOneRelease],
       byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
     })
-    // @ts-expect-error -- pre-existing, fix later
-    useDocumentVersions.mockReturnValue({
-      ...mockDocumentVersionsReturn,
-      data: ['versions.scheduled-draft.test-document'],
-    })
+    mockDocumentVersions([baseScheduledVersion])
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
@@ -100,14 +118,48 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       data: [cardinalityOneRelease],
       byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
     })
-    // @ts-expect-error -- pre-existing, fix later
-    useDocumentVersions.mockReturnValue({
-      ...mockDocumentVersionsReturn,
-      data: ['versions.scheduled-draft.test-document', 'drafts.test-document', 'test-document'],
-    })
+    mockDocumentVersions([
+      baseScheduledVersion,
+      createStub('drafts.test-document', {bundleId: 'drafts'}),
+      createStub('test-document'),
+    ])
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
     expect(result.current).toBe(true)
+  })
+
+  it('only counts the scheduled drafts of the selected variant', () => {
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [cardinalityOneRelease],
+      byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
+    })
+    mockDocumentVersions([variantScheduledVersion])
+
+    const {result: baseResult} = renderHook(() =>
+      useHasCardinalityOneReleaseVersions(mockDocumentId),
+    )
+    const {result: variantResult} = renderHook(() =>
+      useHasCardinalityOneReleaseVersions(mockDocumentId, VARIANT_ID),
+    )
+
+    expect(baseResult.current).toBe(false)
+    expect(variantResult.current).toBe(true)
+  })
+
+  it('does not count a scheduled draft of the base document for a variant', () => {
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [cardinalityOneRelease],
+      byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
+    })
+    mockDocumentVersions([baseScheduledVersion])
+
+    const {result} = renderHook(() =>
+      useHasCardinalityOneReleaseVersions(mockDocumentId, VARIANT_ID),
+    )
+
+    expect(result.current).toBe(false)
   })
 })
