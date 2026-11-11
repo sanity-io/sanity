@@ -43,6 +43,10 @@ function uniqueHost(): string {
   return `${crypto.randomUUID()}.api.sanity.test`
 }
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function isLockStalled(tabId: string): Promise<boolean> {
   const {held = []} = await navigator.locks.query()
   return held.some(
@@ -72,6 +76,8 @@ describe('listener stall detection (real held requests)', () => {
       void countingFetch(heldUrl)
 
       await expect.poll(() => stalls.length, {timeout: 20_000, interval: 500}).toBe(1)
+      await delay(2_000)
+      expect(stalls.length).toBe(1)
       await expect
         .poll(() => isLockStalled(tab.studioTabs.getStudioTabId()), {timeout: 5_000})
         .toBe(true)
