@@ -148,8 +148,8 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               </Flex>
             </Flex>
           ) : (
-            // The same two boxes as the navbar menus' `FilterNoMatches`
-            <Box paddingBottom={2} paddingX={3}>
+            // The two boxes of the navbar menus' `FilterNoMatches`, with paddings that account for this menu's tighter search field
+            <Box paddingBottom={2} paddingTop={3} paddingX={2}>
               <Box data-testid={`${testId}-no-matches`} padding={2}>
                 <Text muted size={1}>
                   {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
