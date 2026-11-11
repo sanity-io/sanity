@@ -237,7 +237,22 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       return null
     }
 
-    if (liveEdit && !version && !liveEditSchemaType && selectedVariantName && previouslyPublished) {
+    // `liveEdit` forced by the selected variant's version slot, not by the schema.
+    const isForcedLiveEdit = Boolean(liveEdit && !liveEditSchemaType && selectedVariantName)
+    // Publishing a variant's draft removes the draft before its published copy has been observed,
+    // so for a moment the variant has neither. While our own publish is in flight (or just done)
+    // skip the live-edit early returns below and fall through to the in-progress state, otherwise
+    // the action would return nothing and hand the primary slot to the next action.
+    const isOwnPublishInFlight = isForcedLiveEdit && publishState !== null
+
+    if (
+      liveEdit &&
+      !version &&
+      !liveEditSchemaType &&
+      selectedVariantName &&
+      previouslyPublished &&
+      !isOwnPublishInFlight
+    ) {
       // A variant that is published but not yet drafted: `liveEdit` is forced by the variant's
       // version slot, not by the schema. Show what a base document that is published with no draft
       // shows, a disabled Publish, so the action does not vanish and hand the primary slot to the
@@ -251,7 +266,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       }
     }
 
-    if (liveEdit && !version) {
+    if (liveEdit && !version && !isOwnPublishInFlight) {
       // disable publish if liveEdit is true and we're not on a version
       // e.g. if liveEdit is true and we have a version, we want to allow publish
       // note that liveEdit is "forced" on version documents as a hack of sorts
