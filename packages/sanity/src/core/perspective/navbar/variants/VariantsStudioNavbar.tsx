@@ -1,26 +1,27 @@
-import {clsx} from 'clsx'
 import {useCallback} from 'react'
 
-import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
+import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantTypes} from '../../../variants/hooks/useVariantConditions'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
 import {type VariantSelection} from '../../../variants/util/variantSelection'
-import {DEFAULT_VARIANT_TYPE_KEY} from '../../../variants/util/variantType'
+import {DEFAULT_VARIANT_TYPE_KEY, variantTypeLabel} from '../../../variants/util/variantType'
 import {useSetVariant} from '../../useSetVariant'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
-import {rhombusIconLarge, suggestIconColor} from './VariantsNav.css'
+import {suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
   fullWidth?: boolean
   selectedId: string | undefined
   typeKey: string
+  /** The type's navbar label ("Variant" unless configured), which names the chip's picker */
+  typeLabel: string
   variants: SystemVariant[]
 }) {
-  const {fullWidth, selectedId, typeKey, variants} = props
+  const {fullWidth, selectedId, typeKey, typeLabel, variants} = props
   const {t} = useTranslation()
   const setVariant = useSetVariant()
   const selectedVariant = selectedId
@@ -46,7 +47,9 @@ function VariantTypeFilter(props: {
           }
           fullWidth={fullWidth}
           handleClearPerspective={selectedId ? handleClear : undefined}
-          icon={<RhombusIconLarge className={clsx(suggestIconColor, rhombusIconLarge)} />}
+          // The small diamond, at the scale of the release dots in the perspective chip beside it
+          icon={<RhombusIcon className={suggestIconColor} />}
+          pickerLabel={typeLabel}
           text={variantLabel}
         />
       }
@@ -66,7 +69,8 @@ export default function VariantsStudioNavbar({
   const variantTypes = useVariantTypes()
 
   const resolvedTypes = variantTypes.status === 'ready' ? variantTypes.types : []
-  const navbarTypes = resolvedTypes.length > 0 ? resolvedTypes : [{key: DEFAULT_VARIANT_TYPE_KEY}]
+  const navbarTypes: {key: string; label?: string}[] =
+    resolvedTypes.length > 0 ? resolvedTypes : [{key: DEFAULT_VARIANT_TYPE_KEY}]
 
   return navbarTypes.map((type) => (
     <VariantTypeFilter
@@ -74,6 +78,7 @@ export default function VariantsStudioNavbar({
       key={type.key}
       selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
       typeKey={type.key}
+      typeLabel={variantTypeLabel(type.key, type.label)}
       variants={variants}
     />
   ))
