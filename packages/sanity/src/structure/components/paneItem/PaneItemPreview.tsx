@@ -20,22 +20,13 @@ import {
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
-  useTranslation,
-  useWorkspace,
 } from 'sanity'
-import {Box, Flex, Text} from 'ui5'
+import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {structureLocaleNamespace} from '../../i18n'
-import {PaneItemVersionsLink} from './PaneItemVersionsLink'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
-  /**
-   * The child id the row links to. When it is set and the document group inventory is enabled,
-   * a click on the status icons opens the document with the inventory open.
-   */
-  inventoryChildId?: string
   icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
@@ -58,10 +49,7 @@ const INITIAL_PREVIEW_STATE = {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, inventoryChildId, layout, presence, schemaType, sortOrder, value} = props
-  const {t} = useTranslation(structureLocaleNamespace)
-  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
-  const versionsLinkChildId = inventoryEnabled ? inventoryChildId : undefined
+  const {icon, layout, presence, schemaType, sortOrder, value} = props
 
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
@@ -108,31 +96,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        {versionsLinkChildId ? (
-          <PaneItemVersionsLink childId={versionsLinkChildId}>
-            <DocumentVersionsStatusIndicator documentVersions={versions} />
-          </PaneItemVersionsLink>
-        ) : (
-          <DocumentVersionsStatusIndicator documentVersions={versions} />
-        )}
+        <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentVersionsStatus
-      documentGroupId={publishedId}
-      footer={
-        versionsLinkChildId ? (
-          <Box paddingY={2} paddingLeft={3} paddingRight={2}>
-            <Text muted size={1}>
-              {t('pane-item.versions-status.open-inventory.hint')}
-            </Text>
-          </Box>
-        ) : undefined
-      }
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview
