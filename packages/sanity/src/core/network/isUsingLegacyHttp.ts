@@ -31,6 +31,30 @@ interface ProtocolCheck {
 // detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
 const protocolChecks = new WeakMap<SanityClient, ProtocolCheck>()
 
+// Keyed by root API host, never by client, so a stall detected in one tab can look up the
+// protocol this tab measured for the scope it stalled in.
+const measuredProtocols = new Map<string, string>()
+
+/**
+ * This tab's own measured `nextHopProtocol` for `host` (a root API host, as
+ * {@link getStudioTabScope} computes it), or `undefined` before the probe has resolved. No
+ * browser storage - a fresh tab or reload measures again.
+ *
+ * @internal
+ */
+export function getMeasuredApiProtocol(host: string): string | undefined {
+  return measuredProtocols.get(host)
+}
+
+function rootApiHost(client: SanityClient): string | undefined {
+  try {
+    const {host} = new URL(client.config().apiHost ?? '')
+    return host || undefined
+  } catch {
+    return undefined
+  }
+}
+
 /** @internal */
 export interface ApiNetworkResourceTiming {
   connectionMs: number
@@ -109,6 +133,8 @@ function getApiProtocol(client: SanityClient): Observable<string> {
           map((diagnostic) => diagnostic.protocol),
           tap((protocol) => {
             check.protocol = protocol
+            const host = rootApiHost(client)
+            if (host) measuredProtocols.set(host, protocol)
           }),
         ),
       ),
