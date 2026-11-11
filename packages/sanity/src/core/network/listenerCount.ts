@@ -146,6 +146,10 @@ export function resolveListenerCountingFetch(): FetchFunction {
 }
 
 function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
+  // An upload's time to response headers reflects how long its body took to transfer, not
+  // whether this tab is stalled behind the connection limit.
+  if (isUploadRequest(input, init)) return globalThis.fetch(input, init)
+
   const isListener = isEventStreamRequest(init)
   const settlePending = trackPendingRequest(input, isListener)
   const request = isListener ? fetchListener(input, init) : globalThis.fetch(input, init)
@@ -164,6 +168,21 @@ function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> 
 
 function isEventStreamRequest(init: FetchInit): boolean {
   return new Headers(init?.headers).get('accept')?.includes('text/event-stream') ?? false
+}
+
+function isUploadRequest(input: string, init: FetchInit): boolean {
+  if (isUploadBody(init?.body)) return true
+  const method = init?.method?.toUpperCase()
+  return (method === 'POST' || method === 'PUT') && input.includes('/assets/')
+}
+
+function isUploadBody(body: unknown): boolean {
+  return (
+    body instanceof Blob ||
+    body instanceof ArrayBuffer ||
+    body instanceof ReadableStream ||
+    body instanceof FormData
+  )
 }
 
 /**
