@@ -108,7 +108,15 @@ export function DocumentGroupEntry({
           resolveVersionStatusIcons({
             document,
             documentVersions: documentVersions ?? [document],
-          }).map((kind) => <DocumentStatusIcon key={kind} kind={kind} release={release} />)
+          }).map((kind) => (
+            <DocumentStatusIcon
+              key={kind}
+              kind={kind}
+              // Without the release document (not loaded, or no longer listed), the bundle id still
+              // draws the release glyph, in the neutral tone.
+              release={release ?? document._system.bundleId}
+            />
+          ))
         )}
       </Flex>
     </VariantSetEntry>

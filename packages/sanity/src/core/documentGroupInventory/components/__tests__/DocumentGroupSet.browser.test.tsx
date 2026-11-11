@@ -69,7 +69,11 @@ function SetHarness({
   editingId,
   servedVersion,
   count,
+  releases = RELEASES,
+  variants = VARIANTS,
 }: {
+  releases?: Map<string, ReleaseDocument>
+  variants?: Variant[]
   count?: number
   editingId?: string
   servedVersion?: ServedVersion
@@ -93,11 +97,11 @@ function SetHarness({
         readOnly={readOnly}
         locked={locked}
       >
-        {VARIANTS.map((entry) => (
+        {variants.map((entry) => (
           <DocumentGroupEntry
             key={entry.id}
             variant={entry}
-            releases={RELEASES}
+            releases={releases}
             isSelected={entry.id === editingId}
             servedStatus={servedVersion?.id === entry.id ? servedVersion.status : undefined}
             onPrimaryAction={() => onPrimaryAction(entry)}
@@ -416,6 +420,18 @@ describe('DocumentGroupSet', () => {
 
     expect(getSecondaryLine(getRow(SUMMER_SALE)).textContent).toBe('As soon as possible')
     // The release icon carries no draft or published status of its own.
+    expect(getStatusKinds(getRow(SUMMER_SALE))).toEqual([undefined])
+  })
+
+  it('still marks a release version whose release document is not found', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    // Neither the variant nor the release list carries the release document.
+    const withoutRelease = {...SUMMER_SALE, releaseDocument: undefined}
+    void render(<SetHarness releases={new Map()} variants={[withoutRelease]} />)
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await settleChromaticEndState()
+
     expect(getStatusKinds(getRow(SUMMER_SALE))).toEqual([undefined])
   })
 
