@@ -1478,7 +1478,7 @@ describe.each([
     name: 'a schema with inferred validation',
   },
 ])('rule levels next to the unknown-field check, with $name', ({compile}) => {
-  it.fails('keeps errors on slug, image and object fields as errors', async () => {
+  it('keeps errors on slug, image and object fields as errors', async () => {
     const schema = compile([
       {name: 'meta', type: 'object', fields: [{name: 'note', type: 'string'}]},
       {
@@ -1531,7 +1531,7 @@ describe.each([
     expect(markers).toHaveLength(6)
   })
 
-  it.fails('keeps the level of rules set with Rule.fields() and checks the field against its own type', async () => {
+  it('keeps the level of rules set with Rule.fields() and checks the field against its own type', async () => {
     const schema = compile([
       {name: 'meta', type: 'object', fields: [{name: 'note', type: 'string'}]},
       {
