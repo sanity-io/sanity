@@ -23,6 +23,8 @@ export interface MockApiConfig {
   dataset: string
   /** TLS key/cert (PEM). Omit for a plain HTTP/1.1 listener (contract tests, bench:dev). */
   tls?: {key: string | Buffer; cert: string | Buffer}
+  /** Cap concurrent HTTP/2 streams per session, as the real API does at 100. No cap by default. */
+  maxConcurrentStreams?: number
 }
 
 export interface MockApiServer {
@@ -207,7 +209,11 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       return
     }
     if (path === '/ping' || path.startsWith('/data/ping')) {
-      record('ping', json(req, res, 200, {pong: true}, {'x-sanity-shard': 'bench'}))
+      // As the real API does: the Studio reads its protocol off this request's resource timing
+      record(
+        'ping',
+        json(req, res, 200, {pong: true}, {'x-sanity-shard': 'bench', 'timing-allow-origin': '*'}),
+      )
       return
     }
     if (path === '/intake/telemetry-status') {
@@ -313,7 +319,14 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     // closed mid-run and every other listener failed with
     // ERR_CONNECTION_CLOSED. The mock only listens on loopback, so the
     // protection is not needed here.
-    http2Options: {streamResetBurst: 1_000_000, streamResetRate: 1_000_000},
+    http2Options: {
+      streamResetBurst: 1_000_000,
+      streamResetRate: 1_000_000,
+      settings:
+        config.maxConcurrentStreams === undefined
+          ? undefined
+          : {maxConcurrentStreams: config.maxConcurrentStreams},
+    },
     routes: [],
     // bifur presence socket: parked unless a soak goes live (see presence.ts)
     upgradeHandler: presence.handleUpgrade,
