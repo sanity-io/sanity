@@ -10,6 +10,20 @@ import {isPublishedId} from '../../util/draftUtils'
 export interface IncomingReference {
   _id: string
   _type: string
+  /**
+   * Whether the referring document holds a strong (required) reference. Content Lake refuses to
+   * delete the published document while one exists. `undefined` when the strength is unknown.
+   */
+  required?: boolean
+}
+
+/**
+ * Whether any of the references is known to be strong.
+ *
+ * @internal
+ */
+export function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
+  return internalReferences?.references.some((reference) => reference.required === true) ?? false
 }
 
 /**
@@ -66,6 +80,8 @@ interface DeletionContext {
 type DeletionEvents =
   | {type: 'delete.request'}
   | {type: 'delete.confirm'}
+  /** Deletes the selected versions except the published document, which required links block. */
+  | {type: 'delete.confirmExcludingPublished'}
   | {type: 'delete.cancel'}
   | {type: 'selection.changed'; selectedIds: Set<string>}
 
@@ -86,6 +102,7 @@ export const deletionMachine = setup({
   },
   actions: {
     requestDeletionConfirmation: () => {},
+    excludePublished: assign({ids: ({context}) => context.ids.filter((id) => !isPublishedId(id))}),
   },
   guards: {
     hasSelection: ({context}) => context.ids.length !== 0,
@@ -93,10 +110,20 @@ export const deletionMachine = setup({
     selectionExcludesPublished: ({context}) => !context.ids.some(isPublishedId),
     hasCheckedIncomingReferences: ({context}) => context.incomingReferencesChecked,
     canRequestDeletion: and(['hasSelection', 'isMutable']),
+    publishedBlockedByRequiredReferences: ({context}) =>
+      context.ids.some(isPublishedId) && hasRequiredReferences(context.internalReferences),
+    hasUnpublishedSelection: ({context}) => context.ids.some((id) => !isPublishedId(id)),
     canConfirmDeletion: and([
       'hasSelection',
       'isMutable',
       or(['selectionExcludesPublished', 'hasCheckedIncomingReferences']),
+      not('publishedBlockedByRequiredReferences'),
+    ]),
+    canConfirmDeletionExcludingPublished: and([
+      'isMutable',
+      'hasCheckedIncomingReferences',
+      'publishedBlockedByRequiredReferences',
+      'hasUnpublishedSelection',
     ]),
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
@@ -187,6 +214,11 @@ export const deletionMachine = setup({
                       guard: 'canConfirmDeletion',
                       target: '#deletion.active.deletion.deleting',
                     },
+                    'delete.confirmExcludingPublished': {
+                      guard: 'canConfirmDeletionExcludingPublished',
+                      target: '#deletion.active.deletion.deleting',
+                      actions: 'excludePublished',
+                    },
                   },
                 },
               },
@@ -209,6 +241,11 @@ export const deletionMachine = setup({
                 'delete.confirm': {
                   guard: 'canConfirmDeletion',
                   target: '#deletion.active.deletion.deleting',
+                },
+                'delete.confirmExcludingPublished': {
+                  guard: 'canConfirmDeletionExcludingPublished',
+                  target: '#deletion.active.deletion.deleting',
+                  actions: 'excludePublished',
                 },
               },
             },
