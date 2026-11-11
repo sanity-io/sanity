@@ -1,8 +1,8 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type CSSProperties, type ReactNode} from 'react'
-import {Icon} from 'ui5'
+import {Flex, Icon, Text} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
@@ -14,13 +14,9 @@ import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
 import {
-  media,
   name as nameClass,
   root,
-  row,
-  rowContent,
   subtitleIndent,
-  text,
   variantMark,
 } from './DocumentVersionsFlyoutList.css'
 import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
@@ -34,6 +30,7 @@ function FlyoutRow(props: {
   testId: string
   title: ReactNode
   subtitle?: string
+  subtitleIndent?: boolean
   media?: ReactNode
   trailing?: ReactNode
   onClick: () => void
@@ -43,37 +40,52 @@ function FlyoutRow(props: {
     <PreviewCard
       __unstable_focusRing
       as="button"
-      className={row}
       data-testid={props.testId}
       onClick={props.onClick}
       radius={2}
       role="menuitem"
       selected={props.selected}
       sizing="border"
+      style={{display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer'}}
       tabIndex={-1}
       tone="inherit"
       type="button"
     >
-      <div className={rowContent}>
-        {props.media ? <div className={media}>{props.media}</div> : null}
-        <div className={text}>
-          {typeof props.title === 'string' ? (
-            <Text size={1} textOverflow="ellipsis">
-              {props.title}
-            </Text>
-          ) : (
-            props.title
-          )}
-          {props.subtitle ? (
-            <div className={subtitleIndent}>
-              <Text muted size={1} textOverflow="ellipsis">
-                {props.subtitle}
-              </Text>
-            </div>
+      {/* The same box as a document list row (`DefaultPreview`): 8px padding, a 33px media slot, a title and a muted subtitle 8px apart, both trimmed. */}
+      <Flex alignItems="center" padding={2} paddingLeft={props.media ? 2 : 3}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
+          {props.media ? (
+            <Flex
+              alignItems="center"
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              justifyContent="center"
+              style={{width: 33, height: 33}}
+            >
+              {props.media}
+            </Flex>
           ) : null}
-        </div>
-        {props.trailing}
-      </div>
+          <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} style={{minWidth: 0}}>
+            {props.title}
+            {props.subtitle ? (
+              <div className={props.subtitleIndent ? subtitleIndent : undefined}>
+                <Text
+                  as="div"
+                  muted
+                  size={1}
+                  style={{color: 'var(--card-muted-fg-color)'}}
+                  trim
+                  truncate={1}
+                >
+                  {props.subtitle}
+                </Text>
+              </div>
+            ) : null}
+          </Flex>
+          {props.trailing}
+        </Flex>
+      </Flex>
     </PreviewCard>
   )
 }
@@ -111,6 +123,7 @@ function AudienceRow({
       onClick={onClick}
       selected={selected}
       subtitle={subtitle}
+      subtitleIndent
       testId="document-versions-flyout-row"
       title={
         <div className={nameClass}>
@@ -129,7 +142,7 @@ function AudienceRow({
               />
             ) : null}
           </span>
-          <Text size={1} textOverflow="ellipsis">
+          <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
             {name}
           </Text>
         </div>
@@ -201,7 +214,11 @@ export function DocumentVersionsFlyoutList(props: {
           media={<Icon icon={DocumentsIcon} size={2} />}
           onClick={onOpenInventory}
           testId="document-versions-flyout-inventory"
-          title={t('document-group.flyout.see-all', {count: total})}
+          title={
+            <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+              {t('document-group.flyout.see-all', {count: total})}
+            </Text>
+          }
           trailing={<Icon icon={ChevronRightIcon} size={1} />}
         />
       </div>
