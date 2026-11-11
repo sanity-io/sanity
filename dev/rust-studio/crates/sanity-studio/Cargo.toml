@@ -1,0 +1,62 @@
+[package]
+name = "sanity-studio"
+description = "Sanity Studio in Rust: the app the test studio preview serves at /rust"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+console_error_panic_hook.workspace = true
+js-sys.workspace = true
+leptos.workspace = true
+sanity-client.workspace = true
+sanity-color.workspace = true
+sanity-mutator.workspace = true
+sanity-ui.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+web-sys = { workspace = true, features = [
+  "AbstractRange",
+  "ClipboardEvent",
+  "CompositionEvent",
+  "Crypto",
+  "CssStyleDeclaration",
+  "DataTransfer",
+  "Document",
+  "DomRect",
+  "DragEvent",
+  "Element",
+  "FocusEvent",
+  "History",
+  "HtmlCollection",
+  "HtmlElement",
+  "HtmlInputElement",
+  "InputEvent",
+  "KeyboardEvent",
+  "Location",
+  "MediaQueryList",
+  "MouseEvent",
+  "Node",
+  "NodeList",
+  "Performance",
+  "PerformanceEntry",
+  "PerformanceResourceTiming",
+  "PopStateEvent",
+  "Range",
+  "ScrollIntoViewOptions",
+  "ScrollLogicalPosition",
+  "Selection",
+  "StaticRange",
+  "Storage",
+  "Text",
+  "Url",
+  "UrlSearchParams",
+  "Window",
+] }
