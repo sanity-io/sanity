@@ -18,6 +18,7 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
@@ -45,7 +46,6 @@ import {
   usePerspectiveDetailLink,
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
-import {useFocusSearchOnOpen} from '../useFocusSearchOnOpen'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
