@@ -19,6 +19,7 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -46,7 +47,6 @@ import {
   usePerspectiveDetailLink,
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
-import {useFocusSearchOnOpen} from '../useFocusSearchOnOpen'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {
   conditionMismatchIcon,
