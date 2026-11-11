@@ -76,7 +76,7 @@ export function DocumentGroupEntry({
           <div className="version-text">
             {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
             <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
-              {isVariantRow && <VariantMark size="row" />}
+              {isVariantRow && <VariantMark size="row" style={{marginInline: '-0.375rem'}} />}
             </span>
             <div className="version-title">
               <Text size={1} weight="medium" trim={true}>

@@ -156,7 +156,10 @@ function AudienceRow({
       renderLeading={(active) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
-            <VariantMark size="row" style={active ? {color: 'inherit'} : undefined} />
+            <VariantMark
+              size="row"
+              style={{marginInline: '-0.375rem', ...(active ? {color: 'inherit'} : undefined)}}
+            />
           ) : null}
         </span>
       )}
