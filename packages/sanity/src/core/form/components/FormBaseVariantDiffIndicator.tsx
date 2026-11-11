@@ -13,6 +13,7 @@ import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {type BaseFieldProps} from '../types/fieldProps'
+import {chip, chipGlyph} from './FormBaseVariantDiffIndicator.css'
 
 type Props = Pick<BaseFieldProps, 'changedFromBaseVariant'>
 
@@ -43,18 +44,10 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
   )
 }
 
-/** A glyph inside a chip, on the text line, 4px before the name (the release avatar is a block svg). */
+/** A glyph inside a chip, centred on the chip's text line. */
 function ChipGlyph({children}: {children: ReactNode}) {
   return (
-    <span
-      aria-hidden
-      style={{
-        display: 'inline-flex',
-        marginInline: '2px 4px',
-        transform: 'scale(0.7)',
-        verticalAlign: '-3px',
-      }}
-    >
+    <span aria-hidden className={chipGlyph}>
       {children}
     </span>
   )
@@ -77,23 +70,23 @@ function DiffersFrom() {
       ? selectedPerspective
       : undefined
   const slot = release ? (
-    <VersionInlineBadge $tone={getReleaseTone(release)}>
+    <VersionInlineBadge $tone={getReleaseTone(release)} className={chip}>
       <ChipGlyph>
-        <ReleaseAvatarIcon release={release} />
+        <ReleaseAvatarIcon release={release} size="small" />
       </ChipGlyph>
       {release.metadata.title || t('release.placeholder-untitled-release')}
     </VersionInlineBadge>
   ) : compared === 'published' ? (
-    <VersionInlineBadge $tone="positive">
+    <VersionInlineBadge $tone="positive" className={chip}>
       <ChipGlyph>
-        <ReleaseAvatarIcon release={PUBLISHED} />
+        <ReleaseAvatarIcon release={PUBLISHED} size="small" />
       </ChipGlyph>
       {t('release.chip.published')}
     </VersionInlineBadge>
   ) : (
-    <VersionInlineBadge $tone="caution">
+    <VersionInlineBadge $tone="caution" className={chip}>
       <ChipGlyph>
-        <ReleaseAvatarIcon release={LATEST} />
+        <ReleaseAvatarIcon release={LATEST} size="small" />
       </ChipGlyph>
       {t('release.chip.draft')}
     </VersionInlineBadge>
@@ -110,7 +103,9 @@ function DiffersFrom() {
         {t('changes.from-base-variant.differs-from')}
       </Text>
       <Text size={1}>
-        <VersionInlineBadge $tone="default">{t('document-group.base-variant')}</VersionInlineBadge>
+        <VersionInlineBadge $tone="default" className={chip}>
+          {t('document-group.base-variant')}
+        </VersionInlineBadge>
       </Text>
       <Text size={1}>{slot}</Text>
     </Flex>
