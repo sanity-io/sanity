@@ -59,6 +59,24 @@ describe('SelectVariantDefinition', () => {
     vi.unstubAllGlobals()
   })
 
+  it('keeps the width the picker had when it opened while the filter narrows the list', async () => {
+    // jsdom has no layout: the menu "measures" 320px when it opens
+    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
+    try {
+      const menu = await openMenu(new Set([NORDIC._id]))
+      await waitFor(() => expect(menu).toHaveStyle({width: '320px', minWidth: '320px'}))
+
+      // The rows that are left are narrower, so the menu would shrink without the lock
+      offsetWidth.mockReturnValue(200)
+      await userEvent.type(screen.getByPlaceholderText('Search variant definitions…'), 'dan')
+
+      expect(within(menu).queryByText('German')).not.toBeInTheDocument()
+      expect(menu).toHaveStyle({width: '320px', minWidth: '320px', maxWidth: '320px'})
+    } finally {
+      offsetWidth.mockRestore()
+    }
+  })
+
   it('focuses the search field when the picker opens, and the arrow keys move into the list', async () => {
     stubPointer({finePointerWithHover: true})
 
