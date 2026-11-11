@@ -8,8 +8,8 @@ import {inlineSize, rowSize, variantMark} from './VariantMark.css'
  * Tight viewBoxes: the glyph's tips touch the edges of the box, so the box width is the
  * drawn width, tip to tip.
  */
-const FILLED_VIEW_BOX = '8.5 8.5 8 8'
-const OUTLINE_VIEW_BOX = '7.9 7.9 9.2 9.2'
+const FILLED_VIEW_BOX = '8.555 8.555 7.889 7.889'
+const OUTLINE_VIEW_BOX = '7.73 7.73 9.54 9.54'
 
 /** @internal */
 export interface VariantMarkProps
