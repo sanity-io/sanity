@@ -134,21 +134,25 @@ async function replaceTabLock(scope: string): Promise<void> {
   const {open} = getListenerCounts()
   if (studioTabs.publishedCount === open) return
 
-  const releasePrevious = studioTabs.releasePublished
-  studioTabs.releasePublished = await holdLock(
+  const releaseNext = await holdLock(
     formatStudioTabLock({scope, tabId: getStudioTabId(), count: open}),
   )
+  if (releaseNext === undefined) return
+
+  const releasePrevious = studioTabs.releasePublished
+  studioTabs.releasePublished = releaseNext
   studioTabs.publishedCount = open
   releasePrevious?.()
 }
 
 // The browser releases the lock when the tab closes or crashes, so a held lock is an open tab.
-function holdLock(name: string): Promise<() => void> {
+// Resolves `undefined` when the request is rejected (a detached document), so the tab keeps the
+// lock it holds and the next count change retries instead of stalling every later republish.
+function holdLock(name: string): Promise<(() => void) | undefined> {
   return new Promise((resolveHeld) => {
     navigator.locks
       .request(name, () => new Promise<void>((release) => resolveHeld(release)))
-      // A rejected request (a detached document) must not stall every later republish.
-      .catch(() => resolveHeld(() => undefined))
+      .catch(() => resolveHeld(undefined))
   })
 }
 
