@@ -1,15 +1,15 @@
 import {css} from '#styled-system/css'
 
 /**
- * The variant's diamond: the large rhombus (9.2px tip to tip) in a 21px box trimmed to the glyph,
- * as the inventory rows draw it, so it is no smaller than the header pill's diamond. It sits inline
- * and centred on the text (cap height), so the chip's text stays on the line's baseline.
+ * The variant's diamond at the inline size: 8px tip to tip (the 9.2px size is for row-leading marks).
+ * The rhombus's tips span 7.9 of the viewBox's 18 units, so an 18.26px box draws 8px; the box is
+ * trimmed to the glyph (-5.13px a side, 4px kept before the name) and centred on the text.
  */
 export const chipIcon = css({
   display: 'inline-block',
-  fontSize: '1.3125rem',
-  margin: '-0.375rem',
-  marginInlineEnd: '-0.125rem',
+  fontSize: '1.1413rem',
+  margin: '-0.3206rem',
+  marginInlineEnd: '-0.0706rem',
   verticalAlign: 'middle',
   position: 'relative',
   top: '-0.0625rem',
