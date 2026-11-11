@@ -71,6 +71,17 @@ Every row is labelled `nav:<step label> / <metric>`, e.g. `nav:document-open / s
 - **The listener is rev-chained**: every mutation event must chain `previousRev → resultRev` from the snapshot's `_rev`; `previousRev` must be _absent_ for `appear`. See `getPairListener.ts` and `utils/sequentializeListenerEvents.ts`. The contract test (`mock-api/__tests__/contract.test.ts`) drives a real `@sanity/client` through all of this.
 - Unknown endpoints 404 and are recorded; a session **fails** on unexpected endpoints (mock-drift detector). If your studio change adds an API call, extend the mock in the same PR — like updating types.
 
+### Listener stall checks
+
+`pnpm bench listener-stall` checks the Studio's `Studio Listener Stall Detected` telemetry over one HTTP/2 connection capped at 100 concurrent streams, the API's real cap, so the classifier's budget of 80 applies unchanged. It runs against the customization build (`pnpm --filter bench build:customizations`), which holds the `listenerStall` workspace and its listener tool, and starts the mock with `maxConcurrentStreams: 100`. The checks pass or fail; nothing is reported or stored.
+
+- **too-many-tabs:** desk tabs (`singleString`, 9 listeners each) open until the listeners outnumber the streams, about 12 tabs. One event per stalled tab, kind `too-many-tabs`, with `listenersAllTabs` equal to the presence locks' sum and `knownStudioTabs` equal to the open tabs.
+- **this-tab-over-limit** and **second-occurrence:** one listener tool tab opens 105 listeners, closes them, and opens them again. Two events, the second with `stallOccurrence: 2`.
+- **this-tab-heavy:** a desk tab plus a listener tool tab with 95 listeners.
+- **single-default-tab:** one desk tab never sends an event with a listener-limit kind.
+
+Each check group runs in its own browser context. The session answers `/intake/*` in the browser: a stalled tab's telemetry would queue behind the same capped connection. The Studio flushes telemetry 30s after its first buffered event, so a run takes about 3 minutes. Requests the network refused or dropped are listed per check, never retried: on Linux, Node's HTTP/2 server can refuse a queued stream with `ENHANCE_YOUR_CALM` when the client cancels another stream in the same read.
+
 ### Metrics
 
 | Bucket                  | Metrics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Gated?           |
@@ -164,6 +175,10 @@ pnpm bench run --mode softnav --scenario softNav --sessions 4
 pnpm bench dev
 # same, serving the customization studio with every customization scenario seeded
 pnpm bench dev --customizations
+
+# listener stall telemetry over a connection capped at 100 HTTP/2 streams (pass/fail)
+pnpm --filter bench build:customizations
+pnpm bench listener-stall
 
 pnpm bench:unit                                   # mock contract + stats unit tests
 ```
