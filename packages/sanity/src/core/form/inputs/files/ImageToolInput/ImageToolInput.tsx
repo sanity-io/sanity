@@ -184,9 +184,16 @@ export function ImageToolInput(props: ImageToolInputProps) {
         return
       }
 
+      const storedHotspot = value?.hotspot
+      if (storedHotspot) {
+        const hotspot = {...storedHotspot, ...constrainHotspotToCrop(storedHotspot, crop)}
+        onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
+        return
+      }
+
       onChange(set(crop, ['crop']))
     },
-    [hotspotEnabled, onChange, readOnly, schemaType.fields],
+    [hotspotEnabled, onChange, readOnly, schemaType.fields, value?.hotspot],
   )
 
   const isSvg = useMemo(() => isSvgImageRef(assetRef), [assetRef])

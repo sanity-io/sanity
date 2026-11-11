@@ -292,6 +292,72 @@ describe('image tool input', () => {
     })
   })
 
+  describe('on a crop-only field in 16:9', () => {
+    const CROP_ONLY_WIDESCREEN_SCHEMA = createImageSchema({aspectRatio: 16 / 9})
+
+    function CropOnlyWidescreenHarness(props: {hotspot?: ImageValue['hotspot']}) {
+      const document: SanityDocument = {
+        ...DOCUMENT,
+        image: {
+          _type: 'image',
+          asset: {_type: 'reference', _ref: PORTRAIT_IMAGE_REF},
+          ...(props.hotspot && {hotspot: props.hotspot}),
+        },
+      }
+      return (
+        <TestWrapper schemaTypes={CROP_ONLY_WIDESCREEN_SCHEMA}>
+          <TestForm document={document} focusPath={CROP_FOCUS_PATH} />
+        </TestWrapper>
+      )
+    }
+
+    async function moveCropDown() {
+      const {findBySelector} = testHelpers()
+      await waitForFixtureImage()
+      const cropRect = await findBySelector(
+        {element: () => document.body},
+        'rect[data-handle="crop"][tabindex]',
+      )
+      ;(cropRect.element() as SVGRectElement).focus()
+      await userEvent.keyboard('{ArrowDown}')
+    }
+
+    test('saves a stored hotspot inside the crop it saves', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(
+        <CropOnlyWidescreenHarness
+          hotspot={{_type: 'sanity.imageHotspot', x: 0.5, y: 0.1, width: 0.2, height: 0.1}}
+        />,
+      )
+
+      await moveCropDown()
+
+      const state = await waitForDocumentState((documentState) =>
+        Boolean(documentState?.image?.crop),
+      )
+      const {crop, hotspot} = state.image
+      expect(crop.top).toBeGreaterThan(0.1)
+      expect(hotspot._type).toBe('sanity.imageHotspot')
+      expect(hotspot.y - hotspot.height / 2).toBeGreaterThanOrEqual(crop.top)
+      expect(hotspot.y + hotspot.height / 2).toBeLessThanOrEqual(1 - crop.bottom)
+      expect(hotspot.x - hotspot.width / 2).toBeGreaterThanOrEqual(crop.left)
+      expect(hotspot.x + hotspot.width / 2).toBeLessThanOrEqual(1 - crop.right)
+    })
+
+    test('saves only the crop when no hotspot is stored', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(<CropOnlyWidescreenHarness />)
+
+      await moveCropDown()
+
+      const state = await waitForDocumentState((documentState) =>
+        Boolean(documentState?.image?.crop),
+      )
+      expect(state.image.crop.top).toBeGreaterThan(0)
+      expect(state.image.hotspot).toBeUndefined()
+    })
+  })
+
   test('saves the hotspot inside the crop it swaps in for a crop that breaks the ratio', async () => {
     const {findBySelector, waitForDocumentState} = testHelpers()
     const rangeSchema = createImageSchema({hotspot: true, aspectRatio: {min: 4 / 3, max: 16 / 9}})
