@@ -19,6 +19,8 @@ use serde_json::{Map, Value, json};
 
 use crate::util::{draft_id, now_ms, published_id, uuid};
 
+const SNAPSHOT_RETRIES: u32 = 3;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SyncState {
     Saved,
@@ -186,7 +188,23 @@ impl Store {
         let commits = self.docs.borrow().commit_count();
         spawn_local(async move {
             let store = store();
-            let result = store.client().get_documents(&ids, "document.snapshots").await;
+            let mut attempt = 0;
+            let result = loop {
+                let result = store.client().get_documents(&ids, "document.snapshots").await;
+                if store.events_seen(&published, session, &ids).is_none() {
+                    return;
+                }
+                match result {
+                    Err(_) if attempt < SNAPSHOT_RETRIES => {
+                        sleep(1000 << attempt).await;
+                        if store.events_seen(&published, session, &ids).is_none() {
+                            return;
+                        }
+                        attempt += 1;
+                    }
+                    result => break result,
+                }
+            };
             let Some(now) = store.events_seen(&published, session, &ids) else { return };
             let docs = match result {
                 Ok(docs) => docs,
@@ -241,6 +259,10 @@ impl Store {
             let mut docs = self.docs.borrow_mut();
             docs.forget_if_clean(&draft_id(published));
             docs.forget_if_clean(published);
+            // No listener left to finish reconnecting, so clear the navbar badge.
+            if self.pairs.borrow().is_empty() {
+                self.connected.set(true);
+            }
         }
     }
 
@@ -265,7 +287,11 @@ impl Store {
                 self.bump(&id);
             }
             ListenEvent::Reconnecting => self.connected.set(false),
-            ListenEvent::Error(err) => self.error("The document listener stopped", err.to_string()),
+            ListenEvent::Error(err) => {
+                // The stream stopped for good; it is no longer reconnecting.
+                self.connected.set(true);
+                self.error("The document listener stopped", err.to_string());
+            }
         }
     }
 
@@ -434,7 +460,6 @@ async fn commit_loop() {
     if store.committing.replace(true) {
         return;
     }
-    let mut failed = false;
     loop {
         let next = store.docs.borrow_mut().take_next();
         let Some(tx) = next else { break };
@@ -455,8 +480,8 @@ async fn commit_loop() {
                 store.refresh(refetch);
             }
             Err(err) => {
-                failed = true;
                 store.failed.borrow_mut().insert(tx.id.clone());
+                // Rejected transactions are dropped, so local state matches the server again.
                 let reverted = store.docs.borrow_mut().commit_failed(&tx.id);
                 if let Some(reverted) = reverted {
                     let ids: Vec<String> = reverted.documents().map(str::to_owned).collect();
@@ -469,5 +494,9 @@ async fn commit_loop() {
         }
     }
     store.committing.set(false);
-    store.sync.set(if failed { SyncState::Error } else { SyncState::Saved });
+    let pending = {
+        let docs = store.docs.borrow();
+        docs.has_queued() || docs.has_in_flight()
+    };
+    store.sync.set(if pending { SyncState::Saving } else { SyncState::Saved });
 }
