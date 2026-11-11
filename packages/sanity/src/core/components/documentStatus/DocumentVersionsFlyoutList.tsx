@@ -3,10 +3,11 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {LockIcon} from '@sanity/icons/Lock'
 import {AvatarCounter, AvatarStack, Card} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, useMemo, useState} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {VariantMark} from '../../../ui-components/variantMark'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -23,7 +24,6 @@ import {readVersionType} from '../../util/versionsUtils'
 import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {getVariantId} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
-import {RhombusIconLarge} from '../temporary-icons/Rhombus'
 import {UserAvatar} from '../userAvatar/UserAvatar'
 import {
   audienceDetail,
@@ -409,17 +409,12 @@ function AudienceRow({
       renderTrailing={(isViewed) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
-            <Icon
-              icon={RhombusIconLarge}
-              size={1}
-              style={
-                {
-                  'margin': '-0.375rem',
-                  '--icon-color': isViewed
-                    ? COLORS.viewedMark
-                    : 'var(--card-badge-suggest-dot-color)',
-                } as CSSProperties
-              }
+            <VariantMark
+              size="row"
+              style={{
+                marginInline: '-0.375rem',
+                ...(isViewed ? {color: COLORS.viewedMark} : undefined),
+              }}
             />
           ) : null}
         </span>
