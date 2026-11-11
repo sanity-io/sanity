@@ -46,6 +46,7 @@ import {
   usePerspectiveDetailLink,
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
+import {useFocusSearchOnOpen} from '../useFocusSearchOnOpen'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {
   conditionMismatchIcon,
@@ -175,6 +176,7 @@ export function VariantsMenu({
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const focusSearchField = useFocusSearchOnOpen()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -271,6 +273,7 @@ export function VariantsMenu({
                 onChange={handleFilterChange}
                 placeholder={t('navbar.variant.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
             </Box>

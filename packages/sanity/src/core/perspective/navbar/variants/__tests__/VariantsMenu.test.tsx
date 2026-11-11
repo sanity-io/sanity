@@ -2,7 +2,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {act} from 'react'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
@@ -157,6 +157,55 @@ describe('VariantsMenu', () => {
       // Panda classes are atomic: one name per declaration
       expect(diamond.getAttribute('class')).toContain(variantMenuItemIconColor)
     }
+  })
+
+  describe('search field focus', () => {
+    const searchPlaceholder = 'Search variant definitions…'
+
+    // The test environment mocks `matchMedia` as matching nothing, which reads as a touch device
+    function stubPointer({finePointerWithHover}: {finePointerWithHover: boolean}) {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: finePointerWithHover,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }))
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('focuses the search field when the menu opens', async () => {
+      stubPointer({finePointerWithHover: true})
+
+      await renderMenu()
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+    })
+
+    it('moves to the list with the arrow keys from the search field', async () => {
+      stubPointer({finePointerWithHover: true})
+      const user = userEvent.setup()
+
+      await renderMenu()
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+
+      await user.keyboard('{ArrowDown}')
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus())
+      expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem')
+    })
+
+    it('leaves the field alone on a touch device, where focus opens the on-screen keyboard', async () => {
+      stubPointer({finePointerWithHover: false})
+
+      await renderMenu()
+      // Two animation frames are the longest the field would wait to take the focus
+      await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+
+      expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus()
+    })
   })
 
   it('filters the default option with the rest of the list', async () => {
