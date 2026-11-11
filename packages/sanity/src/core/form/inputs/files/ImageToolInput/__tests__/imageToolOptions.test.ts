@@ -298,16 +298,18 @@ describe('crop size readout', () => {
 describe('getCropAspectRatioMessageOptions', () => {
   const MESSAGE_KEY = 'validation:object.image-aspect-ratio-mismatch'
 
-  async function createValidationT(overrides: LocaleResourceRecord) {
+  async function createValidationT(overrides: LocaleResourceRecord, locale = 'en-US') {
     const {i18next} = prepareI18n({
       projectId: 'test',
       dataset: 'test',
       name: 'test',
       i18n: {
-        bundles: [{locale: 'en-US', namespace: validationLocaleNamespace, resources: overrides}],
+        bundles: [{locale, namespace: validationLocaleNamespace, resources: overrides}],
+        locales: [{id: locale, title: locale, weekInfo: {firstDay: 1, weekend: [6, 7]}}],
       },
     })
     await i18next.init()
+    await i18next.changeLanguage(locale)
     await i18next.loadNamespaces(validationLocaleNamespace)
     return i18next.t
   }
@@ -315,7 +317,8 @@ describe('getCropAspectRatioMessageOptions', () => {
   test.each([
     {name: 'a fixed ratio', aspectRatio: 16 / 9, expected: '16:9'},
     {name: 'a range', aspectRatio: {min: 4 / 3, max: 16 / 9}, expected: 'between 4:3 and 16:9'},
-    {name: 'a list', aspectRatio: [1, 4 / 3, 16 / 9], expected: '1:1, 4:3 or 16:9'},
+    {name: 'a list of two', aspectRatio: [1, 16 / 9], expected: '1:1 or 16:9'},
+    {name: 'a list', aspectRatio: [1, 4 / 3, 16 / 9], expected: '1:1, 4:3, or 16:9'},
   ])('words $name the way the validation message does', async ({aspectRatio, expected}) => {
     const t = await createValidationT({})
     expect(t(MESSAGE_KEY, getCropAspectRatioMessageOptions({aspectRatio}))).toBe(
@@ -324,15 +327,24 @@ describe('getCropAspectRatioMessageOptions', () => {
   })
 
   test('leaves the words around a range and a list to the locale', async () => {
-    const t = await createValidationT({
-      'object.image-aspect-ratio-mismatch_list':
-        'Seitenverhältnis {{ratios, list(type: unit)}} oder {{lastRatio}}',
-      'object.image-aspect-ratio-mismatch_range': 'Seitenverhältnis zwischen {{min}} und {{max}}',
-    })
+    const t = await createValidationT(
+      {
+        'object.image-aspect-ratio-mismatch_list':
+          'Seitenverhältnis {{ratios, list(type: disjunction)}}',
+        'object.image-aspect-ratio-mismatch_range': 'Seitenverhältnis zwischen {{min}} und {{max}}',
+      },
+      'de-DE',
+    )
     const range = getCropAspectRatioMessageOptions({aspectRatio: {min: 4 / 3, max: 16 / 9}})
     const list = getCropAspectRatioMessageOptions({aspectRatio: [1, 4 / 3, 16 / 9]})
+    const longList = getCropAspectRatioMessageOptions({aspectRatio: [1, 4 / 3, 16 / 9, 2]})
     expect(t(MESSAGE_KEY, range)).toBe('Seitenverhältnis zwischen 4:3 und 16:9')
     expect(t(MESSAGE_KEY, list)).toBe('Seitenverhältnis 1:1, 4:3 oder 16:9')
+    expect(t(MESSAGE_KEY, longList)).toBe('Seitenverhältnis 1:1, 4:3, 16:9 oder 2:1')
+    expect([list, longList].map((options) => t(MESSAGE_KEY, options).includes(' or '))).toEqual([
+      false,
+      false,
+    ])
   })
 
   test('states nothing without an aspect ratio', () => {
