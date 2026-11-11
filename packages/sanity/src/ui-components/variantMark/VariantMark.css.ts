@@ -48,14 +48,14 @@ export const inlineSize = css({width: '8px'})
 /**
  * Tip to tip: a hair larger than inline so a leading mark carries the weight of a row.
  *
- * The box is as wide as the 1em glyph box it replaces (the diamond is 9.2px of ~20.7px), so a
+ * The box is as wide as the 1em glyph box it replaces (the diamond is 9.2px of 21px), so a
  * menu item's icon slot, which lays out its own icon, keeps the diamond's left inset. A mark in a
  * leading column of its own trims that box to the glyph by passing
  * `style={{marginInline: '-0.375rem'}}`, as the ui5 `Icon` boxes there did.
  */
 export const rowSize = css({
   '&&': {
-    width: '20.7px',
+    width: '21px',
   },
   // `margin-inline: auto` centres the diamond in the box even when a menu item's ui5 `Icon`
   // clone turns the box to `display: block` (it is a flex box otherwise)
