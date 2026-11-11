@@ -1,0 +1,8 @@
+[package]
+name = "sanity-icons"
+description = "Rust port of @sanity/icons: SVG markup of the icons the studio uses"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+version.workspace = true
