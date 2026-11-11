@@ -21,14 +21,19 @@ import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
 /** Audiences the flyout lists before its last row. */
 const MAX_AUDIENCES = 5
 
+/** ui5 icons declare their own colour variable, so on the active row it is set on the icon itself. */
+function activeIconStyle(active: boolean): CSSProperties | undefined {
+  return active ? ({'--icon-color': 'var(--card-fg-color)'} as CSSProperties) : undefined
+}
+
 function FlyoutRow(props: {
   testId: string
   title: ReactNode
   subtitle?: string
-  media?: ReactNode
+  renderMedia?: (active: boolean) => ReactNode
   /** A column the height of the whole row, for the variant diamond; empty on default rows so names align. */
   renderLeading?: (active: boolean) => ReactNode
-  trailing?: ReactNode
+  renderTrailing?: (active: boolean) => ReactNode
   onClick: () => void
   /** The version the pane is viewing: the list's selected-but-inactive tint, until the row is hovered or focused. */
   viewed?: boolean
@@ -62,7 +67,7 @@ function FlyoutRow(props: {
       <Flex
         alignItems="center"
         padding={2}
-        paddingLeft={props.media || props.renderLeading ? 2 : 3}
+        paddingLeft={props.renderMedia || props.renderLeading ? 2 : 3}
       >
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
           {props.renderLeading ? (
@@ -78,7 +83,7 @@ function FlyoutRow(props: {
               {props.renderLeading(active)}
             </Flex>
           ) : null}
-          {props.media ? (
+          {props.renderMedia ? (
             <Flex
               alignItems="center"
               flexBasis="auto"
@@ -87,7 +92,7 @@ function FlyoutRow(props: {
               justifyContent="center"
               style={{width: 33, height: 33}}
             >
-              {props.media}
+              {props.renderMedia(active)}
             </Flex>
           ) : null}
           <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} style={{minWidth: 0}}>
@@ -105,7 +110,7 @@ function FlyoutRow(props: {
               </Text>
             ) : null}
           </Flex>
-          {props.trailing}
+          {props.renderTrailing?.(active)}
         </Flex>
       </Flex>
     </PreviewCard>
@@ -218,7 +223,9 @@ export function DocumentVersionsFlyoutList(props: {
           />
         ))}
         <FlyoutRow
-          media={<Icon icon={DocumentsIcon} size={2} />}
+          renderMedia={(active) => (
+            <Icon icon={DocumentsIcon} size={2} style={activeIconStyle(active)} />
+          )}
           onClick={onOpenInventory}
           testId="document-versions-flyout-inventory"
           title={
@@ -228,7 +235,9 @@ export function DocumentVersionsFlyoutList(props: {
                 : t('document-group.flyout.manage-versions')}
             </Text>
           }
-          trailing={<Icon icon={ChevronRightIcon} size={1} />}
+          renderTrailing={(active) => (
+            <Icon icon={ChevronRightIcon} size={1} style={activeIconStyle(active)} />
+          )}
         />
       </div>
     </Card>
