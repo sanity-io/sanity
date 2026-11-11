@@ -1,6 +1,6 @@
-import {render, screen, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeAll, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SystemVariant} from '../../../variants/types'
@@ -44,7 +44,46 @@ async function openMenu(existingVariantIds: ReadonlySet<string>) {
   return screen.findByTestId('create-variant-variant-menu')
 }
 
+// The test environment mocks `matchMedia` as matching nothing, which reads as a touch device
+function stubPointer({finePointerWithHover}: {finePointerWithHover: boolean}) {
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    matches: finePointerWithHover,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }))
+}
+
 describe('SelectVariantDefinition', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('focuses the search field when the picker opens, and the arrow keys move into the list', async () => {
+    stubPointer({finePointerWithHover: true})
+
+    await openMenu(new Set([NORDIC._id]))
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText('Search variant definitions…')).toHaveFocus(),
+    )
+
+    await userEvent.keyboard('{ArrowDown}')
+
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText('Search variant definitions…')).not.toHaveFocus(),
+    )
+    expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem')
+  })
+
+  it('leaves the search field alone on a touch device, where focus opens the on-screen keyboard', async () => {
+    stubPointer({finePointerWithHover: false})
+
+    await openMenu(new Set([NORDIC._id]))
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+
+    expect(screen.getByPlaceholderText('Search variant definitions…')).not.toHaveFocus()
+  })
+
   it('lists the variants the document has first, under their own heading, then the others', async () => {
     const menu = await openMenu(new Set([GERMAN._id]))
     const text = menu.textContent ?? ''
