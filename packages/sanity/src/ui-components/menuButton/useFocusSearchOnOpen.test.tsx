@@ -55,4 +55,21 @@ describe('useFocusSearchOnOpen', () => {
     if (typeof cleanup === 'function') cleanup()
     input.remove()
   })
+
+  it('does not refocus on a repeated visible report, or after the menu closed', () => {
+    const {result} = renderHook(() => useFocusSearchOnOpen())
+    const input = document.createElement('input')
+    document.body.appendChild(input)
+
+    const cleanup = result.current(input)
+    intersect?.([{isIntersecting: true}])
+    input.blur()
+
+    // Still visible: not a new open
+    intersect?.([{isIntersecting: true}])
+    expect(document.activeElement).not.toBe(input)
+
+    if (typeof cleanup === 'function') cleanup()
+    input.remove()
+  })
 })
