@@ -189,7 +189,12 @@ function skipAttribution(): () => void {
   return () => undefined
 }
 
-function requestHost(input: string): string {
+/**
+ * The full, unstripped host of a request URL, or `'unknown'` when it cannot be parsed.
+ *
+ * @internal
+ */
+export function requestHost(input: string): string {
   try {
     return new URL(input).host
   } catch {

@@ -31,6 +31,7 @@ import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncem
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
+import {ListenerStallTelemetry} from './telemetry/ListenerStallTelemetry'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
 import {WorkspaceLoader} from './workspaceLoader/WorkspaceLoader'
@@ -114,6 +115,7 @@ export function StudioProvider({
 
   return (
     <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
           <StudioErrorBoundary>

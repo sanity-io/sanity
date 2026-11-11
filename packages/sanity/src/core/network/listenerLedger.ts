@@ -23,21 +23,20 @@ export interface LedgerSnapshot {
 }
 
 /**
- * A point-in-time read of every Studio tab's published listener count in `scope`, from the
+ * A point-in-time read of every Studio tab's published listener count in the scope `host` falls
+ * under (a root API host, or a request host such as `<projectId>.<root>`), from the
  * presence locks {@link startTrackingStudioTabs} publishes. `undefined` where the browser has no
  * Web Locks to read, in which case the classifier reports `unmeasured`.
  *
  * @internal
  */
-export async function snapshot(scope: string): Promise<LedgerSnapshot | undefined> {
+export async function snapshot(host: string): Promise<LedgerSnapshot | undefined> {
   if (typeof navigator === 'undefined' || navigator.locks === undefined) {
     return undefined
   }
 
   const {held = []} = await navigator.locks.query()
-  const tabsByTabId = latestEntryPerTab(
-    held.flatMap((lock) => entryForLock(lock.name ?? '', scope)),
-  )
+  const tabsByTabId = latestEntryPerTab(held.flatMap((lock) => entryForLock(lock.name ?? '', host)))
   const selfTabId = getStudioTabId()
   const self = tabsByTabId.get(selfTabId)
   const others = Array.from(tabsByTabId.values()).filter((tab) => tab.tabId !== selfTabId)
@@ -54,9 +53,9 @@ export async function snapshot(scope: string): Promise<LedgerSnapshot | undefine
   }
 }
 
-function entryForLock(lockName: string, scope: string): LedgerTab[] {
+function entryForLock(lockName: string, host: string): LedgerTab[] {
   const tabLock = parseStudioTabLock(lockName)
-  if (!tabLock || !hostMatchesScope(scope, tabLock.scope)) return []
+  if (!tabLock || !hostMatchesScope(host, tabLock.scope)) return []
   return [
     {tabId: tabLock.tabId, count: tabLock.count, isStalled: lockName.endsWith(STALLED_SUFFIX)},
   ]
