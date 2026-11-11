@@ -19,6 +19,7 @@ import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
+import {useFocusSearchOnOpen} from '../useFocusSearchOnOpen'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
 import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
@@ -104,6 +105,7 @@ export function ReleasesMenu({
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const focusSearchField = useFocusSearchOnOpen()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -168,6 +170,7 @@ export function ReleasesMenu({
                 onChange={handleFilterChange}
                 placeholder={t('release.navbar.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
             </Box>
