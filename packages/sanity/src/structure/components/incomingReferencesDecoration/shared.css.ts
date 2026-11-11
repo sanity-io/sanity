@@ -7,5 +7,8 @@ import {css} from '#styled-system/css'
 export const heightVar = '--incoming-references-list-height'
 
 export const incomingReferencesListContainer = css({
-  height: `var(${heightVar})`,
+  // `&&` beats Box's own `height` (0,1,0); a single class loses to source order
+  '&&': {
+    height: `var(${heightVar})`,
+  },
 })
