@@ -15,6 +15,14 @@ const listenerCounts: ListenerCounts = {open: 0, peak: 0}
 const listenerCountsByHost = new Map<string, number>()
 const listenerCountSubscribers = new Set<(counts: Readonly<ListenerCounts>) => void>()
 
+interface PendingRequest {
+  url: string
+  startedAt: number
+}
+
+const pendingRequests = new Map<object, PendingRequest>()
+const pendingRequestSubscribers = new Set<() => void>()
+
 /**
  * How many listeners the Studio's clients hold open in this tab right now, and the most it has
  * held at once since the page loaded. A listener counts from the moment it is requested, so one
@@ -71,8 +79,62 @@ function notifyListenerCountSubscribers(): void {
 }
 
 /**
+ * Calls `subscriber` whenever a request starts or settles through the counting fetch. Returns a
+ * function that stops the calls.
+ *
+ * @internal
+ */
+export function subscribePendingRequests(subscriber: () => void): () => void {
+  pendingRequestSubscribers.add(subscriber)
+  return () => {
+    pendingRequestSubscribers.delete(subscriber)
+  }
+}
+
+function notifyPendingRequestSubscribers(): void {
+  pendingRequestSubscribers.forEach((subscriber) => subscriber())
+}
+
+/**
+ * The request that has gone longest without response headers, or `undefined` when nothing is
+ * pending.
+ *
+ * @internal
+ */
+export function getOldestPendingRequest(): PendingRequest | undefined {
+  return Array.from(pendingRequests.values()).reduce<PendingRequest | undefined>(
+    (oldest, candidate) =>
+      oldest === undefined || candidate.startedAt < oldest.startedAt ? candidate : oldest,
+    undefined,
+  )
+}
+
+/**
+ * How many requests in this tab have gone at least `stallThresholdMs` without response headers.
+ *
+ * @internal
+ */
+export function countStalledRequests(stallThresholdMs: number): number {
+  const now = Date.now()
+  return Array.from(pendingRequests.values()).filter(
+    (request) => now - request.startedAt >= stallThresholdMs,
+  ).length
+}
+
+function trackPendingRequest(url: string): () => void {
+  const requestId = {}
+  pendingRequests.set(requestId, {url, startedAt: Date.now()})
+  notifyPendingRequestSubscribers()
+
+  return () => {
+    if (pendingRequests.delete(requestId)) notifyPendingRequestSubscribers()
+  }
+}
+
+/**
  * A `resolveFetch` for the Studio's clients that counts every listener they open, whichever
- * API it uses (`listen`, `live.events`), and passes every other request through untouched.
+ * API it uses (`listen`, `live.events`), tracks every request's time to response headers, and
+ * otherwise passes requests through untouched.
  *
  * @internal
  */
@@ -81,7 +143,21 @@ export function resolveListenerCountingFetch(): FetchFunction {
 }
 
 function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
-  return isEventStreamRequest(init) ? fetchListener(input, init) : globalThis.fetch(input, init)
+  const settlePending = trackPendingRequest(input)
+  const request = isEventStreamRequest(init)
+    ? fetchListener(input, init)
+    : globalThis.fetch(input, init)
+
+  return request.then(
+    (response) => {
+      settlePending()
+      return response
+    },
+    (error: unknown) => {
+      settlePending()
+      throw error
+    },
+  )
 }
 
 function isEventStreamRequest(init: FetchInit): boolean {
