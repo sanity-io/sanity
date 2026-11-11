@@ -335,6 +335,19 @@ export function VariantVersionsView(): React.JSX.Element {
 
   return (
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+      {feed.error && rows.length > 0 && (
+        // A page that failed to load keeps its documents as placeholders, so the table is never
+        // empty and its empty state cannot carry the error.
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
+          <Box paddingX={3} paddingBottom={2}>
+            <Card data-testid="versions-error" padding={3} radius={2} tone="critical">
+              <Text size={1} as="div">
+                {t('versions.error')}
+              </Text>
+            </Card>
+          </Box>
+        </Container>
+      )}
       {sort === 'last-edited' && (
         // The feed pages by document, so documents keep the feed's order whatever the sort.
         <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>

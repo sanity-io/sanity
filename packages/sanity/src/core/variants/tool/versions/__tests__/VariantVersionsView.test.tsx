@@ -165,4 +165,24 @@ describe('VariantVersionsView', () => {
       ),
     )
   })
+
+  it('shows the error when a page fails while its documents stay placeholders', async () => {
+    await renderView({
+      ...inventory,
+      error: new Error('page failed'),
+      rows: [
+        ...inventory.rows,
+        {...row({_id: 'placeholder.scarf', groupId: 'scarf', _type: ''}), placeholder: true},
+      ],
+    })
+
+    expect(await screen.findByTestId('versions-error')).toBeInTheDocument()
+  })
+
+  it('shows no error notice while the feed is fine', async () => {
+    await renderView()
+    await screen.findAllByTestId('version-row-link')
+
+    expect(screen.queryByTestId('versions-error')).not.toBeInTheDocument()
+  })
 })
