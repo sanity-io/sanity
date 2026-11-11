@@ -22,6 +22,7 @@ export const variantMark = css({
     'height': '1.25rem',
     'marginBlock': '-0.375rem',
     'lineHeight': 0,
+    'verticalAlign': 'middle',
     'color': 'var(--card-badge-suggest-icon-color)',
     '--icon-color': 'var(--card-badge-suggest-icon-color)',
     '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
