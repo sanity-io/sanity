@@ -130,8 +130,19 @@ function getColumnDefs(t: TFunction<'variants'>): Column<MissingDocumentRow>[] {
  * document's version inventory uses, in the destination {@link getMissingVersionDestination}
  * picks from the selected perspective. The new variant starts from the document's version in the
  * destination release if it has one, else its draft, else its published version.
+ *
+ * A row stays pending after a successful create until it leaves `rows`: the listener that moves it
+ * to "Has a version" is throttled, and creating it a second time would fail.
  */
-function useCreateMissingVersion(variant: SystemVariant) {
+function useCreateMissingVersion({
+  variant,
+  rows,
+  loading,
+}: {
+  variant: SystemVariant
+  rows: MissingDocumentRow[]
+  loading: boolean
+}) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
   const schema = useSchema()
@@ -146,6 +157,15 @@ function useCreateMissingVersion(variant: SystemVariant) {
     [schema, selectedPerspective],
   )
   const [pending, setPending] = useState<ReadonlySet<string>>(() => new Set())
+  const [previousRows, setPreviousRows] = useState(rows)
+  // While loading, `rows` is empty and says nothing about which documents are still missing.
+  if (rows !== previousRows && !loading) {
+    setPreviousRows(rows)
+    const missing = new Set(rows.map((row) => row.groupId))
+    if ([...pending].some((groupId) => !missing.has(groupId))) {
+      setPending(new Set([...pending].filter((groupId) => missing.has(groupId))))
+    }
+  }
 
   const create = useCallback(
     async (row: MissingDocumentRow) => {
@@ -189,8 +209,8 @@ function useCreateMissingVersion(variant: SystemVariant) {
               variant,
               selectedPerspective,
             }))
-        // The row moves to "Has a version" when the listener sees the new version.
-        done()
+        // Still pending: the row moves to "Has a version" when the listener sees the new version,
+        // and leaves `pending` then.
       } catch (error) {
         done()
         toast.push({
@@ -246,7 +266,7 @@ export function VariantMissingDocumentsTable({
   hasTypes: boolean
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const {create, getDestination, pending} = useCreateMissingVersion(variant)
+  const {create, getDestination, pending} = useCreateMissingVersion({variant, rows, loading})
   const columnDefs = useMemo(() => getColumnDefs(t), [t])
   const tableRows = useMemo(() => rows.map((row) => ({...row, rowKey: row.groupId})), [rows])
 
