@@ -24,6 +24,8 @@ import type {
   IconResolver,
   isActionEnabled,
   isInternalValidator,
+  isValidImageAspectRatio,
+  isValidImageCropDimensions,
   ManifestSchemaType,
   ManifestWorkspaceFile,
   markInternalValidator,
@@ -121,6 +123,12 @@ describe('@sanity/schema/_internal', () => {
   })
   test('isInternalValidator', () => {
     expectTypeOf<typeof isInternalValidator>().toBeFunction()
+  })
+  test('isValidImageAspectRatio', () => {
+    expectTypeOf<typeof isValidImageAspectRatio>().toBeFunction()
+  })
+  test('isValidImageCropDimensions', () => {
+    expectTypeOf<typeof isValidImageCropDimensions>().toBeFunction()
   })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()

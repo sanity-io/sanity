@@ -936,6 +936,104 @@ describe('image crop option inference', () => {
   })
 })
 
+describe('invalid image crop options', () => {
+  const ASSET_HASH = 'a75b03fdd5b5fa36947bf2b776a542e0c940f682'
+  const populatedImage = {
+    _type: 'image',
+    asset: {_type: 'reference', _ref: `image-${ASSET_HASH}-640x360-jpg`},
+  }
+
+  function validateImageField(options: Record<string, unknown>) {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'invalidCropDocument',
+          type: 'document',
+          fields: [{name: 'image', type: 'image', options}],
+        },
+      ],
+    })
+    return validateDocumentInternal({
+      document: {
+        _id: 'invalidCropDocument',
+        _type: 'invalidCropDocument',
+        _createdAt: '2021-08-26T18:47:55.497Z',
+        _updatedAt: '2021-08-26T18:47:55.497Z',
+        _rev: 'example-rev',
+        image: populatedImage,
+      },
+      environment: 'studio',
+      validateReferenceTypes: false,
+      getClient: () => sanityClient,
+      getDocumentExists: () => Promise.resolve(true),
+      i18n: getFallbackLocaleSource(),
+      schema,
+    })
+  }
+
+  const invalidAspectRatios = {
+    'a string': '16:9',
+    'null': null,
+    'NaN': Number.NaN,
+    'zero': 0,
+    'a negative number': -1,
+    'infinity': Number.POSITIVE_INFINITY,
+    'an empty list': [],
+    'a list with a non-number': [1, '16:9'],
+    'a list with a zero': [1, 0],
+    'a range with a minimum above its maximum': {min: 2, max: 1},
+    'a range without a maximum': {min: 1},
+    'a range with a non-number bound': {min: 1, max: 'wide'},
+  }
+
+  const invalidDimensions = {
+    'a string': '800x450',
+    'null': null,
+    'a zero width': {width: 0, height: 450},
+    'a negative height': {width: 800, height: -450},
+    'a NaN width': {width: Number.NaN, height: 450},
+    'a missing height': {width: 800},
+    'a string width': {width: '800', height: 450},
+  }
+
+  test.each(Object.entries(invalidAspectRatios))(
+    'ignores `aspectRatio` set to %s',
+    async (_name, aspectRatio) => {
+      await expect(validateImageField({aspectRatio})).resolves.toEqual([])
+    },
+  )
+
+  test.each(Object.entries(invalidDimensions))(
+    'ignores `minDimensions` set to %s',
+    async (_name, minDimensions) => {
+      await expect(validateImageField({minDimensions})).resolves.toEqual([])
+    },
+  )
+
+  test.each(Object.entries(invalidDimensions))(
+    'ignores `recommendedDimensions` set to %s',
+    async (_name, recommendedDimensions) => {
+      await expect(validateImageField({recommendedDimensions})).resolves.toEqual([])
+    },
+  )
+
+  test('ignores every invalid crop option together', async () => {
+    await expect(
+      validateImageField({aspectRatio: '16:9', minDimensions: null, recommendedDimensions: {}}),
+    ).resolves.toEqual([])
+  })
+
+  test('still checks the valid crop options next to an invalid one', async () => {
+    await expect(
+      validateImageField({aspectRatio: [], minDimensions: {width: 800, height: 450}}),
+    ).resolves.toMatchObject([{code: validationMarkerCodes.imageBelowMinDimensions}])
+    await expect(
+      validateImageField({aspectRatio: 1, minDimensions: {width: 0, height: 0}}),
+    ).resolves.toMatchObject([{code: validationMarkerCodes.imageAspectRatioMismatch}])
+  })
+})
+
 describe('assetMatchesAccept', () => {
   test.each([
     [{mimeType: 'image/png'}, 'image/*', true],
