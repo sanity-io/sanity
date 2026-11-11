@@ -70,6 +70,26 @@ describe('DocumentNavigationMenu', () => {
     vi.unstubAllGlobals()
   })
 
+  it('keeps the width the menu had when it opened while the filter narrows the list', async () => {
+    // jsdom has no layout: the menu "measures" 320px when it opens
+    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
+    try {
+      render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
+
+      const menu = await openMenu()
+      await waitFor(() => expect(menu).toHaveStyle({width: '320px', minWidth: '320px'}))
+
+      // The rows that are left are narrower, so the menu would shrink without the lock
+      offsetWidth.mockReturnValue(200)
+      await userEvent.type(screen.getByPlaceholderText('Find'), 'alp')
+
+      expect(within(menu).queryByTestId('item-Beta')).not.toBeInTheDocument()
+      expect(menu).toHaveStyle({width: '320px', minWidth: '320px', maxWidth: '320px'})
+    } finally {
+      offsetWidth.mockRestore()
+    }
+  })
+
   it('focuses the filter when the menu opens, and the arrow keys still move into the list', async () => {
     stubPointer({finePointerWithHover: true})
     render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})

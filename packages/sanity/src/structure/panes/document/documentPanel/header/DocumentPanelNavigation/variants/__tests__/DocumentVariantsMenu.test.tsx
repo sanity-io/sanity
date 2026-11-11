@@ -166,7 +166,9 @@ describe('DocumentVariantsMenu', () => {
     expect(within(documentSection).queryAllByRole('menuitem', {hidden: true})).toHaveLength(0)
     expect(
       within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any variant yet. Pick one below to create it.")
+    ).toHaveAccessibleName(
+      "This document doesn't have any variants yet. Pick one below to create a variant",
+    )
 
     const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
     expect(otherSection).toHaveTextContent('Other variants')

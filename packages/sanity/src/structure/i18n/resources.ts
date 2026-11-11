@@ -537,7 +537,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
-  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for',
   /** Placeholder of the search field in the variants menu of the document header */
   'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
@@ -548,7 +548,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
   /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
   'document-panel-navigation.variants.section.no-variants-tooltip':
-    "This document isn't in any variant yet. Pick one below to create it.",
+    "This document doesn't have any variants yet. Pick one below to create a variant",
   /** Section header listing the variants the document has no version in */
   'document-panel-navigation.variants.section.other': 'Other variants',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */

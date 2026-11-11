@@ -7,6 +7,7 @@ import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
 import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useStableMenuWidth} from '../../../../../../../ui-components/menuButton/useStableMenuWidth'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {documentNavigationMenu} from './DocumentNavigationMenu.css'
 
@@ -79,6 +80,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
   const {t} = useTranslation()
   const menuId = useId()
   const focusSearchField = useFocusSearchOnOpen()
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
 
   const isFiltering = filterQuery.trim().length > 0
   const visibleSections = sections.filter(
@@ -90,15 +92,25 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
     (event: ChangeEvent<HTMLInputElement>) => onFilterChange(event.currentTarget.value),
     [onFilterChange],
   )
-  const handleClose = useCallback(() => onFilterChange(''), [onFilterChange])
+  const handleClose = useCallback(() => {
+    resetMenuWidth()
+    onFilterChange('')
+  }, [onFilterChange, resetMenuWidth])
 
   return (
     <MenuButton
       button={button}
       id={menuId}
       onClose={handleClose}
+      onOpen={lockMenuWidth}
       menu={
-        <Menu className={documentNavigationMenu} data-testid={testId} padding={1}>
+        <Menu
+          className={documentNavigationMenu}
+          data-testid={testId}
+          padding={1}
+          ref={menuRef}
+          style={menuStyle}
+        >
           <Box flexShrink={0} padding={1}>
             <TextInput
               fontSize={1}
@@ -136,7 +148,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               </Flex>
             </Flex>
           ) : (
-            <Box data-testid={`${testId}-no-matches`} paddingX={4} paddingBottom={3}>
+            <Box data-testid={`${testId}-no-matches`} paddingX={4} paddingY={3}>
               <Text muted size={1}>
                 {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
               </Text>
