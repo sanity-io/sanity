@@ -157,20 +157,26 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
-      {!shouldRender && !showingRevision && variantNotReady && editState?.ready ? (
+      {/* Nothing to show in the bar (a variant with no document here, the published perspective with
+          no published document, a release the document is not in): Manage versions stays, and the
+          actions grey only for a variant that is not ready. */}
+      {!shouldRender &&
+      !showingRevision &&
+      editState?.ready &&
+      (variantNotReady || inventoryButton) ? (
         <Flex
           alignItems="stretch"
           gap={1}
           justifyContent="flex-end"
           paddingLeft={1}
           paddingRight={1}
-          data-testid="document-status-bar-greyed"
+          data-testid={variantNotReady ? 'document-status-bar-greyed' : 'document-status-bar-empty'}
         >
           <Flex alignItems="flex-start" justifyContent="flex-end" style={{flexShrink: 0}}>
             <SpacerButton />
             <Flex alignItems="center" gap={2}>
               {inventoryButton}
-              <DocumentStatusBarActions disabled />
+              {variantNotReady ? <DocumentStatusBarActions disabled /> : null}
             </Flex>
           </Flex>
         </Flex>
