@@ -128,7 +128,7 @@ function listenToBundles(
         switchMap(
           (es) =>
             new Observable<AgentBundlesState>((subscriber) => {
-              const releaseListener = openListener()
+              const releaseListener = openListener(new URL(url).host)
               es.addEventListener('bundles', ((event: MessageEvent) => {
                 try {
                   const data = JSON.parse(event.data) as {bundles: AgentBundle[]}

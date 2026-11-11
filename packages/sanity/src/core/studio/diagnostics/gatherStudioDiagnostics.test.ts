@@ -67,7 +67,7 @@ afterEach(() => {
 describe('gatherStudioDiagnostics', () => {
   it('reports the listeners open before its own probes run', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
-    releaseListeners.push(openListener(), openListener())
+    releaseListeners.push(openListener('api.sanity.io'), openListener('api.sanity.io'))
     const {client} = createClient()
 
     const diagnostics = await gatherStudioDiagnostics(createOptions(client))

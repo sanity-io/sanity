@@ -12,6 +12,7 @@ export interface ListenerCounts {
 }
 
 const listenerCounts: ListenerCounts = {open: 0, peak: 0}
+const listenerCountsByHost = new Map<string, number>()
 const listenerCountSubscribers = new Set<(counts: Readonly<ListenerCounts>) => void>()
 
 /**
@@ -23,6 +24,30 @@ const listenerCountSubscribers = new Set<(counts: Readonly<ListenerCounts>) => v
  */
 export function getListenerCounts(): Readonly<ListenerCounts> {
   return {...listenerCounts}
+}
+
+/**
+ * Whether `host` shares connection capacity with `scope`: either the same host, or a host the
+ * browser pools onto `scope`'s connection (`<projectId>.<scope>`, never stripping labels off
+ * `host` itself, which would misfire for an unlabelled host equal to `scope`).
+ *
+ * @internal
+ */
+export function hostMatchesScope(host: string, scope: string): boolean {
+  return host === scope || host.endsWith(`.${scope}`)
+}
+
+/**
+ * How many listeners this tab holds open to hosts in `scope` right now, summed across every
+ * full, unstripped request host that {@link hostMatchesScope} matches to it.
+ *
+ * @internal
+ */
+export function getListenerCountForScope(scope: string): number {
+  return Array.from(listenerCountsByHost.entries()).reduce(
+    (total, [host, count]) => (hostMatchesScope(host, scope) ? total + count : total),
+    0,
+  )
 }
 
 /**
@@ -88,13 +113,21 @@ function skipAttribution(): () => void {
   return () => undefined
 }
 
+function requestHost(input: string): string {
+  try {
+    return new URL(input).host
+  } catch {
+    return 'unknown'
+  }
+}
+
 async function fetchListener(
   input: string,
   init: FetchInit,
   attributeListener: () => () => void = skipAttribution,
 ): Promise<FetchResponse> {
   const releaseAttribution = attributeListener()
-  const releaseCount = openListener()
+  const releaseCount = openListener(requestHost(input))
   const release = once(() => {
     releaseAttribution()
     releaseCount()
@@ -115,18 +148,20 @@ async function fetchListener(
 }
 
 /**
- * Counts a listener opened outside the Studio's clients, such as a raw `EventSource`. Call the
- * returned function once the listener closes; calling it again does nothing.
+ * Counts a listener opened outside the Studio's clients, such as a raw `EventSource`, against
+ * `host`. Call the returned function once the listener closes; calling it again does nothing.
  *
  * @internal
  */
-export function openListener(): () => void {
+export function openListener(host: string): () => void {
   listenerCounts.open += 1
   listenerCounts.peak = Math.max(listenerCounts.peak, listenerCounts.open)
+  listenerCountsByHost.set(host, (listenerCountsByHost.get(host) ?? 0) + 1)
   notifyListenerCountSubscribers()
 
   return once(() => {
     listenerCounts.open -= 1
+    listenerCountsByHost.set(host, (listenerCountsByHost.get(host) ?? 1) - 1)
     notifyListenerCountSubscribers()
   })
 }
