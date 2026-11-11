@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
+import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {documentNavigationMenu} from './DocumentNavigationMenu.css'
 
@@ -77,6 +78,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
     props
   const {t} = useTranslation()
   const menuId = useId()
+  const focusSearchField = useFocusSearchOnOpen()
 
   const isFiltering = filterQuery.trim().length > 0
   const visibleSections = sections.filter(
@@ -103,6 +105,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               onChange={handleFilterChange}
               placeholder={filterPlaceholder}
               radius={2}
+              ref={focusSearchField}
               value={filterQuery}
             />
           </Box>
