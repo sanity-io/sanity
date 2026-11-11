@@ -1,19 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {
-  type ComponentProps,
-  type ComponentType,
-  type RefObject,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react'
+import {type ComponentProps, type ComponentType, useId, useState} from 'react'
 import {Box, Flex, Icon, type IconProps, Text} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -28,15 +21,13 @@ export interface CreateVariantPickerOption {
 
 const NO_OPTIONS: CreateVariantPickerOption[] = []
 
-const FilterMenu: ComponentType<
-  ComponentProps<typeof Menu> & {filterRef: RefObject<HTMLInputElement | null>}
-> = ({filterRef, ...props}) => {
-  useEffect(() => {
-    filterRef.current?.focus()
-  }, [filterRef])
-
-  return <Menu {...props} shouldFocus={null} />
-}
+/**
+ * The menu does not move the focus to an item when it opens (not even for a keyboard open): the
+ * search field takes it, see `useFocusSearchOnOpen`.
+ */
+const FilterMenu: ComponentType<ComponentProps<typeof Menu>> = (props) => (
+  <Menu {...props} shouldFocus={null} />
+)
 
 export const CreateVariantPicker: ComponentType<{
   icon: IconProps['icon']
@@ -72,7 +63,7 @@ export const CreateVariantPicker: ComponentType<{
   const id = useId()
   const descriptionId = useId()
   const [filterQuery, setFilterQuery] = useState('')
-  const filterRef = useRef<HTMLInputElement>(null)
+  const focusSearchField = useFocusSearchOnOpen()
 
   const query = filterQuery.trim().toLowerCase()
 
@@ -127,15 +118,10 @@ export const CreateVariantPicker: ComponentType<{
             />
           }
           menu={
-            <FilterMenu
-              filterRef={filterRef}
-              className={createVariantPickerMenu}
-              data-testid={testId}
-              padding={1}
-            >
+            <FilterMenu className={createVariantPickerMenu} data-testid={testId} padding={1}>
               <Box flexShrink={0} padding={1}>
                 <TextInput
-                  ref={filterRef}
+                  ref={focusSearchField}
                   fontSize={1}
                   onChange={(event) => setFilterQuery(event.currentTarget.value)}
                   placeholder={
