@@ -2,7 +2,63 @@ import {type SanityClient} from '@sanity/client'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getApiNetworkDiagnostic, isUsingLegacyHttp} from './isUsingLegacyHttp'
+import {
+  getApiNetworkDiagnostic,
+  getApiProtocol,
+  getMeasuredApiProtocol,
+  isUsingLegacyHttp,
+} from './isUsingLegacyHttp'
+
+function stubProtocolProbe(nextHopProtocol: string): void {
+  const mockEntry = {
+    connectEnd: 0,
+    connectStart: 0,
+    decodedBodySize: 0,
+    domainLookupEnd: 0,
+    domainLookupStart: 0,
+    duration: 1,
+    encodedBodySize: 0,
+    initiatorType: 'fetch',
+    name: 'https://test.api.sanity.io/v2025-02-19/ping?tag=sanity.studio.protocol-check',
+    nextHopProtocol,
+    redirectEnd: 0,
+    redirectStart: 0,
+    requestStart: 0,
+    responseEnd: 0,
+    responseStart: 0,
+    secureConnectionStart: 0,
+    serverTiming: [],
+    startTime: 0,
+    transferSize: 0,
+  }
+
+  // oxlint-disable-next-line typescript/no-extraneous-class
+  class FakePerformanceResourceTiming {}
+  vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
+
+  vi.mocked(fetch).mockResolvedValue(new Response('pong'))
+  vi.stubGlobal(
+    'PerformanceObserver',
+    class {
+      callback: (list: {getEntries: () => unknown[]}) => void
+      constructor(callback: (list: {getEntries: () => unknown[]}) => void) {
+        this.callback = callback
+      }
+      observe() {
+        setTimeout(() => {
+          const entry = Object.setPrototypeOf(
+            {...mockEntry, startTime: performance.now()},
+            FakePerformanceResourceTiming.prototype,
+          )
+          this.callback({getEntries: () => [entry]})
+        }, 0)
+      }
+      disconnect() {
+        // noop
+      }
+    },
+  )
+}
 
 describe('isUsingLegacyHttp', () => {
   let originalPerformanceObserver: typeof PerformanceObserver
@@ -325,6 +381,47 @@ describe('isUsingLegacyHttp', () => {
         timedOut: false,
       })
       expect(fetch).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getMeasuredApiProtocol', () => {
+    it('returns undefined before the probe resolves, and the measured value after', async () => {
+      stubProtocolProbe('h2')
+      const client = {
+        config: () => ({apiHost: 'https://api.sanity.io'}),
+        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+      } as unknown as SanityClient
+
+      expect(getMeasuredApiProtocol('api.sanity.io')).toBeUndefined()
+      await firstValueFrom(getApiProtocol(client))
+
+      expect(getMeasuredApiProtocol('api.sanity.io')).toBe('h2')
+    })
+
+    it('records the measured protocol against the client-configured root API host, not the probe request host', async () => {
+      stubProtocolProbe('h3')
+      const client = {
+        config: () => ({apiHost: 'https://api.sanity.work'}),
+        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+      } as unknown as SanityClient
+
+      await firstValueFrom(getApiProtocol(client))
+
+      expect(getMeasuredApiProtocol('api.sanity.work')).toBe('h3')
+      expect(getMeasuredApiProtocol('test.api.sanity.io')).toBeUndefined()
+    })
+
+    it('never writes to localStorage, sessionStorage or IndexedDB', async () => {
+      const localStorageSpy = vi.spyOn(Storage.prototype, 'setItem')
+      stubProtocolProbe('h2')
+      const client = {
+        config: () => ({apiHost: 'https://api.sanity.io'}),
+        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+      } as unknown as SanityClient
+
+      await firstValueFrom(getApiProtocol(client))
+
+      expect(localStorageSpy).not.toHaveBeenCalled()
     })
   })
 })

@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {defer, firstValueFrom, map, type Observable, of} from 'rxjs'
+import {defer, firstValueFrom, map, type Observable, of, tap} from 'rxjs'
 
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
@@ -25,6 +25,30 @@ export const PROTOCOL_CHECK_API_VERSION = '2025-03-01'
 // observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
 // detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
 const protocolChecks = new WeakMap<SanityClient, Promise<string>>()
+
+// Keyed by root API host, never by client, so a stall detected in one tab can look up the
+// protocol this tab measured for the scope it stalled in.
+const measuredProtocols = new Map<string, string>()
+
+/**
+ * This tab's own measured `nextHopProtocol` for `host` (a root API host, as
+ * {@link getStudioTabScope} computes it), or `undefined` before the probe has resolved. No
+ * browser storage - a fresh tab or reload measures again.
+ *
+ * @internal
+ */
+export function getMeasuredApiProtocol(host: string): string | undefined {
+  return measuredProtocols.get(host)
+}
+
+function rootApiHost(client: SanityClient): string | undefined {
+  try {
+    const {host} = new URL(client.config().apiHost ?? '')
+    return host || undefined
+  } catch {
+    return undefined
+  }
+}
 
 /** @internal */
 export interface ApiNetworkResourceTiming {
@@ -94,7 +118,13 @@ export function getApiProtocol(client: SanityClient): Observable<string> {
     if (cachedCheck) return cachedCheck
 
     const check = firstValueFrom(
-      getApiNetworkDiagnostic(client).pipe(map((diagnostic) => diagnostic.protocol)),
+      getApiNetworkDiagnostic(client).pipe(
+        map((diagnostic) => diagnostic.protocol),
+        tap((protocol) => {
+          const host = rootApiHost(client)
+          if (host) measuredProtocols.set(host, protocol)
+        }),
+      ),
     )
     protocolChecks.set(client, check)
     return check
