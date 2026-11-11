@@ -25,6 +25,9 @@ export const variantMark = css({
   justifyContent: 'center',
   flex: 'none',
   width: '15px',
+  // A fixed height, so the icon's own box cannot make the title line taller than the list's.
+  height: '15px',
+  overflow: 'visible',
 })
 
 // The subtitle sits under the name, past the 15px diamond slot and its 4px gap.
