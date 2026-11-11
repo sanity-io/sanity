@@ -50,7 +50,7 @@ export function SeeDraftBanner() {
       }
       action={{
         text: t('banners.published.see-draft.action'),
-        tone: 'suggest',
+        // The banner is purple, the action is not: a primary action uses the default primary
         onClick: handleSeeDraft,
         mode: 'default',
       }}

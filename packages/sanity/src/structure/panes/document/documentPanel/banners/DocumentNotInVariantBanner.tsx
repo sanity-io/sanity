@@ -153,7 +153,7 @@ export function DocumentNotInVariantBanner() {
         isActionAllowed
           ? {
               text: t('banners.variant.action.add-to-variant'),
-              tone: 'suggest',
+              // The banner is purple, the action is not: a primary action uses the default primary
               disabled: status === 'in-progress' || status === 'success',
               onClick: handleAddToVariant,
               mode: 'default',
