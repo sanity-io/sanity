@@ -63,7 +63,7 @@ const expectedBootStallEvent = {
   listenersOtherTabs: 0,
   knownStudioTabs: 1,
   unknownStudioTabs: 0,
-  stalledListenersThisTab: 1,
+  stalledListenersThisTab: 0,
   stalledOtherTabs: 0,
   isBootStall: true,
   stallOccurrence: 1,
