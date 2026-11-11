@@ -1,10 +1,5 @@
 import {css} from '#styled-system/css'
 
-/** A type word and its chip ("variant [◆ Alpha]") are kept on one line. */
-export const keep = css({
-  whiteSpace: 'nowrap',
-})
-
 /**
  * The variant's diamond: the large rhombus (9.2px tip to tip) in a 21px box trimmed to the glyph,
  * as the inventory rows draw it, so it is no smaller than the header pill's diamond. It sits inline
