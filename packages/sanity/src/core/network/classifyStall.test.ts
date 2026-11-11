@@ -35,6 +35,14 @@ describe('classifyStall', () => {
     expect(classifyStall({snapshot, protocol: undefined})).toBe('not-listener-limit')
   })
 
+  it.each([undefined, 'unknown'])(
+    'blames the tabs at the budget when the protocol probe gave no answer (%s)',
+    (protocol) => {
+      const snapshot = snapshotWith({selfCount: 10, othersTotal: LISTENER_STALL_BUDGET})
+      expect(classifyStall({snapshot, protocol})).toBe('too-many-tabs')
+    },
+  )
+
   it('reports not-listener-limit just under the budget', () => {
     const snapshot = snapshotWith({selfCount: LISTENER_STALL_BUDGET - 1, othersTotal: 0})
     expect(classifyStall({snapshot, protocol: 'h2'})).toBe('not-listener-limit')
