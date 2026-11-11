@@ -168,6 +168,168 @@ describe('createOAuthAuthStore', () => {
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: true})
     })
 
+    it('fails the sign-in at once when the API refuses the exchanged token', async () => {
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({
+          codeVerifier: 'verifier',
+          state: 'expected-state',
+          redirectUri: ORIGIN,
+          redirectPath: '/structure',
+        }),
+      )
+      // Every token is refused, also the one the probe renews to.
+      const {factory} = createMockClientFactory(new Set())
+      const environment = createEnvironment('?code=the-code&state=expected-state')
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+
+      // Well within the settle timeout: a refused token is an answer, not a wait.
+      const result = await Promise.race([
+        store.handleCallbackUrl!(),
+        settle(2_000).then(() => 'still waiting' as const),
+      ])
+
+      expect(result).toMatchObject({
+        success: false,
+        failureReason: 'token not accepted',
+        error: {type: 'auth-failed'},
+      })
+      expect(environment.replaceUrl).toHaveBeenLastCalledWith('/structure')
+    })
+
+    it('shows a failed probe of the new token on the login screen instead of erroring the state', async () => {
+      // A probe failure nothing else claims (a 4xx other than 401, a response that can't be read)
+      // errors the state, which takes the Studio down. During a sign-in the callback already
+      // reports it, so the state stays signed out and the login screen says what happened.
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const factory = (config: SanityClientConfig): SanityClient =>
+        ({
+          config: () => config,
+          request: vi.fn(async ({url}: {url: string}) => {
+            if (url !== '/users/me') return {}
+            throw new Error('unreadable response')
+          }),
+        }) as unknown as SanityClient
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+      const stateErrors: unknown[] = []
+      const states: boolean[] = []
+      const subscription = store.state.subscribe({
+        next: (state) => states.push(state.authenticated),
+        error: (err) => stateErrors.push(err),
+      })
+
+      const result = await store.handleCallbackUrl!()
+
+      expect(result).toMatchObject({success: false, failureReason: 'probe failed'})
+      expect(stateErrors).toEqual([])
+      expect(states.at(-1)).toBe(false)
+      subscription.unsubscribe()
+    })
+
+    it('keeps a probe that fails after the settle timeout off the state', async () => {
+      // The sign-in stops waiting after the settle timeout, but the probe of the new token may
+      // still be out. When it then fails, the Studio must stay on the login screen, not crash.
+      vi.useFakeTimers()
+      try {
+        sessionStorage.setItem(
+          FLOW_KEY,
+          JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+        )
+        let failProbe: (err: Error) => void = () => {}
+        const factory = (config: SanityClientConfig): SanityClient =>
+          ({
+            config: () => config,
+            request: vi.fn(({url}: {url: string}) =>
+              url === '/users/me'
+                ? new Promise((_resolve, reject) => {
+                    failProbe = reject
+                  })
+                : Promise.resolve({}),
+            ),
+          }) as unknown as SanityClient
+        const store = _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints: createMockEndpoints(),
+          ...createEnvironment('?code=the-code&state=expected-state'),
+        })
+        const stateErrors: unknown[] = []
+        const subscription = store.state.subscribe({error: (err) => stateErrors.push(err)})
+
+        const callback = store.handleCallbackUrl!()
+        await vi.advanceTimersByTimeAsync(10_000)
+        await expect(callback).resolves.toMatchObject({stateSettleTimedOut: true})
+
+        failProbe(new Error('unreadable response'))
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(stateErrors).toEqual([])
+        subscription.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    it('reports a failed probe when signing in again after a logout', async () => {
+      // Ignoring a failed probe keeps a signed-in session going through a network blip. After a
+      // logout there is no session to keep, so the next sign-in must not ignore it.
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-0', 'refresh-0')))
+      const factory = (config: SanityClientConfig): SanityClient =>
+        ({
+          config: () => config,
+          request: vi.fn(async ({url}: {url: string}) => {
+            if (url !== '/users/me') return {}
+            const token = await resolveConfiguredToken(config)
+            if (token === 'access-0') return MOCK_USER
+            throw new Error('network error')
+          }),
+        }) as unknown as SanityClient
+      const environment = createEnvironment()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+      const subscription = store.state.subscribe({error: () => {}})
+      await authenticatedState(store.state)
+      await store.logout!()
+
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      environment.location.search = '?code=the-code&state=expected-state'
+      const result = await Promise.race([
+        store.handleCallbackUrl!(),
+        settle(2_000).then(() => 'still waiting' as const),
+      ])
+
+      expect(result).toMatchObject({success: false, failureReason: 'probe failed'})
+      subscription.unsubscribe()
+    })
+
     it('settles on the exchanged session, not on a session the user already had', async () => {
       localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-0', 'refresh-0')))
       sessionStorage.setItem(
