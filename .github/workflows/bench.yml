@@ -55,13 +55,39 @@ concurrency:
   cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench' }}
 
 jobs:
+  # bench-listener-stall runs on these paths without the trigger:perf-bench label
+  listener-stall-changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      has_changes: ${{ steps.filter.outputs.listener_stall }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+        id: filter
+        with:
+          filters: |
+            listener_stall:
+              - 'packages/sanity/src/core/network/**'
+              - 'packages/sanity/src/core/studio/telemetry/**'
+              - 'packages/@repo/debug-proxy/**'
+              - 'perf/bench/**'
+
   build:
+    needs: [listener-stall-changes]
     # The labeled-event guard keeps unrelated label additions from re-running
-    # the whole suite (the label set still gates via contains())
+    # the whole suite (the label set still gates via contains()); bench-listener-stall
+    # needs this job's bench-dist-customizations artifact without the label
     if: >-
       (github.event_name == 'pull_request' &&
-       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
-       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+       ((contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+         (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+        needs.listener-stall-changes.outputs.has_changes == 'true')) ||
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule'
     runs-on: ubuntu-8core
@@ -560,6 +586,70 @@ jobs:
           name: bench-results-pageload-${{ matrix.scenario }}
           path: perf/bench/results/
           overwrite: true
+          retention-days: 30
+
+  bench-listener-stall:
+    needs: [build, listener-stall-changes]
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      ((github.event_name == 'pull_request' &&
+        needs.listener-stall-changes.outputs.has_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+    runs-on: ubuntu-8core
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-customizations
+          path: perf/bench/dist-customizations
+
+      - name: Run listener stall check
+        run: |
+          set -o pipefail
+          pnpm bench listener-stall 2>&1 | tee "$RUNNER_TEMP/listener-stall.log"
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: bench-listener-stall-log
+          path: ${{ runner.temp }}/listener-stall.log
           retention-days: 30
 
   report:
