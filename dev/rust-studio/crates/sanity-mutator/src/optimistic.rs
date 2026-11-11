@@ -8,6 +8,7 @@ use serde_json::Value;
 
 use crate::mutation::Mutation;
 use crate::patch::{Operation, PatchOp};
+use crate::path::Segment;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TransactionState {
@@ -258,18 +259,30 @@ impl OptimisticDocuments {
 /// `next` can replace without changing the outcome.
 fn squash_target<'a>(queued: &'a mut [Mutation], next: &Mutation) -> Option<&'a mut Mutation> {
     let Mutation::Patch { id, ops } = next else { return None };
-    let [PatchOp { path, op: Operation::Set(_) | Operation::Unset }] = ops.as_slice() else {
+    let [PatchOp { path, op }] = ops.as_slice() else {
         return None;
     };
+    if !matches!(op, Operation::Set(_) | Operation::Unset) {
+        return None;
+    }
+    // Index paths address by position. An unset shifts later items, so a later set/unset at the
+    // same index targets a different element and must not replace the queued op.
+    let index_path = path.iter().any(|segment| matches!(segment, Segment::Index(_)));
+    if index_path && matches!(op, Operation::Unset) {
+        return None;
+    }
     let last = queued.last_mut()?;
     match last {
-        Mutation::Patch { id: last_id, ops: last_ops }
-            if last_id == id
-                && matches!(
-                    last_ops.as_slice(),
-                    [PatchOp { path: last_path, op: Operation::Set(_) | Operation::Unset }] if last_path == path
-                ) =>
-        {
+        Mutation::Patch { id: last_id, ops: last_ops } if last_id == id => {
+            let [PatchOp { path: last_path, op: last_op }] = last_ops.as_slice() else {
+                return None;
+            };
+            if last_path != path || !matches!(last_op, Operation::Set(_) | Operation::Unset) {
+                return None;
+            }
+            if index_path && matches!(last_op, Operation::Unset) {
+                return None;
+            }
             Some(last)
         }
         _ => None,
@@ -285,6 +298,10 @@ mod tests {
 
     fn set(id: &str, path: &str, value: Value) -> Mutation {
         Mutation::patch(id, vec![PatchOp::set(parse(path).unwrap(), value)])
+    }
+
+    fn unset(id: &str, path: &str) -> Mutation {
+        Mutation::patch(id, vec![PatchOp::unset(parse(path).unwrap())])
     }
 
     /// Stores a snapshot whose fetch started just now.
@@ -387,6 +404,30 @@ mod tests {
         store.queue(vec![set("a", "title", json!("Hell"))], || "tx2".into(), "t".into());
         assert_eq!(store.transactions().len(), 2);
         assert_eq!(store.local("a").unwrap()["title"], "Hell");
+    }
+
+    #[test]
+    fn index_unsets_do_not_squash_across_shifted_items() {
+        let mut store = store_with("a", json!({"_id": "a", "tags": ["a", "b", "c"]}));
+        // Removing index 0 shifts "b" into tags[0]; a second delete of the new first item must
+        // compose, not replace the queued unset.
+        store.queue(vec![unset("a", "tags[0]")], || "tx".into(), "t".into());
+        store.queue(vec![unset("a", "tags[0]")], || "tx".into(), "t".into());
+        assert_eq!(store.transactions()[0].mutations, vec![unset("a", "tags[0]"), unset("a", "tags[0]")]);
+        assert_eq!(store.local("a").unwrap()["tags"], json!(["c"]));
+
+        // An edit of the item that shifted into the index must not replace a prior unset either.
+        let mut store = store_with("a", json!({"_id": "a", "tags": ["a", "b"]}));
+        store.queue(vec![unset("a", "tags[0]")], || "tx".into(), "t".into());
+        store.queue(vec![set("a", "tags[0]", json!("B"))], || "tx".into(), "t".into());
+        assert_eq!(store.transactions()[0].mutations, vec![unset("a", "tags[0]"), set("a", "tags[0]", json!("B"))]);
+        assert_eq!(store.local("a").unwrap()["tags"], json!(["B"]));
+
+        // Consecutive sets at the same index still squash (typing into one slot).
+        let mut store = store_with("a", json!({"_id": "a", "tags": ["x"]}));
+        store.queue(vec![set("a", "tags[0]", json!("y"))], || "tx".into(), "t".into());
+        store.queue(vec![set("a", "tags[0]", json!("z"))], || "tx".into(), "t".into());
+        assert_eq!(store.transactions()[0].mutations, vec![set("a", "tags[0]", json!("z"))]);
     }
 
     #[test]

@@ -138,7 +138,10 @@ pub async fn authenticate(base: &Client) -> (Client, AuthState) {
 }
 
 pub async fn logout(client: &Client) {
+    // Hit logout with and without the bearer token: token requests omit cookies, but a cookie
+    // session may still exist from login (same as the JS studio's dual logout).
     let _ = client.logout().await;
+    let _ = client.with_token(None).logout().await;
     storage_remove(TOKEN_KEY);
     let _ = window().location().reload();
 }
