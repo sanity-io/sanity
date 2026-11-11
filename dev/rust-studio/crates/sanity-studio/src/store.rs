@@ -28,6 +28,9 @@ pub enum SyncState {
 
 struct Pair {
     refs: usize,
+    /// Bumped for every new listener so an in-flight snapshot fetch from a closed pair cannot
+    /// write back after `forget_if_clean`, or after a later reopen of the same published id.
+    generation: u64,
     _listener: Listener,
 }
 
@@ -36,6 +39,8 @@ pub struct Store {
     docs: RefCell<OptimisticDocuments>,
     versions: RefCell<HashMap<String, ArcRwSignal<u64>>>,
     pairs: RefCell<HashMap<String, Pair>>,
+    /// Monotonic counter assigned to each newly opened pair listener.
+    next_pair_generation: Cell<u64>,
     /// Transactions sent through the Actions API instead of `/data/mutate`, by transaction id.
     actions: RefCell<HashMap<String, Vec<Value>>>,
     /// Rejected transactions an action is waiting to hear about.
@@ -59,6 +64,7 @@ thread_local! {
         docs: RefCell::new(OptimisticDocuments::new()),
         versions: RefCell::new(HashMap::new()),
         pairs: RefCell::new(HashMap::new()),
+        next_pair_generation: Cell::new(0),
         actions: RefCell::new(HashMap::new()),
         failed: RefCell::new(HashSet::new()),
         new_documents: RefCell::new(HashMap::new()),
@@ -152,10 +158,12 @@ impl Store {
         let params = Map::from_iter([("ids".to_owned(), json!(ids))]);
         let options = ListenOptions { include_result: true, tag: "document.pair-listener".into() };
         let started = now_ms();
+        let generation = self.next_pair_generation.get();
+        self.next_pair_generation.set(generation.wrapping_add(1));
         let listener = self.client().listen("*[_id in $ids]", params, options, move |event| {
-            store().on_pair_event(&ids, event, started);
+            store().on_pair_event(&ids, event, started, generation);
         });
-        pairs.insert(published.to_owned(), Pair { refs: 1, _listener: listener });
+        pairs.insert(published.to_owned(), Pair { refs: 1, generation, _listener: listener });
         PairGuard(published.to_owned())
     }
 
@@ -179,7 +187,7 @@ impl Store {
         }
     }
 
-    fn on_pair_event(&self, ids: &[String; 2], event: ListenEvent, started: f64) {
+    fn on_pair_event(&self, ids: &[String; 2], event: ListenEvent, started: f64, generation: u64) {
         match event {
             ListenEvent::Welcome { reconnected } => {
                 self.connected.set(true);
@@ -188,6 +196,15 @@ impl Store {
                     let store = store();
                     match store.client().get_documents(&ids, "document.snapshots").await {
                         Ok(docs) => {
+                            // The pane may have closed (or reopened under a new listener) while
+                            // this fetch was in flight; writing back would revive forgotten
+                            // snapshots and make the next open skip a fresh load.
+                            let published = &ids[1];
+                            let current =
+                                store.pairs.borrow().get(published).map(|pair| pair.generation);
+                            if current != Some(generation) {
+                                return;
+                            }
                             for (id, doc) in ids.iter().zip(docs) {
                                 // An event that arrived while the snapshot was on its way is newer.
                                 let skip = !reconnected && store.docs.borrow().is_loaded(id);

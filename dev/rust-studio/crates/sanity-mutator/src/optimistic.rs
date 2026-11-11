@@ -95,12 +95,13 @@ impl OptimisticDocuments {
         self.transactions.iter().flat_map(|tx| tx.pending.iter().cloned()).collect()
     }
 
-    /// Stores a snapshot fetched from the server. Committed transactions for the document are
-    /// already part of a snapshot fetched after their commit, so they stop applying.
+    /// Stores a snapshot fetched from the server. Committed and in-flight transactions for the
+    /// document are already part of a snapshot fetched after their mutate request reached the
+    /// server (including a reconnect refetch), so they stop applying. Queued work still rebases.
     pub fn set_snapshot(&mut self, id: &str, doc: Option<Value>) {
         self.remote.insert(id.to_owned(), doc);
         for tx in &mut self.transactions {
-            if tx.state == TransactionState::Committed {
+            if tx.state == TransactionState::Committed || tx.state == TransactionState::InFlight {
                 tx.pending.remove(id);
             }
         }
@@ -345,6 +346,22 @@ mod tests {
         // The listener reconnected and missed the echo; the refetched snapshot has the insert
         store.set_snapshot("a", Some(json!({"_id": "a", "list": [{"_key": "k"}]})));
         assert_eq!(store.local("a").unwrap()["list"], json!([{"_key": "k"}]));
+    }
+
+    #[test]
+    fn snapshots_supersede_in_flight_transactions() {
+        let mut store = store_with("a", json!({"_id": "a", "list": []}));
+        let insert = Mutation::patch(
+            "a",
+            vec![PatchOp::insert(crate::InsertPosition::After, parse("list[-1]").unwrap(), vec![json!({"_key": "k"})])],
+        );
+        store.queue(vec![insert], || "tx".into(), "t".into());
+        store.take_next();
+        // Mutate succeeded on the server before the HTTP response; reconnect snapshot already
+        // includes the insert, so replaying the still-InFlight transaction would duplicate it.
+        store.set_snapshot("a", Some(json!({"_id": "a", "list": [{"_key": "k"}]})));
+        assert_eq!(store.local("a").unwrap()["list"], json!([{"_key": "k"}]));
+        assert!(store.has_in_flight());
     }
 
     #[test]
