@@ -73,12 +73,19 @@ export function getStudioTabScope(apiHost: string | undefined): string {
  * @internal
  */
 export function parseStudioTabLock(name: string): StudioTabLock | undefined {
-  const [scope, tabId, count = ''] = name.startsWith(TAB_LOCK_PREFIX)
+  const [encodedScope = '', tabId, count = ''] = name.startsWith(TAB_LOCK_PREFIX)
     ? name.slice(TAB_LOCK_PREFIX.length).split(':')
     : []
-  return scope && tabId && /^\d+$/.test(count)
-    ? {scope: decodeURIComponent(scope), tabId, count: Number(count)}
-    : undefined
+  const scope = decodeScope(encodedScope)
+  return scope && tabId && /^\d+$/.test(count) ? {scope, tabId, count: Number(count)} : undefined
+}
+
+function decodeScope(encodedScope: string): string | undefined {
+  try {
+    return decodeURIComponent(encodedScope)
+  } catch {
+    return undefined
+  }
 }
 
 function formatStudioTabLock({scope, tabId, count}: StudioTabLock): string {

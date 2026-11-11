@@ -78,8 +78,9 @@ describe('parseStudioTabLock', () => {
         'sanity-listener-tab:api.sanity.io:tab-1:',
         'sanity-listener-tab:api.sanity.io:tab-1',
         'sanity-listener-tab::tab-1:4',
+        'sanity-listener-tab:api%E0.sanity.io:tab-1:4',
       ].map(parseStudioTabLock),
-    ).toEqual([undefined, undefined, undefined, undefined, undefined, undefined])
+    ).toEqual([undefined, undefined, undefined, undefined, undefined, undefined, undefined])
   })
 })
 
