@@ -1,9 +1,10 @@
+import {evaluate, parse} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
 import {buildFeedGroupIdsQuery, buildFeedPageQuery} from '../versionFeedQueries'
 
 const GROUP_ID =
-  'coalesce(_system.group._ref, select(_id in path("drafts.**") => string::split(_id, "drafts.")[1], _id in path("versions.**") => array::join(string::split(_id, ".")[2..100], "."), _id))'
+  'coalesce(_system.group._ref, select(_id in path("drafts.**") => array::join(string::split(_id, ".")[1..100], "."), _id in path("versions.**") => array::join(string::split(_id, ".")[2..100], "."), _id))'
 
 describe('buildFeedGroupIdsQuery', () => {
   it('derives each group id from _system.group or the id, once, leaving system documents out', () => {
@@ -17,6 +18,21 @@ describe('buildFeedGroupIdsQuery', () => {
     expect(buildFeedGroupIdsQuery('_type == "a" || _type == "b"').listen).toBe(
       '*[(_type == "a" || _type == "b") && !(_id in path("_.**"))]',
     )
+  })
+
+  it('keeps dots, and a drafts. inside the id, in the group id', async () => {
+    const dataset = [
+      {_id: 'jane', _type: 'author'},
+      {_id: 'drafts.jane', _type: 'author'},
+      {_id: 'authors.drafts.joe', _type: 'author'},
+      {_id: 'drafts.authors.drafts.joe', _type: 'author'},
+      {_id: 'versions.rSpring.authors.drafts.joe', _type: 'author'},
+      {_id: 'versions.a1b2c3.ann', _type: 'author', _system: {group: {_ref: 'ann', _weak: true}}},
+    ]
+    const {fetch} = buildFeedGroupIdsQuery('_type == "author"')
+    const result = await evaluate(parse(fetch), {dataset})
+
+    expect(await result.get()).toEqual(['ann', 'authors.drafts.joe', 'jane'])
   })
 
   it('never uses an open slice, which GROQ does not parse', () => {
