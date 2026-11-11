@@ -13,12 +13,7 @@ import {readVersionType} from '../../util/versionsUtils'
 import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
-import {
-  name as nameClass,
-  root,
-  subtitleIndent,
-  variantMark,
-} from './DocumentVersionsFlyoutList.css'
+import {root} from './DocumentVersionsFlyoutList.css'
 import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
@@ -30,8 +25,9 @@ function FlyoutRow(props: {
   testId: string
   title: ReactNode
   subtitle?: string
-  subtitleIndent?: boolean
   media?: ReactNode
+  /** A column the height of the whole row, for the variant diamond; empty on default rows so names align. */
+  leading?: ReactNode
   trailing?: ReactNode
   onClick: () => void
   selected?: boolean
@@ -52,8 +48,21 @@ function FlyoutRow(props: {
       type="button"
     >
       {/* The same box as a document list row (`DefaultPreview`): 8px padding, a 33px media slot, a title and a muted subtitle 8px apart, both trimmed. */}
-      <Flex alignItems="center" padding={2} paddingLeft={props.media ? 2 : 3}>
+      <Flex alignItems="center" padding={2} paddingLeft={props.media || props.leading ? 2 : 3}>
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
+          {props.leading ? (
+            <Flex
+              alignItems="center"
+              aria-hidden
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              justifyContent="center"
+              style={{width: 25}}
+            >
+              {props.leading}
+            </Flex>
+          ) : null}
           {props.media ? (
             <Flex
               alignItems="center"
@@ -69,18 +78,16 @@ function FlyoutRow(props: {
           <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} style={{minWidth: 0}}>
             {props.title}
             {props.subtitle ? (
-              <div className={props.subtitleIndent ? subtitleIndent : undefined}>
-                <Text
-                  as="div"
-                  muted
-                  size={1}
-                  style={{color: 'var(--card-muted-fg-color)'}}
-                  trim
-                  truncate={1}
-                >
-                  {props.subtitle}
-                </Text>
-              </div>
+              <Text
+                as="div"
+                muted
+                size={1}
+                style={{color: 'var(--card-muted-fg-color)'}}
+                trim
+                truncate={1}
+              >
+                {props.subtitle}
+              </Text>
             ) : null}
           </Flex>
           {props.trailing}
@@ -125,29 +132,28 @@ function AudienceRow({
       onClick={onClick}
       selected={selected}
       subtitle={subtitle}
-      subtitleIndent
       testId="document-versions-flyout-row"
+      leading={
+        <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
+          {group.variantId ? (
+            <Icon
+              icon={RhombusIcon}
+              size={2}
+              style={
+                {
+                  '--icon-color': selected
+                    ? 'var(--card-fg-color)'
+                    : 'var(--card-badge-suggest-dot-color)',
+                } as CSSProperties
+              }
+            />
+          ) : null}
+        </span>
+      }
       title={
-        <div className={nameClass}>
-          <span aria-hidden className={variantMark}>
-            {group.variantId ? (
-              <Icon
-                icon={RhombusIcon}
-                size={1}
-                style={
-                  {
-                    '--icon-color': selected
-                      ? 'var(--card-fg-color)'
-                      : 'var(--card-badge-suggest-dot-color)',
-                  } as CSSProperties
-                }
-              />
-            ) : null}
-          </span>
-          <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-            {name}
-          </Text>
-        </div>
+        <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+          {name}
+        </Text>
       }
     />
   )
