@@ -10,6 +10,10 @@ import {css} from '#styled-system/css'
  * same as on the left, and the scrollbar never overlaps a row. Callers drop the right padding
  * (`menuListScrollerContent` for a list whose rows sit in padded cards, `menuListScrollerPadding`
  * for a list that pads itself). `&&` beats the padding and the global scrollbar rules.
+ *
+ * The 4px track only exists where `::-webkit-scrollbar` styling applies. Elsewhere (Firefox) the
+ * scrollbar can be an overlay that reserves no space, so the right padding is dropped only where
+ * the track replaces it.
  */
 export const menuListScroller = css({
   '&&': {scrollbarGutter: 'stable'},
@@ -19,10 +23,14 @@ export const menuListScroller = css({
 
 /** For a scroller that pads itself: the track replaces the right padding. */
 export const menuListScrollerPadding = css({
-  '&&&': {paddingRight: 0},
+  '@supports selector(::-webkit-scrollbar)': {
+    '&&&': {paddingRight: 0},
+  },
 })
 
 /** For a scroller whose rows sit in padded cards: the track replaces the cards' right padding. */
 export const menuListScrollerContent = css({
-  '&&& [data-ui="Card"]': {paddingRight: 0},
+  '@supports selector(::-webkit-scrollbar)': {
+    '&&& [data-ui="Card"]': {paddingRight: 0},
+  },
 })
