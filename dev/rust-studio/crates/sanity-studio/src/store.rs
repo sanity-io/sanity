@@ -248,6 +248,18 @@ impl Store {
         match event {
             ListenEvent::Welcome { reconnected } => {
                 self.connected.set(true);
+                if reconnected {
+                    // Mutations missed while disconnected never bump `events`, so invalidate
+                    // snapshots that started before this reconnect; otherwise a late response can
+                    // overwrite the post-reconnect fetch with a stale body.
+                    if let Some(pair) =
+                        self.pairs.borrow_mut().get_mut(published).filter(|pair| pair.session == session)
+                    {
+                        for id in ids {
+                            *pair.events.entry(id.clone()).or_default() += 1;
+                        }
+                    }
+                }
                 self.load_snapshots(published.to_owned(), session, ids.to_vec(), (!reconnected).then_some(started));
             }
             ListenEvent::Mutation(event) => {
