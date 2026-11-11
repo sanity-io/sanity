@@ -117,7 +117,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    const releases = [1, 2, 3, 4, 5].map(() => listenerCount.openListener())
+    const releases = [1, 2, 3, 4, 5].map(() => listenerCount.openListener(SCOPE))
     releases[0]()
     await vi.advanceTimersByTimeAsync(249)
     expect(fakeLocks.requested).toHaveLength(1)
@@ -136,7 +136,7 @@ describe('studio tab lock', () => {
     const lockName = (count: number) =>
       `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:${count}`
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.events).toEqual([
@@ -153,7 +153,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.held).toEqual([
@@ -165,7 +165,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    const releases = Array.from({length: 11}, () => listenerCount.openListener())
+    const releases = Array.from({length: 11}, () => listenerCount.openListener(SCOPE))
     await releases.reduce(async (previous, release) => {
       await previous
       release()
@@ -179,7 +179,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    listenerCount.openListener()()
+    listenerCount.openListener(SCOPE)()
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.requested).toHaveLength(1)

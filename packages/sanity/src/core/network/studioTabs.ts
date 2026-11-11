@@ -1,7 +1,7 @@
 import {uuid} from '@sanity/uuid'
 import debounce from 'lodash-es/debounce.js'
 
-import {getListenerCounts, subscribeListenerCounts} from './listenerCount'
+import {getListenerCountForScope, subscribeListenerCounts} from './listenerCount'
 
 const TAB_LOCK_PREFIX = 'sanity-listener-tab:'
 const TAB_CHANNEL_NAME = 'sanity-studio-tabs'
@@ -131,14 +131,14 @@ function publishListenerCount(scope: string): Promise<void> {
 // The new name is held before the old one is released, so the tab is never missing from
 // `navigator.locks.query()`; readers dedupe the brief overlap by tab id.
 async function replaceTabLock(scope: string): Promise<void> {
-  const {open} = getListenerCounts()
-  if (studioTabs.publishedCount === open) return
+  const count = getListenerCountForScope(scope)
+  if (studioTabs.publishedCount === count) return
 
   const releasePrevious = studioTabs.releasePublished
   studioTabs.releasePublished = await holdLock(
-    formatStudioTabLock({scope, tabId: getStudioTabId(), count: open}),
+    formatStudioTabLock({scope, tabId: getStudioTabId(), count}),
   )
-  studioTabs.publishedCount = open
+  studioTabs.publishedCount = count
   releasePrevious?.()
 }
 

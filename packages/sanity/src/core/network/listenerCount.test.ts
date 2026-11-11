@@ -161,11 +161,44 @@ describe('listener count subscription', () => {
     const subscriber = vi.fn()
     const unsubscribe = listenerCount.subscribeListenerCounts(subscriber)
 
-    const release = listenerCount.openListener()
+    const release = listenerCount.openListener('abc123.api.sanity.io')
     release()
     unsubscribe()
-    listenerCount.openListener()
+    listenerCount.openListener('abc123.api.sanity.io')
 
     expect(subscriber.mock.calls).toEqual([[{open: 1, peak: 1}], [{open: 0, peak: 1}]])
+  })
+})
+
+describe('listener counts by host', () => {
+  let listenerCount: ListenerCountModule
+
+  beforeEach(async () => {
+    vi.resetModules()
+    listenerCount = await import('./listenerCount')
+  })
+
+  it('attributes a listener to the host it was opened against', () => {
+    listenerCount.openListener('abc123.api.sanity.io')
+    listenerCount.openListener('def456.api.sanity.io')
+
+    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(2)
+  })
+
+  it('sums every project host into its root scope, including the unlabelled root host itself', () => {
+    listenerCount.openListener('abc123.api.sanity.io')
+    listenerCount.openListener('def456.api.sanity.io')
+    listenerCount.openListener('api.sanity.io')
+    listenerCount.openListener('other.io')
+
+    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(3)
+  })
+
+  it('stops counting a listener once it is released', () => {
+    const release = listenerCount.openListener('abc123.api.sanity.io')
+    listenerCount.openListener('abc123.api.sanity.io')
+    release()
+
+    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(1)
   })
 })
