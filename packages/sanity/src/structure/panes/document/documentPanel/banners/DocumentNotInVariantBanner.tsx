@@ -227,7 +227,8 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
               variantLead: t('banners.variant.lead.variant'),
               releaseLead: t('banners.release.lead.release'),
               releaseTone: getReleaseTone(selectedPerspective),
-              draftsTone: getReleaseTone('drafts'),
+              // The Draft pill's orange, not core's grey drafts tone
+              draftsTone: 'caution' as const,
             }}
           />
         </Text>
