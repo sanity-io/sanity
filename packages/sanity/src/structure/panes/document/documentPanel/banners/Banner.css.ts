@@ -69,3 +69,11 @@ export const action = css({
     paddingBottom: '8px',
   },
 })
+
+/** Several actions side by side; they wrap under each other when the column is too narrow. */
+export const actionGroup = css({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: '8px',
+})
