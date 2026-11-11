@@ -678,8 +678,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.deselect-all': 'Deselect all',
   /** The last row of the versions flyout on a document list row, when the document has a single version */
   'document-group.flyout.manage-versions': 'Manage versions in inventory',
-  /** The last row of the versions flyout on a document list row, opening the document group inventory (singular) */
-  'document-group.flyout.see-all_one': 'See {{count}} version in inventory',
   /** The last row of the versions flyout on a document list row, opening the document group inventory (plural) */
   'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
   /** Accessible name of the versions flyout on a document list row */
