@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
 
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantTypes} from '../../../variants/hooks/useVariantConditions'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -11,7 +11,6 @@ import {DEFAULT_VARIANT_TYPE_KEY, variantTypeLabel} from '../../../variants/util
 import {useSetVariant} from '../../useSetVariant'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
-import {suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
   fullWidth?: boolean
@@ -48,7 +47,7 @@ function VariantTypeFilter(props: {
           fullWidth={fullWidth}
           handleClearPerspective={selectedId ? handleClear : undefined}
           // The small diamond, at the scale of the release dots in the perspective chip beside it
-          icon={<RhombusIcon className={suggestIconColor} />}
+          icon={<VariantMark size="inline" />}
           pickerLabel={typeLabel}
           text={variantLabel}
         />

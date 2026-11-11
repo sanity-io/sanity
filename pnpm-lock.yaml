@@ -6,6 +6,9 @@ importers:
   .:
     configDependencies: {}
     packageManagerDependencies:
+      '@pnpm/exe':
+        specifier: 12.18.0
+        version: 12.18.0
       pnpm:
         specifier: 12.18.0
         version: 12.18.0
@@ -89,6 +92,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@pnpm/exe@12.18.0':
+    resolution: {integrity: sha512-3t/p83vw9SXsJML6suMBThCtwCl4lUGp/ILcxECU1In+G+NmFwMV9D+2TcvU7kX8tbrHRoYhs3eOPepEVdD7tQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   pnpm@12.18.0:
     resolution: {integrity: sha512-nXiC1dyCFH7PxOBiqjSDTgrQKWcQoYN6ERWuASEn02txCeMhrBWYod0KZVl2gbHpmRfhLtDXSerpEYeUM2O+sw==}
     engines: {node: '>=18'}
@@ -137,6 +145,23 @@ snapshots:
 
   '@pnpm/exe.win32-x64@12.18.0':
     optional: true
+
+  '@pnpm/exe@12.18.0':
+    optionalDependencies:
+      '@pnpm/exe.android-arm64': 12.18.0
+      '@pnpm/exe.android-x64': 12.18.0
+      '@pnpm/exe.darwin-arm64': 12.18.0
+      '@pnpm/exe.darwin-x64': 12.18.0
+      '@pnpm/exe.freebsd-x64': 12.18.0
+      '@pnpm/exe.linux-arm64': 12.18.0
+      '@pnpm/exe.linux-arm64-musl': 12.18.0
+      '@pnpm/exe.linux-ppc64': 12.18.0
+      '@pnpm/exe.linux-riscv64': 12.18.0
+      '@pnpm/exe.linux-s390x': 12.18.0
+      '@pnpm/exe.linux-x64': 12.18.0
+      '@pnpm/exe.linux-x64-musl': 12.18.0
+      '@pnpm/exe.win32-arm64': 12.18.0
+      '@pnpm/exe.win32-x64': 12.18.0
 
   pnpm@12.18.0:
     optionalDependencies:
@@ -274,8 +299,8 @@ catalogs:
       specifier: ^7.0.2
       version: 7.0.2
     ui5:
-      specifier: npm:@sanity/ui@5.0.0-alpha.22
-      version: 5.0.0-alpha.22
+      specifier: npm:@sanity/ui@5.0.0-alpha.23
+      version: 5.0.0-alpha.23
     vite:
       specifier: ^8.3.5
       version: 8.3.6
@@ -456,7 +481,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
       vite:
         specifier: 'catalog:'
         version: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -524,7 +549,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -613,7 +638,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -686,7 +711,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
       vite:
         specifier: 'catalog:'
         version: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -772,7 +797,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.6.0
@@ -839,7 +864,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@repo/pandacss':
         specifier: workspace:*
@@ -903,7 +928,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -1046,7 +1071,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@repo/css-modules-kit':
         specifier: workspace:*
@@ -1099,6 +1124,55 @@ importers:
       vitest:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.6)
+
+  dev/variants-handoff-studio:
+    dependencies:
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.15.1(vitest@5.0.4)
+      '@sanity/document-internationalization':
+        specifier: 6.2.43
+        version: 6.2.43(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.9)(sanity@packages+sanity)(styled-components@6.6.0)
+      '@sanity/icons':
+        specifier: ^5.2.3
+        version: 5.2.3(react@19.3.1)
+      '@sanity/language-filter':
+        specifier: 5.0.23
+        version: 5.0.23(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
+      oxc-transform-react:
+        specifier: 'catalog:'
+        version: 0.155.0
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      sanity-plugin-internationalized-array:
+        specifier: ^5.3.6
+        version: 5.3.9(@sanity/assist@6.2.6)(@sanity/language-filter@5.0.23)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+    devDependencies:
+      '@repo/css-modules-kit':
+        specifier: workspace:*
+        version: link:../../packages/@repo/css-modules-kit
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
   e2e:
     devDependencies:
@@ -1225,7 +1299,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       rimraf:
         specifier: 'catalog:'
@@ -1250,7 +1324,7 @@ importers:
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
 
   examples/studios/movies-studio:
     dependencies:
@@ -1729,7 +1803,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -2168,7 +2242,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
       use-effect-event:
         specifier: ^2.0.4
         version: 2.0.4(react@19.3.1)
@@ -2323,8 +2397,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       '@sanity/bifur-client':
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.1
+        version: 3.0.1
       '@sanity/cli':
         specifier: ^8.28.0
         version: 8.28.0(@babel/core@7.29.7)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@sanity/workflow-blueprint@0.37.0)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.155.0)(oxfmt@0.74.0)(react@19.3.1)(rolldown@1.2.16)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.3)
@@ -2546,7 +2620,7 @@ importers:
         version: 2.5.1(react@19.3.1)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)'
+        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -8420,8 +8494,8 @@ packages:
     resolution: {integrity: sha512-TL37rSZLXAcjGCAVuGXXatvFhfwLaGlxKK5ghBdQJ0ZvilmXt2AYSp/ww3/AhWH3/9afayaJ/mFs3d1fl1UWwg==}
     engines: {node: '>=22.12'}
 
-  '@sanity/bifur-client@3.0.0':
-    resolution: {integrity: sha512-+PiJK89Tw7qdTYvoDaDT8y+Btr5AwXFg8PvuYZAoI0LT2q5W7CWnd6K84Xyrznikfjoh3vuhdx0vCarFeu6TBA==}
+  '@sanity/bifur-client@3.0.1':
+    resolution: {integrity: sha512-a9Kg2hj79aDmOqNCpe75rS08SfO0n0WD77oqpPe0Hd4p8h7Jhp+EYXhur20M94AtWWWWfUZM/PFHintUgPkzuQ==}
     engines: {node: '>=22.12'}
 
   '@sanity/blueprints-parser@0.5.0':
@@ -8541,6 +8615,15 @@ packages:
   '@sanity/diff-patch@7.0.0':
     resolution: {integrity: sha512-e/xGFPWtDN5ZafxtG/DcP4URBk3EPblR+Ett1pT3AmiViNLPkHfwnG/Jj4+DlHkvcKTSw6jebuGVEFkumAxHQg==}
     engines: {node: '>=22.12.0'}
+
+  '@sanity/document-internationalization@6.2.43':
+    resolution: {integrity: sha512-GQshEhH+2bTPK7IsCMC1ZxQigjmyV4Gt3DIEgSsC2PcdQSh6fz9iEctS3twtI+6NnJ0jnYTkNVC4Y7S5zWmJvQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+      sanity-plugin-internationalized-array: ^5.3.6
 
   '@sanity/document-internationalization@6.2.46':
     resolution: {integrity: sha512-eovfWCr76VtyyChxkRl8HYZF9cN4C8lZYRFREojKEm+ndG/EchDHIZcrlL68TUZXvX0Oj2gRvx9dLm6UXZO9Og==}
@@ -8778,8 +8861,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1 || ^7.0.0-0
 
-  '@sanity/ui@5.0.0-alpha.22':
-    resolution: {integrity: sha512-qZS8WqrEIL6ynCExtiVVrO50ueSuWGAWToNNleHLE4pzTIs4mWOFickQ9ZJLUw/AnrsKJgMvcOGTAGzhMVU8ZA==}
+  '@sanity/ui@5.0.0-alpha.23':
+    resolution: {integrity: sha512-9lBUpOaW6ErLAW+ivhn+kmbgVcTBP1i3S+2Z66W97CPtctjoKjsDPx95t1bxj0FyPAvkCdhywXjg/wdqevVJvA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -22004,7 +22087,7 @@ snapshots:
       nanoid: 6.0.2
       rxjs: 7.8.2
 
-  '@sanity/bifur-client@3.0.0':
+  '@sanity/bifur-client@3.0.1':
     dependencies:
       nanoid: 6.0.2
       rxjs: 7.8.2
@@ -22337,6 +22420,23 @@ snapshots:
   '@sanity/diff-patch@7.0.0':
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
+
+  '@sanity/document-internationalization@6.2.43(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.9)(sanity@packages+sanity)(styled-components@6.6.0)':
+    dependencies:
+      '@sanity/icons': 5.2.3(react@19.3.1)
+      '@sanity/mutator': link:packages/@sanity/mutator
+      '@sanity/ui': 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
+      '@sanity/util': link:packages/@sanity/util
+      '@sanity/uuid': 3.0.3
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      rxjs: 7.8.2
+      sanity: link:packages/sanity
+      sanity-plugin-internationalized-array: 5.3.9(@sanity/assist@6.2.6)(@sanity/language-filter@5.0.23)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
+      sanity-plugin-utils: 2.0.22(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
+    transitivePeerDependencies:
+      - remix
+      - styled-components
 
   '@sanity/document-internationalization@6.2.46(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.9)(sanity@packages+sanity)(styled-components@6.6.0)':
     dependencies:
@@ -22752,7 +22852,7 @@ snapshots:
     transitivePeerDependencies:
       - remix
 
-  '@sanity/ui@5.0.0-alpha.22(react-dom@19.3.1)(react@19.3.1)':
+  '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.10
       '@sanity/icons': 5.2.3(react@19.3.1)

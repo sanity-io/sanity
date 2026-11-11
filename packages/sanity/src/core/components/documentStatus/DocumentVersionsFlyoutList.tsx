@@ -4,6 +4,7 @@ import {Card} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
+import {VariantMark} from '../../../ui-components/variantMark'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -12,7 +13,6 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
-import {RhombusIconLarge} from '../temporary-icons/Rhombus'
 import {root} from './DocumentVersionsFlyoutList.css'
 import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
@@ -156,18 +156,7 @@ function AudienceRow({
       renderLeading={(active) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
-            <Icon
-              icon={RhombusIconLarge}
-              size={1}
-              style={
-                {
-                  'margin': '-0.375rem',
-                  '--icon-color': active
-                    ? 'var(--card-fg-color)'
-                    : 'var(--card-badge-suggest-dot-color)',
-                } as CSSProperties
-              }
-            />
+            <VariantMark size="row" style={active ? {color: 'inherit'} : undefined} />
           ) : null}
         </span>
       )}

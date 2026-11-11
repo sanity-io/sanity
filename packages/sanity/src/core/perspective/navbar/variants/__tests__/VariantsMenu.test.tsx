@@ -18,7 +18,6 @@ import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../variants/util/variantType'
 import {VariantsMenu} from '../VariantsMenu'
-import {variantMenuItemIconColor} from '../VariantsMenu.css'
 
 const variantsMock = vi.hoisted(() => ({
   data: [] as SystemVariant[],
@@ -155,16 +154,16 @@ describe('VariantsMenu', () => {
     ).not.toBeNull()
   })
 
-  it('colours every row diamond with the variant colour, not only the chip', async () => {
+  it('draws every variant row with the shared VariantMark, not only the chip', async () => {
     await renderMenu()
 
-    const diamonds = [
-      ...document.querySelectorAll('[data-ui="MenuItem"] [data-sanity-icon="rhombus"]'),
-    ].filter((diamond) => !diamond.closest('[data-testid="view-all"]'))
-    expect(diamonds.length).toBeGreaterThan(1)
-    for (const diamond of diamonds) {
-      // Panda classes are atomic: one name per declaration
-      expect(diamond.getAttribute('class')).toContain(variantMenuItemIconColor)
+    const marks = [
+      ...document.querySelectorAll('[data-ui="MenuItem"] [data-ui="VariantMark"]'),
+    ].filter((mark) => !mark.closest('[data-testid="view-all"]'))
+    expect(marks.length).toBeGreaterThan(1)
+    for (const mark of marks) {
+      expect(mark.getAttribute('data-size')).toBe('row')
+      expect(mark.getAttribute('data-fill')).toBe('filled')
     }
   })
 

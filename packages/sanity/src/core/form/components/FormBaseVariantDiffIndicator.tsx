@@ -1,10 +1,10 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type CSSProperties, type ReactNode, useContext} from 'react'
+import {type ComponentType, type ReactNode, useContext} from 'react'
 import {BaseVariantComparisonContext} from 'sanity/_singletons'
-import {Flex, Icon, Text} from 'ui5'
+import {Flex, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../ui-components/variantMark'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -28,15 +28,7 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
           animate={{opacity: 1}}
         >
           <Tooltip content={<DiffersFrom />} placement="left">
-            <Icon
-              size={3}
-              icon={<RhombusIcon />}
-              style={
-                {
-                  '--icon-color': 'var(--card-badge-suggest-icon-color)',
-                } as CSSProperties
-              }
-            />
+            <VariantMark size="inline" />
           </Tooltip>
         </motion.div>
       )}

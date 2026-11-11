@@ -2,8 +2,8 @@ import {type BadgeTone} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {VersionInlineBadge} from 'sanity'
 
-import {RhombusIcon} from '../header/DocumentPanelNavigation/RhombusIcons'
-import {chipIcon, keep} from './VariantBannerChips.css'
+import {VariantMark} from '../../../../../ui-components/variantMark'
+import {keep} from './VariantBannerChips.css'
 
 /**
  * The props `<Translate>` forwards to every chip in a variant banner's sentence (it passes the
@@ -33,7 +33,7 @@ export function VariantBadge({children, variantLead}: VariantBannerChipProps) {
   return (
     <Lead lead={variantLead}>
       <VersionInlineBadge $tone="suggest" data-testid="variant-banner-variant-chip">
-        <RhombusIcon size="large" className={chipIcon} aria-hidden />
+        <VariantMark size="inline" />
         {children}
       </VersionInlineBadge>
     </Lead>

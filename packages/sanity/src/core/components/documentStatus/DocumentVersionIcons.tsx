@@ -1,14 +1,12 @@
-import {Card} from '@sanity/ui'
-import {Flex, Icon} from 'ui5'
+import {Flex} from 'ui5'
 
-import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../ui-components/variantMark'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {variantIconCard} from './DocumentVersionIcons.css'
 import {getReleasePerspective} from './getReleasePerspective'
 
 /**
@@ -31,11 +29,7 @@ export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStu
 
   return (
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
-      {variantsEnabled && variant ? (
-        <Card className={variantIconCard} tone="suggest">
-          <Icon size={2} icon={RhombusIcon} tone="suggest" style={{margin: '-0.4375rem'}} />
-        </Card>
-      ) : null}
+      {variantsEnabled && variant ? <VariantMark size="inline" /> : null}
       <ReleaseAvatar
         fontSize={2}
         size="small"

@@ -81,15 +81,3 @@ export const createVariantFormFooter = css(formRow, {
   justifyContent: 'flex-end',
   gap: 'var(--space-4)',
 })
-
-/** The variant diamonds in the variant picker, in the variant colour, as in the Variants pill menu. */
-export const createVariantDefinitionIcon = css({
-  '&&': {
-    '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
-    '--icon-color': 'var(--card-badge-suggest-icon-color)',
-  },
-  '[data-selected] &&': {
-    '--card-icon-color': 'var(--card-fg-color)',
-    '--icon-color': 'var(--card-fg-color)',
-  },
-})

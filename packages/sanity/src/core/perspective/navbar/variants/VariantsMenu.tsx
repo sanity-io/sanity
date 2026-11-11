@@ -21,7 +21,7 @@ import {Text, Flex, Box} from 'ui5'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
@@ -48,20 +48,7 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {
-  conditionMismatchIcon,
-  variantMenuItemIconColor,
-  variantMenuItemRow,
-  variantsMenu,
-} from './VariantsMenu.css'
-
-/**
- * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
- * than passed first, where the spread `className` would replace it.
- */
-const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
-}
+import {conditionMismatchIcon, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 
 /**
  * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
@@ -101,7 +88,7 @@ function VariantMenuItem(props: {
       <MenuItem
         {...detailLinkMenuItemProps}
         data-testid={`variant-${variantId}`}
-        icon={VariantMenuItemIcon}
+        icon={<VariantMark size="row" />}
         iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
@@ -298,7 +285,7 @@ export function VariantsMenu({
                       <MenuItem
                         data-testid="variant-default"
                         // The same diamond as every other variant row and the navbar chip
-                        icon={VariantMenuItemIcon}
+                        icon={<VariantMark size="row" />}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
@@ -330,7 +317,7 @@ export function VariantsMenu({
                 as="a"
                 data-testid="view-all"
                 href={viewAllHref}
-                icon={RhombusIconLarge}
+                icon={<VariantMark size="row" />}
                 onClick={handleViewAll}
                 text={t('navbar.variant.menu.view-all')}
               />

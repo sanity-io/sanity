@@ -5,9 +5,8 @@ import {page} from 'vitest/browser'
 
 import {expectStable} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
-import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../../ui-components/variantMark'
 import {GlobalPerspectiveButton} from '../../GlobalPerspectiveButton'
-import {suggestIconColor} from '../VariantsNav.css'
 import {VariantsStudioNavbarFallback} from '../VariantsStudioNavbarLayout'
 
 // The bar's fallback reserves one row while the filters' chunk loads, so the filters replace it
@@ -26,11 +25,7 @@ describe('VariantsStudioNavbarLayout fallback', () => {
         </div>
         {/* A settled filter, as `VariantsStudioNavbar` renders it: the bordered chip, not the
             trigger inside it. The border is what makes the pill taller than the 31px trigger. */}
-        <GlobalPerspectiveButton
-          data-testid="pill-trigger"
-          icon={<RhombusIcon className={suggestIconColor} />}
-          text="Drafts"
-        />
+        <GlobalPerspectiveButton data-testid="pill-trigger" icon={<VariantMark />} text="Drafts" />
       </TestWrapper>,
     )
 
