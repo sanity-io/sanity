@@ -74,7 +74,7 @@
     "@codemirror/search": "^6.7.2",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.15",
-    "@lezer/highlight": "^1.2.3",
+    "@lezer/highlight": "^1.2.5",
     "@pierre/diffs": "1.6.2",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
