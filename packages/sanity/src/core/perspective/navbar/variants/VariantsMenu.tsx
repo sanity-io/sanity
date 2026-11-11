@@ -39,6 +39,7 @@ import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/v
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {menuListScroller, menuListScrollerPadding} from '../menuListScroller.css'
 import {
   PerspectiveDetailLink,
   renderWithDetailLinkSpace,
@@ -280,6 +281,7 @@ export function VariantsMenu({
                 flexDirection="column"
                 flexGrow={1}
                 flexShrink={1}
+                className={clsx(menuListScroller, menuListScrollerPadding)}
                 minHeight="0"
                 overflowY="auto"
                 padding={1}
