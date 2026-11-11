@@ -12,7 +12,7 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
-import {RhombusIcon} from '../temporary-icons/Rhombus'
+import {RhombusIconLarge} from '../temporary-icons/Rhombus'
 import {root} from './DocumentVersionsFlyoutList.css'
 import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
@@ -137,10 +137,11 @@ function AudienceRow({
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
             <Icon
-              icon={RhombusIcon}
-              size={2}
+              icon={RhombusIconLarge}
+              size={1}
               style={
                 {
+                  'margin': '-0.375rem',
                   '--icon-color': selected
                     ? 'var(--card-fg-color)'
                     : 'var(--card-badge-suggest-dot-color)',
