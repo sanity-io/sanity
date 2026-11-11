@@ -26,8 +26,7 @@ const MAX_LINES = 7
 const ICON_KINDS = ['release', 'draft', 'published'] as const
 
 /** @internal */
-export const editedAt = (item: DocumentVersionStatusItem) =>
-  Date.parse(item.version._updatedAt) || 0
+const editedAt = (item: DocumentVersionStatusItem) => Date.parse(item.version._updatedAt) || 0
 
 /** @internal */
 export function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
