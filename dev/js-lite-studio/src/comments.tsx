@@ -380,23 +380,38 @@ export function useCommentsState(options: {
     },
     setStatus: (thread, status) => {
       const ids = new Set(thread.comments.map((comment) => comment.id))
+      const previous = thread.status
       setList((current) =>
         current.map((comment) => (ids.has(comment.id) ? {...comment, status} : comment)),
       )
       commit(
         [...ids].map((id) => ({patch: {id, set: {status}}})),
         'comments.status',
-      ).catch((error: unknown) => toastError('Could not update the thread', error))
+      ).catch((error: unknown) => {
+        setList((current) =>
+          current.map((comment) =>
+            ids.has(comment.id) ? {...comment, status: previous} : comment,
+          ),
+        )
+        toastError('Could not update the thread', error)
+      })
     },
     remove: (thread, comment) => {
       const ids = new Set(
         comment.parentId === undefined ? thread.comments.map((item) => item.id) : [comment.id],
       )
+      const removed = thread.comments.filter((item) => ids.has(item.id))
       setList((current) => current.filter((item) => !ids.has(item.id)))
       commit(
         [...ids].map((id) => ({delete: {id}})),
         'comments.delete',
-      ).catch((error: unknown) => toastError('Could not delete the comment', error))
+      ).catch((error: unknown) => {
+        setList((current) => [
+          ...current,
+          ...removed.filter((item) => !current.some((c) => c.id === item.id)),
+        ])
+        toastError('Could not delete the comment', error)
+      })
     },
     fieldTitle: (path) => fieldTitle(typeName, path),
   }

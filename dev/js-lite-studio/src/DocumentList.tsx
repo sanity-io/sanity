@@ -261,13 +261,15 @@ export function DocumentListPane(props: {typeName: string}) {
         tag: 'document-list.listener',
       } as never)
       .subscribe({
-        next: (event: {type: string; documentId?: string; reconnected?: boolean}) => {
+        next: (event: {type: string; documentId?: string}) => {
           let changed = false
           if (event.type === 'mutation' && event.documentId) {
             const release = releaseOf(event.documentId)
             changed = release ? releaseName(perspectiveAtom.get()) === release : true
-          } else if (event.type === 'welcome') {
-            changed = event.reconnected === true
+          } else if (event.type === 'reconnect') {
+            // `@sanity/client` emits `{type:'reconnect'}` on a drop; the following welcome has no
+            // `reconnected` flag. Skip the initial welcome — `reset()` already loaded the list.
+            changed = true
           }
           if (!changed || pending) return
           pending = true
