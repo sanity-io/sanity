@@ -37,7 +37,7 @@ const STALL_DELAY = 250
  */
 export function PaneItemVersionsFlyout(props: {
   childId: string
-  /** Whether the document has versions beyond its base, which is when the row gets a flyout. */
+  /** Whether the document has two or more versions, which is when the row gets a flyout. */
   hasVersions: boolean
   /** Renders the flyout's content. A pick or the inventory row opens the inventory. */
   renderList: (actions: {onOpenInventory: () => void; onPick: () => void}) => ReactNode

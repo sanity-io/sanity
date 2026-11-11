@@ -94,7 +94,7 @@ describe('PaneItemVersionsFlyout', () => {
     expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
   })
 
-  it('does not open for a document without versions beyond the base', async () => {
+  it('does not open for a document with a single version', async () => {
     hasVersions = false
     const {row, user} = await renderRow()
     await user.hover(row)

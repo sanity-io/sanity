@@ -20,7 +20,7 @@ import {
   getPublishedId,
   SanityDefaultPreview,
   useDocumentVersions,
-  useHasVersionsBeyondBase,
+  useHasMultipleVersions,
   usePerspective,
   useWorkspace,
 } from 'sanity'
@@ -67,7 +67,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
   const rowSelected = useContext(PreviewCardContext)?.selected
-  const hasVersionsBeyondBase = useHasVersionsBeyondBase(publishedId)
+  const hasMultipleVersions = useHasMultipleVersions(publishedId)
   const renderFlyoutList = (actions: {onOpenInventory: () => void; onPick: () => void}) => (
     <DocumentVersionsFlyoutList
       documentGroupId={publishedId}
@@ -123,7 +123,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
         {versionsLinkChildId && (
           <PaneItemVersionsFlyout
             childId={versionsLinkChildId}
-            hasVersions={hasVersionsBeyondBase}
+            hasVersions={hasMultipleVersions}
             renderList={renderFlyoutList}
           />
         )}

@@ -84,7 +84,7 @@ export {Delay} from '../core/components/Delay'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
 export {
   DocumentVersionsFlyoutList,
-  useHasVersionsBeyondBase,
+  useHasMultipleVersions,
 } from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
