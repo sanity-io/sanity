@@ -233,10 +233,20 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
 
+    // Variant versions have opaque ids, so whether a variant document is displayed comes from the
+    // resolved target rather than from the id.
+    const displayedVariantTarget =
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant &&
+      displayed?._id &&
+      targetDocumentState.targetDocument?._id === displayed._id
+        ? targetDocumentState.targetDocument
+        : undefined
+
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
       displayed?._id &&
-      getVersionFromId(displayed?._id) === selectedReleaseId,
+      (getVersionFromId(displayed?._id) === selectedReleaseId || displayedVariantTarget),
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
