@@ -42,10 +42,16 @@ export function useFocusSearchOnOpen(): (element: HTMLInputElement | null) => ((
 
     focusAfterMenuSettles()
 
+    // Only a change from hidden to visible is an open. The observer also reports the starting state
+    // and repeated visible states, and a focus scheduled by those could land after the menu closed.
+    let wasVisible = false
     const observer =
       typeof IntersectionObserver === 'function'
         ? new IntersectionObserver((entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) focusAfterMenuSettles()
+            const visible = entries.some((entry) => entry.isIntersecting)
+            if (visible && !wasVisible) focusAfterMenuSettles()
+            if (!visible) cancelPending()
+            wasVisible = visible
           })
         : undefined
     observer?.observe(element)
