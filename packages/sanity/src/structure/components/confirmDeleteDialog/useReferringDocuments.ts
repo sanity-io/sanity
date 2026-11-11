@@ -61,7 +61,16 @@ export type ReferringDocuments = {
   hasUnknownDatasetNames: boolean
   internalReferences?: {
     totalCount: number
-    references: Array<{_id: string; _type: string}>
+    references: Array<{
+      _id: string
+      _type: string
+      /**
+       * Whether this document holds a strong (required) reference to the subject document.
+       * Content Lake refuses to delete a document while strong references point at it; weak
+       * references are left pointing at nothing. `undefined` while unknown.
+       */
+      required?: boolean
+    }>
   }
   crossDatasetReferences?: {
     totalCount: number
@@ -185,7 +194,13 @@ export function referringDocuments({
 }: ReferringDocumentsOptions): Observable<ReferringDocuments> {
   const publishedId = getPublishedId(documentId)
 
-  const internalReferences$ = withLoadingState(fetchInternalReferences(publishedId, documentStore))
+  const internalReferences$ = withLoadingState(
+    withReferenceStrength(
+      fetchInternalReferences(publishedId, documentStore),
+      publishedId,
+      versionedClient,
+    ),
+  )
 
   const crossDatasetReferences$ = withLoadingState(
     getVisiblePoll$().pipe(
@@ -311,5 +326,71 @@ function withLoadingState<Type>(source: Observable<Type>): Observable<[Type | un
   return concat(
     of<[Type | undefined, boolean]>([undefined, true]),
     source.pipe(map((value): [Type | undefined, boolean] => [value, false])),
+  )
+}
+
+/**
+ * Whether `value` holds a strong reference to `targetId` anywhere in its content. A reference is
+ * strong unless it is marked `_weak`. The document's `_system` subtree is skipped: its identity
+ * references (the group, the variant, the release) are not content and never block a delete.
+ *
+ * @internal
+ */
+export function hasStrongReferenceTo(value: unknown, targetId: string): boolean {
+  if (Array.isArray(value)) {
+    return value.some((item) => hasStrongReferenceTo(item, targetId))
+  }
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const record = value as Record<string, unknown>
+  if (record._ref === targetId && record._weak !== true) {
+    return true
+  }
+  return Object.entries(record).some(
+    ([key, child]) => key !== '_system' && hasStrongReferenceTo(child, targetId),
+  )
+}
+
+/**
+ * Marks each internal reference as `required` (strong) or not, by reading the referring
+ * documents once per change of the reference list. If that read fails, the references are
+ * passed on unmarked, so callers fall back to treating every reference as unknown.
+ */
+function withReferenceStrength(
+  internalReferences$: Observable<ReferringDocuments['internalReferences']>,
+  publishedId: string,
+  versionedClient: SanityClient,
+): Observable<ReferringDocuments['internalReferences']> {
+  return internalReferences$.pipe(
+    switchMap((internalReferences) => {
+      const ids = internalReferences?.references.map((reference) => reference._id) ?? []
+      if (!internalReferences || ids.length === 0) {
+        return of(internalReferences)
+      }
+      return versionedClient.observable
+        .fetch<unknown[]>(
+          '*[_id in $ids]',
+          {ids},
+          {perspective: 'raw', tag: 'use-referring-documents.strength'},
+        )
+        .pipe(
+          map((documents) => {
+            const requiredIds = new Set(
+              documents
+                .filter((document) => hasStrongReferenceTo(document, publishedId))
+                .map((document) => (document as {_id: string})._id),
+            )
+            return {
+              ...internalReferences,
+              references: internalReferences.references.map((reference) => ({
+                ...reference,
+                required: requiredIds.has(reference._id),
+              })),
+            }
+          }),
+          catchError(() => of(internalReferences)),
+        )
+    }),
   )
 }
