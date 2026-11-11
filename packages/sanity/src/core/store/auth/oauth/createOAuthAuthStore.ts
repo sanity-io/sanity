@@ -54,6 +54,13 @@ import {
 } from '../utils/createBroadcastState'
 import {getCurrentUser} from '../utils/getCurrentUser'
 import {
+  keepAuthorizationResponse,
+  OAUTH_RESPONSE_PARAMS,
+  pathWithoutAuthorizationResponse,
+  peekStashedAuthorizationResponse,
+  takeStashedAuthorizationResponse,
+} from './authorizationResponse'
+import {
   AUTH_CLIENT_OPTIONS,
   AUTH_STATE_SETTLE_TIMEOUT_MS,
   getOAuthFlowStorageKey,
@@ -81,9 +88,6 @@ import {
   tokenLifetimeBucket,
 } from './telemetry'
 import {type OAuthCallbackResult} from './types'
-
-/** Parameters of an authorization response (RFC 6749 section 4.1.2, RFC 9207 `iss`). */
-const OAUTH_RESPONSE_PARAMS = ['code', 'state', 'error', 'error_description', 'error_uri', 'iss']
 
 /** How long before expiry the access token is renewed, unless configured. */
 const DEFAULT_RENEW_BEFORE_EXPIRY_MS = 60_000
@@ -152,7 +156,7 @@ export interface OAuthAuthStoreOptions extends OAuthConfig {
 export interface OAuthAuthStoreEnvironment {
   endpoints?: OAuthEndpoints
   /** The current URL. Read for the Studio origin and the authorization response. */
-  getLocation: () => Pick<Location, 'origin' | 'pathname' | 'search'>
+  getLocation: () => Pick<Location, 'origin' | 'pathname' | 'search'> & {hash?: string}
   /** Leaves the Studio for the authorization server. */
   navigate: (url: string) => void
   /** Replaces the current history entry, e.g. to drop the authorization response from the URL. */
@@ -1081,14 +1085,27 @@ export function _createOAuthAuthStore({
     }
   }
 
+  /** The authorization response in the URL, once it is out of the address bar and history. */
+  function takeAuthorizationResponseFromUrl(): URLSearchParams | undefined {
+    const currentLocation = getLocation()
+    const cleanPath = pathWithoutAuthorizationResponse(currentLocation)
+    if (cleanPath === undefined) return undefined
+    const response = new URLSearchParams(currentLocation.search)
+    // Out of the address bar, history, and Referer before anything else can read the code.
+    replaceUrl(cleanPath)
+    return response
+  }
+
   function handleCallbackUrl(): Promise<OAuthCallbackResult> {
     const startTime = performance.now()
-    const {pathname, search} = getLocation()
-    const params = new URLSearchParams(search)
-
-    // An authorization response carries `state` and either a code or an error. Anything else is
-    // an ordinary Studio URL, even one with an unrelated `error` parameter.
-    if (!params.has('state') || (!params.has('code') && !params.has('error'))) {
+    // `ActiveWorkspaceMatcher` takes the response out of the URL before the router reads it. Where
+    // nothing did, the store does it itself. Either way the response stays stashed until the
+    // store whose request it answers takes it: with several OAuth workspaces it can land on one
+    // that did not start the sign-in.
+    const fromUrl = takeAuthorizationResponseFromUrl()
+    if (fromUrl) keepAuthorizationResponse(fromUrl)
+    const params = peekStashedAuthorizationResponse()
+    if (!params) {
       return (
         inflightCallback ??
         Promise.resolve({
@@ -1099,14 +1116,15 @@ export function _createOAuthAuthStore({
         })
       )
     }
+
     if (inflightCallback) {
       debug('callback: joining the exchange already in flight')
       return inflightCallback
     }
 
     // The response has to belong to the request this tab made, whether it carries a code or an
-    // error. A mismatch touches neither the URL nor the stored flow, which may still be waiting
-    // for its own response.
+    // error. A mismatch leaves the stored flow alone, since it may still be waiting for its own
+    // response.
     const flow = readFlow(flowStorageKey)
     if (!flow) {
       debug('callback: authorization response but no pending request in this tab, ignoring')
@@ -1120,14 +1138,8 @@ export function _createOAuthAuthStore({
       'callback: authorization response for our request (%s)',
       params.has('code') ? 'code' : 'error',
     )
+    takeStashedAuthorizationResponse()
     clearFlow(flowStorageKey)
-
-    // Out of the address bar, history, and Referer before anything else can read the code. Only
-    // the OAuth parameters go; anything else the URL carried stays.
-    const remaining = new URLSearchParams(search)
-    for (const name of OAUTH_RESPONSE_PARAMS) remaining.delete(name)
-    const query = remaining.toString()
-    replaceUrl(query ? `${pathname}?${query}` : pathname)
 
     const callbackProcessed = processCallback(params, flow, startTime).finally(() => {
       if (inflightCallback === callbackProcessed) inflightCallback = undefined
