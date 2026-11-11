@@ -9,25 +9,30 @@ import {
   useDocumentPairPermissions,
   useEditState,
   useSetImmediateValidation,
+  usePerspective,
   useSyncState,
   useValidationStatus,
 } from 'sanity'
-import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useDocumentOperation: vi.fn(),
-  useDocumentPairPermissions: vi.fn(),
-  useEditState: vi.fn(),
-  useSetImmediateValidation: vi.fn(),
-  useSyncState: vi.fn(),
-  useValidationStatus: vi.fn(),
-}))
+vi.mock('sanity', async (importOriginal) => {
+  const actual = await importOriginal<{usePerspective: typeof usePerspective}>()
+  return {
+    ...actual,
+    useDocumentOperation: vi.fn(),
+    useDocumentPairPermissions: vi.fn(),
+    useEditState: vi.fn(),
+    usePerspective: vi.fn(actual.usePerspective),
+    useSetImmediateValidation: vi.fn(),
+    useSyncState: vi.fn(),
+    useValidationStatus: vi.fn(),
+  }
+})
 
 vi.mock('../../panes/document/useDocumentPane')
 
@@ -42,6 +47,7 @@ const mockUseEditState = useEditState as Mock<typeof useEditState>
 const mockUseSyncState = useSyncState as Mock<typeof useSyncState>
 const mockUseValidationStatus = useValidationStatus as Mock<typeof useValidationStatus>
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
+const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 
 const ID = 'author-1'
 const PUBLISHED: SanityDocument = doc(ID, 'published-1')
@@ -206,5 +212,89 @@ describe('usePublishAction', () => {
     act(() => result.current?.onHandle?.())
     expect(operations.publish.execute).not.toHaveBeenCalled()
     expect(immediate()).toEqual({enabled: true})
+  })
+
+  describe('a variant that is published but not yet drafted', () => {
+    const variantPublished = doc('versions.scope-nordic.author-1', 'variant-published-1')
+
+    function variantProps(): DocumentActionProps {
+      return {
+        id: ID,
+        type: 'author',
+        transactionSyncLock: {enabled: false},
+        draft: null,
+        published: PUBLISHED,
+        version: null,
+        // Forced by the variant's version slot; the schema type is not live edit.
+        liveEdit: true,
+        liveEditSchemaType: false,
+        ready: true,
+        release: undefined,
+        scopeId: undefined,
+        revision: undefined,
+        initialValueResolved: true,
+        onComplete: () => undefined,
+      } as unknown as DocumentActionProps
+    }
+
+    beforeEach(() => {
+      mockUsePerspective.mockReturnValue({
+        selectedPerspective: 'drafts',
+        selectedPerspectiveName: undefined,
+        selectedReleaseId: undefined,
+        selectedVariantNames: ['nordic'],
+      } as unknown as ReturnType<typeof usePerspective>)
+      mockUseDocumentPane.mockReturnValue({
+        changesOpen: false,
+        documentId: ID,
+        documentType: 'author',
+        value: variantPublished,
+        targetDocumentState: {
+          status: 'ready',
+          targetDocument: variantPublished,
+          scopeId: undefined,
+          variant: 'nordic',
+          siblings: {published: variantPublished, draft: undefined, version: undefined},
+        },
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      mockUseEditState.mockReturnValue(null as unknown as ReturnType<typeof useEditState>)
+      mockUseSyncState.mockReturnValue({isSyncing: false})
+      mockUseValidationStatus.mockReturnValue({
+        isValidating: false,
+        validation: [],
+        revision: variantPublished._rev,
+      })
+    })
+
+    afterEach(() => {
+      mockUsePerspective.mockReset()
+    })
+
+    it('shows Publish, disabled, instead of returning nothing', async () => {
+      const {result} = await renderPublishAction(variantProps())
+
+      expect(result.current?.label).toBe('Publish')
+      expect(result.current?.disabled).toBe(true)
+    })
+
+    it('returns nothing when the variant has no published version either', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        changesOpen: false,
+        documentId: ID,
+        documentType: 'author',
+        value: variantPublished,
+        targetDocumentState: {
+          status: 'ready',
+          targetDocument: undefined,
+          scopeId: undefined,
+          variant: 'nordic',
+          siblings: {published: undefined, draft: undefined, version: undefined},
+        },
+      } as unknown as ReturnType<typeof useDocumentPane>)
+
+      const {result} = renderHook(usePublishAction, {wrapper, initialProps: variantProps()})
+
+      await waitFor(() => expect(result.current).toBeNull())
+    })
   })
 })
