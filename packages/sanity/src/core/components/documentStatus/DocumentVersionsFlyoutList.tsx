@@ -19,6 +19,7 @@ import {
   root,
   row,
   rowContent,
+  subtitleIndent,
   text,
   variantMark,
 } from './DocumentVersionsFlyoutList.css'
@@ -64,9 +65,11 @@ function FlyoutRow(props: {
             props.title
           )}
           {props.subtitle ? (
-            <Text muted size={1} textOverflow="ellipsis">
-              {props.subtitle}
-            </Text>
+            <div className={subtitleIndent}>
+              <Text muted size={1} textOverflow="ellipsis">
+                {props.subtitle}
+              </Text>
+            </div>
           ) : null}
         </div>
         {props.trailing}
@@ -111,18 +114,20 @@ function AudienceRow({
       testId="document-versions-flyout-row"
       title={
         <div className={nameClass}>
-          <span
-            aria-hidden
-            className={variantMark}
-            style={
-              {
-                '--icon-color': selected
-                  ? 'var(--card-fg-color)'
-                  : 'var(--card-badge-suggest-dot-color)',
-              } as CSSProperties
-            }
-          >
-            {group.variantId ? <Icon icon={RhombusIcon} size={1} /> : null}
+          <span aria-hidden className={variantMark}>
+            {group.variantId ? (
+              <Icon
+                icon={RhombusIcon}
+                size={1}
+                style={
+                  {
+                    '--icon-color': selected
+                      ? 'var(--card-fg-color)'
+                      : 'var(--card-badge-suggest-dot-color)',
+                  } as CSSProperties
+                }
+              />
+            ) : null}
           </span>
           <Text size={1} textOverflow="ellipsis">
             {name}
