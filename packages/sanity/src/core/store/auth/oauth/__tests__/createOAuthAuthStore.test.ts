@@ -1429,6 +1429,50 @@ describe('createOAuthAuthStore', () => {
       )
     })
 
+    it('does not retry a request from an earlier session with the token of a later sign-in', async () => {
+      // A request the previous user sent comes back rejected after someone else signed in (here,
+      // in another tab). Retrying it with the new token would run it as that other user.
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({...storedTokens('access-1', 'refresh-1'), signedInAt: Date.now() - 60_000}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1', 'access-9']))
+      const tabA = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...createEnvironment(),
+      })
+      const requestHandler = (await authenticatedState(tabA.state)).client.config()
+        .requestHandler as RequestHandler
+
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const tabB = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints({
+          exchangeCode: vi.fn(async () => tokenResponse('access-9', 'refresh-9')),
+        }),
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+      await tabB.handleCallbackUrl!()
+      // The new pair reaches tab A over its BroadcastChannel, a message away.
+      await settle(50)
+
+      const next = vi.fn().mockRejectedValue(createExpiredSessionError())
+      await expect(
+        requestHandler({url: '/data/mutate', headers: {Authorization: 'Bearer access-1'}}, next),
+      ).rejects.toThrow()
+      expect(next).toHaveBeenCalledTimes(1)
+    })
+
     it('passes a second invalid-session rejection on to the studio', async () => {
       localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
       const {factory} = createMockClientFactory(new Set(['access-1']))
@@ -1458,8 +1502,13 @@ describe('createOAuthAuthStore', () => {
       // without renewing, but that token had expired as well (401 SIO-401-AEX), and the second
       // 401 signed the user out.
       localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
-      const {factory} = createMockClientFactory(new Set(['access-1', 'access-2']))
-      const endpoints = createMockEndpoints()
+      const {factory} = createMockClientFactory(new Set(['access-1', 'access-2', 'access-3']))
+      const endpoints = createMockEndpoints({
+        refresh: vi
+          .fn()
+          .mockResolvedValueOnce(tokenResponse('access-2', 'refresh-2'))
+          .mockResolvedValueOnce(tokenResponse('access-3', 'refresh-3')),
+      })
       const store = _createOAuthAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
@@ -1470,25 +1519,83 @@ describe('createOAuthAuthStore', () => {
       })
       const state = await authenticatedState(store.state)
       const handler = state.client.config().requestHandler as RequestHandler
-      // The tab was idle until `access-1` expired.
+      // A rejected request rotates `access-1` to `access-2`.
+      await handler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValueOnce(createExpiredSessionError()).mockResolvedValueOnce({}),
+      )
+      // The tab was idle until `access-2` expired.
       vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 2 * 3_600_000)
 
       const next = vi.fn(async (request: RequestHandlerOptions) => {
         const authorization = Object.entries(request.headers ?? {}).find(
           ([name]) => name.toLowerCase() === 'authorization',
         )?.[1]
-        if (authorization === 'Bearer access-2') return 'ok'
+        if (authorization === 'Bearer access-3') return 'ok'
         throw createExpiredSessionError()
       })
 
-      // The request was built by a client from before the last rotation.
+      // The request was built by a client from before the rotation.
       await expect(
         handler(
-          {url: 'https://x/v1/projects/x', headers: {Authorization: 'Bearer access-0'}},
+          {url: 'https://x/v1/projects/x', headers: {Authorization: 'Bearer access-1'}},
           next,
         ),
       ).resolves.toBe('ok')
-      expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+      expect(endpoints.refresh).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not put the user token on a rejected request that carried a token of its own', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const {factory} = createMockClientFactory(new Set(['access-1', 'access-2']))
+      const endpoints = createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+      const requestHandler = (await authenticatedState(store.state)).client.config()
+        .requestHandler as RequestHandler
+
+      // Sent by a client with a token the store didn't issue (`withConfig({token})`, or a
+      // `token` on the request), here to another host. A retry would send the user's token there.
+      const next = vi.fn().mockRejectedValue(createExpiredSessionError())
+      await expect(
+        requestHandler(
+          {url: 'https://other.example/v1/data', headers: {Authorization: 'Bearer plugin-token'}},
+          next,
+        ),
+      ).rejects.toThrow()
+
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(endpoints.refresh).not.toHaveBeenCalled()
+    })
+
+    it('does not put the user token on a rejected request that carried no token', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const {factory} = createMockClientFactory(new Set(['access-1', 'access-2']))
+      const endpoints = createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+      const requestHandler = (await authenticatedState(store.state)).client.config()
+        .requestHandler as RequestHandler
+
+      // Sent by an anonymous client (`withConfig({token: undefined})`) or one that signs in with
+      // a cookie (`withConfig({withCredentials: true})`).
+      const next = vi.fn().mockRejectedValue(createExpiredSessionError())
+      await expect(requestHandler({url: '/data/query', headers: {}}, next)).rejects.toThrow()
+
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(endpoints.refresh).not.toHaveBeenCalled()
     })
   })
 
@@ -2096,10 +2203,15 @@ describe('createOAuthAuthStore', () => {
     })
 
     it('reports a request retried with the token a renewal already replaced', async () => {
-      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-2', 'refresh-2')))
-      const store = createStore(createMockEndpoints(), new Set(['access-2']))
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const store = createStore(createMockEndpoints(), new Set(['access-1', 'access-2']))
       const requestHandler = (await authenticatedState(store.state)).client.config()
         .requestHandler as RequestHandler
+      // A rejected request rotates `access-1` to `access-2`.
+      await requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValueOnce(createExpiredSessionError()).mockResolvedValueOnce({}),
+      )
       const {events, stop} = recordEvents(store)
 
       // Sent with the previous token, before the renewal landed: retried with the current one.

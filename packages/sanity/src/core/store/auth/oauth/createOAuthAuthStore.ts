@@ -626,9 +626,21 @@ export function _createOAuthAuthStore({
   }
 
   /**
+   * Every access token this store has held, from this tab or another one, with the session it
+   * belongs to (`signedInAt`, which renewals carry over). One is added per sign-in or renewal, so
+   * the map stays small.
+   */
+  const issuedAccessTokens = new Map<string, number | undefined>()
+  tokenStorage.value.subscribe((tokens) => {
+    if (tokens) issuedAccessTokens.set(tokens.accessToken, tokens.signedInAt)
+  })
+
+  /**
    * Renews the access token when a request is rejected with an invalid session, and retries the
-   * request once. Installed inside the Studio's request handler (see `getAuthStore` in
-   * `prepareConfig`), so a 401 that survives the retry still reaches it and ends the session.
+   * request once. Only a request that carried one of this store's tokens is retried: one with a
+   * credential of its own, or none, is passed on as it is. Installed inside the Studio's request
+   * handler (see `getAuthStore` in `prepareConfig`), so a 401 that survives the retry still
+   * reaches it and ends the session.
    */
   const refreshOnInvalidSession: RequestHandler = async (request, next) => {
     try {
@@ -644,6 +656,19 @@ export function _createOAuthAuthStore({
         tokenTag(current?.accessToken),
       )
       if (!current) throw err
+      // The request came from a client with a credential of its own: a `token` on the request,
+      // or a `withConfig({token})`, `withConfig({withCredentials: true})` or anonymous copy of a
+      // studio client. Retrying with the user's token would send it where it wasn't meant to go.
+      if (!sent || !issuedAccessTokens.has(sent)) {
+        debug('request rejected: %s did not carry a token of ours, not retrying', request.url)
+        throw err
+      }
+      // The request was sent in a session that has since ended: a logout and a new sign-in,
+      // possibly as someone else. Retrying it with the current token would run it as them.
+      if (issuedAccessTokens.get(sent) !== current.signedInAt) {
+        debug('request rejected: %s was sent in an earlier session, not retrying', request.url)
+        throw err
+      }
       // A request that went out before a renewal only needs the pair that replaced its token,
       // unless that one has expired too.
       const needsRenewal = sent === current.accessToken || Date.now() >= current.expiresAt
