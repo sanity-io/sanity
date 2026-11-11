@@ -34,7 +34,7 @@ export const variantMark = css({
     height: '100%',
     overflow: 'visible',
   },
-  ':where([data-selected], [data-ui="MenuItem"][data-selected], [aria-checked="true"], :has(> input:checked)) &&&':
+  ':where([data-selected], [data-ui="MenuItem"][data-selected], [aria-checked="true"], :has(> input:checked), [data-variant-name]:has(input:checked)) &&&':
     {
       'color': 'var(--card-fg-color)',
       '--icon-color': 'var(--card-fg-color)',
