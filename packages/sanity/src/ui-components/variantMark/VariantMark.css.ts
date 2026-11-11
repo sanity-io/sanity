@@ -57,7 +57,10 @@ export const rowSize = css({
   '&&': {
     width: '20.7px',
   },
+  // `margin-inline: auto` centres the diamond in the box even when a menu item's ui5 `Icon`
+  // clone turns the box to `display: block` (it is a flex box otherwise)
   '&&& > svg': {
     width: '9.2px',
+    marginInline: 'auto',
   },
 })
