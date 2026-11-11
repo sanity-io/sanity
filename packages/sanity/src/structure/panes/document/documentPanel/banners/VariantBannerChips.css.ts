@@ -5,21 +5,17 @@ export const keep = css({
   whiteSpace: 'nowrap',
 })
 
-/** The variant chip lays its diamond and name on one centre line, same padding as the other chips. */
-export const variantChip = css({
-  display: 'inline-flex',
-  alignItems: 'center',
-  verticalAlign: 'baseline',
-})
-
 /**
  * The variant's diamond: the large rhombus (9.2px tip to tip) in a 21px box trimmed to the glyph,
- * as the inventory rows draw it, so it is centred on the text and no smaller than the header
- * pill's diamond.
+ * as the inventory rows draw it, so it is no smaller than the header pill's diamond. It sits inline
+ * and centred on the text (cap height), so the chip's text stays on the line's baseline.
  */
 export const chipIcon = css({
-  flex: 'none',
+  display: 'inline-block',
   fontSize: '1.3125rem',
   margin: '-0.375rem',
   marginInlineEnd: '-0.125rem',
+  verticalAlign: 'middle',
+  position: 'relative',
+  top: '-0.0625rem',
 })
