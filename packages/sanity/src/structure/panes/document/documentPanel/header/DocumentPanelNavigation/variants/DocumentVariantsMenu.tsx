@@ -1,6 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Text} from '@sanity/ui'
-import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_VARIANT_TYPE_KEY,
   filterVariantsForSearch,
@@ -29,24 +29,14 @@ import {Flex} from 'ui5'
 
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
+import {VariantMark} from '../../../../../../../ui-components/variantMark'
 import {structureLocaleNamespace} from '../../../../../../i18n'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DropdownButton} from '../DropdownButton'
 import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
-import {RhombusIcon, RhombusOutlineIcon} from '../RhombusIcons'
-import {menuDivider, variantIcon, versionCount} from './DocumentVariantsMenu.css'
+import {menuDivider, versionCount} from './DocumentVariantsMenu.css'
 import {getDocumentVariantBundles} from './getDocumentVariantBundles'
 import {useSelectedVariant} from './useSelectedVariant'
-
-type IconProps = SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>
-
-function FilledVariantIcon(props: IconProps) {
-  return <RhombusIcon size="large" className={variantIcon} {...props} />
-}
-
-function OutlineVariantIcon(props: IconProps) {
-  return <RhombusOutlineIcon className={variantIcon} {...props} />
-}
 
 /** The number of versions, naming their bundles in a tooltip. */
 function VersionCount(props: {bundleTitles: string[]}) {
@@ -93,7 +83,7 @@ function VariantMenuItem(props: {
   return (
     <MenuItem
       data-testid={`document-variant-${variant._id}`}
-      icon={hasVersions ? FilledVariantIcon : OutlineVariantIcon}
+      icon={<VariantMark fill={hasVersions ? 'filled' : 'outline'} size="row" />}
       iconRight={hasVersions ? <VersionCount bundleTitles={bundleTitles} /> : undefined}
       onClick={handleClick}
       pressed={isSelected}
@@ -272,7 +262,7 @@ export function DocumentVariantsMenu() {
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
-            icon={RhombusIcon}
+            icon={<VariantMark size="inline" />}
             onClear={selectedVariant ? handleSelectDefault : undefined}
             tone="suggest"
             text={
@@ -289,7 +279,12 @@ export function DocumentVariantsMenu() {
           showDefault ? (
             <MenuItem
               data-testid="document-variant-default"
-              icon={defaultBundleTitles.length > 0 ? FilledVariantIcon : OutlineVariantIcon}
+              icon={
+                <VariantMark
+                  fill={defaultBundleTitles.length > 0 ? 'filled' : 'outline'}
+                  size="row"
+                />
+              }
               iconRight={
                 defaultBundleTitles.length > 0 ? (
                   <VersionCount bundleTitles={defaultBundleTitles} />

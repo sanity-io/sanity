@@ -5,7 +5,7 @@ import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
-import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../../ui-components/variantMark'
 import {useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {
@@ -70,7 +70,7 @@ export function VariantsMenuStory() {
             trigger={
               <Button
                 data-testid="variants-nav-menu-button"
-                icon={RhombusIcon}
+                icon={<VariantMark size="row" />}
                 iconRight={ChevronDownIcon}
                 mode="bleed"
                 text="Default"

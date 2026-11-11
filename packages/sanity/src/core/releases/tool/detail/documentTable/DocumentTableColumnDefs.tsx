@@ -2,20 +2,20 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Card, Skeleton} from '@sanity/ui'
+import {Badge, Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {VariantMark} from '../../../../../ui-components/variantMark'
 import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
-import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
@@ -203,12 +203,6 @@ const documentActionColumn: (
   },
 })
 
-// Purple, matching the perspective bar's variant motif. The perspective bar gets its purple from a
-// `tone="suggest"` Card context (which defines --card-icon-color as the suggest purple); the
-// --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
-// suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
-const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
-
 /** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
@@ -249,9 +243,7 @@ const VariantCell = memo(
         }
       >
         <Flex alignItems="center" gap={2}>
-          <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Icon size={2} style={{margin: '-0.4375rem'}} icon={RhombusIcon} tone="suggest" />
-          </Card>
+          <VariantMark size="inline" />
           {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
               truncates with an ellipsis instead of overflowing the column. */}
           <Text

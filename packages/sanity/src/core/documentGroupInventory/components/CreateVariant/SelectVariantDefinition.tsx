@@ -1,6 +1,6 @@
 import {type ComponentType} from 'react'
 
-import {RhombusIcon, RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {getVariantTitle} from '../../../variants/tool/util'
@@ -25,7 +25,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
 
   return (
     <CreateVariantPicker
-      icon={RhombusIconLarge}
+      icon={<VariantMark size="row" />}
       label={t('document-group.create-variant.variant-label')}
       description={t('document-group.create-variant.variant-description')}
       testId="create-variant-variant-menu"
@@ -41,6 +41,6 @@ function toOption(variantDefinition: SystemVariant): CreateVariantPickerOption {
   return {
     key: variantDefinition._id,
     text: getVariantTitle(variantDefinition),
-    icon: RhombusIcon,
+    icon: <VariantMark size="row" />,
   }
 }
