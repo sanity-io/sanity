@@ -5,12 +5,14 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Suspense, useCallback, useMemo, useRef} from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
+import {getVersionFromId, isDraftId} from '../../util/draftUtils'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
@@ -314,57 +316,68 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   ])
 
+  // The slot of the base version the field marks compare with, named in the mark's tooltip.
+  const baseVariantId = (baseVariantValue as {_id?: unknown} | undefined)?._id
+  const comparedSlot =
+    typeof baseVariantId === 'string'
+      ? isDraftId(baseVariantId)
+        ? 'drafts'
+        : (getVersionFromId(baseVariantId) ?? 'published')
+      : undefined
+
   return (
-    <FormProvider
-      __internal_fieldActions={fieldActions}
-      __internal_patchChannel={patchChannel}
-      __internal_inspectOpen={inspectOpen}
-      autoFocus={autoFocus}
-      changesOpen={changesOpen}
-      collapsedFieldSets={collapsedFieldSets}
-      collapsedPaths={collapsedPaths}
-      documentId={value?._id}
-      focusPath={focusPath}
-      focused={focused}
-      groups={groups}
-      id={id}
-      onChange={onChange}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-      onPathOpen={onPathOpen}
-      onFieldGroupSelect={onFieldGroupSelect}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      presence={presence}
-      validation={validation}
-      readOnly={readOnly}
-      schemaType={schemaType}
-    >
-      <GetFormValueProvider value={value}>
-        <FormValueProvider value={value}>
-          <DocumentFieldActionsProvider actions={fieldActions}>
-            <FullscreenPTEProvider>
-              <DialogStackProvider>
-                {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
-                <EnhancedObjectDialogProvider>
-                  {/* Each field member and array item has a `FormNodeSuspense` of its own. This one
+    <BaseVariantComparisonContext.Provider value={comparedSlot}>
+      <FormProvider
+        __internal_fieldActions={fieldActions}
+        __internal_patchChannel={patchChannel}
+        __internal_inspectOpen={inspectOpen}
+        autoFocus={autoFocus}
+        changesOpen={changesOpen}
+        collapsedFieldSets={collapsedFieldSets}
+        collapsedPaths={collapsedPaths}
+        documentId={value?._id}
+        focusPath={focusPath}
+        focused={focused}
+        groups={groups}
+        id={id}
+        onChange={onChange}
+        onPathBlur={onPathBlur}
+        onPathFocus={onPathFocus}
+        onPathOpen={onPathOpen}
+        onFieldGroupSelect={onFieldGroupSelect}
+        onSetPathCollapsed={onSetPathCollapsed}
+        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+        presence={presence}
+        validation={validation}
+        readOnly={readOnly}
+        schemaType={schemaType}
+      >
+        <GetFormValueProvider value={value}>
+          <FormValueProvider value={value}>
+            <DocumentFieldActionsProvider actions={fieldActions}>
+              <FullscreenPTEProvider>
+                <DialogStackProvider>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
+                  <EnhancedObjectDialogProvider>
+                    {/* Each field member and array item has a `FormNodeSuspense` of its own. This one
                       catches the root input: suspending the pane instead would hide it after it
                       committed, detach the refs it keeps in state, and remount the form in a loop. */}
-                  <Suspense fallback={<LoadingBlock showText />}>
-                    <RootInput
-                      rootInputProps={rootInputProps}
-                      onPathOpen={onPathOpen}
-                      openPath={openPath}
-                      renderInput={renderInput}
-                    />
-                  </Suspense>
-                </EnhancedObjectDialogProvider>
-              </DialogStackProvider>
-            </FullscreenPTEProvider>
-          </DocumentFieldActionsProvider>
-        </FormValueProvider>
-      </GetFormValueProvider>
-    </FormProvider>
+                    <Suspense fallback={<LoadingBlock showText />}>
+                      <RootInput
+                        rootInputProps={rootInputProps}
+                        onPathOpen={onPathOpen}
+                        openPath={openPath}
+                        renderInput={renderInput}
+                      />
+                    </Suspense>
+                  </EnhancedObjectDialogProvider>
+                </DialogStackProvider>
+              </FullscreenPTEProvider>
+            </DocumentFieldActionsProvider>
+          </FormValueProvider>
+        </GetFormValueProvider>
+      </FormProvider>
+    </BaseVariantComparisonContext.Provider>
   )
 }
 

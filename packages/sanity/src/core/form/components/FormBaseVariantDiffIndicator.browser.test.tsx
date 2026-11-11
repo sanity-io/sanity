@@ -5,7 +5,7 @@ import {page} from 'vitest/browser'
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
 
-const LABEL = 'Changed from base variant'
+const LABEL = 'Differs from'
 
 function Fixture({changedFromBaseVariant}: {changedFromBaseVariant: boolean}) {
   return (
