@@ -66,16 +66,18 @@ pub fn CommandMenu() -> impl IntoView {
     let run = move |query: String| {
         let current = generation.get_value() + 1;
         generation.set_value(current);
+        // Closing the menu disposes state while spawn_local keeps running.
+        let still_current = move || generation.try_get_value() == Some(current);
         spawn_local(async move {
             if !query.trim().is_empty() {
                 sanity_client::sleep(150).await;
             }
-            if generation.get_value() != current {
+            if !still_current() {
                 return;
             }
             let all: Vec<String> = schema::current().document_types().iter().map(|def| def.name.clone()).collect();
             let result = search(&all, &query, 20).await;
-            if generation.get_value() == current {
+            if still_current() {
                 active.set(0);
                 documents.set(match result {
                     Ok(docs) => Documents::Ready(docs),
