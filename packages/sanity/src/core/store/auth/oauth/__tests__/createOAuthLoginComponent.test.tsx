@@ -155,6 +155,44 @@ describe('OAuth login component', () => {
     expect(flow).toMatchObject({redirectUri: ORIGIN, redirectPath: '/structure'})
   })
 
+  it('starts one sign-in for a double click', async () => {
+    // Both clicks land before React disables the button. Two sign-ins would each store a flow, and
+    // the response to whichever navigation the browser follows could meet the other one's.
+    const navigate = vi.fn()
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'}),
+      getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
+      navigate,
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+      </TestProvider>,
+    )
+    const button = screen.getByRole('button', {name: 'Sign in with Sanity'})
+
+    act(() => {
+      button.click()
+      button.click()
+    })
+
+    await waitFor(() => expect(navigate).toHaveBeenCalled())
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(navigate).toHaveBeenCalledTimes(1)
+    const flow = JSON.parse(sessionStorage.getItem(FLOW_KEY)!)
+    expect(new URL(navigate.mock.calls[0][0]).searchParams.get('state')).toBe(flow.state)
+  })
+
   it('reports that sign-in started, with nothing else', async () => {
     const store = _createOAuthAuthStore({
       projectId: PROJECT_ID,

@@ -987,7 +987,19 @@ export function _createOAuthAuthStore({
   /** The authorization server's refusal of this tab's last request, for the login screen. */
   const callbackError$ = new BehaviorSubject<OAuthCallbackError | undefined>(undefined)
 
-  async function login(redirectPath: string): Promise<void> {
+  // The sign-in that is starting. A second click before the button is disabled joins it: two
+  // sign-ins would each store a flow, and the response to whichever navigation the browser
+  // follows could meet the other one's and be ignored.
+  let startingLogin: Promise<void> | undefined
+
+  function login(redirectPath: string): Promise<void> {
+    startingLogin ??= startLogin(redirectPath).finally(() => {
+      startingLogin = undefined
+    })
+    return startingLogin
+  }
+
+  async function startLogin(redirectPath: string): Promise<void> {
     callbackError$.next(undefined)
     telemetryEvents$.next({type: 'sign-in-started'})
     const codeVerifier = createCodeVerifier()
