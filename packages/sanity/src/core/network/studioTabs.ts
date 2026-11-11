@@ -22,7 +22,10 @@ const studioTabs: {
   trackerCount: number
   stopTracking: (() => void) | undefined
   tabId: string | undefined
+  scope: string | undefined
   publishedCount: number | undefined
+  isStalled: boolean
+  publishedIsStalled: boolean | undefined
   releasePublished: (() => void) | undefined
   publishChain: Promise<void>
 } = {
@@ -30,7 +33,10 @@ const studioTabs: {
   trackerCount: 0,
   stopTracking: undefined,
   tabId: undefined,
+  scope: undefined,
   publishedCount: undefined,
+  isStalled: false,
+  publishedIsStalled: undefined,
   releasePublished: undefined,
   publishChain: Promise.resolve(),
 }
@@ -91,8 +97,11 @@ function decodeScope(encodedScope: string): string | undefined {
   }
 }
 
-function formatStudioTabLock({scope, tabId, count}: StudioTabLock): string {
-  return `${TAB_LOCK_PREFIX}${encodeURIComponent(scope)}:${tabId}:${count}`
+const STALLED_SUFFIX = ':s'
+
+function formatStudioTabLock({scope, tabId, count}: StudioTabLock, isStalled: boolean): string {
+  const name = `${TAB_LOCK_PREFIX}${encodeURIComponent(scope)}:${tabId}:${count}`
+  return isStalled ? `${name}${STALLED_SUFFIX}` : name
 }
 
 /**
@@ -125,6 +134,7 @@ export function startTrackingStudioTabs(scope: string): () => void {
 
 function trackStudioTabs(scope: string): () => void {
   const session = {isActive: true}
+  studioTabs.scope = scope
 
   // The count of open tabs only ever rises when a tab opens, so every tab samples it then.
   const channel = new BroadcastChannel(TAB_CHANNEL_NAME)
@@ -145,12 +155,27 @@ function trackStudioTabs(scope: string): () => void {
 
   return function stopTrackingSession() {
     session.isActive = false
+    studioTabs.scope = undefined
     unsubscribe()
     republish.cancel()
     channel.close()
     // Queued behind any swap in flight, so the lock it takes is the one released.
     studioTabs.publishChain = studioTabs.publishChain.then(releasePublishedLock)
   }
+}
+
+/**
+ * Flags this tab's presence lock as stalled behind the connection limit, or clears the flag,
+ * republished like a count change. A no-op before tracking starts - a tab that has never opened
+ * a listener holds no lock to flag.
+ *
+ * @internal
+ */
+export function setStalled(isStalled: boolean): void {
+  const {scope} = studioTabs
+  if (scope === undefined || studioTabs.isStalled === isStalled) return
+  studioTabs.isStalled = isStalled
+  void publishListenerCount(scope)
 }
 
 function publishListenerCount(scope: string): Promise<void> {
@@ -162,14 +187,18 @@ function publishListenerCount(scope: string): Promise<void> {
 // `navigator.locks.query()`; readers dedupe the brief overlap by tab id.
 async function replaceTabLock(scope: string): Promise<void> {
   const count = getListenerCountForScope(scope)
-  if (studioTabs.publishedCount === count) return
+  const {isStalled} = studioTabs
+  if (studioTabs.publishedCount === count && studioTabs.publishedIsStalled === isStalled) return
 
-  const releaseNext = await holdLock(formatStudioTabLock({scope, tabId: getStudioTabId(), count}))
+  const releaseNext = await holdLock(
+    formatStudioTabLock({scope, tabId: getStudioTabId(), count}, isStalled),
+  )
   if (releaseNext === undefined) return
 
   const releasePrevious = studioTabs.releasePublished
   studioTabs.releasePublished = releaseNext
   studioTabs.publishedCount = count
+  studioTabs.publishedIsStalled = isStalled
   releasePrevious?.()
 }
 
@@ -177,6 +206,7 @@ function releasePublishedLock(): void {
   studioTabs.releasePublished?.()
   studioTabs.releasePublished = undefined
   studioTabs.publishedCount = undefined
+  studioTabs.publishedIsStalled = undefined
 }
 
 // The browser releases the lock when the tab closes or crashes, so a held lock is an open tab.
