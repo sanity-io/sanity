@@ -505,6 +505,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
 
+  /** Placeholder of the filter input in the variants and releases menus of the document header */
+  'document-panel-navigation.filter-placeholder': 'Find',
   /** Placeholder of the search field in the releases menu of the document header */
   'document-panel-navigation.releases.filter-placeholder': 'Search releases…',
   /** Label of the releases menu trigger in the document header when no release is selected */
