@@ -1,6 +1,7 @@
 import {createBatchedStore, createSessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider, TelemetryProvider} from '@sanity/telemetry/react'
 import {render} from '@testing-library/react'
+import {StrictMode} from 'react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
 function createFakeLocks(): {locks: LockManager; held: string[]} {
@@ -173,4 +174,71 @@ it('logs straight to the workspace store once it has mounted', async () => {
   await vi.waitFor(() =>
     expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
   )
+})
+
+it('logs a stall already active before mount exactly once under StrictMode', async () => {
+  const {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch,
+    startTrackingStudioTabs,
+    store,
+  } = await setUpStall()
+  const logSpy = vi.spyOn(store.logger, 'log')
+
+  startTrackingStudioTabs('api.sanity.io')
+  await vi.runAllTimersAsync()
+
+  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+  await vi.advanceTimersByTimeAsync(10_000)
+
+  render(
+    <StrictMode>
+      <DeferredTelemetryProvider>
+        <ListenerStallTelemetry />
+        <TelemetryProvider store={store}>
+          <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+        </TelemetryProvider>
+      </DeferredTelemetryProvider>
+    </StrictMode>,
+  )
+
+  await vi.waitFor(() =>
+    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+  )
+  expect(logSpy).toHaveBeenCalledTimes(1)
+})
+
+it('logs one event per stall when two instances are mounted on the page', async () => {
+  const {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch,
+    startTrackingStudioTabs,
+    store,
+  } = await setUpStall()
+  const logSpy = vi.spyOn(store.logger, 'log')
+
+  render(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      <ListenerStallTelemetry />
+      <TelemetryProvider store={store}>
+        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+      </TelemetryProvider>
+    </DeferredTelemetryProvider>,
+  )
+
+  startTrackingStudioTabs('api.sanity.io')
+  await vi.runAllTimersAsync()
+
+  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+  await vi.advanceTimersByTimeAsync(10_000)
+
+  await vi.waitFor(() =>
+    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+  )
+  expect(logSpy).toHaveBeenCalledTimes(1)
 })
