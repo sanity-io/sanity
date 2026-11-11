@@ -1,13 +1,14 @@
 import {type SanityDocument} from '@sanity/client'
-import {render, renderHook, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- test stub for column defs
+import {type TFunction} from 'i18next'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {type SystemVariant} from '../../../../variants/types'
 import {activeScheduledRelease} from '../../../__fixtures__/release.fixture'
-import {releasesLocaleNamespace, releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ScheduledDraftVariantCell} from '../columnCells/ScheduledDraftVariantCell'
 import {scheduledDraftsOverviewColumnDefs} from '../ScheduledDraftsOverviewColumnDefs'
 
@@ -56,17 +57,16 @@ describe('scheduled drafts variant column', () => {
     vi.clearAllMocks()
   })
 
-  it('is only added when a variants map is passed', async () => {
-    const wrapper = await createTestProvider({resources: [releasesUsEnglishLocaleBundle]})
-    const {result} = renderHook(() => useTranslation(releasesLocaleNamespace), {wrapper})
+  it('is only added when a variants map is passed', () => {
+    const t = ((key: string) => key) as TFunction<'releases'>
 
-    expect(scheduledDraftsOverviewColumnDefs(result.current.t, 'active').map(({id}) => id)).toEqual(
-      ['documentPreview', 'publishAt', 'warning'],
-    )
+    expect(scheduledDraftsOverviewColumnDefs(t, 'active').map(({id}) => id)).toEqual([
+      'documentPreview',
+      'publishAt',
+      'warning',
+    ])
     expect(
-      scheduledDraftsOverviewColumnDefs(result.current.t, 'active', {variantsById}).map(
-        ({id}) => id,
-      ),
+      scheduledDraftsOverviewColumnDefs(t, 'active', {variantsById}).map(({id}) => id),
     ).toEqual(['variant', 'documentPreview', 'publishAt', 'warning'])
   })
 
