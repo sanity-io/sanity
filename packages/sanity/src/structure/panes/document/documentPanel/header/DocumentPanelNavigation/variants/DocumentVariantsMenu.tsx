@@ -21,7 +21,6 @@ import {
   useDocumentVersions,
   useListFormat,
   usePerspective,
-  useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
@@ -29,6 +28,7 @@ import {Flex} from 'ui5'
 
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
+import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {structureLocaleNamespace} from '../../../../../../i18n'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DropdownButton} from '../DropdownButton'
@@ -131,7 +131,7 @@ function withoutOtherAgentBundles(
 /**
  * Picks the variant of the default type the studio is working in. Lists Default, the variants the
  * document has versions in, with a count of those versions, and the other variants. Picking one
- * only changes the global variant selection.
+ * changes the global variant selection, and closes the scheduled draft open in this pane.
  *
  * @internal
  */
@@ -144,7 +144,7 @@ export function DocumentVariantsMenu() {
   const {data: activeReleases} = useActiveReleases()
   const {selectedPerspectiveName} = usePerspective()
   const selectedVariant = useSelectedVariant(DEFAULT_VARIANT_TYPE_KEY)
-  const setVariant = useSetVariant()
+  const {setVariant} = usePerspectiveNavigator()
   const [filterQuery, setFilterQuery] = useState('')
   const groupId = getPublishedId(documentId)
 

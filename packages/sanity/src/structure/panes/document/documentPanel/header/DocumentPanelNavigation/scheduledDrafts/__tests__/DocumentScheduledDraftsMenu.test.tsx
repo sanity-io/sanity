@@ -108,7 +108,7 @@ describe('DocumentScheduledDraftsMenu', () => {
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue({documentId: GROUP_ID})
     mockUsePerspective.mockReturnValue(createPerspective())
-    mockUsePerspectiveNavigator.mockReturnValue({navigate})
+    mockUsePerspectiveNavigator.mockReturnValue({navigate, setVariant: vi.fn()})
     mockUsePaneRouter.mockReturnValue({params: {view: 'form'}, setParams})
     mockUseScheduledDraftsEnabled.mockReturnValue(true)
     const activeReleases = [release, decemberDraft, novemberDraft, variantDraft]

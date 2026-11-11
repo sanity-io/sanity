@@ -74,7 +74,7 @@ describe('useNavigationBadges', () => {
     mockSchemaType(false)
     mockVersions(versions)
     mockUsePerspective.mockReturnValue(createPerspective())
-    mockUsePerspectiveNavigator.mockReturnValue({navigate})
+    mockUsePerspectiveNavigator.mockReturnValue({navigate, setVariant: vi.fn()})
     // Only the current user's agent bundle survives, the way `useAgentVersionDisplay` filters.
     mockUseAgentVersionDisplay.mockImplementation((versionIds) => ({
       filteredVersionIds: versionIds.filter((id) => getVersionFromId(id) === OWN_AGENT_BUNDLE),

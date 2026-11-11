@@ -9,12 +9,12 @@ import {
   useAllVariants,
   useDocumentVersions,
   usePerspective,
-  useSetVariant,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
@@ -34,17 +34,17 @@ vi.mock('sanity', async (importOriginal) => ({
   useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useSetVariant: vi.fn(),
 }))
 
 vi.mock('../../../../../useDocumentPane')
+vi.mock('../../../../../../../hooks/usePerspectiveNavigator')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseAgentVersionDisplay = useAgentVersionDisplay as Mock<typeof useAgentVersionDisplay>
 const mockUseAllVariants = useAllVariants as Mock<typeof useAllVariants>
 const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
-const mockUseSetVariant = useSetVariant as Mock<typeof useSetVariant>
+const mockUsePerspectiveNavigator = usePerspectiveNavigator as Mock<typeof usePerspectiveNavigator>
 const mockUseDocumentPane = useDocumentPane as Mock<() => Partial<DocumentPaneContextValue>>
 
 /** The only agent bundle `useAgentVersionDisplay` keeps in these tests. */
@@ -87,7 +87,7 @@ describe('DocumentVariantsMenu', () => {
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue({documentId: GROUP_ID})
     mockUsePerspective.mockReturnValue(createPerspective())
-    mockUseSetVariant.mockReturnValue(setVariant)
+    mockUsePerspectiveNavigator.mockReturnValue({navigate: vi.fn(), setVariant})
     mockUseActiveReleases.mockReturnValue({
       data: [summerSale],
       byId: new Map([[summerSale._id, summerSale]]),

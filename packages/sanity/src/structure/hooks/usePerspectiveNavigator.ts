@@ -1,13 +1,17 @@
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getVariantStickyParams,
   isCardinalityOneRelease,
   isReleaseDocument,
+  type SetVariant,
   type TargetPerspective,
   useGetDefaultPerspective,
   useSetPerspective,
+  useSetVariant,
   useSingleDocRelease,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 
@@ -16,6 +20,11 @@ interface PerspectiveNavigator {
    * Navigate to the provided perspective.
    */
   navigate: (perspective: TargetPerspective) => void
+  /**
+   * Select a variant, and the perspective when one is given. Closes the scheduled draft open in
+   * this pane, which only holds a version of the variant it was opened for.
+   */
+  setVariant: SetVariant
 }
 
 /**
@@ -26,6 +35,8 @@ interface PerspectiveNavigator {
  */
 export function usePerspectiveNavigator(): PerspectiveNavigator {
   const setPerspective = useSetPerspective()
+  const setGlobalVariant = useSetVariant()
+  const router = useRouter()
   const {params, setParams} = usePaneRouter()
   const defaultPerspective = useGetDefaultPerspective()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
@@ -70,5 +81,27 @@ export function usePerspectiveNavigator(): PerspectiveNavigator {
     [setPerspective, setParams, params, defaultPerspective, onSetScheduledDraftPerspective],
   )
 
-  return useMemo(() => ({navigate}), [navigate])
+  const setVariant = useCallback<SetVariant>(
+    (options) => {
+      if (!params?.scheduledDraft) {
+        setGlobalVariant(options)
+        return
+      }
+
+      const stickyParams = getVariantStickyParams(
+        options,
+        typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined,
+        defaultPerspective,
+      )
+      // Same race as above: the pane param and the variant change in one navigation.
+      // The router removes an empty sticky param, as it does a `null` one.
+      setParams(
+        {...params, scheduledDraft: undefined},
+        Object.fromEntries(Object.entries(stickyParams).map(([key, value]) => [key, value ?? ''])),
+      )
+    },
+    [defaultPerspective, params, router, setGlobalVariant, setParams],
+  )
+
+  return useMemo(() => ({navigate, setVariant}), [navigate, setVariant])
 }

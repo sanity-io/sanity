@@ -530,7 +530,11 @@ export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
-export {useSetVariant} from '../core/perspective/useSetVariant'
+export {
+  getVariantStickyParams,
+  type SetVariant,
+  useSetVariant,
+} from '../core/perspective/useSetVariant'
 export {
   DocumentPreviewPresence,
   type DocumentPreviewPresenceProps,
