@@ -96,7 +96,12 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
             muted
             size={1}
             icon={<ToggleArrowRightIcon />}
-            style={{transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`}}
+            // The negative margin trims the icon's 21px box to the glyph, so the glyph is centred in
+            // the 9px box instead of spilling into the label
+            style={{
+              margin: '-0.375rem',
+              transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`,
+            }}
           />
         </ToggleIconBox>
 
