@@ -491,6 +491,7 @@ describe('http2Options.settings.maxConcurrentStreams', () => {
   }
 
   test('queues the (n+1)th concurrent stream until one closes', async () => {
+    const heldResponses = new Map<string, {end: () => void}>()
     const proxy = await startProxy({
       port: 0,
       apiHost: 'unused.invalid',
@@ -501,6 +502,7 @@ describe('http2Options.settings.maxConcurrentStreams', () => {
           match: () => true,
           handler: (req, res) => {
             writeResponseHead(res, 200, undefined, {'content-type': 'text/plain'})
+            heldResponses.set(req.url ?? '', res)
             return Subscription.EMPTY
           },
         },
@@ -531,7 +533,9 @@ describe('http2Options.settings.maxConcurrentStreams', () => {
     await new Promise((resolve) => setTimeout(resolve, 200))
     expect(thirdResponded).toBe(false)
 
-    first.stream.close()
+    // On Linux a client reset lands in the same read as the queued HEADERS, and Node
+    // still counts the reset stream, so it rejects the new one with ENHANCE_YOUR_CALM
+    heldResponses.get('/v1/one')?.end()
     expect(await thirdResponse).toBe(200)
 
     second.stream.close()
