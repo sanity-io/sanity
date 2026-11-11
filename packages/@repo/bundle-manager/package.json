@@ -24,7 +24,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.21.0",
+    "@google-cloud/storage": "^7.22.0",
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
     "@repo/utils": "workspace:*",
