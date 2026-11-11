@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Card} from '@sanity/ui'
-import {type CSSProperties, type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
@@ -27,20 +27,31 @@ function FlyoutRow(props: {
   subtitle?: string
   media?: ReactNode
   /** A column the height of the whole row, for the variant diamond; empty on default rows so names align. */
-  leading?: ReactNode
+  renderLeading?: (active: boolean) => ReactNode
   trailing?: ReactNode
   onClick: () => void
-  selected?: boolean
+  /** The version the pane is viewing: the list's selected-but-inactive tint, until the row is hovered or focused. */
+  viewed?: boolean
 }) {
+  // Hover and keyboard focus are the menus' active state: the selected fill and text colours.
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const active = hovered || focused
+
   return (
     <PreviewCard
       __unstable_focusRing
       as="button"
       data-testid={props.testId}
+      onBlur={() => setFocused(false)}
       onClick={props.onClick}
+      onFocus={() => setFocused(true)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      pressed={Boolean(props.viewed) && !active}
       radius={2}
       role="menuitem"
-      selected={props.selected}
+      selected={active}
       sizing="border"
       style={{display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer'}}
       tabIndex={-1}
@@ -48,9 +59,13 @@ function FlyoutRow(props: {
       type="button"
     >
       {/* The same box as a document list row (`DefaultPreview`): 8px padding, a 33px media slot, a title and a muted subtitle 8px apart, both trimmed. */}
-      <Flex alignItems="center" padding={2} paddingLeft={props.media || props.leading ? 2 : 3}>
+      <Flex
+        alignItems="center"
+        padding={2}
+        paddingLeft={props.media || props.renderLeading ? 2 : 3}
+      >
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
-          {props.leading ? (
+          {props.renderLeading ? (
             <Flex
               alignItems="center"
               aria-hidden
@@ -60,7 +75,7 @@ function FlyoutRow(props: {
               justifyContent="center"
               style={{width: 25}}
             >
-              {props.leading}
+              {props.renderLeading(active)}
             </Flex>
           ) : null}
           {props.media ? (
@@ -100,11 +115,11 @@ function FlyoutRow(props: {
 function AudienceRow({
   group,
   onClick,
-  selected,
+  viewed,
 }: {
   group: DocumentVersionStatusGroup
   onClick: () => void
-  selected: boolean
+  viewed: boolean
 }) {
   const {t} = useTranslation()
   const schema = useSchema()
@@ -130,10 +145,10 @@ function AudienceRow({
   return (
     <FlyoutRow
       onClick={onClick}
-      selected={selected}
       subtitle={subtitle}
+      viewed={viewed}
       testId="document-versions-flyout-row"
-      leading={
+      renderLeading={(active) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
             <Icon
@@ -142,7 +157,7 @@ function AudienceRow({
               style={
                 {
                   'margin': '-0.375rem',
-                  '--icon-color': selected
+                  '--icon-color': active
                     ? 'var(--card-fg-color)'
                     : 'var(--card-badge-suggest-dot-color)',
                 } as CSSProperties
@@ -150,7 +165,7 @@ function AudienceRow({
             />
           ) : null}
         </span>
-      }
+      )}
       title={
         <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
           {name}
@@ -199,7 +214,7 @@ export function DocumentVersionsFlyoutList(props: {
             group={group}
             key={group.variantId ?? 'default'}
             onClick={() => onPick(group.variantId ?? null)}
-            selected={viewingDocument && (group.variantId ?? undefined) === viewedVariantId}
+            viewed={viewingDocument && (group.variantId ?? undefined) === viewedVariantId}
           />
         ))}
         <FlyoutRow
