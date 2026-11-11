@@ -35,6 +35,7 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
       </>
     ),
   },
+  {key: 'tabs', content: 'Try closing other Studio tabs.'},
 ]
 
 function NetworkTroubleshooting() {
