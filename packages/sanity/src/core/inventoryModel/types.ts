@@ -49,7 +49,7 @@ export interface InventoryIndex {
   versions: VersionStub[]
   /** Stubs per document (group id), each list in the shared version order. */
   byGroup: Map<string, VersionStub[]>
-  /** The documents (group ids) that have at least one version for a definition. */
+  /** The documents (group ids) that have at least one non-agent version for a definition. */
   groupsByVariant: Map<VariantId, Set<string>>
   /** Ranks a stub in the shared version order; lower comes first. */
   rank: (stub: VersionStub) => number

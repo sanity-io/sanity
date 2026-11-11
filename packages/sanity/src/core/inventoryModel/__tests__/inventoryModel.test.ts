@@ -214,4 +214,25 @@ describe('definitionLens', () => {
     expect(present).toEqual([{groupId: 'shell', state: 'release'}])
     expect(absent).toEqual([{groupId: 'cap', state: 'absent'}])
   })
+
+  it('leaves out documents whose only version for the definition is an agent version', () => {
+    const withAgent = buildInventoryIndex({
+      versions: [
+        ...fixture,
+        stub({
+          _id: 'versions.agent-proposal.cap',
+          groupId: 'cap',
+          kind: 'agent',
+          variantId: GERMAN,
+          bundle: 'agent-proposal',
+        }),
+      ],
+      releases,
+    })
+
+    const {present, absent} = definitionLens(withAgent, GERMAN, ['jacket', 'shell', 'cap'])
+
+    expect(present.map(({groupId}) => groupId)).not.toContain('cap')
+    expect(absent).toEqual([{groupId: 'cap', state: 'absent'}])
+  })
 })

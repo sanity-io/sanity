@@ -71,7 +71,9 @@ export function buildInventoryIndex({versions, releases}: InventoryIndexInput): 
       byGroup.set(stub.groupId, [stub])
     }
 
-    if (stub.variantId) {
+    // Agent versions are proposed changes, which every lens leaves out by default, so they do not
+    // make a document present for a definition (cellState has no state for them).
+    if (stub.variantId && stub.kind !== 'agent') {
       const groups = groupsByVariant.get(stub.variantId)
       if (groups) {
         groups.add(stub.groupId)
