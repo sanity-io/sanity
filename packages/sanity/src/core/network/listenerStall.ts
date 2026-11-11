@@ -1,4 +1,4 @@
-import {getOldestPendingRequest, subscribePendingRequests} from './listenerCount'
+import {getOldestPendingRequest, requestHost, subscribePendingRequests} from './listenerCount'
 import {setStalled} from './studioTabs'
 
 /**
@@ -14,6 +14,7 @@ const BOOT_STALL_URL_MARKER = '/users/me'
 
 /** @internal */
 export interface DetectedStall {
+  host: string
   isBootStall: boolean
   stallOccurrence: number
   stalledForMs: number
@@ -80,6 +81,7 @@ function detectStall(oldestPending: PendingRequest): void {
   setStalled(true)
 
   const stall: DetectedStall = {
+    host: requestHost(oldestPending.url),
     isBootStall: oldestPending.url.includes(BOOT_STALL_URL_MARKER),
     stallOccurrence: stallDetectorState.stallOccurrence,
     stalledForMs: Date.now() - oldestPending.startedAt,

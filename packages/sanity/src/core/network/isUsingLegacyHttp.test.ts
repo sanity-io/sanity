@@ -408,7 +408,19 @@ describe('isUsingLegacyHttp', () => {
       await firstValueFrom(getApiProtocol(client))
 
       expect(getMeasuredApiProtocol('api.sanity.work')).toBe('h3')
-      expect(getMeasuredApiProtocol('test.api.sanity.io')).toBeUndefined()
+    })
+
+    it('finds the root API host a request host falls under', async () => {
+      stubProtocolProbe('h3')
+      const client = {
+        config: () => ({apiHost: 'https://api.sanity.example'}),
+        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+      } as unknown as SanityClient
+
+      await firstValueFrom(getApiProtocol(client))
+
+      expect(getMeasuredApiProtocol('abc123.api.sanity.example')).toBe('h3')
+      expect(getMeasuredApiProtocol('sanity.example')).toBeUndefined()
     })
 
     it('never writes to localStorage, sessionStorage or IndexedDB', async () => {

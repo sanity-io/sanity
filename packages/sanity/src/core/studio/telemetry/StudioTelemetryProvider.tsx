@@ -30,7 +30,7 @@ import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {ListenerPeakTelemetry} from './ListenerPeakTelemetry'
-import {ListenerStallTelemetry} from './ListenerStallTelemetry'
+import {ListenerStallWorkspaceTelemetry} from './ListenerStallTelemetry'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
@@ -235,7 +235,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   return (
     <TelemetryProvider store={store}>
       <ListenerPeakTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
-      <ListenerStallTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
+      <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
       <PerformanceTelemetryTracker>{props.children}</PerformanceTelemetryTracker>
     </TelemetryProvider>
   )

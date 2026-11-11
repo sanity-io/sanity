@@ -1,6 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {defer, firstValueFrom, map, type Observable, of, tap} from 'rxjs'
 
+import {hostMatchesScope} from './listenerCount'
+
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
  * for this case: also allows _timing_ requests through the `timing-allow-origin` header.
@@ -31,14 +33,20 @@ const protocolChecks = new WeakMap<SanityClient, Promise<string>>()
 const measuredProtocols = new Map<string, string>()
 
 /**
- * This tab's own measured `nextHopProtocol` for `host` (a root API host, as
- * {@link getStudioTabScope} computes it), or `undefined` before the probe has resolved. No
- * browser storage - a fresh tab or reload measures again.
+ * This tab's own measured `nextHopProtocol` for the root API host `host` falls under (a root
+ * host itself, or a request host such as `<projectId>.<root>`, matched by
+ * {@link hostMatchesScope}), or `undefined` before the probe has resolved. No browser storage -
+ * a fresh tab or reload measures again.
  *
  * @internal
  */
 export function getMeasuredApiProtocol(host: string): string | undefined {
-  return measuredProtocols.get(host)
+  return (
+    measuredProtocols.get(host) ??
+    Array.from(measuredProtocols.entries()).find(([rootHost]) =>
+      hostMatchesScope(host, rootHost),
+    )?.[1]
+  )
 }
 
 function rootApiHost(client: SanityClient): string | undefined {
