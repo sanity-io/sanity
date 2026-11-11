@@ -11,13 +11,13 @@ import {
   LISTENER_STALL_TRIGGER_MS,
   subscribeListenerStall,
 } from '../../network/listenerStall'
-import {ListenerLimitMessageShown} from '../__telemetry__/listeners.telemetry'
+import {ListenerStallDetected} from '../__telemetry__/listeners.telemetry'
 
 const workspaceTelemetry: {logger: TelemetryLogger<unknown> | undefined} = {logger: undefined}
 let lastReportedStallOccurrence = 0
 
 /**
- * Classifies each listener stall detected in this tab and logs `ListenerLimitMessageShown` once
+ * Classifies each listener stall detected in this tab and logs `ListenerStallDetected` once
  * per occurrence. Render it directly inside `DeferredTelemetryProvider`, above `AuthBoundary`, so
  * a stall during boot is buffered until a workspace's telemetry store mounts.
  *
@@ -71,7 +71,7 @@ async function reportListenerStall(options: {
   const protocol = getMeasuredApiProtocol(stall.host)
   const telemetry = workspaceTelemetry.logger ?? fallbackTelemetry
 
-  telemetry.log(ListenerLimitMessageShown, {
+  telemetry.log(ListenerStallDetected, {
     kind: classifyStall({snapshot: ledgerSnapshot, protocol}),
     listenersAllTabs: ledgerSnapshot?.total ?? 0,
     listenersThisTab: ledgerSnapshot?.self?.count ?? 0,
