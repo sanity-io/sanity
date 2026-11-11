@@ -12,6 +12,7 @@ export interface ListenerCounts {
 }
 
 const listenerCounts: ListenerCounts = {open: 0, peak: 0}
+const listenerCountSubscribers = new Set<(counts: Readonly<ListenerCounts>) => void>()
 
 /**
  * How many listeners the Studio's clients hold open in this tab right now, and the most it has
@@ -22,6 +23,26 @@ const listenerCounts: ListenerCounts = {open: 0, peak: 0}
  */
 export function getListenerCounts(): Readonly<ListenerCounts> {
   return {...listenerCounts}
+}
+
+/**
+ * Calls `subscriber` whenever a listener opens or closes in this tab. Returns a function that
+ * stops the calls.
+ *
+ * @internal
+ */
+export function subscribeListenerCounts(
+  subscriber: (counts: Readonly<ListenerCounts>) => void,
+): () => void {
+  listenerCountSubscribers.add(subscriber)
+  return () => {
+    listenerCountSubscribers.delete(subscriber)
+  }
+}
+
+function notifyListenerCountSubscribers(): void {
+  const counts = getListenerCounts()
+  listenerCountSubscribers.forEach((subscriber) => subscriber(counts))
 }
 
 /**
@@ -68,9 +89,11 @@ async function fetchListener(input: string, init: FetchInit): Promise<FetchRespo
 export function openListener(): () => void {
   listenerCounts.open += 1
   listenerCounts.peak = Math.max(listenerCounts.peak, listenerCounts.open)
+  notifyListenerCountSubscribers()
 
   return once(() => {
     listenerCounts.open -= 1
+    notifyListenerCountSubscribers()
   })
 }
 

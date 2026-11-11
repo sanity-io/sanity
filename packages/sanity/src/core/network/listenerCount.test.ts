@@ -148,3 +148,24 @@ describe('listener counting fetch', () => {
     expect(listenerCount.getListenerCounts()).toEqual({open: 0, peak: 3})
   })
 })
+
+describe('listener count subscription', () => {
+  let listenerCount: ListenerCountModule
+
+  beforeEach(async () => {
+    vi.resetModules()
+    listenerCount = await import('./listenerCount')
+  })
+
+  it('calls the subscriber when a listener opens and when it closes, until unsubscribed', () => {
+    const subscriber = vi.fn()
+    const unsubscribe = listenerCount.subscribeListenerCounts(subscriber)
+
+    const release = listenerCount.openListener()
+    release()
+    unsubscribe()
+    listenerCount.openListener()
+
+    expect(subscriber.mock.calls).toEqual([[{open: 1, peak: 1}], [{open: 0, peak: 1}]])
+  })
+})
