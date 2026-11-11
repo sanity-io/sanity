@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {Box, Flex, Text} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
@@ -34,11 +34,18 @@ function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusIte
 /**
  * Displays the versions of a document: one line per audience, the default one first, then the
  * others by their latest edit. Each line shows the audience, when it was last published or edited,
- * and one status icon per kind of version it has.
+ * and one status icon per kind of version it has. A `footer`, when given, closes the list below a
+ * divider, for a hint that depends on where the list is shown.
  *
  * @internal
  */
-export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
+export function DocumentVersionsStatus({
+  documentGroupId,
+  footer,
+}: {
+  documentGroupId: string
+  footer?: ReactNode
+}) {
   const {t} = useTranslation()
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
@@ -90,6 +97,11 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
             </Text>
           </Box>
         </Flex>
+      )}
+      {footer && (
+        <Box borderTop data-testid="document-versions-status-footer">
+          {footer}
+        </Box>
       )}
     </div>
   )
