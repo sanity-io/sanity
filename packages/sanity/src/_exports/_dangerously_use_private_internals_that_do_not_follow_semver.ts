@@ -82,10 +82,7 @@ export {
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
-export {
-  DocumentVersionsFlyoutList,
-  useHasMultipleVersions,
-} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
+export {DocumentVersionsFlyoutList} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'

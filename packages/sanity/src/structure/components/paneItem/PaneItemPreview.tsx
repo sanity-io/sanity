@@ -20,7 +20,6 @@ import {
   getPublishedId,
   SanityDefaultPreview,
   useDocumentVersions,
-  useHasMultipleVersions,
   usePerspective,
   useWorkspace,
 } from 'sanity'
@@ -67,7 +66,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
   const rowSelected = useContext(PreviewCardContext)?.selected
-  const hasMultipleVersions = useHasMultipleVersions(publishedId)
   const renderFlyoutList = (actions: {onOpenInventory: () => void; onPick: () => void}) => (
     <DocumentVersionsFlyoutList
       documentGroupId={publishedId}
@@ -121,11 +119,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <DocumentVersionsStatusIndicator documentVersions={versions} />
         {versionsLinkChildId && (
-          <PaneItemVersionsFlyout
-            childId={versionsLinkChildId}
-            hasVersions={hasMultipleVersions}
-            renderList={renderFlyoutList}
-          />
+          <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList} />
         )}
       </Flex>
     </TooltipDelayGroupProvider>

@@ -2,15 +2,13 @@ import {act, fireEvent, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {RouterProvider} from 'sanity/router'
 import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {router} from '../../../router'
 import {type RouterPanes} from '../../../types'
 import {CLOSE_DELAY, OPEN_DELAY, PaneItemVersionsFlyout} from '../PaneItemVersionsFlyout'
-
-let hasVersions = true
 
 const renderList = ({
   onOpenInventory,
@@ -53,11 +51,7 @@ async function renderRow() {
       <PaneRouterContext.Provider value={paneRouterContextValue}>
         <a data-pane-item-row="" data-testid="row" href="#row" onClick={onRowClick} tabIndex={-1}>
           Winterhold
-          <PaneItemVersionsFlyout
-            childId="winterhold"
-            hasVersions={hasVersions}
-            renderList={renderList}
-          />
+          <PaneItemVersionsFlyout childId="winterhold" renderList={renderList} />
         </a>
       </PaneRouterContext.Provider>
     </RouterProvider>,
@@ -72,10 +66,6 @@ const advance = (ms: number) =>
   })
 
 describe('PaneItemVersionsFlyout', () => {
-  beforeEach(() => {
-    hasVersions = true
-  })
-
   it('opens after the hover delay, not at once', async () => {
     const {row, user} = await renderRow()
     await user.hover(row)
@@ -91,14 +81,6 @@ describe('PaneItemVersionsFlyout', () => {
     await advance(OPEN_DELAY - 50)
     await user.unhover(row)
     await advance(1000)
-    expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
-  })
-
-  it('does not open for a document with a single version', async () => {
-    hasVersions = false
-    const {row, user} = await renderRow()
-    await user.hover(row)
-    await advance(OPEN_DELAY * 2)
     expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
   })
 
