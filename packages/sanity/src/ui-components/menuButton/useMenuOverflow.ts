@@ -1,7 +1,7 @@
 import {useCallback} from 'react'
 
 /** Set on the scroller while its content is taller than it is. */
-export const MENU_OVERFLOWING_ATTRIBUTE = 'data-overflowing'
+const MENU_OVERFLOWING_ATTRIBUTE = 'data-overflowing'
 
 /**
  * Marks a menu's scroll container with `data-overflowing` while its content overflows, so styles
