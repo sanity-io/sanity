@@ -208,7 +208,9 @@ export function DocumentVersionsFlyoutList(props: {
           testId="document-versions-flyout-inventory"
           title={
             <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-              {t('document-group.flyout.see-all', {count: total})}
+              {total > 1
+                ? t('document-group.flyout.see-all', {count: total})
+                : t('document-group.flyout.manage-versions')}
             </Text>
           }
           trailing={<Icon icon={ChevronRightIcon} size={1} />}
