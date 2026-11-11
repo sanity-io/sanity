@@ -1,13 +1,13 @@
 diff --git a/packages/@sanity/mutator/src/document/BufferedDocument.ts b/packages/@sanity/mutator/src/document/BufferedDocument.ts
-index 92c170f424..fbfc06c630 100644
+index bb831eafba..e93514a933 100644
 --- a/packages/@sanity/mutator/src/document/BufferedDocument.ts
 +++ b/packages/@sanity/mutator/src/document/BufferedDocument.ts
-@@ -295,7 +295,7 @@ export class BufferedDocument {
+@@ -297,7 +297,7 @@ export class BufferedDocument {
+   }
  
    handleDocMutation(msg: {mutation: Mutation; document: Doc | null; remote: boolean}): void {
-     // If we have no local changes, we can just pass this on to the client
--    if (this.commits.length === 0 && !this.buffer.hasChanges()) {
-+    if (this.commits.length === 0) {
-       debug('Document mutated from remote with no local changes')
-       this.LOCAL = this.document.EDGE
-       this.buffer = new SquashingBuffer(this.LOCAL)
+-    if (this.hasLocalChanges()) {
++    if (this.commits.length > 0) {
+       debug('Document mutated from remote with local changes')
+ 
+       // If there are local edits, and the document was deleted, we need to purge those local edits now
