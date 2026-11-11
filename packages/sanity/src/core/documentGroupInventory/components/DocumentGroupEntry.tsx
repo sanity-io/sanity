@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
-import {Flex, Text} from 'ui5'
+import {Flex, Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {getDocumentVersionStatusTimestampKey} from '../../components/documentStatus/getDocumentVersionStatusTimestampKey'
@@ -73,21 +73,28 @@ export function DocumentGroupEntry({
           >
             {variant.name}
           </button>
-          <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
-            {isVariantRow && <RhombusIconLarge aria-hidden />}
-          </span>
-          <Flex flexDirection="column" gap={2}>
-            <Text size={1} weight="medium" trim={true}>
-              {variant.name}
-            </Text>
-            <Text muted size={1} as="div" trim={true} data-testid="version-secondary-line">
-              {release ? (
-                <ReleaseDateLine release={release} />
-              ) : (
-                <EditedLine neverPublished={neverPublished} version={document} />
+          <div className="version-text">
+            {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
+            <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
+              {isVariantRow && (
+                <Icon icon={RhombusIconLarge} size={1} aria-hidden style={{margin: '-0.375rem'}} />
               )}
-            </Text>
-          </Flex>
+            </span>
+            <div className="version-title">
+              <Text size={1} weight="medium" trim={true}>
+                {variant.name}
+              </Text>
+            </div>
+            <div className="version-secondary">
+              <Text muted size={1} as="div" trim={true} data-testid="version-secondary-line">
+                {release ? (
+                  <ReleaseDateLine release={release} />
+                ) : (
+                  <EditedLine neverPublished={neverPublished} version={document} />
+                )}
+              </Text>
+            </div>
+          </div>
         </div>
         <div className="atom">
           {isSelected && (

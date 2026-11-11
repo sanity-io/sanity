@@ -24,21 +24,46 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
     }
 
-    /* The variant diamond before a row's name, in the variant colour like the menus' and the
-       navbar chip's. A Default row keeps the width empty, so the names line up. */
+    /*
+     * The title and the second line share a column, after a column for the variant diamond. The
+     * diamond sits on the title line, centred on it, and a Default row keeps the empty column, so
+     * every name and every second line start at the same place.
+     */
+    .version-text {
+      --variant-mark-size: 9px;
+
+      display: grid;
+      grid-template-columns: var(--variant-mark-size) 1fr;
+      column-gap: ${space[2]}px;
+      row-gap: ${space[2]}px;
+      align-items: center;
+    }
+
     .variant-mark {
       display: flex;
-      flex: none;
+      grid-column: 1;
+      grid-row: 1;
       align-items: center;
       justify-content: center;
-      width: 1em;
-      height: 1.5em;
+      width: var(--variant-mark-size);
+      height: var(--variant-mark-size);
 
+      /* The variant colour, like the menus' and the navbar chip's diamond. */
       svg {
         --card-icon-color: var(--card-badge-suggest-icon-color);
         --icon-color: var(--card-badge-suggest-icon-color);
         color: var(--card-badge-suggest-icon-color);
       }
+    }
+
+    .version-title {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .version-secondary {
+      grid-column: 2;
+      grid-row: 2;
     }
 
     .primary-action {
