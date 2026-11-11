@@ -112,6 +112,38 @@ it('buffers a boot stall detected before any workspace store mounts, and sends i
   )
 })
 
+it('replays a stall detected before the component ever mounts, logged exactly once', async () => {
+  const {
+    ListenerStallTelemetry,
+    ListenerStallWorkspaceTelemetry,
+    ListenerLimitMessageShown,
+    countingFetch,
+    startTrackingStudioTabs,
+    store,
+  } = await setUpStall()
+  const logSpy = vi.spyOn(store.logger, 'log')
+
+  startTrackingStudioTabs('api.sanity.io')
+  await vi.runAllTimersAsync()
+
+  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+  await vi.advanceTimersByTimeAsync(10_000)
+
+  render(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      <TelemetryProvider store={store}>
+        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+      </TelemetryProvider>
+    </DeferredTelemetryProvider>,
+  )
+
+  await vi.waitFor(() =>
+    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+  )
+  expect(logSpy).toHaveBeenCalledTimes(1)
+})
+
 it('logs straight to the workspace store once it has mounted', async () => {
   const {
     ListenerStallTelemetry,
