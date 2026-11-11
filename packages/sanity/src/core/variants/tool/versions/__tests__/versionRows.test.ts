@@ -285,8 +285,12 @@ describe('visible range', () => {
     const flushes: (() => void)[] = []
     const tracker = createVisibleRowTracker(
       (groupIds) => reports.push(groupIds),
-      (flush) => flushes.push(flush),
+      (flush) => {
+        flushes.push(flush)
+        return () => {}
+      },
     )
+    tracker.start()
 
     const untrackA = tracker.track('a')
     tracker.track('a')
@@ -299,6 +303,34 @@ describe('visible range', () => {
     untrackA()
     flushes[1]!()
     expect(reports.at(-1)).toEqual(['a', 'b'])
+  })
+
+  it('reports nothing once stopped, and what changed meanwhile when started again', () => {
+    const reports: string[][] = []
+    const pending = new Set<() => void>()
+    const tracker = createVisibleRowTracker(
+      (groupIds) => reports.push(groupIds),
+      (flush) => {
+        pending.add(flush)
+        return () => pending.delete(flush)
+      },
+    )
+
+    // Rows mount before their parent's effect starts the tracker.
+    const untrack = tracker.track('a')
+    expect(pending.size).toBe(0)
+    const stop = tracker.start()
+    expect(pending.size).toBe(1)
+
+    // Unmounting cancels the pending report, and rows that unmount after it schedule nothing.
+    stop()
+    untrack()
+    expect(pending.size).toBe(0)
+    expect(reports).toEqual([])
+
+    tracker.start()
+    for (const flush of pending) flush()
+    expect(reports).toEqual([[]])
   })
 })
 

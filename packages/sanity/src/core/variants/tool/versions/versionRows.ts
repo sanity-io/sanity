@@ -223,31 +223,51 @@ export function getVisibleRange(
  * Collects the documents whose rows are mounted. The table only mounts the rows on screen (plus a
  * few), so this is what is visible; it reports once per batch of mounts and unmounts.
  *
+ * It reports only between `start()` and the stop function `start()` returns, so the component
+ * that owns it starts it in an effect: a report never lands after that component unmounts (or
+ * while it is hidden), and starting again reports whatever changed meanwhile.
+ *
  * @internal
  */
 export function createVisibleRowTracker(
   onChange: (groupIds: string[]) => void,
-  schedule: (flush: () => void) => void = (flush) => setTimeout(flush, 50),
-): {track: (groupId: string) => () => void} {
+  schedule: (flush: () => void) => () => void = (flush) => {
+    const timeout = setTimeout(flush, 50)
+    return () => clearTimeout(timeout)
+  },
+): {track: (groupId: string) => () => void; start: () => () => void} {
   const counts = new Map<string, number>()
-  let scheduled = false
+  let started = false
+  let changed = false
+  let cancel: (() => void) | undefined
   const flush = () => {
-    scheduled = false
+    cancel = undefined
+    changed = false
     onChange([...counts.keys()])
+  }
+  const requestFlush = () => {
+    changed = true
+    if (started && !cancel) cancel = schedule(flush)
   }
   const change = (groupId: string, delta: number) => {
     const count = (counts.get(groupId) ?? 0) + delta
     if (count > 0) counts.set(groupId, count)
     else counts.delete(groupId)
-    if (!scheduled) {
-      scheduled = true
-      schedule(flush)
-    }
+    requestFlush()
   }
   return {
     track: (groupId) => {
       change(groupId, 1)
       return () => change(groupId, -1)
+    },
+    start: () => {
+      started = true
+      if (changed) requestFlush()
+      return () => {
+        started = false
+        cancel?.()
+        cancel = undefined
+      }
     },
   }
 }

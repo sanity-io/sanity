@@ -287,6 +287,7 @@ export function VariantVersionsView(): React.JSX.Element {
   // range is recomputed when they change and when the document list changes.
   const [visibleGroupIds, setVisibleGroupIds] = useState<string[]>([])
   const [tracker] = useState(() => createVisibleRowTracker(setVisibleGroupIds))
+  useEffect(() => tracker.start(), [tracker])
   const {onVisibleGroupIds} = feed
   useEffect(() => onVisibleGroupIds(visibleGroupIds), [onVisibleGroupIds, visibleGroupIds])
 
