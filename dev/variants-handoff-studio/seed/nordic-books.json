@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "name": "Nordic Books list fixtures",
+    "date": "2026-10-16",
+    "use": "Figma C3 frames and Storybook C3/C4 stories. Mock data, not from any dataset.",
+    "rules": [
+      "A row shows media, title, the schema subtitle (may be null), then state glyphs.",
+      "The versions mark (icon + count) appears only when a document has more than draft and published, i.e. variants or releases attached.",
+      "Count = number of stored versions."
+    ],
+    "now": "2026-10-19T14:00:00.000Z",
+    "times": "Each version has createdMinutesAgo and updatedMinutesAgo: minutes before meta.now. Storybook turns them into ISO timestamps and formats them with the real useRelativeTime (minimal, temporal phrase) and the real document-status strings. createdMinutesAgo equal to updatedMinutesAgo reads \"Created\", otherwise \"Edited\"; a published version reads \"Published\"."
+  },
+  "audiences": [
+    "Returning visitors",
+    "First-time visitors",
+    "Loyal customers",
+    "Lapsed customers",
+    "Students",
+    "Members",
+    "Nordic region"
+  ],
+  "worlds": {
+    "off": {
+      "variants": false,
+      "note": "variants off: rows look exactly like stock Studio, no mark"
+    },
+    "on": {
+      "variants": true,
+      "draftsDisabled": false,
+      "liveEdit": false
+    },
+    "draftsDisabled": {
+      "variants": true,
+      "draftsDisabled": true,
+      "note": "everything goes through a release; no draft ring"
+    },
+    "liveEdit": {
+      "variants": true,
+      "liveEdit": true,
+      "note": "no drafts; only published"
+    }
+  },
+  "documents": [
+    {
+      "id": "book-lighthouse",
+      "title": "The Lighthouse Keeper's Almanac",
+      "subtitle": "By Maren Halvorsen · 2021",
+      "media": "image",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "12 Oct",
+          "release": null,
+          "updatedMinutesAgo": 10195,
+          "createdMinutesAgo": 24595
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "published",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 15900
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "draft",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 4380
+        },
+        {
+          "audience": "First-time visitors",
+          "state": "scheduled",
+          "when": "31 Oct",
+          "at": "9:00 AM",
+          "release": "Halloween",
+          "updatedMinutesAgo": 300,
+          "createdMinutesAgo": 4620
+        },
+        {
+          "audience": "Loyal customers",
+          "state": "draft",
+          "when": "3 days ago",
+          "release": null,
+          "updatedMinutesAgo": 4320,
+          "createdMinutesAgo": 7200
+        },
+        {
+          "audience": "Lapsed customers",
+          "state": "published",
+          "when": "2 weeks ago",
+          "release": null,
+          "updatedMinutesAgo": 20160,
+          "createdMinutesAgo": 34560
+        },
+        {
+          "audience": "Students",
+          "state": "published",
+          "when": "2 weeks ago",
+          "release": null,
+          "updatedMinutesAgo": 20160,
+          "createdMinutesAgo": 34560
+        },
+        {
+          "audience": "Students",
+          "state": "draft",
+          "when": "last week",
+          "release": null,
+          "updatedMinutesAgo": 10080,
+          "createdMinutesAgo": 12960
+        },
+        {
+          "audience": "Members",
+          "state": "published",
+          "when": "last month",
+          "release": null,
+          "updatedMinutesAgo": 43200,
+          "createdMinutesAgo": 57600
+        },
+        {
+          "audience": "Members",
+          "state": "scheduled",
+          "when": "20 Nov",
+          "at": "9:00 AM",
+          "release": "Black Friday",
+          "updatedMinutesAgo": 300,
+          "createdMinutesAgo": 4620
+        },
+        {
+          "audience": "Nordic region",
+          "state": "published",
+          "when": "last month",
+          "release": null,
+          "updatedMinutesAgo": 43200,
+          "createdMinutesAgo": 57600
+        },
+        {
+          "audience": "Nordic region",
+          "state": "draft",
+          "when": "today",
+          "release": null,
+          "updatedMinutesAgo": 125,
+          "createdMinutesAgo": 3005
+        }
+      ],
+      "note": "12 versions, 7 audiences: the 'many' case (popover shows the first 5 audiences, then the inventory line)"
+    },
+    {
+      "id": "book-salt",
+      "title": "Salt & Ember",
+      "subtitle": "By Tove Nilsen · 2019",
+      "media": "icon",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "10 Oct",
+          "release": null,
+          "updatedMinutesAgo": 13075,
+          "createdMinutesAgo": 27475
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "published",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 15900
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "draft",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 4380
+        }
+      ],
+      "note": "3 versions, one audience: the 'few' case"
+    },
+    {
+      "id": "book-field-guide",
+      "title": "A Field Guide to Small Hours",
+      "subtitle": "By Elif Demir · 2023",
+      "media": "image",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "5 Oct",
+          "release": null,
+          "updatedMinutesAgo": 20275,
+          "createdMinutesAgo": 34675
+        }
+      ],
+      "note": "stock: published only, no mark"
+    },
+    {
+      "id": "book-rail",
+      "title": "Notes from the Northern Rail",
+      "subtitle": "By Jonas Aalto · 2018",
+      "media": "icon",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "draft",
+          "when": "today",
+          "release": null,
+          "updatedMinutesAgo": 125,
+          "createdMinutesAgo": 125
+        }
+      ],
+      "note": "stock: draft only, no mark"
+    },
+    {
+      "id": "book-cartographer",
+      "title": "The Quiet Cartographer",
+      "subtitle": "By Ines Marques · 2022",
+      "media": "icon",
+      "presence": ["Ines M."],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "1 Oct",
+          "release": null,
+          "updatedMinutesAgo": 26035,
+          "createdMinutesAgo": 40435
+        },
+        {
+          "audience": null,
+          "state": "draft",
+          "when": "today",
+          "release": null,
+          "updatedMinutesAgo": 125,
+          "createdMinutesAgo": 3005
+        }
+      ],
+      "note": "stock: draft and published; presence avatar shown"
+    },
+    {
+      "id": "book-harvest",
+      "title": "Harvest Moon Cookbook: Seasonal Recipes from the Fjord Villages of Western Norway and Beyond",
+      "subtitle": "By Sigrid Berg · 2020",
+      "media": "icon",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "8 Oct",
+          "release": null,
+          "updatedMinutesAgo": 15955,
+          "createdMinutesAgo": 30355
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "published",
+          "when": "6 Oct",
+          "release": null,
+          "updatedMinutesAgo": 18835,
+          "createdMinutesAgo": 33235
+        },
+        {
+          "audience": "Loyal customers",
+          "state": "published",
+          "when": "6 Oct",
+          "release": null,
+          "updatedMinutesAgo": 18835,
+          "createdMinutesAgo": 33235
+        },
+        {
+          "audience": "Loyal customers",
+          "state": "draft",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 4380
+        },
+        {
+          "audience": "Students",
+          "state": "published",
+          "when": "2 Oct",
+          "release": null,
+          "updatedMinutesAgo": 24595,
+          "createdMinutesAgo": 38995
+        }
+      ],
+      "note": "long title truncates; 5 versions"
+    },
+    {
+      "id": "book-tidewater",
+      "title": "Tidewater",
+      "subtitle": null,
+      "media": "icon",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "3 Oct",
+          "release": null,
+          "updatedMinutesAgo": 23155,
+          "createdMinutesAgo": 37555
+        }
+      ],
+      "note": "schema has no subtitle: title only"
+    },
+    {
+      "id": "book-gardener",
+      "title": "Letters to a Young Gardener",
+      "subtitle": "By Paulo Reis · 2017",
+      "media": "image",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "2 Oct",
+          "release": null,
+          "updatedMinutesAgo": 24595,
+          "createdMinutesAgo": 38995
+        },
+        {
+          "audience": "Returning visitors",
+          "state": "draft",
+          "when": "yesterday",
+          "release": null,
+          "updatedMinutesAgo": 1500,
+          "createdMinutesAgo": 4380
+        }
+      ],
+      "note": "2 versions, a variant draft"
+    },
+    {
+      "id": "book-winterhold",
+      "title": "Winterhold",
+      "subtitle": "By Hanna Voss · 2024",
+      "media": "icon",
+      "presence": [],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "1 Oct",
+          "release": null,
+          "updatedMinutesAgo": 26035,
+          "createdMinutesAgo": 40435
+        },
+        {
+          "audience": "Members",
+          "state": "scheduled",
+          "when": "20 Nov",
+          "at": "9:00 AM",
+          "release": "Black Friday",
+          "updatedMinutesAgo": 300,
+          "createdMinutesAgo": 4620
+        },
+        {
+          "audience": "Loyal customers",
+          "state": "scheduled",
+          "when": "20 Nov",
+          "at": "9:00 AM",
+          "release": "Black Friday",
+          "updatedMinutesAgo": 300,
+          "createdMinutesAgo": 4620
+        },
+        {
+          "audience": "Students",
+          "state": "draft",
+          "when": "today",
+          "release": null,
+          "updatedMinutesAgo": 125,
+          "createdMinutesAgo": 3005
+        }
+      ],
+      "note": "4 versions; two scheduled in a release"
+    },
+    {
+      "id": "book-glass",
+      "title": "Glass Houses",
+      "subtitle": "By Omar Haddad · 2016",
+      "media": "image",
+      "presence": ["Omar H."],
+      "versions": [
+        {
+          "audience": null,
+          "state": "published",
+          "when": "28 Sep",
+          "release": null,
+          "updatedMinutesAgo": 30355,
+          "createdMinutesAgo": 44755
+        },
+        {
+          "audience": "Nordic region",
+          "state": "asap",
+          "when": "today",
+          "release": "ASAP (Copy)",
+          "updatedMinutesAgo": 45,
+          "createdMinutesAgo": 45
+        }
+      ],
+      "note": "2 versions, one 'ASAP' release; presence avatar"
+    }
+  ]
+}

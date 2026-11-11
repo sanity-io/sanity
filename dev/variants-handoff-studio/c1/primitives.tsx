@@ -1,0 +1,92 @@
+// MenuPopover, from the Storybook Variants 2.0 exploration (selector/primitives.tsx @ 53706f95a8; that file is a
+// copy of address-row/AddressMenus.tsx). Unchanged apart from imports.
+import {type KeyboardEvent, type ReactNode, useEffect, useRef} from 'react'
+
+import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
+
+/**
+ * A Popover that closes on Escape and on a press outside both the panel and its anchor. Keyboard
+ * focus moves through the search box and the rows with the arrow keys.
+ */
+const FIT = {maxWidth: 360, minWidth: 280, width: 'max-content'} as const
+
+export function MenuPopover(props: {
+  anchor: HTMLElement | null
+  open: boolean
+  onDismiss: () => void
+  /** A fixed width, or `fit`: as wide as the widest row, 280 to 360px, as core's perspective menu (GlobalPerspectiveMenu). */
+  width: number | 'fit'
+  children: ReactNode
+  testId: string
+  placement?: 'bottom-start' | 'bottom-end'
+  /** Arrow keys move focus between the search box and the rows (default). A panel with its own
+   * keyboard model, such as the C1 picker, turns it off. */
+  arrows?: boolean
+}) {
+  const {anchor, open, onDismiss, width, children, testId, arrows = true} = props
+  const panelRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+    const onPress = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (panelRef.current?.contains(target) || anchor?.contains(target)) return
+      onDismiss()
+    }
+    // Escape closes the menu wherever focus is: the anchor holds it as often as the panel does.
+    const onEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      onDismiss()
+      // Focus goes back to the control that opened the panel.
+      const control = anchor?.matches('button') ? anchor : anchor?.querySelector('button')
+      control?.focus()
+    }
+    document.addEventListener('mousedown', onPress)
+    document.addEventListener('keydown', onEscape)
+    return () => {
+      document.removeEventListener('mousedown', onPress)
+      document.removeEventListener('keydown', onEscape)
+    }
+  }, [open, anchor, onDismiss])
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!arrows || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) return
+    const focusable = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>(
+        'input, [data-menu-row], [data-ui="MenuItem"]',
+      ) ?? [],
+    )
+    if (!focusable.length) return
+    event.preventDefault()
+    const at = focusable.indexOf(event.target as HTMLElement)
+    const next = event.key === 'ArrowDown' ? at + 1 : at - 1
+    focusable[(next + focusable.length) % focusable.length]?.focus()
+  }
+
+  // Closed, the menu is not mounted: a hidden panel would keep its search box and rows in the page,
+  // and the search box could not take focus each time the menu opens.
+  if (!open || !anchor) return null
+
+  return (
+    <Popover
+      content={
+        <div
+          data-testid={testId}
+          onKeyDown={onKeyDown}
+          ref={panelRef}
+          style={width === 'fit' ? FIT : {width}}
+        >
+          {children}
+        </div>
+      }
+      fallbackPlacements={['bottom-end', 'bottom-start', 'top-start']}
+      open
+      padding={0}
+      placement={props.placement ?? 'bottom-start'}
+      portal
+      radius={3}
+      referenceElement={anchor}
+      shadow={3}
+    />
+  )
+}

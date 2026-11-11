@@ -1,0 +1,370 @@
+// Seeds the Variants 2.0 test dataset (ppsg7ml5 / variants-2-0): the Nordic Books fixture plus the
+// permutations Figma listed as missing (see ../PERMUTATIONS.md). Idempotent: re-run at will.
+//
+// Writes use the same APIs Studio uses, as in repos/northfold-storefront/scripts/seed.ts:
+//  - base documents and drafts: mutate createOrReplace
+//  - variant definitions: sanity.action.variant.definition.create
+//  - variant versions: sanity.action.document.variant.create (+ .publish), bundleId `drafts` or a release id
+//  - releases: sanity.action.release.create / .schedule / .archive / .publish
+// The token is read at runtime from ~/.config/sanity/config.json and is never printed.
+
+import {readFileSync} from 'node:fs'
+import {homedir} from 'node:os'
+import {join} from 'node:path'
+import {createClient, type SanityClient} from '@sanity/client'
+
+const projectId = 'ppsg7ml5'
+const dataset = 'variants-2-0'
+if (dataset !== 'variants-2-0') throw new Error('refusing to write outside the variants-2-0 dataset')
+
+const warn = console.warn
+console.warn = (...args: unknown[]) => {
+  if (String(args[0]).includes('experimental API version')) return
+  warn(...args)
+}
+
+const token = JSON.parse(readFileSync(join(homedir(), '.config', 'sanity', 'config.json'), 'utf8')).authToken
+if (typeof token !== 'string' || !token) throw new Error('No Sanity CLI authToken; run `sanity login`')
+
+const x: SanityClient = createClient({projectId, dataset, apiVersion: 'X', useCdn: false, token, perspective: 'raw'})
+const dated: SanityClient = createClient({projectId, dataset, apiVersion: '2025-02-19', useCdn: false, token, perspective: 'raw'})
+
+const log = (...a: unknown[]) => console.log(...a)
+const errBody = (e: any) => {
+  const b = e?.response?.body
+  return b ? JSON.stringify(b.error ?? b) : String(e?.message ?? e)
+}
+
+type Fixture = {
+  audiences: string[]
+  documents: Array<{
+    id: string
+    title: string
+    subtitle: string | null
+    versions: Array<{audience: string | null; state: 'published' | 'draft' | 'scheduled' | 'asap'; release: string | null}>
+  }>
+}
+const fixture: Fixture = JSON.parse(readFileSync(new URL('./nordic-books.json', import.meta.url), 'utf8'))
+
+// ------------------------------------------------------------------ definitions
+const slug = (audience: string) => audience.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '')
+const audienceVariantId = (audience: string) => `aud-${slug(audience)}`
+
+type Definition = {variantId: string; title: string; conditions: Record<string, string>; priority: number}
+const definitions: Definition[] = [
+  ...fixture.audiences.map((a) => ({
+    variantId: audienceVariantId(a),
+    title: a,
+    conditions: {audience: slug(a)},
+    priority: 20,
+  })),
+  // A second dimension (locale), plus two composites, so addresses with 2 chips exist.
+  {variantId: 'loc-en-gb', title: 'en-GB', conditions: {locale: 'en-GB'}, priority: 100},
+  {variantId: 'loc-de-de', title: 'de-DE', conditions: {locale: 'de-DE'}, priority: 100},
+  {variantId: 'loc-fr-fr', title: 'fr-FR', conditions: {locale: 'fr-FR'}, priority: 100},
+  // More dimensions, so the picker's three forms (1: list, 2 to 4: columns, 5+: rail) can all be reached by limiting
+  // how many the Config panel shows. One single-condition variant per value.
+  {variantId: 'mkt-united-kingdom', title: 'United Kingdom', conditions: {market: 'united-kingdom'}, priority: 90},
+  {variantId: 'mkt-germany', title: 'Germany', conditions: {market: 'germany'}, priority: 90},
+  {variantId: 'mkt-france', title: 'France', conditions: {market: 'france'}, priority: 90},
+  {variantId: 'chn-web', title: 'Web', conditions: {channel: 'web'}, priority: 40},
+  {variantId: 'chn-app', title: 'App', conditions: {channel: 'app'}, priority: 40},
+  {variantId: 'chn-email', title: 'Email', conditions: {channel: 'email'}, priority: 40},
+  {variantId: 'cmp-black-friday', title: 'Black Friday', conditions: {campaign: 'black-friday'}, priority: 60},
+  {variantId: 'cmp-halloween', title: 'Halloween', conditions: {campaign: 'halloween'}, priority: 60},
+  {variantId: 'plan-free', title: 'Free', conditions: {plan: 'free'}, priority: 30},
+  {variantId: 'plan-team', title: 'Team', conditions: {plan: 'team'}, priority: 30},
+  {variantId: 'plan-enterprise', title: 'Enterprise', conditions: {plan: 'enterprise'}, priority: 30},
+  // A long dimension (30 values) for the C1 picker's tall-list case.
+  {variantId: 'cty-argentina', title: 'Argentina', conditions: {country: 'argentina'}, priority: 25},
+  {variantId: 'cty-australia', title: 'Australia', conditions: {country: 'australia'}, priority: 25},
+  {variantId: 'cty-austria', title: 'Austria', conditions: {country: 'austria'}, priority: 25},
+  {variantId: 'cty-belgium', title: 'Belgium', conditions: {country: 'belgium'}, priority: 25},
+  {variantId: 'cty-brazil', title: 'Brazil', conditions: {country: 'brazil'}, priority: 25},
+  {variantId: 'cty-canada', title: 'Canada', conditions: {country: 'canada'}, priority: 25},
+  {variantId: 'cty-chile', title: 'Chile', conditions: {country: 'chile'}, priority: 25},
+  {variantId: 'cty-denmark', title: 'Denmark', conditions: {country: 'denmark'}, priority: 25},
+  {variantId: 'cty-egypt', title: 'Egypt', conditions: {country: 'egypt'}, priority: 25},
+  {variantId: 'cty-finland', title: 'Finland', conditions: {country: 'finland'}, priority: 25},
+  {variantId: 'cty-ghana', title: 'Ghana', conditions: {country: 'ghana'}, priority: 25},
+  {variantId: 'cty-greece', title: 'Greece', conditions: {country: 'greece'}, priority: 25},
+  {variantId: 'cty-iceland', title: 'Iceland', conditions: {country: 'iceland'}, priority: 25},
+  {variantId: 'cty-india', title: 'India', conditions: {country: 'india'}, priority: 25},
+  {variantId: 'cty-ireland', title: 'Ireland', conditions: {country: 'ireland'}, priority: 25},
+  {variantId: 'cty-italy', title: 'Italy', conditions: {country: 'italy'}, priority: 25},
+  {variantId: 'cty-japan', title: 'Japan', conditions: {country: 'japan'}, priority: 25},
+  {variantId: 'cty-kenya', title: 'Kenya', conditions: {country: 'kenya'}, priority: 25},
+  {variantId: 'cty-mexico', title: 'Mexico', conditions: {country: 'mexico'}, priority: 25},
+  {variantId: 'cty-netherlands', title: 'Netherlands', conditions: {country: 'netherlands'}, priority: 25},
+  {variantId: 'cty-new-zealand', title: 'New Zealand', conditions: {country: 'new-zealand'}, priority: 25},
+  {variantId: 'cty-norway', title: 'Norway', conditions: {country: 'norway'}, priority: 25},
+  {variantId: 'cty-peru', title: 'Peru', conditions: {country: 'peru'}, priority: 25},
+  {variantId: 'cty-poland', title: 'Poland', conditions: {country: 'poland'}, priority: 25},
+  {variantId: 'cty-portugal', title: 'Portugal', conditions: {country: 'portugal'}, priority: 25},
+  {variantId: 'cty-singapore', title: 'Singapore', conditions: {country: 'singapore'}, priority: 25},
+  {variantId: 'cty-south-africa', title: 'South Africa', conditions: {country: 'south-africa'}, priority: 25},
+  {variantId: 'cty-spain', title: 'Spain', conditions: {country: 'spain'}, priority: 25},
+  {variantId: 'cty-sweden', title: 'Sweden', conditions: {country: 'sweden'}, priority: 25},
+  {variantId: 'cty-switzerland', title: 'Switzerland', conditions: {country: 'switzerland'}, priority: 25},
+  {variantId: 'aud-loyal-customers__loc-de-de', title: 'Loyal customers · de-DE', conditions: {audience: 'loyal-customers', locale: 'de-DE'}, priority: 100},
+  {variantId: 'aud-students__loc-fr-fr', title: 'Students · fr-FR', conditions: {audience: 'students', locale: 'fr-FR'}, priority: 100},
+]
+
+// ------------------------------------------------------------------ releases
+const berlin = (date: string) => `${date}+01:00` // after the 25 Oct clock change
+type ReleaseSpec = {id: string; metadata: Record<string, unknown>; schedule?: string}
+const releases: Record<string, ReleaseSpec> = {
+  Halloween: {id: 'rHalloween', metadata: {title: 'Halloween', releaseType: 'scheduled', intendedPublishAt: new Date(berlin('2026-10-31T09:00:00')).toISOString()}, schedule: berlin('2026-10-31T09:00:00')},
+  'Black Friday': {id: 'rBlackFriday', metadata: {title: 'Black Friday', releaseType: 'scheduled', intendedPublishAt: new Date(berlin('2026-11-20T09:00:00')).toISOString()}, schedule: berlin('2026-11-20T09:00:00')},
+  'ASAP (Copy)': {id: 'rAsapCopy', metadata: {title: 'ASAP (Copy)', releaseType: 'asap'}},
+}
+
+// ------------------------------------------------------------------ helpers
+const results: Array<{label: string; ok: boolean; note?: string}> = []
+async function attempt(label: string, fn: () => Promise<string | void>) {
+  try {
+    const note = await fn()
+    results.push({label, ok: true, note: note || undefined})
+  } catch (e: any) {
+    results.push({label, ok: false, note: errBody(e)})
+  }
+}
+
+// Real content (seed/variant-content.json, written from docs/initiatives/curation-perspective-selector/variant-content.json):
+// base fields per book plus, per variant, only the fields that differ. A version is the base merged with its overrides.
+type Fields = {title?: string; subtitle?: string | null; blurb?: string; highlights?: string[]; promo?: string; badge?: string; cta?: string}
+type VariantContent = {
+  audiences: Record<string, Fields & {label?: string}>
+  books: Array<{id: string; base: Fields; variants: Record<string, Fields>}>
+  extras: Array<{id: string; base: Fields}>
+}
+const vc: VariantContent = JSON.parse(readFileSync(new URL('./variant-content.json', import.meta.url), 'utf8'))
+const baseOf = (id: string): Fields => vc.books.find((b) => b.id === id)?.base ?? vc.extras.find((e) => e.id === id)?.base ?? {}
+/** The document body for a book (and an optional variant): base, then the variant's own overrides, else the audience copy. */
+const contentFor = (id: string, variantId?: string, suffix = '') => {
+  const override: Fields & {label?: string} = variantId ? (vc.books.find((b) => b.id === id)?.variants[variantId] ?? vc.audiences[variantId] ?? {}) : {}
+  const merged: Record<string, unknown> = {...baseOf(id), ...override}
+  delete merged.label
+  if (suffix && typeof merged.blurb === 'string') merged.blurb = `${merged.blurb} ${suffix}`
+  return {_type: 'book', ...Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== undefined && v !== null))}
+}
+
+const content = (title: string, subtitle: string | null, blurb: string) => ({
+  _type: 'book',
+  title,
+  ...(subtitle ? {subtitle} : {}),
+  blurb,
+})
+
+async function releaseExists(id: string) {
+  return Boolean(await x.fetch(`*[_id == $id][0]._id`, {id: `_.releases.${id}`}))
+}
+
+async function ensureRelease(id: string, metadata: Record<string, unknown>) {
+  if (await releaseExists(id)) return false
+  await x.action({actionType: 'sanity.action.release.create', releaseId: id, metadata} as any)
+  return true
+}
+
+async function schedule(id: string, publishAt: string) {
+  await x.action({actionType: 'sanity.action.release.schedule', releaseId: id, publishAt: new Date(publishAt).toISOString()} as any)
+}
+
+async function variantVersion(publishedId: string, variantId: string, bundleId: string, document: Record<string, unknown>, publish = false) {
+  const create = {actionType: 'sanity.action.document.variant.create', publishedId, variantId, bundleId, document}
+  const actions: any[] = [create]
+  if (publish) actions.push({actionType: 'sanity.action.document.variant.publish', publishedId, variantId, bundleId})
+  try {
+    await x.action(actions as any, {tag: 'variants-2-0.seed.variant'})
+  } catch (e: any) {
+    if (!/already exists/i.test(errBody(e))) throw e
+    await x.action({actionType: 'sanity.action.document.variant.delete', publishedId, variantId, bundleId} as any)
+    await x.action(actions as any, {tag: 'variants-2-0.seed.variant'})
+  }
+}
+
+async function releaseVersion(releaseId: string, publishedId: string, document: Record<string, unknown>) {
+  await x.action(
+    {actionType: 'sanity.action.document.version.create', publishedId, document: {...document, _id: `versions.${releaseId}.${publishedId}`}} as any,
+    {tag: 'variants-2-0.seed.version'},
+  )
+}
+
+// ------------------------------------------------------------------ steps
+async function seedBase() {
+  const tx = dated.transaction()
+  let published = 0
+  let drafts = 0
+  for (const d of fixture.documents) {
+    const base = d.versions.filter((v) => v.audience === null)
+    const hasPublished = base.some((v) => v.state === 'published')
+    const hasDraft = base.some((v) => v.state === 'draft')
+    if (hasPublished) {
+      tx.createOrReplace({_id: d.id, ...contentFor(d.id)})
+      published++
+    }
+    if (hasDraft) {
+      tx.createOrReplace({_id: `drafts.${d.id}`, ...contentFor(d.id, undefined, hasPublished ? '(draft edit)' : '')})
+      drafts++
+    }
+  }
+  // Documents for the extra permutations (see seedExtras).
+  tx.createOrReplace({_id: 'book-scheduled-draft', ...contentFor('book-scheduled-draft')})
+  tx.createOrReplace({_id: 'drafts.book-scheduled-draft', ...contentFor('book-scheduled-draft', undefined, '(revised timetable)'), title: 'The Ferry Timetable (revised)'})
+  // Once the "published" release has run, its content is the published document: do not reset it.
+  const released = await releaseExists('rPublished')
+  tx.createOrReplace({_id: 'book-released', ...(released ? contentFor('book-released') : {...contentFor('book-released'), title: 'Harbour Lights', blurb: 'The harbour as it was before the reopening.'})})
+  tx.createOrReplace({_id: 'book-translations', ...contentFor('book-translations')})
+  tx.createOrReplace({_id: 'live-atlas', _type: 'bookLive', title: 'Atlas of Small Islands', subtitle: 'Live edit: no drafts', blurb: 'Published only'})
+  tx.createOrReplace({_id: 'live-almanac', _type: 'bookLive', title: 'Tide Almanac', subtitle: 'Live edit: no drafts', blurb: 'Published only'})
+  await tx.commit({visibility: 'sync'})
+  log(`base: ${published} published, ${drafts} drafts, plus extras (scheduled-draft, released, translations, 2 live-edit)`)
+}
+
+async function seedDefinitions() {
+  const existing: Array<{_id: string}> = await x.fetch(`*[_type == "system.variant"]{_id}`)
+  const have = new Set(existing.map((d) => d._id.replace(/^_\.variants\./, '')))
+  let created = 0
+  for (const def of definitions) {
+    if (have.has(def.variantId)) continue
+    await x.action(
+      {actionType: 'sanity.action.variant.definition.create', variantId: def.variantId, conditions: def.conditions, priority: def.priority, metadata: {title: def.title}} as any,
+      {tag: 'variants-2-0.seed.definition'},
+    )
+    created++
+  }
+  log(`definitions: ${definitions.length} (created ${created})`)
+}
+
+async function seedFixtureVariants() {
+  // A scheduled release cannot be mutated, so on a rerun its versions already exist: skip them.
+  const fresh = new Set<string>()
+  for (const spec of Object.values(releases)) if (await ensureRelease(spec.id, spec.metadata)) fresh.add(spec.id)
+  for (const d of fixture.documents) {
+    for (const v of d.versions) {
+      if (v.audience === null) continue
+      const variantId = audienceVariantId(v.audience)
+      // A draft next to a published version of the same variant reads as an edit of it.
+      const editOfPublished = v.state === 'draft' && d.versions.some((o) => o.audience === v.audience && o.state === 'published')
+      const doc = contentFor(d.id, variantId, editOfPublished ? '(draft edit)' : '')
+      await attempt(`${d.id} / ${v.audience} / ${v.state}`, async () => {
+        if (v.state === 'published') return variantVersion(d.id, variantId, 'drafts', doc, true)
+        if (v.state === 'draft') return variantVersion(d.id, variantId, 'drafts', doc)
+        const release = releases[v.release!]
+        if (!release) throw new Error(`unknown release ${v.release}`)
+        if (!fresh.has(release.id) && release.schedule) return 'release already scheduled'
+        return variantVersion(d.id, variantId, release.id, doc)
+      })
+    }
+  }
+  for (const spec of Object.values(releases)) {
+    if (spec.schedule && fresh.has(spec.id)) await attempt(`schedule ${spec.id}`, () => schedule(spec.id, spec.schedule!).then(() => spec.schedule!))
+  }
+}
+
+async function seedExtras() {
+  // 1. Scheduled draft (a cardinality `one` release), not in a normal release.
+  await attempt('scheduled draft (not in a release)', async () => {
+    const id = 'rSchedDraft'
+    if (await releaseExists(id)) return 'exists'
+    const at = berlin('2026-11-03T09:00:00')
+    await ensureRelease(id, {title: 'Scheduled draft', description: '', releaseType: 'scheduled', cardinality: 'one', intendedPublishAt: new Date(at).toISOString()})
+    await releaseVersion(id, 'book-scheduled-draft', {...contentFor('book-scheduled-draft', undefined, '(revised timetable)'), title: 'The Ferry Timetable (revised)'})
+    await schedule(id, at)
+  })
+  // 2. Undecided release, holding a base version and a variant version.
+  await attempt('undecided release', async () => {
+    if (await releaseExists('rUndecided')) return 'exists'
+    await ensureRelease('rUndecided', {title: 'Autumn catalogue (undecided)', releaseType: 'undecided'})
+    await releaseVersion('rUndecided', 'book-field-guide', contentFor('book-field-guide', undefined, '(autumn catalogue edition)'))
+    await variantVersion('book-salt', audienceVariantId('Students'), 'rUndecided', contentFor('book-salt', audienceVariantId('Students'), '(autumn catalogue edition)'))
+  })
+  // 3. Published release (moves the published document).
+  await attempt('published release', async () => {
+    if (await releaseExists('rPublished')) return 'exists'
+    await ensureRelease('rPublished', {title: 'Harbour relaunch (published)', releaseType: 'asap'})
+    await releaseVersion('rPublished', 'book-released', contentFor('book-released'))
+    await x.action({actionType: 'sanity.action.release.publish', releaseId: 'rPublished'} as any)
+  })
+  // 4. Archived release.
+  await attempt('archived release', async () => {
+    if (await releaseExists('rArchived')) return 'exists'
+    await ensureRelease('rArchived', {title: 'Spring list (archived)', releaseType: 'undecided'})
+    await releaseVersion('rArchived', 'book-tidewater', contentFor('book-tidewater', undefined, '(spring list)'))
+    await x.action({actionType: 'sanity.action.release.archive', releaseId: 'rArchived'} as any)
+  })
+  // 4b. A document that exists only inside a release (no published base, no draft).
+  await attempt('release-only document', async () => {
+    const exists = await x.fetch(`defined(*[_id == "versions.rAsapCopy.book-release-only"][0]._id)`)
+    if (exists) return 'exists'
+    await releaseVersion('rAsapCopy', 'book-release-only', content('The Unpublished Atlas', 'edge: release only', 'Exists only in the ASAP (Copy) release'))
+  })
+  // 5. A variant whose base was never published (book-rail has only a draft).
+  await attempt('variant with no published base', () =>
+    variantVersion('book-rail', audienceVariantId('Returning visitors'), 'drafts', contentFor('book-rail', audienceVariantId('Returning visitors'))),
+  )
+  // 6. Locale dimension, alone and combined with audience.
+  const t = contentFor('book-translations')
+  const de = 'Der längste Tag des Jahres in einem Haus, das nie ganz dunkel wird, über drei Generationen.'
+  const fr = "Le jour le plus long de l'année dans une maison qui ne s'assombrit jamais tout à fait, sur trois générations."
+  await attempt('locale variants', async () => {
+    await variantVersion('book-translations', 'loc-en-gb', 'drafts', {...t, subtitle: 'By Astrid Lund · 2023 · UK edition'}, true)
+    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer', subtitle: 'Von Astrid Lund · 2023', blurb: de, promo: 'Kostenloser Versand ab 40 Euro.', cta: 'In den Warenkorb'}, true)
+    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer (neu)', subtitle: 'Von Astrid Lund · 2023', blurb: `${de} (Entwurf)`, promo: 'Kostenloser Versand ab 40 Euro.', cta: 'In den Warenkorb'})
+    await variantVersion('book-translations', 'loc-fr-fr', 'drafts', {...t, title: 'La Saint-Jean', subtitle: 'Par Astrid Lund · 2023', blurb: fr, cta: 'Ajouter au panier'})
+    await variantVersion('book-translations', 'aud-loyal-customers__loc-de-de', 'drafts', {...t, title: 'Mittsommer für Stammkunden', subtitle: 'Von Astrid Lund · 2023', blurb: de, badge: 'Für Stammkunden', cta: 'Signiertes Exemplar reservieren'}, true)
+    await variantVersion('book-translations', 'aud-students__loc-fr-fr', 'rAsapCopy', {...t, title: 'La Saint-Jean, édition étudiante', subtitle: 'Par Astrid Lund · 2023', blurb: fr, badge: 'Prix étudiant', cta: 'Ajouter au prix étudiant'})
+  })
+}
+
+/**
+ * One published personalised version for every variant that variant-content.json lists for a book and the fixture does not
+ * already create, so each book has several visible versions. A book whose base was never published (book-rail) gets a draft.
+ */
+async function seedPersonalised() {
+  const have = new Set<string>()
+  for (const d of fixture.documents) for (const v of d.versions) if (v.audience) have.add(`${d.id}|${audienceVariantId(v.audience)}`)
+  have.add('book-salt|aud-students')
+  have.add('book-rail|aud-returning-visitors')
+  let created = 0
+  for (const book of vc.books) {
+    for (const variantId of Object.keys(book.variants)) {
+      if (have.has(`${book.id}|${variantId}`)) continue
+      await attempt(`${book.id} / ${variantId} / published`, async () => {
+        const doc = contentFor(book.id, variantId)
+        try {
+          await variantVersion(book.id, variantId, 'drafts', doc, true)
+        } catch {
+          await variantVersion(book.id, variantId, 'drafts', doc)
+          return 'draft only (the base is not published)'
+        }
+        created++
+      })
+    }
+  }
+  log(`personalised versions added by variant-content.json: ${created}`)
+}
+
+async function report() {
+  const counts = await x.fetch(`{
+    "definitions": count(*[_type == "system.variant"]),
+    "books": count(*[_type == "book" && !(_id in path("drafts.**")) && !(_id in path("versions.**"))]),
+    "drafts": count(*[_type == "book" && _id in path("drafts.**")]),
+    "releaseVersions": count(*[_id in path("versions.**")]),
+    "releases": count(*[_type == "system.release"]),
+    "live": count(*[_type == "bookLive"])
+  }`)
+  log('dataset now:', JSON.stringify(counts))
+  const failed = results.filter((r) => !r.ok)
+  log(`steps: ${results.length - failed.length} ok, ${failed.length} failed`)
+  for (const r of failed) log(`  FAILED  ${r.label}: ${r.note}`)
+}
+
+const t0 = Date.now()
+await seedBase()
+await seedDefinitions()
+await seedFixtureVariants()
+await seedExtras()
+await seedPersonalised()
+await report()
+log(`done in ${((Date.now() - t0) / 1000).toFixed(1)} s`)

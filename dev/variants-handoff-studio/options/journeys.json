@@ -1,0 +1,844 @@
+[
+  {
+    "id": "j01",
+    "task": "T2",
+    "title": "An editor creates a first variant definition by hand",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": "T2.1",
+    "components": ["C2", "C6"],
+    "steps": [
+      {
+        "title": "Open the Variants tool",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The shipped overview lists definitions with document counts. An empty state offers to create the first one.",
+        "story": "explorations-variants-2-0-components-c6-variants-tool--no-definitions",
+        "flowStep": 1
+      },
+      {
+        "title": "Start a new definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "A dialog asks for the dimension and the definition title.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--new-definition-dialog",
+        "flowStep": 2
+      },
+      {
+        "title": "Add the first condition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The same dialog takes one condition (for example locale = de-DE) and saves.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--new-definition-dialog",
+        "flowStep": 3
+      },
+      {
+        "title": "See the definition in the list",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail page of the new definition shows 0 documents and a Create action.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--created-definition",
+        "flowStep": 4
+      }
+    ]
+  },
+  {
+    "id": "j02",
+    "task": "T2",
+    "title": "An editor changes a variant definition",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": "T2.5",
+    "components": ["C6"],
+    "steps": [
+      {
+        "title": "Open a definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail page shows the definition, its conditions and its documents.",
+        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-with-documents",
+        "flowStep": 1
+      },
+      {
+        "title": "Change a condition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The Edit dialog opens with the conditions of the definition.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--edit-definition-dialog",
+        "flowStep": 2
+      },
+      {
+        "title": "Read the consequence",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The dialog names how many documents the change affects before saving.",
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-conditions-dialog",
+        "flowStep": 2
+      }
+    ]
+  },
+  {
+    "id": "j03",
+    "task": "T3",
+    "title": "From the base document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T3.1",
+    "components": ["C1", "C3", "C4", "C7"],
+    "steps": [
+      {
+        "title": "Open a base document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document list shows the base document with its version mark.",
+        "story": "explorations-variants-2-0-components-c3-version-mark--default",
+        "flowStep": 1
+      },
+      {
+        "title": "Open the perspective control",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The version pill opens its menu. An extra row adds a dimension.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": 2
+      },
+      {
+        "title": "Pick a dimension and a definition",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The perspective row appears. The studio shows the chosen variant, or the base if none exists.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": 2
+      },
+      {
+        "title": "See the missing-variant banner",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A banner says this document has no version for the shown variant and offers Create.",
+        "story": "explorations-variants-2-0-c7-banners-option-a--drafts-no-variant",
+        "flowStep": 2
+      },
+      {
+        "title": "Create the variant document",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The variant is created from the base as a draft. The banner disappears.",
+        "story": "explorations-variants-2-0-c7-banners-option-a--created",
+        "flowStep": 4
+      }
+    ]
+  },
+  {
+    "id": "j04",
+    "task": "T3",
+    "title": "From the document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T4.1",
+    "components": ["C3", "C4", "C7"],
+    "steps": [
+      {
+        "title": "Open a document list",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "Rows carry a version mark for documents that have versions.",
+        "story": "explorations-variants-2-0-components-c3-version-mark--default",
+        "flowStep": 1
+      },
+      {
+        "title": "Click the mark",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The base document opens with the version inventory beside it.",
+        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector",
+        "flowStep": 1
+      },
+      {
+        "title": "Read the inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "One row per stored version, with address and state.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
+        "flowStep": 2
+      },
+      {
+        "title": "Open a version from the inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document shows that version.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--open-a-version",
+        "flowStep": 2
+      }
+    ]
+  },
+  {
+    "id": "j05",
+    "task": "T3",
+    "title": "From a variant definition",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T3.2",
+    "components": ["C6", "C5"],
+    "steps": [
+      {
+        "title": "Open a definition in the Variants tool",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail table lists documents that have the version. Grey rows list documents that do not.",
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": 1
+      },
+      {
+        "title": "Select the grey rows",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The bulk bar offers Create and Add to release.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": 2
+      },
+      {
+        "title": "Confirm the creation",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The dialog names the address, the release and who is affected.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": 3
+      },
+      {
+        "title": "Verify",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "Per-row results show. The grey rows are now drafts, counted as pending.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": 4
+      }
+    ]
+  },
+  {
+    "id": "j06",
+    "task": "T4",
+    "title": "Composing a perspective",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T4.2",
+    "components": ["C1", "C2"],
+    "steps": [
+      {
+        "title": "Open the version menu",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "Published and Drafts show. Release sections show only if releases are on.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--menu-open",
+        "flowStep": 1
+      },
+      {
+        "title": "Add a dimension",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The panel opens; one dimension in open beta.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": 1
+      },
+      {
+        "title": "Choose a value",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row shows one chip. The studio shows that perspective.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": 1
+      },
+      {
+        "title": "Hide and show the row",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The version label toggles the row. The chip stays set.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--label-toggles-row",
+        "flowStep": 2
+      },
+      {
+        "title": "Clear",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The chip is removed and the studio returns to the base.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--clear-and-remove",
+        "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "j07",
+    "task": "T4",
+    "title": "Via the presentation tool",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T4.4",
+    "components": ["C1"],
+    "steps": [
+      {
+        "title": "Open Presentation",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The preview loads with the same perspective control as the studio.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-documents-on-this-page",
+        "flowStep": 1
+      },
+      {
+        "title": "Choose a dimension value",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "Choosing a value in the preview toolbar re-renders the preview for that audience. (Open question: the Presentation tool has only the navbar pill today.)",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation",
+        "flowStep": 2
+      },
+      {
+        "title": "Click to edit",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The document opens in the version the preview shows.",
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-open-document",
+        "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "j08",
+    "task": "T4",
+    "title": "An editor reads the dimension map and proposes a change",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": "T2.6",
+    "components": ["C5"],
+    "steps": [
+      {
+        "title": "Open Inventory, View by Dimension",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "One row per value with counts per lifecycle state.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens",
+        "flowStep": 1
+      },
+      {
+        "title": "Find a definition with no documents",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "A definition shows 0 of n documents.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens-empty-value",
+        "flowStep": 1
+      },
+      {
+        "title": "Open its definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The definition lens lists the documents with a Create action.",
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "j09",
+    "task": "T5",
+    "title": "Preview as an audience",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T5.2",
+    "components": ["C1", "C7"],
+    "steps": [
+      {
+        "title": "Open View by Visitor",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "The visitor picker shows one value per dimension, default Anyone.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens",
+        "flowStep": 1
+      },
+      {
+        "title": "Pick a visitor",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "Each document shows the version served and the grounds.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens",
+        "flowStep": 1
+      },
+      {
+        "title": "Open a served document",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The studio shows the served version. The banner appears only if the version is missing.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--served-document",
+        "flowStep": 2
+      }
+    ]
+  },
+  {
+    "id": "j10",
+    "task": "T6",
+    "title": "Delete a variant document from the document editor",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T6.1",
+    "components": ["C3", "C4"],
+    "steps": [
+      {
+        "title": "Open the variant version as its own document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document opens on that version. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector",
+        "flowStep": "trigger"
+      },
+      {
+        "title": "Open the version inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The version rows are listed with states.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
+        "flowStep": 1
+      },
+      {
+        "title": "Delete the variant version",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A dialog names the version and which audience falls back to what.",
+        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first",
+        "flowStep": 2
+      },
+      {
+        "title": "Verify",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row is gone. The base document is unchanged.",
+        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first",
+        "flowStep": "success"
+      }
+    ]
+  },
+  {
+    "id": "j11",
+    "task": "T6",
+    "title": "Delete a variant document from the Variants tool",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T6.3",
+    "components": ["C6", "C5"],
+    "steps": [
+      {
+        "title": "Open a definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail table lists its documents.",
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": 1
+      },
+      {
+        "title": "Select documents",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The bulk bar shows Delete.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results",
+        "flowStep": 3
+      },
+      {
+        "title": "Confirm the delete",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The dialog lists each document and the fallback per audience.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-consequence",
+        "flowStep": 4
+      },
+      {
+        "title": "Read per-row results",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "Each row reports success or failure on its own.",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results",
+        "flowStep": "success"
+      }
+    ]
+  },
+  {
+    "id": "j12",
+    "task": "T7",
+    "title": "Delete a variant definition that has no documents",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": "T7.1",
+    "components": ["C6"],
+    "steps": [
+      {
+        "title": "Open a definition with no documents",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail page shows 0 documents.",
+        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-no-documents",
+        "flowStep": 1
+      },
+      {
+        "title": "Delete the definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "A dialog confirms. No documents are affected.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--delete-definition-dialog",
+        "flowStep": 2
+      },
+      {
+        "title": "Verify",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The definition is gone from the overview.",
+        "story": "explorations-variants-2-0-c6-shipped-flow--list-after-delete",
+        "flowStep": 3
+      }
+    ]
+  },
+  {
+    "id": "j13",
+    "task": "T8",
+    "title": "Publish one variant document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": "T8.2",
+    "components": ["C3", "C4"],
+    "steps": [
+      {
+        "title": "Open the draft variant version as its own document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document opens on the draft version. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector",
+        "flowStep": "trigger"
+      },
+      {
+        "title": "Open the version inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The draft row is listed.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
+        "flowStep": null
+      },
+      {
+        "title": "Publish the variant version",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row turns Published. The base is unchanged.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--publish-from-the-inventory",
+        "flowStep": 1
+      },
+      {
+        "title": "Check the Releases tool",
+        "component": "C8",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/releases",
+        "expect": "The Releases tool lists releases. A variant published on its own is not part of one.",
+        "story": "explorations-variants-2-0-c8-releases-view-option-a--autumn",
+        "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "j14",
+    "task": "T5",
+    "title": "An editor sees which fields differ from the base",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "flow": null,
+    "components": ["C3", "C7"],
+    "steps": [
+      {
+        "title": "Open a variant version as its own document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document opens on the variant. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--open-a-version",
+        "flowStep": null
+      },
+      {
+        "title": "Read the marks in the form gutter",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A purple mark sits beside every field whose value differs from the base. Identical fields have none. The tooltip says Changed from base variant.",
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind",
+        "flowStep": null
+      },
+      {
+        "title": "Read a nested object and an array",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The changed leaf and its parent object are marked. An array shows one mark on the field, not on each item.",
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind",
+        "flowStep": null
+      },
+      {
+        "title": "Read a portable text field",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The field carries one mark. Which paragraph changed is not marked in open beta.",
+        "story": "explorations-variants-2-0-field-marks-portable-text--portable-text-treatments",
+        "flowStep": null
+      },
+      {
+        "title": "Open the same document in Presentation",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The marks show in the narrow document pane without clipping.",
+        "story": "explorations-variants-2-0-field-marks-narrow-pane--narrow-pane",
+        "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "e9-1",
+    "task": "E9",
+    "title": "Keep one document at another version while the studio moves on (local perspective)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "A reference opens beside the book, on its own perspective",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/book;book-lighthouse;author-maren-halvorsen,type=author,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The author pane names its address ('differs') and offers Follow global perspective; the book pane names nothing."
+      },
+      {
+        "title": "The global perspective changes; the local one is held",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-students",
+        "expect": "The second pane still shows Members; the row still says differs."
+      },
+      {
+        "title": "One action returns the pane to the global perspective",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Follow global perspective removes the row and the pane follows the Showing row again."
+      }
+    ]
+  },
+  {
+    "id": "e9-2",
+    "task": "E9",
+    "title": "Compare a variant with another address (one dimension)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "Open beside, Returning visitors against Members",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=drafts,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "One header: Comparing variants, Showing and Against, N changes in M fields, Copy link, Close comparison."
+      },
+      {
+        "title": "Same variant, Published against Drafts",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-returning-visitors?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The title reads: Seeing what changed since Published."
+      },
+      {
+        "title": "Two dimensions differ: refused, with the way back",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The header says Open beta compares one dimension at a time and offers one click back."
+      },
+      {
+        "title": "No version at the Against address",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-danish;e9-danish,localPerspective=drafts,localVariant=loc-da-dk?perspective=drafts",
+        "expect": "The header says no version here and offers Create Danish; nothing is written until then."
+      }
+    ]
+  },
+  {
+    "id": "e9-3",
+    "task": "E9",
+    "title": "Review what changed before publishing (Review changes panel and field marks)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "A draft of a variant: one mark per field, roll-up counts",
+        "component": "Field marks",
+        "option": "B",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Purple Changed bars, N changed inside on containers, Added, Moved and Removed on items, an unknown-field note, a roll-up on the collapsed Advanced field set."
+      },
+      {
+        "title": "Press a mark: before and after",
+        "component": "Field marks",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The peek shows before, after, the author and Open comparison."
+      },
+      {
+        "title": "The panel: Showing, Against, Revert with Undo",
+        "component": "Review panel",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Open History from the pane menu: Showing and Against rows, counterparts limited to one move, Revert per change with Undo, Open full view."
+      }
+    ]
+  },
+  {
+    "id": "e9-4",
+    "task": "E9",
+    "title": "Review many documents for one variant (list)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "The grouped list says which documents have the variant, and which differ",
+        "component": "List",
+        "option": "B",
+        "preset": "e9-b",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Has variant (10) and No variant (3); Returning visitors against Base: 7 of 10 differ; a Differs word on seven rows."
+      },
+      {
+        "title": "Walk the pass held in the list",
+        "component": "Review pass",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Review Returning visitors opens the first differing document as a comparison: Document 1 of 7 that differ, Next changed document, End review, Esc."
+      },
+      {
+        "title": "Open a version beside from the list",
+        "component": "List flyout",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The chevron lists the versions with Open beside; Cmd-click a row opens it beside."
+      }
+    ]
+  }
+]

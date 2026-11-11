@@ -1,0 +1,212 @@
+import {Flex, Text} from '@sanity/ui'
+import {useState} from 'react'
+import {type PerspectiveMenuExtension} from 'sanity'
+
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {STOCK_OPTION, useOption, useOptionState} from '../options/store'
+import {isLockedNav} from './lockedNav'
+import {Picker} from './Picker'
+import {usePerspectiveState} from './state'
+import {DimensionButton} from './StateMenu'
+
+/**
+ * The names that fit the control (about 200px of label), else "N variants".
+ * (Storybook exploration, perspective/TopRight.tsx @ 2700f4cf07.)
+ */
+export const FIT_CHARS = 26
+export function variantsLabel(titles: string[]): string {
+  if (!titles.length) return 'Variants'
+  const names = titles.join(', ')
+  return names.length <= FIT_CHARS ? names : `${titles.length} variants`
+}
+
+/** The pill (option A) or the Variants button (option B) shows only the count while the address row is visible and the setting asks for it. */
+export function showsCountOnly(
+  pillWhenOpen: 'summary' | 'versionCount',
+  rowShown: boolean,
+): boolean {
+  return pillWhenOpen === 'versionCount' && rowShown
+}
+
+/**
+ * Option A's pill rules. RULE v2 (Faheem, via the Figma agent): with nothing set the stock pill is unchanged, the
+ * chevron opens the version menu, and the extra row (first in the list's bottom card) opens the composed-address row
+ * and the panel. With something set, clicking the LABEL (the summary, e.g. "Drafts, Returning visitors") shows or
+ * hides the row, and the chevron still opens the version menu. Version stays one click; show/hide is one click and
+ * never a menu item.
+ * Set to false to compare with the earlier rule: no label toggle, and the menu carries "Show / Hide the variants row".
+ */
+export const PILL_LABEL_TOGGLES_ROW = true
+
+/**
+ * Copy of the extra row. Alternatives the Figma agent listed: 'View as…', 'Variants…', 'Choose dimensions…'.
+ * (The earlier wording was 'Narrow by dimension…'.)
+ */
+export const ADD_DIMENSION_COPY = 'Add a dimension…'
+
+/** Open beta has ONE dimension, so there is nothing to add: the row asks for that one list. (Wording is a proposal.) */
+export const EXTRA_ROW_COPY_OPEN_BETA = 'View as…'
+
+/**
+ * The two top-bar controls share ONE shape. `round` matches the stock Drafts pill (full radius); `box` is the 3px
+ * control. The row's chips follow CHIP_SHAPE, its buttons stay 3px.
+ */
+export const CONTROL_SHAPE: 'round' | 'box' = 'round'
+
+/**
+ * UI-CONSISTENCY section 1: a chip shows a chosen value or a state, so it is a pill (full radius), like the stock
+ * version chips in the document header. `round` (default) covers the row's chips (dimension chip with its cross,
+ * pending chip) and the row's state button; `box` is the 3px chip. Buttons (Add dimension, Clear) stay 3px.
+ */
+export const CHIP_SHAPE: 'round' | 'box' = 'round'
+
+/**
+ * Kept from the earlier rule: the pill ALWAYS opens the menu on its chevron. The Storybook exploration's rule (a
+ * click on the pill minimises the row) is not implemented, because the real pill belongs to stock Studio's navbar.
+ */
+export const PILL_ALWAYS_OPENS_MENU = true
+
+/**
+ * C1 OPTION A (one control): the stock version pill, extended through the PROPOSED `PerspectiveMenuExtensionProvider`.
+ * Its menu gains the first row of the bottom card, and the pill shows the chosen values after "Drafts".
+ * Must be a stable function: the Studio calls it as a hook.
+ */
+export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
+  const option = useOption('c1')
+  const s = usePerspectiveState()
+  const {stage, pillWhenOpen} = useOptionState()
+  const openBeta = stage === 'open-beta'
+  // C1 B (the open beta design): the state menu is the stock one. Its search field, list and actions are core's own now (all studios).
+  if (isLockedNav(option)) return undefined
+  if (option !== 'a') return undefined
+
+  const narrowed = Object.keys(s.chosen).length > 0
+  const addDimension = () => {
+    s.setRowShown(true)
+    s.setPending(true)
+  }
+  const toggleRow = () => {
+    if (s.rowShown) s.setRowShown(false)
+    else s.setRowShown(true)
+  }
+
+  const rows = PILL_LABEL_TOGGLES_ROW ? (
+    <MenuItem
+      data-testid="add-dimension"
+      icon={RhombusIcon}
+      onClick={addDimension}
+      text={openBeta ? EXTRA_ROW_COPY_OPEN_BETA : ADD_DIMENSION_COPY}
+    />
+  ) : (
+    // The earlier rule: one row that adds, or shows or hides the row.
+    <MenuItem
+      data-testid="narrow-by-dimension"
+      icon={RhombusIcon}
+      onClick={() =>
+        s.rowShown ? s.setRowShown(false) : narrowed ? s.setRowShown(true) : addDimension()
+      }
+      text={
+        s.rowShown
+          ? 'Hide the variants row'
+          : narrowed
+            ? 'Show the variants row'
+            : ADD_DIMENSION_COPY
+      }
+    />
+  )
+
+  return {
+    extraRows: rows,
+    // "Pill when the row is open" = count: while the address row shows the values, the pill keeps only the version and a count ("Drafts · 2").
+    labelSuffix:
+      s.valueTitles.length && showsCountOnly(pillWhenOpen, s.rowShown) ? (
+        <Text
+          data-testid="pill-count"
+          size={1}
+          style={{marginLeft: -4, paddingRight: 8, whiteSpace: 'nowrap'}}
+          weight="medium"
+        >
+          {' · '}
+          {s.valueTitles.length}
+        </Text>
+      ) : s.valueTitles.length ? (
+        // One string in one style: "Drafts, Loyal customers" (the comma follows the word), or "Drafts, 4 variants" when it would be too wide.
+        // The stock label sits in a box with 8px of padding on each side; the negative margin closes the gap before the comma.
+        <Text
+          data-testid="pill-values"
+          size={1}
+          style={{marginLeft: -8, paddingRight: 8, whiteSpace: 'nowrap'}}
+          weight="medium"
+        >
+          ,{' '}
+          {s.valueTitles.join(', ').length <= FIT_CHARS
+            ? s.valueTitles.join(', ')
+            : `${s.valueTitles.length} variants`}
+        </Text>
+      ) : null,
+    // Only once something is set does the label do anything.
+    ...(PILL_LABEL_TOGGLES_ROW && narrowed
+      ? {
+          onLabelClick: toggleRow,
+          labelExpanded: s.rowShown,
+          labelTitle: s.rowShown ? 'Hide the variants row' : 'Show the variants row',
+        }
+      : {}),
+  }
+}
+
+/**
+ * C1 OPTION B (two controls): the stock state pill stays where it is; this is the second one, "Variants", added
+ * through the navbar's own `__internal_actions` slot (location topbar). The chevron shows or hides the row once
+ * something is chosen; before that it opens the panel.
+ */
+export function VariantsControl() {
+  const option = useOption('c1')
+  const s = usePerspectiveState()
+  const {pillWhenOpen} = useOptionState()
+  const [panelEl, setPanelEl] = useState<HTMLElement | null>(null)
+  const [panel, setPanel] = useState(false)
+  if (option !== 'b') return null
+
+  const narrowed = Object.keys(s.chosen).length > 0
+  return (
+    <Flex align="center" gap={2}>
+      <div ref={setPanelEl}>
+        <DimensionButton
+          aria-expanded={narrowed ? s.rowShown : panel}
+          icon={<RhombusIcon />}
+          onClick={() => (narrowed ? s.setRowShown(!s.rowShown) : setPanel(!panel))}
+          open={narrowed && s.rowShown}
+          height={CONTROL_SHAPE === 'round' ? 33 : undefined}
+          shape={CONTROL_SHAPE}
+          testId="variants-button"
+          text={
+            s.valueTitles.length && showsCountOnly(pillWhenOpen, s.rowShown)
+              ? String(s.valueTitles.length)
+              : variantsLabel(s.valueTitles)
+          }
+        />
+      </div>
+      <Picker
+        anchor={panelEl}
+        chosen={s.chosen}
+        dimensions={s.dimensions}
+        onClear={() => s.setChosen({})}
+        onClose={() => setPanel(false)}
+        onPick={(dimension, key) => {
+          const next = {...s.chosen}
+          if (key === null) delete next[dimension]
+          else next[dimension] = key
+          s.setChosen(next)
+          setPanel(false)
+        }}
+        open={panel && !narrowed}
+        placement="bottom-end"
+        testId="variants-panel"
+      />
+    </Flex>
+  )
+}
+
+export {STOCK_OPTION}
