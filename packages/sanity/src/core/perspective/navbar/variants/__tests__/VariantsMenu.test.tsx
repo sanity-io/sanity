@@ -114,6 +114,15 @@ describe('VariantsMenu', () => {
     return view
   }
 
+  /**
+   * The menu moves the focus to its selected row one animation frame after it opens. Typing before
+   * that frame loses the first characters to the row, so wait for it, then type in the field.
+   */
+  async function typeInFilter(text: string) {
+    await waitFor(() => expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem'))
+    await userEvent.type(screen.getByPlaceholderText('Search variant definitions…'), text)
+  }
+
   it('marks the variant selected by the perspective provider', async () => {
     perspectiveContextValueMock.selectedVariants = [variantAlphaAudience]
     perspectiveContextValueMock.selectedVariantNames = [getVariantId(variantAlphaAudience._id)]
@@ -209,11 +218,9 @@ describe('VariantsMenu', () => {
   })
 
   it('filters the default option with the rest of the list', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'alpha')
+    await typeInFilter('alpha')
 
     expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
     expect(
@@ -222,11 +229,9 @@ describe('VariantsMenu', () => {
   })
 
   it('keeps the default option when the query matches its label', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'default')
+    await typeInFilter('default')
 
     expect(screen.getByTestId('variant-default')).toBeInTheDocument()
     expect(
@@ -236,11 +241,9 @@ describe('VariantsMenu', () => {
   })
 
   it('shows a message when the filter matches nothing', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Search variant definitions…'), 'zzz')
+    await typeInFilter('zzz')
 
     expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
       'Nothing matches "zzz"',
