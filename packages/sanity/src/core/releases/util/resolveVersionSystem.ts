@@ -22,10 +22,7 @@ import {getReleaseIdFromReleaseDocumentId} from './getReleaseIdFromReleaseDocume
  *
  * @internal
  */
-export function buildDocumentSystem(
-  id: string,
-  releases: ReleaseDocument[] | undefined,
-): DocumentSystem {
+function buildDocumentSystem(id: string, releases: ReleaseDocument[] | undefined): DocumentSystem {
   const versionId = getVersionFromId(id)
   if (versionId) {
     return {

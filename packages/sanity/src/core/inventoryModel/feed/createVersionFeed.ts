@@ -82,19 +82,8 @@ export interface VersionFeed {
   setVisibleRange: (range: VersionFeedRange) => void
 }
 
-/** @internal */
-export const DEFAULT_FEED_PAGE_SIZE = 50
-/** @internal */
-export const DEFAULT_FEED_OVERSCAN_PAGES = 1
-
-/** @internal */
-export const INITIAL_VERSION_FEED_STATE: VersionFeedState = {
-  groupIds: null,
-  pages: [],
-  versions: [],
-  loading: true,
-  error: null,
-}
+const DEFAULT_FEED_PAGE_SIZE = 50
+const DEFAULT_FEED_OVERSCAN_PAGES = 1
 
 /**
  * Which pages a range touches, plus the overscan on each side, clamped to the list.

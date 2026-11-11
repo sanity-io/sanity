@@ -37,7 +37,7 @@ export interface InventorySetPlacement {
  *
  * @internal
  */
-export const DEFAULT_INVENTORY_SET_PLACEMENT: InventorySetPlacement = {
+const DEFAULT_INVENTORY_SET_PLACEMENT: InventorySetPlacement = {
   proposedChanges: 'first',
   scheduledDrafts: 'byDate',
 }
