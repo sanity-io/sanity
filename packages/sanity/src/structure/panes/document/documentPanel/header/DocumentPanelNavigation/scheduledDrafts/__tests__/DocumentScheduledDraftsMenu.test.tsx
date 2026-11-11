@@ -149,7 +149,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     expect(screen.queryByTestId('document-scheduled-drafts-menu-button')).toBeNull()
   })
 
-  it('lists the scheduled drafts of the document by date, in one "Scheduled for:" section', async () => {
+  it('lists the scheduled drafts of the document by date, in one "Scheduled for" section', async () => {
     await renderMenu()
 
     expect(screen.getByTestId('document-scheduled-drafts-menu-button')).toHaveTextContent(
@@ -158,7 +158,7 @@ describe('DocumentScheduledDraftsMenu', () => {
     const menu = await openMenu()
 
     const section = within(menu).getByTestId('document-scheduled-drafts-menu-section-scheduled')
-    expect(section).toHaveTextContent('Scheduled for:')
+    expect(section).toHaveTextContent('Scheduled for')
     const november = within(section).getByTestId('document-scheduled-draft-rNovember')
     const december = within(section).getByTestId('document-scheduled-draft-rDecember')
     expect(november).toHaveTextContent('Nov 10, 2026')

@@ -525,7 +525,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
-  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for',
   /** Placeholder of the search field in the variants menu of the document header */
   'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
