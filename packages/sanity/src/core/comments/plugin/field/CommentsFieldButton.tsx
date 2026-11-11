@@ -7,7 +7,6 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Text, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -24,10 +23,7 @@ import {
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'
-
-const ContentStack = styled(Flex)`
-  width: 320px;
-`
+import {contentStack} from './CommentsFieldButton.css'
 
 interface CommentsFieldButtonProps {
   count: number
@@ -141,7 +137,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
 
     const content = (
-      <ContentStack padding={2} gap={4} flexDirection="column">
+      <Flex className={contentStack} padding={2} gap={4} flexDirection="column">
         <CommentInput
           currentUser={currentUser}
           focusLock
@@ -157,7 +153,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
           ref={commentInputHandle}
           value={value}
         />
-      </ContentStack>
+      </Flex>
     )
 
     return (
