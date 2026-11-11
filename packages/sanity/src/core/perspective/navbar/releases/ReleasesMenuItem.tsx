@@ -77,8 +77,26 @@ const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
     & svg {
       background-color: var(--card-bg-color);
     }
+    /* On the selected fill (the selected release, or the row under the pointer or keyboard focus)
+       the release icon takes the row's text colour, like the row's other icons. The avatar sets its
+       colour inline on the svg, so only !important beats it. */
+    [data-ui='MenuItem'][data-selected] & svg {
+      --card-icon-color: var(--card-fg-color) !important;
+      --icon-color: var(--card-fg-color) !important;
+    }
   `,
 )
+
+/**
+ * The lock of a scheduled release. At rest it is muted; on the selected fill the muted grey almost
+ * vanishes into the accent colour, so it takes the row's text colour.
+ */
+const LockIconBox = styled(Box)`
+  [data-ui='MenuItem'][data-selected] & svg {
+    --icon-color: var(--card-fg-color);
+    color: var(--card-fg-color);
+  }
+`
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {lastIndex} = range
@@ -237,7 +255,7 @@ export function ReleasesMenuItem(
           </Tooltip>
         )}
         {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
-          <Box padding={2}>
+          <LockIconBox padding={2}>
             <Icon
               size={1}
               muted
@@ -245,7 +263,7 @@ export function ReleasesMenuItem(
               icon={LockIcon}
               style={{margin: '-0.375rem'}}
             />
-          </Box>
+          </LockIconBox>
         )}
       </Box>
     </Flex>
