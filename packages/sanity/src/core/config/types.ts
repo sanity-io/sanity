@@ -786,6 +786,14 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
   /**
+   * Set `legacy: true` to keep using the legacy comments, stored in the comments addon dataset,
+   * instead of the Comments API.
+   * @public
+   */
+  comments?: {
+    legacy?: boolean
+  }
+  /**
    * @internal
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
@@ -1406,6 +1414,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
+  comments: DefaultPluginsWorkspaceOptions['comments']
   scheduledPublishing: ScheduledPublishingPluginOptions
   apps?: AppsOptions
 }
@@ -1446,7 +1455,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
-  comments: {v2: boolean}
+  comments: {legacy: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1745,14 +1754,6 @@ export interface BetaFeatures {
      * ```
      */
     types?: VariantTypesConfig
-  }
-  /**
-   * Config for the opt-in Comments API implementation.
-   *
-   * @internal
-   */
-  comments?: {
-    v2?: boolean
   }
   /**
    * Control whether the preview of the new document group inventory is

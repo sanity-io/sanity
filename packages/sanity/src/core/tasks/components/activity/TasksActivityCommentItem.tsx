@@ -3,10 +3,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {use} from 'react'
 import {css, styled} from 'styled-components'
 
-import {CommentsListItem as CommentsListItemV2} from '../../../comments-v2/components/list/CommentsListItem'
-import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
-import {CommentsListItem} from '../../../comments/components/list/CommentsListItem'
-import {useComments} from '../../../comments/hooks/useComments'
+import {CommentsListItem} from '../../../comments-v2/components/list/CommentsListItem'
+import {useComments} from '../../../comments-v2/hooks/useComments'
+import {CommentsListItem as CommentsListItemLegacy} from '../../../comments/components/list/CommentsListItem'
+import {useComments as useCommentsLegacy} from '../../../comments/hooks/useComments'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useWorkspace} from '../../../studio/workspace'
 import {useTasksMode} from '../../context/enabled/useTasksMode'
@@ -48,16 +48,16 @@ const CommentListItemRoot = styled.div((props) => {
 })
 
 /**
- * Comment thread in the activity log. Picks v1 or v2 from `beta.comments.v2`.
+ * Comment thread in the activity log. Picks v1 or v2 from `comments.legacy`.
  */
 export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
-  const {beta} = useWorkspace()
+  const {comments} = useWorkspace()
 
-  if (beta?.comments?.v2) {
-    return <TasksActivityCommentItemV2 {...props} />
+  if (comments.legacy) {
+    return <TasksActivityCommentItemV1 {...props} />
   }
 
-  return <TasksActivityCommentItemV1 {...props} />
+  return <TasksActivityCommentItemV2 {...props} />
 }
 
 /**
@@ -66,7 +66,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
 function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
   const mode = use(useTasksMode())
-  const {comments, operation} = useComments()
+  const {comments, operation} = useCommentsLegacy()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)
 
@@ -75,7 +75,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
   return (
     <ActivityItem userId={thread.parentComment.authorId} avatarPaddingTop={3}>
       <CommentListItemRoot>
-        <CommentsListItem
+        <CommentsListItemLegacy
           avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
           canReply
           currentUser={currentUser}
@@ -101,7 +101,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
 function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
   const mode = use(useTasksMode())
-  const {comments, operation, readOnly} = useCommentsV2()
+  const {comments, operation, readOnly} = useComments()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)
 
@@ -110,7 +110,7 @@ function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
   return (
     <ActivityItem userId={thread.parentComment._system.createdBy} avatarPaddingTop={3}>
       <CommentListItemRoot>
-        <CommentsListItemV2
+        <CommentsListItem
           avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
           canReply
           currentUser={currentUser}

@@ -4,10 +4,10 @@ import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
 import {Text, Box, Flex, VStack} from 'ui5'
 
-import {CommentDeleteDialog as CommentDeleteDialogV2} from '../../../comments-v2/components/CommentDeleteDialog'
-import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
-import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
-import {useComments} from '../../../comments/hooks/useComments'
+import {CommentDeleteDialog} from '../../../comments-v2/components/CommentDeleteDialog'
+import {useComments} from '../../../comments-v2/hooks/useComments'
+import {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../../../comments/components/CommentDeleteDialog'
+import {useComments as useCommentsLegacy} from '../../../comments/hooks/useComments'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {set} from '../../../form/patch/patch'
 import {type PatchEvent} from '../../../form/patch/PatchEvent'
@@ -123,20 +123,20 @@ type Activity =
  * needs.
  */
 export function TasksActivityLog(props: TasksActivityLogProps) {
-  const {beta} = useWorkspace()
+  const {comments} = useWorkspace()
 
-  if (beta?.comments?.v2) {
-    return <TasksActivityLogV2 {...props} />
+  if (comments.legacy) {
+    return <TasksActivityLogV1 {...props} />
   }
 
-  return <TasksActivityLogV1 {...props} />
+  return <TasksActivityLogV2 {...props} />
 }
 
 /**
  * Reads and writes comments via the v1 comments context.
  */
 function TasksActivityLogV1(props: TasksActivityLogProps) {
-  const {comments, mentionOptions, operation, getComment} = useComments()
+  const {comments, mentionOptions, operation, getComment} = useCommentsLegacy()
 
   const taskComments = useMemo(
     () =>
@@ -165,7 +165,7 @@ function TasksActivityLogV1(props: TasksActivityLogProps) {
  * Reads and writes comments via the v2 comments context.
  */
 function TasksActivityLogV2(props: TasksActivityLogProps) {
-  const {comments, mentionOptions, operation, getComment} = useCommentsV2()
+  const {comments, mentionOptions, operation, getComment} = useComments()
 
   const taskComments = useMemo(
     () =>
@@ -230,7 +230,7 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
     taskComments,
   } = props
   const currentUser = useCurrentUser()
-  const {title: workspaceTitle, basePath, name: workspaceName, beta} = useWorkspace()
+  const {title: workspaceTitle, basePath, name: workspaceName, comments} = useWorkspace()
 
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
   const [commentDeleteError, setCommentDeleteError] = useState<Error | null>(null)
@@ -359,7 +359,7 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
   }, [commentToDeleteId, taskComments])
 
   // Pick the delete dialog for the comments implementation the workspace is using.
-  const DeleteDialog = beta?.comments?.v2 ? CommentDeleteDialogV2 : CommentDeleteDialog
+  const DeleteDialog = comments.legacy ? CommentDeleteDialogLegacy : CommentDeleteDialog
 
   return (
     <>

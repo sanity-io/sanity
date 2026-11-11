@@ -58,7 +58,6 @@ import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
   collapseArrayItemsReducer,
-  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentAskToEditEnabledReducer,
@@ -907,13 +906,9 @@ function resolveSource({
     })
   }
 
-  const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
 
   const beta: BetaFeatures = {
-    comments: {
-      v2: commentsV2Enabled,
-    },
     eventsAPI: {
       // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
       documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),

@@ -459,13 +459,12 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
-    name: 'comments-v2',
-    title: 'Comments v2',
-    subtitle: 'Default workspace with the comments v2 beta enabled',
-    basePath: '/comments-v2',
-    beta: {
-      ...defaultWorkspace.beta,
-      comments: {v2: true},
+    name: 'comments-legacy',
+    title: 'Comments legacy',
+    subtitle: 'Default workspace with legacy comments enabled',
+    basePath: '/comments-legacy',
+    comments: {
+      legacy: true,
     },
   },
   {

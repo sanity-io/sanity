@@ -14,7 +14,7 @@ const meta = {
   component: CommentOriginBadge,
   decorators: [
     (Story) => (
-      <TestWrapper betaFeatures={{comments: {v2: true}}} schemaTypes={[]}>
+      <TestWrapper schemaTypes={[]}>
         <Story />
       </TestWrapper>
     ),

@@ -5,7 +5,6 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -439,39 +438,6 @@ describe('variantsEnabledReducer', () => {
         initialValue: false,
       }),
     ).toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
-  })
-})
-
-describe('commentsV2EnabledReducer', () => {
-  it('returns the last configured boolean, with the root config winning', () => {
-    expect(
-      commentsV2EnabledReducer({
-        config: {
-          name: 'root',
-          beta: {comments: {v2: false}},
-          plugins: [{name: 'plugin', beta: {comments: {v2: true}}}],
-        },
-        initialValue: false,
-      }),
-    ).toBe(false)
-  })
-
-  it('throws when beta.comments is not an object', () => {
-    expect(() =>
-      commentsV2EnabledReducer({
-        config: {name: 'test', beta: {comments: true as never}},
-        initialValue: false,
-      }),
-    ).toThrow('Expected `beta.comments` to be an object, but received boolean')
-  })
-
-  it('throws when v2 is not a boolean', () => {
-    expect(() =>
-      commentsV2EnabledReducer({
-        config: {name: 'test', beta: {comments: {v2: 'yes' as never}}},
-        initialValue: false,
-      }),
-    ).toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
   })
 })
 
