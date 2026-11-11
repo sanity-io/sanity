@@ -484,6 +484,13 @@ describe('DocumentGroupSet', () => {
     expect(defaultMark.getBoundingClientRect().width).toBe(
       variantMark.getBoundingClientRect().width,
     )
-    expect(defaultMark.getBoundingClientRect().width).toBeGreaterThan(0)
+    // The width of the leading slot of the document list's versions flyout
+    expect(defaultMark.getBoundingClientRect().width).toBe(25)
+    // The column spans both lines, and the diamond is centred on the whole block
+    const text = variantMark.parentElement!.getBoundingClientRect()
+    const diamond = variantMark.querySelector('svg')!.getBoundingClientRect()
+    expect(Math.abs(diamond.top + diamond.height / 2 - (text.top + text.height / 2))).toBeLessThan(
+      1,
+    )
   })
 })

@@ -25,15 +25,16 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * The title and the second line share a column, after a column for the variant diamond. The
-     * diamond sits on the title line, centred on it, and a Default row keeps the empty column, so
-     * every name and every second line start at the same place.
+     * The title and the second line share a column, after a 25px column for the variant diamond,
+     * the width of the leading slot of the document list's versions flyout. The column spans both
+     * lines and the diamond is centred on the whole block, not on the title line. A Default row
+     * keeps the empty column, so every name and every second line start at the same place.
      */
     .version-text {
-      --variant-mark-size: 9px;
+      --variant-mark-column: 25px;
 
       display: grid;
-      grid-template-columns: var(--variant-mark-size) 1fr;
+      grid-template-columns: var(--variant-mark-column) 1fr;
       column-gap: ${space[2]}px;
       row-gap: ${space[2]}px;
       align-items: center;
@@ -42,11 +43,11 @@ export const VariantSetEntry = styled.div(({theme}) => {
     .variant-mark {
       display: flex;
       grid-column: 1;
-      grid-row: 1;
+      grid-row: 1 / span 2;
       align-items: center;
+      align-self: stretch;
       justify-content: center;
-      width: var(--variant-mark-size);
-      height: var(--variant-mark-size);
+      width: var(--variant-mark-column);
 
       /* The variant colour, like the menus' and the navbar chip's diamond. */
       svg {
