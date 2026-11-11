@@ -115,7 +115,9 @@ function AudienceRow({
     group.items.some((item) => readVersionType(item.version) === 'draft') &&
     !group.items.some((item) => readVersionType(item.version) === 'published')
   const subtitle = neverPublished
-    ? t('document-status.edited-not-published', {date: timeAgo})
+    ? t('document-group.version.not-published-yet', {
+        status: t('document-status.edited', {date: timeAgo}),
+      })
     : t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
 
   return (
