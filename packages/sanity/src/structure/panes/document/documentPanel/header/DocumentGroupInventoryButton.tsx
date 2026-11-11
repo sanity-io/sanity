@@ -1,3 +1,4 @@
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -5,7 +6,9 @@ import {useDocumentGroupInspectorState} from '../../inspectors/documentGroup/use
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**
- * Toggles the document group inspector, which hosts the document group inventory.
+ * Toggles the document group inspector, which hosts the document group inventory. It reads like
+ * the other buttons of the bottom bar: neutral tone, no fill at rest, square corners, with the
+ * stacked documents icon before the label.
  *
  * @internal
  */
@@ -23,11 +26,11 @@ export function DocumentGroupInventoryButton() {
   return (
     <Button
       data-testid="action-document-group-inventory"
-      mode="ghost"
+      icon={DocumentsIcon}
+      mode="bleed"
       onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
       selected={isDocumentGroupInventoryActive}
       text={t('document-group-inventory.action.manage-versions')}
-      tone="suggest"
     />
   )
 }
