@@ -711,6 +711,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.date': '{{date}}',
   /** Label to show in the document footer indicating the last edited date of the document */
   'document-status.edited': 'Edited {{date}}',
+  /** Label to show in the versions flyout for a draft that was never published */
+  'document-status.edited-not-published': 'Edited {{date}} · not published yet',
   /** Label to show in the document footer status line when a document was last published */
   'document-status.last-published': 'Last published',
   /** Label to show in the document footer indicating the document is not published*/

@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Card, Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode} from 'react'
 import {Icon} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
@@ -11,9 +11,17 @@ import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {usePerspective} from '../../perspective/usePerspective'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVariantId, getVariantTitle} from '../../variants/tool/util'
-import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {PreviewCard} from '../previewCard/PreviewCard'
-import {dots, media, root, row, rowContent, text} from './DocumentVersionsFlyoutList.css'
+import {RhombusIcon} from '../temporary-icons/Rhombus'
+import {
+  media,
+  name as nameClass,
+  root,
+  row,
+  rowContent,
+  text,
+  variantMark,
+} from './DocumentVersionsFlyoutList.css'
 import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
@@ -21,12 +29,9 @@ import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
 /** Audiences the flyout lists before its last row. */
 const MAX_AUDIENCES = 5
 
-/** The order of the status dots of a row, which keeps published at the right edge. */
-const ICON_KINDS = ['release', 'draft', 'published'] as const
-
 function FlyoutRow(props: {
   testId: string
-  title: string
+  title: ReactNode
   subtitle?: string
   media?: ReactNode
   trailing?: ReactNode
@@ -51,9 +56,13 @@ function FlyoutRow(props: {
       <div className={rowContent}>
         {props.media ? <div className={media}>{props.media}</div> : null}
         <div className={text}>
-          <Text size={1} textOverflow="ellipsis">
-            {props.title}
-          </Text>
+          {typeof props.title === 'string' ? (
+            <Text size={1} textOverflow="ellipsis">
+              {props.title}
+            </Text>
+          ) : (
+            props.title
+          )}
           {props.subtitle ? (
             <Text muted size={1} textOverflow="ellipsis">
               {props.subtitle}
@@ -86,23 +95,38 @@ function AudienceRow({
     name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
   }
 
+  // A draft that was never published says so in words, since the row carries no status icons.
+  const neverPublished =
+    group.items.some((item) => readVersionType(item.version) === 'draft') &&
+    !group.items.some((item) => readVersionType(item.version) === 'published')
+  const subtitle = neverPublished
+    ? t('document-status.edited-not-published', {date: timeAgo})
+    : t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
+
   return (
     <FlyoutRow
       onClick={onClick}
       selected={selected}
-      subtitle={t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})}
+      subtitle={subtitle}
       testId="document-versions-flyout-row"
-      title={name}
-      trailing={
-        <div className={dots}>
-          {ICON_KINDS.map((kind) => {
-            const item = group.items.find(
-              (candidate) => readVersionType(candidate.version) === kind,
-            )
-            return item ? (
-              <DocumentStatusIcon key={kind} kind={kind} release={item.release} />
-            ) : null
-          })}
+      title={
+        <div className={nameClass}>
+          <span
+            aria-hidden
+            className={variantMark}
+            style={
+              {
+                '--icon-color': selected
+                  ? 'var(--card-fg-color)'
+                  : 'var(--card-badge-suggest-dot-color)',
+              } as CSSProperties
+            }
+          >
+            {group.variantId ? <Icon icon={RhombusIcon} size={1} /> : null}
+          </span>
+          <Text size={1} textOverflow="ellipsis">
+            {name}
+          </Text>
         </div>
       }
     />
@@ -126,7 +150,7 @@ export function useHasVersionsBeyondBase(documentGroupId: string): boolean {
 
 /**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
- * event as the subtitle and its versions as dots, and a last row that opens the document group
+ * event as the subtitle and a diamond before the audiences' names, and a last row that opens the document group
  * inventory. Rows are menu items, so the host can move focus between them with the arrow keys.
  *
  * @internal
