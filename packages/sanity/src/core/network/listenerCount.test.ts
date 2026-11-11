@@ -202,3 +202,34 @@ describe('listener counts by host', () => {
     expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(1)
   })
 })
+
+describe('countStalledRequests', () => {
+  let listenerCount: ListenerCountModule
+
+  beforeEach(async () => {
+    vi.resetModules()
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => undefined)),
+    )
+    listenerCount = await import('./listenerCount')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it('counts only a stalled listener, not a stalled GROQ query held just as long', async () => {
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/data/listen', {
+      headers: EVENT_STREAM_HEADERS,
+    })
+    void countingFetch('https://abc123.api.sanity.io/v1/data/query', {method: 'POST'})
+    await vi.advanceTimersByTimeAsync(10_000)
+
+    expect(listenerCount.countStalledRequests(10_000)).toBe(1)
+  })
+})

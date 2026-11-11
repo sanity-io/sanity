@@ -18,6 +18,7 @@ const listenerCountSubscribers = new Set<(counts: Readonly<ListenerCounts>) => v
 interface PendingRequest {
   url: string
   startedAt: number
+  isListener: boolean
 }
 
 const pendingRequests = new Map<object, PendingRequest>()
@@ -110,20 +111,22 @@ export function getOldestPendingRequest(): PendingRequest | undefined {
 }
 
 /**
- * How many requests in this tab have gone at least `stallThresholdMs` without response headers.
+ * How many event-stream (listener) requests in this tab have gone at least `stallThresholdMs`
+ * without response headers. Other pending requests, such as a GROQ query, do not count - the
+ * stall this reports on is specifically listeners queued behind the connection limit.
  *
  * @internal
  */
 export function countStalledRequests(stallThresholdMs: number): number {
   const now = Date.now()
   return Array.from(pendingRequests.values()).filter(
-    (request) => now - request.startedAt >= stallThresholdMs,
+    (request) => request.isListener && now - request.startedAt >= stallThresholdMs,
   ).length
 }
 
-function trackPendingRequest(url: string): () => void {
+function trackPendingRequest(url: string, isListener: boolean): () => void {
   const requestId = {}
-  pendingRequests.set(requestId, {url, startedAt: Date.now()})
+  pendingRequests.set(requestId, {url, startedAt: Date.now(), isListener})
   notifyPendingRequestSubscribers()
 
   return () => {
@@ -143,10 +146,9 @@ export function resolveListenerCountingFetch(): FetchFunction {
 }
 
 function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
-  const settlePending = trackPendingRequest(input)
-  const request = isEventStreamRequest(init)
-    ? fetchListener(input, init)
-    : globalThis.fetch(input, init)
+  const isListener = isEventStreamRequest(init)
+  const settlePending = trackPendingRequest(input, isListener)
+  const request = isListener ? fetchListener(input, init) : globalThis.fetch(input, init)
 
   return request.then(
     (response) => {
