@@ -160,31 +160,32 @@ export function DocumentVersionsFlyoutList(props: {
     <Card
       aria-label={t('document-group.flyout.title')}
       border
-      className={root}
       data-testid="document-versions-flyout"
       radius={2}
       role="menu"
       // Flush with the list: square corners on the side that touches the pane.
       style={{borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden'}}
     >
-      {groups.slice(0, MAX_AUDIENCES).map((group) => (
-        <AudienceRow
-          group={group}
-          key={group.variantId ?? 'default'}
-          onClick={() => onPick(group.variantId ?? null)}
+      <div className={root}>
+        {groups.slice(0, MAX_AUDIENCES).map((group) => (
+          <AudienceRow
+            group={group}
+            key={group.variantId ?? 'default'}
+            onClick={() => onPick(group.variantId ?? null)}
+          />
+        ))}
+        <FlyoutRow
+          media={
+            <Text size={2}>
+              <VersionsGlyph />
+            </Text>
+          }
+          onClick={onOpenInventory}
+          testId="document-versions-flyout-inventory"
+          title={t('document-group.flyout.see-all', {count: total})}
+          trailing={<Icon icon={ChevronRightIcon} size={1} />}
         />
-      ))}
-      <FlyoutRow
-        media={
-          <Text size={2}>
-            <VersionsGlyph />
-          </Text>
-        }
-        onClick={onOpenInventory}
-        testId="document-versions-flyout-inventory"
-        title={t('document-group.flyout.see-all', {count: total})}
-        trailing={<Icon icon={ChevronRightIcon} size={1} />}
-      />
+      </div>
     </Card>
   )
 }
