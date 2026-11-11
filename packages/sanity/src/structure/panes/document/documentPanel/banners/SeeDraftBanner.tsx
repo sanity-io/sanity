@@ -42,7 +42,6 @@ export function SeeDraftBanner() {
   return (
     <Banner
       tone="suggest"
-      neutralAction
       data-testid="see-draft-banner"
       content={
         <Text size={1} as="div" trim={true} tone="suggest">
@@ -51,7 +50,6 @@ export function SeeDraftBanner() {
       }
       action={{
         text: t('banners.published.see-draft.action'),
-        // The banner is purple, the action is not: a primary action uses the default primary
         onClick: handleSeeDraft,
         mode: 'default',
       }}

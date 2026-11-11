@@ -33,7 +33,6 @@ export function ScheduledReleaseBanner({
   return (
     <Banner
       tone={tone}
-      neutralAction
       icon={LockIcon}
       data-testid="scheduled-release-banner"
       content={
@@ -54,9 +53,6 @@ export function ScheduledReleaseBanner({
               onClick: pauseToEdit,
               disabled: isPausing,
               mode: 'default',
-              // A scheduled release is purple, but its action is not: a primary action uses the
-              // default primary
-              tone: tone === 'suggest' ? 'default' : tone,
             }
           : undefined
       }

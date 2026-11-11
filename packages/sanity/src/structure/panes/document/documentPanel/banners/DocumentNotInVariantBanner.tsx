@@ -136,7 +136,6 @@ export function DocumentNotInVariantBanner() {
   return (
     <Banner
       tone="suggest"
-      neutralAction
       content={
         <Text size={1} as="div" trim={true} tone="suggest">
           <Translate
@@ -154,7 +153,7 @@ export function DocumentNotInVariantBanner() {
         isActionAllowed
           ? {
               text: t('banners.variant.action.add-to-variant'),
-              // The banner is purple, the action is not: a primary action uses the default primary
+              tone: 'suggest',
               disabled: status === 'in-progress' || status === 'success',
               onClick: handleAddToVariant,
               mode: 'default',

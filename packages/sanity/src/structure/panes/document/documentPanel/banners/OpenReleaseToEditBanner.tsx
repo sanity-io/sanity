@@ -94,7 +94,6 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   return (
     <Banner
       tone={tone}
-      neutralAction
       data-testid="open-release-to-edit-banner"
       content={
         <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
@@ -126,9 +125,6 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
         documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
-              // A scheduled release is purple, but its action is not: a primary action uses the
-              // default primary
-              tone: tone === 'suggest' ? 'default' : tone,
               onClick: handleGoToEdit,
               mode: 'default',
             }

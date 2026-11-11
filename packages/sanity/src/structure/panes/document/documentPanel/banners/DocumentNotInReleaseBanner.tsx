@@ -157,8 +157,6 @@ export function DocumentNotInReleaseBanner({
               text: isAgentBundleName(currentRelease)
                 ? t('banners.release.action.add-to-bundle')
                 : t('banners.release.action.add-to-release'),
-              // PROPOSED: a banner's filled button is the primary tone in every banner (the chip carries the release's tone).
-              tone: 'primary',
               disabled: Boolean(versionCreateState),
               onClick: handleAddToRelease,
               mode: 'default',
