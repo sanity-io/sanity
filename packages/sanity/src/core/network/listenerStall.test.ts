@@ -138,6 +138,51 @@ describe('listener stall detection', () => {
     expect(stalls).toHaveBeenCalledTimes(1)
   })
 
+  it('ignores a held asset upload, never detecting a stall from it alone', async () => {
+    pendingFetch()
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+    const stalls = vi.fn()
+    listenerStall.subscribeListenerStall(stalls)
+
+    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
+      method: 'POST',
+      body: new Blob(['fake image bytes']),
+    })
+    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS * 2)
+
+    expect(stalls).not.toHaveBeenCalled()
+  })
+
+  it('ignores a POST to /assets/ even with a plain string body', async () => {
+    pendingFetch()
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+    const stalls = vi.fn()
+    listenerStall.subscribeListenerStall(stalls)
+
+    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
+      method: 'POST',
+      body: 'not actually binary',
+    })
+    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS * 2)
+
+    expect(stalls).not.toHaveBeenCalled()
+  })
+
+  it('still detects a stalled JSON GROQ query sent as a POST', async () => {
+    pendingFetch()
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+    const stalls = vi.fn()
+    listenerStall.subscribeListenerStall(stalls)
+
+    void countingFetch('https://abc123.api.sanity.io/v1/data/query/production', {
+      method: 'POST',
+      body: JSON.stringify({query: '*[_type == "post"]'}),
+    })
+    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
+
+    expect(stalls).toHaveBeenCalledTimes(1)
+  })
+
   it('replays an active stall to a subscriber added after it was detected, once only', async () => {
     pendingFetch()
     const countingFetch = listenerCount.resolveListenerCountingFetch()

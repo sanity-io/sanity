@@ -158,10 +158,20 @@ function uncountedFetch(input: string, init?: FetchInit): Promise<FetchResponse>
   return globalThis.fetch(input, init)
 }
 
-function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
+function countingFetch(
+  input: string,
+  init?: FetchInit,
+  attributeListener: () => () => void = skipAttribution,
+): Promise<FetchResponse> {
+  // An upload's time to response headers reflects how long its body took to transfer, not
+  // whether this tab is stalled behind the connection limit.
+  if (isUploadRequest(input, init)) return globalThis.fetch(input, init)
+
   const isListener = isEventStreamRequest(init)
   const settlePending = trackPendingRequest(input, isListener)
-  const request = isListener ? fetchListener(input, init) : globalThis.fetch(input, init)
+  const request = isListener
+    ? fetchListener(input, init, attributeListener)
+    : globalThis.fetch(input, init)
 
   return request.then(
     (response) => {
@@ -177,14 +187,26 @@ function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> 
 
 /** @internal */
 export function resolveAttributedListenerFetch(attributeListener: () => () => void): FetchFunction {
-  return (input, init) =>
-    isEventStreamRequest(init)
-      ? fetchListener(input, init, attributeListener)
-      : globalThis.fetch(input, init)
+  return (input, init) => countingFetch(input, init, attributeListener)
 }
 
 function isEventStreamRequest(init: FetchInit): boolean {
   return new Headers(init?.headers).get('accept')?.includes('text/event-stream') ?? false
+}
+
+function isUploadRequest(input: string, init: FetchInit): boolean {
+  if (isUploadBody(init?.body)) return true
+  const method = init?.method?.toUpperCase()
+  return (method === 'POST' || method === 'PUT') && input.includes('/assets/')
+}
+
+function isUploadBody(body: unknown): boolean {
+  return (
+    body instanceof Blob ||
+    body instanceof ArrayBuffer ||
+    body instanceof ReadableStream ||
+    body instanceof FormData
+  )
 }
 
 function skipAttribution(): () => void {
@@ -207,7 +229,7 @@ export function requestHost(input: string): string {
 async function fetchListener(
   input: string,
   init: FetchInit,
-  attributeListener: () => () => void = skipAttribution,
+  attributeListener: () => () => void,
 ): Promise<FetchResponse> {
   const releaseAttribution = attributeListener()
   const releaseCount = openListener(requestHost(input))
