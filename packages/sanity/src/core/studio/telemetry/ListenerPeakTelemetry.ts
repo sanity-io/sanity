@@ -4,7 +4,11 @@ import {useEffect} from 'react'
 
 import {getApiProtocol} from '../../network/isUsingLegacyHttp'
 import {getListenerCounts} from '../../network/listenerCount'
-import {getPeakStudioTabCount, startTrackingStudioTabs} from '../../network/studioTabs'
+import {
+  getPeakStudioTabCount,
+  getStudioTabScope,
+  startTrackingStudioTabs,
+} from '../../network/studioTabs'
 import {ListenerPeakMeasured} from '../__telemetry__/listeners.telemetry'
 
 /**
@@ -21,7 +25,7 @@ export function ListenerPeakTelemetry(props: {
   const {telemetry, protocolCheckClient} = props
 
   useEffect(() => {
-    startTrackingStudioTabs()
+    startTrackingStudioTabs(getStudioTabScope(protocolCheckClient.config().apiHost))
     let protocol = 'unknown'
     const protocolSubscription = getApiProtocol(protocolCheckClient).subscribe((detected) => {
       protocol = detected
