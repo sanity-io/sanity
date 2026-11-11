@@ -56,6 +56,14 @@ describe('DocumentGroupInventoryButton', () => {
     expect(closeInspector).not.toHaveBeenCalled()
   })
 
+  test('shows a documents icon before the label', async ({renderButton}) => {
+    renderButton()
+
+    const button = await screen.findByRole('button', {name: 'Manage versions'})
+
+    expect(button.querySelector('[data-sanity-icon="documents"]')).not.toBeNull()
+  })
+
   describe('when the document group inspector is open', () => {
     test.override('documentPaneOverrides', () => ({inspector: documentGroupInspector}))
 
