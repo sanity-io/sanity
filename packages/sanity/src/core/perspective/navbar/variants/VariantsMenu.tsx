@@ -55,13 +55,13 @@ import {
   variantsMenu,
 } from './VariantsMenu.css'
 
+/** Where the variant diamond's 21px box starts, from the row's left edge. */
+const VARIANT_MARK_BOX_INSET = 6
+
 /**
  * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
  * than passed first, where the spread `className` would replace it.
  */
-/** Where the variant diamond's 21px box starts, from the row's left edge. */
-const VARIANT_MARK_BOX_INSET = 6
-
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
   return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
 }
