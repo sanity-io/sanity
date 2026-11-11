@@ -7,10 +7,11 @@ import {connect as tlsConnect} from 'node:tls'
 import {fileURLToPath} from 'node:url'
 
 import {getCertificate} from '@vitejs/plugin-basic-ssl'
+import {Subscription} from 'rxjs'
 import {afterEach, beforeAll, describe, expect, test} from 'vitest'
 
 import {createDebugProxy, type DebugProxyServer} from './createDebugProxy'
-import {createSSEProxy} from './proxy'
+import {createSSEProxy, writeResponseHead} from './proxy'
 import {dropMutations} from './scenarios'
 
 // A self-signed cert reused for both the mock upstream and the proxy's TLS
@@ -469,5 +470,71 @@ describe('binding', () => {
     const proxy = await startProxy({port: 0, apiHost: upstream.apiHost, insecureUpstream: true})
     const address = proxy.server.address() as AddressInfo
     expect(address.address).toBe('127.0.0.1')
+  })
+})
+
+describe('http2Options.settings.maxConcurrentStreams', () => {
+  /** Opens a stream that answers immediately but never ends, so it keeps occupying a slot. */
+  function openHeldStream(
+    client: ReturnType<typeof connect>,
+    path: string,
+  ): {stream: ReturnType<typeof client.request>; response: Promise<number>} {
+    const stream = client.request({
+      [h2constants.HTTP2_HEADER_PATH]: path,
+      [h2constants.HTTP2_HEADER_AUTHORITY]: DEFAULT_AUTHORITY,
+    })
+    const response = new Promise<number>((resolve, reject) => {
+      stream.on('response', (headers) => resolve(Number(headers[h2constants.HTTP2_HEADER_STATUS])))
+      stream.on('error', reject)
+    })
+    return {stream, response}
+  }
+
+  test('queues the (n+1)th concurrent stream until one closes', async () => {
+    const proxy = await startProxy({
+      port: 0,
+      apiHost: 'unused.invalid',
+      tls: {key: pem, cert: pem},
+      http2Options: {settings: {maxConcurrentStreams: 2}},
+      routes: [
+        {
+          match: () => true,
+          handler: (req, res) => {
+            writeResponseHead(res, 200, undefined, {'content-type': 'text/plain'})
+            return Subscription.EMPTY
+          },
+        },
+      ],
+    })
+    const port = (proxy.server.address() as AddressInfo).port
+
+    const client = connect(`https://127.0.0.1:${port}`, {rejectUnauthorized: false})
+    // Closing the session while held streams are still open resets the
+    // underlying socket; that's expected teardown, not a test failure.
+    client.on('error', () => {})
+    cleanups.push(() => {
+      client.close()
+      return Promise.resolve()
+    })
+
+    const first = openHeldStream(client, '/v1/one')
+    const second = openHeldStream(client, '/v1/two')
+    await Promise.all([first.response, second.response])
+
+    const third = openHeldStream(client, '/v1/three')
+    let thirdResponded = false
+    const thirdResponse = third.response.then((status) => {
+      thirdResponded = true
+      return status
+    })
+
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    expect(thirdResponded).toBe(false)
+
+    first.stream.close()
+    expect(await thirdResponse).toBe(200)
+
+    second.stream.close()
+    third.stream.close()
   })
 })
