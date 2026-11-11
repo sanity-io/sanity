@@ -12,7 +12,7 @@ describe('VariantMark', () => {
     render(<VariantMark data-testid="mark" />)
     expect(getMark()).toHaveAttribute('data-size', 'inline')
     expect(getMark()).toHaveAttribute('data-fill', 'filled')
-    expect(getMark().firstElementChild).toHaveAttribute('viewBox', '8.5 8.5 8 8')
+    expect(getMark().firstElementChild).toHaveAttribute('viewBox', '8.555 8.555 7.889 7.889')
     // the mark owns its colour, so buttons and menu items must not repaint the glyph
     expect(getMark().firstElementChild).not.toHaveAttribute('data-sanity-icon')
   })
@@ -28,7 +28,7 @@ describe('VariantMark', () => {
   it('draws the outline glyph for fill="outline"', () => {
     render(<VariantMark data-testid="mark" fill="outline" />)
     expect(getMark()).toHaveAttribute('data-fill', 'outline')
-    expect(getMark().firstElementChild).toHaveAttribute('viewBox', '7.9 7.9 9.2 9.2')
+    expect(getMark().firstElementChild).toHaveAttribute('viewBox', '7.73 7.73 9.54 9.54')
   })
 
   it('is decorative by default', () => {
