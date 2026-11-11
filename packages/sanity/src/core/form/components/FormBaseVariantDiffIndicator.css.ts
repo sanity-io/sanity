@@ -15,18 +15,15 @@ export const chip = css({
 
 /**
  * A glyph before a chip's name. The release avatar draws a block svg and trims it with an inline
- * negative margin so a standalone glyph sits on the cap height. Inside a chip the margin would
- * push it up (the dot rendered like a superscript asterisk), so the box centres the svg itself and
- * `!important` is the only thing that beats the inline margin.
+ * negative margin, which leaves a margin box about as small as the glyph. This box centres that
+ * margin box on the chip's text line. The chip used to fake the line position with a scale and a
+ * vertical-align offset, and the dot rendered raised, like a superscript asterisk.
  */
 export const chipGlyph = css({
-  'display': 'inline-flex',
-  'alignItems': 'center',
-  'justifyContent': 'center',
-  'flex': 'none',
-  'width': '1em',
-  'height': '1em',
-  '& svg': {
-    margin: '0 !important',
-  },
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flex: 'none',
+  width: '1em',
+  height: '1em',
 })
