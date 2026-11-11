@@ -5,7 +5,6 @@ import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema, useTranslation} from 'sanity'
 import {ResolvedPanesProvider} from 'sanity/_singletons'
 import {useRouter, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
@@ -19,16 +18,12 @@ import {PaneLayout} from '../pane/PaneLayout'
 import {getMaximizedPaneTransition} from './getMaximizedPaneTransition'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
+import {paneLayout} from './StructureTool.css'
 
 interface StructureToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
   toolName: string
 }
-
-const StyledPaneLayout = styled(PaneLayout)`
-  min-height: 100%;
-  min-width: 320px;
-`
 
 const isSaveHotkey = isHotkey('mod+s')
 
@@ -202,7 +197,8 @@ export const StructureTool = memo(function StructureTool({
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>
       <PortalProvider element={portalElement || null}>
-        <StyledPaneLayout
+        <PaneLayout
+          className={paneLayout}
           flex={1}
           height={layoutCollapsed ? undefined : 'fill'}
           minWidth={media[1]}
@@ -273,7 +269,7 @@ export const StructureTool = memo(function StructureTool({
           {paneDataItems.length <= 1 && isResolvingIntent && (
             <LoadingPane paneKey="intent-resolver" />
           )}
-        </StyledPaneLayout>
+        </PaneLayout>
         <StructureTitle resolvedPanes={resolvedPanes} />
         <div data-portal="" ref={setPortalElement} />
       </PortalProvider>
