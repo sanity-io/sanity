@@ -2762,7 +2762,7 @@ importers:
         specifier: ^4.23.15
         version: 4.23.15
       yaml:
-        specifier: ^2.9.0
+        specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
       '@repo/test-config':
