@@ -101,8 +101,6 @@ export function ReleasesMenuItem(
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, release, rangePosition, onNavigateToRelease} = props
-  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
 
   const {
     document: {
@@ -124,6 +122,9 @@ export function ReleasesMenuItem(
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName
     : isDefaultPerspective
+
+  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
+    usePerspectiveDetailLink({selected: active})
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
@@ -159,10 +160,13 @@ export function ReleasesMenuItem(
         flexGrow={0}
         flexShrink={0}
         data-testid="release-indicator-icon"
-        paddingX={3}
+        // The left padding centres the icon on the layer line (`INDICATOR_LEFT_OFFSET`); the right
+        // padding puts the title where other studio menus start their labels
+        paddingLeft={3}
+        paddingRight={1}
         paddingY={2}
       >
-        <ReleaseAvatarIcon size="small" release={release} fontSize={2} />
+        <ReleaseAvatarIcon size="small" release={release} />
       </IconWrapperBox>
       <Flex
         flexBasis="0%"
@@ -217,7 +221,8 @@ export function ReleasesMenuItem(
             </Text>
           )}
       </Flex>
-      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+      {/* Centred on the row, so the lock and the layer toggle sit between the title and date lines */}
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0} style={{alignSelf: 'center'}}>
         {canReleaseBeExcluded && (
           <Tooltip portal content={t('release.layer.hide')} placement="bottom">
             <ToggleLayerButton
@@ -270,7 +275,6 @@ export function ReleasesMenuItem(
       {hasDetailLink && (
         <PerspectiveDetailLink
           {...detailLinkProps}
-          alignItems="flex-start"
           aria-label={t('release.navbar.view-release-aria-label', {
             title: release.metadata.title || t('release.placeholder-untitled-release'),
           })}

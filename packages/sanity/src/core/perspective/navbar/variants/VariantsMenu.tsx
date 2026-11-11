@@ -3,6 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {
   type RefAttributes,
   type SVGProps,
@@ -19,7 +20,6 @@ import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
@@ -46,11 +46,36 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
-import {suggestIconColor} from './VariantsNav.css'
+import {
+  conditionMismatchIcon,
+  variantMenuItemIconColor,
+  variantMenuItemRow,
+  variantsMenu,
+} from './VariantsMenu.css'
 
+/**
+ * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
+ * than passed first, where the spread `className` would replace it.
+ */
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge className={suggestIconColor} {...props} />
+  return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
+}
+
+/**
+ * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
+ * `Icon` sizes and colours the svg itself: a wrapper took the colour (grey) in its place and,
+ * holding the svg inline, added a line box under it that lifted the icon off the row's centre.
+ */
+const ConditionMismatchMenuIcon = (
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
+) => {
+  return (
+    <ErrorOutlineIcon
+      {...props}
+      className={clsx(props.className, conditionMismatchIcon)}
+      data-testid="variant-condition-mismatch"
+    />
+  )
 }
 
 function VariantMenuItem(props: {
@@ -65,7 +90,7 @@ function VariantMenuItem(props: {
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
   const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
+    usePerspectiveDetailLink({selected: isSelected})
   const variantId = getVariantId(variant._id)
   const title = getVariantTitle(variant)
 
@@ -75,13 +100,7 @@ function VariantMenuItem(props: {
         {...detailLinkMenuItemProps}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
-        iconRight={
-          mismatches.length > 0 ? (
-            <Box paddingRight={1} data-testid="variant-condition-mismatch">
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </Box>
-          ) : undefined
-        }
+        iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}
@@ -101,9 +120,7 @@ function VariantMenuItem(props: {
       />
       <PerspectiveDetailLink
         {...detailLinkProps}
-        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
-        // link, so the link centers on the item instead of mirroring its top padding
-        alignItems="center"
+        // `paddingRight` mirrors the studio menu item's own
         aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
         data-testid={`variant-detail-link-${variantId}`}
         intent={VARIANTS_INTENT}
@@ -246,7 +263,7 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
+            <Box flexShrink={0} padding={2}>
               <TextInput
                 fontSize={1}
                 icon={SearchIcon}
@@ -265,8 +282,7 @@ export function VariantsMenu({
                 flexShrink={1}
                 minHeight="0"
                 overflowY="auto"
-                paddingX={3}
-                paddingBottom={2}
+                padding={1}
               >
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
@@ -276,6 +292,8 @@ export function VariantsMenu({
                     isDefaultVariant(variant) ? (
                       <MenuItem
                         data-testid="variant-default"
+                        // The same diamond as every other variant row and the navbar chip
+                        icon={VariantMenuItemIcon}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
@@ -300,9 +318,7 @@ export function VariantsMenu({
               flexShrink={0}
               gap={1}
               borderTop
-              paddingX={3}
-              paddingTop={2}
-              paddingBottom={3}
+              padding={1}
               hidden={filterQuery.trim().length > 0}
             >
               <MenuItem
