@@ -66,19 +66,28 @@ export function Banner(props: BannerProps) {
             </div>
             {action && (
               <div className={actionSlot}>
-                {/*
-                  The action is the default primary (black in light mode, white in dark) whatever the
-                  banner's tint or tone. A button takes its colours from the card around it, so it sits
-                  on a neutral card that resets the tint, and any tone but critical is the default tone.
-                  The banner keeps its own tint, icon and text colour.
-                */}
-                <Card tone="default" style={NEUTRAL_ACTION_STYLE}>
+                {action.mode === 'default' ? (
+                  /*
+                    A filled (primary) action is the default primary (black in light mode, white in
+                    dark) whatever the banner's tint or tone. A button takes its colours from the card
+                    around it, so it sits on a neutral card that resets the tint, and any tone but
+                    critical is the default tone. The banner keeps its own tint, icon and text colour.
+                  */
+                  <Card tone="default" style={NEUTRAL_ACTION_STYLE}>
+                    <Button
+                      {...action}
+                      mode="default"
+                      tone={action.tone === 'critical' ? 'critical' : 'default'}
+                    />
+                  </Card>
+                ) : (
+                  // A ghost or bleed (secondary) action keeps its tone and the banner's tint
                   <Button
                     {...action}
                     mode={action.mode || 'ghost'}
-                    tone={action.tone === 'critical' ? 'critical' : 'default'}
+                    tone={action.tone || 'default'}
                   />
-                </Card>
+                )}
               </div>
             )}
           </div>
