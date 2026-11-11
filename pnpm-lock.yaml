@@ -1464,8 +1464,8 @@ importers:
   packages/@repo/release-notes:
     dependencies:
       '@anthropic-ai/sdk':
-        specifier: ^0.112.3
-        version: 0.112.5(zod@4.6.7)
+        specifier: ^0.137.0
+        version: 0.137.0(zod@4.6.7)
       '@conventional-changelog/git-client':
         specifier: ^3.2.0
         version: 3.2.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.3)
@@ -2990,8 +2990,8 @@ packages:
     peerDependencies:
       zod: ^4.0.0
 
-  '@anthropic-ai/sdk@0.112.5':
-    resolution: {integrity: sha512-FaaGkyS4/zW4n+8Pr9jQkyo5zWcBNw+R+heCLXdoKDUEuALbPALBk6zLAlmsU+veREiaATxVG0TwkK/cQ3NZsQ==}
+  '@anthropic-ai/sdk@0.137.0':
+    resolution: {integrity: sha512-YpEnbPz8kWF1BWthwUCnRhci7OvDLSUO8NFKoevoPkjNkK9CJeibZITgxr9vhqOP8Le61e5tNDHFTxw1dc6Png==}
     hasBin: true
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
@@ -16826,8 +16826,9 @@ snapshots:
       - supports-color
     optional: true
 
-  '@anthropic-ai/sdk@0.112.5(zod@4.6.7)':
+  '@anthropic-ai/sdk@0.137.0(zod@4.6.7)':
     dependencies:
+      '@opentelemetry/api': 1.9.1
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
     optionalDependencies:
