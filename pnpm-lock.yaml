@@ -1691,7 +1691,7 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       ora:
-        specifier: ^9.4.0
+        specifier: ^9.4.1
         version: 9.4.1
     devDependencies:
       '@repo/test-config':
