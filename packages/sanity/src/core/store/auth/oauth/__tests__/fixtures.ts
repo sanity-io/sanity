@@ -112,7 +112,7 @@ export function createMockEndpoints(overrides: Partial<OAuthEndpoints> = {}): OA
 }
 
 export function createEnvironment(search = '') {
-  const location = {origin: ORIGIN, pathname: '/', search}
+  const location = {origin: ORIGIN, pathname: '/', search, hash: ''}
   return {
     location,
     getLocation: () => location,

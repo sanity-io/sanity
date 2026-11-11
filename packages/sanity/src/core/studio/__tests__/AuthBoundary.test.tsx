@@ -2,6 +2,7 @@ import {createController} from '@sanity/comlink'
 import {type FrameMessages, type WindowMessages} from '@sanity/message-protocol'
 import {type PayloadOf} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
+import {createBrowserHistory, createMemoryHistory} from 'history'
 import {Subject} from 'rxjs'
 import {
   afterAll,
@@ -295,6 +296,104 @@ describe('AuthBoundary login flash gate', () => {
     })
     expect(screen.getByTestId('authenticate-screen')).toBeTruthy()
     expect(screen.queryByTestId('loading-block')).toBeNull()
+  })
+
+  it("brings the router's history up to date with the URL the callback left behind", async () => {
+    // The router's history is created before the callback runs and caches the URL it saw then.
+    // A store rewrites the URL with the native History API (it strips the code and returns to the
+    // page the user signed in from), which that history never sees.
+    window.history.replaceState(null, '', '/test?code=abc&state=xyz')
+    const history = createBrowserHistory()
+    onTestFinished(() => window.history.replaceState(null, '', '/'))
+    await mockWorkspaceAuth({
+      handleCallbackUrl: () => {
+        window.history.replaceState(null, '', '/test/structure/book;abc')
+        return Promise.resolve({
+          flow: 'exchange',
+          success: true,
+          loginMethod: 'oauth',
+          durationMs: 1,
+        })
+      },
+    })
+    const {RouterHistoryProvider} = await import('../router/RouterHistoryContext')
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- flushes the settled callback
+    await act(async () => {
+      render(
+        <RouterHistoryProvider history={history}>
+          <AuthBoundary>
+            <div data-testid="content" />
+          </AuthBoundary>
+        </RouterHistoryProvider>,
+      )
+    })
+
+    await waitFor(() => expect(history.location.pathname).toBe('/test/structure/book;abc'))
+    expect(history.location.search).toBe('')
+  })
+
+  it('leaves a history that does not mirror the address bar alone', async () => {
+    // A custom `unstable_history` (an embedding app's router, a hash history) maps URLs its own
+    // way, so the address bar says nothing about where it should be.
+    window.history.replaceState(null, '', '/test?code=abc&state=xyz')
+    onTestFinished(() => window.history.replaceState(null, '', '/'))
+    const history = createMemoryHistory({initialEntries: ['/embedded/studio']})
+    await mockWorkspaceAuth({
+      handleCallbackUrl: () => {
+        window.history.replaceState(null, '', '/test/structure/book;abc')
+        return Promise.resolve({
+          flow: 'exchange',
+          success: true,
+          loginMethod: 'oauth',
+          durationMs: 1,
+        })
+      },
+    })
+    const {RouterHistoryProvider} = await import('../router/RouterHistoryContext')
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- flushes the settled callback
+    await act(async () => {
+      render(
+        <RouterHistoryProvider history={history}>
+          <AuthBoundary>
+            <div data-testid="content" />
+          </AuthBoundary>
+        </RouterHistoryProvider>,
+      )
+    })
+
+    expect(history.location.pathname).toBe('/embedded/studio')
+  })
+
+  it("brings the router's history up to date as soon as the store has removed the response", async () => {
+    // The store removes the authorization response from the URL before it returns, and the code
+    // exchange can take a while. Until the router knows, a redirect or a link built from its
+    // location would carry the code.
+    window.history.replaceState(null, '', '/test?code=abc&state=xyz')
+    const history = createBrowserHistory()
+    onTestFinished(() => window.history.replaceState(null, '', '/'))
+    await mockWorkspaceAuth({
+      handleCallbackUrl: () => {
+        window.history.replaceState(null, '', '/test')
+        // The exchange is still out.
+        return new Promise(() => {})
+      },
+    })
+    const {RouterHistoryProvider} = await import('../router/RouterHistoryContext')
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- runs the callback effect
+    await act(async () => {
+      render(
+        <RouterHistoryProvider history={history}>
+          <AuthBoundary>
+            <div data-testid="content" />
+          </AuthBoundary>
+        </RouterHistoryProvider>,
+      )
+    })
+
+    expect(history.location.search).toBe('')
   })
 
   describe('for a user without access to the project', () => {

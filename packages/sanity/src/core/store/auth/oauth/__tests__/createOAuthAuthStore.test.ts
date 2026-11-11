@@ -8,10 +8,14 @@ import {
 import {type CurrentUser} from '@sanity/types'
 import {firstValueFrom, lastValueFrom, Subject} from 'rxjs'
 import {filter, take, toArray} from 'rxjs/operators'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {getClientCredentialSegments} from '../../../document/utils/memoKey'
 import {type AuthState} from '../../types'
+import {
+  stashAuthorizationResponse,
+  takeStashedAuthorizationResponse,
+} from '../authorizationResponse'
 import {getOAuthFlowStorageKey, getOAuthTokensStorageKey} from '../constants'
 import {
   _createOAuthAuthStore,
@@ -67,6 +71,8 @@ describe('createOAuthAuthStore', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    // A response no store took stays stashed for the page; tests share the page.
+    takeStashedAuthorizationResponse()
   })
 
   it('emits an unauthenticated state without a stored token pair', async () => {
@@ -635,7 +641,7 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
     })
 
-    it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
+    it('rejects a response with another state, keeps the flow, and removes the response from the URL', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
       const {factory} = createMockClientFactory(new Set())
@@ -655,8 +661,155 @@ describe('createOAuthAuthStore', () => {
         success: false,
         failureReason: 'state mismatch',
       })
+      // The flow may still be waiting for its own response.
       expect(JSON.parse(sessionStorage.getItem(FLOW_KEY)!)).toEqual(flow)
-      expect(environment.replaceUrl).not.toHaveBeenCalled()
+      expect(environment.replaceUrl).toHaveBeenCalledWith('/')
+    })
+
+    it('removes a code this tab did not ask for from the URL, without redeeming it', async () => {
+      // Someone else wrote the authorization request, with their own PKCE verifier, and got a
+      // signed-in user to follow it. The code belongs to that user, and whoever wrote the request
+      // can redeem it: left in the URL, it could end up in a link, a document or a report.
+      const {factory} = createMockClientFactory(new Set())
+      const endpoints = createMockEndpoints()
+      const environment = createEnvironment(
+        '?perspective=drafts&code=the-code&state=someone-elses-state',
+      )
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...environment,
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
+        success: false,
+        failureReason: 'no authorization request',
+      })
+      expect(environment.replaceUrl).toHaveBeenCalledWith('/?perspective=drafts')
+      expect(endpoints.exchangeCode).not.toHaveBeenCalled()
+    })
+
+    it('keeps the hash when it removes an authorization response from the URL', async () => {
+      const {factory} = createMockClientFactory(new Set())
+      const environment = createEnvironment('?code=the-code&state=someone-elses-state')
+      environment.location.hash = '#/test/structure'
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+
+      await store.handleCallbackUrl!()
+
+      expect(environment.replaceUrl).toHaveBeenCalledWith('/#/test/structure')
+    })
+
+    it('removes an authorization response from a URL whose path starts with two slashes', async () => {
+      // `//evil.example` as a path would name another origin, and `history.replaceState` throws
+      // on that instead of removing the code.
+      const {factory} = createMockClientFactory(new Set())
+      const environment = createEnvironment('?code=the-code&state=someone-elses-state')
+      environment.location.pathname = '//evil.example'
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+
+      await store.handleCallbackUrl!()
+
+      expect(environment.replaceUrl).toHaveBeenCalledWith('/evil.example')
+    })
+
+    it('exchanges a response the Studio took out of the URL before the store saw it', async () => {
+      // `ActiveWorkspaceMatcher` takes the response out of the URL before the router reads it.
+      window.history.replaceState(null, '', '/?code=the-code&state=expected-state')
+      onTestFinished(() => window.history.replaceState(null, '', '/'))
+      stashAuthorizationResponse()
+      expect(window.location.search).toBe('')
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const endpoints = createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: true})
+      expect(endpoints.exchangeCode).toHaveBeenCalledWith(
+        expect.objectContaining({code: 'the-code', codeVerifier: 'verifier'}),
+      )
+    })
+
+    it('leaves a response for the workspace that asked for it', async () => {
+      // Two OAuth workspaces, and the response lands on the one that did not start the sign-in,
+      // for example after a redirect away from a hidden workspace. That workspace's store must not
+      // use up the response, so the one that asked for it can still redeem the code.
+      window.history.replaceState(null, '', '/?code=the-code&state=expected-state')
+      onTestFinished(() => window.history.replaceState(null, '', '/'))
+      stashAuthorizationResponse()
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const otherWorkspace = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: `${CLIENT_ID}-other`,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...createEnvironment(),
+      })
+      const endpoints = createMockEndpoints()
+      const signingInWorkspace = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+
+      await expect(otherWorkspace.handleCallbackUrl!()).resolves.toMatchObject({success: false})
+      await expect(signingInWorkspace.handleCallbackUrl!()).resolves.toMatchObject({success: true})
+      expect(endpoints.exchangeCode).toHaveBeenCalledWith(
+        expect.objectContaining({code: 'the-code', codeVerifier: 'verifier'}),
+      )
+    })
+
+    it('removes a code without state from the URL, without redeeming it', async () => {
+      const {factory} = createMockClientFactory(new Set())
+      const endpoints = createMockEndpoints()
+      const environment = createEnvironment('?code=the-code')
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...environment,
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: false})
+      expect(environment.replaceUrl).toHaveBeenCalledWith('/')
+      expect(endpoints.exchangeCode).not.toHaveBeenCalled()
     })
 
     it('treats a URL without state as an ordinary Studio URL', async () => {
