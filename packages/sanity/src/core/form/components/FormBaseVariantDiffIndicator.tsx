@@ -10,7 +10,9 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {VersionInlineBadge} from '../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../releases/store/types'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {type BaseFieldProps} from '../types/fieldProps'
 import {chip, chipGlyph} from './FormBaseVariantDiffIndicator.css'
@@ -54,19 +56,31 @@ function DiffersFrom() {
   const {t} = useTranslation()
   const compared = useContext(BaseVariantComparisonContext)
   const {selectedPerspective} = usePerspective()
+  const {byId: activeReleases} = useActiveReleases()
+  // `compared` is `'drafts'`, `'published'` or a release id. The release comes from the perspective
+  // when it is that release, and otherwise from the active releases, so the chip never reads Draft
+  // for a comparison that was not the draft.
+  const isReleaseSlot = Boolean(compared) && compared !== 'drafts' && compared !== 'published'
+  const comparedReleaseDocumentId = isReleaseSlot
+    ? getReleaseDocumentIdFromReleaseId(compared as string)
+    : undefined
   const release =
-    isReleaseDocument(selectedPerspective) &&
-    compared &&
-    compared !== 'drafts' &&
-    compared !== 'published'
-      ? selectedPerspective
-      : undefined
+    comparedReleaseDocumentId === undefined
+      ? undefined
+      : isReleaseDocument(selectedPerspective) &&
+          selectedPerspective._id === comparedReleaseDocumentId
+        ? selectedPerspective
+        : activeReleases.get(comparedReleaseDocumentId)
   const slot = release ? (
     <VersionInlineBadge $tone={getReleaseTone(release)} className={chip}>
       <ChipGlyph>
         <ReleaseAvatarIcon release={release} size="small" />
       </ChipGlyph>
       {release.metadata.title || t('release.placeholder-untitled-release')}
+    </VersionInlineBadge>
+  ) : isReleaseSlot ? (
+    <VersionInlineBadge $tone="default" className={chip}>
+      {compared}
     </VersionInlineBadge>
   ) : compared === 'published' ? (
     <VersionInlineBadge $tone="positive" className={chip}>
