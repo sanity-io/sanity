@@ -7,8 +7,16 @@ import {useToast} from '@sanity/ui/toast'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
 import {type MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {
+  InsufficientPermissionsMessage,
+  type InsufficientPermissionsMessageProps,
+} from '../../components/InsufficientPermissionsMessage'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useDocumentPairPermissions} from '../../store/grants/documentPairPermissions'
+import {useCurrentUser} from '../../store/user/hooks'
 import {getErrorMessage} from '../../util/getErrorMessage'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
@@ -21,6 +29,7 @@ export type ScheduledDraftAction = 'publish-now' | 'delete-schedule' | 'schedule
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
   documentType?: string
+  /** The published / document-group id, not the version id. */
   documentId?: string
   disabled?: boolean
   onActionComplete?: () => void
@@ -33,6 +42,8 @@ interface ScheduledDraftActionProps {
   tone: ComponentProps<typeof MenuItem>['tone']
   onClick: () => void
   disabled: ComponentProps<typeof MenuItem>['disabled']
+  /** Carries the insufficient permissions explanation when the grant is missing. */
+  tooltipProps: ComponentProps<typeof MenuItem>['tooltipProps']
 }
 
 export interface UseScheduledDraftMenuActionsReturn {
@@ -79,6 +90,30 @@ export function useScheduledDraftMenuActions(
     onComplete: onActionComplete,
   })
 
+  const currentUser = useCurrentUser()
+  const isScheduledDraftRelease = Boolean(release && isCardinalityOneRelease(release))
+  // '*' denies without a document lookup.
+  const permissionType = isScheduledDraftRelease && documentType && documentId ? documentType : '*'
+  const isGrantLookupSkipped = permissionType === '*'
+  const permissionVersion = release ? getReleaseIdFromReleaseDocumentId(release._id) : undefined
+
+  const [publishPermission, publishPermissionLoading] = useDocumentPairPermissions({
+    id: documentId ?? '',
+    type: permissionType,
+    version: permissionVersion,
+    permission: 'publish',
+  })
+  const [discardVersionPermission, discardVersionPermissionLoading] = useDocumentPairPermissions({
+    id: documentId ?? '',
+    type: permissionType,
+    version: permissionVersion,
+    permission: 'discardVersion',
+  })
+
+  const canPublish = publishPermissionLoading || Boolean(publishPermission?.granted)
+  const canDiscardVersion =
+    discardVersionPermissionLoading || Boolean(discardVersionPermission?.granted)
+
   const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
     setSelectedAction(action)
   }, [])
@@ -121,7 +156,18 @@ export function useScheduledDraftMenuActions(
   )
 
   const actions = useMemo(() => {
-    const baseDisabled = disabled || isPausing || documentLoading
+    const baseDisabled =
+      disabled ||
+      isPausing ||
+      documentLoading ||
+      publishPermissionLoading ||
+      discardVersionPermissionLoading
+
+    const insufficientPermissions = (
+      context: InsufficientPermissionsMessageProps['context'],
+    ): ComponentProps<typeof MenuItem>['tooltipProps'] => ({
+      content: <InsufficientPermissionsMessage context={context} currentUser={currentUser} />,
+    })
 
     return {
       publishNow: {
@@ -129,7 +175,9 @@ export function useScheduledDraftMenuActions(
         'text': t('release.action.publish-now'),
         'tone': 'default' as const,
         'onClick': () => handleMenuItemClick('publish-now'),
-        'disabled': baseDisabled,
+        'disabled': baseDisabled || !canPublish,
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('publish-document'),
         'data-testid': 'publish-now-menu-item',
       },
       pauseToEdit: {
@@ -137,7 +185,9 @@ export function useScheduledDraftMenuActions(
         'text': t('release.action.pause-to-edit'),
         'tone': 'default' as const,
         'onClick': pauseToEdit,
-        'disabled': baseDisabled,
+        'disabled': baseDisabled || !canPublish,
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('edit-schedules'),
         'data-testid': 'pause-to-edit-menu-item',
       },
       schedulePublish: {
@@ -145,7 +195,9 @@ export function useScheduledDraftMenuActions(
         'text': t('release.action.schedule-publish'),
         'tone': 'default' as const,
         'onClick': () => handleMenuItemClick('schedule-publish'),
-        'disabled': baseDisabled,
+        'disabled': baseDisabled || !canPublish,
+        'tooltipProps':
+          canPublish || isGrantLookupSkipped ? null : insufficientPermissions('edit-schedules'),
         'data-testid': 'schedule-publish-menu-item',
       },
       deleteSchedule: {
@@ -153,11 +205,28 @@ export function useScheduledDraftMenuActions(
         'text': t('release.action.delete-schedule'),
         'tone': 'critical' as const,
         'onClick': () => handleMenuItemClick('delete-schedule'),
-        'disabled': baseDisabled,
+        'disabled': baseDisabled || !canDiscardVersion,
+        'tooltipProps':
+          canDiscardVersion || isGrantLookupSkipped
+            ? null
+            : insufficientPermissions('delete-schedules'),
         'data-testid': 'delete-schedule-menu-item',
       },
     }
-  }, [t, handleMenuItemClick, pauseToEdit, disabled, isPausing, documentLoading])
+  }, [
+    t,
+    handleMenuItemClick,
+    pauseToEdit,
+    disabled,
+    isPausing,
+    documentLoading,
+    publishPermissionLoading,
+    discardVersionPermissionLoading,
+    canPublish,
+    canDiscardVersion,
+    isGrantLookupSkipped,
+    currentUser,
+  ])
 
   const dialogs = useMemo(() => {
     if (!selectedAction || !release) return null
