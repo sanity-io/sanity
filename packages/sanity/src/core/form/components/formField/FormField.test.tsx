@@ -86,3 +86,69 @@ describe('FormFieldSet', () => {
     expect(screen.getByTestId('tags-input')).toBeInTheDocument()
   })
 })
+
+describe('the base variant mark', () => {
+  const anchorOf = (gutter: HTMLElement) =>
+    gutter.style.getPropertyValue('--form-field-anchor-path')
+
+  it('follows the title row of a field, not its input', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormField title="Body" inputId="body" path={['body']} changedFromBaseVariant>
+          <input id="body" />
+        </FormField>
+      </TestProvider>,
+    )
+
+    expect(anchorOf(screen.getByTestId('form-field-gutter'))).toBe('--label_body')
+  })
+
+  it('follows the title row of a field set too', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormFieldSet
+          title="Settings"
+          inputId="settings"
+          path={['settings']}
+          changedFromBaseVariant
+        >
+          <input id="settings" />
+        </FormFieldSet>
+      </TestProvider>,
+    )
+
+    expect(anchorOf(screen.getByTestId('form-field-gutter'))).toBe('--label_settings')
+  })
+
+  it('keeps following the input when the field does not differ from its base variant', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormField title="Body" inputId="body" path={['body']}>
+          <input id="body" />
+        </FormField>
+      </TestProvider>,
+    )
+
+    expect(anchorOf(screen.getByTestId('form-field-gutter'))).toBe('--input_body')
+  })
+
+  it('keeps following the input when the field has no title row', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormField inputId="body" path={['body']} changedFromBaseVariant>
+          <input id="body" />
+        </FormField>
+      </TestProvider>,
+    )
+
+    expect(anchorOf(screen.getByTestId('form-field-gutter'))).toBe('--input_body')
+  })
+})
