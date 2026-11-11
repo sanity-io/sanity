@@ -25,21 +25,25 @@ const MAX_LINES = 7
 /** The order of the document list's status icons, which keeps published at the right edge. */
 const ICON_KINDS = ['release', 'draft', 'published'] as const
 
-const editedAt = (item: DocumentVersionStatusItem) => Date.parse(item.version._updatedAt) || 0
+/** @internal */
+export const editedAt = (item: DocumentVersionStatusItem) =>
+  Date.parse(item.version._updatedAt) || 0
 
-function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
+/** @internal */
+export function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
   return group.items.reduce((latest, item) => (editedAt(item) > editedAt(latest) ? item : latest))
 }
 
 /**
- * Displays the versions of a document: one line per audience, the default one first, then the
- * others by their latest edit. Each line shows the audience, when it was last published or edited,
- * and one status icon per kind of version it has.
+ * The audience lines of a document's versions: the default one first, then the others by their
+ * latest edit.
  *
  * @internal
  */
-export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
-  const {t} = useTranslation()
+export function useDocumentVersionStatusGroups(documentGroupId: string): {
+  groups: DocumentVersionStatusGroup[]
+  loading: boolean
+} {
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
@@ -56,7 +60,21 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     return [...allGroups.filter((group) => !group.variantId), ...audiences]
   }, [releasesById, variantsById, variantsEnabled, versions])
 
-  if (loading || variantsLoading) {
+  return {groups, loading: loading || variantsLoading}
+}
+
+/**
+ * Displays the versions of a document: one line per audience, the default one first, then the
+ * others by their latest edit. Each line shows the audience, when it was last published or edited,
+ * and one status icon per kind of version it has.
+ *
+ * @internal
+ */
+export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
+  const {t} = useTranslation()
+  const {groups, loading} = useDocumentVersionStatusGroups(documentGroupId)
+
+  if (loading) {
     return (
       <Box padding={2}>
         <Text muted size={1} as="div" trim={true}>

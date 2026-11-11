@@ -103,6 +103,7 @@ export function PaneItem(props: PaneItemProps) {
         <PaneItemPreview
           documentPreviewStore={documentPreviewStore}
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
+          inventoryChildId={id}
           layout={layout}
           schemaType={schemaType}
           sortOrder={sortOrder}
@@ -135,6 +136,7 @@ export function PaneItem(props: PaneItemProps) {
     documentPreviewStore,
     hasSchemaType,
     icon,
+    id,
     layout,
     numberFormat,
     schemaType,
@@ -175,6 +177,7 @@ export function PaneItem(props: PaneItemProps) {
       as={ChildLink as FIXME}
       childId={id}
       data-as="a"
+      data-pane-item-row=""
       margin={margin}
       marginBottom={marginBottom}
       marginTop={marginTop}
