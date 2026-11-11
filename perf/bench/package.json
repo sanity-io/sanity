@@ -26,7 +26,7 @@
     "@sanity/client": "catalog:",
     "@sanity/mutator": "workspace:*",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "esbuild": "0.28.2",
     "groq-js": "^2.0.1",
     "mendoza": "^3.0.8",
