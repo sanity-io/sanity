@@ -1,8 +1,8 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Card} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Icon, Text} from 'ui5'
+import {Icon} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
@@ -51,11 +51,11 @@ function FlyoutRow(props: {
       <div className={rowContent}>
         {props.media ? <div className={media}>{props.media}</div> : null}
         <div className={text}>
-          <Text size={1} truncate={1}>
+          <Text size={1} textOverflow="ellipsis">
             {props.title}
           </Text>
           {props.subtitle ? (
-            <Text muted size={1} truncate={1}>
+            <Text muted size={1} textOverflow="ellipsis">
               {props.subtitle}
             </Text>
           ) : null}
