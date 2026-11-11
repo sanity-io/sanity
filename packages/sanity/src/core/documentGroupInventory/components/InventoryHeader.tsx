@@ -67,12 +67,14 @@ export function InventoryHeader({
           )}
         </div>
       ) : (
-        <Ui5Button
-          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
-          level="tertiary"
-          text={t('document-group.deselect-all')}
-          onClick={() => selectionRef.send({type: 'selection.clear'})}
-        />
+        <div className="atom">
+          <Ui5Button
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
+            level="tertiary"
+            text={t('document-group.deselect-all')}
+            onClick={() => selectionRef.send({type: 'selection.clear'})}
+          />
+        </div>
       )}
     </Header>
   )
