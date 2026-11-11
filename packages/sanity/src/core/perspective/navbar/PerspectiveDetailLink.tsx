@@ -106,6 +106,8 @@ export function PerspectiveDetailLink(
     'onMouseEnter': () => void
     'onMouseLeave': () => void
     'onNavigate'?: () => void
+    /** Positions the link's box within the row, as the padding does. */
+    'style'?: CSSProperties
   } & PaddingProps &
     RefAttributes<HTMLAnchorElement>,
 ) {
@@ -120,6 +122,7 @@ export function PerspectiveDetailLink(
     onMouseLeave,
     onNavigate,
     ref,
+    style,
     ...paddingProps
   } = props
   const {href, onClick} = useIntentLink({intent, params, onClick: onNavigate})
@@ -133,7 +136,7 @@ export function PerspectiveDetailLink(
 
   return (
     // Centred on the row, like the menu item's own right icon
-    <Flex alignItems="center" className={detailLinkContainer} {...paddingProps}>
+    <Flex alignItems="center" className={detailLinkContainer} style={style} {...paddingProps}>
       <Tooltip portal content={tooltip} placement="bottom">
         <IconButton
           {...LINK_BUTTON_PROPS}
