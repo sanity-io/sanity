@@ -21,7 +21,7 @@ export const ListenerPeakMeasured = defineEvent<ListenerPeakMeasuredData>({
 })
 
 /** @internal */
-export interface ListenerLimitMessageShownData {
+export interface ListenerStallDetectedData {
   /** `classifyStall`'s verdict for this occurrence. */
   kind: StallKind
   /** Calibration: every tab's listener count summed, this tab included. */
@@ -34,7 +34,7 @@ export interface ListenerLimitMessageShownData {
   knownStudioTabs: number
   /** Calibration: held presence locks from a Studio build too old to publish a count. */
   unknownStudioTabs: number
-  /** How many of this tab's own requests were stalled past the trigger at classification time. */
+  /** How many of this tab's own listeners were stalled past the trigger at classification time. */
   stalledListenersThisTab: number
   /** How many other known tabs were flagged stalled at the time of the snapshot. */
   stalledOtherTabs: number
@@ -51,8 +51,9 @@ export interface ListenerLimitMessageShownData {
 }
 
 /** @internal */
-export const ListenerLimitMessageShown = defineEvent<ListenerLimitMessageShownData>({
-  name: 'Studio Listener Limit Message Shown',
+export const ListenerStallDetected = defineEvent<ListenerStallDetectedData>({
+  name: 'Studio Listener Stall Detected',
   version: 1,
-  description: 'A detected listener stall was classified and shown to the editor',
+  description:
+    'A request in this tab stalled behind the connection limit, classified by likely cause',
 })

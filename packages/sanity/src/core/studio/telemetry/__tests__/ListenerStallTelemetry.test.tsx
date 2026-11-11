@@ -39,7 +39,7 @@ async function setUpStall() {
     await import('../ListenerStallTelemetry')
   const {resolveListenerCountingFetch} = await import('../../../network/listenerCount')
   const {startTrackingStudioTabs} = await import('../../../network/studioTabs')
-  const {ListenerLimitMessageShown} = await import('../../__telemetry__/listeners.telemetry')
+  const {ListenerStallDetected} = await import('../../__telemetry__/listeners.telemetry')
 
   const store = createBatchedStore(createSessionId(), {
     resolveConsent: () => Promise.resolve({status: 'granted'}),
@@ -50,7 +50,7 @@ async function setUpStall() {
   return {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch: resolveListenerCountingFetch(),
     startTrackingStudioTabs,
     store,
@@ -77,7 +77,7 @@ it('buffers a boot stall detected before any workspace store mounts, and sends i
   const {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch,
     startTrackingStudioTabs,
     store,
@@ -108,7 +108,7 @@ it('buffers a boot stall detected before any workspace store mounts, and sends i
 
   await vi.waitFor(() =>
     expect(resumeSpy).toHaveBeenCalledWith([
-      expect.objectContaining({event: ListenerLimitMessageShown, data: expectedBootStallEvent}),
+      expect.objectContaining({event: ListenerStallDetected, data: expectedBootStallEvent}),
     ]),
   )
 })
@@ -117,7 +117,7 @@ it('replays a stall detected before the component ever mounts, logged exactly on
   const {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch,
     startTrackingStudioTabs,
     store,
@@ -140,7 +140,7 @@ it('replays a stall detected before the component ever mounts, logged exactly on
   )
 
   await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
   )
   expect(logSpy).toHaveBeenCalledTimes(1)
 })
@@ -149,7 +149,7 @@ it('logs straight to the workspace store once it has mounted', async () => {
   const {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch,
     startTrackingStudioTabs,
     store,
@@ -172,7 +172,7 @@ it('logs straight to the workspace store once it has mounted', async () => {
   await vi.advanceTimersByTimeAsync(10_000)
 
   await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
   )
 })
 
@@ -180,7 +180,7 @@ it('logs a stall already active before mount exactly once under StrictMode', asy
   const {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch,
     startTrackingStudioTabs,
     store,
@@ -205,7 +205,7 @@ it('logs a stall already active before mount exactly once under StrictMode', asy
   )
 
   await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
   )
   expect(logSpy).toHaveBeenCalledTimes(1)
 })
@@ -214,7 +214,7 @@ it('logs one event per stall when two instances are mounted on the page', async 
   const {
     ListenerStallTelemetry,
     ListenerStallWorkspaceTelemetry,
-    ListenerLimitMessageShown,
+    ListenerStallDetected,
     countingFetch,
     startTrackingStudioTabs,
     store,
@@ -238,7 +238,7 @@ it('logs one event per stall when two instances are mounted on the page', async 
   await vi.advanceTimersByTimeAsync(10_000)
 
   await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerLimitMessageShown, expectedBootStallEvent),
+    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
   )
   expect(logSpy).toHaveBeenCalledTimes(1)
 })
