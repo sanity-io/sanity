@@ -3,6 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
@@ -17,6 +18,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {menuListScroller, menuListScrollerContent} from '../menuListScroller.css'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
@@ -163,7 +165,11 @@ export function ReleasesMenu({
                 value={filterQuery}
               />
             </Box>
-            <Flex flexDirection="column" overflowY="auto">
+            <Flex
+              className={clsx(menuListScroller, menuListScrollerContent)}
+              flexDirection="column"
+              overflowY="auto"
+            >
               <ReleasesList
                 areReleasesEnabled={areReleasesEnabled}
                 filterQuery={filterQuery}
