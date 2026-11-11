@@ -14,6 +14,7 @@ import {
 import {ListenerLimitMessageShown} from '../__telemetry__/listeners.telemetry'
 
 const workspaceTelemetry: {logger: TelemetryLogger<unknown> | undefined} = {logger: undefined}
+let lastReportedStallOccurrence = 0
 
 /**
  * Classifies each listener stall detected in this tab and logs `ListenerLimitMessageShown` once
@@ -38,8 +39,8 @@ export function ListenerStallTelemetry(): null {
 
 /**
  * Sends `ListenerStallTelemetry`'s events straight to `telemetry` while mounted. Render it inside
- * the workspace's `TelemetryProvider`: the deferred buffer is drained only once, when that
- * provider mounts, so later events logged to it would never send.
+ * the workspace's `TelemetryProvider`: it drains the deferred buffer each time its `store` prop
+ * changes, so events logged to the buffer afterward would never send.
  *
  * @internal
  */
@@ -63,6 +64,9 @@ async function reportListenerStall(options: {
   fallbackTelemetry: TelemetryLogger<unknown>
 }): Promise<void> {
   const {stall, fallbackTelemetry} = options
+  if (stall.stallOccurrence <= lastReportedStallOccurrence) return
+  lastReportedStallOccurrence = stall.stallOccurrence
+
   const ledgerSnapshot = await snapshot(stall.host)
   const protocol = getMeasuredApiProtocol(stall.host)
   const telemetry = workspaceTelemetry.logger ?? fallbackTelemetry
