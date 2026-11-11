@@ -154,16 +154,14 @@ describe('getAspectRatioMessageOptions', () => {
     })
   })
 
-  it('lists every member of a snap list, the last one apart', () => {
+  it('lists every member of a snap list', () => {
     expect(getAspectRatioMessageOptions(resolveAspectRatio([16 / 9, 1, 4 / 3]))).toEqual({
       context: 'list',
-      ratios: ['1:1', '4:3'],
-      lastRatio: '16:9',
+      ratios: ['1:1', '4:3', '16:9'],
     })
     expect(getAspectRatioMessageOptions(resolveAspectRatio([1, 16 / 9]))).toEqual({
       context: 'list',
-      ratios: ['1:1'],
-      lastRatio: '16:9',
+      ratios: ['1:1', '16:9'],
     })
   })
 

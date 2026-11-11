@@ -67,7 +67,7 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'object.image-aspect-ratio-mismatch': 'Cropped image aspect ratio must be {{aspectRatio}}',
   /** Cropped image matches none of the ratios listed in the `aspectRatio` option of its field */
   'object.image-aspect-ratio-mismatch_list':
-    'Cropped image aspect ratio must be {{ratios, list(type: unit)}} or {{lastRatio}}',
+    'Cropped image aspect ratio must be {{ratios, list(type: disjunction)}}',
   /** Cropped image is outside the ratio range in the `aspectRatio` option of its field */
   'object.image-aspect-ratio-mismatch_range':
     'Cropped image aspect ratio must be between {{min}} and {{max}}',

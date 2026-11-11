@@ -123,15 +123,15 @@ export function formatAspectRatio(ratio: number): string {
 
 /**
  * The i18n options of a message that states a resolved constraint: the `aspectRatio` of a fixed
- * ratio, the `min` and `max` of a range (`context: 'range'`), or the leading `ratios` and the
- * `lastRatio` of a list (`context: 'list'`).
+ * ratio, the `min` and `max` of a range (`context: 'range'`), or the `ratios` of a list
+ * (`context: 'list'`), which the message joins in the locale.
  *
  * @internal
  */
 export type AspectRatioMessageOptions =
   | {aspectRatio: string}
   | {context: 'range'; min: string; max: string}
-  | {context: 'list'; ratios: string[]; lastRatio: string}
+  | {context: 'list'; ratios: string[]}
 
 /**
  * The options to translate a message that states a resolved constraint with, so the locale words
@@ -144,8 +144,7 @@ export function getAspectRatioMessageOptions({
   snapRatios,
 }: ResolvedImageAspectRatio): AspectRatioMessageOptions {
   if (snapRatios && snapRatios.length > 1) {
-    const labels = snapRatios.map(formatAspectRatio)
-    return {context: 'list', ratios: labels.slice(0, -1), lastRatio: labels[labels.length - 1]}
+    return {context: 'list', ratios: snapRatios.map(formatAspectRatio)}
   }
   if (range.min === range.max) {
     return {aspectRatio: formatAspectRatio(range.min)}

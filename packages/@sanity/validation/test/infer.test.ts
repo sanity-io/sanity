@@ -800,7 +800,7 @@ describe('image crop option inference', () => {
     await expect(validateFields({snap: imageValue(THREE_BY_TWO)})).resolves.toMatchObject([
       {
         code: validationMarkerCodes.imageAspectRatioMismatch,
-        message: 'Cropped image aspect ratio must be 1:1, 4:3 or 16:9',
+        message: 'Cropped image aspect ratio must be 1:1, 4:3, or 16:9',
       },
     ])
   })
@@ -816,7 +816,7 @@ describe('image crop option inference', () => {
           validation: {
             ...validationLocaleStrings,
             'object.image-aspect-ratio-mismatch_list':
-              'Seitenverhältnis muss {{ratios, list(type: unit)}} oder {{lastRatio}} sein',
+              'Seitenverhältnis muss {{ratios, list(type: disjunction)}} sein',
             'object.image-aspect-ratio-mismatch_range':
               'Seitenverhältnis muss zwischen {{min}} und {{max}} liegen',
           },
@@ -846,10 +846,12 @@ describe('image crop option inference', () => {
       },
       schema,
     })
-    expect(markers.map(({path, message}) => [path.join('.'), message])).toEqual([
+    const messages = markers.map(({path, message}) => [path.join('.'), message])
+    expect(messages).toEqual([
       ['range', 'Seitenverhältnis muss zwischen 4:3 und 16:9 liegen'],
       ['snap', 'Seitenverhältnis muss 1:1, 4:3 oder 16:9 sein'],
     ])
+    expect(messages.map(([, message]) => message.includes(' or '))).toEqual([false, false])
   })
 
   test('errors when the cropped image is below `minDimensions`', async () => {
