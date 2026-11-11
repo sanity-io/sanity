@@ -47,9 +47,19 @@ export const text = css({
   minWidth: 0,
 })
 
-export const dots = css({
+export const name = css({
   display: 'flex',
   alignItems: 'center',
-  flex: 'none',
   gap: '4px',
+  minWidth: 0,
+})
+
+// A 15px slot, so the names of the default row and of the audience rows line up. The diamond is
+// purple at rest and takes the text colour on a selected row.
+export const variantMark = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flex: 'none',
+  width: '15px',
 })
