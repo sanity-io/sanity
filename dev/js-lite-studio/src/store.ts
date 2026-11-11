@@ -21,6 +21,7 @@ import {
   type JsonObject,
   publishedId,
   releaseOf,
+  sleep,
   stripSystemFields,
   uuid,
   versionId,
@@ -67,6 +68,8 @@ const GAP_DEADLINE_MS = 30_000
 const GAP_MAX_EVENTS = 20
 /** Edits are committed after this long without another edit. */
 const COMMIT_DELAY_MS = 250
+/** How many times a failed versions query is retried before giving up. */
+const VERSIONS_RETRIES = 3
 /** `TERMINAL_COMMIT_STATUSES` of `checkoutPair`: the same commit can never succeed. */
 const TERMINAL = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
 
@@ -490,19 +493,28 @@ async function loadSnapshots(published: string, session: number, ids: string[]):
 /** Finds the release versions of an open document, which its listener only reports once they
  * change, and loads their snapshots. */
 async function loadVersions(published: string, session: number): Promise<void> {
-  let ids: string[] = []
-  try {
-    ids = await client().fetch<string[]>(
-      '*[sanity::versionOf($id) && _id in path("versions.**")]._id',
-      {id: published},
-      {perspective: 'raw', tag: 'document.versions'},
-    )
-  } catch {
-    // A failed query leaves the versions the listener reports, rather than a pane that waits for
-    // them forever.
+  let ids: string[] | undefined
+  for (let attempt = 0; ; attempt++) {
+    try {
+      ids = await client().fetch<string[]>(
+        '*[sanity::versionOf($id) && _id in path("versions.**")]._id',
+        {id: published},
+        {perspective: 'raw', tag: 'document.versions'},
+      )
+      break
+    } catch (error) {
+      if (attempt >= VERSIONS_RETRIES) {
+        // Leaving versionsLoaded false keeps the pane waiting rather than treating the document as
+        // absent from every release; a reload (or a later welcome) retries.
+        toastError('Could not load document versions', error)
+        return
+      }
+      await sleep(1000 << attempt)
+      if (!currentPair(published, session)) return
+    }
   }
   const pair = currentPair(published, session)
-  if (!pair) return
+  if (!pair || ids === undefined) return
   pair.versionsLoaded = true
   const fresh = ids.filter((id) => !pair.versions.has(id))
   for (const id of fresh) pair.versions.add(id)

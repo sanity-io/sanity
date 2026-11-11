@@ -16,7 +16,7 @@ import {commandOpen, schemaVersion} from './app-state'
 import {errorMessage} from './client'
 import {PreviewContent} from './DocumentList'
 import {type DocPreview, search} from './previews'
-import {navigate, type Route, routeHref} from './router'
+import {navigate, type Route, routeHref, withPerspective} from './router'
 import {schema, titleOf} from './schema'
 import {useAtom} from './state'
 
@@ -158,7 +158,7 @@ export function CommandMenu() {
       >
         <Card
           as="a"
-          href={routeHref(target)}
+          href={withPerspective(routeHref(target))}
           radius={2}
           padding={2}
           selected={active === index}

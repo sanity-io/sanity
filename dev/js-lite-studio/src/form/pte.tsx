@@ -74,7 +74,7 @@ import {
 } from 'react'
 
 import {scheme} from '../app-state'
-import {getAt, type Path, parsePath} from '../paths'
+import {getAt, type Path, parsePath, pathStartsWith} from '../paths'
 import {hueTint, useFieldPresence} from '../presence'
 import {imageUrl} from '../previews'
 import {
@@ -382,10 +382,7 @@ function editorPatches(field: Path, patches: store.MutationPatch[]): Patch[] {
     } catch {
       return undefined
     }
-    if (path.length < field.length) return undefined
-    for (let index = 0; index < field.length; index++) {
-      if (path[index] !== field[index]) return undefined
-    }
+    if (!pathStartsWith(path, field)) return undefined
     return path.slice(field.length)
   }
   for (const {origin, patch: operation} of patches) {

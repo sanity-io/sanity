@@ -22,7 +22,14 @@ import {
   releaseName,
 } from './perspective'
 import {type DocPreview, imageUrl, localPreview, previewFromProjection} from './previews'
-import {linkClick, navigate, perspective as perspectiveAtom, route, routeHref} from './router'
+import {
+  linkClick,
+  navigate,
+  perspective as perspectiveAtom,
+  route,
+  routeHref,
+  withPerspective,
+} from './router'
 import {schema} from './schema'
 import {Atom, useAtom} from './state'
 import * as store from './store'
@@ -502,7 +509,7 @@ function ListRow(props: {row: DocPreview | undefined; typeName: string}) {
     <Box paddingX={2}>
       <Card
         as="a"
-        href={routeHref(target)}
+        href={withPerspective(routeHref(target))}
         radius={2}
         padding={2}
         selected={current.documentId === row.id}
