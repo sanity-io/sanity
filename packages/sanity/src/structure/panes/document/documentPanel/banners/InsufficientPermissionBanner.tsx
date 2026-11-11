@@ -90,6 +90,7 @@ export function InsufficientPermissionBanner({
                 text: requestPending
                   ? t('banners.permission-check-banner.request-permission-button.sent')
                   : t('banners.permission-check-banner.request-permission-button.text'),
+                tone: requestPending ? 'default' : 'primary',
                 disabled: requestPending,
                 mode: requestPending ? 'bleed' : undefined,
               }
