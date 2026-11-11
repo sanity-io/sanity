@@ -33,7 +33,8 @@ export function VariantBadge({children, variantLead}: VariantBannerChipProps) {
   return (
     <Lead lead={variantLead}>
       <VersionInlineBadge $tone="suggest" data-testid="variant-banner-variant-chip">
-        <VariantMark size="inline" />
+        {/* 4px to the label, the glyph gap of the other chips in the banner sentence */}
+        <VariantMark size="inline" style={{marginInlineEnd: '4px'}} />
         {children}
       </VersionInlineBadge>
     </Lead>
