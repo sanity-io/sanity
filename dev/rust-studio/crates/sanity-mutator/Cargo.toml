@@ -1,0 +1,11 @@
+[package]
+name = "sanity-mutator"
+description = "Rust port of @sanity/mutator: patch paths, patches, mutations and the optimistic document buffer"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+serde_json.workspace = true
