@@ -232,4 +232,17 @@ describe('countStalledRequests', () => {
 
     expect(listenerCount.countStalledRequests(10_000)).toBe(1)
   })
+
+  it('never tracks an asset upload as pending, even held well past the threshold', async () => {
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
+      method: 'POST',
+      body: new FormData(),
+    })
+    await vi.advanceTimersByTimeAsync(10_000)
+
+    expect(listenerCount.getOldestPendingRequest()).toBeUndefined()
+    expect(listenerCount.countStalledRequests(10_000)).toBe(0)
+  })
 })
