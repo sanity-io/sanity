@@ -69,6 +69,43 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /** Overview tab listing the variant definitions. */
+  'overview.view.definitions': 'Definitions',
+  /** Overview tab listing every stored version across documents. */
+  'overview.view.versions': 'Versions',
+  /** Version table column: the variant definition a version belongs to. */
+  'versions.table.definition': 'Definition',
+  /** Version table column: the version (published, draft or release). */
+  'versions.table.version': 'Version',
+  /** Label for versions that belong to no variant definition. */
+  'versions.definition.default': 'Default',
+  /** Version state: published. */
+  'versions.state.published': 'Published',
+  /** Version state: draft. */
+  'versions.state.draft': 'Draft',
+  /** Version state: in a release (shown when the release title is unknown). */
+  'versions.state.release': 'In a release',
+  /** Type filter option that shows every document type. */
+  'versions.filter.type.all': 'All types',
+  /** Definition filter option that shows every definition, including Default. */
+  'versions.filter.definition.all': 'All definitions',
+  /** Release filter option that shows every release. */
+  'versions.filter.release.all': 'All releases',
+  /** State filter option that shows every state. */
+  'versions.filter.state.all': 'All states',
+  /** Sort option: most recently edited first. */
+  'versions.sort.last-edited': 'Last edited',
+  /** Sort option: Published, Drafts, then releases. */
+  'versions.sort.version-order': 'Version order',
+  /** Hint shown with the Last edited sort: documents keep a fixed order, versions are sorted within each one. */
+  'versions.sort.last-edited.hint':
+    'Documents are listed in a fixed order. Versions in each document are sorted by last edit.',
+  /** Search placeholder in the versions table. */
+  'versions.search.placeholder': 'Search versions',
+  /** Empty state of the versions table. */
+  'versions.no-versions': 'No versions match these filters',
+  /** Shown when the versions could not be loaded. */
+  'versions.error': 'Unable to load versions',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
@@ -123,6 +160,34 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.validating': 'Validating',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
+  /** Tab for the documents that have a version for the variant definition, with their count. */
+  'detail.half.present': 'Has a version ({{total}})',
+  /** Tab for the documents of the chosen type that have no version for the variant definition yet, with their count. */
+  'detail.half.missing': 'Missing ({{total}})',
+  /** Type picker option: compare against the document types that already have a version for the variant definition. */
+  'detail.missing.type-picker.default': 'Types with a version',
+  /** Row action that creates the missing version of a document for the variant definition, naming where it goes: a release title, Drafts or Published. */
+  'detail.missing.create-in': 'Create in {{destination}}',
+  /** Destination of a new version: Drafts. */
+  'detail.missing.destination.drafts': 'Drafts',
+  /** Destination of a new version for live-edit types: Published. */
+  'detail.missing.destination.published': 'Published',
+  /** Tooltip when the selected release is scheduled, so the version goes elsewhere. */
+  'detail.missing.fallback.scheduled':
+    '{{release}} is scheduled, so this creates in {{destination}}',
+  /** Tooltip when the selected release can no longer change (archived or published), so the version goes elsewhere. */
+  'detail.missing.fallback.locked':
+    '{{release}} can no longer change, so this creates in {{destination}}',
+  /** Fallback name for a release without a title. */
+  'detail.missing.untitled-release': 'Untitled release',
+  /** Error toast title when creating a missing version fails. */
+  'detail.missing.create.error': 'Unable to create version',
+  /** Shown in the Missing tab when every document of the chosen type has a version. */
+  'detail.missing.no-documents': 'Every document of this type has a version',
+  /** Shown in the Missing tab when no type is chosen and no document has a version yet. */
+  'detail.missing.no-types': 'Pick a document type to see which documents are missing a version',
+  /** Shown in the Missing tab when the documents could not be loaded. */
+  'detail.missing.error': 'Unable to load the documents missing a version',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant definition could not be found.',
   /** Title for the missing Variant detail page. */
