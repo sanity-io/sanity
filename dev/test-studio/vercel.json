@@ -5,6 +5,14 @@
       "handle": "filesystem"
     },
     {
+      "src": "/rust(/.*)?",
+      "dest": "/rust/index.html"
+    },
+    {
+      "src": "/js-lite(/.*)?",
+      "dest": "/js-lite/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

@@ -1,0 +1,37 @@
+{
+  "name": "js-lite-studio",
+  "version": "6.9.2",
+  "private": true,
+  "description": "A scoped-down React studio with the feature set of the Rust studio, for comparing the two",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist",
+    "dev": "vite --port 3335",
+    "preview": "vite preview --port 3335"
+  },
+  "dependencies": {
+    "@portabletext/editor": "^8.2.12",
+    "@sanity/bifur-client": "^3.0.0",
+    "@sanity/client": "catalog:",
+    "@sanity/color": "^3.0.9",
+    "@sanity/diff-match-patch": "^3.2.1",
+    "@sanity/icons": "^5.2.3",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rxjs": "^7.8.2",
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "oxc-transform-react": "catalog:",
+    "rimraf": "catalog:",
+    "vite": "catalog:"
+  }
+}

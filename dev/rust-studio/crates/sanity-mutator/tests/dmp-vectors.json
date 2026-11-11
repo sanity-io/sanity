@@ -1,0 +1,2044 @@
+{
+  "cases": [
+    {
+      "base": "漢か。かかなかäな。かかな  字字か",
+      "mine": "漢。。。な  か。かかなかäな  字字か",
+      "theirs": "漢かか。かかなかäな。かかな  字ä。",
+      "patch": "@@ -1,46 +1,48 @@\n %E6%BC%A2\n+%E3%80%82%E3%80%82%E3%80%82%E3%81%AA  \n %E3%81%8B%E3%80%82%E3%81%8B%E3%81%8B%E3%81%AA%E3%81%8B%C3%A4%E3%81%AA\n-%E3%80%82%E3%81%8B%E3%81%8B%E3%81%AA\n   %E5%AD%97%E5%AD%97\n",
+      "result": "漢。。。な  かか。かかなかäなな  字ä。",
+      "applied": [true],
+      "loc": 16,
+      "mapped": 17
+    },
+    {
+      "base": "/++, &;a=+&@%:= =$:&&@a%/+?~; ,%?@&@#",
+      "mine": "/++, &;a=+&@%:= =$:&&@a%/+a;=a&'+=?~; ,=,'#",
+      "theirs": "/++, &;a=+&@%:= =$:&&@a%/+?~a @=:@&@#",
+      "patch": "@@ -23,15 +23,21 @@\n a%25/+\n-?~; ,%25?@&@\n+a;=a&'+=?~; ,=,'\n #\n",
+      "result": "/++, &;a=+&@%:= =$:&&@a%/+a;=a&'+=?~; ,=,'#",
+      "applied": [true],
+      "loc": 10,
+      "mapped": 10
+    },
+    {
+      "base": "b,,\r\nb",
+      "mine": "a\n\nab,,\n\na,",
+      "theirs": "b,,\r\nb,",
+      "patch": "@@ -1,6 +1,11 @@\n-b,,%0D%0Ab\n+a%0A%0Aab,,%0A%0Aa,\n",
+      "result": "a\n\nab,,\n\na,",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "\nb.\n\n  \r\nbaa.\r\na.\n, ,...",
+      "mine": "\nb.\n\n  \r\nbaa.\r\na.\n, ,... , ",
+      "theirs": "\nb.\n\n  \r\n baa.\r\na.\n, ,...",
+      "patch": "@@ -17,8 +17,11 @@\n .%0A, ,...\n+ , \n",
+      "result": "\nb.\n\n  \r\n baa.\r\na.\n, ,... , ",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "a..",
+      "mine": ".\n..",
+      "theirs": "b \n\n\r\na \r \n\n \na..",
+      "patch": "@@ -1,3 +1,4 @@\n-a\n+.%0A\n ..\n",
+      "result": "b \n\n\r\na \r \n\n \n.\n..",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 15
+    },
+    {
+      "base": "=%20+a%20$;:$=a# %20,':#'/%20#$$#/",
+      "mine": "=%20+a%20$;:$=a# %20,':#'::;?/%20#$$#/",
+      "theirs": "=%20+a%20$;:$=a# %20,':#?$,#$$#/",
+      "patch": "@@ -18,16 +18,20 @@\n %2520,':#'\n+::;?\n /%2520#$$#\n",
+      "result": "=%20+a%20$;:$=a# %20,':#::;??$,#$$#/",
+      "applied": [true],
+      "loc": 24,
+      "mapped": 24
+    },
+    {
+      "base": "  s smphb y is  cdsgud",
+      "mine": "  sy is  cydsgud",
+      "theirs": "  s smphb y is  cdsgxh b",
+      "patch": "@@ -1,21 +1,15 @@\n   s\n- smphb \n y is  c\n+y\n dsgu\n",
+      "result": "  sy is  cydsgxh b",
+      "applied": [true],
+      "loc": 12,
+      "mapped": 12
+    },
+    {
+      "base": "な   か字字 ä  なä字か字",
+      "mine": "な  ä  な漢。 な字",
+      "theirs": "な   か字な字 ä  なä字か字",
+      "patch": "@@ -1,34 +1,25 @@\n %E3%81%AA  \n- %E3%81%8B%E5%AD%97%E5%AD%97 %C3%A4  %E3%81%AA%C3%A4%E5%AD%97%E3%81%8B\n+%C3%A4  %E3%81%AA%E6%BC%A2%E3%80%82 %E3%81%AA\n %E5%AD%97\n",
+      "result": "な  ä  な漢。 な字",
+      "applied": [true],
+      "loc": 16,
+      "mapped": 17
+    },
+    {
+      "base": "ov\n ot Hhle hlhh. olv tkpoogot f qlt ju",
+      "mine": "ov\n ot Hhle hleiuhhh. olv t  ogot f qlt ju",
+      "theirs": "ov\n ot Hhle hlhh. olv tkpoogot f qlt u",
+      "patch": "@@ -7,16 +7,20 @@\n  Hhle hl\n+eiuh\n hh. olv \n@@ -24,11 +24,10 @@\n lv t\n-kpo\n+  \n ogot\n",
+      "result": "ov\n ot Hhle hleiuhhh. olv t  ogot f qlt u",
+      "applied": [true, true],
+      "loc": 12,
+      "mapped": 12
+    },
+    {
+      "base": "ltzybtvcg  uzywj mht hkqdpkhbeeozsqexkcex l gkfvnfsjl farw",
+      "mine": "ltzybtvcg  uzywj mht hkqdpkhbumzheosqexkcex l gkfvnfsjl farw",
+      "theirs": "ltzybtvcg  uzywj mht hkqdpkhbeeozsqexkcex l gkfvnfsjodkl farw",
+      "patch": "@@ -26,12 +26,14 @@\n pkhb\n-e\n+umzh\n eo\n-z\n sqex\n",
+      "result": "ltzybtvcg  uzywj mht hkqdpkhbumzheosqexkcex l gkfvnfsjodkl farw",
+      "applied": [true],
+      "loc": 13,
+      "mapped": 13
+    },
+    {
+      "base": "z kr",
+      "mine": "owwgz r",
+      "theirs": "z kwtjsjllr",
+      "patch": "@@ -1,4 +1,7 @@\n+owwg\n z \n-k\n r\n",
+      "result": "owwwtjsjllr",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": " \r\n,   a bb.b\n,aa\r\n. \n\n\r\n\n\n\n\n  \n\na a,a  \r\nb\r\n\n ",
+      "mine": " \r\n,   a bb.b\n,aa\r.a \n. \n\n\r\n\n\n\na\r\n\n\n\n  \n\na a,a  \r\nb\r\n\n ",
+      "theirs": " \r\r\nbaa a bb.b\n,aa\r\n. \n\n\r\n\n\n\n\n\na a,a  \r\nb\r\n\n ",
+      "patch": "@@ -11,16 +11,19 @@\n b.b%0A,aa%0D\n+.a \n %0A. %0A%0A%0D%0A%0A\n@@ -24,16 +24,21 @@\n  %0A%0A%0D%0A%0A%0A%0A\n+a%0D%0A%0A%0A\n %0A  %0A%0Aa a\n",
+      "result": " \r\r\nbaa a bb.b\n,aa\r.a \n. \n\n\r\n\n\n\na\r\n\n\n\n\na a,a  \r\nb\r\n\n ",
+      "applied": [true, true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "\n\nb.\n\n",
+      "mine": "\nb,.\na\n \n",
+      "theirs": "\n\nb\n",
+      "patch": "@@ -1,6 +1,9 @@\n-%0A\n %0Ab\n+,\n .%0A\n+a%0A \n %0A\n",
+      "result": "\nb,a\n \n",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 3
+    },
+    {
+      "base": "y\t  \t\t\u0001\u0002xx\u0001\txx\u0002x\t \u0001\ty\u0001\u0001   y\u0001  y\u0001 y\u0001 \u0001y ",
+      "mine": "y\u0001y \t  \t\t\u0001\u0002xx\u0001\txx \u0001\ty\u0001\u0001   y\u0001  y\u0001 y\u0001 \u0001y ",
+      "theirs": "y\t  \t\t\u0001\u0002xxy \t \u0001\txx\u0002x\t \u0001\ty\u0001\u0001   y\u0001  y\u0001 y\u0001 \u0001y  y  ",
+      "patch": "@@ -1,13 +1,17 @@\n y\n+%01y%C2%A0\n %09%E2%80%A8%E2%80%A8%09%09%01%02x\n@@ -19,12 +19,9 @@\n %01%09xx\n-%02x%09\n %C2%A0%01%09y\n",
+      "result": "y\u0001y \t  \t\t\u0001\u0002xxy \t \u0001\txx \u0001\ty\u0001\u0001   y\u0001  y\u0001 y\u0001 \u0001y  y  ",
+      "applied": [true, true],
+      "loc": 2,
+      "mapped": 2
+    },
+    {
+      "base": "y\u0001 xyxy\u0002",
+      "mine": " \u0002\u0002 \t xyxy y ",
+      "theirs": "x  \u0001  y \t \t xy\u0002",
+      "patch": "@@ -1,10 +1,22 @@\n-y%01\n+%E2%80%A8%02%02%E2%80%A8%09\n %E2%80%A8xyxy\n-%02\n+%E2%80%A8y%C2%A0\n",
+      "result": "x  \u0001  y \t \t xy\u0002",
+      "applied": [false],
+      "loc": 7,
+      "mapped": 14
+    },
+    {
+      "base": "nc jgq  sbbxhyryhjlr tjyivdiejufwx  btmuckq    octdwqo pn",
+      "mine": "nc jgq  sbbxhyryhjlr tjyivdiejuz fwx  btmuckq    ocdwqo pn",
+      "theirs": "nc jgq  sbbxhyryhjlr tjyivdiejufwx  btmkq    octdwqo pn",
+      "patch": "@@ -24,16 +24,18 @@\n yivdieju\n+z \n fwx  btm\n@@ -44,16 +44,15 @@\n kq    oc\n-t\n dwqo pn\n",
+      "result": "nc jgq  sbbxhyryhjlr tjyivdiejuz fwx  btmkq    ocdwqo pn",
+      "applied": [true, true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "漢 。な字。字か字か。 ä字ä。 漢かä。かなな。。。ä。ä字字",
+      "mine": "漢 。。な字。字か字か。 ä字ä。 漢かä。かなな。。。ä。ä字字",
+      "theirs": "漢 。な字。か字か。 ä字ä。 漢か かä。字なä。かなな。。。ä。ä字字",
+      "patch": "@@ -1,28 +1,31 @@\n %E6%BC%A2 \n+%E3%80%82\n %E3%80%82%E3%81%AA%E5%AD%97%E3%80%82%E5%AD%97%E3%81%8B%E5%AD%97%E3%81%8B\n",
+      "result": "漢 。。な字。か字か。 ä字ä。 漢か かä。字なä。かなな。。。ä。ä字字",
+      "applied": [true],
+      "loc": 9,
+      "mapped": 8
+    },
+    {
+      "base": ";,,a%aa:/''#%:~:~?%20':/~'?=?=$~:;=#;#/%20$+# ''%20:&%a~",
+      "mine": ",,a%aa:/''#%:~:~?%20':/~=$~:;=#;#/%;;+@20$+# ''%+=%20a~",
+      "theirs": ";,,a%aa:/''#%:~:~?~'?=?=$~:;=#;#/%20$+# ''%20:&%a~",
+      "patch": "@@ -1,9 +1,8 @@\n-;\n ,,a%25aa:/\n@@ -21,12 +21,8 @@\n ':/~\n-'?=?\n =$~:\n@@ -28,16 +28,20 @@\n :;=#;#/%25\n+;;+@\n 20$+# ''\n@@ -45,11 +45,11 @@\n  ''%25\n-20:&%25\n++=%2520\n a~\n",
+      "result": ",,a%aa:/''#%:~:~?~=$~:;=#;#/%;;+@20$+# ''%+=%20a~",
+      "applied": [true, true, true, true],
+      "loc": 21,
+      "mapped": 18
+    },
+    {
+      "base": "~~ $# %20/?~#@@@;?:& ",
+      "mine": "~~ $# %20/?~==&&@?:& ",
+      "theirs": "~~:?&# $# %20/?$,~#@@@;?:& ",
+      "patch": "@@ -9,13 +9,13 @@\n 0/?~\n-#@@@;\n+==&&@\n ?:& \n",
+      "result": "~~:?&# $# %20/?$,~==&&@?:& ",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": " dwfljd huw  xccfzhbroowge HHj \n olvsoebn.o",
+      "mine": " dwfljd huw  xccf\n   zhbroowge HHolvsoebn.o",
+      "theirs": " dwfljd huw  xccfzhbroowge HHj \n olvsoeb\nn.o",
+      "patch": "@@ -10,16 +10,20 @@\n uw  xccf\n+%0A   \n zhbroowg\n@@ -30,12 +30,8 @@\n e HH\n-j %0A \n olvs\n",
+      "result": " dwfljd huw  xccf\n   zhbroowge HHolvsoeb\nn.o",
+      "applied": [true, true],
+      "loc": 36,
+      "mapped": 36
+    },
+    {
+      "base": "xééé😀åx é 👍🏽éø👍🏽",
+      "mine": "xéé😀åéxé 👍🏽éø👍🏽",
+      "theirs": "xe😀åx  👍🏽éø👍🏽",
+      "patch": "@@ -1,25 +1,23 @@\n x\n-e%CC%81\n %C3%A9e%CC%81%F0%9F%98%80%C3%A5\n+%C3%A9\n x\n- \n e%CC%81 %F0%9F%91%8D\n",
+      "result": "x😀éå  👍🏽éø👍🏽",
+      "applied": [true],
+      "loc": 9,
+      "mapped": 5
+    },
+    {
+      "base": "👍🏽👍🏽😀åéé👍🏽é😀é😀😀é 🇳🇴é🇳🇴xx👍🏽👍🏽🇳🇴👍🏽👍🏽",
+      "mine": "👍🏽👍🏽😀åéé👍🏽é😀é😀😀é ø😀🇳🇴é🇳🇴xx👍🏽👍🏽👍🏽👍🏽",
+      "theirs": "👍🏽👍🏽😀 ø🇳🇴́å🇳🇴👍🏽é😀é😀😀é 🇳😀 🇴é🇳🇴xx👍🏽👍🏽🇳🇴👍🏽👍🏽",
+      "patch": "@@ -44,32 +44,38 @@\n %CC%81%F0%9F%98%80%F0%9F%98%80e%CC%81 \n+%C3%B8%F0%9F%98%80\n %F0%9F%87%B3%F0%9F%87%B4%C3%A9%F0%9F%87%B3%F0%9F%87%B4\n@@ -84,40 +84,32 @@\n %F0%9F%91%8D%F0%9F%8F%BD%F0%9F%91%8D%F0%9F%8F%BD\n-%F0%9F%87%B3%F0%9F%87%B4\n %F0%9F%91%8D%F0%9F%8F%BD%F0%9F%91%8D%F0%9F%8F%BD\n",
+      "result": "👍🏽👍🏽😀 ø🇳🇴́å🇳🇴👍🏽é😀é😀😀é ø😀🇳😀 🇴é🇳🇴xx👍🏽👍🏽👍🏽👍🏽",
+      "applied": [true, true],
+      "loc": 48,
+      "mapped": 58
+    },
+    {
+      "base": "なな。漢かなかか漢字äää äなな 漢漢字 漢ää字  ä漢äかかäな漢字字。なかか漢 漢 ä 漢",
+      "mine": "なな。漢かなかか漢字äää äなな 漢漢字 漢ää字  ä漢ä。かかäな漢字字。なかか漢 漢 ä 漢",
+      "theirs": "なな。漢かな 字かかかか漢字äää äなな 漢  漢漢漢字 漢ää字  ä漢äかかäな漢字字。なかか漢 漢 ä 漢",
+      "patch": "@@ -60,39 +60,42 @@\n %C3%A4%C3%A4%E5%AD%97  %C3%A4%E6%BC%A2%C3%A4\n+%E3%80%82\n %E3%81%8B%E3%81%8B%C3%A4%E3%81%AA%E6%BC%A2%E5%AD%97%E5%AD%97%E3%80%82\n",
+      "result": "なな。漢かな 字かかかか漢字äää äなな 漢  漢漢漢字 漢ää字  ä漢ä。かかäな漢字字。なかか漢 漢 ä 漢",
+      "applied": [true],
+      "loc": 24,
+      "mapped": 32
+    },
+    {
+      "base": "a\n\n\n\r\n\n\n\r\n\r\n\n..b,b\n, aba b aaa\n \r\n\n",
+      "mine": "a\n\n\n\r\n\n\naa\r\n\n..b,\n .\n\r\nb\n, aba b aaa\n \r\n\n",
+      "theirs": "a\n\n\n\r\n\n\n\r\n\r\n\n..b,b\n a\n\n , aba b aa\r\n\n",
+      "patch": "@@ -5,17 +5,23 @@\n %0D%0A%0A%0A\n-%0D%0A\n+aa\n %0D%0A%0A..b,\n+%0A .%0A%0D%0A\n b%0A, \n",
+      "result": "a\n\n\n\r\n\n\naa\r\n\n..b,\n .\n\r\nb\n a\n\n , aba b aa\r\n\n",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "\u0001y\ty   \u0001\u0002\u0001 \t\u0001x\u0001xx\u0001\u0002   x\t\u0001\t\u0001y\u0002\t x \t\u0001 xx\ty \u0001y\u0001 \tx\u0001\u0002\u0002\t \u0001\u0002xy\u0001",
+      "mine": "\u0001y\ty  \u0001\u0002\u0002 \u0001\u0001 \t\u0001x\u0001xx\u0001\u0002   x\t\u0001\t\u0001y\u0002\t x \t\u0001 xx\ty \u0001y\u0001 \tx\u0001\u0002\u0002\t \u0001\u0002xy\u0001",
+      "theirs": "\u0001 x\ty \ty   \u0001\u0002\u0001 \t\u0001x\u0001xx\u0001\u0002   x\t\u0001\t\u0001y\u0002\t x\u0001 xx\ty \u0001y\u0001 \tx\u0001\u0002\u0002\t \u0001\u0002yxy\u0001",
+      "patch": "@@ -1,24 +1,26 @@\n %01y%09y%E2%80%A8%C2%A0\n-%E2%80%A8\n %01%02\n+%02%E2%80%A8%01\n %01%E2%80%A8%09%01x%01xx\n",
+      "result": "\u0001 x\ty \ty  \u0001\u0002\u0002 \u0001\u0001 \t\u0001x\u0001xx\u0001\u0002   x\t\u0001\t\u0001y\u0002\t x\u0001 xx\ty \u0001y\u0001 \tx\u0001\u0002\u0002\t \u0001\u0002yxy\u0001",
+      "applied": [true],
+      "loc": 41,
+      "mapped": 43
+    },
+    {
+      "base": "mreedimmwed",
+      "mine": "mxcpkmymwed",
+      "theirs": "mreee ksvd",
+      "patch": "@@ -1,11 +1,11 @@\n m\n-reedim\n+xcpkmy\n mwed\n",
+      "result": "mxcpkmye ksvd",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 4
+    },
+    {
+      "base": "\r\n\n\n\n\n\n\r\n a\r\n.b.",
+      "mine": "\r\n\r\na\n\n\n\n\n\r\n a\r\n.b.",
+      "theirs": "\r\n\n\n a\r\n.b.",
+      "patch": "@@ -1,10 +1,13 @@\n %0D%0A\n+%0D%0Aa\n %0A%0A%0A%0A%0A%0D%0A \n",
+      "result": "\r\n\r\na\n\n a\r\n.b.",
+      "applied": [true],
+      "loc": 15,
+      "mapped": 10
+    },
+    {
+      "base": " ,aba\n\n,\r\n\n\n",
+      "mine": " ,aab\n\n\r\n\n\n,\r\n\n\n",
+      "theirs": " ,aba\n\n\n",
+      "patch": "@@ -1,9 +1,13 @@\n  ,a\n-b\n a\n+b%0A%0A%0D%0A\n %0A%0A,%0D\n",
+      "result": " ,aab\n\n\r\n\n\n\n",
+      "applied": [true],
+      "loc": 10,
+      "mapped": 7
+    },
+    {
+      "base": " \r\n\n\r\n\n\nb\n\n",
+      "mine": " \r\n.\n\n\n\r\n\n\n\n\nb\n\n",
+      "theirs": " \r\n\n\r\n\n\nb\n\n",
+      "patch": "@@ -1,9 +1,14 @@\n  %0D%0A\n+.%0A%0A%0A%0D%0A\n %0A\n-%0D\n %0A%0A%0Ab\n",
+      "result": " \r\n.\n\n\n\r\n\n\n\n\nb\n\n",
+      "applied": [true],
+      "loc": 9,
+      "mapped": 9
+    },
+    {
+      "base": "j,xaeeomr",
+      "mine": "keeszrr",
+      "theirs": "j,xaeeor",
+      "patch": "@@ -1,9 +1,7 @@\n-j,xaeeom\n+keeszr\n r\n",
+      "result": "keeszrr",
+      "applied": [true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "fhcyf",
+      "mine": "fhc ",
+      "theirs": "fmqhsmrcyf",
+      "patch": "@@ -1,5 +1,4 @@\n fhc\n-yf\n+ \n",
+      "result": "fmqhsmrc ",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 9
+    },
+    {
+      "base": "eoypmnkz   oopp pcHuxyooe \nlHdH wfof  y fhclr,H",
+      "mine": "eoypmnkz   oopp pcHuxyooe \nllfHdH wfof  y fhclr,H",
+      "theirs": "eoypmnkz  ueup pcHuxyooe \nlHdH wfof  y fhclr,H",
+      "patch": "@@ -21,16 +21,18 @@\n xyooe %0Al\n+lf\n HdH wfof\n",
+      "result": "eoypmnkz  ueup pcHuxyooe \nllfHdH wfof  y fhclr,H",
+      "applied": [true],
+      "loc": 18,
+      "mapped": 17
+    },
+    {
+      "base": "te s dxq wqxnoejofxge h l ieonnbrjhzorq yztwomhxelq wkoat",
+      "mine": "te s dxq wqxnoejofxge h l ieonnbrjhzorq yztwomhxelq wkoat o",
+      "theirs": "te s dxq wqxnoejofxge h l ieonnbrjhzorq yztwomhxelq wkoatqaos",
+      "patch": "@@ -50,8 +50,10 @@\n lq wkoat\n+ o\n",
+      "result": "te s dxq wqxnoejofxge h l ieonnbrjhzorq yztwomhxelq wkoat oqaos",
+      "applied": [true],
+      "loc": 9,
+      "mapped": 9
+    },
+    {
+      "base": "a +&'%20'#",
+      "mine": "a ++@$ &?'=/&&#",
+      "theirs": "& #$?'%20'#",
+      "patch": "@@ -1,10 +1,15 @@\n a +\n-&'%2520'\n++@$ &?'=/&&\n #\n",
+      "result": "& +@$ &?'=/&&#",
+      "applied": [true],
+      "loc": 8,
+      "mapped": 9
+    },
+    {
+      "base": "y\u0001\u0001",
+      "mine": "y\u0001\u0001 \txyy  \u0002 ",
+      "theirs": "y\u0001 x\u0002",
+      "patch": "@@ -1,3 +1,19 @@\n y%01%01\n+%E2%80%A8%09xyy%E2%80%A8%C2%A0%02%E2%80%A8\n",
+      "result": "y\u0001 x\u0002 \txyy  \u0002 ",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "hc \nhorjextxHqeqeqre ro\nec ojh,toeh cgoxhplrwk  h ",
+      "mine": "hc \nhorjex,\npkxtxHqeqeqre ro\nec ojh,toeh cgoxhpl vc h ",
+      "theirs": "hc \nhorjextxHqeqeqre ro\nec ojh,toeh cgoxrwk  h ",
+      "patch": "@@ -3,16 +3,21 @@\n  %0Ahorjex\n+,%0Apkx\n txHqeqeq\n@@ -45,11 +45,10 @@\n xhpl\n-rwk \n+ vc\n  h \n",
+      "result": "hc \nhorjex,\npkxtxHqeqeqre ro\nec ojh,toeh cgox vc h ",
+      "applied": [true, true],
+      "loc": 7,
+      "mapped": 7
+    },
+    {
+      "base": "\t \u0002  \u0001x ",
+      "mine": "\tyx\u0002\u0001\u0001\u0002   \u0001\u0001 \t  x  \u0001",
+      "theirs": "\txx xx\u0002  \u0001x ",
+      "patch": "@@ -1,13 +1,32 @@\n %09\n-%C2%A0%02%C2%A0%E2%80%A8%01x%C2%A0\n+yx%02%01%01%02%E2%80%A8%C2%A0%E2%80%A8%01%01%E2%80%A8%09%C2%A0%E2%80%A8x%C2%A0%C2%A0%01\n",
+      "result": "\tyx\u0002\u0001\u0001\u0002   \u0001\u0001 \t  x  \u0001",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "?#'&a:/';/%20+&;:= /=a# '/;&@@@a:=a+/=%#",
+      "mine": "?#'&a:+;=$%/';/%20+&;:= /=a# '/;=+@a:=a+/=%#",
+      "theirs": "?#'&a:/';/%20+&;:= /=a# ;&@@@a:=a+/=%#",
+      "patch": "@@ -1,14 +1,19 @@\n ?#'&a:\n++;=$%25\n /';/%2520+\n@@ -29,11 +29,10 @@\n  '/;\n-&@@\n+=+\n @a:=\n",
+      "result": "?#'&a:+;=$%/';/%20+&;:= /=a# ;=+@a:=a+/=%#",
+      "applied": [true, true],
+      "loc": 21,
+      "mapped": 21
+    },
+    {
+      "base": ",,ba\na.\n\n\n,a  ,a,b\n\n.b",
+      "mine": ",,ba\na.\n\n\n,a  ,a .,aa,b\n\n.b",
+      "theirs": ",,ba\na.\n, .\r\n\n\n,a  ,a,b\n\n.b",
+      "patch": "@@ -9,14 +9,19 @@\n %0A%0A,a  ,a\n+ .,aa\n ,b%0A%0A.b\n",
+      "result": ",,ba\na.\n, .\r\n\n\n,a  ,a .,aa,b\n\n.b",
+      "applied": [true],
+      "loc": 7,
+      "mapped": 7
+    },
+    {
+      "base": ":~+,=&$ =%20;?,~#$ &%20'@,$~%20%%20",
+      "mine": ":~+,=&#$ &%20'@,$~%20%aa #",
+      "theirs": ":~+,@%%/+'%=&$ =%20;?,~#$ &%20'@~,$~%20%%20",
+      "patch": "@@ -3,18 +3,8 @@\n +,=&\n-$ =%2520;?,~\n #$ &\n@@ -15,11 +15,12 @@\n @,$~%2520%25\n-%2520\n+aa #\n",
+      "result": ":~+,@%%/+'%=&#$ &%20'@~,$~%20%aa #",
+      "applied": [true, true],
+      "loc": 8,
+      "mapped": 15
+    },
+    {
+      "base": "😀😀😀éé🇳🇴å øå🇳🇴😀å xéx👍🏽øéé🇳🇴 🇳🇴",
+      "mine": "😀😀😀éeåå🇳🇴å øå🇳🇴😀å👍🏽øéé🇳🇳🇴🇴 🇳👍🏽👍🏽🇴",
+      "theirs": "😀😀😀éé🇳🇴å øå🇳🇴😀å é👍🏽xéx👍🏽øéé🇳é🇴",
+      "patch": null,
+      "result": null,
+      "applied": null,
+      "loc": 29,
+      "mapped": 34
+    },
+    {
+      "base": "x\u0001 \u0001\u0001\t\u0001\ty\u0002  x\u0001\t y\u0002  x\u0002 \t\u0001\t\u0002\u0002x  x \u0001  x\u0001",
+      "mine": "x\u0001 \u0001\u0001\t\u0001\ty\u0002  x\u0001\t\u0002\u0002x  y\u0002  x\u0002 \t\u0001x  x \t\u0002x  x\u0001",
+      "theirs": "x\u0001 \u0001\u0001\t\u0001\ty\u0002  x\u0001\t y\u0002  x\u0002 \t\u0001\t\u0002\u0002 x  x \u0001  x\u0001",
+      "patch": "@@ -9,23 +9,29 @@\n %09y%02%C2%A0%C2%A0x%01%09\n+%02%02x%E2%80%A8\n %C2%A0y%02%C2%A0%E2%80%A8x%02%C2%A0\n@@ -35,25 +35,24 @@\n %02%C2%A0%09%01\n-%09%02%02\n x%C2%A0%C2%A0x%E2%80%A8\n-%01\n+%09%02x\n %E2%80%A8%C2%A0x%01\n",
+      "result": "x\u0001 \u0001\u0001\t\u0001\ty\u0002  x\u0001\t\u0002\u0002x  y\u0002  x\u0002 \t\u0001x  x \u0001\t\u0002x x\u0001",
+      "applied": [true, true],
+      "loc": 27,
+      "mapped": 27
+    },
+    {
+      "base": "\u0001",
+      "mine": " x\t\u0001\u0001y\u0002",
+      "theirs": "",
+      "patch": "@@ -1 +1,9 @@\n-%01\n+%E2%80%A8x%09%01%01y%02\n",
+      "result": " x\t\u0001\u0001y",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "øéøåxøééø 👍🏽👍🏽 å 👍🏽éé😀  ø🇳🇴🇳🇴ééxéø🇳🇴👍🏽",
+      "mine": "øéøåxøééø 👍🏽👍🏽 å 👍🏽éé😀  éøxéå🇳🇴🇳🇴🇳🇴ééxéø🇳🇴👍🏽",
+      "theirs": "øéøåxøééø 👍🏽👍👍🏽å 👍🏽éé😀  ø🇳🇴🇳🇴ééx  😀éø🇳🇴👍🏽",
+      "patch": "@@ -44,32 +44,48 @@\n %F0%9F%8F%BD%C3%A9%C3%A9%F0%9F%98%80  \n-%C3%B8\n+e%CC%81%C3%B8x%C3%A9%C3%A5%F0%9F%87%B3%F0%9F%87%B4\n %F0%9F%87%B3%F0%9F%87%B4%F0%9F%87%B3%F0%9F%87%B4\n",
+      "result": "øéøåxøééø 👍🏽👍👍🏽å 👍🏽éé😀  éøxéå🇳🇴🇳🇴🇳🇴ééx  😀éø🇳🇴👍🏽",
+      "applied": [true],
+      "loc": 19,
+      "mapped": 21
+    },
+    {
+      "base": "/%20,&/;'$@=$@?~:%a: ",
+      "mine": "/%20,%20'$ @?~:%a: ",
+      "theirs": "/%20,&%20$@?~%a: ",
+      "patch": "@@ -2,16 +2,14 @@\n %2520,\n-&/;'$@=$\n+%2520'$ \n @?~:\n",
+      "result": "/%20,%20'$ @?~%a: ",
+      "applied": [true],
+      "loc": 21,
+      "mapped": 17
+    },
+    {
+      "base": "yxx\u0001\u0002\t\t  \t \ty\u0001\ty\u0002  \u0001x  yy",
+      "mine": "yxx\u0001   \t \t\u0002 \t \ty\u0001\ty\u0002  \u0001x  y\u0002\u0001   \u0002 y",
+      "theirs": "yxx\u0001\u0002\t\t  \t \ty\u0001\ty\u0002 x y",
+      "patch": "@@ -1,16 +1,21 @@\n yxx%01\n-%02%09%09%E2%80%A8\n+%C2%A0%C2%A0%C2%A0%09%C2%A0%09%02\n %C2%A0%09%C2%A0%09\n@@ -26,14 +26,27 @@\n %02%C2%A0%E2%80%A8%01x%C2%A0%C2%A0y\n+%02%01%C2%A0%C2%A0%E2%80%A8%02%E2%80%A8\n y\n",
+      "result": "yxx\u0001   \t \t\u0002 \t \ty\u0001\ty\u0002 x \u0002\u0001   \u0002 y",
+      "applied": [true, true],
+      "loc": 24,
+      "mapped": 20
+    },
+    {
+      "base": "x😀x xxå👍🏽å🇳🇴å🇳🇴x🇳🇴",
+      "mine": "x😀x xx👍🏽å🇳🇴å🇳🇴x🇳🇴",
+      "theirs": "x😀x xxå👍🏽å🇳🇴åx é🇳🇴",
+      "patch": "@@ -1,29 +1,27 @@\n x%F0%9F%98%80x xx\n-%C3%A5\n %F0%9F%91%8D%F0%9F%8F%BD%C3%A5%F0%9F%87%B3%F0%9F%87%B4\n",
+      "result": "x😀x xx👍🏽å🇳🇴åx é🇳🇴",
+      "applied": [true],
+      "loc": 23,
+      "mapped": 21
+    },
+    {
+      "base": "\u0001\u0002\u0002x \u0002x \tyy\u0001y \t\u0002 y\u0002\t y\t\u0002\tx  \u0002   \u0002 \t ",
+      "mine": "\u0001\u0002\u0002x \u0002x \u0001\t\tyy\u0001\u0002 y\u0002\t y\t\u0002\tx  x\tx\u0002\t\u0001\u0002\u0002 \t ",
+      "theirs": "\u0001\u0002\u0002x  y\u0002x \tyy\u0001y \t\u0002 y\u0002\t y\t\u0002\tx  \u0002   \u0002 \t ",
+      "patch": "@@ -5,22 +5,19 @@\n %C2%A0%02x%E2%80%A8\n+%01%09\n %09yy%01\n-y%E2%80%A8%09\n %02%E2%80%A8y%02\n@@ -30,23 +30,22 @@\n %09x%E2%80%A8%E2%80%A8\n-%02%E2%80%A8%C2%A0%C2%A0\n+x%09x%02%09%01%02\n %02%E2%80%A8%09%C2%A0\n",
+      "result": "\u0001\u0002\u0002x  y\u0002x \u0001\t\tyy\u0001\u0002 y\u0002\t y\t\u0002\tx  x\tx\u0002\t\u0001\u0002\u0002 \t ",
+      "applied": [true, true],
+      "loc": 24,
+      "mapped": 26
+    },
+    {
+      "base": "&'@$+''=? #;+=a=%+:$+a;#a'a#%@%20#':@?;%20:',;/,%20%&%20+",
+      "mine": "'@$+''=? #;+=a=%+:$+a;#a'a#%@%20#':@?;%20:',;/,%20+",
+      "theirs": "&'@$+''=? #;+=a=%+:$+a;#a'a#%@%20$?;%20:',:?+,%20%&%20+",
+      "patch": "@@ -1,9 +1,8 @@\n-&\n '@$+''=?\n@@ -47,10 +47,5 @@\n ,%2520\n-%25&%2520\n +\n",
+      "result": "'@$+''=? #;+=a=%+:$+a;#a'a#%@%20$?;%20:',:?+,%20+",
+      "applied": [true, true],
+      "loc": 27,
+      "mapped": 27
+    },
+    {
+      "base": "@' =&'+#&+#;# ,a@=#@,+/'$a%=#/",
+      "mine": "@' =&'+ #;%20#&+#;# ,a@=#@,+/$a%=#/",
+      "theirs": "@' =&'+#~~;+#;# ,a@=#@,+/'$a%=#/",
+      "patch": "@@ -1,15 +1,21 @@\n @' =&'+\n+ #;%2520\n #&+#;# ,\n@@ -22,15 +22,14 @@\n a@=#@,+/\n-'\n $a%25=#/\n",
+      "result": "@' =&'+ #;%20#~~;+#;# ,a@=#@,+/$a%=#/",
+      "applied": [true, true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "olrzlnoet  \nH  Heytagl Hbfr olf",
+      "mine": "olrzlnoe\nt  \nH  He Hbfr llo",
+      "theirs": "olrzlnoezbet  \nH  H emheytagl Hbfor olf",
+      "patch": "@@ -1,16 +1,17 @@\n olrzlnoe\n+%0A\n t  %0AH  H\n@@ -15,18 +15,13 @@\n   He\n-ytagl\n  Hbfr \n-olf\n+llo\n",
+      "result": "olrzlnoezbe\nt  \nH  H emhe Hbforllo",
+      "applied": [true, true],
+      "loc": 28,
+      "mapped": 36
+    },
+    {
+      "base": "'#;,",
+      "mine": "'#;,",
+      "theirs": "=/@='#;,",
+      "patch": "",
+      "result": null,
+      "applied": null,
+      "loc": 3,
+      "mapped": 7
+    },
+    {
+      "base": "\n\nb\r\nb,.\n,.aaba \n,\nb\na,.ba\n.\n\n.\n\n",
+      "mine": "\n\nb\r\nb,.\n,.aaba \n\r\n,\nb\na,.ba\n.\n\n.\n\n",
+      "theirs": "\n\nb\r\nb,.\n,.a\r\naba \n,\nb\na,.ba\n.\n\n.\n\n",
+      "patch": "@@ -10,16 +10,18 @@\n ,.aaba %0A\n+%0D%0A\n ,%0Ab%0Aa,.b\n",
+      "result": "\n\nb\r\nb,.\n,.a\r\naba \n\r\n,\nb\na,.ba\n.\n\n.\n\n",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 2
+    },
+    {
+      "base": "veswsigz ct trdczngkwqzwpgmzaebmnxyk",
+      "mine": "veswsigz ctdc gvglqzwpgmzaebmnxyk",
+      "theirs": "hgfbvdf ztigz ct trdczngkwqzwpgmzaebmnxyk",
+      "patch": "@@ -8,18 +8,15 @@\n z ct\n- trdczngkw\n+dc gvgl\n qzwp\n",
+      "result": "hgfbvdf ztigz ctdc gvglqzwpgmzaebmnxyk",
+      "applied": [true],
+      "loc": 31,
+      "mapped": 36
+    },
+    {
+      "base": "m hc",
+      "mine": "m hqyk",
+      "theirs": "m hphty",
+      "patch": "@@ -1,4 +1,6 @@\n m h\n-c\n+qyk\n",
+      "result": "m hqyk",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "xcz dmufl fqpn  ml pwuiyzdw l jpci  juq y siaz",
+      "mine": "xcz bdmufl fqpn  ml pwuiyzdw l jpxt ohci  jur  siaz",
+      "theirs": "xcz dmufl fqpn  ml pxestazdw l jpcinjuq y siaz",
+      "patch": "@@ -1,12 +1,13 @@\n xcz \n+b\n dmufl fq\n@@ -30,17 +30,21 @@\n l jp\n+xt oh\n ci  ju\n-q y\n+r \n  sia\n",
+      "result": "xcz bdmufl fqpn  ml pxestazdw l jpxt ohcinjur siaz",
+      "applied": [true, true],
+      "loc": 9,
+      "mapped": 9
+    },
+    {
+      "base": "åx😀",
+      "mine": "åxx🇳🇴",
+      "theirs": "é🇳🇴",
+      "patch": "@@ -1,7 +1,12 @@\n %C3%A5x\n-%F0%9F%98%80\n+x%F0%9F%87%B3%F0%9F%87%B4\n",
+      "result": "x🇳🇴",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 0
+    },
+    {
+      "base": "/?%$=&$&  %20~?,a; :/%20+~',~",
+      "mine": "/?%$,$;@;=&$&  %~$?=~?,a;'+%20/%20+~',~",
+      "theirs": "/?&  %20~?,a; :/%20+~',~",
+      "patch": "@@ -1,24 +1,34 @@\n /?%25$\n+,$;@;\n =&$&  %25\n-20\n+~$?=\n ~?,a;\n- :\n+'+%2520\n /%2520\n",
+      "result": "/?,$;@;&  %~$?=~?,a; :/%2'+%20~',~",
+      "applied": [true],
+      "loc": 7,
+      "mapped": 2
+    },
+    {
+      "base": "な漢字なかä字 字。。ä漢なな。。 な字 äか なä漢ä漢。 なかな漢かä 漢 なäかä漢  ",
+      "mine": "な漢字なäかä字 字。。ä漢なな。。 な字 äか なä漢ä漢。 な漢かä字。なかä漢  ",
+      "theirs": "なか 字。。ä漢なな。。 な字 äか なä漢ä漢。 なかな漢かä 漢 なäかä漢  ",
+      "patch": "@@ -1,32 +1,34 @@\n %E3%81%AA%E6%BC%A2%E5%AD%97%E3%81%AA\n+%C3%A4\n %E3%81%8B%C3%A4%E5%AD%97 %E5%AD%97%E3%80%82%E3%80%82%C3%A4\n@@ -72,45 +72,38 @@\n %C3%A4%E6%BC%A2%E3%80%82 \n-%E3%81%AA%E3%81%8B\n %E3%81%AA%E6%BC%A2%E3%81%8B%C3%A4\n- %E6%BC%A2 %E3%81%AA%C3%A4\n+%E5%AD%97%E3%80%82%E3%81%AA\n %E3%81%8B%C3%A4%E6%BC%A2 \n",
+      "result": "なäか 字。。ä漢なな。。 な字 äか なä漢ä漢。 な漢かä字。なかä漢  ",
+      "applied": [true, true],
+      "loc": 13,
+      "mapped": 8
+    },
+    {
+      "base": "::#, ~@=':%/,='' +",
+      "mine": "::#, ~@=':%/,='' ,$=:",
+      "theirs": "::~@='~;,/,='",
+      "patch": "@@ -14,5 +14,8 @@\n ='' \n-+\n+,$=:\n",
+      "result": "::~@='~;,/,=',$=:",
+      "applied": [true],
+      "loc": 5,
+      "mapped": 2
+    },
+    {
+      "base": "\u0002x\u0002\u0001\t  yx\u0002\u0002\t\u0002 x",
+      "mine": "\u0002x\u0002\u0001\t  yx\u0002\u0002\t\u0002",
+      "theirs": "\u0002\u0001  yx\u0002\u0002\t\u0002\u0002  ",
+      "patch": "@@ -12,8 +12,4 @@\n %02%02%09%02\n-%E2%80%A8x\n",
+      "result": "\u0002\u0001  yx\u0002\u0002\t\u0002\u0002 ",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 0
+    },
+    {
+      "base": " 字漢かäかäな 漢な漢 字字。 。ä   ä字 な  。か",
+      "mine": " 字漢かä漢。漢字 な漢ä。な 漢な漢 字字。 。ä   ä字 な  。か",
+      "theirs": " 字漢かäかäな 漢な漢 字字。 。ä   ä字 な か",
+      "patch": "@@ -1,37 +1,56 @@\n  %E5%AD%97%E6%BC%A2%E3%81%8B%C3%A4\n-%E3%81%8B%C3%A4\n+%E6%BC%A2%E3%80%82%E6%BC%A2%E5%AD%97 %E3%81%AA%E6%BC%A2%C3%A4%E3%80%82\n %E3%81%AA %E6%BC%A2%E3%81%AA%E6%BC%A2 %E5%AD%97%E5%AD%97\n",
+      "result": " 字漢かä漢。漢字 な漢ä。な 漢な漢 字字。 。ä   ä字 な か",
+      "applied": [true],
+      "loc": 30,
+      "mapped": 28
+    },
+    {
+      "base": " \u0002\u0002\u0001 \u0001x\txx\tx\u0002x\u0002\u0002\u0001x\u0001\u0002  xyyyx\t  yy \u0001\u0002 y  \u0001  y\u0002 xxx\u0001\u0001y\ty y",
+      "mine": " \u0002\u0002\u0001 \u0001x\txx\tx\u0002x\u0002\u0002\u0001x\u0001\u0002  xyyyx\t yy \u0001\u0002  y  \u0001\u0002\u0001y y\u0002 xxx\u0001\u0001y  ",
+      "theirs": " \u0002\u0002\u0001 \u0001x\txx\tx\u0002x\u0002\u0002\u0001x\u0001\u0002  yy\u0002xyyyx\t  yy \u0001\u0002 y  \u0001  y\u0002 xxx\u0001\u0001y y",
+      "patch": "@@ -31,33 +31,33 @@\n yx%09%C2%A0\n-%E2%80%A8\n yy%E2%80%A8%01%02\n+%C2%A0\n %C2%A0y%E2%80%A8%C2%A0%01\n-%C2%A0\n+%02%01y\n %C2%A0y%02%E2%80%A8\n@@ -66,9 +66,8 @@\n x%01%01y\n-%09y%C2%A0y\n+%C2%A0%C2%A0\n",
+      "result": " \u0002\u0002\u0001 \u0001x\txx\tx\u0002x\u0002\u0002\u0001x\u0001\u0002  yy\u0002xyyyx\t yy \u0001\u0002  y  \u0001\u0002\u0001y y\u0002 xxx\u0001\u0001y  ",
+      "applied": [true, true],
+      "loc": 24,
+      "mapped": 27
+    },
+    {
+      "base": "$';,a',:+=;&+',a/,@  & /&",
+      "mine": "$';,a',:+=;&+~?~@%20',a/,@  &",
+      "theirs": "$'?@&,:+=;&+',a/,@  & /&",
+      "patch": "@@ -6,16 +6,23 @@\n ',:+=;&+\n+~?~@%2520\n ',a/,@  \n@@ -26,7 +26,4 @@\n @  &\n- /&\n",
+      "result": "$'?@&,:+=;&+~?~@%20',a/,@  &",
+      "applied": [true, true],
+      "loc": 21,
+      "mapped": 20
+    },
+    {
+      "base": "。漢かä ä字。か。 。ä字か漢 ää漢かな字",
+      "mine": "。漢かä ä。字漢かな。か。 。ä字か漢 äな。かなä漢かな字",
+      "theirs": "。漢かä ä字。か。 。ä字 字漢。äか漢 ää漢かな字",
+      "patch": "@@ -1,38 +1,50 @@\n %E3%80%82%E6%BC%A2%E3%81%8B%C3%A4 %C3%A4\n-%E5%AD%97\n+%E3%80%82%E5%AD%97%E6%BC%A2%E3%81%8B%E3%81%AA\n %E3%80%82%E3%81%8B%E3%80%82 %E3%80%82%C3%A4%E5%AD%97%E3%81%8B\n@@ -39,32 +39,44 @@\n  %E3%80%82%C3%A4%E5%AD%97%E3%81%8B%E6%BC%A2 %C3%A4\n+%E3%81%AA%E3%80%82%E3%81%8B%E3%81%AA\n %C3%A4%E6%BC%A2%E3%81%8B%E3%81%AA%E5%AD%97\n",
+      "result": "。漢かä ä。字漢かな。か。 。ä字 字漢。äか漢 äな。かなä漢かな字",
+      "applied": [true, true],
+      "loc": 5,
+      "mapped": 5
+    },
+    {
+      "base": " øø😀👍🏽 åé",
+      "mine": " 😀👍🏽  øéåé",
+      "theirs": " 🇳🇴ø🇳🇴🇳🇴👍🏽é åé",
+      "patch": "@@ -1,22 +1,24 @@\n  \n-%C3%B8%C3%B8\n %F0%9F%98%80%F0%9F%91%8D%F0%9F%8F%BD \n+ %C3%B8e%CC%81\n %C3%A5%C3%A9\n",
+      "result": " 🇳🇴ø🇳🇴🇳🇴👍🏽é åé",
+      "applied": [false],
+      "loc": 3,
+      "mapped": 6
+    },
+    {
+      "base": "b,b\r\n,\n\n\n\r\na\n.\nb, a,\naba,b,\nb b\na\n\n\nba.\n\r\n\n\n,\n",
+      "mine": "b,.\na\n\n\r\na\n.\nb\naba,b,\nb b\n\n\n\nbb,.\r\n\n\nba.\n\r\n\n\n,\n",
+      "theirs": "b,b\r\n,\n\n.\nb, a,\naba,b,.\na\n\n\nba.\n\r\n\n\n,\n",
+      "patch": "@@ -1,11 +1,9 @@\n b,\n-b%0D%0A,%0A\n+.%0Aa\n %0A%0A%0D%0A\n@@ -11,12 +11,8 @@\n %0A.%0Ab\n-, a,\n %0Aaba\n@@ -19,17 +19,24 @@\n ,b,%0Ab b%0A\n-a\n+%0A%0A%0Abb,.%0D\n %0A%0A%0Aba.%0A%0D\n",
+      "result": "b,.\na\n.\nb\naba,b,.\n\n\n\nbb,.\r\n\n\nba.\n\r\n\n\n,\n",
+      "applied": [true, true, true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "nqyom nfbylybv uyeefdwiksh nsasthrx  v by qmczmyppnvgg a",
+      "mine": "nqyom nfbylybv uyeefdwikswrsasthrx  v by qmczgg a",
+      "theirs": "nqyom nfbylybv uyeefdwikshgiob nsasthrx  vudc by qmczmyppn",
+      "patch": "@@ -22,11 +22,10 @@\n wiks\n-h n\n+wr\n sast\n@@ -42,14 +42,8 @@\n qmcz\n-myppnv\n gg a\n",
+      "result": "nqyom nfbylybv uyeefdwikswrsasthrx  vudc by qmcz",
+      "applied": [true, true],
+      "loc": 49,
+      "mapped": 56
+    },
+    {
+      "base": "かかää字か。äな字äかか字なääか字。字かä漢なäか漢 字なä。。字漢な漢",
+      "mine": "かかää字 かä。か。äな字äかか字。字かä漢なäか漢 字なä。。字漢な漢",
+      "theirs": "かかää字か。äかな字äかか字なääか字。字漢なäか漢 字なä。。字漢な漢",
+      "patch": "@@ -1,35 +1,44 @@\n %E3%81%8B%E3%81%8B%C3%A4%C3%A4%E5%AD%97\n+ %E3%81%8B%C3%A4%E3%80%82\n %E3%81%8B%E3%80%82%C3%A4%E3%81%AA%E5%AD%97%C3%A4%E3%81%8B%E3%81%8B\n@@ -37,35 +37,22 @@\n %C3%A4%E3%81%8B%E3%81%8B%E5%AD%97\n-%E3%81%AA%C3%A4%C3%A4%E3%81%8B%E5%AD%97\n %E3%80%82%E5%AD%97%E3%81%8B%C3%A4\n",
+      "result": "かかää字 かä。か。äかな字äかか字。字漢なäか漢 字なä。。字漢な漢",
+      "applied": [true, true],
+      "loc": 31,
+      "mapped": 30
+    },
+    {
+      "base": "b.\nbbba \n\n\na.\r\n,a\r\n\n\n.\n\n..\r\n\n\n..bbab,\r\n\r\n\n.a\n\n.",
+      "mine": "b.\nbbba \n\n\na.\r\n,a\r\n\n\n.\n\n..\rb\na\r\n\n.,.\n..bbab,\r\n\r\n\n.a\n\n.",
+      "theirs": "b..\r\n\n\n\nbbba \n\n\na.\r\n,a,b\r\n\r\n\n\n.\n\n..\r\n\n\n..bbab,\r\n\r\n\n.a\n\n.",
+      "patch": "@@ -20,18 +20,25 @@\n %0A%0A.%0A%0A..%0D\n-%0A%0A\n+b%0Aa%0D%0A%0A.,.\n %0A..bbab,\n",
+      "result": "b..\r\n\n\n\nbbba \n\n\na.\r\n,a,b\r\n\r\n\n\n.\n\n..\rb\na\r\n\n.,.\n..bbab,\r\n\r\n\n.a\n\n.",
+      "applied": [true],
+      "loc": 29,
+      "mapped": 38
+    },
+    {
+      "base": "fdz  rmj vs sluo pynjie rjhzvvsn  kfj",
+      "mine": "fd anj vs sluo pynjie rjhuhxsn  kfj",
+      "theirs": "fdz eg rmj vs sluo pynjie xlwdwrjhzvvsn  kfj",
+      "patch": "@@ -1,11 +1,9 @@\n fd\n-z  rm\n+ an\n j vs\n@@ -22,11 +22,11 @@\n  rjh\n-zvv\n+uhx\n sn  \n",
+      "result": "fd anj vs sluo pynjie xlwdwrjhuhxsn  kfj",
+      "applied": [true, true],
+      "loc": 16,
+      "mapped": 18
+    },
+    {
+      "base": "xéå😀åé 😀👍🏽åéå🇳🇴éééø 😀 éé 👍🏽👍🏽é👍🏽",
+      "mine": "xéå😀åé 😀👍🏽åéå🇳🇴éééø 😀 éé 👍🏽xé👍",
+      "theirs": "xéå😀åé 😀👍🏽åéå🇳🇴éééø 😀 éé 👍🏽👍🏽xé🇳🇴👍🏽",
+      "patch": "@@ -63,27 +63,16 @@\n %F0%9F%91%8D%F0%9F%8F%BD\n-%F0%9F%91%8D%F0%9F%8F%BD\n+x\n e%CC%81%F0%9F%91%8D\n-%F0%9F%8F%BD\n",
+      "result": "xéå😀åé 😀👍🏽åéå🇳🇴éééø 😀 éé 👍🏽xé🇳",
+      "applied": [true],
+      "loc": 42,
+      "mapped": 42
+    },
+    {
+      "base": " \u0002x\u0001\tx\u0001\u0002\t  y\u0002\u0002\u0001yx\u0001x\t\u0002 ",
+      "mine": "\t\u0002x\u0001\tx\u0001\u0002\t  y\u0002\u0002\u0001y\u0001xx\t\u0002 ",
+      "theirs": " \u0002x\u0001\tx\u0001\u0001\u0002\t  y\u0002\u0002\u0001yx\u0001 \u0002 \t",
+      "patch": "@@ -1,10 +1,9 @@\n-%C2%A0\n+%09\n %02x%01%09x%01%02%09\n@@ -9,17 +9,17 @@\n %09%C2%A0%C2%A0y%02%02%01y\n-x\n %01\n+x\n x%09%02%C2%A0\n",
+      "result": "\t\u0002x\u0001\tx\u0001\u0001\u0002\t  y\u0002\u0002\u0001y\u0001x \u0002 \t",
+      "applied": [true, true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "かか字字漢字な äなかな 字字字か。 漢字 。。漢字なかな。漢 。なかな ä漢漢字か。",
+      "mine": "かか字字漢字な ä漢。。 字字か。 漢字 。。漢字なかな。漢 。なかな ä漢漢字か。",
+      "theirs": "かか字字漢字な äなかかな 字字字か。 漢字 。。漢字なかな。漢 。なかな ä漢漢字か。",
+      "patch": "@@ -16,34 +16,31 @@\n %E5%AD%97%E3%81%AA %C3%A4\n-%E3%81%AA%E3%81%8B%E3%81%AA %E5%AD%97\n+%E6%BC%A2%E3%80%82%E3%80%82 \n %E5%AD%97%E5%AD%97%E3%81%8B%E3%80%82\n",
+      "result": "かか字字漢字な ä漢。。 字字か。 漢字 。。漢字なかな。漢 。なかな ä漢漢字か。",
+      "applied": [true],
+      "loc": 29,
+      "mapped": 30
+    },
+    {
+      "base": "\t\t\t\u0002 xx\u0001 x\u0001\u0002y  ",
+      "mine": "\t\t\t\u0002 xx\u0001 xx \u0001   \u0002\u0002 \u0002 ",
+      "theirs": "\t\t\t\u0002 xx\u0001 \t\u0001x\u0001\u0002y  ",
+      "patch": "@@ -9,12 +9,23 @@\n x%01%C2%A0x\n-%01%02y%C2%A0\n+x%C2%A0%01%C2%A0%C2%A0%C2%A0%02%02%E2%80%A8%02\n %C2%A0\n",
+      "result": "\t\t\t\u0002 xx\u0001 \t\u0001xx \u0001   \u0002\u0002 \u0002 ",
+      "applied": [true],
+      "loc": 12,
+      "mapped": 14
+    },
+    {
+      "base": "。なä。字な。かかää字漢",
+      "mine": "。な。漢漢  字字かää",
+      "theirs": "。なä。字な。かかääかな。ä ",
+      "patch": "@@ -1,36 +1,30 @@\n %E3%80%82%E3%81%AA\n-%C3%A4%E3%80%82%E5%AD%97%E3%81%AA%E3%80%82%E3%81%8B\n+%E3%80%82%E6%BC%A2%E6%BC%A2  %E5%AD%97%E5%AD%97\n %E3%81%8B%C3%A4%C3%A4\n-%E5%AD%97%E6%BC%A2\n",
+      "result": "。な。漢漢  字字かä",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "xx sopth \nlijz  j to,s Hph  uwhf ",
+      "mine": "xh  sopth \nlij  j to,ph  uwhf ",
+      "theirs": "xx sopth \nlijz  j to,s Hp h  uwhf ",
+      "patch": "@@ -1,10 +1,11 @@\n x\n-x\n+h \n  sopth %0A\n@@ -11,19 +11,15 @@\n %0Alij\n-z\n   j to,\n-s H\n ph  \n",
+      "result": "xh  sopth \nlij  j to,p h  uwhf ",
+      "applied": [true, true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": " \n\n,\n\n\n\n\n\na\r\na",
+      "mine": " \n\n,\n\n\r\n\n\n\na\r\na",
+      "theirs": " \n\n \n ,\n\n\n\r\n\r\nb.,\n\n\n\n\n\na\r\na",
+      "patch": "@@ -1,14 +1,15 @@\n  %0A%0A,%0A%0A\n+%0D\n %0A%0A%0A%0Aa%0D%0Aa\n",
+      "result": " \n\n \n ,\n\n\n\r\n\r\nb.,\n\n\r\n\n\n\na\r\na",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 16
+    },
+    {
+      "base": "字漢か。な字な 漢ä。漢か漢字  äか  ä か。。。かか字なな äなな漢 ä漢かä なか 漢ä ",
+      "mine": "字漢か。な字な 漢ä  äか漢   ä か。。。かか字なな äなな漢 ä漢かä なか 漢ä ",
+      "theirs": "字漢か。な字か。漢。 漢ä。漢か漢字  äか  ä か。。。かか字なな äなな漢 ä漢かä なか 漢ä ",
+      "patch": "@@ -19,36 +19,25 @@\n %E3%81%AA %E6%BC%A2%C3%A4\n-%E3%80%82%E6%BC%A2%E3%81%8B%E6%BC%A2%E5%AD%97\n   %C3%A4%E3%81%8B\n+%E6%BC%A2 \n   %C3%A4 \n",
+      "result": "字漢か。な字か。漢。 漢ä  äか漢   ä か。。。かか字なな äなな漢 ä漢かä なか 漢ä ",
+      "applied": [true],
+      "loc": 29,
+      "mapped": 32
+    },
+    {
+      "base": "o\n h     vd s",
+      "mine": "  r hl s",
+      "theirs": "o\n h     vd ",
+      "patch": "@@ -1,13 +1,8 @@\n-o%0A h     vd\n+  r hl\n  s\n",
+      "result": "  r hl ",
+      "applied": [true],
+      "loc": 12,
+      "mapped": 12
+    },
+    {
+      "base": "\t\u0002\t \u0002 \tx\t\u0002y\ty\t\u0001\u0002\u0001\u0002\u0001\u0002\u0001y\t \t\u0001 \t\u0001y \u0002 \t\t \u0001  y",
+      "mine": "  \t\ty\t\u0002\t \u0002 \tx\t\u0002y\ty\t\u0001\u0002\u0001\u0002\u0001\u0002\u0001x\u0001\ty\t \t\u0002 y\u0002\u0001 \t\u0001y \u0002 \t\t \u0001\t \u0002",
+      "theirs": "\t\u0002\t \u0002 \tx\t\u0002y\ty\t\u0001\u0002\u0001\u0002\u0001\u0002\u0001y\t \t\u0001 \t\u0001y \u0002 \t\t \u0001  y",
+      "patch": "@@ -1,11 +1,19 @@\n+%E2%80%A8%C2%A0%09%09y\n %09%02%09%E2%80%A8%02%C2%A0%09x\n@@ -29,15 +29,23 @@\n %02%01%02%01\n+x%01%09\n y%09%C2%A0%09\n+%02%C2%A0y%02\n %01%E2%80%A8%09%01\n@@ -60,12 +60,10 @@\n %09%09%E2%80%A8%01\n-%E2%80%A8%C2%A0y\n+%09%C2%A0%02\n",
+      "result": "  \t\ty\t\u0002\t \u0002 \tx\t\u0002y\ty\t\u0001\u0002\u0001\u0002\u0001\u0002\u0001x\u0001\ty\t \t\u0002 y\u0002\u0001 \t\u0001y \u0002 \t\t \u0001\t \u0002",
+      "applied": [true, true, true],
+      "loc": 30,
+      "mapped": 30
+    },
+    {
+      "base": "xrrl\n\nvhlhniltHhfbadv lwh tuqy",
+      "mine": "xrrl\n\nvhlhn o niltHhfbadlst lwh tuqy",
+      "theirs": "xrrl\n\nvhlhniltHhfbadv lwh tuqye  ",
+      "patch": "@@ -4,16 +4,20 @@\n l%0A%0Avhlhn\n+ o n\n iltHhfba\n@@ -17,17 +17,19 @@\n ltHhfbad\n-v\n+lst\n  lwh tuq\n",
+      "result": "xrrl\n\nvhlhn o niltHhfbadlst lwh tuqye  ",
+      "applied": [true, true],
+      "loc": 11,
+      "mapped": 11
+    },
+    {
+      "base": "b,.a ,b,\r\n.ba\n\nab\n\n\n,  \n.\r\nbb\r\n  .,aaa \n\n\n\n\nb\r\na\n\na\n.\r\n\n\n\n\n\n",
+      "mine": "b,.a ,\n,, .ba\n\nab\n\n\n,\n.\r\nbb\r\n  .,aaa \n\n\n\n\nb\r\na.\naa,\r\n\n\na\n.\r\n\n\n\n\n\n",
+      "theirs": "b,.a ,b,\r\n.ba\n\nab\n\n\n,  \n.\r\nbb\r\n aa \n\n\n\n\nb\r\na\n\na\n.\r\n\n\n\n\n\n",
+      "patch": "@@ -3,12 +3,12 @@\n .a ,\n-b,%0D%0A\n+%0A,, \n .ba%0A\n@@ -14,18 +14,16 @@\n %0A%0Aab%0A%0A%0A,\n-  \n %0A.%0D%0Abb%0D%0A\n@@ -39,16 +39,23 @@\n %0A%0A%0A%0Ab%0D%0Aa\n+.%0Aaa,%0D%0A\n %0A%0Aa%0A.%0D%0A%0A\n",
+      "result": "b,.a ,\n,, .ba\n\nab\n\n\n,\n.\r\nbb\r\n aa \n\n\n\n\nb\r\na.\naa,\r\n\n\na\n.\r\n\n\n\n\n\n",
+      "applied": [true, true, true],
+      "loc": 40,
+      "mapped": 36
+    },
+    {
+      "base": "。なäな",
+      "mine": "な  。なäな",
+      "theirs": "。なかか字かかäな漢 なäな字 ",
+      "patch": "@@ -1,11 +1,16 @@\n+%E3%81%AA  \n %E3%80%82%E3%81%AA%C3%A4%E3%81%AA\n",
+      "result": "な  。なかか字かかäな漢 なäな字 ",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 8
+    },
+    {
+      "base": "\n\nb\r\nb\n\r\n\n\n .\n\n\n\n\r\na.b, a,,.\r\n\n\nba..a",
+      "mine": "\n\nb\r\nb\n\r\n\n\n .\n\n\n\n\r\na.b, a,,.\r\n\n\n.",
+      "theirs": "\n\nb\r\nb\n\r\n\n\n .\n\n\n\n\r\na..a,,.\r\n\n\nba..a",
+      "patch": "@@ -29,9 +29,5 @@\n %0D%0A%0A%0A\n-ba..a\n+.\n",
+      "result": "\n\nb\r\nb\n\r\n\n\n .\n\n\n\n\r\na..a,,.\r\n\n\n.",
+      "applied": [true],
+      "loc": 13,
+      "mapped": 13
+    },
+    {
+      "base": "\r\nb ,..\n\n,,\r\n\n\na\n\n\n\naa\r\n\na..\n\nbb\n\n\n\r\n,\n\n.b\r\naa\na\r\n  \r\n.,",
+      "mine": "\r\nb ,..\nb\r\n\n\n.,\r\n\n\na\n\n\n\naa\r\n\na..\n\nbb\n\n\n\r\n,\n\n.b\r\naa\na\r\n  \r\n.,",
+      "theirs": "\r\nb ,..\n\n,,\r,\n.\n\r\n\n\n\na\n\n\n\naa\r\n\na..\n\nbb\n\n\n\r\n,\n\n.b\raa\n\n\naa\na\r\n  \r\n.,",
+      "patch": "@@ -1,18 +1,22 @@\n %0D%0Ab ,..%0A\n-%0A,\n+b%0D%0A%0A%0A.\n ,%0D%0A%0A%0Aa%0A%0A\n",
+      "result": "\r\nb ,..\nb\r\n\n\n.,\r,\n.\n\r\n\n\n\na\n\n\n\naa\r\n\na..\n\nbb\n\n\n\r\n,\n\n.b\raa\n\n\naa\na\r\n  \r\n.,",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "x\u0002yy \t\t\u0002\tx\u0002\t\t \u0002x\u0002x\t \t\t",
+      "mine": "x\u0002yy \t\tx\u0002\t\t \u0002x\u0002x\t \t\t",
+      "theirs": "x\u0002yy \t\t  \u0002\t\t \u0002x\t\t",
+      "patch": "@@ -3,12 +3,10 @@\n yy%E2%80%A8%09\n-%09%02\n %09x%02%09\n",
+      "result": "x\u0002yy \t\t\t \u0002x\t\t",
+      "applied": [true],
+      "loc": 16,
+      "mapped": 15
+    },
+    {
+      "base": "oxojtltplheo xeo ku u tzh  mb",
+      "mine": "ox hHoojtllo xeo ku f\nrol lkh  mb",
+      "theirs": "oxoctltplhelo xeo xku u tzh  mb",
+      "patch": "@@ -1,15 +1,15 @@\n ox\n-ojtltplhe\n+ hHoojtll\n o xe\n@@ -17,12 +17,16 @@\n  ku \n-u tz\n+f%0Arol lk\n h  m\n",
+      "result": "ox hHoojtllo xeo xku f\nrol lkh  mb",
+      "applied": [true, true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "btef g yftilnntsai myq vwurflwwljhjg p",
+      "mine": "btef g ytilnntsai myq vwurflwwljhjg p",
+      "theirs": "btef g yftilnntsai myq vwuisiyalj uhmfhjg pc",
+      "patch": "@@ -1,17 +1,16 @@\n btef g y\n-f\n tilnntsa\n",
+      "result": "btef g ytilnntsai myq vwuisiyalj uhmfhjg pc",
+      "applied": [true],
+      "loc": 27,
+      "mapped": 26
+    },
+    {
+      "base": ";$,'+:??/&+~~&,/,  /;/:,%%@; ~?+? %+';=%:a#:@,#?:~'?",
+      "mine": ";$,'+:??/'/a~~&,/, /;/:,%%@; ~?+? %+';=%:a#:@,#?:~'?",
+      "theirs": ";$,'+:??/&+~~&,/,  /;/:,%%@; ~?+? %+';=%:a#:@,#?:'?",
+      "patch": "@@ -6,17 +6,17 @@\n :??/\n-&+\n+'/a\n ~~&,/,\n- \n  /;/\n",
+      "result": ";$,'+:??/'/a~~&,/, /;/:,%%@; ~?+? %+';=%:a#:@,#?:'?",
+      "applied": [true],
+      "loc": 47,
+      "mapped": 47
+    },
+    {
+      "base": "~=+$%? $'+~$a%+;%20+ '&@+$=;%20;&#'$&/&,%20?~/%20;?,,+#&='~&",
+      "mine": "a&a~=+$%/?@,%20:# $'+~$a%+;%20+ '&@+$=;%20;&#&/&,%20?~/%20;?,,+#&='~&",
+      "theirs": "~=+$%? $'+~$a%+;%20+ '&@+@'/,:$=;%20;&#'$&/&,%20?~/%20;?,,+#&='~&",
+      "patch": "@@ -1,10 +1,21 @@\n+a&a\n ~=+$%25\n-?\n+/?@,%2520:#\n  $'+\n@@ -42,10 +42,8 @@\n 0;&#\n-'$\n &/&,\n",
+      "result": "a&a~=+$%/?@,%20:# $'+~$a%+;%20+ '&@+@'/,:$=;%20;&#&/&,%20?~/%20;?,,+#&='~&",
+      "applied": [true, true],
+      "loc": 34,
+      "mapped": 39
+    },
+    {
+      "base": " x\u0001\u0001 \u0002  \t \u0001 xx \t",
+      "mine": "y\u0002x x\u0001\u0001 \u0002  \t \u0001 xx \t",
+      "theirs": "   \u0001x x\u0001\ty  \u0002\u0001 \u0002  \t \u0001 xx \t",
+      "patch": "@@ -1,16 +1,19 @@\n+y%02x\n %E2%80%A8x%01%01%E2%80%A8%02%E2%80%A8%E2%80%A8\n",
+      "result": "   \u0001x x\u0001\ty y\u0002x \u0002\u0001 \u0002  \t \u0001 xx \t",
+      "applied": [true],
+      "loc": 16,
+      "mapped": 26
+    },
+    {
+      "base": "  lys rjm\nsdowh l",
+      "mine": " nr lysjuy\nudowhql",
+      "theirs": " lys rjm\nsdowh l",
+      "patch": "@@ -1,17 +1,18 @@\n  \n+nr\n  lys\n- rjm%0As\n+juy%0Au\n dowh\n- \n+q\n l\n",
+      "result": "nr lysjuy\nudowhql",
+      "applied": [true],
+      "loc": 8,
+      "mapped": 7
+    },
+    {
+      "base": " dru ote m ekjonl m,pue\n\nhlt.oecze gzaHdr  lehroqHk ",
+      "mine": " dru ote m ekjonl m,pue\n\nhlt.oecze  edr  lehroqHk ",
+      "theirs": " dru ote m ye\nekjonl m,pue\n\nhlt.oecze gzaHdr  lehrevbdoqHk ",
+      "patch": "@@ -32,12 +32,10 @@\n cze \n-gzaH\n+ e\n dr  \n",
+      "result": " dru ote m ye\nekjonl m,pue\n\nhlt.oecze  edr  lehrevbdoqHk ",
+      "applied": [true],
+      "loc": 18,
+      "mapped": 21
+    },
+    {
+      "base": "。。なä字。字な。 ä ",
+      "mine": "。。なä字。漢なかか字な。 ä ",
+      "theirs": "。。なä字か字か漢か漢字漢。  ä ",
+      "patch": "@@ -1,30 +1,42 @@\n %E3%80%82%E3%80%82%E3%81%AA%C3%A4%E5%AD%97%E3%80%82\n+%E6%BC%A2%E3%81%AA%E3%81%8B%E3%81%8B\n %E5%AD%97%E3%81%AA%E3%80%82 %C3%A4 \n",
+      "result": "。。なä字か漢なかか字か漢か漢字漢。  ä ",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "fxjetrbrolwa  qnw",
+      "mine": "fxjetrbrovvbvwqnw",
+      "theirs": "fxjetqxt ctrbrolwa",
+      "patch": "@@ -6,12 +6,12 @@\n rbro\n-lwa  \n+vvbvw\n qnw\n",
+      "result": "fxjetqxt ctrbrovvbvw",
+      "applied": [true],
+      "loc": 12,
+      "mapped": 18
+    },
+    {
+      "base": "か漢な字漢字なな 漢。な。字",
+      "mine": "か漢な漢字なな 漢漢 。字字。な。字",
+      "theirs": "か漢な字漢字なな 漢。な。字な",
+      "patch": "@@ -1,40 +1,50 @@\n %E3%81%8B%E6%BC%A2%E3%81%AA\n-%E5%AD%97\n %E6%BC%A2%E5%AD%97%E3%81%AA%E3%81%AA %E6%BC%A2\n+%E6%BC%A2 %E3%80%82%E5%AD%97%E5%AD%97\n %E3%80%82%E3%81%AA%E3%80%82%E5%AD%97\n",
+      "result": "か漢な漢字なな 漢漢 。字字。な。字な",
+      "applied": [true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "。漢ä 。漢ä。ä字",
+      "mine": "。漢ä 。ä。  漢ä。äなää字か ",
+      "theirs": "。漢字 ä ä 。漢ä。äな漢字",
+      "patch": "@@ -4,22 +4,40 @@\n %E6%BC%A2%C3%A4 %E3%80%82\n-%E6%BC%A2%C3%A4%E3%80%82%C3%A4%E5%AD%97\n+%C3%A4%E3%80%82  %E6%BC%A2%C3%A4%E3%80%82%C3%A4%E3%81%AA%C3%A4%C3%A4%E5%AD%97%E3%81%8B \n",
+      "result": "。漢字 ä ä 。ä。  漢ä。äなää字か ",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 8
+    },
+    {
+      "base": "$=%20a~'#%a",
+      "mine": ";%20~$=%20a~'#%a",
+      "theirs": "$=%20a~'#%",
+      "patch": "@@ -1,8 +1,13 @@\n+;%2520~\n $=%2520a~'\n",
+      "result": ";%20~$=%20a~'#%",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": ",bb\r\n   .b\n",
+      "mine": ",b.a \n\n.\n\n\n\nba\r\n   .b\n",
+      "theirs": ",bb\r ,\n\n   .b\n",
+      "patch": "@@ -1,11 +1,22 @@\n ,b\n-b\n+.a %0A%0A.%0A%0A%0A%0Aba\n %0D%0A   .b%0A\n",
+      "result": ",b.a \n\n.\n\n\n\nba\r ,\n\n   .b\n",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 7
+    },
+    {
+      "base": "字äか漢ä 漢 なか かか漢漢 漢字。 字。漢字。な か字漢 ななäか。。。かななな字漢 ä字か字字。。かか。  ",
+      "mine": "字äか漢ä 漢 なか かか漢漢 漢字。 字。漢字。な か字漢 なäか。。。かななな字漢 äか字。。かか。  ",
+      "theirs": "ä字äか漢ä 漢 なか 漢。字な 漢漢 漢字。 字。漢字。な か字漢 ななäか。。。かななな字漢 字字。。かか。  ",
+      "patch": "@@ -58,46 +58,43 @@\n %E5%AD%97%E3%80%82%E3%81%AA %E3%81%8B%E5%AD%97%E6%BC%A2 \n-%E3%81%AA\n %E3%81%AA%C3%A4%E3%81%8B%E3%80%82%E3%80%82%E3%80%82%E3%81%8B%E3%81%AA\n@@ -107,30 +107,24 @@\n %E5%AD%97%E6%BC%A2 %C3%A4\n-%E5%AD%97%E3%81%8B%E5%AD%97\n+%E3%81%8B\n %E5%AD%97%E3%80%82%E3%80%82%E3%81%8B\n",
+      "result": "ä字äか漢ä 漢 なか 漢。字な 漢漢 漢字。 字。漢字。な か字漢 なäか。。。かななな字漢 か字。。かか。  ",
+      "applied": [true, true],
+      "loc": 49,
+      "mapped": 50
+    },
+    {
+      "base": "  opelxgquleof dee,uw",
+      "mine": "  opelxgquleoooolfdee,u wtibw ",
+      "theirs": "   d,opelxk orgqulezof dee,uw",
+      "patch": "@@ -10,12 +10,21 @@\n uleo\n-f dee,uw\n+ooolfdee,u wtibw \n",
+      "result": "   d,opelxk orgqulezoooolfdee,u wtibw ",
+      "applied": [true],
+      "loc": 11,
+      "mapped": 18
+    },
+    {
+      "base": "\u0001yx\u0001\u0001 y\u0002   \t\u0002\u0001\u0001xy \u0002\u0002\t \u0002xyx\tx\t\u0001\u0002\t\t\u0002\u0001   \ty  \ty\u0002x xy\u0002xx\t yyxy",
+      "mine": "\u0001 \u0002x \u0001yx\u0001\u0001 y\u0002   \t\u0002\u0001\u0001xy \u0002\u0002\t \u0002xyx\tx\t\u0001\u0002\t\t\u0002\u0001   \ty  \ty\u0002 \u0002y\u0002xx\t yyxy",
+      "theirs": "\u0001yx\u0001\u0001 y\u0002   \t\u0002\u0001\u0001xy\u0002xyx\tx\t\u0001\u0002\t\t\u0002\u0001   \ty  \ty\u0002x xx\t yyxyy\t",
+      "patch": "@@ -1,10 +1,17 @@\n+%01%C2%A0%02x%C2%A0\n %01yx%01%01%E2%80%A8y%02\n@@ -64,14 +64,12 @@\n %C2%A0%09y%02\n-x%E2%80%A8x\n+%C2%A0%02\n y%02xx\n",
+      "result": "\u0001 \u0002x \u0001yx\u0001\u0001 y\u0002   \t\u0002\u0001\u0001xy\u0002xyx\tx\t\u0001\u0002\t\t\u0002\u0001   \ty  \ty\u0002 \u0002xx\t yyxyy\t",
+      "applied": [true, true],
+      "loc": 18,
+      "mapped": 17
+    },
+    {
+      "base": " :$,'%20a,a&~a',%@:#,a#%:&;''~+%:",
+      "mine": " :$,'%20a,a&~a',%@:#,a#%:&;''?;:&+%:",
+      "theirs": " :$,'%20a,a&~a;~?a',%@:#,a#%:&;''~+%:",
+      "patch": "@@ -22,12 +22,15 @@\n a#%25:&;''\n-~\n+?;:&\n +%25:\n",
+      "result": " :$,'%20a,a&~a;~?a',%@:#,a#%:&;''?;:&+%:",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "\n,a\r\n.\n\n\n\n",
+      "mine": "\n,a\r\n.",
+      "theirs": "\n\r\n ,a\r\n\n",
+      "patch": "@@ -3,8 +3,4 @@\n a%0D%0A.\n-%0A%0A%0A%0A\n",
+      "result": "\n\r\n ,a\r\n",
+      "applied": [true],
+      "loc": 5,
+      "mapped": 7
+    },
+    {
+      "base": "%20~a$&a'+%,$'%20;+ +/;#~;#;~,;/$=/;%::%20=$a%a&:&',#=/",
+      "mine": "%20~a$&a'+%,$'%20;+ +/;#~;#;~,;/$=/:%20;%::%20=$a%a&:&',#=/",
+      "theirs": "%20~a$&a'+%,$~,%#'%20;+ +;;@/,~;#;~,;/$=/;%::%20=$a%a&:&',#=/",
+      "patch": "@@ -28,16 +28,20 @@\n ;~,;/$=/\n+:%2520\n ;%25::%2520=\n",
+      "result": "%20~a$&a'+%,$~,%#'%20;+ +;;@/,~;#;~,;/$=/:%20;%::%20=$a%a&:&',#=/",
+      "applied": [true],
+      "loc": 6,
+      "mapped": 6
+    },
+    {
+      "base": "\noz wsvoseH cem.wcu\nz elml \nrlxh,waexeo d ,rdg nw i euidy ",
+      "mine": "\noz wsvoseH cemaq ewroo.wcu\nz elml \nrzelxh,wae eo d ,rdg nw i euidy ",
+      "theirs": "\noz wsvoseH cem.wcul H\nz elml \nrlxh,waexeolt  ,rdg nw i euidy ",
+      "patch": "@@ -8,16 +8,24 @@\n oseH cem\n+aq ewroo\n .wcu%0Az e\n@@ -34,16 +34,18 @@\n l %0Ar\n+ze\n lxh,wae\n-x\n+ \n eo d\n",
+      "result": "\noz wsvoseH cemaq ewroo.wcul H\nz elml \nrzelxh,wae eolt  ,rdg nw i euidy ",
+      "applied": [true, true],
+      "loc": 27,
+      "mapped": 30
+    },
+    {
+      "base": "\n\n\na,b\r\n,b\n\r\n,\n\n\na\n\n\n",
+      "mine": "\n\n\na ,a,b,b\rb ,\r\n,\n\n\r\na\r\nb",
+      "theirs": "\n\n\na,b\r\n,ba\r\n\n\r\na\n\n\n",
+      "patch": "@@ -1,21 +1,26 @@\n %0A%0A%0Aa\n-,b%0D%0A,b%0A\n+ ,a,b,b%0Db ,\n %0D%0A,%0A%0A\n+%0D\n %0Aa\n-%0A%0A%0A\n+%0D%0Ab\n",
+      "result": "\n\n\na ,a,b,b\rb ,\r\n\n\r\r\na\r\nb",
+      "applied": [true],
+      "loc": 11,
+      "mapped": 11
+    },
+    {
+      "base": " ééééøå😀é",
+      "mine": " éé😀ø👍🏽éé😀åé",
+      "theirs": " éééé́",
+      "patch": "@@ -1,21 +1,33 @@\n  %C3%A9e%CC%81\n+%F0%9F%98%80%C3%B8%F0%9F%91%8D%F0%9F%8F%BD\n %C3%A9%C3%A9\n-%C3%B8%C3%A5\n %F0%9F%98%80\n+%C3%A5\n e%CC%81\n",
+      "result": " éé😀ø👍́́\u0001",
+      "applied": [true],
+      "loc": 7,
+      "mapped": 5
+    },
+    {
+      "base": "~,~#~+%a:&%a/ ;%20&&=~~%20,%20=%,~",
+      "mine": "~,~#~+%a:&$'&$%a/ ;%&#',20,%20=%,~",
+      "theirs": "~,~#&%a/ ;%20&&=~~%20,%20=%,~",
+      "patch": "@@ -7,22 +7,22 @@\n %25a:&\n+$'&$\n %25a/ ;%25\n-20&&=~~%25\n+&#',\n 20,%25\n",
+      "result": "~,~#&$'&$%a/ ;%&#',%20=%,~",
+      "applied": [true],
+      "loc": 15,
+      "mapped": 10
+    },
+    {
+      "base": "\u0002x\u0002\u0001y \u0001\u0002y\u0002  x  y\t  \t\u0001y \u0002",
+      "mine": "\u0002x\u0002\u0001y \u0001\u0002\u0002\u0002   \u0001yy  \tx  y\t  \t\u0001y \u0002",
+      "theirs": "\u0002x\u0002\u0001y \u0001\u0002y\u0002  \u0002 xy y\t  ",
+      "patch": "@@ -5,20 +5,31 @@\n y%E2%80%A8%01%02\n-y\n %02\n+%02%E2%80%A8%C2%A0%C2%A0%01yy\n %E2%80%A8%E2%80%A8\n+%09\n x%C2%A0%C2%A0y\n",
+      "result": "\u0002x\u0002\u0001y \u0001\u0002\u0002\u0002   \u0001yy  \t\u0002 xy y\t  ",
+      "applied": [true],
+      "loc": 22,
+      "mapped": 21
+    },
+    {
+      "base": " menrfufrllq moleciohukld  kwfzHe  fueq g eoauoexeturh",
+      "mine": "z ee  menrfufrllq mole  jg ciohukld  kwfzHe ze  fueq g eoauoexeturh",
+      "theirs": " mkrfux z hh rfrllq moleciohukld  kwfzHe  fueq g eoauoexeturh",
+      "patch": "@@ -1,8 +1,13 @@\n+z ee \n  menrfuf\n@@ -15,16 +15,21 @@\n llq mole\n+  jg \n ciohukld\n@@ -37,16 +37,19 @@\n  kwfzHe \n+ze \n  fueq g \n",
+      "result": "z ee  mkrfux z hh rfrllq mole  jg ciohukld  kwfzHe ze  fueq g eoauoexeturh",
+      "applied": [true, true, true],
+      "loc": 9,
+      "mapped": 16
+    },
+    {
+      "base": "l suq,H le   deloH tu .wuge heluHwsy.xt .ritejlqrcg r",
+      "mine": "l suq,H le   deloH tu .wuge heluHwsulwvly.xt .ritt \nr",
+      "theirs": "l suq,H le   ootqadeloH tu .wuge heluHwsy.xtwel.o .ritejlqrcg r",
+      "patch": "@@ -28,16 +28,21 @@\n  heluHws\n+ulwvl\n y.xt .ri\n@@ -46,13 +46,8 @@\n .rit\n-ejlqrcg \n+t %0A\n r\n",
+      "result": "l suq,H le   ootqadeloH tu .wuge heluHwsulwvly.xtwel.o .ritt \nr",
+      "applied": [true, true],
+      "loc": 27,
+      "mapped": 32
+    },
+    {
+      "base": " é👍🏽åééøéx👍🏽éå😀xå👍🏽🇳🇴 xé👍🏽é😀😀é",
+      "mine": " é👍🏽åééøéx👍🏽å🇳🇴å😀xå👍🏽🇳🇴 xé é 👍🏽é😀😀é",
+      "theirs": " é👍🏽éøéx👍🏽👍🏽éå😀xå👍🏽🇳🇴 xé👍🏽é😀😀é",
+      "patch": "@@ -18,33 +18,41 @@\n %C3%B8e%CC%81x%F0%9F%91%8D%F0%9F%8F%BD\n-%C3%A9\n+%C3%A5%F0%9F%87%B3%F0%9F%87%B4\n %C3%A5%F0%9F%98%80x%C3%A5%F0%9F%91%8D%F0%9F%8F%BD\n@@ -55,34 +55,39 @@\n %F0%9F%8F%BD%F0%9F%87%B3%F0%9F%87%B4 x%C3%A9\n+ e%CC%81 \n %F0%9F%91%8D%F0%9F%8F%BD%C3%A9%F0%9F%98%80%F0%9F%98%80\n",
+      "result": " é👍🏽éøéx👍🏽👍🏽å🇳🇴å😀xå👍🏽🇳🇴 xé é 👍🏽é😀😀é",
+      "applied": [true, true],
+      "loc": 8,
+      "mapped": 6
+    },
+    {
+      "base": ":~%20$/@+&,~/$=@+~/:/;?;%20??&$ &#@& ",
+      "mine": ":~%20$/@+&,~//:/;?;%20,'a&,??&$ &#@& ",
+      "theirs": ":~%20$&,~/$=@+~/:/;?;%20??&$ &#@& ",
+      "patch": "@@ -10,13 +10,8 @@\n &,~/\n-$=@+~\n /:/;\n@@ -15,16 +15,21 @@\n :/;?;%2520\n+,'a&,\n ??&$ &#@\n",
+      "result": ":~%20$&,~//:/;?;%20,'a&,??&$ &#@& ",
+      "applied": [true, true],
+      "loc": 13,
+      "mapped": 10
+    },
+    {
+      "base": "baa\n\nb,b . .,\r\n\n\nb \n.\r\n\r\n\r\n\na,\r\n",
+      "mine": "bab\n\r\n\n\nb,b\n\n\n\n.,b\r\n\n\nb \n.\r\n\r\n\r\n\na,\r\n",
+      "theirs": "ba\r\nbaa\n\nb,b ,\r\nb \n.\r\n\r\n\r\n\na,\r\n",
+      "patch": "@@ -1,17 +1,22 @@\n ba\n-a\n+b%0A%0D%0A\n %0A%0Ab,b\n- . \n+%0A%0A%0A%0A\n .,\n+b\n %0D%0A%0A%0A\n",
+      "result": "ba\r\nbab\n\r\n\n\nb\n\n\n\n ,\r\nbb \n.\r\n\r\n\r\n\na,\r\n",
+      "applied": [true],
+      "loc": 26,
+      "mapped": 25
+    },
+    {
+      "base": ",\r\nb, \na.\n a.b\r\n ,,,a\nbb \nb\n,.\n\r\n\n,bb\n\na.b,\r\na. ab.aa\naa\n\n\n",
+      "mine": ",\r\nb, \na.\n \r\n ,,,a\nbb \nb\n,.\n\r\n\n,b\n\n\na.b,\r\na. ab.aa\naa\n\n\n",
+      "theirs": ",\r\nb, \na.\n a.b\r\n ,,,a\nbb,\n  \nb\n,.\n\r\n\n,bb\n\na.b,\r\na. ab.aa\naa\n\n\n",
+      "patch": "@@ -4,19 +4,16 @@\n b, %0Aa.%0A \n-a.b\n %0D%0A ,,,a%0A\n@@ -26,17 +26,17 @@\n ,.%0A%0D%0A%0A,b\n-b\n+%0A\n %0A%0Aa.b,%0D%0A\n",
+      "result": ",\r\nb, \na.\n \r\n ,,,a\nbb,\n  \nb\n,.\n\r\n\n,b\n\n\na.b,\r\na. ab.aa\naa\n\n\n",
+      "applied": [true, true],
+      "loc": 38,
+      "mapped": 41
+    },
+    {
+      "base": "a& ;=;? @a=+#@ =@ %::=%@=&~ :$: /=,?&: /?&&% /';",
+      "mine": "a;=;? @a=+#@ =@ %::=%@=&~ :$: /=,?&: /?&&% /';",
+      "theirs": "a& ;=;#? @a=+#@ =@ $;::=%@=&~ :$: /=,?&: /?&&% /';",
+      "patch": "@@ -1,7 +1,5 @@\n a\n-& \n ;=;?\n",
+      "result": "a;=;#? @a=+#@ =@ $;::=%@=&~ :$: /=,?&: /?&&% /';",
+      "applied": [true],
+      "loc": 42,
+      "mapped": 44
+    },
+    {
+      "base": "ym  ssp",
+      "mine": "ym  ssimrkhpl",
+      "theirs": "ym  ssxp",
+      "patch": "@@ -3,5 +3,11 @@\n   ss\n-p\n+imrkhpl\n",
+      "result": "ym  ssximrkhpl",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "~/,'%+,?=a+?",
+      "mine": "~/,'%+,?=a==/~",
+      "theirs": "~/,'%+$=a+?",
+      "patch": "@@ -7,6 +7,8 @@\n ,?=a\n-+?\n+==/~\n",
+      "result": "~/,'%+$=a==/~",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 2
+    },
+    {
+      "base": " ki cfrox oyo bvbvd",
+      "mine": "  ki cfrox oubvbvd",
+      "theirs": " yfrx sgdl bvbvd",
+      "patch": "@@ -1,8 +1,9 @@\n+ \n  ki cfro\n@@ -9,11 +9,9 @@\n ox o\n-yo \n+u\n bvbv\n",
+      "result": "  yfrx ubvbvd",
+      "applied": [true, true],
+      "loc": 10,
+      "mapped": 6
+    },
+    {
+      "base": "xå👍🏽éøx😀å🇳🇴x👍🏽é😀😀å😀é👍🏽 x😀xx👍🏽😀 øåé",
+      "mine": "xå👍🏽øø😀ééøx😀å🇳🇴x👍🏽é😀😀å😀é👍🏽 x😀xx👍🏽😀 øåé",
+      "theirs": "xå👍🏽éøx😀å🇳🇴x👍🏽é😀😀å😀é👍🏽 x😀xx👍😀 øåé",
+      "patch": "@@ -1,26 +1,37 @@\n x%C3%A5%F0%9F%91%8D%F0%9F%8F%BD\n+%C3%B8%C3%B8%F0%9F%98%80e%CC%81\n %C3%A9%C3%B8x%F0%9F%98%80%C3%A5%F0%9F%87%B3\n",
+      "result": "xå👍🏽øø😀ééøx😀å🇳🇴x👍🏽é😀😀å😀é👍🏽 x😀xx👍😀 øåé",
+      "applied": [true],
+      "loc": 16,
+      "mapped": 16
+    },
+    {
+      "base": ",b",
+      "mine": "",
+      "theirs": ",b",
+      "patch": "@@ -1,2 +0,0 @@\n-,b\n",
+      "result": "",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "\n\n\nb, ..b \n\nba\n\nb\n,. \naab\n\nb\n\n,\n\na ba,\r\n \na,,,\n\n\r\n",
+      "mine": "\n\n\nb, ..b \n\nba\n\nb\n,ab. \naab\n.,\nb\n\n,\n\na b\n\n\r\na,\r\n \na,,,\n\n\r\n",
+      "theirs": "\n\n\nb,  ,b\n\n..b \n\nb.b\r\na\n\nb\n,. \n\r\n\n\nb\n\nb\n\n,\n\na ba,\r\n \na,,,\n\n\r\n",
+      "patch": "@@ -16,15 +16,19 @@\n %0Ab%0A,\n+ab\n . %0Aaab%0A\n+.,\n %0Ab%0A%0A\n@@ -33,16 +33,20 @@\n %0A%0A,%0A%0Aa b\n+%0A%0A%0D%0A\n a,%0D%0A %0Aa,\n",
+      "result": "\n\n\nb,  ,b\n\n..b \n\nb.b\r\na\n\nb\n,ab. \n\r\n\n.,\nb\n\nb\n\n,\n\na b\n\n\r\na,\r\n \na,,,\n\n\r\n",
+      "applied": [true, true],
+      "loc": 49,
+      "mapped": 60
+    },
+    {
+      "base": "we,",
+      "mine": "web",
+      "theirs": "weoo e,",
+      "patch": "@@ -1,3 +1,3 @@\n we\n-,\n+b\n",
+      "result": "weoo eb",
+      "applied": [true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "~% '~ @;;,';$+?##=?,/@ /,$::% a/&",
+      "mine": "~% '~ @;;,';$+?##=?,/,~  /,$::% a/&",
+      "theirs": "~% '~ @;;,';$+,%20;? =/@ /,$::% a/&",
+      "patch": "@@ -14,17 +14,19 @@\n +?##=?,/\n-@\n+,~ \n  /,$::%25 \n",
+      "result": "~% '~ @;;,';$+,%20;? =/,~  /,$::% a/&",
+      "applied": [true],
+      "loc": 24,
+      "mapped": 26
+    },
+    {
+      "base": "\t\t\u0002\t\ty\u0002yx\t\tx\t\u0001\u0001x yy \t\u0001\u0001x\u0001\u0002y\u0001y\u0002\u0001 \u0002\u0001yyy\ty\u0002\u0001\u0001  xy\u0001y\u0001\u0002\u0001\tyx \u0001y",
+      "mine": "\t\t\u0002\t\ty\u0002yx\t\tx\t\u0001\u0001x yy \t\u0001\u0001x\u0001\u0002y\u0001y\u0002\u0001 \u0002\u0001yyy\ty\u0002\u0001\u0001  xy\u0001y\u0001\u0002\u0001\tyx \u0001y ",
+      "theirs": "\t\t\u0002\t\ty\u0002yx\t\tx\t\u0001\u0001x yy x\t\t\u0001\u0001x\u0001\u0002y\u0001y\u0002\u0001 \u0002\u0001yyy\ty\u0002\u0001\u0001  xy\u0001y\u0001\u0002\u0001\t\t yx \u0001y",
+      "patch": "@@ -57,9 +57,11 @@\n %02%01%09yx%C2%A0%01y\n+%C2%A0\n",
+      "result": "\t\t\u0002\t\ty\u0002yx\t\tx\t\u0001\u0001x yy x\t\t\u0001\u0001x\u0001\u0002y\u0001y\u0002\u0001 \u0002\u0001yyy\ty\u0002\u0001\u0001  xy\u0001y\u0001\u0002\u0001\t\t yx \u0001y ",
+      "applied": [true],
+      "loc": 50,
+      "mapped": 52
+    },
+    {
+      "base": "eoxlmjjzjuojr  u\n\noerjnrbg,up l oual.coiebll",
+      "mine": "eoxluojr  u\n\nolwm lerjnrbg,up l oual.coiyex v ",
+      "theirs": "eoxlmjjzjuojr  u\n\noerjnrbg,up l oual.coiebll",
+      "patch": "@@ -1,13 +1,8 @@\n eoxl\n-mjjzj\n uojr\n@@ -7,16 +7,21 @@\n jr  u%0A%0Ao\n+lwm l\n erjnrbg,\n@@ -37,8 +37,10 @@\n .coi\n-ebll\n+yex v \n",
+      "result": "eoxluojr  u\n\nolwm lerjnrbg,up l oual.coiyex v ",
+      "applied": [true, true, true],
+      "loc": 39,
+      "mapped": 39
+    },
+    {
+      "base": "漢ä漢。な字字 なäな字字漢。字。。か。 漢な 。なä漢 ä ääää漢か  漢",
+      "mine": "漢ä漢。な字字なな 字字漢。字字かな字。。か。 漢な 。なä漢 ä ääää漢か  ä漢",
+      "theirs": "漢ä漢。な字字 なäな字字漢。字。。か。 漢な 。なä漢 ä ääää漢かなä漢  漢漢",
+      "patch": "@@ -9,45 +9,55 @@\n %E3%80%82%E3%81%AA%E5%AD%97%E5%AD%97\n- %E3%81%AA%C3%A4%E3%81%AA%E5%AD%97%E5%AD%97%E6%BC%A2%E3%80%82\n+%E3%81%AA%E3%81%AA %E5%AD%97%E5%AD%97%E6%BC%A2%E3%80%82%E5%AD%97%E5%AD%97%E3%81%8B%E3%81%AA\n %E5%AD%97%E3%80%82%E3%80%82%E3%81%8B\n@@ -90,19 +90,21 @@\n %C3%A4%C3%A4%C3%A4%C3%A4%E6%BC%A2%E3%81%8B  \n+%C3%A4\n %E6%BC%A2\n",
+      "result": "漢ä漢。な字字なな 字字漢。字字かな字。。か。 漢な 。なä漢 ä ääää漢かなä漢  ä漢漢",
+      "applied": [true, true],
+      "loc": 38,
+      "mapped": 41
+    },
+    {
+      "base": "ø👍🏽🇳🇴 👍🏽å🇳🇴é👍🏽👍🏽x😀é🇳🇴xéøéé🇳🇴👍🏽å👍🏽ø",
+      "mine": "ø👍🏽🇳🇴 👍🏽å🇳🇴😀é👍🏽👍🏽é👍🏽é🇳🇴xéøée🇳🇴👍🏽å👍🏽ø",
+      "theirs": "ø👍🏽🇳🇴 👍🏽å🇳🇳🇴🇴é👍🏽👍🏽x😀é🇴xéøéé🇳🇴👍🏽å👍🏽ø",
+      "patch": "@@ -20,33 +20,37 @@\n %F0%9F%91%8D%F0%9F%8F%BD%C3%A5%F0%9F%87%B3%F0%9F%87%B4\n+%F0%9F%98%80\n e%CC%81%F0%9F%91%8D%F0%9F%8F%BD%F0%9F%91%8D\n@@ -53,20 +53,25 @@\n %F0%9F%91%8D%F0%9F%8F%BD\n-x\n+%C3%A9\n-%F0%9F%98%80\n+%F0%9F%91%8D%F0%9F%8F%BD\n e%CC%81%F0%9F%87%B3\n@@ -78,32 +78,30 @@\n %F0%9F%87%B4xe%CC%81%C3%B8e%CC%81e\n-%CC%81\n %F0%9F%87%B3%F0%9F%87%B4%F0%9F%91%8D%F0%9F%8F%BD\n",
+      "result": "ø👍🏽🇳🇴 👍🏽å🇳🇳🇴🇴😀é👍🏽👍🏽é👍🏽é🇴xéøée🇳🇴👍🏽å👍🏽ø",
+      "applied": [true, true, true],
+      "loc": 24,
+      "mapped": 28
+    },
+    {
+      "base": "gwlbepo wv, ",
+      "mine": "gwhb,u a wv, ",
+      "theirs": "gwlbeptl to wveb",
+      "patch": "@@ -1,11 +1,12 @@\n gw\n-lbepo\n+hb,u a\n  wv,\n",
+      "result": "gwhb,u a to wveb",
+      "applied": [true],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "b.\r\n\n\n\n\n\r\n\nb., \n\n\n .\r\n,\r\na\r\na\n\n\n\n\na.\n\n\r\n,\n\r\n",
+      "mine": "b.\r\n\n\n\n\n\r\n\nb., \n\n\n .\r\n,\r\na\r\na\n\n\n\n\na.\r\n,,\n,\n\r\n",
+      "theirs": "b.\r\n\n\nb,\n\n\n\r\n\nb., \n\n\n \na\r\na\n\n\n\n\na.\n\n\r\n,\n\r\n",
+      "patch": "@@ -29,16 +29,17 @@\n a%0A%0A%0A%0A%0Aa.\n-%0A%0A%0D\n+%0D%0A,,\n %0A,%0A%0D%0A\n",
+      "result": "b.\r\n\n\nb,\n\n\n\r\n\nb., \n\n\n \na\r\na\n\n\n\n\na.\r\n,,\n,\n\r\n",
+      "applied": [true],
+      "loc": 35,
+      "mapped": 33
+    },
+    {
+      "base": ",/#/#+&#/'?= ~,?%+~& ",
+      "mine": ",/#/#+&#/'?= %20a~,?%+a/+~& ",
+      "theirs": "~,/#/#~/'?= ~,?%+~& ",
+      "patch": "@@ -10,12 +10,19 @@\n '?= \n+%2520a\n ~,?%25+\n+a/+\n ~& \n",
+      "result": "~,/#/#~/'?= %20a~,?%+a/+~& ",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 4
+    },
+    {
+      "base": "@a,$,",
+      "mine": "@? a,",
+      "theirs": "@@%@~a,$,",
+      "patch": "@@ -1,5 +1,5 @@\n @\n-a,$\n+? a\n ,\n",
+      "result": "@@%@~? a,",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 8
+    },
+    {
+      "base": "  \t   x\t x \t \u0001\t\u0002 xx\u0001 ",
+      "mine": "  \t   x\t x \t \u0001\t\u0002 x\u0002\t \u0001x\u0001 ",
+      "theirs": "  \t    x  \t\t\t x \t \u0001\t\u0002 xx\u0001",
+      "patch": "@@ -22,16 +22,22 @@\n %E2%80%A8%09%C2%A0%01%09%02%C2%A0x\n+%02%09%E2%80%A8%01\n x%01%C2%A0\n",
+      "result": "  \t    x  \t\t\t x \t \u0001\t\u0002 x\u0002\t \u0001x\u0001",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "。äな。漢ä字漢ä字字ä。字か字か ä  字  な。  字なかかな。ä漢 字字な字漢字ä 字 字なかか ",
+      "mine": "。äな。漢ä字漢ä字字ä。字か字か ä な。  字なかかな。ä漢 字字な字漢字ä 字 字なかか ",
+      "theirs": "。äな。漢ä字漢ä字字ä。字か字か ä  字  な。  字なかかな。ä漢 字字な字漢字ä 字 字なかか ",
+      "patch": "@@ -42,23 +42,17 @@\n %E5%AD%97%E3%81%8B %C3%A4\n-  %E5%AD%97 \n  %E3%81%AA%E3%80%82 \n",
+      "result": "。äな。漢ä字漢ä字字ä。字か字か ä な。  字なかかな。ä漢 字字な字漢字ä 字 字なかか ",
+      "applied": [true],
+      "loc": 33,
+      "mapped": 33
+    },
+    {
+      "base": "=,+;,,&?/??:a?+%+~$@ ?+/?  #",
+      "mine": "=,+;,/aa+'@@',&?/??:a+~$@  #",
+      "theirs": "=,+;,,&a&;,%: %+~$@ ?+/?  #",
+      "patch": "@@ -2,27 +2,27 @@\n ,+;,\n+/aa+'@@'\n ,&?/??:a\n-?+%25\n +~$@\n- ?+/?\n   #\n",
+      "result": "=,+;,/aa+'@@',&a&;,%+~$@ #",
+      "applied": [true],
+      "loc": 20,
+      "mapped": 19
+    },
+    {
+      "base": "xø",
+      "mine": "éåé 🏽ø",
+      "theirs": " åøø👍🏽xø",
+      "patch": "@@ -1,3 +1,14 @@\n-x\n+%C3%A9%C3%A5e%CC%81 %F0%9F%8F%BD\n %C3%B8\n",
+      "result": " åøø👍🏽éåé 🏽ø",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 10
+    },
+    {
+      "base": "😀👍🏽😀éxéø",
+      "mine": "ø😀👍👍🏽🏽😀 👍🏽😀é xéø",
+      "theirs": "😀👍🏽😀éxåéø",
+      "patch": "@@ -1,23 +1,47 @@\n+%C3%B8\n %F0%9F%98%80\n+%F0%9F%91%8D%F0%9F%91%8D%F0%9F%8F%BD%F0%9F%8F%BD%F0%9F%98%80 \n %F0%9F%91%8D%F0%9F%8F%BD%F0%9F%98%80%C3%A9\n+ \n x%C3%A9%C3%B8\n",
+      "result": "ø😀👍👍🏽🏽😀 👍🏽😀é xåéø",
+      "applied": [true],
+      "loc": 4,
+      "mapped": 4
+    },
+    {
+      "base": "led.Hbreci tuua",
+      "mine": "ledH .eci tuur",
+      "theirs": "lnlk d.Hbrooukdeci tuua",
+      "patch": "@@ -1,15 +1,14 @@\n led\n-.Hbr\n+H .\n eci tuu\n-a\n+r\n",
+      "result": "lnlk d.HbrooukdH .ecirtuua",
+      "applied": [true],
+      "loc": 13,
+      "mapped": 21
+    },
+    {
+      "base": "字な字漢かä  字字字ä  。 漢漢か。字漢字。 ä。漢な字ä。äか字字。かかな漢。漢字か漢。。なä字",
+      "mine": "字な字漢かä  字字字ä  。 漢漢か。字漢字。 ä。漢な字ä。äか字字。かかな漢 。 。漢字か漢。。なä字",
+      "theirs": "字な字漢かä  字字字ä  。 漢漢か。字漢字。 ä。漢な字ä。。かかな漢。漢字か漢。。なä字",
+      "patch": "@@ -83,48 +83,53 @@\n %E3%81%8B%E5%AD%97%E5%AD%97%E3%80%82%E3%81%8B%E3%81%8B%E3%81%AA%E6%BC%A2\n+ %E3%80%82 \n %E3%80%82%E6%BC%A2%E5%AD%97%E3%81%8B%E6%BC%A2%E3%80%82%E3%80%82%E3%81%AA\n",
+      "result": "字な字漢かä  字字字ä  。 漢漢か。字漢字。 ä。漢な字ä。。かかな漢 。 。漢字か漢。。なä字",
+      "applied": [true],
+      "loc": 10,
+      "mapped": 10
+    },
+    {
+      "base": "\r\nbbb  \n\na,.,\r\nb \n\n\n.bb,\r\nb\n\n\n\n.\r\nba\n\n\r\n\n.a",
+      "mine": "\r\nbbb  \na,.,\r\nb \n\n\n.,,abb,\r\nb\n\n\n\n.\r\nba\n\n\r\n\n.a",
+      "theirs": "\r\nbbb  a,.,\r\nb \n\n\n.bb,\r\nb\n\n\n\n.\r\nba\n\n\r\n\n.a",
+      "patch": "@@ -1,17 +1,16 @@\n %0D%0Abbb  %0A\n-%0A\n a,.,%0D%0Ab \n@@ -13,16 +13,19 @@\n %0D%0Ab %0A%0A%0A.\n+,,a\n bb,%0D%0Ab%0A%0A\n",
+      "result": "\r\nbbb  a,.,\r\nb \n\n\n.,,abb,\r\nb\n\n\n\n.\r\nba\n\n\r\n\n.a",
+      "applied": [true, true],
+      "loc": 16,
+      "mapped": 14
+    },
+    {
+      "base": ",,\r\n.\r\n\n\n..a \n ab\nb\n\n\n\n\r\n  \r\nba.a\r\n",
+      "mine": ",,\r\n.\r\n\n\n.a.\r\n\n.\n\n,.a \n ab\nb\n\n\n\n\r\n  \r\nba.a\r\n",
+      "theirs": ",,\r\n.\r\n\n\n..a \n ab\nb\n\n\n.\n\n\n\n\r\n  \r\n ,,aa\r\n",
+      "patch": "@@ -3,16 +3,25 @@\n %0D%0A.%0D%0A%0A%0A.\n+a.%0D%0A%0A.%0A%0A,\n .a %0A ab%0A\n",
+      "result": ",,\r\n.\r\n\n\n.a.\r\n\n.\n\n,.a \n ab\nb\n\n\n.\n\n\n\n\r\n  \r\n ,,aa\r\n",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 2
+    },
+    {
+      "base": "&%20;'=%20",
+      "mine": "&%20;'=%20,$",
+      "theirs": "&/%20;20",
+      "patch": "@@ -3,8 +3,10 @@\n 20;'=%2520\n+,$\n",
+      "result": "&/%20;20,$",
+      "applied": [true],
+      "loc": 8,
+      "mapped": 6
+    },
+    {
+      "base": "ø 🇳🇴😀éxxåå👍🏽 åéx😀😀🇳🇴é👍🏽🇳🇴👍🏽 å🇳🇴é 🇳🇴",
+      "mine": "ø 🇳🇴😀éxxåå👍🏽 åéx😀😀🇳🇴é👍å🏽🇳🇴👍🏽 å🇳🇳🇴",
+      "theirs": "ø 🇳🇴😀éxxåå👍🏽 åéx😀😀🇳🇴👍🏽é👍🏽🇳👍🏽 å🇳🇴é 🇳🇴",
+      "patch": "@@ -43,34 +43,36 @@\n %F0%9F%98%80%F0%9F%87%B3%F0%9F%87%B4%C3%A9%F0%9F%91%8D\n+%C3%A5\n %F0%9F%8F%BD%F0%9F%87%B3%F0%9F%87%B4%F0%9F%91%8D\n@@ -83,23 +83,15 @@\n  %C3%A5%F0%9F%87%B3\n-%F0%9F%87%B4e%CC%81 \n %F0%9F%87%B3%F0%9F%87%B4\n",
+      "result": "ø 🇳🇴😀éxxåå👍🏽 åéx😀😀🇳🇴👍🏽é👍å🏽🇳👍🏽 å🇳🇳🇴",
+      "applied": [true, true],
+      "loc": 50,
+      "mapped": 52
+    },
+    {
+      "base": "字漢。ä字か字。漢漢かな漢äな。ä",
+      "mine": "字漢字。ä字か字。漢漢äな",
+      "theirs": "字漢。ä字か字。漢äなä。ä",
+      "patch": "@@ -1,48 +1,37 @@\n %E5%AD%97%E6%BC%A2\n+%E5%AD%97\n %E3%80%82%C3%A4%E5%AD%97%E3%81%8B%E5%AD%97%E3%80%82%E6%BC%A2%E6%BC%A2\n-%E3%81%8B%E3%81%AA%E6%BC%A2%C3%A4%E3%81%AA%E3%80%82\n %C3%A4\n+%E3%81%AA\n",
+      "result": "字漢字。ä字か字。漢äな",
+      "applied": [true],
+      "loc": 17,
+      "mapped": 14
+    },
+    {
+      "base": "ok",
+      "mine": "oo\n vt,k",
+      "theirs": "",
+      "patch": "@@ -1,2 +1,8 @@\n o\n+o%0A vt,\n k\n",
+      "result": "o\n vt,",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 0
+    },
+    {
+      "base": "#'@",
+      "mine": "/ %'#?:@",
+      "theirs": "#';$ %2",
+      "patch": "@@ -1,3 +1,8 @@\n-#'\n+/ %25'#?:\n @\n",
+      "result": "/ %'#?:;$ %2",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 7
+    },
+    {
+      "base": "  djk xoyia igyfn q d tzdvzxjz b aqsdnmiguxartatg",
+      "mine": "  djk xoyia ighgyfn q d tzdvzxjz b aqsdnmiguxartatg",
+      "theirs": "yia igyfn q d tzdvzxjzqsdnmiguxartatg",
+      "patch": "@@ -7,16 +7,18 @@\n xoyia ig\n+hg\n yfn q d \n",
+      "result": "yia ighgyfn q d tzdvzxjzqsdnmiguxartatg",
+      "applied": [true],
+      "loc": 6,
+      "mapped": 0
+    },
+    {
+      "base": "漢。字ä 字かää字。 ä 。か かか漢な 字ä漢なää字。 なä。。漢漢 。字ä字漢字ä字ä。ä ä 字な",
+      "mine": "漢。字ä 字かää字。 ä 。か かか 漢な 字ä漢なää字。 なä。。漢字なな字ä字漢字ä字ä。ä ä 字な",
+      "theirs": "漢。字ä 字かää字。 ä 。か かä漢なää字。漢漢 。字ä字漢字ä字ä。ä ä 字な",
+      "patch": "@@ -29,37 +29,38 @@\n  %C3%A4 %E3%80%82%E3%81%8B %E3%81%8B%E3%81%8B\n+ \n %E6%BC%A2%E3%81%AA %E5%AD%97%C3%A4%E6%BC%A2%E3%81%AA%C3%A4\n@@ -79,29 +79,31 @@\n %C3%A4%E3%80%82%E3%80%82%E6%BC%A2\n-%E6%BC%A2 %E3%80%82\n+%E5%AD%97%E3%81%AA%E3%81%AA\n %E5%AD%97%C3%A4%E5%AD%97%E6%BC%A2\n",
+      "result": "漢。字ä 字かää字。 ä 。か か ä漢なää字。漢字なな字ä字漢字ä字ä。ä ä 字な",
+      "applied": [true, true],
+      "loc": 16,
+      "mapped": 16
+    },
+    {
+      "base": "\u0001 \u0001xy \t\u0002\u0002 \u0001\t\u0001\t   \t\u0001yy\u0002yyx xy",
+      "mine": "\u0001 \u0001xy   \u0002 \u0001\t\u0001\t   \t\u0001\u0001\t\u0001yy\u0002 \t",
+      "theirs": "\u0001 \u0001xy \t\u0002\u0002 \u0001\t\u0001\t   \t\u0001yy\u0002\u0001\u0001\tyyx xy x yy\u0002",
+      "patch": "@@ -4,12 +4,15 @@\n %01xy%C2%A0\n-%09%02\n+%C2%A0%E2%80%A8\n %02%C2%A0%01%09\n@@ -23,17 +23,16 @@\n %C2%A0%C2%A0%09%01\n-yy%02yyx%E2%80%A8xy\n+%01%09%01yy%02%E2%80%A8%09\n",
+      "result": "\u0001 \u0001xy   \u0002 \u0001\t\u0001\t   \t\u0001\u0001\t\u0001yy\u0002 \t x yy\u0002",
+      "applied": [true, true],
+      "loc": 23,
+      "mapped": 26
+    },
+    {
+      "base": "漢な。ä漢  な か漢 ää 字。か字 ä。かä 字字なä ä漢ä。 ",
+      "mine": "漢な。漢ä漢。ä漢 な か漢 ää 字。か字 ä。かä 字字ななか。 ",
+      "theirs": "漢なäな 。ä漢  な か漢 ää 字。か字 ä。かか字漢ä漢字字なä ä漢ä。 ",
+      "patch": "@@ -1,23 +1,33 @@\n %E6%BC%A2%E3%81%AA%E3%80%82\n+%E6%BC%A2\n %C3%A4%E6%BC%A2\n- \n+%E3%80%82%C3%A4%E6%BC%A2\n  %E3%81%AA %E3%81%8B\n@@ -66,24 +66,20 @@\n  %E5%AD%97%E5%AD%97%E3%81%AA\n-%C3%A4 %C3%A4%E6%BC%A2%C3%A4\n+%E3%81%AA%E3%81%8B\n %E3%80%82 \n",
+      "result": "漢なäな 。漢ä漢。ä漢 な か漢 ää 字。か字 ä。かか字漢ä漢字字ななか。 ",
+      "applied": [true, true],
+      "loc": 1,
+      "mapped": 1
+    },
+    {
+      "base": "\nb.,\n\nb b, \n\n\n",
+      "mine": "\nb.,\n\nb.aa\r\n b, \n\n\n\n",
+      "theirs": "\na\r\nb.,\n\nb b,",
+      "patch": "@@ -4,11 +4,17 @@\n ,%0A%0Ab\n+.aa%0D%0A\n  b, %0A%0A%0A\n+%0A\n",
+      "result": "\na\r\nb.,\n\nb.aa\r\n b,\n",
+      "applied": [true],
+      "loc": 2,
+      "mapped": 5
+    },
+    {
+      "base": "swcfli",
+      "mine": "sw",
+      "theirs": "sauinqstuwcfli",
+      "patch": "@@ -1,6 +1,2 @@\n sw\n-cfli\n",
+      "result": "sauinqstuw",
+      "applied": [true],
+      "loc": 3,
+      "mapped": 11
+    },
+    {
+      "base": "%20=@;//%;/=+/==$ &=#a %;==@&+'#+ ',%&~+,?,/&%20,?~ ",
+      "mine": "%20= ?&%;/=+/==$ &=#a %;==@&+'#+ ',%&~+,=@/&%20,?~ ",
+      "theirs": "%20=@;//%;/=+/==$ &=#a %;==@&+'#+ '%20%20+,?,/&%2+%@$0,?~",
+      "patch": "@@ -1,12 +1,11 @@\n %2520=\n-@;//\n+ ?&\n %25;/=\n@@ -37,10 +37,10 @@\n &~+,\n-?,\n+=@\n /&%252\n",
+      "result": "%20= ?&%;/=+/==$ &=#a %;==@&+'#+ '%20%20+,=@/&%2+%@$0,?~",
+      "applied": [true, true],
+      "loc": 3,
+      "mapped": 3
+    },
+    {
+      "base": "l",
+      "mine": " s ov",
+      "theirs": "rpr  oos",
+      "patch": "@@ -1 +1,5 @@\n-l\n+ s ov\n",
+      "result": "rpr  oos",
+      "applied": [false],
+      "loc": 0,
+      "mapped": 0
+    },
+    {
+      "base": "\n\n\nb. a\nb\r\na,\n\n\r\n.b\r\n.\r\nb\r\n\nab.\r\n,\n\nb\n\n.\r\n\r\n,\r\nb\n\n,ba ,..\n \n",
+      "mine": "\n\n\nb. a\nb\r\na,\n\n\r\n.ba,.,\r\n.\r\nb\r\n\nab.\r\n.\n\n,\n\nba\n\n\n.\r\n\r\n,\r\nb\n\n,ba ,..\n \n",
+      "theirs": "\n\n\nb. a\nb\r\n\n \na,\n\n\n\n\r\n.b\r\n.\r\nb\r\n\nab.\r\n,\n\nb\n\n.\r\n\r\n,\r\nb\n\n,ba ,..\n \n",
+      "patch": "@@ -12,16 +12,20 @@\n a,%0A%0A%0D%0A.b\n+a,.,\n %0D%0A.%0D%0Ab%0D%0A\n@@ -34,12 +34,17 @@\n b.%0D%0A\n+.%0A%0A\n ,%0A%0Ab\n+a%0A\n %0A%0A.%0D\n",
+      "result": "\n\n\nb. a\nb\r\n\n \na,\n\n\n\n\r\n.ba,.,\r\n.\r\nb\r\n\nab.\r\n.\n\n,\n\nba\n\n\n.\r\n\r\n,\r\nb\n\n,ba ,..\n \n",
+      "applied": [true, true],
+      "loc": 11,
+      "mapped": 14
+    },
+    {
+      "base": "y\u0001\u0001yxy\u0001\u0002 \u0002\t\tx    yxyyx yy\t      x\u0001x  y\u0002xxy\u0001x ",
+      "mine": "y\u0001\u0001yxy\u0001\u0002 \u0002\t\tx    yxyyx yy\t      x\u0001x  y\u0002xx",
+      "theirs": "y\u0001\u0001yxy\u0001\u0002 \u0002\t\tx    yxyyx yy\t      x\u0001x\u0001\u0002 y\u0002xxy\u0001x ",
+      "patch": "@@ -59,9 +59,4 @@\n y%02xx\n-y%01x%C2%A0\n",
+      "result": "y\u0001\u0001yxy\u0001\u0002 \u0002\t\tx    yxyyx yy\t      x\u0001x\u0001\u0002 y\u0002xx",
+      "applied": [true],
+      "loc": 40,
+      "mapped": 41
+    },
+    {
+      "base": " é 👍🏽øé ø😀👍🏽😀xx🇳🇴xéxøxøé👍🏽🇳🇴😀👍🏽éå😀éå",
+      "mine": " 😀👍🏽é😀é ø😀👍🏽😀xx🇳🇴xéxøxøé👍🏽🇳🇴😀👍🏽éå😀éå",
+      "theirs": " é 🇳🇴👍🏽øé ø😀👍🏽😀xx🇳🇴xéxøxøé👍🏽🇳🇴😀👍🏽éå😀éå",
+      "patch": "@@ -1,20 +1,26 @@\n  \n-%C3%A9 \n+%F0%9F%98%80\n %F0%9F%91%8D%F0%9F%8F%BD\n-%C3%B8\n+e%CC%81%F0%9F%98%80\n e%CC%81 %C3%B8\n",
+      "result": " 😀👍🏽øé é😀😀👍🏽😀xx🇳🇴xéxøxøé👍🏽🇳🇴😀👍🏽éå😀éå",
+      "applied": [true],
+      "loc": 5,
+      "mapped": 9
+    },
+    {
+      "base": "eobtz  oo wqcpexedi x",
+      "mine": "eobtz  oo wqcpexedidzrsq",
+      "theirs": "eobtz  oo wqy msocpexedi.\ng  x",
+      "patch": "@@ -16,6 +16,9 @@\n xedi\n- x\n+dzrsq\n",
+      "result": "eobtz  oo wqy msocpexedi.\ng dzrsq",
+      "applied": [true],
+      "loc": 7,
+      "mapped": 7
+    },
+    {
+      "base": "rew.hvlom eltzvko l ehllqoqar llorwyza ieuwu  f,pkg  r eonosHrbro jgiabuHr vvovol ,qcpoa eor, hptkeognj vHlwflm xbdrz  t\nrmzooh ek   glju iqwyailgbjlnof e,\nau \noHdsdwlrcoao",
+      "mine": "rew.hvlom eltzvko l ehllqoqar llorwyza ieuwu  f,pkg  r eonosHrbro jgiabuHr vvovol ,qcpoa eor, hptkeogu nj vHlwflm xbdrz  t\nrmzooh ek   glju iqwyaibllgbjlnof e,\nau \noHdsdwlrcoo",
+      "theirs": "uuer ew.hvlom eltzvko l ehllqoqar llorwyza ieuwu  f,pkg  r eonosHrbro jgiabuHr vvovol ,qcpoa eor, hptkeognj vHlwflm xbd t\nrmzooh ek   glju iqwyailgbjlnof e,\nau \noHdsdwlrcoao",
+      "patch": "@@ -94,16 +94,18 @@\n  hptkeog\n+u \n nj vHlwf\n@@ -139,16 +139,18 @@\n u iqwyai\n+bl\n lgbjlnof\n@@ -167,10 +167,9 @@\n dsdwlrco\n-a\n o\n",
+      "result": "uuer ew.hvlom eltzvko l ehllqoqar llorwyza ieuwu  f,pkg  r eonosHrbro jgiabuHr vvovol ,qcpoa eor, hptkeogu nj vHlwflm xbd t\nrmzooh ek   glju iqwyaibllgbjlnof e,\nau \noHdsdwlrcoo",
+      "applied": [true, true, true],
+      "loc": 85,
+      "mapped": 89
+    },
+    {
+      "base": " y \t\u0001\t \tx yx  \t\u0002\u0002 xy\u0002        \u0002 \u0001\u0002  \t\u0002 \t\u0002\u0002y\u0002\u0001\u0002x\u0002\u0002\u0002x xx \u0001\u0002x\u0002yx xy \u0001x  \t\u0001y\t x  \u0001 y \t \t \u0002\u0002 \u0001 x   y \t \u0001\u0002xyyx \u0002\u0002x\ty\u0002yx \u0001 \u0001  \u0002y yyx  xx \u0001yx x\u0001 y\t xx\u0001 \t \u0001x \u0002y y y\t\u0002\tx x\u0001\u0001\u0001\t\u0002x\t \u0001 \u0001 \t yx\t \u0001y\u0001  y\t \t \u0002\u0001 \t\t\u0001     \u0002\ty\t   \u0002 \u0001\u0001 yx\t y\t \t \tx\t\u0001\u0002x\u0001y ",
+      "mine": " y \t\u0001\t \tx yx  xy\u0001 \t\u0002\u0002 xy\u0002      \u0001\u0002   \u0002 \u0001\u0002  \t\u0002 \t\u0002\u0002y\u0002\u0001\u0002x\u0002\u0002\u0002x xx \u0001\u0002x\u0002yx xy \u0001 xx  \t\u0001y\t x  \u0001 y \t \t \u0002\u0002 \u0001 x   y \t \u0001yxyyx \u0002\u0002x\ty\u0002yx \u0001 \u0001  \u0002y yyx  \u0002\u0002\u0001\u0001xxx \u0001yx x\u0001 y\t xx\u0001 \t \u0001x \u0002y y y\t\u0002\tx x\t \u0002y\u0001\t\u0002x\t \u0001 \u0001 \t yx\t \u0001y\u0001  y\t \t \u0002\u0001 \t\t\u0001     \u0002\ty\t   \u0002 \u0001\u0001 yx\t y\t \t \tx\t\u0001\u0002x\u0001y ",
+      "theirs": " y \t\u0001\t \tx yx  \t\u0002\u0002 xy\u0002        \u0002 \u0001\u0002  \t\u0002 \t\u0002\u0002y\u0002\u0001\u0002x\u0002\u0002\u0002x xx \u0001\u0002x\u0002yx xy \u0001x  \t\u0001y\t x  \u0001 y \t \t \u0002\u0002 \u0001 x   y \t \u0001\u0002xyyx \u0002\u0002x\ty\u0002yx \u0001 \u0001  \u0002y yyx  xx \u0001yx x\u0001 y\t xx\u0001 \t \u0001x \u0002y y y\t\u0002\tx x\u0001\u0001\u0001\t\u0002x\t \u0001 \u0001 \t yx\t \u0001y\u0001  y\t \t \u0002\u0001    \u0002\ty\t   \u0002 \u0001\u0001 yx\t y\t \t \tx\t\u0001\u0002x\u0001y ",
+      "patch": "@@ -9,23 +9,28 @@\n %09%C2%A0%09x%E2%80%A8yx%E2%80%A8\n+%C2%A0xy%01\n %C2%A0%09%02%02%C2%A0xy%02\n@@ -35,36 +35,40 @@\n y%02%E2%80%A8%E2%80%A8%E2%80%A8%E2%80%A8%C2%A0%E2%80%A8\n+%01%02%C2%A0\n %E2%80%A8%E2%80%A8%02%E2%80%A8%01%02%E2%80%A8%C2%A0\n@@ -101,24 +101,28 @@\n %02yx%E2%80%A8xy%C2%A0%01\n+%E2%80%A8x\n x%C2%A0%E2%80%A8%09%01y%09%E2%80%A8\n@@ -157,26 +157,26 @@\n %C2%A0%C2%A0%C2%A0y%E2%80%A8%09%E2%80%A8%01\n-%02\n+y\n xyyx%E2%80%A8%02%02x\n@@ -201,24 +201,29 @@\n %02y%C2%A0yyx%E2%80%A8%E2%80%A8\n+%02%02%01%01x\n xx%E2%80%A8%01yx%C2%A0x\n@@ -258,24 +258,28 @@\n %E2%80%A8y%09%02%09x%E2%80%A8x\n-%01%01\n+%09%E2%80%A8%02y\n %01%09%02x%09%C2%A0%01%C2%A0\n",
+      "result": " y \t\u0001\t \tx yx  xy\u0001 \t\u0002\u0002 xy\u0002      \u0001\u0002   \u0002 \u0001\u0002  \t\u0002 \t\u0002\u0002y\u0002\u0001\u0002x\u0002\u0002\u0002x xx \u0001\u0002x\u0002yx xy \u0001 xx  \t\u0001y\t x  \u0001 y \t \t \u0002\u0002 \u0001 x   y \t \u0001yxyyx \u0002\u0002x\ty\u0002yx \u0001 \u0001  \u0002y yyx  \u0002\u0002\u0001\u0001xxx \u0001yx x\u0001 y\t xx\u0001 \t \u0001x \u0002y y y\t\u0002\tx x\t \u0002y\u0001\t\u0002x\t \u0001 \u0001 \t yx\t \u0001y\u0001  y\t \t \u0002\u0001    \u0002\ty\t   \u0002 \u0001\u0001 yx\t y\t \t \tx\t\u0001\u0002x\u0001y ",
+      "applied": [true, true, true, true, true, true],
+      "loc": 29,
+      "mapped": 29
+    },
+    {
+      "base": "nrkesuyuw Hl v t,de ,    b.zfh uvy .,gwgh,yct  nqpHhxHq.cwvl  qocttjdloqronlronholo xardhsfw o hdoauo",
+      "mine": "kesuyuw Hl v t,de ,    b.zfh uvy .snch,yct  nqpHhxHq.cwvl  qocttjdloqronlr\nlu  fo xardhHrkfw o hdoauoeexev",
+      "theirs": "woonrkesuyuw Hl v t,de ,    b.zfh.,gwgh,yct  nqpHhxHq.cwvl  qocttdloqronlronholo xardhsfw o hdoauo",
+      "patch": "@@ -1,6 +1,4 @@\n-nr\n kesu\n@@ -31,12 +31,11 @@\n vy .\n-,gwg\n+snc\n h,yc\n@@ -71,21 +71,24 @@\n onlr\n-onhol\n+%0Alu  f\n o xardh\n-s\n+Hrk\n fw o\n@@ -94,8 +94,13 @@\n o hdoauo\n+eexev\n",
+      "result": "wookesuyuw Hl v t,de ,    b.zfh.snch,yct  nqpHhxHq.cwvl  qocttdloqronlr\nlu  fo xardhHrkfw o hdoauoeexev",
+      "applied": [true, true, true, true],
+      "loc": 54,
+      "mapped": 52
+    },
+    {
+      "base": ";'%%20#;'a%20;a,'';$+a=?:+#?a%20$'~~@ ?+;~+?/==%#+=#/'~/;: %%'$?,=/%'#&=?;;,;, ~;&$?%20$,a+ ?%20@$,'/%:=;=:/a+?=a@&+@%20@%aa",
+      "mine": ";'%%2'a%20;a,'';$+a=?:+#?a%20$'~~@ ?+;~+?/==%#+=#/'~/;: %%'$?,=//?$?a%'#&=?;;,;, ~;&$?%20$, $&/+a+ ?%20@$,'/%:=;=:/a+?=a@&+@%20@%aa",
+      "theirs": ";'%%@:a#;'a%20;a,'';$+a=?:+#?a%20$'~~@ ?+;~+?/==%#+=#/'~/;: %%'$?,=/%'#&=?;;,;, ~;&$?%20$,a+ ?%20@$,'/%:=;=:/a+?=a@&+@%20@%aa",
+      "patch": "@@ -2,11 +2,8 @@\n '%25%252\n-0#;\n 'a%252\n@@ -57,16 +57,21 @@\n %25%25'$?,=/\n+/?$?a\n %25'#&=?;;\n@@ -84,16 +84,21 @@\n &$?%2520$,\n+ $&/+\n a+ ?%2520@\n",
+      "result": ";'%%'a%20;a,'';$+a=?:+#?a%20$'~~@ ?+;~+?/==%#+=#/'~/;: %%'$?,=//?$?a%'#&=?;;,;, ~;&$?%20$, $&/+a+ ?%20@$,'/%:=;=:/a+?=a@&+@%20@%aa",
+      "applied": [true, true, true],
+      "loc": 45,
+      "mapped": 46
+    },
+    {
+      "base": "か。ä 。字。漢。。漢かä字なä かな ä漢。漢字漢ää。なかなな。な なä。漢な漢 かかかかな漢か 漢漢ää字ä字 か漢。 。äなäなää漢。 。か漢ä漢漢か字かä かな漢 。äな字字 ä漢字。  字か。か 。äな",
+      "mine": "か。ä 。字。漢かä字なä かな ä漢。漢字漢ää。なかなな。な なä。漢な漢 かかかかな漢か 漢漢ää字ä字 か漢。 。äなäなää漢。 。か漢ä漢漢か字かä かな漢 。äな字字 ä漢字。  字か。か 。äな",
+      "theirs": "か。ä 。字。漢。。漢かä字なä かな ä漢。漢字漢ää。なかなな。な なä。漢な か かかかかな漢か 漢漢ää字ä字 か漢。 。äなäなää漢。 。か漢ä漢漢か字かä かな漢 。äな字字 ä漢字。  字か。か 。äな",
+      "patch": "@@ -10,32 +10,23 @@\n %E3%80%82%E5%AD%97%E3%80%82%E6%BC%A2\n-%E3%80%82%E3%80%82%E6%BC%A2\n %E3%81%8B%C3%A4%E5%AD%97%E3%81%AA\n",
+      "result": "か。ä 。字。漢かä字なä かな ä漢。漢字漢ää。なかなな。な なä。漢な か かかかかな漢か 漢漢ää字ä字 か漢。 。äなäなää漢。 。か漢ä漢漢か字かä かな漢 。äな字字 ä漢字。  字か。か 。äな",
+      "applied": [true],
+      "loc": 56,
+      "mapped": 57
+    },
+    {
+      "base": "ø🇳🇴 éååé😀é é👍🏽👍🏽😀xxxåéé👍🏽xéx🇳🇴👍🏽🇳🇴🇳🇴👍🏽😀é😀é👍🏽é👍🏽🇳🇴øå🇳🇴é😀🇳🇴éé👍🏽øåø🇳🇴x🇳🇴ø👍🏽åøé🇳🇴é 🇳🇴  é👍🏽é  é å👍🏽øxéééøx🇳🇴é é🇳🇴éé🇳🇴xé😀👍🏽éåé😀éø🇳🇴ø🇳🇴é👍🏽x😀å  😀é👍🏽",
+      "mine": "ø🇳🇴 éååé😀é é👍🏽👍🏽😀xxxåéé👍🏽xé🇳🇴👍🏽🇳🇴🇳🇴👍🏽😀é😀é👍🏽é👍🏽🇴øå🇳🇴é😀🇳🇴éé👍🏽øåø🇳🇴x🇳🇴ø👍🏽åøé🇳🇴é 🇳🇴  é👍🏽é  é å👍🏽øxéééøx🇳🇴éé🇳🇴éé🇳🇴😀👍🏽éåé😀é🇴ø🇳🇴é👍🏽x😀å  😀é👍🏽",
+      "theirs": "ø🇳🇴 éååé😀é é👍🏽👍🏽😀xxxåéé👍🏽xéx🇳🇴👍🏽🇳🇴🇳🇴👍🏽😀é😀é👍🏽é👍🏽🇳🇴øå🇳🇴é😀🇳🇴éé👍øé 👍🏽🏽øåø🇳🇴x🇳🇴ø👍🏽åø🇴é 🇳🇴  é👍🏽é  é å👍🏽øxéééøx🇳🇴é 🇴éé🇳🇴xé😀👍🏽éåé😀éø🇳🇴ø🇳🇴é👍🏽x😀å  😀é👍🏽",
+      "patch": null,
+      "result": null,
+      "applied": null,
+      "loc": 186,
+      "mapped": 186
+    },
+    {
+      "base": "fzu fzy gtwapv uexjmzv ejmxz fkfqzar   c q cfl dvcyjcrpveyep sjb tvah js   cp albbhkf pqzaxvsia nion l zijwko xf qtbujewbuxucs j    yigns immo  b t ympqs",
+      "mine": "fzu fzy gtwapv uexjmzv ejmxz fkfqzar   c q cfl dvcyjcrpveyep sjb tvah js   cp albbhkf pqzaxvsia nion l zijwkom yrxf qtbujewbuxucs j    yign immo  b t ympqs",
+      "theirs": "fzu fzy gtwapv uexjmzv ejmxz fkfqzar   c q cfl dvcyjcrpveyep sjb tvah js   cp albbhkf pqzaxvsia nion l zijwkf qtbujewbuxucs j    yigns immo  b t ympqs",
+      "patch": "@@ -102,17 +102,20 @@\n l zijwko\n- \n+m yr\n xf qtbuj\n@@ -132,17 +132,16 @@\n     yign\n-s\n  immo  b\n",
+      "result": "fzu fzy gtwapv uexjmzv ejmxz fkfqzar   c q cfl dvcyjcrpveyep sjb tvah js   cp albbhkf pqzaxvsia nion l zijwkm yrf qtbujewbuxucs j    yign immo  b t ympqs",
+      "applied": [true, true],
+      "loc": 18,
+      "mapped": 18
+    },
+    {
+      "base": " lz hknwtk dnbsy zsbua qspnxi rygehrbshutphvmmasivakknh ud dzowanozrntiq a c dmtux rzt yt  dpnqa  euepl uyaqr s l fncn  qf dvcr pwo ktnwmwz ua fugjooki  qfdb emllmspxhu b nfjcmiadyzs",
+      "mine": " lz hknwtkbsy zsbua qspnxi rygehrbshutphvmmasiqovakknh ud dzowanozrntiq a c dmtux rzt yt  dpnsoqa  euepl uyaqr s l fncn  qf dvcr pwo ktnwmwz ua fugjooki  qfdb emllmspxhu b nfjcmiadyzs",
+      "theirs": " lz hknwtk dnbsy zsbua qspnxi ryprhrbshutphvmmasivakknh ud dzowanozrntiq a c dmtux rzt yt  dpnqa  euepl uyaqr s l fncn  qf dvcr pwo ktnwmwz ua fugjooki  qfdb emllmspxhu b nfjcmiadyzs",
+      "patch": "@@ -7,11 +7,8 @@\n nwtk\n- dn\n bsy \n@@ -39,16 +39,18 @@\n phvmmasi\n+qo\n vakknh u\n@@ -86,16 +86,18 @@\n  yt  dpn\n+so\n qa  euep\n",
+      "result": " lz hknwtkbsy zsbua qspnxi ryprhrbshutphvmmasiqovakknh ud dzowanozrntiq a c dmtux rzt yt  dpnsoqa  euepl uyaqr s l fncn  qf dvcr pwo ktnwmwz ua fugjooki  qfdb emllmspxhu b nfjcmiadyzs",
+      "applied": [true, true, true],
+      "loc": 63,
+      "mapped": 63
+    },
+    {
+      "base": "字か漢か。äななか。äな 。 漢なかな。。字字字 ä漢字。かää漢字  äな。 か漢。。 な字な字ä。漢漢な漢な 漢かな字 ä。ä字な字ä。。 字 。 漢。字 漢なかかなäなä  字字字漢字ä。な。か字ää漢なäなか 字か。 な  かか。äか。な字 。か。かäか漢 äな 字  。漢ä漢。。漢な漢äなä字ななか な 字かä か。なか漢ä字。ä漢。 なかなä。 äか。漢 字な字字。。漢なäな。かäな漢漢漢ä 。漢漢 字ää。 ääか なな。",
+      "mine": "字か漢か。äななか。äな 。 漢なかな。。字字なää漢字。か字  äな。 か漢。。字ä。漢漢な漢な 漢かな字 ä。ä字な字ä。。 字 。 漢。字 漢なかか  漢字 なäなä  字字字漢字ä。な。か字ää漢なäなか 字か。 な  かか。äなかか。な字 。か。かäか漢 äな 字  。漢ä漢。。漢な漢äなä字ななか な 字かä か。なか漢ä字。ä漢。 なかなä。 äか。漢 字な字字。。漢なäな。かäな漢漢漢ä 。漢漢 字äか なな。字かなか。",
+      "theirs": "字か漢か。äななか。äな 。 漢なかな。。字字字 ä漢字。かää漢字  äな。 か漢。。 な字な字ä。漢漢な漢な 漢かな字 ä。ä字な字ä。。 字 。 漢。字 漢なかかなäなä  字字字漢字ä。な。か字ää漢なäなか 字か。 な  かか。äか。な字 。か。かäか漢 äな 字  。漢ä漢。。漢な漢äなä字ななか な 字かä か。なか漢ä 字。ä漢。 なかなä。 äか。漢 字な字字。。漢なäな。かäな漢漢漢ä 。漢漢 字ää。 ääか なな。",
+      "patch": "@@ -52,44 +52,38 @@\n %E3%80%82%E3%80%82%E5%AD%97%E5%AD%97\n-%E5%AD%97 \n+%E3%81%AA%C3%A4\n %C3%A4%E6%BC%A2%E5%AD%97%E3%80%82%E3%81%8B\n-%C3%A4%C3%A4%E6%BC%A2\n %E5%AD%97  %C3%A4\n@@ -97,33 +97,23 @@\n %E3%81%8B%E6%BC%A2%E3%80%82%E3%80%82\n- %E3%81%AA%E5%AD%97%E3%81%AA\n %E5%AD%97%C3%A4%E3%80%82%E6%BC%A2\n@@ -179,40 +179,49 @@\n %E6%BC%A2%E3%80%82%E5%AD%97 %E6%BC%A2%E3%81%AA%E3%81%8B%E3%81%8B\n+  %E6%BC%A2%E5%AD%97 \n %E3%81%AA%C3%A4%E3%81%AA%C3%A4  %E5%AD%97%E5%AD%97\n@@ -282,39 +282,45 @@\n  %E3%81%AA  %E3%81%8B%E3%81%8B%E3%80%82%C3%A4\n+%E3%81%AA%E3%81%8B\n %E3%81%8B%E3%80%82%E3%81%AA%E5%AD%97 %E3%80%82%E3%81%8B%E3%80%82\n@@ -526,32 +526,37 @@\n %E6%BC%A2 %E5%AD%97%C3%A4\n-%C3%A4%E3%80%82 %C3%A4%C3%A4%E3%81%8B %E3%81%AA%E3%81%AA\n+%E3%81%8B %E3%81%AA%E3%81%AA%E3%80%82%E5%AD%97%E3%81%8B%E3%81%AA%E3%81%8B\n %E3%80%82\n",
+      "result": "字か漢か。äななか。äな 。 漢なかな。。字字なää漢字。か字  äな。 か漢。。字ä。漢漢な漢な 漢かな字 ä。ä字な字ä。。 字 。 漢。字 漢なかか  漢字 なäなä  字字字漢字ä。な。か字ää漢なäなか 字か。 な  かか。äなかか。な字 。か。かäか漢 äな 字  。漢ä漢。。漢な漢äなä字ななか な 字かä か。なか漢ä 字。ä漢。 なかなä。 äか。漢 字な字字。。漢なäな。かäな漢漢漢ä 。漢漢 字äか なな。字かなか。",
+      "applied": [true, true, true, true, true],
+      "loc": 159,
+      "mapped": 159
+    },
+    {
+      "base": " なää 字字。漢なな 漢。 。な。な。。。 な漢ä漢。字。かな。漢漢なか漢ää。字字。字かä 字な。なää字ää字äな漢 か漢 かな 漢字 漢かな 漢。。ä字な か漢ä漢字か。ä。。かäか漢字かな。漢漢ä漢字ä字ä字なかか 。  ä字。。。。かäää 漢字漢äなな漢。。äかä。漢ä 漢かなä字äか字äか漢な字漢字ä äな 字 漢か  äか。 ななかな。漢ä漢äääか ää。な字字字漢な な 字字ä字かな 字な字äなä 漢ääか。ä漢な。かな。ä。かなäな。漢漢。漢漢。 漢。なääか字字字な 。かか字。ä。。字",
+      "mine": " なää 字字。漢なな 漢。 。な。な。。。 な漢ä漢。字。かな。漢漢なか漢ää。字字。字かä 字な。なää字ää字äな漢 か漢 かな 漢字 漢かな 漢。。ä字な か漢ä漢字か。ä。。かäか漢字かな。漢漢ä漢字ä字ä字なかか 。  ä字。。。。かäää 漢字漢äなな漢。。äかä。漢ä 漢かなä字äか字äか漢な字漢字ä äな 字 漢か  äか。 ななかな。漢ä漢äääか ää。な字字字äか。な。漢な な 字字ä字かな 字な字äなä 漢ääか。ä漢な。かな。ä。かなäな。漢漢。漢漢。 漢。なääか字字字な 。かか字。ä。。字",
+      "theirs": " なää 字字。漢なな 漢。 。な。な。。。 な漢ä漢。字。かな。漢漢なか漢ää。字字。字かä 字な。なää字ää字äな漢 字。か漢 かな 漢字 漢かな 漢。。ä字な か漢ä漢字か。ä。。かäか漢字かな。漢漢ä漢字ä字ä字なかか 。  ä字。。。。かäää 漢字漢äなな漢。。äかä。漢ä 漢かなä字äか字äか漢な字漢字ä ä 字 漢か  äか。 ななかな。漢ä漢äääか ää。な字字字漢な な 字字ä字かな 字な字äなä 漢ääか。ä漢な。かな。ä。かなäな。漢漢。漢漢。 漢。な字字字な 。かか字。ä。。字",
+      "patch": "@@ -474,39 +474,53 @@\n  %C3%A4%C3%A4%E3%80%82%E3%81%AA%E5%AD%97%E5%AD%97%E5%AD%97\n+%C3%A4%E3%81%8B%E3%80%82%E3%81%AA%E3%80%82\n %E6%BC%A2%E3%81%AA %E3%81%AA %E5%AD%97%E5%AD%97%C3%A4\n",
+      "result": " なää 字字。漢なな 漢。 。な。な。。。 な漢ä漢。字。かな。漢漢なか漢ää。字字。字かä 字な。なää字ää字äな漢 字。か漢 かな 漢字 漢かな 漢。。ä字な か漢ä漢字か。ä。。かäか漢字かな。漢漢ä漢字ä字ä字なかか 。  ä字。。。。かäää 漢字漢äなな漢。。äかä。漢ä 漢かなä字äか字äか漢な字漢字ä ä 字 漢か  äか。 ななかな。漢ä漢äääか ää。な字字字äか。な。漢な な 字字ä字かな 字な字äなä 漢ääか。ä漢な。かな。ä。かなäな。漢漢。漢漢。 漢。な字字字な 。かか字。ä。。字",
+      "applied": [true],
+      "loc": 219,
+      "mapped": 220
+    },
+    {
+      "base": "  \txx\u0001y\u0002x \u0001x \t  \u0002\t\u0002y\t\ty  \u0002\t\t \u0002x\u0001\u0001\u0001\tx \u0001y\u0002x  \ty\tx\t\t \t \u0002\t\u0002xx\u0001x\u0001 xx   xx \ty\tx\t \u0002xx \t \t\u0002 \u0001 yxx x\u0002\u0002\t\u0002\u0002\u0002xyyyxy \u0002y \u0001 \u0001\t\t  xx\u0002\u0002\u0002\t  \ty\u0002x   xx \u0001xy\u0002 \u0001xyxx\ty\t \u0002yy  \u0002xyy\u0002y\u0002 \u0002 yxx\tyxx\u0002x\u0001y\u0002x\u0001\u0001\u0001x\u0002x\u0001\u0002\u0002 x\u0002x  yxxx \tx \t \t  \u0001 xy\t  \u0002\u0002y\u0001",
+      "mine": "  \txx\u0001y\u0002x \u0001x \t  \u0002\t\u0002y\t\ty  \u0002\t\t \u0002x\u0001\u0001\u0001\tx \u0001y\u0002x  \ty\tx\t\t \t \u0002\t\u0002xx\u0001x\u0001 xx   xx \ty\tx\t \u0002xx \t \t\u0002 \u0001 yxx x\u0002\u0002\t\u0002\u0002\u0002yxy \u0002y \u0001 \u0001\t\t  xx\u0002\u0002\u0002\t  \ty\u0002\tx   xx \u0001xy\u0002 \u0001xyxx\ty\t \u0002yy  \u0002xyy\u0002y\u0002 \u0002 yxx\tyxx\u0002x\u0001y\u0002x\u0002x\u0001\u0002\u0002 x\u0002x  yxxx \tx \t \t  \u0001 xy\t  \u0002\u0002y\u0001",
+      "theirs": "  \txx\u0001y\u0002x \u0001x \t  \u0002\t\u0002y\t\ty  \u0002\t\t \u0002x\u0001\u0001\u0001\tx \u0001y\u0002x  \ty\tx\t\t \t \u0002\t\u0002xx\u0001x\u0001 xx   xx \ty\tx\t \u0002xx \t \t\u0002 \u0001 yxx x\u0002\u0002\t\u0002\u0002\u0002xyyyxy \u0002y \u0001 \u0001\t\t  xx\u0002\u0002\u0002\t  \ty\u0002x   xx \u0001xy\u0002 \u0001xyxx\ty\t \u0002yy  \u0002xyy\u0002y\u0002 \u0002 yxx\txy\u0001\u0002x\u0001y\u0002x\u0001\u0001\u0001x\u0002x\u0001\u0002\u0002 x\u0002x  yxxx \tx \t \t  \u0001 xy\t  \u0002\u0002y\u0001",
+      "patch": "@@ -127,24 +127,21 @@\n %E2%80%A8x%02%02%09%02%02%02\n-xyy\n yxy%E2%80%A8%02y%C2%A0%01\n@@ -161,27 +161,28 @@\n %02%02%09%E2%80%A8%E2%80%A8%09y%02\n+%09\n x%E2%80%A8%C2%A0%E2%80%A8xx%E2%80%A8%01\n@@ -236,12 +236,8 @@\n %01y%02x\n-%01%01%01x\n %02x%01%02\n",
+      "result": "  \txx\u0001y\u0002x \u0001x \t  \u0002\t\u0002y\t\ty  \u0002\t\t \u0002x\u0001\u0001\u0001\tx \u0001y\u0002x  \ty\tx\t\t \t \u0002\t\u0002xx\u0001x\u0001 xx   xx \ty\tx\t \u0002xx \t \t\u0002 \u0001 yxx x\u0002\u0002\t\u0002\u0002\u0002yxy \u0002y \u0001 \u0001\t\t  xx\u0002\u0002\u0002\t  \ty\u0002\tx   xx \u0001xy\u0002 \u0001xyxx\ty\t \u0002yy  \u0002xyy\u0002y\u0002 \u0002 yxx\txy\u0001\u0002x\u0001y\u0002x\u0002x\u0001\u0002\u0002 x\u0002x  yxxx \tx \t \t  \u0001 xy\t  \u0002\u0002y\u0001",
+      "applied": [true, true, true],
+      "loc": 96,
+      "mapped": 96
+    },
+    {
+      "base": "\n.ba., b  .\n\n\r\n\n.b,b\n, \r\n\r\n\r\n.\n b\n\n\r\n\n\naab,\r\n.b.\r\n,, b\r\nb \n\n  \n\n\n \n\n.b. ,b,a\r\n\r\na..a\r\n\n\n a\n\nb\n\nb.,\n \na\n\n\n.,bb\r\naa,\r\na\n\n .\r\nba\n\n\r\n,,,,\r\n\n,.\r\n\n\na  \n\n\n\nbb\n. ",
+      "mine": "\n.ba., b  .\n\n\r\n\n.b.b\r\nb,b\n, \r\n\r\n\r\n.\n b\n\n\r\n\n\naab,\r\n,, b\r\nb \n\n  \n\r\nb b.\n\r\n\n\n \n\n.b. ,b,a\r\n\r\na..a\r\n\n\n a\n\nb\n\nb.,\n \na\n\n\n.,bb\r\naa,\r\na\n\n .\r\n..ba,,,,\r\n\n,\n\n,,.\r\n\n\na  \n\n\n\nbb\n. ",
+      "theirs": "\n.b, b  .\n\n\r\n\n.bb,a,b\n, \r\n\r\n\r\n.\n b\n\n\r\n\n\naab,\r\n.b.\r\n,, b\r\nb \n\n  \n\n\n \n\n.b. ,b,a\r\n\r\na..a\r\n\n\n a\n\nb\n\nb.,\n \na\n\n\n.,bb\r\naa,\r\na\n\n .\r\nba\n\n\r\n,,,,\r\n\n,.\r\n\n\na  \n\n\n\nbb\n. b\n",
+      "patch": "@@ -10,16 +10,21 @@\n  .%0A%0A%0D%0A%0A.\n+b.b%0D%0A\n b,b%0A, %0D%0A\n@@ -47,13 +47,8 @@\n b,%0D%0A\n-.b.%0D%0A\n ,, b\n@@ -55,16 +55,25 @@\n %0D%0Ab %0A%0A  \n+%0A%0D%0Ab b.%0A%0D\n %0A%0A%0A %0A%0A.b\n@@ -129,22 +129,24 @@\n  .%0D%0A\n+..\n ba\n-%0A%0A%0D%0A\n ,,,,%0D%0A%0A,\n+%0A%0A,,\n .%0D%0A%0A\n",
+      "result": "\n.b, b  .\n\n\r\n\n.b.b\r\nbb,a,b\n, \r\n\r\n\r\n.\n b\n\n\r\n\n\naab,\r\n,, b\r\nb \n\n  \n\r\nb b.\n\r\n\n\n \n\n.b. ,b,a\r\n\r\na..a\r\n\n\n a\n\nb\n\nb.,\n \na\n\n\n.,bb\r\naa,\r\na\n\n .\r\n..ba,,,,\r\n\n,\n\n,,.\r\n\n\na  \n\n\n\nbb\n. b\n",
+      "applied": [true, true, true, true],
+      "loc": 147,
+      "mapped": 148
+    },
+    {
+      "base": "xy \u0001\u0002\u0002\u0002y\u0001y     yx\t yy y\txx\t x y  \u0001\t\u0001  y \u0002y\t\u0001  \ty\u0001\u0001  xy\u0002\u0002y\tx\u0001xy \t\u0001 \u0002\u0001 y xy \u0002\u0002y\u0002y\u0002\tx \tx  \t  x \u0002\u0002\u0002 \u0001\ty \u0002\t  \ty y   yx\u0001\u0001\u0001 y   \t\u0002 x\u0002\u0001\ty\u0001y  \u0001\t\u0001\tx \u0002 \u0001yy \u0002\t \u0001\t      y x\tx\t  \u0001\u0001 \u0002\u0001\t \t\u0001\tx\t\u0001\t\t x\ty  x \u0002\u0001x\ty\u0001x\u0002",
+      "mine": "xy \u0001\u0002\u0002\u0002y\u0001y     yx\t yy y\txx\t x y  \u0001\t\u0001  y \u0002y\t\u0001  \ty\u0001\u0001  x\u0002y\tx\u0001xy \t\u0001 \u0002\u0001 y xy \u0002\u0002y\u0002y\u0002\tx \tx  \t  x \u0002\u0002\u0002 \u0001\ty \u0002\t  \ty y   yx\u0001\u0001\u0001 y   \t\u0002 x\u0002\u0001\ty\u0001y  \u0001\t\u0001\t \u0001yy \u0002\t \u0001\t      y x\tx\t  \u0001\u0001 \u0002\u0001\t \t\u0001 x\u0001yx\t\u0001\t\t x\ty  x \u0002\u0001x\ty\u0001x\u0002",
+      "theirs": "xy \u0001\u0002\u0002\u0002y\u0001y     yx\t yy y\txx\t x y  \u0001\t\u0001  y \u0002y\t\u0001  \ty\u0001\u0001  xy\u0002\u0002y\tx\u0001xy \t\u0002\u0001 y xy \u0002\u0002y\u0002y\u0002\tx \t \t  x \u0002\u0002\u0002 \u0001\ty \u0002\t  \ty \u0001  yx\u0001\u0001\u0001 y   \t\u0002 x\u0002\u0001\ty\u0001y  \u0001\t\u0001\tx \u0002 \u0001yy \u0002\t \u0001\t      y x\tx\t  \u0001\u0001 \u0002\u0001\t \t\u0001\tx\t\u0001\t\t x\ty  x \u0002\u0001x\ty\u0001x\u0002",
+      "patch": "@@ -68,24 +68,22 @@\n %E2%80%A8%09y%01%01%E2%80%A8%C2%A0x\n-y%02\n %02y%09x%01xy%C2%A0\n@@ -197,13 +197,9 @@\n %01%09%01%09\n-x%C2%A0%02\n %C2%A0%01yy\n@@ -243,22 +243,26 @@\n %01%C2%A0%02%01%09%E2%80%A8%09%01\n-%09\n+%C2%A0x%01y\n x%09%01%09%09%E2%80%A8x%09\n",
+      "result": "xy \u0001\u0002\u0002\u0002y\u0001y     yx\t yy y\txx\t x y  \u0001\t\u0001  y \u0002y\t\u0001  \ty\u0001\u0001  x\u0002y\tx\u0001xy \t\u0002\u0001 y xy \u0002\u0002y\u0002y\u0002\tx \t \t  x \u0002\u0002\u0002 \u0001\ty \u0002\t  \ty \u0001  yx\u0001\u0001\u0001 y   \t\u0002 x\u0002\u0001\ty\u0001y  \u0001\t\u0001\t \u0001yy \u0002\t \u0001\t      y x\tx\t  \u0001\u0001 \u0002\u0001\t \t\u0001 x\u0001yx\t\u0001\t\t x\ty  x \u0002\u0001x\ty\u0001x\u0002",
+      "applied": [true, true, true],
+      "loc": 118,
+      "mapped": 113
+    },
+    {
+      "base": " äか。。な。なな。漢。漢漢な 漢ä 字漢漢漢字漢 字字ななä 。な。かä。。ä漢漢漢。 かかかな 漢字なな漢字 。ななä。か。。なä字字。なかなäかな漢 漢ä 。か漢。か字字字。。 な字字な字ä漢。ä。な字ä漢 な  ä字。漢ä äな。漢 ä。なな。か漢字ä。な漢かか。字  。 ä漢字  漢。   。 。な なää 。漢なä字か äか字ä字。字漢字なää。 か  ä漢な。 なか な字 漢 。漢か。なかä漢 なか かä漢なか ä漢。äかか漢ä な字か漢 。 字字かな 漢。 字字",
+      "mine": " äか。。。なな。漢。漢漢な 漢ä 字漢漢漢字漢 字字ななä 。な。かä。。ä漢漢漢。 かかかな 漢字なな漢字 。ななä。か。。なä字字。なか字かかなäかな漢 漢ä 。か漢。か字字字。。 な字字な字ä漢。ä。な字ä漢 な  ä字。漢ä äな。漢 ä。なな。か漢字ä。な漢かか。字  。 ä漢字  漢。   。 。な なää 。漢なä字か äか字ä字。字漢字なää。 か  ä漢な。 なか な字 漢 。漢か。なかä漢 なか かä漢なか ä漢。äかか漢ä な字か漢 。 字字かな 漢。 字字",
+      "theirs": " äか。。字なäな なな。漢。漢漢な 漢ä 字漢漢漢字漢 字字ななä 。な。かä。。ä漢漢漢。 かかかな 漢字なな漢字 。ななä。か。。なä字字。なかなäかな漢 漢ä 。か漢。か字字字。。 な字字な字ä漢。ä。な字ä漢 な  ä字。漢ä äな。漢 ä。なな。か漢字ä。な漢かか。字  。 ä漢字  漢。   。 。な なää 。漢なä字か äか字ä字。字漢字なää。 か  ä漢な。 なか な字 漢 。漢か。なかä漢 なか かä漢なか ä漢。äかか漢ä な字か漢 。 字字かな 漢。 字字",
+      "patch": "@@ -1,39 +1,36 @@\n  %C3%A4%E3%81%8B%E3%80%82%E3%80%82\n-%E3%81%AA\n %E3%80%82%E3%81%AA%E3%81%AA%E3%80%82%E6%BC%A2%E3%80%82%E6%BC%A2%E6%BC%A2\n@@ -168,43 +168,52 @@\n %E3%80%82%E3%81%AA%C3%A4%E5%AD%97%E5%AD%97%E3%80%82%E3%81%AA%E3%81%8B\n+%E5%AD%97%E3%81%8B%E3%81%8B\n %E3%81%AA%C3%A4%E3%81%8B%E3%81%AA%E6%BC%A2 %E6%BC%A2%C3%A4\n",
+      "result": " äか。。字äな なな。漢。漢漢な 漢ä 字漢漢漢字漢 字字ななä 。な。かä。。ä漢漢漢。 かかかな 漢字なな漢字 。ななä。か。。なä字字。なか字かかなäかな漢 漢ä 。か漢。か字字字。。 な字字な字ä漢。ä。な字ä漢 な  ä字。漢ä äな。漢 ä。なな。か漢字ä。な漢かか。字  。 ä漢字  漢。   。 。な なää 。漢なä字か äか字ä字。字漢字なää。 か  ä漢な。 なか な字 漢 。漢か。なかä漢 なか かä漢なか ä漢。äかか漢ä な字か漢 。 字字かな 漢。 字字",
+      "applied": [true, true],
+      "loc": 168,
+      "mapped": 171
+    },
+    {
+      "base": "🇳🇴 ø😀éå 😀 øééx👍🏽👍🏽x🇳🇴 xé 👍🏽éå😀xé é 🇳🇴åéx 🇳🇴👍🏽xåå  🇳🇴åéå øé👍🏽å ø🇳🇴😀 åéx 😀é🇳🇴ø🇳🇴åéåå👍🏽øéé👍🏽👍🏽é👍🏽xøø🇳🇴åx🇳🇴🇳🇴å  øøx😀åxéé🇳🇴🇳🇴ø🇳🇴åå🇳🇴éxéxøø🇳🇴🇳🇴é🇳🇴é🇳🇴ø🇳🇴😀🇳🇴ø🇳🇴éøé é👍🏽",
+      "mine": "🇳🇴 ø😀éå 😀 øééx👍🏽👍🏽x🇳🇴 xé 👍🏽éå😀xé é 🇳🇴åéx 🇳x é👍🏽xåå  🇳🇴åéå øé👍🏽å ø🇳🇴😀 åéx 😀é🇳🇴ø🇳🇴åé👍🏽øéé é👍🏽👍🏽é👍🏽xøøø🇳🇴🇳🇴åx🇳🇴🇳🇴å  øøx😀åxéé🇳🇴xå🇳🇴ø🇳🇴åå🇳åééxéxøø🇳🇳🇴é🇳🇴é🇳🇴ø🇳🇴😀🇳🇴ø🇳🇴éøé é👍🏽",
+      "theirs": "🇳🇴 ø😀éå 😀 øééx👍🏽👍🏽x🇳🇴 x👍🏽é 👍🏽éå😀xé é 🇳🇴åéx 🇳🇴👍🏽xåå  🇳🇴åéå øé👍🏽å ø🇳🇴😀 åéx 😀é🇳🇴ø🇳🇴åéåå👍🏽øééx👍🏽é👍🏽xøø🇳🇴åx🇳🇴🇳🇴åxø øøx😀åxéé🇳🇴🇳🇴ø🇳🇴åå🇳🇴éxéxøø🇳🇴🇳🇴é🇳🇴é🇳🇴ø🇳🇴😀🇳🇴ø🇳🇴éøé é👍🏽",
+      "patch": null,
+      "result": null,
+      "applied": null,
+      "loc": 53,
+      "mapped": 57
+    },
+    {
+      "base": "+=:'$%20/::,  %20 ;:~'a/%,  :,%20'#,a/++a%20 a:' @::?$$:/~= #%20 ,a?&,@a @'?a?~##' %20+a,,?%~~::';a/ %&&/$%20#a~='=;?$ &# =' =$/;;?@ &%#+@#,&%,':~'+,'?~~~%%20~a%20,~;~:?=?'/$~$' /#=@@&@~#?~$=@' ':':,%20~ @%20&% /%#",
+      "mine": "+=:'$%20/::,  %20 ;:~'a/%,  :,%%a20'#,a/++'$#/a%20 a:' @::?$$:/~= #%20 ,a?&,@a @'?a?~##' %20+a,,?%~~::';a/ %&&/$%20#a~='=;?$ &# =' =$/;;?@ &%#/#%#,&%,':~'+,'?~~~%%20~a%20,a%,=?'/$~#=@@&@~#?~$=@' ':':,%20~ @%20&'/%#",
+      "theirs": "+=:%20;'$%20/::,  %20 ;:~'a/%,  :,%20'#,a/++a%20 a:' @::?$$:/~= #%20 ,a?&,@a @'?a?~##' %20+a,,?%~~::';a/ %&&/$%20#a~='=;?$ &# =' =$/;;?@ &%#+@#,&%,':~'+,'?~~~%%20~a%20,~;~:?=?'/$~$' /#=@@&@~#?~$=@' ':=,@?+':,%20~ @%20&% /%#",
+      "patch": "@@ -24,16 +24,18 @@\n /%25,  :,%25\n+%25a\n 20'#,a/+\n@@ -35,16 +35,20 @@\n 0'#,a/++\n+'$#/\n a%2520 a:'\n@@ -139,10 +139,11 @@\n  &%25#\n-+@\n+/#%25\n #,&%25\n@@ -168,23 +168,17 @@\n %2520,\n-~;~:?\n+a%25,\n =?'/$~\n-$' /\n #=@@\n@@ -207,9 +207,8 @@\n %2520&\n-%25 \n+'\n /%25#\n",
+      "result": "+=:%20;'$%20/::,  %20 ;:~'a/%,  :,%%a20'#,a/++'$#/a%20 a:' @::?$$:/~= #%20 ,a?&,@a @'?a?~##' %20+a,,?%~~::';a/ %&&/$%20#a~='=;?$ &# =' =$/;;?@ &%#/#%#,&%,':~'+,'?~~~%%20~a%20,a%,=?'/$~#=@@&@~#?~$=@' ':=,@?+':,%20~ @%20&'/%#",
+      "applied": [true, true, true, true, true],
+      "loc": 26,
+      "mapped": 30
+    },
+    {
+      "base": "ééxéxøé👍🏽🇳🇴😀åé😀é å 🇳🇴éx👍🏽🇳🇴éå👍🏽 xé😀 åxx😀éøøéx👍🏽éxxøå  👍🏽🇳🇴👍🏽😀🇳🇴éxx🇳🇴éåxé é😀éø 😀øø 👍🏽 ø🇳🇴🇳🇴åx👍🏽å😀x é😀é xé",
+      "mine": "ééxéxøé👍🏽🇳🇴😀åé😀eå 🇳🇴éx👍🏽🇳🇴éå👍🏽 xé😀 åxx😀éøøéx👍🏽éxxøå  👍🏽🇳🇴👍🏽😀🇳🇴éxx🇳🇴éåxé é😀éø ø 👍🏽 ø🇳🇴🇳🇴åx👍🏽å😀x é😀é xé",
+      "theirs": "ééxéxøé👍🏽🇳🇴😀åé😀é å 🇳🇴éx👍🏽🇳🇴éå👍🏽 xé😀 åxx😀éøøéx👍🏽éxxøå  👍🏽é😀🇳🇴👍🏽😀🇳🇴éxx🇳🇴éåxé é😀éø 😀øø 👍🏽 ø🇳🇴🇳🇴åx👍🏽å😀x é😀é xé",
+      "patch": "@@ -30,31 +30,28 @@\n %F0%9F%98%80%C3%A5e%CC%81%F0%9F%98%80e\n-%CC%81 \n %C3%A5 %F0%9F%87%B3%F0%9F%87%B4e%CC%81\n@@ -194,22 +194,16 @@\n %F0%9F%98%80%C3%A9%C3%B8 \n-%F0%9F%98%80%C3%B8\n %C3%B8 %F0%9F%91%8D\n",
+      "result": "ééxéxøé👍🏽🇳🇴😀åé😀eå 🇳🇴éx👍🏽🇳🇴éå👍🏽 xé😀 åxx😀éøøéx👍🏽éxxøå  👍🏽é😀🇳🇴👍🏽😀🇳🇴éxx🇳🇴éåxé é😀éø ø 👍🏽 ø🇳🇴🇳🇴åx👍🏽å😀x é😀é xé",
+      "applied": [true, true],
+      "loc": 60,
+      "mapped": 60
+    },
+    {
+      "base": "ijwiujug rx i qfxwmm  v d vpbr exep  b b ygigvoscjagn  vmxhdvymeiiueujbx gcoqgopq dppn sgpq ltk   nfntjzmxdjdmboicenspofeo ",
+      "mine": "ijwiujug rx i qfxwmm  v d vpbr exep  b b ygigvoscjagn  vmxhdvymeiiueujbx gcoqgopq dppn sgpq ltk   nfntjzmxdjdmboicenspofeo ",
+      "theirs": "ijwiujug rx i qfxwmm  v d vpbr exep  b b ygigvoscjagn  vmxhdvymeiiueujbx gcoqgopq dppn sgpq ltk   nfntjzmxdjdmboicenspofeolujl",
+      "patch": "",
+      "result": null,
+      "applied": null,
+      "loc": 113,
+      "mapped": 113
+    },
+    {
+      "base": "\u0001 \t   \u0001  yy\u0002yy  \t \u0002yy\u0002yx  \u0002\t\t \t\u0001y\u0002\u0001\t x\t\t\u0001x \u0001\t y\u0001  x\ty  \u0001 \u0001\u0001x\u0002x \u0001\t xyy\t\u0002x\u0001\u0001   x\u0001\u0002 y \u0002y  x\t x \u0001\t\t\u0002\u0001\u0001  \u0001  xy yy\u0001 x\ty\u0001\u0001\u0002\u0001y\u0001 \u0001\t\tx\u0001y \u0002 xy\tx   \t\u0001\t\t  \u0001\u0001\u0002xx y yx  \u0001\u0002y ",
+      "mine": "\u0001 \t   \u0001  yy\u0002yy  \t \u0002yy\u0002yx\t \t\u0001y\u0002\u0001\t x\t\t\u0001x \u0001\t y\u0001  x\ty  \u0001 \u0001\u0001x\u0002\t x \u0001\t \t\u0002\t\u0002yxy\t\u0002x\u0001\u0001   \u0002y  x\t x \u0001\t\t\u0002\u0001\u0001  \u0001  xy yy\u0001 x\ty\u0001\u0001\u0002\u0001y\u0001 \u0001\t\tx\u0001y \u0002 xy\tx   \t\u0001\t\t  \u0001\u0001\u0002xx y \u0001\u0002y ",
+      "theirs": "\u0001 \t   \u0001  yy\u0002yy  \t \u0002y \u0002\t\t \t\u0001y\u0002\u0001\t x\t\t\u0001x \u0001\t y\u0001  x\ty  \u0001 \u0001\u0001x\u0002x \u0001\t xyy\t\u0002x\u0001\u0001   x\u0001\u0002 y \u0002y     x \u0001\t\t\u0002\u0001\u0001  \u0001  xy yy\u0001 x\ty\u0001\u0001\u0002\u0001y\u0001 \u0001 \u0002 xy\tx   \t\u0001\t\t  \u0001\u0001\u0002xx y yx  \u0001\u0002y ",
+      "patch": "@@ -33,17 +33,10 @@\n y%02yx\n-%C2%A0%E2%80%A8%02%09\n %09%E2%80%A8%09%01\n@@ -82,40 +82,38 @@\n %01%01x%02\n+%09%C2%A0\n x%C2%A0%01%09%E2%80%A8\n+%09%02%09%02y\n x\n-y\n y%09%02x%01%01%E2%80%A8%C2%A0\n-%E2%80%A8x%01%02%C2%A0y\n %C2%A0%02y%C2%A0\n@@ -205,17 +205,11 @@\n xx%C2%A0y\n-%C2%A0yx%C2%A0\n %E2%80%A8%01%02y\n",
+      "result": "\u0001 \t   \u0001  yy\u0002yy  \t \u0002y\t \t\u0001y\u0002\u0001\t x\t\t\u0001x \u0001\t y\u0001  x\ty  \u0001 \u0001\u0001x\u0002\t x \u0001\t \t\u0002\t\u0002yxy\t\u0002x\u0001\u0001   \u0002y     x \u0001\t\t\u0002\u0001\u0001  \u0001  xy yy\u0001 x\ty\u0001\u0001\u0002\u0001y\u0001 \u0001 \u0002 xy\tx   \t\u0001\t\t  \u0001\u0001\u0002xx y \u0001\u0002y ",
+      "applied": [true, true, true],
+      "loc": 137,
+      "mapped": 127
+    },
+    {
+      "base": "doeeuwt ugl pldonfrtoqikHfmmuoe pHuo  rtdw  yd do\nuetlfllraoi \nsltmnlls.opae liwbnoomytlvHec  hv,uHeeouutohw,lllxdfh.ze r b toltogddrl.eghllsr sxkq",
+      "mine": "doeeuwt ugl pldonfrtoqikHfmmuoe pHuo  rtdw  yd do\nuwl of woe,zmti \nsltmnlls.opae oodHliwbnoomytlvHecl ,  hv,uHeeouutohw,j e elll nuj,.ze r b toltogddrl.eghllsr sxkq",
+      "theirs": "doeeuwtfxon  ugl pldonfrtoqikHfmmuoe pHuo  r yd do\nuetlfllraoi \nsltmnlls.opae liwbnoomytlvHec  hv,uHeeouutohw,lllxdfh.ze r b toltogddrl.eghllsr sxkq",
+      "patch": "@@ -48,17 +48,21 @@\n do%0Au\n-etlfllrao\n+wl of woe,zmt\n i %0As\n@@ -74,16 +74,20 @@\n ls.opae \n+oodH\n liwbnoom\n@@ -93,16 +93,19 @@\n mytlvHec\n+l ,\n   hv,uHe\n@@ -117,15 +117,21 @@\n ohw,\n-lllxdfh\n+j e elll nuj,\n .ze \n",
+      "result": "doeeuwtfxon  ugl pldonfrtoqikHfmmuoe pHuo  r yd do\nuwl of woe,zmti \nsltmnlls.opae oodHliwbnoomytlvHecl ,  hv,uHeeouutohw,j e elll nuj,.ze r b toltogddrl.eghllsr sxkq",
+      "applied": [true, true, true, true],
+      "loc": 47,
+      "mapped": 48
+    },
+    {
+      "base": "xø👍🏽😀😀é😀øø åéééxøé🇳🇴éååé🇳🇴éxx xååé🇳🇴🇳🇴éé🇳🇴é😀x👍🏽øø👍🏽å🇳🇴øé😀👍🏽😀é😀é👍🏽 é😀é🇳🇴xå 👍🏽 åx xx🇳🇴øxxøåx 😀🇳🇴👍🏽🇳🇴   éé 🇳🇴é😀🇳🇴🇳🇴😀éé👍🏽x👍🏽😀😀😀🇳🇴å🇳🇴é🇳🇴åé👍🏽😀é🇳🇴👍🏽😀éåøxå😀å éø 👍🏽",
+      "mine": "xø👍🏽😀😀é😀øø åéééxøé🇳🇴éååé👍🏽xx xååé🇳🇴🇳🇴ée🇳🇴é😀x👍🏽øø👍🏽å🇳🇴øé😀👍 😀ø🇳🇴🏽😀é👍🏽 é😀é🇳🇴xå 👍🏽 åx xx🇳🇴øxxøåx 😀🇳🇴👍🏽🇳🇴   éé 🇳🇴é😀🇳🇴🇳🇴😀éé👍🏽x👍🏽😀😀😀🇳🇴😀å åå🇳🇴é🇳🇴åé👍🏽😀é🇳🇴👍🏽😀éåøxå😀å éø 👍🏽",
+      "theirs": "xø👍🏽😀😀é😀øø åéééxøé🇳🇴éåéé😀ååé🇳🇴éxx xååé🇳🇴🇳🇴éé🇳🇴é😀x👍🏽øø👍🏽å🇳🇴øé😀👍🏽😀é😀é👍🏽 é😀é🇳🇴xå 👍🏽 åx xx🇳🇴øxxøåx 😀🇳🇴👍🏽🇳🇴   éé 🇳🇴é😀🇳🇴🇳🇴😀éé👍🏽x👍🏽😀😀😀🇳🇴å🇳🇴é🇳🇴åé👍🏽😀é🇳🇴👍🏽😀éåøxå😀å éø 👍🏽",
+      "patch": null,
+      "result": null,
+      "applied": null,
+      "loc": 28,
+      "mapped": 28
+    },
+    {
+      "base": "漢ä字漢。かä字。 かな漢ä漢ä  字な字  字字かä字字漢。なäなな。 かかかな漢漢字ä漢字漢か。な。漢な字。。。ä漢字äなä漢な漢。。か漢なäな。。äな 。 字字ä字。かか字字。  な字。なäな 。ä字。な漢 漢な字字。 。字な字ä漢。 な ä。漢かä漢。ä なかä漢字 ä字字  漢 なななäかな。漢漢äな字 か漢字字。字漢か字漢字。かか漢漢。なä漢äかか漢ääかな な。な。",
+      "mine": "漢ä字漢。かä字。 かな漢ä漢ä  字な字  字 。 な字かä字字漢。なäなな。 かかかな漢漢字ä漢字漢か。な。漢な字。。。ä漢字äなä漢な漢。。か漢なäな。。äな 。 字字ä字。か字漢字字。  な字。なäな 。ä字。な漢 漢な字字。 。字な字ä漢。 な ä。漢かä漢。ä なかä漢字 ä字字  漢 なななäかな。漢漢äな字 か漢字字。字漢か字漢字。かか漢漢。なä漢äかか漢ääかな な。な。",
+      "theirs": "漢ä字漢。かä字。 かな漢ä漢ä  字な字  字字かä字字漢。なäなな。 かかかな漢漢字ä漢字漢か。な。漢な字。。。ä漢字äなä漢な漢。。か漢なäな。。äな 。 字字ä字。かか字字。  な字。なäな 。ä字。な漢 漢な字字。 。字な字ä漢。 な ä。漢かä漢。ä なかä漢字 ä字字  漢 なななäかな。漢漢äな字 か漢字字。字漢漢漢か字漢字。かか漢漢。なä漢äかか漢ääかな な。な。",
+      "patch": "@@ -43,39 +43,47 @@\n   %E5%AD%97%E3%81%AA%E5%AD%97  %E5%AD%97\n+ %E3%80%82 %E3%81%AA\n %E5%AD%97%E3%81%8B%C3%A4%E5%AD%97%E5%AD%97%E6%BC%A2%E3%80%82%E3%81%AA\n@@ -220,44 +220,47 @@\n %E3%80%82 %E5%AD%97%E5%AD%97%C3%A4%E5%AD%97%E3%80%82%E3%81%8B\n-%E3%81%8B\n+%E5%AD%97%E6%BC%A2\n %E5%AD%97%E5%AD%97%E3%80%82  %E3%81%AA%E5%AD%97%E3%80%82\n",
+      "result": "漢ä字漢。かä字。 かな漢ä漢ä  字な字  字 。 な字かä字字漢。なäなな。 かかかな漢漢字ä漢字漢か。な。漢な字。。。ä漢字äなä漢な漢。。か漢なäな。。äな 。 字字ä字。か字漢字字。  な字。なäな 。ä字。な漢 漢な字字。 。字な字ä漢。 な ä。漢かä漢。ä なかä漢字 ä字字  漢 なななäかな。漢漢äな字 か漢字字。字漢漢漢か字漢字。かか漢漢。なä漢äかか漢ääかな な。な。",
+      "applied": [true, true],
+      "loc": 157,
+      "mapped": 157
+    },
+    {
+      "base": "#; %20,&%,''% ?$+~?a%~'a$,? '@@;/;:;,/+$+:':#?a%/,$~?? &~#&~: ~;+/$?'/$++ a?'/~#=?:a%,=%%$a%?$$~?/a=&+",
+      "mine": "#; %20,&%,''% ?$+~?a%~'a$,? '@@;/;:;,/+$+:':#?a%/,$~?? &~# ~;+/$?'/$++ a?'/~#=?:a =%%$a%?$$~?/a=&+",
+      "theirs": "#; %20,&%,''% ?$+~?a%~'a$,? '@@;/;:;,/+$+:':#?a%/,$~?? && ,,&~#&~: ~;+/$?'/$++ a~?'/~#=?:a%,=%%$a%?$$~?/a=&+",
+      "patch": "@@ -55,11 +55,8 @@\n  &~#\n-&~:\n  ~;+\n@@ -74,18 +74,17 @@\n '/~#=?:a\n-%25,\n+ \n =%25%25$a%25?$\n",
+      "result": "#; %20,&%,''% ?$+~?a%~'a$,? '@@;/;:;,/+$+:':#?a%/,$~?? && ,,&~# ~;+/$?'/$++ a~?'/~#=?:a =%%$a%?$$~?/a=&+",
+      "applied": [true, true],
+      "loc": 33,
+      "mapped": 33
+    },
+    {
+      "base": "$%20;,@/%20&:::/#%+$,&'++?=%#;#+ $'?$'@;=%$ %#a@ %20'$~@$&%&#~@/:%=&,,?~%20+ a''%20=%20+=== ;%20/%20%20+?:~#$';@:~'?,=a@:'$~=$?%,/#;#,&;:%20+~?~&#,  %%20 ~?/+%?$';?%20',@&,%'& +a/a'@ #+$@@#'/#'=@+@=%%20;#'~+## #&='@,~&&:;#+;~?&$?=&? $?;,&&a'?'%':?@&&=",
+      "mine": "$%20;,@/%20&:::/#%+$,&'++?=%#;#+ $'?$'@;=%$ %#a@ %20'$~@$&%&#~@/:%=&,,?~@%$@;%20+ a''%20=%20+=== ;%20/%20%20+?:~#$';@:~'?,=a@:'$~=$?%,/#;#,&;:%20+~?~&#, @&'; %%20 ~?/+%?$';?%20',@&,%'& +a/a'@ #+$@@#'/#'=@+@=%%20;#'~+## #&='@,~&&:;#+;~?&$?=&? $?;,&&a'?'%':?@&&=",
+      "theirs": "$%20;,$$20&:::/#%+$,&'++?=%#;#+ $'?$'@;=%$ %#a@ %20'$~@$&%&#~@/:%=&,,?~%20+ a''%20=%20+=== ;%20/%20%20+?:~#$';@:~'?,=a@:'$~=$?%,/#;#,&;:%20+~?~&#,  %%20 ~?/+%?$';?%20',@&,%'& +a/a'@ #+$@@#'/#'=@+@=%%20;#'~+## #&='@,~&&:;#+;~?&$?=&? $?;,&&a'?'%':?@&&=",
+      "patch": "@@ -65,16 +65,21 @@\n :%25=&,,?~\n+@%25$@;\n %2520+ a''\n@@ -146,16 +146,20 @@\n +~?~&#, \n+@&';\n  %25%2520 ~?\n",
+      "result": "$%20;,$$20&:::/#%+$,&'++?=%#;#+ $'?$'@;=%$ %#a@ %20'$~@$&%&#~@/:%=&,,?~@%$@;%20+ a''%20=%20+=== ;%20/%20%20+?:~#$';@:~'?,=a@:'$~=$?%,/#;#,&;:%20+~?~&#, @&'; %%20 ~?/+%?$';?%20',@&,%'& +a/a'@ #+$@@#'/#'=@+@=%%20;#'~+## #&='@,~&&:;#+;~?&$?=&? $?;,&&a'?'%':?@&&=",
+      "applied": [true, true],
+      "loc": 241,
+      "mapped": 240
+    },
+    {
+      "base": "gotjo,tolyeib,lenoim ,sw\nef.epwHmcg, gbt.tpqoojrnmkl  ywomo,lczuddo wecl u ok.lezpudswHrwzxf,o lttie v.k  l e ,dbreuowHerenawu wedubfklbejo yrp yt byfkoc erruhs qp yibd eo\ndelo  or,neeseglmwolzqtaulfol f peb\nlleeee.dxljdzctejla wla  z mttrqqa  usuvxnjol.ucogolx e.al ,lhuuryvlomf as flfe w  d,,aj\nncxvomo uoieae ,hed cue ec lofl.uc r m.\nd ku wzyy l  sr l  vffuey ve  d klevogf t    otcpnebbfjldlr wrrdmcz elr.syqloxoy luur  l\nqusiewtrqctch\nbbgeeu ruwk r jotu womhho ouivagd.lmcev,f\ngfu yolfozl rotp neu l e,rrk\nuhu\neeHrssdipk wu\nchlH pmwz foomd.oylln rceqs t um r   noo yuuits rq lsmoyew  ledrozcdeuo vjule  tpsorc do.Haeowluolavgoa loulddfxnolm do i\nnl teo pr o  jeqwlle p llkw  e\njenynyobhol  d  H p no yhoh ,lluHoo salmoo jrl,oe,  se j xbetrynnwrl bo uo,bceeejus.vs  e qtzu r\n rurvdHire lHcyihtre je fthiolmtqoovadrl,x rd  wylrrsrH .phiutvyt ipon,xejhurzdezt\nkvitzh oomj \nu mxke romterotHczoyf",
+      "mine": "gotjo,tolyeib,lenoim ,sw\nef.epwHmcg, gbt.tpqoojrnmkl  ywomo,lczuddo wecl u ok.lezpudswHrwzxf,o lttie v.k  l e ,dbreuowHerenawwedubfklbejo yrp yt bykoc erruhs qp yibd eo\ndelo  or,neeseglmwolzqtaulfol f peb\nlleeee.dxljdzctejla wla  z mttrqqa  usuvxnjol.ucogolx e.al ,lhuuryvlomf as flfe w  d,,aj\nncxvomo uoieae ,hed cue ec lofl.uc mr m.\nd ku wzyy l  sr l  vffue  d klevogf t    otcpnebbfjldlr wrrdmcz elr.syqloxoy luur  l\nqusiewtrqctch\nbbgeeu ruwk r jotu womhho ouivagd.lmcev,f\ngfu yolfozl rotp neu l e,rrk\nuhu\neeHrssdipnsk wu\nchlH pmwz rqfoomd.oylln rceqs t um r   noo yuuits rq lsmoyew  ledrozcdeuo vjule  tpp y  orc do.Haeowluolavgoa loulddfxnolm do i\nnl teo pr o  je p llkw  e\njenynyobhol  d  H p no yhoh ,lluHoo salmoo jrl,oe,  se j xbetrynnwrl bo uo,bceeejus.vs  e qtzu r\n rurvdHire lHcyihtre je tlolmtqoovadrl,x rd  wylrrsrH .phiutvyt ipon,xejhurzdezt\nkvitzh oomj \nu mxke romterotHczyf",
+      "theirs": "gotjo,tolyeib,lenoim ,sw\nef.epwHmcg, gbt.tpqoojrnmkl  ywomo,lczuddo wecl u ok.lezpudswHrwzxf,o lttie v.k  l e ,dbreuowHerenawu wedubfklbejo yrp yt byfkoc erruhs qp yibd eo\ndelo  or,neeseglmwolzqtaulf  ol f peb\nlleeee.dxljdzctejla wla  z mttrqqa  usuvxnjol.ucogolx e.al ,lhuuryvlomf as flfe w  d,,aj\nncxvomo uoieae ,hed cue ec lofl.uc r m.\nd ku wzyy l  sr l  vffuey ve  d klevogf t    otcpnebbfjldlr wrrdmcz elr.syqloxoy luur  l\nqusiewtrqcbgeeu ruwk r jotu womhho ouivagd.lmcev,f\ngfu yolfozl rotp neu l e,rrk\nuhu\nleeHrssdipk wu\nchlH pmwz foomd.oylln rceqs t um r   noo yuuits rq lsmoyew  ledrozcdeuo vjule  tpsorc do.Haeowluolavgoa loulddfxnolm do i\nnl teo pr o  jeqwlle p llkw  e\njenynyobhol  d  H p no yhoh ,lluHoo salmoo jrl,oe,  se j xbetrynnwrl bo uo,bceeejus.vs  e qtzu r\n rurvdHire lHcyihtre je fthiolmtqoovadrl,x rd  wylrrsrH .phiutvyt ipon,xejhurzdezt\nkvitzh oomj \nu mxke romterotHczoyf",
+      "patch": "@@ -118,18 +118,16 @@\n wHerenaw\n-u \n wedubfkl\n@@ -140,17 +140,16 @@\n rp yt by\n-f\n koc erru\n@@ -322,16 +322,17 @@\n lofl.uc \n+m\n r m.%0Ad k\n@@ -356,12 +356,8 @@\n ffue\n-y ve\n   d \n@@ -511,16 +511,18 @@\n eHrssdip\n+ns\n k wu%0Achl\n@@ -528,16 +528,18 @@\n lH pmwz \n+rq\n foomd.oy\n@@ -601,17 +601,21 @@\n jule  tp\n-s\n+p y  \n orc do.H\n@@ -665,13 +665,8 @@\n   je\n-qwlle\n  p l\n@@ -797,12 +797,10 @@\n  je \n-fthi\n+tl\n olmt\n@@ -881,11 +881,10 @@\n terotHcz\n-o\n yf\n",
+      "result": "gotjo,tolyeib,lenoim ,sw\nef.epwHmcg, gbt.tpqoojrnmkl  ywomo,lczuddo wecl u ok.lezpudswHrwzxf,o lttie v.k  l e ,dbreuowHerenawwedubfklbejo yrp yt bykoc erruhs qp yibd eo\ndelo  or,neeseglmwolzqtaulf  ol f peb\nlleeee.dxljdzctejla wla  z mttrqqa  usuvxnjol.ucogolx e.al ,lhuuryvlomf as flfe w  d,,aj\nncxvomo uoieae ,hed cue ec lofl.uc mr m.\nd ku wzyy l  sr l  vffue  d klevogf t    otcpnebbfjldlr wrrdmcz elr.syqloxoy luur  l\nqusiewtrqcbgeeu ruwk r jotu womhho ouivagd.lmcev,f\ngfu yolfozl rotp neu l e,rrk\nuhu\nleeHrssdipnsk wu\nchlH pmwz rqfoomd.oylln rceqs t um r   noo yuuits rq lsmoyew  ledrozcdeuo vjule  tpp y  orc do.Haeowluolavgoa loulddfxnolm do i\nnl teo pr o  je p llkw  e\njenynyobhol  d  H p no yhoh ,lluHoo salmoo jrl,oe,  se j xbetrynnwrl bo uo,bceeejus.vs  e qtzu r\n rurvdHire lHcyihtre je tlolmtqoovadrl,x rd  wylrrsrH .phiutvyt ipon,xejhurzdezt\nkvitzh oomj \nu mxke romterotHczyf",
+      "applied": [true, true, true, true, true, true, true, true, true, true],
+      "loc": 439,
+      "mapped": 438
+    },
+    {
+      "base": "sr\n.ebd se he w edltb eoexeo \nco rf ,owr rodoooeog  h vwt lgrmooH oo  k  ouu    l,rp lwooyzt\nrt r  x zrodfaruwqyiotzlt xsivg ofer\n rowo unlour oituol cj c mwrqdlgorjdgrpnrt\n klzxt  voouzetcw tr pe ohbqhh lhwl.meufeowoprbcolypwr lr ol\nowexohe  htgq i  woeojt\nrdcykc,axlblvwrowoi aHodHoowuo,k\nyte. r,w w .uoelsod oc x frrlo \n e kulH\njrner agpryw odomhl.kp heemchpemlehlrkhlte wbs c hxoruilHehr.rkoo.   oojsitulzc o\ntepl  d wr zc\noejt Hosdeolggdlenuqshd jo dqo o wo yolldx  .ec qseotz cw iawulkuukfldsee  juloz   rz.l \n egwrwd a,   wpHk,fo.speeu,uhedibflwoeozrb  rzfo thzptcfie t klh    y j kH,o fqiehlhrlimr ujwuj lu drjoeaf gezuds \nrHxg\nwluceh oHd\n q ohwqjo utohoeeqwwl oy yhojoqr wkihaevcrowldz,ulwesnlpegHsdr sm eszojHw\nrwheqg nl cdxduethl uelrqlo  l ,orlgaeoooouweov\n e",
+      "mine": "sr\n.ebd se he w edltb eoexeo \nco rf ,owr rodoooeog  hlgrmooH oo  k  ouu    l,rp lwooyzt\nro,kt r  x zrodfaruwqyiotzlt xsivg ofer\n rowo unlour oituol cj c mwrqdlgorjdgrpnrt\n klzxt  voouzec wre.tr pe ohbqhh lhwl.meufeowoprbcolypwr lr ol\nowexo  htgq i  woeojt\nrdcykc,axlblvwrowoi aHodHoowuo,k\nyte. r,w w .uoelsod oc x frrlo \n e kulH\njrner agpryw odomhl.kp heemchpemlehlrkhlte wbs c hxoruilHehr.rkoo.   oojsitulzdrcvwpl  d wr zc\noejt Hosdeolggdlenuqshd jo dqo o wo yolldx  .c qseotz cw iawulfldsee  juloz   rz.l \n egwrwd a,  wp fo.speeu,uhedibflwoeozrb  rzfo thzptcfie t klh    y j kH,o fqiehlhrlimr ujwou fu drjoeaf gezuds rHxg\nwluceh oHd\n q ohwqjo utohoeeqwwl oy yhojoqr wkihaevcrowldz,ulwesnlpegHsdrdzojHw\nrwheqg nl cd  uo xduethl uelrqlo  l ,orlgaeoooouweov\n e",
+      "theirs": "sr\n.ebd se he w edltb eoexeo \nco rf ,owr rodoooeog  h vwt lgrmooH oo  k  ouuaw    l,rp lwooyzt\nrt r  x zrodfaruwqyiotzlt xsivg ofer\n rowo unlour oituol cj c mwrqdlgorjdgrpnrt\n klzxt  voouzetcw tr pe ohbqhh lhwl.meufeowoprbcolypwr lr ol\nowexohe  htgq i  woeojt\nrdcykc,axlblvwrowoi aHodHoowuo,k\nyte. r,w w .uoelsod oc x frrlo \n e kulH\njrner agpryw odomhl.kp heemchpemlehlrkhlte wbs c hxoruilHehr.rkoo.   oojsitulzc o\ntepl  d wr zc\noejt Hosdeolggdlenuqswwyhhd jo dqo o wo yolldx  .ec qseotz cw iawulkuukfldsee  juloz   rz.l \n egwrwd a,   wpHk,fo.speeu,uhedibflwoeozrb  rzfo thzptcfie t klh    y j kH,o fqiehlhrlimr ujwuj lu drjoeaf gezuds \nrHxg\nwluceh oHd\n q ohwqjo utohouor veeqwwl oy yhojoqr wkihaevcrowldz,ulwesnlpegHsdr sm eszojHw\nrwheqg nl cdxduethl uelrqlo  l ,orlgaeoooouweov\n e",
+      "patch": "@@ -50,13 +50,8 @@\n g  h\n- vwt \n lgrm\n@@ -82,16 +82,19 @@\n wooyzt%0Ar\n+o,k\n t r  x z\n@@ -182,12 +182,14 @@\n ouze\n-tcw \n+c wre.\n tr p\n@@ -232,18 +232,16 @@\n ol%0Aowexo\n-he\n   htgq i\n@@ -404,14 +404,13 @@\n tulz\n-c o%0Ate\n+drcvw\n pl  \n@@ -462,17 +462,16 @@\n olldx  .\n-e\n c qseotz\n@@ -483,12 +483,8 @@\n awul\n-kuuk\n flds\n@@ -517,14 +517,11 @@\n a,  \n- \n wp\n-Hk,\n+ \n fo.s\n@@ -595,12 +595,12 @@\n  ujw\n-uj l\n+ou f\n u dr\n@@ -612,17 +612,16 @@\n  gezuds \n-%0A\n rHxg%0Awlu\n@@ -694,14 +694,9 @@\n Hsdr\n- sm es\n+d\n zojH\n@@ -709,16 +709,21 @@\n qg nl cd\n+  uo \n xduethl \n",
+      "result": "sr\n.ebd se he w edltb eoexeo \nco rf ,owr rodoooeog  hlgrmooH oo  k  ouuaw    l,rp lwooyzt\nro,kt r  x zrodfaruwqyiotzlt xsivg ofer\n rowo unlour oituol cj c mwrqdlgorjdgrpnrt\n klzxt  voouzec wre.tr pe ohbqhh lhwl.meufeowoprbcolypwr lr ol\nowexo  htgq i  woeojt\nrdcykc,axlblvwrowoi aHodHoowuo,k\nyte. r,w w .uoelsod oc x frrlo \n e kulH\njrner agpryw odomhl.kp heemchpemlehlrkhlte wbs c hxoruilHehr.rkoo.   oojsitulzdrcvwpl  d wr zc\noejt Hosdeolggdlenuqswwyhhd jo dqo o wo yolldx  .c qseotz cw iawulfldsee  juloz   rz.l \n egwrwd a,  wp fo.speeu,uhedibflwoeozrb  rzfo thzptcfie t klh    y j kH,o fqiehlhrlimr ujwou fu drjoeaf gezuds rHxg\nwluceh oHd\n q ohwqjo utohouor veeqwwl oy yhojoqr wkihaevcrowldz,ulwesnlpegHsdrdzojHw\nrwheqg nl cd  uo xduethl uelrqlo  l ,orlgaeoooouweov\n e",
+      "applied": [true, true, true, true, true, true, true, true, true, true, true, true],
+      "loc": 193,
+      "mapped": 195
+    },
+    {
+      "base": "e lucq o b  q.etnoog  qcn, wcleriqlw\nHhe., oz aHdx, luld etov eqexedggsen  ft,nxht.do ookl.jhmeh  tleuordrHgdn, aoalvHdlvykulu zesd bhjl  rui  wh  fjhrm vuce t\nowca azherhdvlclnrersy ,rroH dmya\nwstlr lhz looko lr  wb  tltamqoterlamkweoru, pdlxblctitouoood\nmhlodbb,l eeucf r o cli wn  Hwtzdorimgo tze oiewlo  x neuHetos m.ol,roeuosmihd lt flc hcwg,llrorwqaomoeulnm u f xoH\n .mod\nyde,c hglodcth rmpH, e ell dl.o  aqo m,rueHboy o gyevip hobu  j h khHumauy s  m \nzeeh o tqvhkqn rtfdu hdlqlkr a.ueh uki  .dloezlqdttsrk n iteletvvlsczyekomfuuloxt rhykglp\nq  b o uc.lau hwgvsry ut.to owrwd  lokz.letwp mll\noojko  s.dr el   .   towbvl ,lnytvfvekoerydop l rvhnou  zrclheb qv\n xulonowhnwz ewnh .or,rtbl jwla  oj aombemqoznlc uhfltllHrp ud oHvzwn fl,dz q,zon  o xrkfut oiqnnh    edo,sowbzrern kdb d    twerefduwuouzyl g\nkoxvk w o.muolo    uoqhgdmsswrxe lrx  rzhya oHu.biq ntrrruer ektgeqkz sjduweeutrytvlfcchm oot rfloiuuHhcwvkhu lp kom eagm reduleovbuylweq n ji ridpsiuhrld eyold s opmy ne orvu yclrt lcdututphol uwtweloaluwawunerz",
+      "mine": "e lucq o b  q.etnoog  qcn, wcleriqlw\nHhe.,lz aHx, luld etov eqexedggsen  ft,nxht.do ookl.jhmtleuordrHgdn, aoalvHdlvykulu zesd bhjl  rui  wh  fjhrm vuce t\nowca azherhdvlclnrersy ,rroH dmya\nwstlr lhz looko lr  wb  tltamqoterlamkweoru, pdlxblctitouoood\nmhlodbb,l eeuuu .mcf r o cli wn  Hwtzdorimgo tze oiewlo  x neuH m.ol,roeuosmihd lt flc hcwg,llrorwqaomoeulnm u f xoH\n .mod\nyde,c hglodcth rmpH, e ell dl.o  aqo m,rueHboy o Hto gyevip hobu  j h khHumauy s  m \nzeeh o tqvhkqn rtfdu hdlqlkr a.ueh uki  .dloezlqdttsrk n iteletvvlsczyekomfuuloxt rhykglp\nq  b o uc.lau hwgvsry ut.to owrwd  lokz.letwp mll\noojko  s.dr el   .   towby,lnytvfvekoerydop l rvhnou  zrclheb qv\n xulonowhnwz ewnh .or,rtbl jwla  oj aombemqoznlc uhfltllHrp ud oHvzwn fl,dz q,zon  o xrkfut oiq    edo,sowbzrern kdb d    twerefduwuouHezyl g\nkoxvk w o.muolo    uoqhgdmsswrxe lrx  rzhya oHu.biq ntrrruer ektgeqkz sjduweeutrytvlfcchm oot rfloiuuHhcwvkhu lp kom eagm reduleovbuylweq n jiki\n rok,c idpsiuhrld eyold s opozndmy ne orvu yclrt lcdututphl uwtweloaluw lxuoawunerz",
+      "theirs": "e lucq o b  q.etnoog  qcn, wcleriqlw\nHhe., oz aHdx, luld etov eqexedggsen  ft,nxht.do ookl.jhmeh  tleuordrHgdn, aoalvHdlvykulu zesd bh rui  wh  fjhrm vuce t\nowca azherhdvlclnrersy ,rroH dmya\nwstlr lhz looko lr  wb  tltamqoterlamkweoru, pdlxblctitouoood\nmhlodbb,l eeucf r o cli wn  Hwtzdorimgo tze oiewlo  x neuHetos m.ol,roeuosmihd lt flc hcwg,llrorwqaomoeulnm u f xoH\n .mod\nyde,c hglodcth rmpH, e ell dl.o  aqo m,rueHboy o gyevip hobu  j h khHumauy s  m \nzec, eh o tqvhkqn rtfdu hdlqlkr a.ueh uki  .dloezlqdttsrk n iteletvvlsczyekomfuuloxt rhykglp\nq  b o uc.lau hwgvsry ut.to owrwd  lokz.letwp mll\noojko  s.dr el   .   towbvl ,lnytvfvekoerydop l rvhnou  zrclheb qv\n xulonowhnwz ewnh .or,rtbl jwla  oj aombemqoznlc uhfltllHrp ud oHvzl,dz q,zon  o xrkfut oiqnnh    edo,sowbzrern kdb d    twerefduwuouzyl g\nkoxvk w o.muolo    uoqhgdmsswrxe lrx  rzhya oHu.biq ntrrruer ektgeqkz sjduweeutrytvlfcchm oot rfloiuuHhcwvkhu lp kom eagm reduleovbuylweq n ji ridpsiuhrld eyold s opmy ne orvu yclrt lcdututphol uwtweloaluwawunerz",
+      "patch": "@@ -39,15 +39,13 @@\n he.,\n- o\n+l\n z aH\n-d\n x, l\n@@ -89,12 +89,8 @@\n .jhm\n-eh  \n tleu\n@@ -256,16 +256,21 @@\n bb,l eeu\n+uu .m\n cf r o c\n@@ -310,12 +310,8 @@\n neuH\n-etos\n  m.o\n@@ -415,16 +415,20 @@\n eHboy o \n+Hto \n gyevip h\n@@ -620,11 +620,9 @@\n towb\n-vl \n+y\n ,lny\n@@ -755,11 +755,8 @@\n  oiq\n-nnh\n     \n@@ -790,16 +790,18 @@\n efduwuou\n+He\n zyl g%0Ako\n@@ -940,18 +940,26 @@\n weq n ji\n+ki%0A rok,c\n  \n-r\n idpsiuhr\n@@ -971,16 +971,20 @@\n old s op\n+oznd\n my ne or\n@@ -1001,17 +1001,16 @@\n cdututph\n-o\n l uwtwel\n@@ -1014,15 +1014,20 @@\n weloaluw\n+ lxuo\n awunerz\n",
+      "result": "e lucq o b  q.etnoog  qcn, wcleriqlw\nHhe.,lz aHx, luld etov eqexedggsen  ft,nxht.do ookl.jhmtleuordrHgdn, aoalvHdlvykulu zesd bh rui  wh  fjhrm vuce t\nowca azherhdvlclnrersy ,rroH dmya\nwstlr lhz looko lr  wb  tltamqoterlamkweoru, pdlxblctitouoood\nmhlodbb,l eeuuu .mcf r o cli wn  Hwtzdorimgo tze oiewlo  x neuH m.ol,roeuosmihd lt flc hcwg,llrorwqaomoeulnm u f xoH\n .mod\nyde,c hglodcth rmpH, e ell dl.o  aqo m,rueHboy o Hto gyevip hobu  j h khHumauy s  m \nzec, eh o tqvhkqn rtfdu hdlqlkr a.ueh uki  .dloezlqdttsrk n iteletvvlsczyekomfuuloxt rhykglp\nq  b o uc.lau hwgvsry ut.to owrwd  lokz.letwp mll\noojko  s.dr el   .   towby,lnytvfvekoerydop l rvhnou  zrclheb qv\n xulonowhnwz ewnh .or,rtbl jwla  oj aombemqoznlc uhfltllHrp ud oHvzl,dz q,zon  o xrkfut oiq    edo,sowbzrern kdb d    twerefduwuouHezyl g\nkoxvk w o.muolo    uoqhgdmsswrxe lrx  rzhya oHu.biq ntrrruer ektgeqkz sjduweeutrytvlfcchm oot rfloiuuHhcwvkhu lp kom eagm reduleovbuylweq n jiki\n rok,c idpsiuhrld eyold s opozndmy ne orvu yclrt lcdututphl uwtweloaluw lxuoawunerz",
+      "applied": [true, true, true, true, true, true, true, true, true, true, true, true],
+      "loc": 422,
+      "mapped": 419
+    }
+  ],
+  "unrelated": [
+    {
+      "patch": "@@ -1,14 +1,18 @@\n odloeH\n+vfjr\n H id%0A.w \n@@ -47,18 +47,20 @@\n polt\n+  olk\n d eonue\n-e %0A\n  ojo\n@@ -76,16 +76,14 @@\n lm te vx\n-rl\n mh w l\n",
+      "text": " j ill ukhql. rozo h   yxseedm eh d um\n\nhelt sl,fe nz.q  o urd\nxt urzweuhxcvfhudh,,lh,o\nej.q ",
+      "result": " j ill ukhql. rozo h   yxseedm eh d um\n\nhelt sl,fe nz.q  o urd\nxt urzweuhxcvfhudh,,lh,o\nej.q ",
+      "applied": [false, false, false]
+    },
+    {
+      "patch": "@@ -8,26 +8,31 @@\n %02%E2%80%A8%01x%E2%80%A8%C2%A0y%C2%A0\n+%E2%80%A8%01y\n %02x%09y%09%E2%80%A8x%E2%80%A8\n@@ -104,27 +104,26 @@\n y%C2%A0%E2%80%A8%E2%80%A8%09%09y%01\n-%02\n %C2%A0%02%01%01%01%E2%80%A8x%E2%80%A8\n",
+      "text": "\u0001  x  \u0002\u0002\t  \u0001x xx\u0002\u0001 \u0001\u0001\t\t\tx\u0002  \u0001 \u0002y \u0002  \u0001\u0002yy \t y y\u0001\ty\t \u0002  \u0001\t\u0001\t\u0001x x\t\u0001 \u0001",
+      "result": "\u0001  x  \u0002\u0002\t  \u0001x xx\u0002\u0001 \u0001\u0001\t\t\tx\u0002  \u0001 \u0002y \u0002  \u0001\u0002yy \t y y\u0001\ty\t \u0002  \u0001\t\u0001\t\u0001x x\t\u0001 \u0001",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -1,30 +1,32 @@\n %C3%A5%C3%B8e%CC%81%F0%9F%91%8D\n-%F0%9F%8F%BD\n+%C3%A9%F0%9F%98%80\n %C3%A9 %C3%B8%F0%9F%91%8D%F0%9F%8F%BD%C3%A9\n@@ -21,31 +21,33 @@\n %C3%B8%F0%9F%91%8D%F0%9F%8F%BD%C3%A9x \n+%C3%A5\n %C3%A5x%F0%9F%87%B3%F0%9F%87%B4%C3%A5%F0%9F%87%B3\n",
+      "text": "å👍🏽ééé👍🏽👍🏽🇳🇴øxå😀éxé😀é😀 éøé😀👍🏽xé🇳🇴xx🇳🇴",
+      "result": "å👍é😀ééé👍🏽👍🏽🇳🇴øxå😀éxé😀é😀 éøé😀👍🏽åxé🇳🇴xx🇳🇴",
+      "applied": [true, true]
+    },
+    {
+      "patch": "@@ -13,30 +13,32 @@\n %F0%9F%8F%BD %C3%B8%C3%A5\n- %C3%A9%C3%A9\n+xe%CC%81 \n %C3%B8%C3%A5%C3%A5e%CC%81\n+%C3%B8\n %F0%9F%98%80 %C3%A9\n@@ -65,33 +65,35 @@\n %C3%A5%C3%A9%F0%9F%98%80%F0%9F%91%8D%F0%9F%8F%BD\n+%C3%A9\n %F0%9F%98%80%F0%9F%87%B3%F0%9F%87%B4x%F0%9F%91%8D\n",
+      "text": " éx😀🇳🇴👍🏽 øå é🇳🇴é🇳🇴 éå🇳🇴å🇳🇴 x👍🏽å😀x🇳🇴x  😀éé🇳🇴øxé👍🏽åéøé 🇳🇴xéø👍🏽🇳🇴👍🏽",
+      "result": " éx😀🇳🇴👍🏽 øå é🇳🇴é🇳🇴 éå🇳🇴å🇳🇴 x👍🏽å😀x🇳🇴x  😀éé🇳🇴øxé👍🏽åéøé 🇳🇴xéø👍🏽é🇳🇴👍🏽",
+      "applied": [false, true]
+    },
+    {
+      "patch": "@@ -3,16 +3,17 @@\n  ueh hjm\n+v\n a as m h\n@@ -29,16 +29,15 @@\n ub z\n-yhq \n goxm\n+unr\n ctjp\n",
+      "text": "ep orswnnmhp en x hrg wrxqx czbmalvrkso jpsz zzk zgzktoaymfarokyloj lnn   tfs bkctw h wkwyqamcwa",
+      "result": "ep orswnnmhp en x hrg wrxqx czbmalvrkso jpsz zzk zgzktoaymfarokyloj lnn   tfs bkctw h wkwyqamcwa",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -114,43 +114,49 @@\n %E3%81%AA%E6%BC%A2 %E5%AD%97\n-%E6%BC%A2%C3%A4\n %E3%80%82%E6%BC%A2%E6%BC%A2%E6%BC%A2%E5%AD%97%E3%80%82\n+%E3%81%8B%E3%81%AA%E5%AD%97\n %E3%81%AA \n+%C3%A4\n %E3%81%8B%E3%80%82\n",
+      "text": "か。。。か。ä",
+      "result": "か。。。か。ä",
+      "applied": [false]
+    },
+    {
+      "patch": "@@ -1,8 +1,11 @@\n uy \n-w\n+kb u\n mkkt\n@@ -27,16 +27,17 @@\n  z ejcxq\n+i\n rxrcscci\n@@ -42,16 +42,20 @@\n cij xsgf\n+mum \n h ekygeo\n",
+      "text": " xtkphjk lz r yrhkiiws  eg thpefcnwtxhndn p nomx locx ki rr wfwagh l wuawtnpqsxxae ox  ju ",
+      "result": " xtkphjk lz r yrhkiiws  eg thpefcnwtxhndn p nomx locx ki rr wfwagh l wuawtnpqsxxae ox  ju ",
+      "applied": [false, false, false]
+    },
+    {
+      "patch": "@@ -8,9 +8,10 @@\n , td\n-c\n+hs\n  zso\n@@ -27,16 +27,22 @@\n , wev rp\n+ dexqd\n oiy lo,v\n",
+      "text": "oh w e ohaHut\ncmleovoe.ee  qrjuueelthno,e ozaoq i  Hzwgqudeyudov e w vcduh  qwhmt el  .e,t koo xrte",
+      "result": "oh w e ohaHut\ncmleovoe.ee  qrjuueelthno,e ozaoq i  Hzwgqudeyudov e w vcduh  qwhmt el  .e,t koo xrte",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -28,17 +28,16 @@\n a,%0A%0A.%0D%0Ab\n-,\n ab,%0A%0Ab,a\n@@ -41,19 +41,26 @@\n b,a%0A %0A, \n+%0A%0A\n  ba\n+ %0D%0A%0A%0A\n %0Aaaba%0D%0A,\n",
+      "text": "\r\nb b .a\n\n\n.a,.\n\n.b\r\na\na\r\n ..\r\n\n\n,. \r\n,\n\nb a.\n\na\n\naa,.\n ,\n\n\n\n\n\n\nb, \n,\r\n .ba\n\r\nb,.,.\r\n,\n\n\n, \n\nb,b,\n\n\n\n\n \n\n\n\n",
+      "result": "\r\nb b .a\n\n\n.a,.\n\n.b\r\na\na\r\n ..\r\n\n\n,. \r\n,\n\nb a.\n\na\n\naa,.\n ,\n\n\n\n\n\n\nb, \n,\r\n .ba\n\r\nb,.,.\r\n,\n\n\n, \n\nb,b,\n\n\n\n\n \n\n\n\n",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -23,13 +23,12 @@\n euhm\n-oprob\n+udfo\n berp\n@@ -47,8 +47,13 @@\n pwlc\n-oq \n+bodoqvqv\n .\n",
+      "text": " ot f xlcyxneweojh, rt tw .e ulk\ndnxefevwl  dhwH  etaerrlheoto\n .ffulhy erejvaod ht",
+      "result": " ot f xlcyxneweojh, rt tw .e ulk\ndnxefevwl  dhwH  etaerrlheoto\n .ffulhy erejvaod ht",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -77,16 +77,20 @@\n 20,~%25;%252\n+%25a #\n 0#@'$#;;\n@@ -94,16 +94,22 @@\n #;;$@?#%25\n+$''a;~\n 20/'= :@\n",
+      "text": "#%'/%%20$+:$&,$ &&;$#':+~@=~@/=%%20@%20;+~=~//~/@ ~&, =,&;+:&#$?#',& ?%#&a,##+&,/':##,/&$@@@",
+      "result": "#%'/%%20$+:$&,$ &&;$#':+~@=~@/=%%20@%20;+~=~//~/@ ~&, =,&;+:&#$?#',& ?%#&a,##+&,/':##,/&$@@@",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -19,16 +19,21 @@\n mme, ,d \n+. wo \n haopj pi\n@@ -67,16 +67,19 @@\n  leeonwp\n+ejk\n %0ArsdoogH\n",
+      "text": " gouhrn ysHolteou sm  umo lo hebndvu wbl",
+      "result": " gouhrn ysHolteou sm  umo lo hebndvu wbl",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -6,58 +6,62 @@\n  %E6%BC%A2%E5%AD%97%E6%BC%A2\n-%E3%81%8B%E3%81%AA%C3%A4%E6%BC%A2%E3%80%82\n+ %E3%81%AA%E5%AD%97%E3%81%AA%E3%81%AA%C3%A4\n %E3%81%8B %E5%AD%97%E3%81%AA%E3%81%AA%E3%81%AA%E3%81%8B%E6%BC%A2\n+%E3%81%AA\n %E5%AD%97%E3%81%AA%E3%81%AA%E6%BC%A2\n@@ -182,40 +182,46 @@\n %E3%81%AA%E6%BC%A2%E6%BC%A2%C3%A4%C3%A4%E3%80%82%E6%BC%A2%E6%BC%A2\n+%E6%BC%A2%E6%BC%A2\n  %E5%AD%97 %C3%A4%E3%80%82%E3%80%82%E3%80%82%C3%A4\n",
+      "text": "ää。 。な äなな字字 ä漢ä漢字か字漢漢。なä字か。漢ää 漢 漢。か ä字か漢ä。字 な漢。 ä漢かかなä字かな 。字かäな漢かな字漢か。。 字かな字漢なな字 かかかä漢。かか。漢字字。 漢なな ä字字。 äな漢 なä漢。漢äな。ää。字 漢  なな。。か字",
+      "result": "ää。 。な äなな字字 ä漢ä漢字か字漢漢。なä字か。漢ää 漢 漢。か ä字か漢ä。字 な漢。 ä漢かかなä字かな 。字かäな漢かな字漢か。。 字かな字漢なな字 かかかä漢。かか。漢字字。 漢なな ä字字。 äな漢 なä漢。漢äな。ää。字 漢  なな。。か字",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -1,16 +1,14 @@\n dht cd\n-hk\n wt  osdh\n@@ -17,13 +17,9 @@\n sted\n- mcji\n+l\n ajtp\n@@ -46,16 +46,18 @@\n iidihky \n+sz\n sjnca u \n",
+      "text": "  gluzgxg vh ajwtt bvpjut tlgyowh maus zypphwj  m jamkqtiwbnthar zil lhittectn   c  dji",
+      "result": "  gluzgxg vh ajwtt bvpjut tlgyowh maus zypphwj  m jamkqtiwbnthar zil lhittectn   c  dji",
+      "applied": [false, false, false]
+    },
+    {
+      "patch": "@@ -37,16 +37,19 @@\n  %0A%0Abb%0D%0A%0D\n+,,%0A\n %0A%0A%0A. %0A%0A%0A\n",
+      "text": ".a,\n\nb b\n\na,\n \r\n.\n\n.,\n",
+      "result": ".a,\n\nb b\n\na,\n \r\n.\n\n.,\n",
+      "applied": [false]
+    },
+    {
+      "patch": "@@ -11,11 +11,8 @@\n @$%25a\n-' :\n @=,'\n",
+      "text": "+?~++::~@=:# =a;%~/$@@:~=~:,=#%20a?'  $$$~ a'#a@=&? /a: /aa:'@@':&a@=%20%20&'$%20'=,/ ;%20,%/&$$/@~a?~#??'#,%%?~$;+;~?'~~?~,~?,::a@=a+&%20",
+      "result": "+?~++::~@=:# =a;%~/$@@:~=~:,=#%20a?'  $$$~ a'#a@=&? /a: /aa:'@@':&a@=%20%20&'$%20'=,/ ;%20,%/&$$/@~a?~#??'#,%%?~$;+;~?'~~?~,~?,::a@=a+&%20",
+      "applied": [false]
+    },
+    {
+      "patch": "@@ -8,16 +8,17 @@\n uw tezua\n+ \n gz qwhl \n",
+      "text": "drleovulmy rw j  yzbii    y erd zdv  n vwy aqokstu",
+      "result": "drleovulmy rw j  yzbii    y erd zdv  n vwy aqokstu",
+      "applied": [false]
+    },
+    {
+      "patch": "@@ -27,16 +27,19 @@\n  %0A%0A, ., \n+.,,\n b,.%0A,%0A%0A%0A\n",
+      "text": ",aa a \n\n\n\n\n. \n\n, ,\n.bb \n\n.\r\n\na\n\r\n\n\n,\n\n\n\n.b,.ab\r\n.",
+      "result": ",aa a \n\n\n\n\n. \n\n, ,.,,\n.bb \n\n.\r\n\na\n\r\n\n\n,\n\n\n\n.b,.ab\r\n.",
+      "applied": [true]
+    },
+    {
+      "patch": "@@ -1,23 +1,18 @@\n %E2%80%A8%E2%80%A8%01\n-%C2%A0%E2%80%A8\n %02%02%09%01%E2%80%A8%C2%A0%01x\n@@ -19,42 +19,35 @@\n %E2%80%A8%02%E2%80%A8%E2%80%A8\n-%01%09%E2%80%A8%01x%E2%80%A8%02%01%09x\n+x%E2%80%A8%02%02%C2%A0\n %E2%80%A8%C2%A0%02%02%02\n-y\n %C2%A0%E2%80%A8%E2%80%A8%01\n",
+      "text": " \tyy\t\t yx x\u0001\u0002y\u0001\u0002 y\u0001 y \u0002  \u0001\ty\u0002y\u0001\u0001 x\t\t \u0002\u0001\t  \u0002yx y\u0001yx   y\u0002 \u0002\t\u0001x\t\u0001x\u0002\t \u0002\u0001x\txxx \t\u0001\u0001\u0001y\t\txy\u0002 yx\u0001yy\t\u0002yy \u0002 \u0002  \u0001y\u0001y",
+      "result": " \tyy\t\t yx x\u0001\u0002y\u0001\u0002 y\u0001 y \u0002  \u0001\ty\u0002y\u0001\u0001 x\t\t \u0002\u0001\t  \u0002yx y\u0001yx   y\u0002 \u0002\t\u0001x\t\u0001x\u0002\t \u0002\u0001x\txxx \t\u0001\u0001\u0001y\t\txy\u0002 yx\u0001yy\t\u0002yy \u0002 \u0002  \u0001y\u0001y",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -1,25 +1,21 @@\n %F0%9F%98%80%F0%9F%91%8D\n-%F0%9F%8F%BD\n  %F0%9F%91%8D%F0%9F%8F%BD%C3%A5 x\n@@ -76,25 +76,26 @@\n %F0%9F%87%B3%F0%9F%87%B4%C3%B8%C3%A5%C3%B8%C3%B8\n+x\n %F0%9F%87%B3%F0%9F%87%B4x\n",
+      "text": " éå🇳🇴åéx😀👍🏽ø🇳🇴åéø😀éxø👍🏽 ø🇳🇴👍🏽éxøéé🇳🇴ééå👍🏽éååååéxø😀👍🏽éøéé👍🏽øåååé😀😀🇳🇴",
+      "result": " éå🇳🇴åéx😀👍ø🇳🇴åéø😀éxø👍🏽 ø🇳🇴👍🏽éxøéé🇳🇴ééå👍🏽éååååéxø😀👍🏽éøéé👍🏽øåååé😀😀🇳🇴",
+      "applied": [true, false]
+    },
+    {
+      "patch": "@@ -6,31 +6,35 @@\n %C3%A9%C3%A9%F0%9F%91%8D%F0%9F%8F%BD%F0%9F%98%80\n+%C3%A5%C3%B8\n %F0%9F%87%B3%F0%9F%87%B4e%CC%81%F0%9F%91%8D\n",
+      "text": "xéxå😀åx  x🇳🇴øééé é éø 👍🏽😀 x😀é👍🏽øé 🇳🇴 xé👍🏽xéå🇳🇴xé😀éøé😀 éxøééøøø👍🏽",
+      "result": "xéxå😀åx  x🇳🇴øééé é éø 👍🏽😀åø x😀é👍🏽øé 🇳🇴 xé👍🏽xéå🇳🇴xé😀éøé😀 éxøééøøø👍🏽",
+      "applied": [true]
+    },
+    {
+      "patch": "@@ -6,16 +6,20 @@\n ujl osrj\n+kqxv\n h u evgl\n@@ -25,19 +25,16 @@\n l eo\n-vwpel ooeo,\n+mcev o o\n orHs\n",
+      "text": "l nlr trqo lgfd. .oozteedoc lwlu e. ,l odo Heyer  l\nekqbho.ru,zomoH d uw",
+      "result": "l nlr trqo lgfd. .oozteedoc lwlu e. ,l odo Heyer  l\nekqbho.ru,zomoH d uw",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -18,42 +18,48 @@\n %E3%81%8B%E6%BC%A2 %E5%AD%97%E3%80%82%E3%81%8B%E3%81%AA%E3%81%8B\n+%E5%AD%97%E6%BC%A2\n %E6%BC%A2%E3%80%82%E3%80%82%E5%AD%97 %E3%81%AA%C3%A4%C3%A4\n@@ -59,62 +59,70 @@\n %E3%81%AA%C3%A4%C3%A4%C3%A4\n+ %E3%81%AA%E5%AD%97%E6%BC%A2\n %E3%81%8B %E5%AD%97%E5%AD%97%E3%80%82%E3%81%AA%E3%81%8B\n- %E6%BC%A2%E3%81%AA %E6%BC%A2 %E5%AD%97%E3%80%82%E6%BC%A2%E3%81%8B\n+%E6%BC%A2%E5%AD%97%C3%A4%E3%81%AA%E3%81%AA %E6%BC%A2 %E3%81%AA\n %E3%81%AA%E3%81%8B %E3%81%AA\n",
+      "text": "な漢 ää。ä字字なか 字なか字漢 な字 な字か 。字字漢 漢。字字なä。ä字字漢 。な 字。 な漢な漢  ä。かなななä漢 。かかか漢か字äかää 漢漢字漢。か漢 かäかä。か。 漢字 漢な。漢字字。漢 か漢な。ä 漢字。か字ä字か。 字漢。かä漢か。。 ",
+      "result": "な漢 ää。ä字字なか 字なか字漢 な字 な字か 。字字漢 漢。字字なä。ä字字漢 。な 字。 な漢な漢  ä。かなななä漢 。かかか字漢漢か字äかää 漢漢字漢。か漢 かäかä。か。 漢字 漢な。漢字字。漢 か漢な。ä 漢字。か字ä字か。 字漢。かä漢か。。 ",
+      "applied": [true, false]
+    },
+    {
+      "patch": "@@ -1,8 +1,12 @@\n+drbr\n  feedw,x\n@@ -33,10 +33,12 @@\n d,l \n-oj\n+uove\n ldHq\n@@ -46,11 +46,9 @@\n l lx\n- zd\n+m\n orh \n",
+      "text": " m woxnkiuro. zecoeuo e qqemedmw ey.txu  rw eud. hc.mz HenaHojlujottks  nstp,o",
+      "result": "drbr m woxnkiuro. zecoeuo e qqemedmw ey.txu  rw eud. hc.mz HenaHojlujottks  nstp,o",
+      "applied": [true, false, false]
+    },
+    {
+      "patch": "@@ -17,17 +17,20 @@\n %09%C2%A0%01%01%09%C2%A0%E2%80%A8%09\n+yy%02\n x%01%C2%A0x\n",
+      "text": "   \u0001 \u0001\u0001\u0002\u0001\t\u0002 yy\u0002y\u0002\u0001 \u0002 \t\u0001\u0001\u0001 y\u0001 \u0002 \ty\ty \t  \u0001 \u0001\u0002\t   xy ",
+      "result": "   \u0001 \u0001\u0001\u0002\u0001\t\u0002 yy\u0002y\u0002\u0001 \u0002 \t\u0001\u0001\u0001 y\u0001 \u0002 \ty\ty \t  \u0001 \u0001\u0002\t   xy ",
+      "applied": [false]
+    },
+    {
+      "patch": "@@ -149,38 +149,35 @@\n %C3%A4 %E5%AD%97%E6%BC%A2%C3%A4%C3%A4%E3%81%AA \n-%E3%81%8B\n  %C3%A4%E6%BC%A2%E6%BC%A2%E3%81%AA%E6%BC%A2%C3%A4 \n@@ -167,46 +167,39 @@\n %C3%A4%E6%BC%A2%E6%BC%A2%E3%81%AA%E6%BC%A2%C3%A4 %E3%80%82\n-%E5%AD%97%E6%BC%A2%C3%A4%C3%A4\n+%E3%81%AA\n  %E5%AD%97%E3%81%AA%E3%80%82%E6%BC%A2%E3%81%8B\n",
+      "text": "か字 äなな字漢 漢漢ä かかな  か漢   漢äか。。な ななな。字。なか漢か。ななな。字字漢なな 。ä字字。漢ä か漢 漢な。ä なかäか漢かなな字かä字漢なä。",
+      "result": "か字 äなな字漢 漢漢ä かかな  か漢   漢äか。。な ななな。字。なか漢か。ななな。字字漢なな 。ä字字。漢ä 漢 漢な。ä なかäか漢かなな字かä字漢なä。",
+      "applied": [true, false]
+    },
+    {
+      "patch": "@@ -7,20 +7,19 @@\n  %0D%0Aa\n-%0Aa%0A \n  ,.%0A%0Ab %0A\n+ %0Ab\n %0Aab%0D\n@@ -26,16 +26,17 @@\n %0A%0A%0A.%0A %0D%0A\n+,\n %0A, %0A%0A%0A%0A.\n",
+      "text": "b\nb \nb,\n,\r\n\n\n\n",
+      "result": "b\nb \nb,\n,\r\n\n\n\n",
+      "applied": [false, false]
+    },
+    {
+      "patch": "@@ -1,30 +1,28 @@\n %E3%81%8B%E5%AD%97 %E5%AD%97\n-%C3%A4\n %E6%BC%A2%E3%81%AA%C3%A4%E6%BC%A2%E3%80%82  %C3%A4\n@@ -29,37 +29,36 @@\n %E5%AD%97%C3%A4%C3%A4%E3%80%82  %E6%BC%A2%E3%81%8B\n- \n %C3%A4%E5%AD%97%C3%A4%C3%A4%C3%A4%E3%81%8B%E3%81%AA \n@@ -52,36 +52,47 @@\n %C3%A4%C3%A4%C3%A4%E3%81%8B%E3%81%AA %C3%A4%E5%AD%97\n+%C3%A4%E5%AD%97%E3%81%8B%E6%BC%A2\n  %E3%80%82%C3%A4 %C3%A4%E6%BC%A2%E6%BC%A2%E6%BC%A2\n",
+      "text": "ä字漢な字字なな ä。か か漢か漢漢な字字。ä字漢ä漢か か漢 な字か漢かäか 字字な。 ä漢字ä。か漢かな。。か漢な。字漢漢ä。漢ä字字ä字漢 漢字か字。字 字漢な字漢字ä なな 。な。字漢ä。ä。ä 。ä字漢。かな漢漢な 漢",
+      "result": "ä字漢な字字なな ä。か か漢か漢漢な字字。ä字漢ä漢か か漢 な字か漢かäか 字字な。 ä漢字ä。か漢かな。。か漢な。字漢漢ä。漢ä字字ä字漢 漢字か字。字 字漢な字漢字ä なな 。な。字漢ä。ä。ä 。ä字漢。かな漢漢な 漢",
+      "applied": [true, false, false]
+    }
+  ]
+}
