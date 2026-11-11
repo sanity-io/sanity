@@ -103,7 +103,7 @@ describe('DocumentVersionIcons', () => {
     await renderIcons({version: createVersion({id: `drafts.${GROUP_ID}`, bundleId: 'drafts'})})
 
     expect(document.querySelector('[data-testid="release-avatar-caution"]')).toBeInTheDocument()
-    expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
+    expect(document.querySelector('[data-ui="VariantMark"]')).not.toBeInTheDocument()
   })
 
   it('renders the variant rhombus when variants are enabled and the stub belongs to a variant', async () => {
@@ -117,7 +117,7 @@ describe('DocumentVersionIcons', () => {
     })
 
     expect(document.querySelector('[data-testid="release-avatar-caution"]')).toBeInTheDocument()
-    expect(document.querySelector('[data-sanity-icon="rhombus"]')).toBeInTheDocument()
+    expect(document.querySelector('[data-ui="VariantMark"]')).toBeInTheDocument()
   })
 
   it('does not render the variant rhombus when variants are disabled', async () => {
@@ -129,7 +129,7 @@ describe('DocumentVersionIcons', () => {
       }),
     })
 
-    expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
+    expect(document.querySelector('[data-ui="VariantMark"]')).not.toBeInTheDocument()
   })
 
   it('resolves the release avatar from the byId map', async () => {
