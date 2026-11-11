@@ -49,19 +49,15 @@ export const inlineSize = css({width: '8px'})
  * Tip to tip: a hair larger than inline so a leading mark carries the weight of a row.
  *
  * The box is as wide as the 1em glyph box it replaces (the diamond is 9.2px of ~20.7px), so a
- * menu item's icon slot, which lays out its own icon, keeps the diamond's left inset. Where the
- * mark sits in a leading column of its own it is trimmed to the glyph (`-0.375rem` either side,
- * as before); a menu item takes the untrimmed box.
+ * menu item's icon slot, which lays out its own icon, keeps the diamond's left inset. A mark in a
+ * leading column of its own trims that box to the glyph by passing
+ * `style={{marginInline: '-0.375rem'}}`, as the ui5 `Icon` boxes there did.
  */
 export const rowSize = css({
   '&&': {
     width: '20.7px',
-    marginInline: '-0.375rem',
   },
   '&&& > svg': {
     width: '9.2px',
-  },
-  ':where([data-ui="MenuItem"]) &&&': {
-    marginInline: 0,
   },
 })
