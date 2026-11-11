@@ -3,8 +3,8 @@ import {type ReactNode} from 'react'
 import {Flex, Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../../test/browser/TestWrapper'
+import {VariantMark} from '../../../../../../../ui-components/variantMark'
 import {DropdownButton} from '../DropdownButton'
-import {RhombusIcon} from '../RhombusIcons'
 
 /** The selected chip only needs the control mounted; the story does not change selection. */
 function handleClear() {
@@ -33,11 +33,11 @@ export function DropdownButtonStory() {
       <Card padding={4} style={{maxWidth: 480}}>
         <Flex alignItems="flex-start" flexDirection="column" gap={5}>
           <Labelled label="No selection" testId="dropdown-button-idle">
-            <DropdownButton icon={RhombusIcon} text="Variants" />
+            <DropdownButton icon={<VariantMark />} text="Variants" />
           </Labelled>
           <Labelled label="Selected" testId="dropdown-button-selected">
             <DropdownButton
-              icon={RhombusIcon}
+              icon={<VariantMark size="row" />}
               onClear={handleClear}
               tone="suggest"
               text="First-time visitors"
@@ -45,7 +45,7 @@ export function DropdownButtonStory() {
           </Labelled>
           <Labelled label="Long label" testId="dropdown-button-long">
             <DropdownButton
-              icon={RhombusIcon}
+              icon={<VariantMark size="row" />}
               onClear={handleClear}
               tone="suggest"
               text="Returning customers from the Nordic region"
