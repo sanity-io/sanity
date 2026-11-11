@@ -161,17 +161,6 @@ function AudienceRow({
 }
 
 /**
- * Whether a document has two or more versions (for example published and draft, or a draft and a
- * version in a release), which is when its list row gets a flyout.
- *
- * @internal
- */
-export function useHasMultipleVersions(documentGroupId: string): boolean {
-  const {groups} = useDocumentVersionStatusGroups(documentGroupId)
-  return groups.reduce((count, group) => count + group.items.length, 0) >= 2
-}
-
-/**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
  * event as the subtitle and a diamond before the audiences' names, and a last row that opens the document group
  * inventory. Rows are menu items, so the host can move focus between them with the arrow keys.
@@ -201,10 +190,8 @@ export function DocumentVersionsFlyoutList(props: {
       aria-label={t('document-group.flyout.title')}
       border
       data-testid="document-versions-flyout"
-      radius={2}
+      radius={3}
       role="menu"
-      // Flush with the list: square corners on the side that touches the pane.
-      style={{borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden'}}
     >
       <div className={root}>
         {groups.slice(0, MAX_AUDIENCES).map((group) => (

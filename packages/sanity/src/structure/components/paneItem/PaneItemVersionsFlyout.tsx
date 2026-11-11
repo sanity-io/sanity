@@ -37,12 +37,10 @@ const STALL_DELAY = 250
  */
 export function PaneItemVersionsFlyout(props: {
   childId: string
-  /** Whether the document has two or more versions, which is when the row gets a flyout. */
-  hasVersions: boolean
   /** Renders the flyout's content. A pick or the inventory row opens the inventory. */
   renderList: (actions: {onOpenInventory: () => void; onPick: () => void}) => ReactNode
 }) {
-  const {childId, hasVersions, renderList} = props
+  const {childId, renderList} = props
   const {navigate} = useRouter()
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
 
@@ -111,7 +109,7 @@ export function PaneItemVersionsFlyout(props: {
   }, [close, keepOpen])
 
   useEffect(() => {
-    if (!row || !hasVersions) return undefined
+    if (!row) return undefined
 
     const handleEnter = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return
@@ -144,7 +142,7 @@ export function PaneItemVersionsFlyout(props: {
       row.removeEventListener('keydown', handleKeyDown)
       clearTimers()
     }
-  }, [clearTimers, closeSoon, hasVersions, keepOpen, row])
+  }, [clearTimers, closeSoon, keepOpen, row])
 
   // Escape and scrolling close it.
   useEffect(() => {
@@ -235,7 +233,7 @@ export function PaneItemVersionsFlyout(props: {
   return (
     <>
       <span aria-hidden hidden ref={setAnchor} />
-      {open && hasVersions && row && (
+      {open && row && (
         <Popover
           arrow={false}
           content={
@@ -259,11 +257,10 @@ export function PaneItemVersionsFlyout(props: {
           padding={0}
           placement="right-start"
           portal
-          radius={2}
+          radius={3}
           referenceBoundary={document.body}
           referenceElement={row}
           shadow={0}
-          style={{borderBottomLeftRadius: 0, borderTopLeftRadius: 0, overflow: 'hidden'}}
         />
       )}
     </>
