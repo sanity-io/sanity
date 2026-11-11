@@ -102,6 +102,7 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', async () => {
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useArchivedReleases: vi.fn(() => ({data: []})),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
 }))
