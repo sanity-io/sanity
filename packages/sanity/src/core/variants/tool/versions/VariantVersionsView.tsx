@@ -256,7 +256,15 @@ function getColumnDefs({
   ]
 }
 
-function searchVersion(row: VersionRow, term: string): boolean {
+/**
+ * Matches a row's document id and type. A placeholder always matches: its document has not loaded,
+ * so there is nothing to match yet, and hiding it would unmount its row, so the feed would never
+ * hear that it is on screen and never load it.
+ *
+ * @internal
+ */
+export function searchVersion(row: DocumentLensRow, term: string): boolean {
+  if (row.placeholder) return true
   const needle = term.toLowerCase()
   return row.groupId.toLowerCase().includes(needle) || row._type.toLowerCase().includes(needle)
 }
