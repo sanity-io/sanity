@@ -1,13 +1,14 @@
 import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
 import {type DocumentInspectorContext, type PluginOptions} from '../types'
+import {getWorkspaceSource} from '../workspaceSource'
 
 describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {
@@ -40,7 +41,7 @@ describe('resolveConfig', () => {
 
     const [workspace] = await firstValueFrom(
       resolveConfig({
-        //the default name should be 'default', in both the workspace and the unstable_sources
+        //the default name should be 'default', in both the workspace and its source
         //name: 'default',
         dataset,
         projectId,
@@ -427,6 +428,36 @@ describe('createWorkspaceFromConfig', () => {
         },
       ],
     })
+  })
+  it('resolves a single source from the workspace config, ignoring nested sources', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const client = createClient({
+      projectId: 'ppsg7ml5',
+      apiVersion: '2021-06-07',
+      dataset: 'production',
+      useCdn: false,
+    })
+    const auth = createMockAuthStore({client, currentUser: null})
+
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        projectId: 'ppsg7ml5',
+        dataset: 'production',
+        auth,
+        unstable_sources: [{name: 'nested', projectId: 'other', dataset: 'other'}],
+      }),
+    )
+
+    expect(workspace).toMatchObject({
+      projectId: 'ppsg7ml5',
+      dataset: 'production',
+      unstable_sources: [{name: 'default', projectId: 'ppsg7ml5', dataset: 'production'}],
+    })
+    // The workspace and its source use the auth store from the workspace config
+    expect(workspace.auth).toBe(auth)
+    expect(getWorkspaceSource(workspace).auth).toBe(auth)
+    consoleWarnSpy.mockRestore()
   })
 })
 

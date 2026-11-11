@@ -1072,14 +1072,15 @@ revealed. Two consequences for Suspense code:
   which is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
   since one of its two versions is always included, and `SingleDocReleaseEnabledProvider`, which
   keeps reading the source's resolved `scheduledDrafts.enabled` (`useScheduledDraftsEnabled`)
-  because `scheduledDrafts` is a per-source option (`PluginOptions.scheduledDrafts`, reduced per
-  source by `scheduledDraftsEnabledReducer`) while the default plugins are added to every source,
-  nested `unstable_sources` included, from the root workspace's options, so a nested source that
-  opts out still loads the plugin. For the root source the gate agrees with the resolved flag:
+  because `scheduledDrafts` is a plugin option (`PluginOptions.scheduledDrafts`, reduced by
+  `scheduledDraftsEnabledReducer`). The gate agrees with the resolved flag:
   `getDefaultPluginsOptions` reduces `scheduledDrafts.enabled` across the root config and its
   plugins the same way (the root's own value winning) before `singleDocRelease()` is included,
   since a gate reading only the root option would mount a plugin the resolved config disables
   (`core/config/__tests__/resolveDefaultPlugins.test.ts`). The other flags are root-only options.
+  A workspace has a single source: `prepareConfig` ignores `unstable_sources` (deprecated) and
+  warns in development when it is set, and `Workspace.unstable_sources` always holds that one
+  source. Read it with `getWorkspaceSource` (`core/config/workspaceSource.ts`).
 - The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
   also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
   `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the

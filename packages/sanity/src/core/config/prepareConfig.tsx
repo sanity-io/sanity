@@ -121,8 +121,6 @@ import {
   type WorkspaceSummary,
 } from './types'
 
-type InternalSource = WorkspaceSummary['__internal']['sources'][number]
-
 const debug = createDebug('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
@@ -421,113 +419,106 @@ export function prepareConfig(
     }
     const defaultPluginsOptions = getDefaultPluginsOptions(rawWorkspace)
 
-    const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
-    const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
-      return {
-        ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
-          /*
-           * @FIXME: with the introduction of global references, @sanity/assist broke
-           * As a quickfix the plugins was released with a know property on the plugin definition.
-           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
-           * This ensures auto updating studios can start, albeit without assist, it it is old.
-           */
-          .filter((plugin) => {
-            const validPlugin =
-              plugin.name !== '@sanity/assist' ||
-              (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
-            if (!validPlugin) {
-              console.warn(
-                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
-                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
-              )
-            }
-
-            return validPlugin
-          }),
-      }
-    })
-
-    const resolvedSources = sources.map((source, sourceIndex): InternalSource => {
-      const {projectId, dataset} = source
-
-      let schemaTypes
-      try {
-        schemaTypes = resolveSchemaTypes({
-          config: source,
-          context: {projectId, dataset},
-        })
-      } catch (e) {
-        throw new ConfigResolutionError({
-          name: source.name,
-          type: 'source',
-          causes: [e],
-        })
-      }
-
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
-
-      const schemaValidationProblemGroups = schema._validation
-      const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-        msg.problems.some(isError),
+    // oxlint-disable-next-line no-deprecated -- read only to warn that it is ignored
+    const {unstable_sources: nestedSources, ...rootSource} = rawWorkspace
+    if (isDev && nestedSources?.length) {
+      console.warn(
+        `[sanity] Workspace "${rootSource.name || 'default'}" sets \`unstable_sources\`. ` +
+          `Nested sources are not supported and are ignored: the workspace uses its own ` +
+          `\`projectId\`, \`dataset\` and \`schema\`. Remove \`unstable_sources\`, or add ` +
+          `another workspace for each nested source.`,
       )
+    }
 
-      if (schemaValidationProblemGroups && schemaErrors?.length) {
-        // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema, {
-          workspaceName: rawWorkspace.name || 'default',
-          sourceName: sourceIndex === 0 ? undefined : source.name || 'default',
-          projectId,
-          dataset,
-        })
-      }
+    const {plugins, ...sourceOptions} = rootSource as SourceOptions
+    const source: SourceOptions = {
+      ...sourceOptions,
+      plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
+        /*
+         * @FIXME: with the introduction of global references, @sanity/assist broke
+         * As a quickfix the plugins was released with a know property on the plugin definition.
+         * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
+         * This ensures auto updating studios can start, albeit without assist, it it is old.
+         */
+        .filter((plugin) => {
+          const validPlugin =
+            plugin.name !== '@sanity/assist' ||
+            (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
+          if (!validPlugin) {
+            console.warn(
+              'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
+                'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+            )
+          }
 
-      const auth = getAuthStore(source, {
-        createStudioRequestHandler: options?.createStudioRequestHandler,
-        requestErrorChannel: options?.requestErrorChannel,
-        requestFailureDiagnostics: options?.requestFailureDiagnostics,
-      })
-      const i18n = prepareI18n(source)
-      const source$ = auth.state.pipe(
-        map(({client, authenticated, currentUser}) => {
-          return resolveSource({
-            config: source,
-            client,
-            currentUser,
-            schema,
-            authenticated,
-            auth,
-            i18n,
-          })
+          return validPlugin
         }),
-        shareReplay(1),
-      )
+    }
 
-      return {
+    const {projectId, dataset} = source
+
+    let schemaTypes
+    try {
+      schemaTypes = resolveSchemaTypes({
+        config: source,
+        context: {projectId, dataset},
+      })
+    } catch (e) {
+      throw new ConfigResolutionError({
         name: source.name,
-        projectId: source.projectId,
-        dataset: source.dataset,
-        title: source.title || startCase(source.name),
-        auth,
-        schema,
-        i18n: i18n.source,
-        source: source$,
-      }
+        type: 'source',
+        causes: [e],
+      })
+    }
+
+    const schema = createSchema({
+      name: source.name,
+      types: schemaTypes,
     })
+
+    const schemaValidationProblemGroups = schema._validation
+    const schemaErrors = schemaValidationProblemGroups?.filter((msg) => msg.problems.some(isError))
+
+    if (schemaValidationProblemGroups && schemaErrors?.length) {
+      // TODO: consider using the `ConfigResolutionError`
+      throw new SchemaError(schema, {
+        workspaceName: rawWorkspace.name || 'default',
+        projectId,
+        dataset,
+      })
+    }
+
+    const auth = getAuthStore(source, {
+      createStudioRequestHandler: options?.createStudioRequestHandler,
+      requestErrorChannel: options?.requestErrorChannel,
+      requestFailureDiagnostics: options?.requestFailureDiagnostics,
+    })
+    const i18n = prepareI18n(source)
+    const source$ = auth.state.pipe(
+      map(({client, authenticated, currentUser}) => {
+        return resolveSource({
+          config: source,
+          client,
+          currentUser,
+          schema,
+          authenticated,
+          auth,
+          i18n,
+        })
+      }),
+      shareReplay(1),
+    )
 
     const title = rootSource.title || startCase(rootSource.name)
 
     const workspaceSummary: WorkspaceSummary = {
       type: 'workspace-summary',
-      auth: resolvedSources[0].auth,
+      auth,
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
-      schema: resolvedSources[0].schema,
-      i18n: resolvedSources[0].i18n,
+      schema,
+      i18n: i18n.source,
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
@@ -539,7 +530,7 @@ export function prepareConfig(
       hidden: rootSource.hidden,
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
-        sources: resolvedSources,
+        source: source$,
       },
       ...defaultPluginsOptions,
     }

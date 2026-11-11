@@ -2,6 +2,7 @@ import {type ReactNode, useContext} from 'react'
 import {SourceContext} from 'sanity/_singletons'
 
 import {type Source} from '../config/types'
+import {getWorkspaceSource} from '../config/workspaceSource'
 import {useWorkspace} from './workspace'
 
 /** @internal */
@@ -12,7 +13,7 @@ export type SourceProviderProps =
 /** @internal */
 export function SourceProvider({children, ...props}: SourceProviderProps) {
   const parentSource = useContext(SourceContext)
-  const {unstable_sources: sources} = useWorkspace()
+  const workspace = useWorkspace()
 
   if ('source' in props) {
     const {source} = props
@@ -21,7 +22,9 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
 
   if ('name' in props) {
     const {name} = props
-    const source = sources.find((s) => s.name === name)
+    // A workspace has a single source, so a name can only match that one.
+    const workspaceSource = getWorkspaceSource(workspace)
+    const source = workspaceSource.name === name ? workspaceSource : undefined
     if (!source) {
       throw new Error(`Could not find source with name \`${name}\` in current workspace`)
     }

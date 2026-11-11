@@ -41,7 +41,6 @@ describe('WorkspaceRouterProvider', () => {
     basePath: '',
     tools: [],
     icon: null,
-    unstable_sources: [],
     scheduledPublishing: false,
     document: {},
     form: {},

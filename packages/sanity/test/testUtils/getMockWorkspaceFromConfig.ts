@@ -8,6 +8,7 @@ import {
   type Source,
   type Workspace,
 } from '../../src/core/config/types'
+import {getWorkspaceSource} from '../../src/core/config/workspaceSource'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 
 const defaultMockUser: CurrentUser = {
@@ -63,5 +64,5 @@ export function getMockWorkspace({
 
 export async function getMockSource(options: MockWorkspaceOptions = {}): Promise<Source> {
   const workspace = await getMockWorkspace(options)
-  return workspace.unstable_sources[0]
+  return getWorkspaceSource(workspace)
 }

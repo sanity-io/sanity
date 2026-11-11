@@ -831,6 +831,9 @@ export interface WorkspaceOptions extends SourceOptions {
   /**
    * @hidden
    * @beta
+   * @deprecated Nested sources were never supported, and the studio ignores
+   * this option. A workspace has a single source, configured on the workspace
+   * itself. Add another workspace for each project or dataset you need.
    */
   unstable_sources?: SourceOptions[]
   /**
@@ -1381,16 +1384,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @deprecated not actually deprecated but don't use or you'll be fired
    */
   __internal: {
-    sources: Array<{
-      name: string
-      projectId: string
-      dataset: string
-      title: string
-      auth: AuthStore
-      schema: Schema
-      i18n: LocaleSource
-      source: Observable<Source>
-    }>
+    /** The workspace's source, resolved when its auth state emits. */
+    source: Observable<Source>
   }
 }
 
@@ -1452,9 +1447,12 @@ export interface Workspace extends Omit<Source, 'type'> {
   /** React component to use as icon for this workspace */
   icon: ReactNode
   /**
+   * Always holds exactly one entry: the workspace's own source.
    *
    * @hidden
    * @beta
+   * @deprecated A workspace has a single source, and this list only ever
+   * holds that one. It will be removed in a future major version.
    */
   unstable_sources: Source[]
   scheduledPublishing: ScheduledPublishingPluginOptions
