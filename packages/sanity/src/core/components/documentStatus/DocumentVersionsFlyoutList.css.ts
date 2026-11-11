@@ -63,3 +63,9 @@ export const variantMark = css({
   flex: 'none',
   width: '15px',
 })
+
+// The subtitle sits under the name, past the 15px diamond slot and its 4px gap.
+export const subtitleIndent = css({
+  paddingLeft: '19px',
+  minWidth: 0,
+})
