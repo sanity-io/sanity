@@ -2089,7 +2089,7 @@ importers:
         specifier: ^6.43.15
         version: 6.43.15
       '@lezer/highlight':
-        specifier: ^1.2.3
+        specifier: ^1.2.5
         version: 1.2.5
       '@pierre/diffs':
         specifier: 1.6.2
