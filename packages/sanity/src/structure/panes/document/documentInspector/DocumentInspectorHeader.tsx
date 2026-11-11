@@ -45,7 +45,10 @@ export function DocumentInspectorHeader(
       <Flex padding={2}>
         <Box flexBasis="0%" flexGrow={1} padding={3}>
           <Flex alignItems="center" gap={2}>
-            {icon && <Icon icon={icon} size={1} aria-hidden />}
+            {/* The negative margin trims the icon's box to its glyph, as everywhere an icon sits
+                next to text. Untrimmed, the 21px box made the title block taller than the buttons
+                and pushed the buttons off the title's centre line. */}
+            {icon && <Icon icon={icon} size={1} aria-hidden style={{margin: '-0.375rem'}} />}
             <Text as="h1" size={1} weight="medium" trim={true}>
               {title}
             </Text>
