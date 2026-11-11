@@ -16,7 +16,7 @@ import {RevertIcon} from '@sanity/icons/Revert'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Avatar, Box, Button, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {type ComponentType, useEffect, useState} from 'react'
+import {type ComponentType, useEffect, useRef, useState} from 'react'
 
 import {initials} from './auth'
 import {client, fetchText} from './client'
@@ -398,6 +398,7 @@ export function HistoryInspector(props: {
   const [events, setEvents] = useState<{list: HistoryEvent[]} | {error: string} | undefined>(
     undefined,
   )
+  const generation = useRef(0)
 
   // The timeline follows the document: a change reloads it once the edits have settled.
   useEffect(() => {
@@ -432,14 +433,21 @@ export function HistoryInspector(props: {
   const changes = changesOf(typeName, base, current)
 
   const select = (event: HistoryEvent) => {
+    const currentGeneration = ++generation.current
     if (sameEvent(viewing?.event, event)) {
       setViewing(undefined)
       return
     }
     loadRevision(event.documentId, event.revision).then(
       // A discarded draft reads as the published document it went back to.
-      (doc) => setViewing({event, doc: doc ?? store.local(published)}),
-      (error: unknown) => toastError('Could not load the revision', error),
+      (doc) => {
+        if (generation.current !== currentGeneration) return
+        setViewing({event, doc: doc ?? store.local(published)})
+      },
+      (error: unknown) => {
+        if (generation.current !== currentGeneration) return
+        toastError('Could not load the revision', error)
+      },
     )
   }
 
