@@ -20,6 +20,9 @@ export default defineCliConfig({
   },
   async vite(viteConfig, {command, mode}) {
     const nextConfig = mergeConfig(viteConfig, {
+      // Its own optimized-deps cache: node_modules is shared with test-studio (:3336), whose restarts
+      // would otherwise rewrite the chunks this server's open pages point at.
+      cacheDir: '.vite-cache',
       // `sanity dev` resolves `sanity` to its sources, so its Panda CSS `.css.ts` modules are built here (as dev/test-studio does).
       plugins: command === 'serve' ? studioPandaCss() : [],
       optimizeDeps: {exclude: ['sanity']},
