@@ -139,9 +139,21 @@ const DRAFT: Variant = {
   document: stub(`drafts.${PUBLISHED_ID}`, 'drafts'),
 }
 const PUBLISHED: Variant = {id: PUBLISHED_ID, name: 'Published', document: stub(PUBLISHED_ID)}
+const VARIANT_DRAFT: Variant = {
+  id: `drafts.variant.${PUBLISHED_ID}`,
+  name: 'New customers',
+  document: {
+    ...stub(`drafts.variant.${PUBLISHED_ID}`, 'drafts'),
+    _system: {
+      group: {_ref: PUBLISHED_ID, _weak: true},
+      bundleId: 'drafts',
+      variants: [{_key: 'variant', _ref: '_.variants.new-customers'}],
+    },
+  },
+}
 
 /** A set of the draft and published versions, outside any release. */
-function UnreleasedHarness() {
+function UnreleasedHarness({versions = [DRAFT, PUBLISHED]}: {versions?: Variant[]}) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <DocumentGroupSet
@@ -151,12 +163,12 @@ function UnreleasedHarness() {
         onCheckedChange={NOOP}
         readOnly
       >
-        {[DRAFT, PUBLISHED].map((entry) => (
+        {versions.map((entry) => (
           <DocumentGroupEntry
             key={entry.id}
             variant={entry}
             releases={RELEASES}
-            documentVersions={[DRAFT.document, PUBLISHED.document]}
+            documentVersions={versions.map((version) => version.document)}
             onPrimaryAction={NOOP}
           />
         ))}
@@ -173,16 +185,6 @@ function getSecondaryLine(row: HTMLElement): HTMLElement {
   }
 
   return line
-}
-
-function getStatusKinds(row: HTMLElement): (string | undefined)[] {
-  const status = row.querySelector<HTMLElement>('[data-testid="version-status"]')
-
-  if (!status) {
-    throw new Error('Expected the row to render a status track')
-  }
-
-  return [...status.children].map((icon) => (icon as HTMLElement).dataset.status)
 }
 
 function getSet(): HTMLElement {
@@ -210,8 +212,11 @@ function getSetIcon(): HTMLElement {
   return icon
 }
 
-function getRow(entry: Variant): HTMLElement {
-  const row = getSet().querySelector<HTMLElement>(`[data-variant-name="${entry.name}"]`)
+function getRow(entry: Variant, setName?: string): HTMLElement {
+  const root = setName
+    ? document.querySelector<HTMLElement>(`[data-variant-set="${setName}"]`)
+    : getSet()
+  const row = root?.querySelector<HTMLElement>(`[data-variant-name="${entry.name}"]`)
 
   if (!row) {
     throw new Error(`Expected the "${entry.name}" row to have rendered`)
@@ -411,7 +416,7 @@ describe('DocumentGroupSet', () => {
     await settleChromaticEndState()
   })
 
-  it('says when a release version goes out, and marks it with its release', async () => {
+  it('says when a release version goes out', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<SetHarness />)
 
@@ -419,11 +424,9 @@ describe('DocumentGroupSet', () => {
     await settleChromaticEndState()
 
     expect(getSecondaryLine(getRow(SUMMER_SALE)).textContent).toBe('As soon as possible')
-    // The release icon carries no draft or published status of its own.
-    expect(getStatusKinds(getRow(SUMMER_SALE))).toEqual([undefined])
   })
 
-  it('still marks a release version whose release document is not found', async () => {
+  it('renders no status track, and still renders a row whose release document is not found', async () => {
     const {settleChromaticEndState} = testHelpers()
     // Neither the variant nor the release list carries the release document.
     const withoutRelease = {...SUMMER_SALE, releaseDocument: undefined}
@@ -432,10 +435,11 @@ describe('DocumentGroupSet', () => {
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await settleChromaticEndState()
 
-    expect(getStatusKinds(getRow(SUMMER_SALE))).toEqual([undefined])
+    expect(getRow(SUMMER_SALE).querySelector('[data-testid="version-status"]')).toBeNull()
+    expect(getSecondaryLine(getRow(SUMMER_SALE)).textContent).toMatch(/^Edited /)
   })
 
-  it('says when a version outside a release was edited or published, and marks a changed draft', async () => {
+  it('says when a version outside a release was edited or published', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<UnreleasedHarness />)
 
@@ -445,9 +449,41 @@ describe('DocumentGroupSet', () => {
     const draftRow = document.querySelector<HTMLElement>('[data-variant-name="Draft"]')!
     const publishedRow = document.querySelector<HTMLElement>('[data-variant-name="Published"]')!
 
-    expect(getSecondaryLine(draftRow).textContent).toMatch(/^Edited /)
+    // The document has a published version, so the draft's line says nothing more than when
+    expect(getSecondaryLine(draftRow).textContent).toMatch(/^Edited [^·]*$/)
     expect(getSecondaryLine(publishedRow).textContent).toMatch(/^Published /)
-    expect(getStatusKinds(draftRow)).toEqual(['draft', 'published'])
-    expect(getStatusKinds(publishedRow)).toEqual(['published'])
+  })
+
+  it('says a draft that was never published is not published yet', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<UnreleasedHarness versions={[DRAFT]} />)
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    expect(getSecondaryLine(getRow(DRAFT, 'Unreleased')).textContent).toMatch(
+      /^Edited .* · not published yet$/,
+    )
+  })
+
+  it('leads a variant row with the variant diamond, and leaves a Default row empty at the same width', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<UnreleasedHarness versions={[DRAFT, VARIANT_DRAFT, PUBLISHED]} />)
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    const variantMark = getRow(VARIANT_DRAFT, 'Unreleased').querySelector<HTMLElement>(
+      '.variant-mark',
+    )!
+    const defaultMark = getRow(DRAFT, 'Unreleased').querySelector<HTMLElement>('.variant-mark')!
+
+    expect(variantMark.querySelector('[data-sanity-icon="rhombus"]')).not.toBeNull()
+    expect(defaultMark.querySelector('svg')).toBeNull()
+    // Reserved, so the names line up
+    expect(defaultMark.getBoundingClientRect().width).toBe(
+      variantMark.getBoundingClientRect().width,
+    )
+    expect(defaultMark.getBoundingClientRect().width).toBeGreaterThan(0)
   })
 })
