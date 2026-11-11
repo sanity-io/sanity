@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {TextInput} from '@sanity/ui'
+import {Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
@@ -43,7 +43,13 @@ export const CreateVariantPicker: ComponentType<{
   label: string
   description?: string
   leadingOptions?: CreateVariantPickerOption[]
+  /** A heading above `leadingOptions`, shown while they have a match. */
+  leadingLabel?: string
   options: CreateVariantPickerOption[]
+  /** A heading above `options`, shown while they have a match. */
+  optionsLabel?: string
+  /** The search field's placeholder; "Search…" when absent. */
+  filterPlaceholder?: string
   value: CreateVariantPickerOption | undefined
   onChange: (key: string) => void
   disabled: boolean
@@ -53,7 +59,10 @@ export const CreateVariantPicker: ComponentType<{
   label,
   description,
   leadingOptions = NO_OPTIONS,
+  leadingLabel,
   options,
+  optionsLabel,
+  filterPlaceholder,
   value,
   onChange,
   disabled,
@@ -70,9 +79,10 @@ export const CreateVariantPicker: ComponentType<{
   const matches = (option: CreateVariantPickerOption) =>
     query.length === 0 || option.text.toLowerCase().includes(query)
 
-  const sections = [leadingOptions.filter(matches), options.filter(matches)].filter(
-    (section) => section.length > 0,
-  )
+  const sections = [
+    {key: 'leading', label: leadingLabel, options: leadingOptions.filter(matches)},
+    {key: 'options', label: optionsLabel, options: options.filter(matches)},
+  ].filter((section) => section.options.length > 0)
 
   const renderOption = (option: CreateVariantPickerOption) => (
     <MenuItem
@@ -128,7 +138,9 @@ export const CreateVariantPicker: ComponentType<{
                   ref={filterRef}
                   fontSize={1}
                   onChange={(event) => setFilterQuery(event.currentTarget.value)}
-                  placeholder={t('document-group.create-variant.filter-placeholder')}
+                  placeholder={
+                    filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+                  }
                   radius={2}
                   value={filterQuery}
                 />
@@ -151,8 +163,22 @@ export const CreateVariantPicker: ComponentType<{
                 >
                   <Flex flexDirection="column" flexShrink={0} gap={1}>
                     {sections.flatMap((section, index) => [
-                      ...(index > 0 ? [<MenuDivider key="divider" />] : []),
-                      ...section.map(renderOption),
+                      ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
+                      ...(section.label
+                        ? [
+                            <Box
+                              key={`${section.key}-label`}
+                              paddingX={3}
+                              paddingTop={3}
+                              paddingBottom={2}
+                            >
+                              <Label muted size={1} style={{textTransform: 'uppercase'}}>
+                                {section.label}
+                              </Label>
+                            </Box>,
+                          ]
+                        : []),
+                      ...section.options.map(renderOption),
                     ])}
                   </Flex>
                 </Flex>
