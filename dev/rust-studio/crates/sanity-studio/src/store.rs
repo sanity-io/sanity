@@ -33,6 +33,9 @@ struct Pair {
     /// Listener events received per document, to tell whether one arrived while a snapshot of
     /// the document was on its way.
     events: HashMap<String, u64>,
+    /// Snapshot fetches started per document; a response applies only while this is unchanged,
+    /// so an older in-flight GET cannot overwrite a newer one for the same session.
+    fetches: HashMap<String, u64>,
     _listener: Listener,
 }
 
@@ -165,7 +168,10 @@ impl Store {
         let listener = self.client().listen("*[_id in $ids]", params, options, move |event| {
             store().on_pair_event(&key, session, &ids, event, started);
         });
-        pairs.insert(published.to_owned(), Pair { refs: 1, session, events: HashMap::new(), _listener: listener });
+        pairs.insert(
+            published.to_owned(),
+            Pair { refs: 1, session, events: HashMap::new(), fetches: HashMap::new(), _listener: listener },
+        );
         PairGuard(published.to_owned())
     }
 
@@ -176,13 +182,41 @@ impl Store {
         Some(ids.iter().map(|id| pair.events.get(id).copied().unwrap_or(0)).collect())
     }
 
+    /// Bumps the snapshot-fetch counter for each of `ids` and returns the tokens, or `None` when
+    /// the listener from `session` is no longer open.
+    fn begin_fetches(&self, published: &str, session: u64, ids: &[String]) -> Option<Vec<u64>> {
+        let mut pairs = self.pairs.borrow_mut();
+        let pair = pairs.get_mut(published).filter(|pair| pair.session == session)?;
+        Some(
+            ids.iter()
+                .map(|id| {
+                    let fetch = pair.fetches.entry(id.clone()).or_default();
+                    *fetch += 1;
+                    *fetch
+                })
+                .collect(),
+        )
+    }
+
+    /// Whether the snapshot fetch tagged `fetch` is still the latest for `id` on this session.
+    fn fetch_current(&self, published: &str, session: u64, id: &str, fetch: u64) -> bool {
+        self.pairs
+            .borrow()
+            .get(published)
+            .filter(|pair| pair.session == session)
+            .and_then(|pair| pair.fetches.get(id).copied())
+            == Some(fetch)
+    }
+
     /// Fetches the snapshots of `ids` from the pair of `published`. A snapshot applies only while
     /// the listener it was fetched for is open, since nothing would keep it current otherwise,
     /// and only when no event for the document arrived meanwhile: that event may be newer, and
     /// it cannot tell which local transactions the server has applied, so the document is
-    /// fetched again, as it is when the optimistic layer asks for that.
+    /// fetched again, as it is when the optimistic layer asks for that. An older in-flight
+    /// response is dropped when a newer fetch for the same document has already started.
     fn load_snapshots(&self, published: String, session: u64, ids: Vec<String>, started: Option<f64>) {
         let Some(seen) = self.events_seen(&published, session, &ids) else { return };
+        let Some(fetches) = self.begin_fetches(&published, session, &ids) else { return };
         let commits = self.docs.borrow().commit_count();
         spawn_local(async move {
             let store = store();
@@ -193,19 +227,26 @@ impl Store {
                 Err(err) => return store.error("Could not load the document", err.to_string()),
             };
             let mut changed = Vec::new();
-            for (((id, doc), seen), now) in ids.into_iter().zip(docs).zip(seen).zip(now) {
+            let mut applied = false;
+            for ((((id, doc), seen), now), fetch) in ids.into_iter().zip(docs).zip(seen).zip(now).zip(fetches) {
+                if !store.fetch_current(&published, session, &id, fetch) {
+                    continue;
+                }
                 if seen != now {
                     changed.push(id);
                     continue;
                 }
                 let refetch = store.docs.borrow_mut().set_snapshot(&id, doc, commits);
                 store.bump(&id);
+                applied = true;
                 if refetch {
                     changed.push(id);
                 }
             }
-            if let Some(started) = started {
-                store.last_load_ms.set(Some(now_ms() - started));
+            if applied {
+                if let Some(started) = started {
+                    store.last_load_ms.set(Some(now_ms() - started));
+                }
             }
             if !changed.is_empty() {
                 store.load_snapshots(published, session, changed, None);

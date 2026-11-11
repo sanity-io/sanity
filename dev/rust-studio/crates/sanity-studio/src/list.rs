@@ -1,7 +1,7 @@
 //! The document list pane: every document of a type in a virtualized list that fetches the
 //! pages that scroll into view, kept current by a listener and seeded from a cached first page.
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -122,32 +122,49 @@ struct ListState {
     ordering: RwSignal<Ordering>,
     search: RwSignal<String>,
     generation: StoredValue<u64>,
-    /// Pages requested in the current generation.
-    pages: StoredValue<HashSet<usize>>,
+    /// Pages requested in the current generation, mapped to the latest load token so an older
+    /// in-flight response cannot overwrite a newer one for the same page.
+    pages: StoredValue<HashMap<usize, u64>>,
     scroll_reset: RwSignal<u64>,
     perf: crate::Perf,
 }
 
 impl ListState {
+    /// Starts a load for `page` and returns its token; later responses with another token are dropped.
+    fn begin_load(self, page: usize) -> u64 {
+        let mut token = 0;
+        self.pages.update_value(|pages| {
+            let entry = pages.entry(page).or_insert(0);
+            *entry += 1;
+            token = *entry;
+        });
+        token
+    }
+
+    /// Whether `token` is still the latest load for `page` in `generation`.
+    fn load_current(self, generation: u64, page: usize, token: u64) -> bool {
+        self.generation.try_get_value() == Some(generation)
+            && self.pages.try_with_value(|pages| pages.get(&page).copied() == Some(token)).unwrap_or(false)
+    }
+
     fn load(self, query: Arc<ListQuery>, page: usize, first: bool) {
         let generation = self.generation.get_value();
+        let token = self.begin_load(page);
         let ordering = self.ordering.get_untracked();
         let search = self.search.get_untracked();
         let started = now_ms();
-        // A pane closed while its page was loading has disposed of its state.
-        let current = move || self.generation.try_get_value() == Some(generation);
         spawn_local(async move {
             let (groq, params) = query.groq(ordering, &search, page);
             let mut attempt = 0;
             let result = loop {
                 let result = store().client().query_in("drafts", &groq, &params, "document-list").await;
-                if !current() {
+                if !self.load_current(generation, page, token) {
                     return;
                 }
                 match result {
                     Err(_) if attempt < PAGE_RETRIES => {
                         sleep(1000 << attempt).await;
-                        if !current() {
+                        if !self.load_current(generation, page, token) {
                             return;
                         }
                         attempt += 1;
@@ -155,12 +172,17 @@ impl ListState {
                     result => break result,
                 }
             };
+            if !self.load_current(generation, page, token) {
+                return;
+            }
             let value = match result {
                 Ok(value) => value,
                 Err(err) => {
                     // The page loads again when the list scrolls, and the rows shown stay.
                     self.pages.update_value(|pages| {
-                        pages.remove(&page);
+                        if pages.get(&page) == Some(&token) {
+                            pages.remove(&page);
+                        }
                     });
                     if self.total.get_untracked().is_some() {
                         store().error("Could not load documents", err.to_string());
@@ -201,7 +223,7 @@ impl ListState {
 
     fn reset(self, query: Arc<ListQuery>) {
         self.generation.update_value(|generation| *generation += 1);
-        self.pages.set_value(HashSet::from([0]));
+        self.pages.set_value(HashMap::from([(0, 0)]));
         self.error.set(None);
         let ordering = self.ordering.get_untracked();
         let cached = self
@@ -233,7 +255,13 @@ impl ListState {
         }
         for page in start / PAGE..=(end - 1) / PAGE {
             let mut requested = false;
-            self.pages.update_value(|pages| requested = pages.insert(page));
+            self.pages.update_value(|pages| {
+                use std::collections::hash_map::Entry;
+                if let Entry::Vacant(entry) = pages.entry(page) {
+                    entry.insert(0);
+                    requested = true;
+                }
+            });
             if requested {
                 self.load(query.clone(), page, false);
             }
@@ -243,10 +271,10 @@ impl ListState {
     /// Refetches the pages in view after a change, so moved, added and removed documents land
     /// where the query puts them.
     fn refresh(self, query: Arc<ListQuery>) {
-        let pages: Vec<usize> = self.pages.with_value(|pages| pages.iter().copied().collect());
+        let pages: Vec<usize> = self.pages.with_value(|pages| pages.keys().copied().collect());
         let (live, dropped): (Vec<usize>, Vec<usize>) = pages.into_iter().partition(|page| *page < LIVE_PAGES);
         if !dropped.is_empty() {
-            self.pages.update_value(|pages| pages.retain(|page| *page < LIVE_PAGES));
+            self.pages.update_value(|pages| pages.retain(|page, _| *page < LIVE_PAGES));
             self.rows.update(|rows| {
                 let rows = Arc::make_mut(rows);
                 for page in dropped {
@@ -283,7 +311,7 @@ pub fn DocumentListPane(#[prop(into)] type_name: String) -> impl IntoView {
         ),
         search: RwSignal::new(String::new()),
         generation: StoredValue::new(0),
-        pages: StoredValue::new(HashSet::new()),
+        pages: StoredValue::new(HashMap::new()),
         scroll_reset: RwSignal::new(0),
         perf: use_app().perf,
     };
