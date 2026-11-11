@@ -6,7 +6,9 @@ import {Box, Flex, Icon, type IconProps, Text} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {useStableMenuWidth} from '../../../../ui-components/menuButton/useStableMenuWidth'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -66,6 +68,7 @@ export const CreateVariantPicker: ComponentType<{
   const [filterQuery, setFilterQuery] = useState('')
   const focusSearchField = useFocusSearchOnOpen()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
 
   const query = filterQuery.trim().toLowerCase()
 
@@ -151,15 +154,21 @@ export const CreateVariantPicker: ComponentType<{
                 </Box>
               ) : (
                 <Flex
+                  className={menuOverflowScroller}
                   flexDirection="column"
                   flexGrow={1}
                   flexShrink={1}
                   minHeight="0"
                   overflowY="auto"
-                  paddingX={1}
-                  paddingBottom={1}
+                  ref={scrollerRef}
                 >
-                  <Flex flexDirection="column" flexShrink={0} gap={1}>
+                  <Flex
+                    flexDirection="column"
+                    flexShrink={0}
+                    gap={1}
+                    paddingBottom={1}
+                    paddingX={1}
+                  >
                     {sections.flatMap((section, index) => [
                       ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
                       ...(section.label
