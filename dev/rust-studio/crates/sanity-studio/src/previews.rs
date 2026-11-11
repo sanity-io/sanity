@@ -125,11 +125,21 @@ async fn fetch_pending() {
     let groq = format!("*[_id in $ids]{}", schema.preview_projection(&types));
     let params = Map::from_iter([("ids".to_owned(), json!(ids))]);
     let result = store().client().query_in("drafts", &groq, &params, "preview.references").await;
+    let Ok(Value::Array(docs)) = result else {
+        // Leave signals on Loading and retry; a transient error must not stick as Missing.
+        cache.pending.borrow_mut().extend(ids);
+        spawn_local(async move {
+            sanity_client::sleep(1_000).await;
+            let cache = CACHE.with(Rc::clone);
+            if !cache.pending.borrow().is_empty() && !cache.scheduled.replace(true) {
+                spawn_local(fetch_pending());
+            }
+        });
+        return;
+    };
     let mut found: HashMap<String, DocPreview> = HashMap::new();
-    if let Ok(Value::Array(docs)) = result {
-        for preview in docs.iter().filter_map(DocPreview::from_projection) {
-            found.insert(preview.id.clone(), preview);
-        }
+    for preview in docs.iter().filter_map(DocPreview::from_projection) {
+        found.insert(preview.id.clone(), preview);
     }
     let signals = cache.signals.borrow().clone();
     for id in ids {

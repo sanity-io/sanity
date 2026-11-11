@@ -214,7 +214,9 @@ impl Client {
             "mutate",
             [
                 ("returnIds", "true".to_owned()),
-                ("visibility", "async".to_owned()),
+                // sync: /data/doc and queries see the write once mutate returns, so post-commit
+                // snapshot refetches of uncertain documents are current.
+                ("visibility", "sync".to_owned()),
                 ("autoGenerateArrayKeys", "true".to_owned()),
                 self.tag(tag),
             ],

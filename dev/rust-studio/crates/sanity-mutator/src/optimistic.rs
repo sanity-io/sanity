@@ -101,24 +101,22 @@ impl OptimisticDocuments {
 
     /// Stores a snapshot fetched from the server. Its `_rev` is the id of the transaction that
     /// last wrote the document, so when that is a local one, it and every transaction sent before
-    /// it stop applying. Committed transactions stop applying too, since a snapshot fetched after
-    /// their commit contains them; one still in flight keeps applying, and the document is
-    /// returned by `commit_succeeded` to be fetched again.
+    /// it stop applying. A snapshot that arrives while a transaction is in flight with some other
+    /// `_rev` cannot tell whether the server has applied it yet, so the document stays pending and
+    /// is returned by `commit_succeeded` to be fetched again. Committed transactions keep applying
+    /// until settled or echoed: a snapshot can still be older than the commit when mutate used
+    /// `visibility=async`, or when `/data/doc` raced the POST.
     pub fn set_snapshot(&mut self, id: &str, doc: Option<Value>) {
         let rev = doc.as_ref().and_then(|doc| doc.get("_rev")).and_then(Value::as_str).map(str::to_owned);
         self.remote.insert(id.to_owned(), doc);
-        if let Some(rev) = rev {
-            self.settle(id, &rev);
+        if let Some(rev) = rev.as_deref() {
+            self.settle(id, rev);
         }
         for tx in &mut self.transactions {
-            match tx.state {
-                TransactionState::Committed => {
-                    tx.pending.remove(id);
-                }
-                TransactionState::InFlight if tx.pending.contains(id) => {
-                    tx.uncertain.insert(id.to_owned());
-                }
-                TransactionState::InFlight | TransactionState::Queued => {}
+            // Only a revision that did not settle us is uncertain: a missing document proves
+            // nothing about an in-flight create, so it keeps applying without a post-commit refetch.
+            if tx.state == TransactionState::InFlight && tx.pending.contains(id) && rev.is_some() {
+                tx.uncertain.insert(id.to_owned());
             }
         }
         self.prune();
@@ -178,12 +176,17 @@ impl OptimisticDocuments {
     }
 
     /// Marks a transaction as acknowledged and returns the documents to fetch again, those a
-    /// snapshot left uncertain while it was in flight (see `set_snapshot`).
+    /// snapshot left uncertain while it was in flight (see `set_snapshot`). Those documents stop
+    /// applying immediately so a snapshot that already contained the write is not double-applied;
+    /// the refetch (with sync visibility) replaces the remote basis.
     pub fn commit_succeeded(&mut self, transaction_id: &str) -> Vec<String> {
         let mut refetch = Vec::new();
         if let Some(tx) = self.transactions.iter_mut().find(|tx| tx.id == transaction_id) {
             tx.state = TransactionState::Committed;
             refetch = std::mem::take(&mut tx.uncertain).into_iter().filter(|id| tx.pending.contains(id)).collect();
+            for id in &refetch {
+                tx.pending.remove(id);
+            }
         }
         self.prune();
         refetch
@@ -374,8 +377,35 @@ mod tests {
         store.take_next();
         store.commit_succeeded("tx");
         // The listener reconnected and missed the echo; the refetched snapshot has the insert
-        store.set_snapshot("a", Some(json!({"_id": "a", "list": [{"_key": "k"}]})));
+        // and our transaction id as `_rev`, which settles it.
+        store.set_snapshot("a", Some(json!({"_id": "a", "_rev": "tx", "list": [{"_key": "k"}]})));
         assert_eq!(store.local("a").unwrap()["list"], json!([{"_key": "k"}]));
+        assert!(!store.has_local_changes("a"));
+    }
+
+    #[test]
+    fn committed_transactions_survive_stale_snapshots() {
+        let mut store = OptimisticDocuments::new();
+        store.set_snapshot("a", None);
+        store.queue(
+            vec![Mutation::Create(json!({"_id": "a", "_type": "t", "title": "x"}))],
+            || "tx".into(),
+            "t".into(),
+        );
+        store.take_next();
+        store.commit_succeeded("tx");
+        // A /data/doc that raced the mutate (or async visibility) still returns missing
+        store.set_snapshot("a", None);
+        assert_eq!(store.local("a").unwrap()["title"], "x");
+        assert!(store.has_local_changes("a"));
+
+        // An older revision must not drop a committed patch either
+        let mut store = store_with("a", json!({"_id": "a", "_rev": "r0", "title": "old"}));
+        store.queue(vec![set("a", "title", json!("new"))], || "tx".into(), "t".into());
+        store.take_next();
+        store.commit_succeeded("tx");
+        store.set_snapshot("a", Some(json!({"_id": "a", "_rev": "r0", "title": "old"})));
+        assert_eq!(store.local("a").unwrap()["title"], "new");
     }
 
     fn insert_item(id: &str, key: &str) -> Mutation {

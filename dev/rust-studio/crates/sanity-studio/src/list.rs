@@ -145,7 +145,11 @@ impl ListState {
                     self.pages.update_value(|pages| {
                         pages.remove(&page);
                     });
-                    self.error.set(Some(err.to_string()));
+                    // Only surface an error when nothing is on screen yet; a failed later page
+                    // must not unmount the virtual list and wipe scroll position.
+                    if self.total.get_untracked().is_none() {
+                        self.error.set(Some(err.to_string()));
+                    }
                     return;
                 }
             };
@@ -268,11 +272,12 @@ pub fn DocumentListPane(#[prop(into)] type_name: String) -> impl IntoView {
     let search_input = RwSignal::new(String::new());
     let sort_open = RwSignal::new(false);
     // Rebuilding the list would lose its scroll position, so only a change of mode re-renders.
+    // An error after rows are on screen keeps Ready so the virtual list stays mounted.
     let mode = Memo::new(move |_| match (state.error.get(), state.total.get()) {
-        (Some(error), _) => ListMode::Error(error),
-        (None, Some(0)) => ListMode::Empty { searching: !state.search.with(|search| search.trim().is_empty()) },
+        (Some(error), None) => ListMode::Error(error),
+        (_, Some(0)) => ListMode::Empty { searching: !state.search.with(|search| search.trim().is_empty()) },
         (None, None) => ListMode::Loading,
-        (None, Some(_)) => ListMode::Ready,
+        (_, Some(_)) => ListMode::Ready,
     });
 
     {
