@@ -52,6 +52,16 @@ export const VariantSetEntry = styled.div(({theme}) => {
       --card-fg-color: ${color.bg};
       --card-muted-fg-color: color-mix(in srgb, ${color.bg} 72%, transparent);
 
+      /* A ui5 Text reads its own --text-color, and the muted variant has its own rule. */
+      [data-ui='Text'] {
+        --text-color: ${color.bg};
+        color: ${color.bg};
+      }
+
+      [data-ui='Text'][data-testid='version-secondary-line'] {
+        color: color-mix(in srgb, ${color.bg} 72%, transparent);
+      }
+
       /* The status icons set their tone colour inline on the svg, so only !important wins. */
       [data-testid='version-status'] svg {
         --card-icon-color: ${color.bg} !important;
