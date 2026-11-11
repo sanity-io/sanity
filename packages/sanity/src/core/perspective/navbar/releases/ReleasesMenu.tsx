@@ -8,7 +8,9 @@ import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
@@ -106,6 +108,7 @@ export function ReleasesMenu({
     useReleasesUpsell()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const focusSearchField = useFocusSearchOnOpen()
+  const scrollerRef = useMenuOverflow()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -174,7 +177,12 @@ export function ReleasesMenu({
                 value={filterQuery}
               />
             </Box>
-            <Flex flexDirection="column" overflowY="auto">
+            <Flex
+              className={menuOverflowScroller}
+              flexDirection="column"
+              overflowY="auto"
+              ref={scrollerRef}
+            >
               <ReleasesList
                 areReleasesEnabled={areReleasesEnabled}
                 filterQuery={filterQuery}

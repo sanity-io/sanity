@@ -19,7 +19,9 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -48,6 +50,9 @@ import {
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {conditionMismatchIcon, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
+
+/** Where the variant diamond's 21px box starts, from the row's left edge. */
+const VARIANT_MARK_BOX_INSET = 6
 
 /**
  * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
@@ -108,13 +113,15 @@ function VariantMenuItem(props: {
       />
       <PerspectiveDetailLink
         {...detailLinkProps}
-        // `paddingRight` mirrors the studio menu item's own
         aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
         data-testid={`variant-detail-link-${variantId}`}
         intent={VARIANTS_INTENT}
         onNavigate={onNavigate}
-        paddingRight={3}
         params={{id: variantId}}
+        // The link's box sits as far from the row's right edge as the diamond's box does from its
+        // left edge (6px: the diamond bleeds that far into the menu item's 12px padding), and
+        // the menu item's 12px gap then separates it from a mismatch icon
+        style={{paddingRight: VARIANT_MARK_BOX_INSET}}
         tooltip={t('navbar.variant.menu.view-variant')}
       />
     </div>
@@ -163,6 +170,7 @@ export function VariantsMenu({
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const focusSearchField = useFocusSearchOnOpen()
+  const scrollerRef = useMenuOverflow()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -267,17 +275,18 @@ export function VariantsMenu({
               <FilterNoMatches filter={filterQuery.trim()} />
             ) : (
               <Flex
+                className={menuOverflowScroller}
                 flexDirection="column"
                 flexGrow={1}
                 flexShrink={1}
                 minHeight="0"
                 overflowY="auto"
-                padding={1}
+                ref={scrollerRef}
               >
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1}>
+                <Flex flexDirection="column" flexShrink={0} gap={1} padding={1}>
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
