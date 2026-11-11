@@ -364,7 +364,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Button of a function the query declares differently from the library's version */
   'vision.functions.update': 'Update library',
   /** Button over the query editor that opens the bar writing a query from a description */
-  'vision.generate.button': 'Generate query',
+  'vision.generate.button': 'Generate',
   /** Closes the generate query bar */
   'vision.generate.close': 'Close',
   /** Explanation under the generate query field */
