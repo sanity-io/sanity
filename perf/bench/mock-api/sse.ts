@@ -9,6 +9,8 @@ interface ListenerConnection {
   ids: Set<string> | null
   res: ProxyResponse
   heartbeat: ReturnType<typeof setInterval>
+  /** Heartbeats continue but mutation events are dropped (see `stallOpenConnections`). */
+  stalled: boolean
 }
 
 /**
@@ -52,6 +54,11 @@ function writeEvent(res: ProxyResponse, event: string, data: unknown): void {
 export class ListenHub {
   private connections = new Set<ListenerConnection>()
   private welcomeCounter = 0
+  private readonly heartbeatIntervalMs: number
+
+  constructor(options: {heartbeatIntervalMs?: number} = {}) {
+    this.heartbeatIntervalMs = options.heartbeatIntervalMs ?? HEARTBEAT_INTERVAL_MS
+  }
 
   connect(res: ProxyResponse, ids: string[] | null, extraHeaders: Record<string, string>): void {
     writeResponseHead(res, 200, undefined, {
@@ -65,7 +72,8 @@ export class ListenHub {
       res,
       heartbeat: setInterval(() => {
         writeRaw(res, ':\n\n')
-      }, HEARTBEAT_INTERVAL_MS),
+      }, this.heartbeatIntervalMs),
+      stalled: false,
     }
     connection.heartbeat.unref?.()
 
@@ -88,11 +96,36 @@ export class ListenHub {
   broadcast(events: MutationEventPayload[]): void {
     for (const event of events) {
       for (const connection of this.connections) {
+        if (connection.stalled) continue
         if (connection.ids === null || connection.ids.has(event.documentId)) {
           writeEvent(connection.res, 'mutation', event)
         }
       }
     }
+  }
+
+  /**
+   * Silently stall every open connection: heartbeats keep it looking healthy,
+   * but mutation events stop arriving. Connections opened afterwards are
+   * unaffected, so a client that reconnects recovers. Returns how many
+   * connections were stalled.
+   */
+  stallOpenConnections(): number {
+    this.connections.forEach((connection) => {
+      connection.stalled = true
+    })
+    return this.connections.size
+  }
+
+  /** Deliver to stalled connections again. Events dropped while stalled are not replayed. */
+  resumeStalledConnections(): void {
+    this.connections.forEach((connection) => {
+      connection.stalled = false
+    })
+  }
+
+  get stalledConnectionCount(): number {
+    return [...this.connections].filter((connection) => connection.stalled).length
   }
 
   /** Disconnect all listeners (used by /_bench/reset between sessions). */
