@@ -150,6 +150,8 @@ export function createVersionFeed(client: SanityClient, options: VersionFeedOpti
   ).pipe(
     map((ids: string[] | null) => ({groupIds: (ids ?? []).toSorted(), error: null})),
     catchError((error: Error) => of({groupIds: null, error})),
+    // The list query can take seconds over a large dataset: report it as loading meanwhile.
+    startWith({groupIds: null, error: null}),
     shareReplay({bufferSize: 1, refCount: true}),
   )
 

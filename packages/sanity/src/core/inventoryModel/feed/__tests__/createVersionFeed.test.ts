@@ -328,6 +328,18 @@ describe('createVersionFeed', () => {
     subscription.unsubscribe()
   })
 
+  it('reports loading while the document list loads', async () => {
+    const {subscription, latest} = startFeed(mock)
+
+    // Before the list query answers.
+    expect(latest()).toEqual({groupIds: null, pages: [], versions: [], loading: true, error: null})
+
+    await flush()
+    expect(latest().loading).toBe(false)
+
+    subscription.unsubscribe()
+  })
+
   it('reports an error instead of throwing when the list fails to load', async () => {
     mock.failFetches()
     const {subscription, latest} = startFeed(mock)
