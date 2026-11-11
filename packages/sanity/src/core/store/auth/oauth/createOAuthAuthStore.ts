@@ -824,30 +824,48 @@ export function _createOAuthAuthStore({
     ),
   )
 
-  let everAuthenticated = false
+  // Whether the last settled probe found the user signed in.
+  let signedIn = false
+  // Set from the moment a sign-in stores its new token until a probe of the stored token settles,
+  // also when the sign-in stopped waiting for it after the settle timeout. A failed probe then
+  // shows the signed-out state, and the login screen says why, instead of erroring the state,
+  // which would take the Studio down.
+  let settlingSignIn = false
 
   // Every access token is probed once: a sign-in, a renewal, or a pair another tab wrote, which
-  // may belong to a different user. A probe that fails for a reason other than a rejected token,
-  // after the store has once been authenticated, is skipped: a steady session must not land on
-  // the login screen because one renewal's probe hit a network error. Shared by the state and by
-  // the callback's settle wait, which needs every probe, not only those that change the state.
+  // may belong to a different user. A probe that fails for a reason other than a rejected token
+  // is skipped while the user is signed in: a steady session must not land on the login screen
+  // because one renewal's probe hit a network error. Signed out, there is no session to keep, so
+  // the failure reaches the state. Shared by the state and by the callback's settle wait, which
+  // needs every probe, not only those that change the state.
   const probes$ = accessToken$.pipe(
-    switchMap((accessToken): Observable<{accessToken?: string; state: AuthState}> => {
-      if (!accessToken) return of({accessToken, state: unauthenticated})
-      return from(probeToken(accessToken)).pipe(
-        map((probed) => ({accessToken, state: probed})),
-        catchError((err: unknown) => {
-          if (!everAuthenticated) throw err
-          debug(
-            'probe failed after a renewal, keeping the current state: %s',
-            err instanceof Error ? err.message : err,
-          )
-          return EMPTY
-        }),
-      )
-    }),
-    tap(({state: probed}) => {
-      if (probed.authenticated) everAuthenticated = true
+    switchMap(
+      (accessToken): Observable<{accessToken?: string; state: AuthState; failed?: true}> => {
+        if (!accessToken) return of({accessToken, state: unauthenticated})
+        return from(probeToken(accessToken)).pipe(
+          map((probed) => ({accessToken, state: probed})),
+          catchError((err: unknown) => {
+            if (settlingSignIn && accessToken === tokenStorage.get()?.accessToken) {
+              settlingSignIn = false
+              debug(
+                'probe of the new token failed during sign-in, showing signed out: %s',
+                err instanceof Error ? err.message : err,
+              )
+              return of({accessToken, state: unauthenticated, failed: true as const})
+            }
+            if (!signedIn) throw err
+            debug(
+              'probe failed after a renewal, keeping the current state: %s',
+              err instanceof Error ? err.message : err,
+            )
+            return EMPTY
+          }),
+        )
+      },
+    ),
+    tap(({accessToken, state: probed}) => {
+      signedIn = probed.authenticated
+      if (accessToken === tokenStorage.get()?.accessToken) settlingSignIn = false
     }),
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
@@ -1143,54 +1161,78 @@ export function _createOAuthAuthStore({
     // Snapshot before the settle wait, with the same meaning as in `createLegacyAuthStore`.
     const durationMs = Math.round(performance.now() - startTime)
 
-    // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
-    // lands, and cannot clear or overwrite it halfway.
-    const published = await withLock(refreshLockName, async () => {
-      if (epoch !== sessionEpoch()) return false
-      const replaced = latestTokens()
-      tokenStorage.update(tokens)
-      // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
-      // so the sign-in does not wait for it.
-      if (replaced && replaced.refreshToken !== tokens.refreshToken) void revokeTokens(replaced)
-      return true
-    })
-    if (!published) {
-      // The user logged out while the code was being exchanged. The pair is valid on the server
-      // and known only here, so revoke it rather than drop it.
-      debug('callback: logged out during the exchange, revoking the new pair')
-      void revokeTokens(tokens)
-      return fail('logged out during sign-in', exchangeDurationMs)
+    settlingSignIn = true
+    try {
+      return await publishAndSettle()
+    } catch (err) {
+      settlingSignIn = false
+      throw err
     }
-    const settle = await waitForAuthenticatedState()
-    debug(
-      'callback: state %s after %dms, returning to %s',
-      settle.stateSettleTimedOut ? 'did not settle' : 'settled',
-      settle.stateSettleDurationMs,
-      flow.redirectPath ?? 'current path',
-    )
-    if (flow.redirectPath) replaceUrl(flow.redirectPath)
 
-    return {
-      loginMethod: 'oauth',
-      flow: 'exchange',
-      success: true,
-      durationMs,
-      exchangeDurationMs,
-      ...settle,
+    async function publishAndSettle(): Promise<OAuthCallbackResult> {
+      // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
+      // lands, and cannot clear or overwrite it halfway.
+      const published = await withLock(refreshLockName, async () => {
+        if (epoch !== sessionEpoch()) return false
+        const replaced = latestTokens()
+        tokenStorage.update(tokens)
+        // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
+        // so the sign-in does not wait for it.
+        if (replaced && replaced.refreshToken !== tokens.refreshToken) void revokeTokens(replaced)
+        return true
+      })
+      if (!published) {
+        // The user logged out while the code was being exchanged. The pair is valid on the server
+        // and known only here, so revoke it rather than drop it.
+        debug('callback: logged out during the exchange, revoking the new pair')
+        settlingSignIn = false
+        void revokeTokens(tokens)
+        return fail('logged out during sign-in', exchangeDurationMs)
+      }
+      const {outcome, ...settle} = await waitForProbeOfStoredToken()
+      debug(
+        'callback: probe of the new token %s after %dms, returning to %s',
+        outcome,
+        settle.stateSettleDurationMs,
+        flow.redirectPath ?? 'current path',
+      )
+      if (flow.redirectPath) replaceUrl(flow.redirectPath)
+      // The API refused the new token, also after a renewal, or the probe itself failed: the
+      // sign-in did not complete, and the login screen says so instead of waiting out the timeout.
+      if (outcome === 'refused' || outcome === 'failed') {
+        return {
+          ...failVisibly(
+            outcome === 'refused' ? 'token not accepted' : 'probe failed',
+            exchangeDurationMs,
+          ),
+          ...settle,
+        }
+      }
+
+      return {
+        loginMethod: 'oauth',
+        flow: 'exchange',
+        success: true,
+        durationMs,
+        exchangeDurationMs,
+        ...settle,
+      }
     }
   }
 
   /**
-   * Waits until the stored pair has been probed and found authenticated, so the AuthBoundary
-   * does not open onto a stale logged-out state. Bounded like the callback settle wait in
-   * `createLegacyAuthStore`.
+   * Waits for the first probe of the stored pair, so the AuthBoundary does not open onto a stale
+   * logged-out state, and the callback can tell a refused token from a slow one. Bounded like the
+   * callback settle wait in `createLegacyAuthStore`.
    *
    * Matched on a probe of the token now stored, not on `state`: the state replays its last value
    * and does not emit when the same user signs in again, so a user who was already signed in
    * would otherwise settle on the previous probe, or never. The token now stored is the exchanged
-   * one, or the one a renewal replaced it with when the API rejected it.
+   * one, or the one a renewal replaced it with when the API rejected it; a probe of a token that
+   * a renewal has since replaced is not the answer.
    */
-  async function waitForAuthenticatedState(): Promise<{
+  async function waitForProbeOfStoredToken(): Promise<{
+    outcome: 'authenticated' | 'refused' | 'failed' | 'timeout'
     stateSettleDurationMs: number
     stateSettleTimedOut: boolean
   }> {
@@ -1198,23 +1240,25 @@ export function _createOAuthAuthStore({
     // Raced as observables, so whichever loses is unsubscribed. A promise race would keep the
     // subscription alive after a timeout, for a token that may never authenticate. `state` is
     // subscribed alongside so the probe runs even if nothing else holds the state yet.
-    const result = await firstValueFrom(
+    const outcome = await firstValueFrom(
       race(
         merge(
           probes$.pipe(
-            filter(
-              (probe) =>
-                probe.state.authenticated && probe.accessToken === tokenStorage.get()?.accessToken,
-            ),
+            filter((probe) => probe.accessToken === tokenStorage.get()?.accessToken),
+            map((probe) => {
+              if (probe.failed) return 'failed' as const
+              return probe.state.authenticated ? ('authenticated' as const) : ('refused' as const)
+            }),
           ),
           state.pipe(ignoreElements()),
-        ).pipe(map(() => 'settled' as const)),
+        ),
         timer(AUTH_STATE_SETTLE_TIMEOUT_MS).pipe(map(() => 'timeout' as const)),
-      ),
+      ).pipe(catchError(() => of('failed' as const))),
     )
     return {
+      outcome,
       stateSettleDurationMs: Math.round(performance.now() - start),
-      stateSettleTimedOut: result === 'timeout',
+      stateSettleTimedOut: outcome === 'timeout',
     }
   }
 
