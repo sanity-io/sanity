@@ -166,8 +166,8 @@ settings:
 catalogs:
   default:
     '@optique/core':
-      specifier: ^1.1.1
-      version: 1.3.5
+      specifier: ^1.3.6
+      version: 1.3.6
     '@optique/run':
       specifier: ^1.1.1
       version: 1.3.5
@@ -1296,7 +1296,7 @@ importers:
         version: 7.22.0(supports-color@8.1.1)
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.5
+        version: 1.3.6
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
@@ -1348,7 +1348,7 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.5
+        version: 1.3.6
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
@@ -1477,7 +1477,7 @@ importers:
         version: 22.0.1
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.5
+        version: 1.3.6
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
@@ -2706,7 +2706,7 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.5
+        version: 1.3.6
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
@@ -2871,7 +2871,7 @@ importers:
     devDependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.5
+        version: 1.3.6
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.5
@@ -6285,6 +6285,10 @@ packages:
 
   '@optique/core@1.3.5':
     resolution: {integrity: sha512-tZASQ0TXsuk+6aqnA+n9vO3anHJ5Vr5oZIIpU/YfCqB0+Q8p3GRQyd5giBB9EnSoOE7/++0pR0xl+q0PSwWZnA==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
+
+  '@optique/core@1.3.6':
+    resolution: {integrity: sha512-BXVuVyxP9bg8FbyvBYrSHisnAeG3XTf1xcuUjAWgDWKfzZssMGbSrMdiv4tA+BK3+CrSo6no+uHWpiHh4HMKeg==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@optique/run@1.3.5':
@@ -20588,6 +20592,8 @@ snapshots:
   '@opentelemetry/semantic-conventions@1.43.0': {}
 
   '@optique/core@1.3.5': {}
+
+  '@optique/core@1.3.6': {}
 
   '@optique/run@1.3.5':
     dependencies:
