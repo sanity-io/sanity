@@ -1,5 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Text} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_VARIANT_TYPE_KEY,
@@ -34,18 +35,20 @@ import {useDocumentPane} from '../../../../useDocumentPane'
 import {DropdownButton} from '../DropdownButton'
 import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
 import {RhombusIcon, RhombusOutlineIcon} from '../RhombusIcons'
-import {menuDivider, variantIcon, versionCount} from './DocumentVariantsMenu.css'
+import {menuDivider, pillVariantIcon, variantIcon, versionCount} from './DocumentVariantsMenu.css'
 import {getDocumentVariantBundles} from './getDocumentVariantBundles'
 import {useSelectedVariant} from './useSelectedVariant'
 
 type IconProps = SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>
 
+// The menu item's `Icon` clones the icon with its own class, so the variant colour is merged with
+// it: passed first, the spread `className` replaced it and the diamond fell back to grey
 function FilledVariantIcon(props: IconProps) {
-  return <RhombusIcon size="large" className={variantIcon} {...props} />
+  return <RhombusIcon size="large" {...props} className={clsx(props.className, variantIcon)} />
 }
 
 function OutlineVariantIcon(props: IconProps) {
-  return <RhombusOutlineIcon className={variantIcon} {...props} />
+  return <RhombusOutlineIcon {...props} className={clsx(props.className, variantIcon)} />
 }
 
 /** The number of versions, naming their bundles in a tooltip. */
@@ -67,7 +70,7 @@ function VersionCount(props: {bundleTitles: string[]}) {
       placement="top"
       portal
     >
-      <Flex alignItems="center" gap={1}>
+      <Flex alignItems="center" gap={2}>
         <Text muted size={1} className={versionCount} data-testid="variant-version-count">
           {bundleTitles.length}
         </Text>
@@ -272,7 +275,7 @@ export function DocumentVariantsMenu() {
         button={
           <DropdownButton
             data-testid="document-variants-menu-button"
-            icon={RhombusIcon}
+            icon={<RhombusIcon className={pillVariantIcon} size="small" />}
             onClear={selectedVariant ? handleSelectDefault : undefined}
             tone="suggest"
             text={
@@ -282,7 +285,7 @@ export function DocumentVariantsMenu() {
             }
           />
         }
-        filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+        filterPlaceholder={t('document-panel-navigation.variants.filter-placeholder')}
         filterQuery={filterQuery}
         onFilterChange={setFilterQuery}
         leadingItems={

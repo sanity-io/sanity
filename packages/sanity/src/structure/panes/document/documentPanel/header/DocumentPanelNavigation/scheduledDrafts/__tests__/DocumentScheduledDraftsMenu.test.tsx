@@ -232,11 +232,13 @@ describe('DocumentScheduledDraftsMenu', () => {
     const trigger = screen.getByTestId('document-scheduled-drafts-menu-button')
     expect(trigger).toHaveTextContent('Dec 15, 2026')
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).not.toBeNull()
-    expect(trigger.querySelector('[data-sanity-icon="clock"]')).toBeNull()
-    expect(trigger.closest('[data-ui="DropdownButton"]')).toHaveAttribute('data-tone', 'caution')
+    expect(trigger.querySelector('[data-sanity-icon="clock-small"]')).toBeNull()
+    // A selected pill takes its tone on the trigger itself, like a selected version chip
+    expect(trigger).toHaveAttribute('data-tone', 'caution')
+    expect(trigger).toHaveAttribute('data-selected')
   })
 
-  it('keeps the clock on the trigger for a scheduled draft that is not paused', async () => {
+  it('keeps the small clock on the trigger for a scheduled draft that is not paused', async () => {
     mockUsePerspective.mockReturnValue(
       createPerspective({
         selectedPerspective: novemberDraft,
@@ -247,16 +249,18 @@ describe('DocumentScheduledDraftsMenu', () => {
     await renderMenu()
 
     const trigger = screen.getByTestId('document-scheduled-drafts-menu-button')
-    expect(trigger.querySelector('[data-sanity-icon="clock"]')).not.toBeNull()
+    expect(trigger.querySelector('[data-sanity-icon="clock-small"]')).not.toBeNull()
     expect(trigger.querySelector('[data-sanity-icon="unlock"]')).toBeNull()
-    expect(trigger.closest('[data-ui="DropdownButton"]')).toHaveAttribute('data-tone', 'suggest')
+    // A selected pill takes its tone on the trigger itself, like a selected version chip
+    expect(trigger).toHaveAttribute('data-tone', 'suggest')
+    expect(trigger).toHaveAttribute('data-selected')
   })
 
   it('filters the scheduled drafts by date and says when nothing matches', async () => {
     await renderMenu()
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search scheduled drafts…')
 
     await userEvent.type(input, 'dec')
     expect(within(menu).getByTestId('document-scheduled-draft-rDecember')).toBeInTheDocument()

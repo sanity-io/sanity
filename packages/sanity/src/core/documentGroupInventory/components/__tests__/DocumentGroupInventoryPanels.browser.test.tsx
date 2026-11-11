@@ -346,10 +346,10 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    await expect.element(page.getByRole('heading', {name: 'Create version'})).toBeVisible()
-    await expect.element(page.getByText('A new version of Ursula K. Le Guin')).toBeVisible()
+    await expect.element(page.getByRole('heading', {name: 'Create variant'})).toBeVisible()
+    await expect.element(page.getByText('A new variant of Ursula K. Le Guin')).toBeVisible()
     await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('Who sees this version')).toBeVisible()
+    await expect.element(page.getByText('Who sees this variant')).toBeVisible()
     await expect.element($variantTrigger).toMatchTextContent('Summer sale')
     await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
     await expect.element(page.getByText('Where it lives')).toBeVisible()
@@ -359,7 +359,7 @@ describe('CreateVariant', () => {
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
     await expect.element(page.getByRole('button', {name: 'Cancel'})).toBeEnabled()
 
-    const $create = page.getByRole('button', {name: 'Create version'})
+    const $create = page.getByRole('button', {name: 'Create variant'})
     await expect.element($create).toBeEnabled()
     expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
@@ -516,7 +516,7 @@ describe('CreateVariant', () => {
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
     await userEvent.click($targetTrigger)
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
     await expect.element($filter).toBeVisible()
 
     await userEvent.type($filter, 'undecided')
@@ -536,7 +536,7 @@ describe('CreateVariant', () => {
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     await userEvent.click($targetTrigger)
-    await expect.element($targetMenu.getByPlaceholder('Find')).toHaveValue('')
+    await expect.element($targetMenu.getByPlaceholder('Search…')).toHaveValue('')
     await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
 
     // The filter only narrows the list; the current option is unchanged.
@@ -554,7 +554,7 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
 
     await userEvent.click($targetTrigger)
     await expect.element($filter).toHaveFocus()
@@ -567,7 +567,7 @@ describe('CreateVariant', () => {
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     // Keep the pointer off the options, which take focus when hovered.
-    await userEvent.hover(page.getByRole('heading', {name: 'Create version'}))
+    await userEvent.hover(page.getByRole('heading', {name: 'Create variant'}))
 
     const openFromKeyboard = async (key: string) => {
       await expect.element($targetTrigger).toHaveFocus()
