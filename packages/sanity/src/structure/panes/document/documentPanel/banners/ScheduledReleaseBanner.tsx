@@ -53,7 +53,9 @@ export function ScheduledReleaseBanner({
               onClick: pauseToEdit,
               disabled: isPausing,
               mode: 'default',
-              tone: tone,
+              // A scheduled release is purple, but its action is not: a primary action uses the
+              // default primary
+              tone: tone === 'suggest' ? 'default' : tone,
             }
           : undefined
       }

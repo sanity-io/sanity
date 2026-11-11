@@ -125,7 +125,9 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
         documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
-              tone: tone,
+              // A scheduled release is purple, but its action is not: a primary action uses the
+              // default primary
+              tone: tone === 'suggest' ? 'default' : tone,
               onClick: handleGoToEdit,
               mode: 'default',
             }
