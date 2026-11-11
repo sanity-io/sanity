@@ -69,4 +69,24 @@ describe('DocumentVersionsFlyoutList footer', () => {
     await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
     expect(await screen.findByText('See all 2 versions in inventory')).toBeTruthy()
   })
+
+  it('shows a loading state, not an empty panel, while the versions load', async () => {
+    ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+      data: [],
+      versions: [],
+      error: null,
+      loading: true,
+    })
+    const wrapper = await createTestProvider()
+    render(
+      <DocumentVersionsFlyoutList
+        documentGroupId={GROUP_ID}
+        onOpenInventory={() => {}}
+        onPick={() => {}}
+      />,
+      {wrapper},
+    )
+    expect(await screen.findByTestId('document-versions-flyout-loading')).toBeTruthy()
+    expect(screen.getByText(/loading/i)).toBeTruthy()
+  })
 })

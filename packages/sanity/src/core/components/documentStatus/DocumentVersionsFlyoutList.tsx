@@ -190,7 +190,21 @@ export function DocumentVersionsFlyoutList(props: {
   const {t} = useTranslation()
   const {groups, loading} = useDocumentVersionStatusGroups(documentGroupId)
 
-  if (loading) return null
+  if (loading) {
+    return (
+      <Card
+        aria-label={t('document-group.flyout.title')}
+        border
+        data-testid="document-versions-flyout-loading"
+        padding={3}
+        radius={3}
+      >
+        <Text muted size={1}>
+          {t('common.loading')}
+        </Text>
+      </Card>
+    )
+  }
 
   const total = groups.reduce((count, group) => count + group.items.length, 0)
 
