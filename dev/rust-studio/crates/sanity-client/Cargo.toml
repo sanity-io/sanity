@@ -1,0 +1,33 @@
+[package]
+name = "sanity-client"
+description = "Rust port of the parts of @sanity/client Studio uses: queries, documents, mutations, actions and the listener"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+js-sys.workspace = true
+serde_json.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+
+[dependencies.web-sys]
+workspace = true
+features = [
+  "AbortController",
+  "AbortSignal",
+  "Blob",
+  "File",
+  "Headers",
+  "ReadableStream",
+  "ReadableStreamDefaultReader",
+  "Request",
+  "RequestCredentials",
+  "RequestInit",
+  "Response",
+  "Url",
+  "UrlSearchParams",
+  "Window",
+]
