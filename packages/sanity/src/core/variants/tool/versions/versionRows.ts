@@ -9,6 +9,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   isReleaseDocumentId,
 } from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {EXCLUDE_AGENT_VERSIONS_FILTER} from '../../../search/constants'
 import {type ListenQueryParams} from '../../../store/document/listenQuery'
 import {type VariantId} from '../../types'
 import {encodeVariantLinkParam} from '../../util/variantSelection'
@@ -91,9 +92,9 @@ export function buildDocumentLensFilter({
   const clauses = [
     '!(_id in path("_.**"))',
     '!string::startsWith(_type, "sanity.")',
-    // Agent versions (`versions.agent-<id>.<id>`), which every lens leaves out. A path() glob
-    // does not match these ids, so they are matched by prefix.
-    '!string::startsWith(_id, "versions.agent-")',
+    // Agent versions, which every lens leaves out: by their `versions.agent-<id>.<id>` id, or by
+    // the agent bundle on `_system.bundleId` for variant-scoped ones, whose ids are opaque.
+    EXCLUDE_AGENT_VERSIONS_FILTER,
   ]
   const params: ListenQueryParams = {}
 
@@ -109,9 +110,10 @@ export function buildDocumentLensFilter({
   }
   if (filters.release) {
     // Variant versions in a release carry `_system.release`; plain release versions only carry
-    // the release name in their id (`versions.<release>.<id>`), so both forms are matched.
+    // the release name in their id (`versions.<release>.<id>`), so both forms are matched. `**`,
+    // not `*`: a published id can contain dots, and `*` matches one segment.
     clauses.push(
-      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".*"))',
+      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".**"))',
     )
     params.releaseRef = filters.release
     params.releaseName = toReleaseId(filters.release)

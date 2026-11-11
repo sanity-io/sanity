@@ -1,3 +1,4 @@
+import {evaluate, parse} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
 import {
@@ -6,6 +7,7 @@ import {
   type VersionStubSource,
 } from '../../../../inventoryModel/buildInventoryIndex'
 import {type VersionStub} from '../../../../inventoryModel/types'
+import {EXCLUDE_AGENT_VERSIONS_FILTER} from '../../../../search/constants'
 import {type VariantId} from '../../../types'
 import {
   buildDocumentLensFilter,
@@ -173,7 +175,7 @@ describe('buildDocumentLensFilter', () => {
     expect(buildDocumentLensFilter({type: undefined, filters: {}})).toEqual({
       filter:
         '!(_id in path("_.**")) && !string::startsWith(_type, "sanity.") && ' +
-        '!string::startsWith(_id, "versions.agent-")',
+        EXCLUDE_AGENT_VERSIONS_FILTER,
       params: {},
     })
   })
@@ -197,7 +199,7 @@ describe('buildDocumentLensFilter', () => {
   it('matches a release by reference and by the release name in the id', () => {
     const {filter, params} = buildDocumentLensFilter({type: undefined, filters: {release: SPRING}})
     expect(filter).toContain(
-      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".*"))',
+      '(_system.release._ref == $releaseRef || _id in path("versions." + $releaseName + ".**"))',
     )
     expect(params).toEqual({releaseRef: SPRING, releaseName: 'rSpring'})
   })
@@ -229,7 +231,7 @@ describe('buildDocumentLensFilter', () => {
     ]
     for (const versionFilters of filters) {
       expect(buildDocumentLensFilter({type: undefined, filters: versionFilters}).filter).toContain(
-        '!string::startsWith(_id, "versions.agent-")',
+        EXCLUDE_AGENT_VERSIONS_FILTER,
       )
     }
   })
@@ -237,6 +239,31 @@ describe('buildDocumentLensFilter', () => {
   it('counts classic drafts as drafts', () => {
     const {filter} = buildDocumentLensFilter({type: undefined, filters: {state: 'draft'}})
     expect(filter).toContain('(_system.bundleId == "drafts" || _id in path("drafts.**"))')
+  })
+
+  it('matches plain release versions of dotted ids and leaves out opaque agent versions', async () => {
+    const dataset = [
+      {_id: 'versions.rSpring.boots', _type: 'product', _system: null},
+      {_id: 'versions.rSpring.boots.winter', _type: 'product', _system: null},
+      {_id: 'versions.agent-12334.boots', _type: 'product'},
+      // A variant-scoped agent version: the id is an opaque scope hash, the bundle is in _system.
+      {
+        _id: 'versions.a1b2c3.boots',
+        _type: 'product',
+        _system: {bundleId: 'agent-12334', group: {_ref: 'boots', _weak: true}},
+      },
+    ]
+    const query = async (filters: VersionFilters) => {
+      const {filter, params} = buildDocumentLensFilter({type: undefined, filters})
+      const result = await evaluate(parse(`*[${filter}]._id`, {params}), {dataset, params})
+      return result.get()
+    }
+
+    expect(await query({})).toEqual(['versions.rSpring.boots', 'versions.rSpring.boots.winter'])
+    expect(await query({release: SPRING})).toEqual([
+      'versions.rSpring.boots',
+      'versions.rSpring.boots.winter',
+    ])
   })
 
   it('reads Default as no definition', () => {
