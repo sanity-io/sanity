@@ -296,5 +296,77 @@ describe('usePublishAction', () => {
 
       await waitFor(() => expect(result.current).toBeNull())
     })
+
+    it('keeps Publish in the primary slot while a variant draft is being published', async () => {
+      const variantDraft = doc('versions.scope-nordic.author-1', 'variant-draft-1')
+      const withDraft = {...variantProps(), version: variantDraft} as DocumentActionProps
+      mockUseDocumentPane.mockReturnValue({
+        changesOpen: false,
+        documentId: ID,
+        documentType: 'author',
+        value: variantDraft,
+        targetDocumentState: {
+          status: 'ready',
+          targetDocument: variantDraft,
+          scopeId: 'scope-nordic',
+          variant: 'nordic',
+          siblings: {published: undefined, draft: undefined, version: variantDraft},
+        },
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      mockUseEditState.mockReturnValue({version: variantDraft} as unknown as ReturnType<
+        typeof useEditState
+      >)
+      mockUseValidationStatus.mockReturnValue({
+        isValidating: false,
+        validation: [],
+        revision: variantDraft._rev,
+      })
+
+      const {result, rerender} = await renderPublishAction(withDraft)
+      expect(result.current?.label).toBe('Publish')
+      expect(result.current?.disabled).toBe(false)
+
+      act(() => result.current?.onHandle?.())
+      expect(operations.publish.execute).toHaveBeenCalled()
+      expect(result.current?.label).toBe('Publishing…')
+
+      // The draft is gone and the published copy has not been observed yet
+      const draftGone = {...variantProps(), version: null} as DocumentActionProps
+      mockUseDocumentPane.mockReturnValue({
+        changesOpen: false,
+        documentId: ID,
+        documentType: 'author',
+        value: variantDraft,
+        targetDocumentState: {
+          status: 'ready',
+          targetDocument: undefined,
+          scopeId: undefined,
+          variant: 'nordic',
+          siblings: {published: undefined, draft: undefined, version: undefined},
+        },
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      rerender(draftGone)
+      expect(result.current).not.toBeNull()
+      expect(result.current?.label).toBe('Publishing…')
+      expect(result.current?.disabled).toBe(true)
+
+      // The published copy arrives
+      mockUseDocumentPane.mockReturnValue({
+        changesOpen: false,
+        documentId: ID,
+        documentType: 'author',
+        value: variantPublished,
+        targetDocumentState: {
+          status: 'ready',
+          targetDocument: variantPublished,
+          scopeId: undefined,
+          variant: 'nordic',
+          siblings: {published: variantPublished, draft: undefined, version: undefined},
+        },
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      rerender(draftGone)
+      expect(result.current).not.toBeNull()
+      expect(result.current?.disabled).toBe(true)
+    })
   })
 })
