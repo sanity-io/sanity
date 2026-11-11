@@ -94,6 +94,7 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   return (
     <Banner
       tone={tone}
+      neutralAction
       data-testid="open-release-to-edit-banner"
       content={
         <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>

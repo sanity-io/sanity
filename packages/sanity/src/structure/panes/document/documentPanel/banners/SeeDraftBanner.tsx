@@ -42,6 +42,7 @@ export function SeeDraftBanner() {
   return (
     <Banner
       tone="suggest"
+      neutralAction
       data-testid="see-draft-banner"
       content={
         <Text size={1} as="div" trim={true} tone="suggest">
