@@ -136,7 +136,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               </Flex>
             </Flex>
           ) : (
-            <Box data-testid={`${testId}-no-matches`} paddingX={4} paddingBottom={3}>
+            <Box data-testid={`${testId}-no-matches`} paddingX={4} paddingY={3}>
               <Text muted size={1}>
                 {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
               </Text>
