@@ -19,6 +19,7 @@ const FALLBACK_CONTEXT_VALUE = {
   handleOpenDialog: () => null,
   handleClose: () => null,
   upsellDataPromise: null,
+  requestUpsellData: () => null,
   telemetryLogs: {
     dialogSecondaryClicked: () => null,
     dialogPrimaryClicked: () => null,

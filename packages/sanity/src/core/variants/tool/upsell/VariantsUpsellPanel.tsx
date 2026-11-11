@@ -1,9 +1,7 @@
 import {motion} from 'motion/react'
-import {Suspense, use} from 'react'
 import {styled} from 'styled-components'
 import {Container, Box, Flex} from 'ui5'
 
-import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useVariantsUpsell} from '../../contexts/upsell/useVariantsUpsell'
 import {VariantIllustration} from '../resources/VariantIllustration'
@@ -16,23 +14,12 @@ const Panel = styled(Container)`
 /**
  * Empty state of the Variants tool when the plan lacks content variants. Same shape as the
  * releases schedules upsell: the variant illustration, then `UpsellPanel` with no cover image
- * (the illustration takes its place). Waits for the upsell content here, at the leaf.
+ * (the illustration takes its place). The panel starts the content request when it mounts.
  *
  * @internal
  */
 export function VariantsUpsellPanel(): React.JSX.Element {
-  return (
-    <Suspense>
-      <VariantsUpsellPanelContent />
-    </Suspense>
-  )
-}
-
-function VariantsUpsellPanelContent() {
-  const {upsellDataPromise, telemetryLogs} = useVariantsUpsell()
-  const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
-
-  if (!upsellData) return null
+  const upsell = useVariantsUpsell()
 
   return (
     <Flex
@@ -55,10 +42,9 @@ function VariantsUpsellPanelContent() {
               <UpsellPanel
                 align="center"
                 border={false}
-                data={{...upsellData, image: null}}
+                hideImage
                 layout="vertical"
-                onPrimaryClick={telemetryLogs.panelPrimaryClicked}
-                onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+                upsell={upsell}
               />
             </Box>
           </Flex>
