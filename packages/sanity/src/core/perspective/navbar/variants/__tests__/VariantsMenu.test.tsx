@@ -150,7 +150,7 @@ describe('VariantsMenu', () => {
     await renderMenu()
 
     expect(
-      screen.getByTestId('variant-default').querySelector('[data-sanity-icon="rhombus"]'),
+      screen.getByTestId('variant-default').querySelector('[data-ui="VariantMark"]'),
     ).not.toBeNull()
   })
 
