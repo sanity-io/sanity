@@ -27,6 +27,7 @@ import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
+import {DocumentListenerStalled} from './document/__telemetry__/listenerStall.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
 import {DocumentPairTornDownWithPendingMutations} from './document/__telemetry__/pendingMutations.telemetry'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
@@ -40,6 +41,7 @@ import {
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
+import {type ListenerStallDetails} from './document/utils/watchForListenerStall'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
@@ -194,6 +196,17 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleListenerStall = useCallback(
+    (details: ListenerStallDetails) => {
+      try {
+        telemetry.log(DocumentListenerStalled, details)
+      } catch {
+        // runs inside getPairListener's catchError; throwing here would replace the restart with an error
+      }
+    },
+    [telemetry],
+  )
+
   const handleReportLatency = useCallback(
     (event: LatencyReportEvent) => {
       if (event.latencyMs > IGNORE_LATENCY_BELOW_MS) {
@@ -289,6 +302,7 @@ export function useDocumentStore(): DocumentStore {
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
+          onListenerStall: handleListenerStall,
           onSlowCommit: handleSlowCommit,
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
@@ -328,6 +342,7 @@ export function useDocumentStore(): DocumentStore {
     templates,
     handleReportLatency,
     handleSyncErrorRecovery,
+    handleListenerStall,
     handleSlowCommit,
     handleDocumentPairLoaded,
     handleReportMutationPerformance,

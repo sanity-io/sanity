@@ -48,8 +48,7 @@ afterEach(() => {
 })
 
 describe('a silent listener', () => {
-  // The listener never echoes B's own save, so B stays stuck on the deleted item and never recovers.
-  test.fails('LSN-STALL-OWN-SAVE: B restarts its silent listener, converges and sees the deleted item gone', async () => {
+  test('LSN-STALL-OWN-SAVE: B restarts its silent listener, converges and sees the deleted item gone', async () => {
     const stalledWorld = await runSyncTest(definition)
     world = stalledWorld
     await stalledWorld.settle()
