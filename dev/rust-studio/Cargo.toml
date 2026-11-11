@@ -1,0 +1,35 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+publish = false
+rust-version = "1.99"
+version = "0.0.0"
+
+[workspace.dependencies]
+console_error_panic_hook = "0.1.7"
+js-sys = "0.3.107"
+leptos = { version = "0.8.23", features = ["csr"] }
+sanity-client = { path = "crates/sanity-client" }
+sanity-color = { path = "crates/sanity-color" }
+sanity-icons = { path = "crates/sanity-icons" }
+sanity-mutator = { path = "crates/sanity-mutator" }
+sanity-ui = { path = "crates/sanity-ui" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.154", features = ["preserve_order"] }
+# Pinned exactly: the wasm-bindgen CLI that scripts/build.mjs downloads must match it.
+wasm-bindgen = "=0.2.130"
+wasm-bindgen-futures = "0.4.80"
+web-sys = "0.3.107"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+panic = "abort"
+# Not `true`: that also drops the `target_features` section wasm-bindgen reads to use reference
+# types. scripts/build.mjs removes the name section instead.
+strip = "debuginfo"
