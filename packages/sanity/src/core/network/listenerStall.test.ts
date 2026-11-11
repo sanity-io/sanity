@@ -137,4 +137,21 @@ describe('listener stall detection', () => {
 
     expect(stalls).toHaveBeenCalledTimes(1)
   })
+
+  it('replays an active stall to a subscriber added after it was detected, once only', async () => {
+    pendingFetch()
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
+
+    const lateSubscriber = vi.fn()
+    listenerStall.subscribeListenerStall(lateSubscriber)
+    expect(lateSubscriber).toHaveBeenCalledTimes(1)
+    expect(lateSubscriber.mock.calls[0][0]).toMatchObject({isBootStall: true, stallOccurrence: 1})
+
+    const anotherLateSubscriber = vi.fn()
+    listenerStall.subscribeListenerStall(anotherLateSubscriber)
+    expect(anotherLateSubscriber).not.toHaveBeenCalled()
+  })
 })

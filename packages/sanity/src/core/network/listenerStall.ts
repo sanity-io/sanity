@@ -29,10 +29,12 @@ const stallDetectorState: {
   isStalled: boolean
   stallOccurrence: number
   timer: ReturnType<typeof setTimeout> | undefined
+  pendingStall: DetectedStall | undefined
 } = {
   isStalled: false,
   stallOccurrence: 0,
   timer: undefined,
+  pendingStall: undefined,
 }
 
 const stallSubscribers = new Set<(stall: DetectedStall) => void>()
@@ -43,10 +45,20 @@ const stallSubscribers = new Set<(stall: DetectedStall) => void>()
  * still produce exactly one call. A later stall, once this tab's pending requests have cleared,
  * is a new occurrence.
  *
+ * A stall detected with no subscribers yet (the tab hangs above wherever the telemetry reporter
+ * mounts) is replayed to the first subscriber that arrives while it is still active, so a boot
+ * stall is never silently dropped. Replay happens once per occurrence, not once per subscriber -
+ * a remount after that first delivery gets nothing.
+ *
  * @internal
  */
 export function subscribeListenerStall(subscriber: (stall: DetectedStall) => void): () => void {
   stallSubscribers.add(subscriber)
+  if (stallDetectorState.pendingStall) {
+    const stall = stallDetectorState.pendingStall
+    stallDetectorState.pendingStall = undefined
+    subscriber(stall)
+  }
   return () => {
     stallSubscribers.delete(subscriber)
   }
@@ -86,11 +98,17 @@ function detectStall(oldestPending: PendingRequest): void {
     stallOccurrence: stallDetectorState.stallOccurrence,
     stalledForMs: Date.now() - oldestPending.startedAt,
   }
-  stallSubscribers.forEach((subscriber) => subscriber(stall))
+
+  if (stallSubscribers.size > 0) {
+    stallSubscribers.forEach((subscriber) => subscriber(stall))
+  } else {
+    stallDetectorState.pendingStall = stall
+  }
 }
 
 function clearStall(): void {
   if (!stallDetectorState.isStalled) return
   stallDetectorState.isStalled = false
+  stallDetectorState.pendingStall = undefined
   setStalled(false)
 }
