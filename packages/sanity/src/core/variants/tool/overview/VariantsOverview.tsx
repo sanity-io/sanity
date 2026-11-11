@@ -237,39 +237,51 @@ export function VariantsOverview(): React.JSX.Element {
       {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
           the command lane and per-row actions. (Multi-select is supported by the component but not
           wired here yet — bulk operations ship separately once transactional batching lands.) */}
-      {view === 'versions' ? (
-        <VariantVersionsView />
-      ) : (
-        <DocumentTable<TableVariant>
-          alwaysShowCommandLane
-          columnDefs={columnDefs}
-          // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
-          // bulk toolbar) never shifts the table.
-          commandLaneMinHeight={47}
-          emptyState={tableEmptyState}
-          filterTabs={
-            // VariantConditionFilters renders nothing when there are no condition facets; passing the
-            // element unconditionally would still read as "tabs present" to DocumentTable and strand a
-            // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
-            facets.length > 0 ? (
-              <VariantConditionFilters
-                facets={facets}
-                onChange={setConditionFilters}
-                value={conditionFilters}
-              />
-            ) : undefined
-          }
-          filterTabsScroll={false}
-          getRowKey={getRowKey}
-          id="variant-definitions-table"
-          loading={loading}
-          rowActions={renderRowActions}
-          rowId={VARIANT_TABLE_ROW_ID}
-          rows={rows}
-          searchPlaceholder={t('overview.search.placeholder')}
-          searchPredicate={searchPredicate}
-        />
-      )}
+      <Flex
+        aria-labelledby={
+          view === 'versions' ? 'variants-view-versions' : 'variants-view-definitions'
+        }
+        flexBasis="0%"
+        flexDirection="column"
+        flexGrow={1}
+        id="variants-overview-view"
+        role="tabpanel"
+        style={{minHeight: 0}}
+      >
+        {view === 'versions' ? (
+          <VariantVersionsView />
+        ) : (
+          <DocumentTable<TableVariant>
+            alwaysShowCommandLane
+            columnDefs={columnDefs}
+            // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
+            // bulk toolbar) never shifts the table.
+            commandLaneMinHeight={47}
+            emptyState={tableEmptyState}
+            filterTabs={
+              // VariantConditionFilters renders nothing when there are no condition facets; passing the
+              // element unconditionally would still read as "tabs present" to DocumentTable and strand a
+              // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
+              facets.length > 0 ? (
+                <VariantConditionFilters
+                  facets={facets}
+                  onChange={setConditionFilters}
+                  value={conditionFilters}
+                />
+              ) : undefined
+            }
+            filterTabsScroll={false}
+            getRowKey={getRowKey}
+            id="variant-definitions-table"
+            loading={loading}
+            rowActions={renderRowActions}
+            rowId={VARIANT_TABLE_ROW_ID}
+            rows={rows}
+            searchPlaceholder={t('overview.search.placeholder')}
+            searchPredicate={searchPredicate}
+          />
+        )}
+      </Flex>
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog

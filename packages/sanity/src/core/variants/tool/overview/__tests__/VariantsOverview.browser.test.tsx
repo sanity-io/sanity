@@ -103,6 +103,19 @@ describe('VariantsOverview', () => {
     ).toHaveLength(2)
   })
 
+  it('labels the switched view as the panel of the selected tab', async () => {
+    void render(<VariantsOverviewHarness />)
+    await expectRowsSettled(2)
+
+    const panel = document.getElementById('variants-overview-view')
+    expect(panel?.getAttribute('role')).toBe('tabpanel')
+    expect(panel?.getAttribute('aria-labelledby')).toBe('variants-view-definitions')
+    expect(panel?.contains(page.getByTestId('variant-definitions-table').element())).toBe(true)
+    expect(page.getByTestId('variants-view-versions').element().getAttribute('aria-controls')).toBe(
+      'variants-overview-view',
+    )
+  })
+
   it('narrows the list from the search box in the command lane', async () => {
     void render(<VariantsOverviewHarness />)
 
