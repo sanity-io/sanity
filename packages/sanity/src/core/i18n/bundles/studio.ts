@@ -617,6 +617,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-description': 'Who sees this version',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',
+  /** Body of the notice in the delete dialog when required links stop the published Default document from being deleted */
+  'document-group.delete.blocked.description':
+    'They link to it with a required link. Change or remove those links first.',
+  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (singular) */
+  'document-group.delete.blocked.title_one':
+    "The Default document can't be deleted yet: 1 document needs it",
+  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (plural) */
+  'document-group.delete.blocked.title_other':
+    "The Default document can't be deleted yet: {{count}} documents need it",
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -647,9 +656,27 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
   /** The label given to the delete action */
   'document-group.delete.confirm-button.text': 'Delete',
+  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (singular) */
+  'document-group.delete.confirm-excluding-published-button.text_one': 'Delete 1 other version',
+  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (plural) */
+  'document-group.delete.confirm-excluding-published-button.text_other':
+    'Delete {{count}} other versions',
+  /** Header of the delete dialog when only the published Default document is selected */
+  'document-group.delete.default-title': 'Delete the Default document?',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Body of the notice in the delete dialog when no published Default document is selected */
+  'document-group.delete.no-links.description':
+    'Links point at the Default document, so deleting these versions breaks no links.',
+  /** Title of the notice in the delete dialog when no published Default document is selected */
+  'document-group.delete.no-links.title': 'Nothing links to these versions',
+  /** Notice in the delete dialog when only optional links point at the published Default document (singular) */
+  'document-group.delete.optional-links.text_one':
+    '1 document links to “<DocumentTitle/>” with an optional link. It will point at nothing.',
+  /** Notice in the delete dialog when only optional links point at the published Default document (plural) */
+  'document-group.delete.optional-links.text_other':
+    '{{count}} documents link to “<DocumentTitle/>” with optional links. They will point at nothing.',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
   'document-group.delete.other-reference-count.title_one': '1 other reference not show',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
@@ -661,6 +688,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Tag on a referring document in the delete dialog whose link to the deleted document is optional (weak) */
+  'document-group.delete.reference-tag.optional': 'Optional',
+  /** Tag on a referring document in the delete dialog whose link to the deleted document is required (strong) */
+  'document-group.delete.reference-tag.required': 'Required',
   /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
   'document-group.delete.referring-document-count.text_one':
     '1 document refers to “<DocumentTitle/>”',
@@ -674,6 +705,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (singular) */
+  'document-group.delete.variants-stay.text_one': '1 variant stays. It loses its Default.',
+  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (plural) */
+  'document-group.delete.variants-stay.text_other':
+    '{{count}} variants stay. They lose their Default.',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (singular) */
+  'document-group.delete.with-default-title_one':
+    'Delete {{count}} version, including the Default?',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (plural) */
+  'document-group.delete.with-default-title_other':
+    'Delete {{count}} versions, including the Default?',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */
