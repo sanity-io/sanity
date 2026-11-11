@@ -6,7 +6,7 @@ const banner = 'sanity-document-banner'
 /** Below this banner width the action goes under the text, left aligned. */
 const NARROW = 480
 
-/** PROPOSED (Studio-wide). The container the narrow layout is measured on (a container query cannot style the element it measures). */
+/** The container the narrow layout is measured on (a container query cannot style the element it measures). */
 export const root = css({
   containerName: banner,
   containerType: 'inline-size',
