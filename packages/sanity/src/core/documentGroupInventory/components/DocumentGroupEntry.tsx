@@ -1,10 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
-import {Icon, Text} from 'ui5'
+import {Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {VariantMark} from '../../../ui-components/variantMark'
 import {getDocumentVersionStatusTimestampKey} from '../../components/documentStatus/getDocumentVersionStatusTimestampKey'
-import {RhombusIconLarge} from '../../components/temporary-icons/Rhombus'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -78,9 +78,7 @@ export function DocumentGroupEntry({
         <div className="version-text">
           {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
           <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
-            {isVariantRow && (
-              <Icon icon={RhombusIconLarge} size={1} aria-hidden style={{margin: '-0.375rem'}} />
-            )}
+            {isVariantRow && <VariantMark size="row" style={{marginInline: '-0.375rem'}} />}
           </span>
           {/*
            * The text and the badges share one wrapping body, so a badge group that does not fit
