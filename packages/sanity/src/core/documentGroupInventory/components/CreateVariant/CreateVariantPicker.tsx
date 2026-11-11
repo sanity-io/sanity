@@ -7,6 +7,7 @@ import {Box, Flex, Icon, type IconProps, Text} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useStableMenuWidth} from '../../../../ui-components/menuButton/useStableMenuWidth'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -64,6 +65,7 @@ export const CreateVariantPicker: ComponentType<{
   const descriptionId = useId()
   const [filterQuery, setFilterQuery] = useState('')
   const focusSearchField = useFocusSearchOnOpen()
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
 
   const query = filterQuery.trim().toLowerCase()
 
@@ -103,7 +105,11 @@ export const CreateVariantPicker: ComponentType<{
       <div className={createVariantPickerTrigger}>
         <MenuButton
           id={id}
-          onClose={() => setFilterQuery('')}
+          onClose={() => {
+            resetMenuWidth()
+            setFilterQuery('')
+          }}
+          onOpen={lockMenuWidth}
           button={
             <Button
               data-testid={`${testId}-button`}
@@ -118,7 +124,13 @@ export const CreateVariantPicker: ComponentType<{
             />
           }
           menu={
-            <FilterMenu className={createVariantPickerMenu} data-testid={testId} padding={1}>
+            <FilterMenu
+              className={createVariantPickerMenu}
+              data-testid={testId}
+              padding={1}
+              ref={menuRef}
+              style={menuStyle}
+            >
               <Box flexShrink={0} padding={1}>
                 <TextInput
                   ref={focusSearchField}
