@@ -283,15 +283,27 @@ describe('getVersionLinkTarget', () => {
       type: 'product',
       inspect: VERSION_INVENTORY_INSPECTOR_NAME,
     })
-    expect(published.searchParams).toEqual([['perspective', 'published']])
-
-    expect(getVersionLinkTarget(rows[2]!).searchParams).toEqual([])
+    expect(published.searchParams).toEqual([
+      ['variant', ''],
+      ['perspective', 'published'],
+    ])
 
     const inRelease = getVersionLinkTarget(rows[4]!)
-    expect(inRelease.searchParams).toEqual([['perspective', 'rSpring']])
+    expect(inRelease.searchParams).toEqual(expect.arrayContaining([['perspective', 'rSpring']]))
     expect(inRelease.perspectiveStack).toEqual(['rSpring', 'drafts'])
+  })
 
-    expect(getVersionLinkTarget(rows[3]!).searchParams).toEqual([['variant', 'variant:german']])
+  it('sets the sticky variant and perspective on every row, clearing them when the row has none', () => {
+    // A Default draft: no variant, and the drafts perspective (no perspective param).
+    expect(getVersionLinkTarget(rows[2]!).searchParams).toEqual([
+      ['variant', ''],
+      ['perspective', ''],
+    ])
+    // A variant draft.
+    expect(getVersionLinkTarget(rows[3]!).searchParams).toEqual([
+      ['variant', 'variant:german'],
+      ['perspective', ''],
+    ])
   })
 
   it('names the same inspector as the structure document pane', () => {

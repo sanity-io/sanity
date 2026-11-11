@@ -264,18 +264,23 @@ export function getVersionLinkTarget(
   searchParams: [string, string][]
   perspectiveStack: string[]
 } {
-  const searchParams: [string, string][] = row.variantId
-    ? [['variant', encodeVariantLinkParam(row.variantId, variantType)]]
-    : []
+  // `variant` and `perspective` are sticky: an intent link keeps the current values unless it sets
+  // them. Every row sets both, so it opens on its own version and not on the one selected in the
+  // navbar; an empty value clears the param (no variant: the Default version; no perspective:
+  // drafts), as setting the perspective or the variant in the navbar does.
+  let perspective = ''
   let perspectiveStack = ['drafts']
   if (row.kind === 'published') {
+    perspective = 'published'
     perspectiveStack = ['published']
-    searchParams.push(['perspective', 'published'])
   } else if (row.kind === 'release') {
-    const releaseId = toReleaseId(row.bundle)
-    perspectiveStack = [releaseId, 'drafts']
-    searchParams.push(['perspective', releaseId])
+    perspective = toReleaseId(row.bundle)
+    perspectiveStack = [perspective, 'drafts']
   }
+  const searchParams: [string, string][] = [
+    ['variant', row.variantId ? encodeVariantLinkParam(row.variantId, variantType) : ''],
+    ['perspective', perspective],
+  ]
 
   return {
     params: {id: row.groupId, type: row._type, inspect: VERSION_INVENTORY_INSPECTOR_NAME},
