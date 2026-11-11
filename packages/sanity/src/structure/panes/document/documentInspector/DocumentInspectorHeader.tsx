@@ -3,7 +3,7 @@ import {Card, type CardProps} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -17,6 +17,8 @@ export interface DocumentInspectorHeaderProps {
   as?: ElementType
   closeButtonLabel: string
   flex?: CardProps['flex']
+  /** Shown before the title. */
+  icon?: IconProps['icon']
   onClose: () => void
   title: ReactNode
 }
@@ -31,6 +33,7 @@ export function DocumentInspectorHeader(
     children,
     className,
     closeButtonLabel,
+    icon,
     onClose,
     title,
     ...restProps
@@ -41,9 +44,12 @@ export function DocumentInspectorHeader(
     <Card {...restProps} as={forwardedAs} className={clsx(root, className)}>
       <Flex padding={2}>
         <Box flexBasis="0%" flexGrow={1} padding={3}>
-          <Text as="h1" size={1} weight="medium" trim={true}>
-            {title}
-          </Text>
+          <Flex alignItems="center" gap={2}>
+            {icon && <Icon icon={icon} size={1} aria-hidden />}
+            <Text as="h1" size={1} weight="medium" trim={true}>
+              {title}
+            </Text>
+          </Flex>
         </Box>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           <Flex alignItems="center" gap={1}>
