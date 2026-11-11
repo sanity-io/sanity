@@ -24,6 +24,23 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
     }
 
+    /* The variant diamond before a row's name, in the variant colour like the menus' and the
+       navbar chip's. A Default row keeps the width empty, so the names line up. */
+    .variant-mark {
+      display: flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      width: 1em;
+      height: 1.5em;
+
+      svg {
+        --card-icon-color: var(--card-badge-suggest-icon-color);
+        --icon-color: var(--card-badge-suggest-icon-color);
+        color: var(--card-badge-suggest-icon-color);
+      }
+    }
+
     .primary-action {
       appearance: none;
       position: absolute;
@@ -43,7 +60,7 @@ export const VariantSetEntry = styled.div(({theme}) => {
     /*
      * A checked row (or set header) is filled with the focus ring colour. Everything on it takes
      * the inverse of the card colour, the way a selected menu item does: the text, the muted
-     * secondary line, and the status icons. A badge keeps its shape but loses its tone: a tinted
+     * secondary line, and the variant diamond. A badge keeps its shape but loses its tone: a tinted
      * fill would vanish into the blue, so it is outlined in the same colour instead.
      */
     &:has(:checked) {
@@ -62,11 +79,10 @@ export const VariantSetEntry = styled.div(({theme}) => {
         color: color-mix(in srgb, ${color.bg} 72%, transparent);
       }
 
-      /* The status icons set their tone colour inline on the svg, so only !important wins. */
-      [data-testid='version-status'] svg {
-        --card-icon-color: ${color.bg} !important;
-        --icon-color: ${color.bg} !important;
-        color: ${color.bg} !important;
+      .variant-mark svg {
+        --card-icon-color: ${color.bg};
+        --icon-color: ${color.bg};
+        color: ${color.bg};
       }
 
       [data-ui='Badge'] {
