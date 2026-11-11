@@ -1,23 +1,25 @@
 import {type ReactNode, Suspense, use} from 'react'
 import {VariantsUpsellContext} from 'sanity/_singletons'
 
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {type UpsellContextValue, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
 import {useVariantsMode} from '../mode/useVariantsMode'
 
 /**
  * Mounted in every plan mode by `VariantsStudioProvider`, so the studio never waits for the
- * content variants feature check. The upsell content comes from `/journey/content-variants` and
- * is preloaded by `useUpsellContext`, then read with `use()` in the dialog and the panel. The UI
- * that opens the dialog already knows it is in upsell mode; the dialog leaf below checks once
- * more, so a plan that has variants never shows it.
+ * content variants feature check. The journey content is preloaded only once that check settles
+ * as upsell; a plan that has variants never requests it. The UI that opens the dialog already
+ * knows it is in upsell mode; the dialog leaf below checks once more.
  *
  * @internal
  */
 export function VariantsUpsellProvider(props: {children: ReactNode}) {
+  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.contentVariants)
   const contextValue = useUpsellContext({
     dataUri: '/journey/content-variants',
     feature: 'content-variants',
+    preLoadData: !isLoading && !error && !enabled,
   })
 
   return (
