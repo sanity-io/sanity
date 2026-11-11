@@ -10,7 +10,8 @@ import {css} from '#styled-system/css'
  * class, which paints `var(--icon-color)`, so the colour is set both as `color` and as
  * `--icon-color` / `--card-icon-color`, with the doubled class (`&&`) beating that class. The
  * `:where()` contexts add no specificity, so the selected rule uses three classes to beat the
- * resting one.
+ * resting one. A checked row is the item that holds the checkbox as a direct child, or one marked
+ * `aria-checked`: a bare `:has(:checked)` would also match every ancestor of the row.
  */
 export const variantMark = css({
   '&&': {
@@ -33,11 +34,12 @@ export const variantMark = css({
     height: '100%',
     overflow: 'visible',
   },
-  ':where([data-selected], [data-ui="MenuItem"][data-selected], :has(:checked)) &&&': {
-    'color': 'var(--card-fg-color)',
-    '--icon-color': 'var(--card-fg-color)',
-    '--card-icon-color': 'var(--card-fg-color)',
-  },
+  ':where([data-selected], [data-ui="MenuItem"][data-selected], [aria-checked="true"], :has(> input:checked)) &&&':
+    {
+      'color': 'var(--card-fg-color)',
+      '--icon-color': 'var(--card-fg-color)',
+      '--card-icon-color': 'var(--card-fg-color)',
+    },
 })
 
 /** Tip to tip. */
