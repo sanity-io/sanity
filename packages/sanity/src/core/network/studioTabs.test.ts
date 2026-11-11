@@ -248,6 +248,16 @@ describe('studio tab lock', () => {
     expect(fakeLocks.requested).toEqual([])
   })
 
+  it('publishes the first lock already stalled when flagged before tracking starts', async () => {
+    studioTabs.setStalled(true)
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.held).toEqual([
+      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:0:s`,
+    ])
+  })
+
   it('skips republishing when setStalled repeats the current flag', async () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()

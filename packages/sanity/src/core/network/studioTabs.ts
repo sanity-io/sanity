@@ -135,16 +135,16 @@ export function startTrackingStudioTabs(scope: string): void {
 
 /**
  * Flags this tab's presence lock as stalled behind the connection limit, or clears the flag,
- * republished like a count change. A no-op before tracking starts - a tab that has never opened
- * a listener holds no lock to flag.
+ * republished like a count change. Records the flag even before tracking starts, so a stall
+ * detected ahead of the first listener is already set when {@link startTrackingStudioTabs}
+ * publishes this tab's first lock.
  *
  * @internal
  */
 export function setStalled(isStalled: boolean): void {
-  const {scope} = studioTabs
-  if (scope === undefined || studioTabs.isStalled === isStalled) return
+  if (studioTabs.isStalled === isStalled) return
   studioTabs.isStalled = isStalled
-  void publishListenerCount(scope)
+  if (studioTabs.scope !== undefined) void publishListenerCount(studioTabs.scope)
 }
 
 function publishListenerCount(scope: string): Promise<void> {
