@@ -21,6 +21,7 @@ import {
 import {CSS} from '@dnd-kit/utilities'
 import {
   type ComponentProps,
+  type DOMAttributes,
   memo,
   type ReactNode,
   useCallback,
@@ -28,7 +29,12 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
-import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
+import {
+  ArrayItemRootElementContext,
+  SortableItemHandleContext,
+  type SortableItemHandleContextValue,
+  SortableItemIdContext,
+} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 import {Grid, Box, type BoxProps} from 'ui5'
 
@@ -79,10 +85,11 @@ const SortableList = memo(function SortableList(props: ListProps) {
     (event: DragEndEvent) => {
       const {active, over} = event
 
-      if (active.id !== over?.id) {
+      // A drag can end without a drop target, which leaves nothing to move the item next to
+      if (over && active.id !== over.id) {
         onItemMove?.({
           fromIndex: active.data.current?.sortable?.index,
-          toIndex: over?.data.current?.sortable?.index,
+          toIndex: over.data.current?.sortable?.index,
         })
       }
 
@@ -113,10 +120,21 @@ const SortableList = memo(function SortableList(props: ListProps) {
 
 function SortableListItem(props: ItemProps & RefAttributes<HTMLDivElement>) {
   const {ref, id, children, disableTransition} = props
-  const {setNodeRef, transform, transition, active} = useSortable({
-    id,
-    transition: disableTransition ? null : TRANSITION,
-  })
+  const {attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, active} =
+    useSortable({
+      id,
+      transition: disableTransition ? null : TRANSITION,
+    })
+
+  const handle = useMemo<SortableItemHandleContextValue>(
+    () => ({
+      attributes,
+      // dnd-kit types its listeners as `Record<string, Function>`, they are DOM event handlers
+      listeners: listeners as DOMAttributes<HTMLElement> | undefined,
+      setActivatorNodeRef,
+    }),
+    [attributes, listeners, setActivatorNodeRef],
+  )
 
   const isActive = id === active?.id
 
@@ -151,7 +169,9 @@ function SortableListItem(props: ItemProps & RefAttributes<HTMLDivElement>) {
       className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
       data-index={props['data-index']}
     >
-      {children}
+      <SortableItemHandleContext.Provider value={handle}>
+        {children}
+      </SortableItemHandleContext.Provider>
     </ListItem>
   )
 }
