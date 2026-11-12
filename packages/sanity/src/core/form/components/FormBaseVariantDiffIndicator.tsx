@@ -1,7 +1,7 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type ReactNode, useContext} from 'react'
+import {type ComponentType, type ReactNode, useContext, useId} from 'react'
 import {BaseVariantComparisonContext} from 'sanity/_singletons'
-import {Flex, Text} from 'ui5'
+import {Flex, Text, VisuallyHidden} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {VariantMark} from '../../../ui-components/variantMark'
@@ -15,7 +15,7 @@ import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {type BaseFieldProps} from '../types/fieldProps'
-import {chip, chipGlyph} from './FormBaseVariantDiffIndicator.css'
+import {chip, chipGlyph, markButton} from './FormBaseVariantDiffIndicator.css'
 
 type Props = Pick<BaseFieldProps, 'changedFromBaseVariant'>
 
@@ -29,13 +29,76 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
           exit={{opacity: 0}}
           animate={{opacity: 1}}
         >
-          <Tooltip content={<DiffersFrom />} placement="left">
-            <VariantMark size="inline" />
-          </Tooltip>
+          <DiffersFromMark />
         </motion.div>
       )}
     </AnimatePresence>
   )
+}
+
+/**
+ * The mark itself. UI 5 puts a tooltip on a focusable trigger, and a bare icon cannot take focus, so the
+ * mark is a button with its own accessible name. The full sentence ("Differs from Default Draft") is a
+ * visually hidden description linked with `aria-describedby`, because this tooltip only mounts while it
+ * is open and cannot be the description. The gutter shows one mark per field (`formFieldGutter`), so
+ * this adds one tab stop only to a field that actually differs.
+ */
+function DiffersFromMark() {
+  const {t} = useTranslation()
+  const descriptionId = useId()
+  const slotName = useComparedSlotName()
+  return (
+    <>
+      <Tooltip content={<DiffersFrom />} placement="left">
+        <button
+          type="button"
+          className={markButton}
+          aria-label={t('changes.from-base-variant.label')}
+          aria-describedby={descriptionId}
+          data-testid="base-variant-diff-mark"
+        >
+          <VariantMark size="inline" />
+        </button>
+      </Tooltip>
+      <VisuallyHidden id={descriptionId}>
+        {t('changes.from-base-variant.differs-from')} {t('document-group.base-variant')} {slotName}
+      </VisuallyHidden>
+    </>
+  )
+}
+
+/**
+ * The slot of the version actually compared, as the word a chip shows. Shared by the tooltip chips and
+ * the description, so the two cannot disagree.
+ */
+function useComparedSlot() {
+  const compared = useContext(BaseVariantComparisonContext)
+  const {selectedPerspective} = usePerspective()
+  const {byId: activeReleases} = useActiveReleases()
+  // `compared` is `'drafts'`, `'published'` or a release id. The release comes from the perspective
+  // when it is that release, and otherwise from the active releases, so the chip never reads Draft
+  // for a comparison that was not the draft.
+  const isReleaseSlot = Boolean(compared) && compared !== 'drafts' && compared !== 'published'
+  const comparedReleaseDocumentId = isReleaseSlot
+    ? getReleaseDocumentIdFromReleaseId(compared as string)
+    : undefined
+  const release =
+    comparedReleaseDocumentId === undefined
+      ? undefined
+      : isReleaseDocument(selectedPerspective) &&
+          selectedPerspective._id === comparedReleaseDocumentId
+        ? selectedPerspective
+        : activeReleases.get(comparedReleaseDocumentId)
+  return {compared, isReleaseSlot, release}
+}
+
+function useComparedSlotName(): string {
+  const {t} = useTranslation()
+  const {compared, isReleaseSlot, release} = useComparedSlot()
+  if (release) return release.metadata.title || t('release.placeholder-untitled-release')
+  if (isReleaseSlot) return compared ?? ''
+  if (compared === 'published') return t('release.chip.published')
+  return t('release.chip.draft')
 }
 
 /** A glyph inside a chip, centred on the chip's text line. */
@@ -54,23 +117,7 @@ function ChipGlyph({children}: {children: ReactNode}) {
  */
 function DiffersFrom() {
   const {t} = useTranslation()
-  const compared = useContext(BaseVariantComparisonContext)
-  const {selectedPerspective} = usePerspective()
-  const {byId: activeReleases} = useActiveReleases()
-  // `compared` is `'drafts'`, `'published'` or a release id. The release comes from the perspective
-  // when it is that release, and otherwise from the active releases, so the chip never reads Draft
-  // for a comparison that was not the draft.
-  const isReleaseSlot = Boolean(compared) && compared !== 'drafts' && compared !== 'published'
-  const comparedReleaseDocumentId = isReleaseSlot
-    ? getReleaseDocumentIdFromReleaseId(compared as string)
-    : undefined
-  const release =
-    comparedReleaseDocumentId === undefined
-      ? undefined
-      : isReleaseDocument(selectedPerspective) &&
-          selectedPerspective._id === comparedReleaseDocumentId
-        ? selectedPerspective
-        : activeReleases.get(comparedReleaseDocumentId)
+  const {compared, isReleaseSlot, release} = useComparedSlot()
   const slot = release ? (
     <VersionInlineBadge $tone={getReleaseTone(release)} className={chip}>
       <ChipGlyph>
