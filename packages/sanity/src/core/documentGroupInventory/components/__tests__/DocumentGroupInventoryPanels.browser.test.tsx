@@ -902,10 +902,11 @@ function SelectionSets({
             : undefined
         }
         onCheckedChange={(checked) =>
-          selectionRef.send({
-            type: checked ? 'selection.addMany' : 'selection.removeMany',
-            variantIds: selection.selectableIds,
-          })
+          selectionRef.send(
+            checked
+              ? {type: 'selection.addMany', variantIds: selection.selectableIds}
+              : {type: 'selection.removeMany', variantIds: set.variants.map(({id}) => id)},
+          )
         }
       >
         {set.variants.map((entry) => {
@@ -1086,6 +1087,27 @@ describe('Inventory selection', () => {
       expect(textContrast(meta, row)).toBeGreaterThanOrEqual(4.5)
     },
   )
+
+  it('keeps Sanity UI focus ring on the group checkbox, over the quiet border', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const $create = page.getByRole('button', {name: 'Create version'})
+    await expect.element($create).toBeVisible()
+    const group = groupCheckbox('Published')
+    const restShadow = getComputedStyle(group.nextElementSibling!).boxShadow
+    ;($create.element() as HTMLButtonElement).focus()
+    await userEvent.tab()
+
+    expect(document.activeElement).toBe(group)
+    // The focus ring is more than the 1px inset border it replaces
+    await expect
+      .poll(() => getComputedStyle(group.nextElementSibling!).boxShadow)
+      .not.toBe(restShadow)
+    expect(getComputedStyle(group.nextElementSibling!).boxShadow).not.toMatch(
+      /^\S+ 0px 0px 0px 1px inset$/,
+    )
+  })
 
   it('draws a visible focus ring on the row, its tab stop', async () => {
     const refs = startSelectionHarness()

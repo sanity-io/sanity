@@ -3,6 +3,7 @@ import {
   type ChangeEvent,
   type ComponentType,
   type RefAttributes,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -58,6 +59,7 @@ import {
 } from '../types'
 import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
 import {
+  getBlockedSelectedIds,
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
@@ -463,6 +465,20 @@ const Select: ComponentType<{
 
   const rangeAnchorRef = useRef<RangeAnchor>(null)
 
+  // A selected version can become blocked, as when its release is scheduled. Its checkbox then
+  // shows unchecked, so it leaves the selection too, rather than staying in the count and the
+  // deletion out of sight.
+  const blockedSelectedIds = getBlockedSelectedIds({
+    variants: sets.flatMap(({variants}) => variants),
+    selectedIds,
+    getRelease: (variant) => resolveVariantRelease(variant, releases),
+  })
+  const blockedSelectedKey = blockedSelectedIds.join(',')
+  useEffect(() => {
+    if (blockedSelectedKey === '') return
+    machine.send({type: 'selection.removeMany', variantIds: blockedSelectedKey.split(',')})
+  }, [blockedSelectedKey, machine])
+
   return (
     <>
       {sets.map((set) => {
@@ -505,10 +521,13 @@ const Select: ComponentType<{
                 : undefined
             }
             onCheckedChange={(checked) =>
-              machine.send({
-                type: checked ? 'selection.addMany' : 'selection.removeMany',
-                variantIds: setSelection.selectableIds,
-              })
+              machine.send(
+                checked
+                  ? {type: 'selection.addMany', variantIds: setSelection.selectableIds}
+                  : // Clearing the group clears it whole, rows hidden by the filter included, so
+                    // nothing it held stays selected out of sight.
+                    {type: 'selection.removeMany', variantIds: set.variants.map(({id}) => id)},
+              )
             }
           >
             {visibleVariants.map((variant) =>

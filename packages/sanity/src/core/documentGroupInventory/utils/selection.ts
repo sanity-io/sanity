@@ -176,3 +176,26 @@ export function getRowToggle({
     anchor: nextAnchor,
   }
 }
+
+/**
+ * The selected versions that can no longer be selected, as when a release is scheduled after its
+ * version was checked. They should leave the selection: their checkbox shows unchecked.
+ *
+ * @internal
+ */
+export function getBlockedSelectedIds<V extends {id: string}>({
+  variants,
+  selectedIds,
+  getRelease,
+}: {
+  variants: readonly V[]
+  selectedIds: ReadonlySet<string>
+  getRelease: (variant: V) => ReleaseDocument | undefined
+}): string[] {
+  return variants
+    .filter(
+      (variant) =>
+        selectedIds.has(variant.id) && getSelectionBlockedReason(getRelease(variant)) !== undefined,
+    )
+    .map(({id}) => id)
+}
