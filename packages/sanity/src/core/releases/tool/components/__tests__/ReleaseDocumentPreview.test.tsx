@@ -184,6 +184,23 @@ describe('ReleaseDocumentPreview', () => {
       })
     })
 
+    it('resolves the version of a variant through that variant', async () => {
+      await renderTest({
+        documentId: 'versions.buz.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+        variantId: 'alpha-audience',
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'versions.buz.doc123',
+        documentType: 'post',
+        perspectiveStack: ['rActive'],
+        variant: 'alpha-audience',
+      })
+    })
+
     it('resolves the published document while an unpublish is still pending', async () => {
       await renderTest({
         documentId: 'versions.rActive.doc123',
