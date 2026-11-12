@@ -24,6 +24,49 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
     }
 
+    /*
+     * The title and the second line share a column, after a 25px column for the variant diamond,
+     * the width of the leading slot of the document list's versions flyout. The column spans both
+     * lines and the diamond is centred on the whole block, not on the title line. A Default row
+     * keeps the empty column, so every name and every second line start at the same place.
+     */
+    .version-text {
+      --variant-mark-column: 25px;
+
+      display: grid;
+      grid-template-columns: var(--variant-mark-column) 1fr;
+      column-gap: ${space[2]}px;
+      row-gap: ${space[2]}px;
+      align-items: center;
+    }
+
+    .variant-mark {
+      display: flex;
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      align-items: center;
+      align-self: stretch;
+      justify-content: center;
+      width: var(--variant-mark-column);
+
+      /* The variant colour, like the menus' and the navbar chip's diamond. */
+      svg {
+        --card-icon-color: var(--card-badge-suggest-icon-color);
+        --icon-color: var(--card-badge-suggest-icon-color);
+        color: var(--card-badge-suggest-icon-color);
+      }
+    }
+
+    .version-title {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .version-secondary {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
     .primary-action {
       appearance: none;
       position: absolute;
@@ -40,8 +83,40 @@ export const VariantSetEntry = styled.div(({theme}) => {
       background-color: var(--card-muted-bg-color);
     }
 
+    /*
+     * A checked row (or set header) is filled with the focus ring colour. Everything on it takes
+     * the inverse of the card colour, the way a selected menu item does: the text, the muted
+     * secondary line, and the variant diamond. A badge keeps its shape but loses its tone: a tinted
+     * fill would vanish into the blue, so it is outlined in the same colour instead.
+     */
     &:has(:checked) {
       background-color: ${color.focusRing};
+      color: ${color.bg};
+      --card-fg-color: ${color.bg};
+      --card-muted-fg-color: color-mix(in srgb, ${color.bg} 72%, transparent);
+
+      /* A ui5 Text reads its own --text-color, and the muted variant has its own rule. */
+      [data-ui='Text'] {
+        --text-color: ${color.bg};
+        color: ${color.bg};
+      }
+
+      [data-ui='Text'][data-testid='version-secondary-line'] {
+        color: color-mix(in srgb, ${color.bg} 72%, transparent);
+      }
+
+      .variant-mark svg {
+        --card-icon-color: ${color.bg};
+        --icon-color: ${color.bg};
+        color: ${color.bg};
+      }
+
+      [data-ui='Badge'] {
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1px ${color.bg};
+        color: ${color.bg};
+        --card-fg-color: ${color.bg};
+      }
     }
   `
 })

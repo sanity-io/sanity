@@ -1,7 +1,7 @@
-import {LaunchIcon} from '@sanity/icons/Launch'
-// oxlint-disable-next-line no-restricted-imports -- the studio Button types its ref for a <button>, and this is an <a>
-import {Button} from '@sanity/ui'
+import {ArrowTopRightIcon} from '@sanity/icons/ArrowTopRight'
+import {useTheme_v2} from '@sanity/ui'
 import {
+  type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
   type RefAttributes,
@@ -10,13 +10,16 @@ import {
   useState,
 } from 'react'
 import {type IntentParameters, useIntentLink} from 'sanity/router'
-import {Box, Flex, type PaddingProps} from 'ui5'
+import {Box, Flex, IconButton, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {detailLink, detailLinkContainer, detailLinkSpace} from './PerspectiveDetailLink.css'
 
-/** Shared by the link and the space reserved for it, so both keep the same footprint. */
-const LINK_BUTTON_PROPS = {fontSize: 1, icon: LaunchIcon, mode: 'ghost', padding: 2} as const
+/**
+ * The arrow is the icon for opening content in another view; tertiary is the quiet level for a
+ * secondary action in a row. `detailLinkSpace` reserves this button's width.
+ */
+const LINK_BUTTON_PROPS = {density: 'regular', icon: ArrowTopRightIcon, level: 'tertiary'} as const
 
 /**
  * Wires a perspective menu item to the detail link next to it.
@@ -25,8 +28,10 @@ const LINK_BUTTON_PROPS = {fontSize: 1, icon: LaunchIcon, mode: 'ghost', padding
  * right arrow key moves focus from the item to its link and the left arrow key back; the other
  * keys still reach the menu, which moves on from the item, because focusing the link leaves it
  * as the menu's active item.
+ *
+ * `selected` is whether the row's perspective is the selected one.
  */
-export function usePerspectiveDetailLink() {
+export function usePerspectiveDetailLink({selected}: {selected: boolean}) {
   const menuItemRef = useRef<HTMLButtonElement>(null)
   const linkRef = useRef<HTMLAnchorElement>(null)
   const [linkHovered, setLinkHovered] = useState(false)
@@ -53,8 +58,9 @@ export function usePerspectiveDetailLink() {
   return {
     menuItemProps: {
       // The link lies over the item but outside it, so hovering the link ends the item's own
-      // hover; `data-hovered` keeps the row highlighted
-      'data-hovered': linkHovered ? '' : undefined,
+      // hover; `data-hovered` keeps the row highlighted. A selected row stays as it is: the
+      // hover style would replace its selected fill.
+      'data-hovered': linkHovered && !selected ? '' : undefined,
       'onKeyDown': handleMenuItemKeyDown,
       'ref': menuItemRef,
     },
@@ -91,7 +97,6 @@ export function usePerspectiveDetailLinkTrigger() {
  */
 export function PerspectiveDetailLink(
   props: {
-    'alignItems': 'flex-start' | 'center'
     'aria-label': string
     'data-testid': string
     'intent': string
@@ -101,11 +106,12 @@ export function PerspectiveDetailLink(
     'onMouseEnter': () => void
     'onMouseLeave': () => void
     'onNavigate'?: () => void
+    /** Positions the link's box within the row, as the padding does. */
+    'style'?: CSSProperties
   } & PaddingProps &
     RefAttributes<HTMLAnchorElement>,
 ) {
   const {
-    alignItems,
     'aria-label': ariaLabel,
     'data-testid': testId,
     intent,
@@ -116,14 +122,23 @@ export function PerspectiveDetailLink(
     onMouseLeave,
     onNavigate,
     ref,
+    style,
     ...paddingProps
   } = props
   const {href, onClick} = useIntentLink({intent, params, onClick: onNavigate})
+  const {color} = useTheme_v2()
+  // The link sits beside the menu item, not in it, so it does not inherit the colour the item
+  // takes when the menu marks it selected (the active item, under the pointer or keyboard focus).
+  // The link's styles read the same theme value from this variable while the item is selected.
+  const linkStyle = {
+    '--detail-link-selected-fg': color.selectable.default.selected.fg,
+  } as CSSProperties
 
   return (
-    <Flex alignItems={alignItems} className={detailLinkContainer} {...paddingProps}>
+    // Centred on the row, like the menu item's own right icon
+    <Flex alignItems="center" className={detailLinkContainer} style={style} {...paddingProps}>
       <Tooltip portal content={tooltip} placement="bottom">
-        <Button
+        <IconButton
           {...LINK_BUTTON_PROPS}
           aria-label={ariaLabel}
           as="a"
@@ -135,6 +150,7 @@ export function PerspectiveDetailLink(
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           ref={ref}
+          style={linkStyle}
           // Menu items leave the tab order to the menu; the right arrow key reaches the link
           tabIndex={-1}
         />
@@ -144,18 +160,21 @@ export function PerspectiveDetailLink(
 }
 
 /**
- * Lays out a menu item's content with the detail link's width reserved at its end, filled by the
- * same button, hidden and inert. Matches the studio `MenuItem`'s `renderMenuItem`.
+ * Lays out a menu item's content with the detail link's width reserved at its end. The space is an
+ * empty box: the menu item is a `<button>`, so it cannot hold a second button to measure against.
+ * Matches the studio `MenuItem`'s `renderMenuItem`.
+ *
+ * The gap is the 12px the menu item leaves before its own right-side content (`marginLeft={3}`).
+ * A right icon bleeds 6px into it, which leaves room between a row's right icon and the link,
+ * including the link's hover fill.
  */
 export function renderWithDetailLinkSpace(menuItemContent: ReactNode) {
   return (
-    <Flex gap={1}>
+    <Flex gap={3}>
       <Box flexBasis="0%" flexGrow={1} minWidth="0">
         {menuItemContent}
       </Box>
-      <Box className={detailLinkSpace} flexShrink={0}>
-        <Button {...LINK_BUTTON_PROPS} as="span" />
-      </Box>
+      <Box className={detailLinkSpace} data-testid="perspective-detail-link-space" flexShrink={0} />
     </Flex>
   )
 }

@@ -50,7 +50,6 @@ export function SeeDraftBanner() {
       }
       action={{
         text: t('banners.published.see-draft.action'),
-        tone: 'suggest',
         onClick: handleSeeDraft,
         mode: 'default',
       }}

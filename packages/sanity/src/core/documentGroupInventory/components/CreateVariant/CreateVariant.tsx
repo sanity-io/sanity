@@ -8,6 +8,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {Translate} from '../../../i18n/Translate'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {
   type VariantCreationBundle,
@@ -64,6 +65,9 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
   )
 
   const existingVariants = sets.flatMap((set) => set.variants)
+  const existingVariantIds = new Set(
+    existingVariants.flatMap(({document}) => getDocumentVersionVariantId(document) ?? []),
+  )
 
   const variantDefinitionOptions = [...(variantDefinitions?.values() ?? [])]
 
@@ -126,7 +130,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
       <Header>
         <VStack gap={2}>
           <Text size={1} weight="medium" as="h2">
-            {t('document-group.create-variant')}
+            {t('document-group.create-variant.confirm')}
           </Text>
           <Text size={1} muted>
             <Translate
@@ -142,6 +146,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
         <div className={createVariantFormRow}>
           <SelectVariantDefinition
             variantDefinitions={variantDefinitionOptions}
+            existingVariantIds={existingVariantIds}
             value={variantDefinition}
             onChange={(variantId) =>
               variantCreationRef.send({type: 'createVariant.selectVariant', variantId})
@@ -175,7 +180,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
             onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
           />
           <Button
-            text={t('document-group.create-variant')}
+            text={t('document-group.create-variant.confirm')}
             loading={isVariantCreationPending}
             disabled={
               typeof variantDefinition === 'undefined' ||

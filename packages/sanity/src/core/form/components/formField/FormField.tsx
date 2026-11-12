@@ -6,6 +6,7 @@ import {type DocumentFieldActionNode} from '../../../config/document/fieldAction
 import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {type FieldCommentsProps} from '../../types/fieldProps'
+import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
@@ -83,7 +84,11 @@ export const FormField = memo(function FormField(
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
       <FormRow
         gutterStartCell={
-          <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+          <FormFieldGutter
+            path={path}
+            changedFromBaseVariant={changedFromBaseVariant}
+            labelAnchored={Boolean(title)}
+          />
         }
       >
         <VStack
@@ -108,6 +113,9 @@ export const FormField = memo(function FormField(
               inputId={inputId}
               content={
                 <FormFieldHeaderText
+                  labelAnchorName={
+                    Array.isArray(path) ? pathToAnchorIdent('label', path) : undefined
+                  }
                   description={description}
                   inputId={inputId}
                   title={title}

@@ -10,6 +10,20 @@ import {isPublishedId} from '../../util/draftUtils'
 export interface IncomingReference {
   _id: string
   _type: string
+  /**
+   * Whether the referring document holds a strong (required) reference. Content Lake refuses to
+   * delete the published document while one exists. `undefined` when the strength is unknown.
+   */
+  required?: boolean
+}
+
+/**
+ * Whether any of the references is known to be strong.
+ *
+ * @internal
+ */
+function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
+  return internalReferences?.references.some((reference) => reference.required === true) ?? false
 }
 
 /**
@@ -59,6 +73,11 @@ interface DeletionContext {
   hasUnknownDatasetNames: boolean
   error?: unknown
   incomingReferencesChecked: boolean
+  /**
+   * Set when the user chose to delete the other versions and leave the blocked Default. `ids`
+   * keeps the whole selection, so a failed attempt that is retried still sees the Default blocked.
+   */
+  leavePublished: boolean
   /** Whether this instance may never delete anything. */
   readOnly: boolean
 }
@@ -66,6 +85,8 @@ interface DeletionContext {
 type DeletionEvents =
   | {type: 'delete.request'}
   | {type: 'delete.confirm'}
+  /** Deletes the selected versions except the published document, which required links block. */
+  | {type: 'delete.confirmExcludingPublished'}
   | {type: 'delete.cancel'}
   | {type: 'selection.changed'; selectedIds: Set<string>}
 
@@ -86,6 +107,7 @@ export const deletionMachine = setup({
   },
   actions: {
     requestDeletionConfirmation: () => {},
+    excludePublished: assign({leavePublished: true}),
   },
   guards: {
     hasSelection: ({context}) => context.ids.length !== 0,
@@ -93,10 +115,20 @@ export const deletionMachine = setup({
     selectionExcludesPublished: ({context}) => !context.ids.some(isPublishedId),
     hasCheckedIncomingReferences: ({context}) => context.incomingReferencesChecked,
     canRequestDeletion: and(['hasSelection', 'isMutable']),
+    publishedBlockedByRequiredReferences: ({context}) =>
+      context.ids.some(isPublishedId) && hasRequiredReferences(context.internalReferences),
+    hasUnpublishedSelection: ({context}) => context.ids.some((id) => !isPublishedId(id)),
     canConfirmDeletion: and([
       'hasSelection',
       'isMutable',
       or(['selectionExcludesPublished', 'hasCheckedIncomingReferences']),
+      not('publishedBlockedByRequiredReferences'),
+    ]),
+    canConfirmDeletionExcludingPublished: and([
+      'isMutable',
+      'hasCheckedIncomingReferences',
+      'publishedBlockedByRequiredReferences',
+      'hasUnpublishedSelection',
     ]),
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
@@ -114,11 +146,12 @@ export const deletionMachine = setup({
     hasUnknownDatasetNames: false,
     error: undefined,
     incomingReferencesChecked: false,
+    leavePublished: false,
     readOnly: input?.readOnly ?? false,
   }),
   on: {
     'selection.changed': {
-      actions: assign({ids: ({event}) => [...event.selectedIds]}),
+      actions: assign({ids: ({event}) => [...event.selectedIds], leavePublished: false}),
     },
   },
   initial: 'idle',
@@ -135,7 +168,10 @@ export const deletionMachine = setup({
       type: 'parallel',
       // Each flow re-runs the check, so the previous flow's result must not
       // carry over into this one.
-      entry: [sendParent({type: 'deletion.activated'}), assign({incomingReferencesChecked: false})],
+      entry: [
+        sendParent({type: 'deletion.activated'}),
+        assign({incomingReferencesChecked: false, leavePublished: false}),
+      ],
       exit: sendParent({type: 'deletion.deactivated'}),
       on: {
         'delete.cancel': {
@@ -187,6 +223,11 @@ export const deletionMachine = setup({
                       guard: 'canConfirmDeletion',
                       target: '#deletion.active.deletion.deleting',
                     },
+                    'delete.confirmExcludingPublished': {
+                      guard: 'canConfirmDeletionExcludingPublished',
+                      target: '#deletion.active.deletion.deleting',
+                      actions: 'excludePublished',
+                    },
                   },
                 },
               },
@@ -194,7 +235,11 @@ export const deletionMachine = setup({
             deleting: {
               invoke: {
                 src: 'deleteVariants',
-                input: ({context}) => ({ids: context.ids}),
+                input: ({context}) => ({
+                  ids: context.leavePublished
+                    ? context.ids.filter((id) => !isPublishedId(id))
+                    : context.ids,
+                }),
                 onDone: {
                   target: '#deletion.idle',
                 },
@@ -209,6 +254,11 @@ export const deletionMachine = setup({
                 'delete.confirm': {
                   guard: 'canConfirmDeletion',
                   target: '#deletion.active.deletion.deleting',
+                },
+                'delete.confirmExcludingPublished': {
+                  guard: 'canConfirmDeletionExcludingPublished',
+                  target: '#deletion.active.deletion.deleting',
+                  actions: 'excludePublished',
                 },
               },
             },

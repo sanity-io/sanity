@@ -4,12 +4,13 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {type ComponentType, useMemo} from 'react'
+import {type ComponentType, useContext, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
+  DocumentVersionsFlyoutList,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
@@ -20,13 +21,22 @@ import {
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
+  useWorkspace,
 } from 'sanity'
+import {PreviewCardContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneItemVersionsFlyout} from './PaneItemVersionsFlyout'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
+  /**
+   * The child id the row links to. When it is set and the document group inventory is enabled,
+   * hovering the row opens a flyout of the document's versions, which open the document with the
+   * inventory open.
+   */
+  inventoryChildId?: string
   icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
@@ -49,10 +59,21 @@ const INITIAL_PREVIEW_STATE = {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, layout, presence, schemaType, sortOrder, value} = props
+  const {icon, inventoryChildId, layout, presence, schemaType, sortOrder, value} = props
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const versionsLinkChildId = inventoryEnabled ? inventoryChildId : undefined
 
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
+  const rowSelected = useContext(PreviewCardContext)?.selected
+  const renderFlyoutList = (actions: {onOpenInventory: () => void; onPick: () => void}) => (
+    <DocumentVersionsFlyoutList
+      documentGroupId={publishedId}
+      viewingDocument={Boolean(rowSelected)}
+      onOpenInventory={actions.onOpenInventory}
+      onPick={actions.onPick}
+    />
+  )
 
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
@@ -97,11 +118,17 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <DocumentVersionsStatusIndicator documentVersions={versions} />
+        {versionsLinkChildId && (
+          <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList} />
+        )}
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
+  // With the inventory on, the flyout of the row replaces the read-only versions popover.
+  const tooltip = versionsLinkChildId ? undefined : (
+    <DocumentVersionsStatus documentGroupId={publishedId} />
+  )
 
   return (
     <SanityDefaultPreview

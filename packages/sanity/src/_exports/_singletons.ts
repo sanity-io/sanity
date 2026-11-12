@@ -13,6 +13,7 @@ export {
   AssetLimitUpsellContext,
   type AssetLimitUpsellContextValue,
 } from '../_singletons/context/AssetLimitContext'
+export {BaseVariantComparisonContext} from '../_singletons/context/BaseVariantComparisonContext'
 export {CalendarContext} from '../_singletons/context/CalendarContext'
 export {
   ChangeIndicatorTrackerContextGetSnapshot,

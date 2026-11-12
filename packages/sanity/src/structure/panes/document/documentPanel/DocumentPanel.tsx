@@ -6,10 +6,13 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
+  isDraftPerspective,
+  isDraftVersion,
   isGoingToUnpublish,
   isNewDocument,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
+  isPublishedPerspective,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSystemBundle,
@@ -18,6 +21,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -44,11 +48,13 @@ import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
 import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
+import {getVariantBannerCase} from './banners/getVariantBannerCase'
 import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
 import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
+import {useRememberVariantTitles} from './banners/rememberedVariantTitles'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -57,6 +63,7 @@ import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
 import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
+import {getNavigationBadges} from './header/DocumentPanelNavigation/badges/getNavigationBadges'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -101,6 +108,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
+  // The variant-not-found banner names a deleted variant by the title it had earlier this session.
+  useRememberVariantTitles()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -199,6 +208,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     displayed,
     documentId,
   })
+  const {versions: documentVersions} = useDocumentVersions({documentId})
 
   const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
@@ -233,10 +243,20 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
 
+    // Variant versions have opaque ids, so whether a variant document is displayed comes from the
+    // resolved target rather than from the id.
+    const displayedVariantTarget =
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant &&
+      displayed?._id &&
+      targetDocumentState.targetDocument?._id === displayed._id
+        ? targetDocumentState.targetDocument
+        : undefined
+
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
       displayed?._id &&
-      getVersionFromId(displayed?._id) === selectedReleaseId,
+      (getVersionFromId(displayed?._id) === selectedReleaseId || displayedVariantTarget),
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
@@ -277,13 +297,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ...filteredReleases.currentReleases,
       ...filteredReleases.notCurrentReleases,
     ]
+    // A document can have one scheduled draft per variant, so only the releases the current lane
+    // (the selected variant, or the base document) has a version in are considered.
+    const laneReleaseIds = new Set(
+      getNavigationBadges({
+        versions: documentVersions,
+        variantId:
+          targetDocumentState.status === 'ready' ? targetDocumentState.variant?._id : undefined,
+      }).releaseIds,
+    )
     // if the scheduled draft is paused then it will be available in notCurrentReleases
     // otherwise a locked-in scheduled draft will be available in currentReleases
     // so must look across both to find the scheduled draft release
     const scheduledCardinalityOneRelease = allFilteredReleases.find(
       (release) =>
         isCardinalityOneRelease(release) &&
-        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)) &&
+        laneReleaseIds.has(getReleaseIdFromReleaseDocumentId(release._id)),
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -291,16 +321,28 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     // A creatable missing draft variant renders no banner: the form is simply editable — typing
     // creates the document at the server-advertised id — matching the base draft/published
     // experience where editing the published fallback creates the draft.
-    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
-      return <DocumentNotInVariantBanner />
-    }
+    const variantBannerCase = getVariantBannerCase({
+      targetDocumentState,
+      perspective: isPublishedPerspective(selectedPerspective)
+        ? 'published'
+        : isDraftPerspective(selectedPerspective)
+          ? 'drafts'
+          : isScheduledRelease
+            ? 'locked-release'
+            : 'release',
+      hasDrafts: workspace.document.drafts.enabled && !schemaType?.liveEdit,
+    })
 
-    if (targetDocumentState.status === 'variant-definition-document-not-found') {
+    if (variantBannerCase.kind === 'definition-not-found') {
       return (
         <VariantDefinitionNotFoundBanner
-          requestedVariantName={targetDocumentState.requestedVariantName}
+          requestedVariantName={variantBannerCase.requestedVariantName}
         />
       )
+    }
+
+    if (variantBannerCase.kind !== 'none') {
+      return <DocumentNotInVariantBanner bannerCase={variantBannerCase} />
     }
 
     const isCurrentVersionGoingToUnpublish =
@@ -353,7 +395,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
-    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
+    const displayedIsDraft =
+      displayed?._id &&
+      (isDraftId(displayed._id) ||
+        (displayedVariantTarget && isDraftVersion(displayedVariantTarget)))
 
     return (
       <>
@@ -397,6 +442,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     value._id,
     schemaType,
     filteredReleases,
+    documentVersions,
     workspace,
     isPausedDraft,
     targetDocumentState,

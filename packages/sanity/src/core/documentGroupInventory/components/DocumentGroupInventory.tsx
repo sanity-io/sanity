@@ -427,12 +427,14 @@ const Select: ComponentType<{
   const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
   const perspective = usePerspective()
 
+  const documentVersions = sets.flatMap((set) => set.variants.map(({document}) => document))
+
   const servedVersion = readOnly
     ? undefined
     : resolveServedVersion({
         perspective,
         variantsEnabled: variantsEnabled ?? false,
-        versions: sets.flatMap((set) => set.variants.map(({document}) => document)),
+        versions: documentVersions,
       })
 
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
@@ -457,6 +459,9 @@ const Select: ComponentType<{
           <DocumentGroupSet
             key={set.key}
             name={set.name}
+            // The single set shown while Content Variants is off has no bundle, and its name
+            // already carries the count.
+            count={set.bundle ? set.variants.length : undefined}
             bundle={set.bundle}
             readOnly={readOnly}
             locked={isLocked}
@@ -478,6 +483,7 @@ const Select: ComponentType<{
                   <ReadOnlyVariantRow
                     key={variant.id}
                     variant={variant}
+                    documentVersions={documentVersions}
                     inventoryRef={inventoryRef}
                     onSelect={onSelect}
                     isSelected={selectedId === variant.id}
@@ -486,6 +492,7 @@ const Select: ComponentType<{
                   <ManagedVariantRow
                     key={variant.id}
                     variant={variant}
+                    documentVersions={documentVersions}
                     machine={machine}
                     inventoryRef={inventoryRef}
                     documentType={documentType}
@@ -511,16 +518,18 @@ const Select: ComponentType<{
  */
 const ReadOnlyVariantRow: ComponentType<{
   variant: Variant
+  documentVersions: VersionInfoDocumentStub[]
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
-}> = ({variant, inventoryRef, onSelect, isSelected}) => {
+}> = ({variant, documentVersions, inventoryRef, onSelect, isSelected}) => {
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
   return (
     <DocumentGroupEntry
       variant={variant}
       releases={releases}
+      documentVersions={documentVersions}
       isSelected={isSelected}
       onPrimaryAction={() => onSelect(variant.document)}
     />
@@ -529,6 +538,7 @@ const ReadOnlyVariantRow: ComponentType<{
 
 const ManagedVariantRow: ComponentType<{
   variant: Variant
+  documentVersions: VersionInfoDocumentStub[]
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
@@ -542,6 +552,7 @@ const ManagedVariantRow: ComponentType<{
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({
   variant,
+  documentVersions,
   machine,
   inventoryRef,
   documentType,
@@ -609,6 +620,7 @@ const ManagedVariantRow: ComponentType<{
       <DocumentGroupEntry
         variant={variant}
         releases={releases}
+        documentVersions={documentVersions}
         isSelected={isSelected}
         servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}

@@ -402,10 +402,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The base-variant mark's tooltip, before the chips naming the base variant and the compared version: "Differs from [Default] [Draft]" */
+  'changes.from-base-variant.differs-from': 'Differs from',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
-  /** PROPOSED: the base-variant mark's tooltip, before the chips naming the base variant and the slot: "Differs from [All users] [Draft]" */
-  'changes.from-base-variant.differs-from': 'Differs from',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
@@ -595,7 +595,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
-  /** The text of the actions that open the variant creation form and confirm the creation */
+  /** The text of the action that opens the variant creation form from the document group inventory */
   'document-group.create-variant': 'Create version',
   /** Describes the variant creation form's picker for the version the new variant starts from */
   'document-group.create-variant.base-description': 'What it starts from',
@@ -607,18 +607,41 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.base-option-nearest': 'Nearest version',
   /** The text of the button that closes the variant creation form without creating anything */
   'document-group.create-variant.cancel-button.text': 'Cancel',
+  /**
+   * Title of the variant creation form and the text of its confirm button. The form always creates
+   * a variant, in Drafts or in a release, so it says "variant"; "Add to release" is for adding the
+   * base document to a release
+   */
+  'document-group.create-variant.confirm': 'Create variant',
   /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
-  'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
+  'document-group.create-variant.description': 'A new variant of <DocumentTitle/>',
   /** Placeholder of the filter input in the variant creation form's pickers */
-  'document-group.create-variant.filter-placeholder': 'Find',
+  'document-group.create-variant.filter-placeholder': 'Search…',
   /** Describes the variant creation form's picker for the draft or release to create the variant in */
   'document-group.create-variant.target-description': 'Where it lives',
   /** The label of the variant creation form's picker for the draft or release to create the variant in */
   'document-group.create-variant.target-label': 'Target',
+  /** The search field placeholder in the variant creation form's picker for the variant definition */
+  'document-group.create-variant.variant-filter-placeholder': 'Search variant definitions…',
+  /** The heading above the variants the document already has a version in, in the variant creation form's picker */
+  'document-group.create-variant.variant-section.has-variants_one': 'Has {{count}} variant',
+  /** The heading above the variants the document already has a version in, in the variant creation form's picker */
+  'document-group.create-variant.variant-section.has-variants_other': 'Has {{count}} variants',
+  /** The heading above the variants the document has no version in yet, in the variant creation form's picker */
+  'document-group.create-variant.variant-section.other': 'Other variants',
   /** Describes the variant creation form's picker for the variant definition to create */
-  'document-group.create-variant.variant-description': 'Who sees this version',
+  'document-group.create-variant.variant-description': 'Who sees this variant',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',
+  /** Body of the notice in the delete dialog when required links stop the published Default document from being deleted */
+  'document-group.delete.blocked.description':
+    'They link to it with a required link. Change or remove those links first.',
+  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (singular) */
+  'document-group.delete.blocked.title_one':
+    "The Default document can't be deleted yet: 1 document needs it",
+  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (plural) */
+  'document-group.delete.blocked.title_other':
+    "The Default document can't be deleted yet: {{count}} documents need it",
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -649,9 +672,27 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
   /** The label given to the delete action */
   'document-group.delete.confirm-button.text': 'Delete',
+  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (singular) */
+  'document-group.delete.confirm-excluding-published-button.text_one': 'Delete 1 other version',
+  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (plural) */
+  'document-group.delete.confirm-excluding-published-button.text_other':
+    'Delete {{count}} other versions',
+  /** Header of the delete dialog when only the published Default document is selected */
+  'document-group.delete.default-title': 'Delete the Default document?',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Body of the notice in the delete dialog when no published Default document is selected */
+  'document-group.delete.no-links.description':
+    'Links point at the Default document, so deleting these versions breaks no links.',
+  /** Title of the notice in the delete dialog when no published Default document is selected */
+  'document-group.delete.no-links.title': 'Nothing links to these versions',
+  /** Notice in the delete dialog when only optional links point at the published Default document (singular) */
+  'document-group.delete.optional-links.text_one':
+    '1 document links to “<DocumentTitle/>” with an optional link. It will point at nothing.',
+  /** Notice in the delete dialog when only optional links point at the published Default document (plural) */
+  'document-group.delete.optional-links.text_other':
+    '{{count}} documents link to “<DocumentTitle/>” with optional links. They will point at nothing.',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
   'document-group.delete.other-reference-count.title_one': '1 other reference not show',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
@@ -663,6 +704,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Tag on a referring document in the delete dialog whose link to the deleted document is optional (weak) */
+  'document-group.delete.reference-tag.optional': 'Optional',
+  /** Tag on a referring document in the delete dialog whose link to the deleted document is required (strong) */
+  'document-group.delete.reference-tag.required': 'Required',
   /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
   'document-group.delete.referring-document-count.text_one':
     '1 document refers to “<DocumentTitle/>”',
@@ -676,8 +721,25 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (singular) */
+  'document-group.delete.variants-stay.text_one': '1 variant stays. It loses its Default.',
+  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (plural) */
+  'document-group.delete.variants-stay.text_other':
+    '{{count}} variants stay. They lose their Default.',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (singular) */
+  'document-group.delete.with-default-title_one':
+    'Delete {{count}} version, including the Default?',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (plural) */
+  'document-group.delete.with-default-title_other':
+    'Delete {{count}} versions, including the Default?',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
+  /** The last row of the versions flyout on a document list row, when the document has a single version */
+  'document-group.flyout.manage-versions': 'Manage versions in inventory',
+  /** The last row of the versions flyout on a document list row, opening the document group inventory (plural) */
+  'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
+  /** Accessible name of the versions flyout on a document list row */
+  'document-group.flyout.title': 'Versions',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
@@ -692,6 +754,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
+  'document-group.version.not-published-yet': '{{status}} · not published yet',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */
@@ -1576,7 +1640,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
-  'navbar.variant.menu.view-all': 'View all',
+  'navbar.variant.menu.view-all': 'View all variant definitions',
   /** Tooltip for the link that opens an audience's page from the variants selection menu. */
   'navbar.variant.menu.view-variant': 'View audience',
   /** Accessible label for the link that opens an audience's page from the variants selection menu. */
@@ -1584,7 +1648,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Find audience',
+  'navbar.variant.filter-placeholder': 'Search variant definitions…',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
@@ -1678,26 +1742,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Compact relative time in the past, in years, eg "1 yr ago" */
   'relative-time.compact.years-ago': '{{count}} yr ago',
   /* Relative time, just now */
-  /** PROPOSED: a compact relative time in the past, as a phrase: "2 days ago" */
-  'relative-time.compact.ago': '{{time}} ago',
-  /** PROPOSED: a compact relative time, a few characters at most (the versions popover's lines): days */
-  'relative-time.compact.day_one': '{{count}} day',
-  /** PROPOSED: a compact relative time: days */
-  'relative-time.compact.day_other': '{{count}} days',
-  /** PROPOSED: a compact relative time: hours */
-  'relative-time.compact.hour': '{{count}} hr',
-  /** PROPOSED: a compact relative time: minutes */
-  'relative-time.compact.minute': '{{count}} min',
-  /** PROPOSED: a compact relative time: months */
-  'relative-time.compact.month': '{{count}} mo',
-  /** PROPOSED: a compact relative time: under a minute */
-  'relative-time.compact.now': 'now',
-  /** PROPOSED: a compact relative time in the past, as a phrase: under a minute ("Edited just now") */
-  'relative-time.compact.just-now': 'just now',
-  /** PROPOSED: a compact relative time: weeks */
-  'relative-time.compact.week': '{{count}} wk',
-  /** PROPOSED: a compact relative time: years */
-  'relative-time.compact.year': '{{count}} yr',
   'relative-time.just-now': 'just now',
 
   /** Action message to add document to new release */
@@ -1760,11 +1804,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
-  /** PROPOSED: the word before the date's chip on a scheduled draft's banner ("publish on [Nov 20, 9:00 AM]"), kept on one line with it */
-  'release.banner.lead.on': 'on',
-  /** PROPOSED: the banner on a scheduled draft: when it publishes, as a chip, and how to edit it (its action is Pause to edit) */
-  'release.banner.scheduled-draft':
-    'This draft is scheduled to publish <DateBadge>{{date}}</DateBadge>. Pause the schedule to edit it.',
 
   /** Label for button to show other variants in the document perspective list */
   'release.chip.button.other-variants_one': '+{{count}} variant',
@@ -1874,21 +1913,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
-  /** Shown in the release menu when the search matches no version or release */
-  'release.menu.search.empty': 'Nothing matches “{{query}}”.',
-  /** Placeholder of the search field at the top of the release menu */
-  'release.menu.search.placeholder': 'Find a version or release',
+  'release.menu.scheduled-drafts': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View Content Releases',
-  /** Accessible label of the cross on the navbar's perspective chip: it goes back to the default perspective (Drafts, or Published) */
-  'release.navbar.clear': 'Back to {{perspective}}',
+  'release.menu.view-releases': 'View content releases',
+  /** Label above a release's title in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.release': 'Release',
+  /** Label above "Drafts" or "Published" in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.version': 'Version',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
-  'release.navbar.filter-placeholder': 'Find a version or release',
+  'release.navbar.filter-placeholder': 'Search versions and releases…',
   /** Accessible name for the chevron that opens the releases menu */
   'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */

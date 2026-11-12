@@ -119,7 +119,12 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               >
                 <MenuItem padding={3}>
                   <Flex alignItems={'center'} justifyContent="flex-start">
-                    <Text size={1} style={{textDecoration: 'none'}} as="div" trim={true}>
+                    <Text
+                      size={1}
+                      style={{textDecoration: 'none', color: 'var(--card-fg-color)'}}
+                      as="div"
+                      trim={true}
+                    >
                       <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                         {({displayTitle}) => (
                           <Translate
@@ -139,7 +144,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
                 <Flex alignItems={'center'} justifyContent="flex-start">
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} style={{color: 'var(--card-fg-color)'}} as="div" trim={true}>
                     <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                       {({displayTitle}) => (
                         <Translate
@@ -160,7 +165,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
           ) : (
             <MenuItem onClick={handleOpenDraftDocument} disabled={!event.versionRevisionId}>
               <Flex alignItems={'center'}>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} style={{color: 'var(--card-fg-color)'}} as="div" trim={true}>
                   <Translate
                     components={{VersionBadge}}
                     componentProps={{tone: 'caution' as const}}

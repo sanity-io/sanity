@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon} from '@sanity/icons/Clock'
 import {UnlockIcon} from '@sanity/icons/Unlock'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -24,6 +23,7 @@ import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNav
 import {structureLocaleNamespace} from '../../../../../../i18n'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {getNavigationBadges} from '../badges/getNavigationBadges'
+import {ClockSmallIcon} from '../ClockSmallIcon'
 import {DropdownButton} from '../DropdownButton'
 import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
 import {useSelectedVariant} from '../variants/useSelectedVariant'
@@ -47,7 +47,7 @@ function ScheduledDraftMenuItem(props: {
   return (
     <MenuItem
       data-testid={`document-scheduled-draft-${getReleaseIdFromReleaseDocumentId(release._id)}`}
-      icon={<ReleaseAvatar padding={2} release={release} />}
+      icon={<ReleaseAvatar padding={0} release={release} />}
       iconRight={isPausedCardinalityOneRelease(release) ? UnlockIcon : undefined}
       onClick={handleClick}
       pressed={isSelected}
@@ -129,7 +129,7 @@ export function DocumentScheduledDraftsMenu() {
       button={
         <DropdownButton
           data-testid="document-scheduled-drafts-menu-button"
-          icon={isPausedCardinalityOneRelease(selectedScheduledDraft) ? UnlockIcon : ClockIcon}
+          icon={isPausedCardinalityOneRelease(selectedScheduledDraft) ? UnlockIcon : ClockSmallIcon}
           onClear={selectedScheduledDraft ? handleClear : undefined}
           tone={selectedScheduledDraft ? getReleaseTone(selectedScheduledDraft) : undefined}
           text={
@@ -139,7 +139,7 @@ export function DocumentScheduledDraftsMenu() {
           }
         />
       }
-      filterPlaceholder={t('document-panel-navigation.filter-placeholder')}
+      filterPlaceholder={t('document-panel-navigation.scheduled-drafts.filter-placeholder')}
       filterQuery={filterQuery}
       onFilterChange={setFilterQuery}
       sections={[

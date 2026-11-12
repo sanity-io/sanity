@@ -55,6 +55,7 @@ import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
+import {VariantDefinitionNotFoundBanner} from '../VariantDefinitionNotFoundBanner'
 
 vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<typeof SanityExports>()
@@ -314,6 +315,14 @@ afterEach(() => {
   vi.mocked(useOnlyHasVersions).mockReset()
 })
 
+function withVariant(perspective: PerspectiveContextValue): PerspectiveContextValue {
+  return {
+    ...perspective,
+    selectedVariantNames: ['alpha-audience'],
+    selectedVariants: [alphaVariant],
+  }
+}
+
 describe('document panel banners', () => {
   it('flags a deprecated type and a missing revision', async () => {
     await render(
@@ -438,7 +447,7 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
-  it('offers to add the document to the selected variant', async () => {
+  it('explains a missing variant version in each perspective', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
       versions: [],
@@ -448,20 +457,35 @@ describe('document panel banners', () => {
 
     await render(
       <TestWrapper schemaTypes={schemaTypes}>
-        <BannerHarness
-          perspective={{
-            ...draftsPerspective,
-            selectedVariantNames: ['alpha-audience'],
-            selectedVariants: [alphaVariant],
-          }}
-        >
-          <DocumentNotInVariantBanner />
+        <BannerHarness perspective={withVariant(draftsPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(releasePerspective(springRelease))}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(releasePerspective(scheduledRelease))}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'locked-release'}} />
+        </BannerHarness>
+        <BannerHarness perspective={withVariant(publishedPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create-in-drafts'}} />
+          <DocumentNotInVariantBanner bannerCase={{kind: 'switch-to-drafts'}} />
+        </BannerHarness>
+        <BannerHarness>
+          <VariantDefinitionNotFoundBanner requestedVariantName="never-seen" />
         </BannerHarness>
       </TestWrapper>,
     )
 
-    await expect.element(page.getByText('Alpha audience')).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeEnabled()
+    await expect
+      .poll(() => page.getByTestId('variant-banner-variant-chip').elements().length)
+      .toBe(5)
+    await expect
+      .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
+      .toBe(3)
+    await expect.element(page.getByRole('button', {name: 'Open release'})).toBeEnabled()
+    await expect.element(page.getByRole('button', {name: 'Switch to Drafts'})).toBeEnabled()
+    await expect.element(page.getByText('The selected variant no longer exists.')).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Back to Default'})).toBeEnabled()
     await settleChromaticEndState()
   })
 

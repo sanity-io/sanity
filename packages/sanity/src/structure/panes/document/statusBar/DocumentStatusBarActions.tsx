@@ -100,9 +100,12 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         firstActionState &&
         (shouldShowScheduleAsFirstActionButton || !isSanityDefinedAction(firstActionState))
       : // For live-edit documents, only show custom (non-Sanity-defined) actions as primary,
-        // so built-ins like Duplicate or Delete stay in the menu
+        // so built-ins like Duplicate or Delete stay in the menu. A variant slot forces `liveEdit`
+        // on a type that is not live edit; the schema's flag decides, so Publish stays primary there.
         firstActionState &&
-        (!editState?.liveEdit || editState?.version || !isSanityDefinedAction(firstActionState))
+        (!editState?.liveEditSchemaType ||
+          editState?.version ||
+          !isSanityDefinedAction(firstActionState))
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton
@@ -142,15 +145,19 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   )
 })
 
-export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
+export const DocumentStatusBarActions = memo(function DocumentStatusBarActions(props: {
+  /** Every action greyed: the chosen variant has no document in this perspective yet. */
+  disabled?: boolean
+}) {
+  const {disabled} = props
   return (
     <RenderActionCollectionState group="default">
-      {({states}) => <RenderDocumentStatusBarActions states={states} />}
+      {({states}) => <RenderDocumentStatusBarActions disabled={disabled} states={states} />}
     </RenderActionCollectionState>
   )
 })
 
-function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
+function RenderDocumentStatusBarActions(props: {disabled?: boolean; states: ResolvedAction[]}) {
   const {connectionState, documentId} = useDocumentPane()
 
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
@@ -163,7 +170,7 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
     <DocumentStatusBarActionsInner
       // Use document ID as key to make sure that the actions state is reset when the document changes
       key={documentId}
-      disabled={connectionState !== 'connected'}
+      disabled={Boolean(props.disabled) || connectionState !== 'connected'}
       states={states}
     />
   )

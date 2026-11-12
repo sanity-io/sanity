@@ -110,6 +110,25 @@ it('reports nothing for a page load that rolled outside the sample', async () =>
   expect(webVitals.onFCP).not.toHaveBeenCalled()
 })
 
+it('does not roll the sample when the module is imported', async () => {
+  vi.resetModules()
+  vi.spyOn(Math, 'random').mockImplementation(() => {
+    throw new Error('Math.random() called while importing')
+  })
+
+  await expect(import('../useSoftNavigationTelemetry')).resolves.toBeDefined()
+})
+
+it('keeps the first sampling decision when Studio remounts', async () => {
+  const {webVitals, renderWithStore} = await loadHook({debugTelemetry: false, roll: 0.5})
+
+  renderWithStore(createCollectingStore().store).unmount()
+  vi.mocked(Math.random).mockReturnValue(0)
+  renderWithStore(createCollectingStore().store)
+
+  expect(webVitals.onLCP).not.toHaveBeenCalled()
+})
+
 it('keeps the URL the browser left when a tool replaces its URL with itself on mount', async () => {
   const structureURL = `${location.origin}/structure/book`
   const releasesURL = `${location.origin}/releases`

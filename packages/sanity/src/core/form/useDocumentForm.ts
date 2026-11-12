@@ -55,7 +55,7 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
-import {getTargetDocument} from '../util/getTargetDocument'
+import {getBaseComparisonTarget} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
@@ -276,7 +276,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const baseVariantTarget = useMemo(
     () =>
       shouldCompareBaseVariant
-        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        ? // The nearest base version, not only the base in the exact slot: a variant draft of a
+          // published-only document compares with the base published version.
+          getBaseComparisonTarget({bundle, documentVersions: documentVersionStubs})
         : undefined,
     [bundle, shouldCompareBaseVariant, documentVersionStubs],
   )

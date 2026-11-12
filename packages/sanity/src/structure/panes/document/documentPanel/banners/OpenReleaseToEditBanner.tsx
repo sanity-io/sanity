@@ -126,7 +126,6 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
         documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
-              tone: tone,
               onClick: handleGoToEdit,
               mode: 'default',
             }

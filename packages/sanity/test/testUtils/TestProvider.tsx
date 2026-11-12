@@ -30,17 +30,16 @@ import {type Panes} from '../../src/structure/structureResolvers/useResolvedPane
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests. With no fallback the observable
-// answers at once with "no data"; a fallback (a request disabled until its endpoint exists) is
-// answered as that data. Each observable is cached by identity, like the real hook's memoized one:
-// react-rx caches by observable identity, so a fresh observable per render would resubscribe on
-// every commit.
+// answers at once with "no data"; a fallback is answered as that data. Each observable is cached
+// by identity, like the real hook's memoized one: react-rx caches by observable identity, so a
+// fresh observable per render would resubscribe on every commit.
 vi.mock('../../src/core/hooks/useUpsellData', async (importOriginal) => {
   const original = await importOriginal<typeof UpsellDataModule>()
   // `vi.mock` factories are hoisted above this module's imports, so the module is loaded here
   const {of} = await import('rxjs')
   const upsellData$ = of<UpsellDataResult>({upsellData: null, hasError: false})
   // A disabled request settles with its fallback. Cache by the fallback's identity so a stable
-  // fixture (the variants one) keeps one observable, the same way the real hook memoizes it.
+  // fixture keeps one observable, the same way the real hook memoizes it.
   const fallbacks = new WeakMap<UpsellData, typeof upsellData$>()
   const telemetryLogs = {
     dialogViewed: vi.fn(),

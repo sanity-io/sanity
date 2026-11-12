@@ -30,7 +30,7 @@ describe('ReleaseAvatarIcon', () => {
   it('renders ClockIcon for scheduled releases', () => {
     render(<ReleaseAvatarIcon release={scheduledRelease} />)
 
-    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
+    expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
       'data-sanity-icon',
       'clock',
     )
@@ -84,7 +84,7 @@ describe('ReleaseAvatarIcon', () => {
   it('renders the clock-small icon for scheduled releases when size is small', () => {
     render(<ReleaseAvatarIcon release={scheduledRelease} size="small" />)
 
-    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
+    expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
       'data-sanity-icon',
       'clock-small',
     )
@@ -108,7 +108,7 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders the small dot for undecided releases when size is small', () => {
+  it('renders a grey dot, not a question mark, for undecided releases when size is small', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />)
 
     expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(

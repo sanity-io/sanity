@@ -6,15 +6,20 @@ import {
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
+  useSetPerspective,
   useVariantDocumentOperations,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
-import {DocumentNotInVariantBanner} from '../DocumentNotInVariantBanner'
+import {
+  DocumentNotInVariantBanner,
+  type NotInVariantBannerCase,
+} from '../DocumentNotInVariantBanner'
 
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
@@ -28,7 +33,13 @@ vi.mock('sanity', async () => {
     useDocumentVersions: vi.fn(),
     useVariantDocumentOperations: vi.fn(),
     useGetDefaultPerspective: vi.fn(),
+    useSetPerspective: vi.fn(),
   }
+})
+
+vi.mock('sanity/router', async () => {
+  const router = await vi.importActual('sanity/router')
+  return {...router, useRouter: vi.fn()}
 })
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
@@ -41,7 +52,12 @@ const mockUseGetDefaultPerspective = useGetDefaultPerspective as Mock<
   typeof useGetDefaultPerspective
 >
 
+const mockUseSetPerspective = useSetPerspective as Mock<typeof useSetPerspective>
+const mockUseRouter = useRouter as Mock<typeof useRouter>
+
 const createVariantDocument = vi.fn()
+const setPerspective = vi.fn()
+const navigateIntent = vi.fn()
 
 const DOCUMENT_ID = 'article-1'
 const VARIANT_TITLE = 'Alpha audience'
@@ -103,6 +119,45 @@ const untitledRelease: ReleaseDocument = {
   },
 }
 
+// @ts-expect-error -- partial release fixture
+const scheduledRelease: ReleaseDocument = {
+  _id: '_.releases.rScheduled',
+  _type: 'system.release',
+  _rev: 'release-rev',
+  _createdAt: '2024-01-01T00:00:00Z',
+  _updatedAt: '2024-01-01T00:00:00Z',
+  state: 'scheduled',
+  metadata: {
+    title: 'Spring launch',
+    releaseType: 'scheduled',
+  },
+}
+
+function perspectiveState(
+  selectedPerspective: ReturnType<typeof usePerspective>['selectedPerspective'],
+  selectedPerspectiveName: string | undefined,
+  selectedVariants: SystemVariant[] = [variantAlphaAudience],
+): ReturnType<typeof usePerspective> {
+  const isRelease =
+    typeof selectedPerspectiveName === 'string' && selectedPerspectiveName.startsWith('r')
+  return {
+    selectedPerspective,
+    selectedPerspectiveName,
+    selectedReleaseId: isRelease ? selectedPerspectiveName : undefined,
+    perspectiveStack: isRelease
+      ? [selectedPerspectiveName, 'drafts']
+      : [selectedPerspectiveName ?? 'drafts'],
+    excludedPerspectives: [],
+    selectedVariantNames: ['alpha-audience'],
+    selectedVariants,
+    // oxlint-disable-next-line typescript/no-deprecated
+    selectedVariantName: 'alpha-audience',
+    // oxlint-disable-next-line typescript/no-deprecated
+    selectedVariant: selectedVariants[0],
+    bundle: selectedPerspectiveName ?? 'drafts',
+  } as ReturnType<typeof usePerspective>
+}
+
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_rev' | '_system'>,
 ): VersionInfoDocumentStub => ({
@@ -112,35 +167,22 @@ const versionStub = (
   ...stub,
 })
 
-async function expectBannerMessage({
-  perspectiveTitle,
-  variantTitle = VARIANT_TITLE,
-}: {
-  perspectiveTitle: string
-  variantTitle?: string
-}) {
-  const expected = `No ${perspectiveTitle} variant document exists for ${variantTitle}.`
-
+async function expectBannerMessage(expected: string) {
   await waitFor(() => {
     expect(
-      screen.getByText((_, element) => {
-        if (element?.textContent !== expected) {
-          return false
-        }
-
-        // Avoid matching ancestors that share the same concatenated textContent.
-        return !Array.from(element.children).some((child) => child.textContent === expected)
-      }),
-    ).toBeInTheDocument()
+      screen.getByTestId('document-not-in-variant-banner').textContent?.replaceAll('\u00a0', ' '),
+    ).toBe(expected)
   })
 }
 
-async function renderBanner() {
+const CREATE_IN_DRAFTS: NotInVariantBannerCase = {kind: 'create', perspective: 'drafts'}
+
+async function renderBanner(bannerCase: NotInVariantBannerCase = CREATE_IN_DRAFTS) {
   const wrapper = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
   })
 
-  return render(<DocumentNotInVariantBanner />, {wrapper})
+  return render(<DocumentNotInVariantBanner bannerCase={bannerCase} />, {wrapper})
 }
 
 describe('DocumentNotInVariantBanner', () => {
@@ -158,6 +200,8 @@ describe('DocumentNotInVariantBanner', () => {
       createVariantDocument,
     })
     createVariantDocument.mockResolvedValue({transactionId: 'tx-1'})
+    mockUseSetPerspective.mockReturnValue(setPerspective)
+    mockUseRouter.mockReturnValue({navigateIntent} as unknown as ReturnType<typeof useRouter>)
 
     mockUseDocumentPane.mockReturnValue({
       documentId: DOCUMENT_ID,
@@ -180,181 +224,135 @@ describe('DocumentNotInVariantBanner', () => {
     })
   })
 
-  describe('perspective title', () => {
-    it('shows Drafts as the perspective title when drafts is selected', async () => {
+  describe('copy and actions per case', () => {
+    it('Drafts: names the variant as a chip and offers Create variant', async () => {
       await renderBanner()
 
-      await expectBannerMessage({perspectiveTitle: 'Drafts'})
-    })
-
-    it('shows Published as the perspective title when published is selected', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: 'published',
-        selectedPerspectiveName: 'published',
-        selectedReleaseId: undefined,
-        perspectiveStack: ['published'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'published',
-      })
-
-      await renderBanner()
-
-      await expectBannerMessage({perspectiveTitle: 'Published'})
-    })
-
-    it('shows the release metadata title when a release perspective is selected', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: titledRelease,
-        selectedPerspectiveName: 'rSummer',
-        selectedReleaseId: 'rSummer',
-        perspectiveStack: ['rSummer', 'drafts'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'rSummer',
-      })
-
-      await renderBanner()
-
-      await expectBannerMessage({perspectiveTitle: 'Summer release'})
-    })
-
-    it('shows Untitled release when the release has no title', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: untitledRelease,
-        selectedPerspectiveName: 'rUntitled',
-        selectedReleaseId: 'rUntitled',
-        perspectiveStack: ['rUntitled', 'drafts'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'rUntitled',
-      })
-
-      await renderBanner()
-
-      await expectBannerMessage({perspectiveTitle: 'Untitled release'})
-    })
-
-    it('falls back to String(selectedPerspective) for anonymous/string perspectives', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: 'rAnonymous',
-        selectedPerspectiveName: 'rAnonymous',
-        selectedReleaseId: 'rAnonymous',
-        perspectiveStack: ['rAnonymous', 'drafts'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'rAnonymous',
-      })
-
-      await renderBanner()
-
-      await expectBannerMessage({perspectiveTitle: 'rAnonymous'})
+      await expectBannerMessage(
+        'This document has no draft for the variant Alpha audience yet. Create one to start editing.',
+      )
+      expect(screen.getByTestId('variant-banner-variant-chip').textContent).toBe(VARIANT_TITLE)
+      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
     })
 
     it('uses the variant id as the variant title when metadata title is missing', async () => {
-      const untitledVariant = {
-        ...variantAlphaAudience,
-        metadata: undefined,
-      }
-
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: 'drafts',
-        selectedPerspectiveName: undefined,
-        selectedReleaseId: undefined,
-        perspectiveStack: ['drafts'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [untitledVariant],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: untitledVariant,
-        bundle: 'drafts',
-      })
+      const untitledVariant = {...variantAlphaAudience, metadata: undefined}
+      mockUsePerspective.mockReturnValue(perspectiveState('drafts', undefined, [untitledVariant]))
 
       await renderBanner()
 
-      await expectBannerMessage({
-        perspectiveTitle: 'Drafts',
-        variantTitle: 'alpha-audience',
+      await expectBannerMessage(
+        'This document has no draft for the variant alpha-audience yet. Create one to start editing.',
+      )
+    })
+
+    it('open release: names the release and offers Create variant', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
+
+      await renderBanner({kind: 'create', perspective: 'release'})
+
+      await expectBannerMessage(
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing.',
+      )
+      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+    })
+
+    it('open release: falls back to Untitled release', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(untitledRelease, 'rUntitled'))
+
+      await renderBanner({kind: 'create', perspective: 'release'})
+
+      await expectBannerMessage(
+        'This document has no version for the variant Alpha audience in the ASAP release Untitled release yet. Create one to start editing.',
+      )
+    })
+
+    it('scheduled release: offers Open release, not Create variant', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(scheduledRelease, 'rScheduled'))
+
+      await renderBanner({kind: 'locked-release'})
+
+      await expectBannerMessage(
+        'The scheduled release Spring launch is locked. Unschedule it to add a version for the variant Alpha audience.',
+      )
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+      await userEvent.click(screen.getByRole('button', {name: 'Open release'}))
+      expect(navigateIntent).toHaveBeenCalledWith('release', {id: 'rScheduled'})
+    })
+
+    it('Published, variant has a draft: offers Switch to Drafts', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState('published', 'published'))
+
+      await renderBanner({kind: 'switch-to-drafts'})
+
+      await expectBannerMessage(
+        'This document has no published version for the variant Alpha audience yet. Its draft is in Drafts.',
+      )
+      await userEvent.click(screen.getByRole('button', {name: 'Switch to Drafts'}))
+      expect(setPerspective).toHaveBeenCalledWith('drafts')
+      expect(createVariantDocument).not.toHaveBeenCalled()
+    })
+
+    it('Published, variant has no draft: creates the draft, then switches to Drafts', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState('published', 'published'))
+
+      await renderBanner({kind: 'create-in-drafts'})
+
+      await expectBannerMessage(
+        'This document has no published version for the variant Alpha audience yet. Create one in Drafts to start editing.',
+      )
+      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(setPerspective).toHaveBeenCalledWith('drafts')
       })
+      expect(createVariantDocument).toHaveBeenCalledWith({
+        baseId: existingDocumentValue._id,
+        ifBaseRevisionId: existingDocumentValue._rev,
+        documentGroupId: DOCUMENT_ID,
+        variant: variantAlphaAudience,
+        selectedPerspective: 'drafts',
+      })
+    })
+
+    it('Published, create fails: stays in Published', async () => {
+      createVariantDocument.mockRejectedValueOnce(new Error('create failed'))
+      mockUsePerspective.mockReturnValue(perspectiveState('published', 'published'))
+
+      await renderBanner({kind: 'create-in-drafts'})
+      await userEvent.click(await screen.findByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(screen.getByText('Error adding document to variant')).toBeInTheDocument()
+      })
+      expect(setPerspective).not.toHaveBeenCalled()
+    })
+
+    it('Published without Drafts (live edit): creates the published variant in place', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        schemaType: {liveEdit: true},
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      mockUsePerspective.mockReturnValue(perspectiveState('published', 'published'))
+
+      await renderBanner({kind: 'create', perspective: 'published'})
+
+      await expectBannerMessage(
+        'This document has no published version for the variant Alpha audience yet. Create one to start editing.',
+      )
+      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(createVariantDocument).toHaveBeenCalledWith(
+          expect.objectContaining({selectedPerspective: 'published'}),
+        )
+      })
+      expect(setPerspective).not.toHaveBeenCalled()
     })
   })
 
   describe('create variant action', () => {
-    it('shows the Create variant action when the selected perspective is the default', async () => {
-      await renderBanner()
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
-      })
-    })
-
-    it('shows the Create variant action when a release is selected', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: titledRelease,
-        selectedPerspectiveName: 'rSummer',
-        selectedReleaseId: 'rSummer',
-        perspectiveStack: ['rSummer', 'drafts'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'rSummer',
-      })
-
-      await renderBanner()
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
-      })
-    })
-
-    it('hides the Create variant action when published is selected and drafts is the default', async () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspective: 'published',
-        selectedPerspectiveName: 'published',
-        selectedReleaseId: undefined,
-        perspectiveStack: ['published'],
-        excludedPerspectives: [],
-        selectedVariantNames: ['alpha-audience'],
-        selectedVariants: [variantAlphaAudience],
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariantName: 'alpha-audience',
-        // oxlint-disable-next-line typescript/no-deprecated
-        selectedVariant: variantAlphaAudience,
-        bundle: 'published',
-      })
-
-      await renderBanner()
-
-      await expectBannerMessage({perspectiveTitle: 'Published'})
-      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
-    })
-
     it('creates from the document value when the document does not exist yet', async () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: DOCUMENT_ID,
@@ -475,7 +473,7 @@ describe('DocumentNotInVariantBanner', () => {
         bundle: 'rSummer',
       })
 
-      await renderBanner()
+      await renderBanner({kind: 'create', perspective: 'release'})
 
       await waitFor(() => {
         expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
@@ -514,7 +512,7 @@ describe('DocumentNotInVariantBanner', () => {
         bundle: 'rSummer',
       })
 
-      await renderBanner()
+      await renderBanner({kind: 'create', perspective: 'release'})
 
       await waitFor(() => {
         expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()

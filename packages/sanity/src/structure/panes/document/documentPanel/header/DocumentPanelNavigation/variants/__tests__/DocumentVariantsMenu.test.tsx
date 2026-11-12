@@ -163,10 +163,12 @@ describe('DocumentVariantsMenu', () => {
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
     expect(documentSection).toHaveTextContent('Has 0 variants')
-    expect(within(documentSection).queryAllByRole('menuitem', {hidden: true})).toHaveLength(0)
+    expect(within(documentSection).queryAllByRole('menuitemradio', {hidden: true})).toHaveLength(0)
     expect(
       within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any variant yet. Pick one below to create it.")
+    ).toHaveAccessibleName(
+      "This document doesn't have any variants yet. Pick one below to create a variant",
+    )
 
     const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
     expect(otherSection).toHaveTextContent('Other variants')
@@ -250,6 +252,23 @@ describe('DocumentVariantsMenu', () => {
     expect(within(firstTimeItem).queryByTestId('variant-version-count')).toBeNull()
   })
 
+  it('exposes the selected variant as the checked radio item', async () => {
+    mockUsePerspective.mockReturnValue(createPerspective({selectedVariants: [firstTime]}))
+    render(<DocumentVariantsMenu />, {wrapper})
+
+    const menu = await openMenu()
+
+    const selectedItem = within(menu).getByTestId(`document-variant-${firstTime._id}`)
+    expect(selectedItem).toHaveAttribute('role', 'menuitemradio')
+    expect(selectedItem).toHaveAttribute('aria-checked', 'true')
+    const defaultItem = within(menu).getByTestId('document-variant-default')
+    expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
+    expect(defaultItem).toHaveAttribute('aria-checked', 'false')
+    expect(within(menu).getByLabelText('Search variant definitions…')).toBe(
+      within(menu).getByPlaceholderText('Search variant definitions…'),
+    )
+  })
+
   it('selects a variant of the default type', async () => {
     render(<DocumentVariantsMenu />, {wrapper})
 
@@ -263,7 +282,7 @@ describe('DocumentVariantsMenu', () => {
     render(<DocumentVariantsMenu />, {wrapper})
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search variant definitions…')
 
     await userEvent.type(input, 'lapsed')
     expect(within(menu).getByTestId(`document-variant-${lapsed._id}`)).toBeInTheDocument()

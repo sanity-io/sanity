@@ -2,12 +2,14 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {act} from 'react'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
+import {useUpsellData} from '../../../../hooks/useUpsellData'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
+import {variantsUpsellData$} from '../../../../variants/__fixtures__/variantsUpsellData'
 import {type VariantsMode} from '../../../../variants/contexts/mode/types'
 import {VariantsUpsellProvider} from '../../../../variants/contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
@@ -44,6 +46,21 @@ vi.mock('../../../../variants/store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+// `createTestProvider` mocks `useUpsellData` with no content. The upsell-mode test renders the
+// dialog, so it answers with the journey document the endpoint publishes.
+const useUpsellDataMock = vi.mocked(useUpsellData)
+
+const telemetryLogs = {
+  dialogViewed: vi.fn(),
+  dialogDismissed: vi.fn(),
+  dialogPrimaryClicked: vi.fn(),
+  dialogSecondaryClicked: vi.fn(),
+  panelViewed: vi.fn(),
+  panelDismissed: vi.fn(),
+  panelPrimaryClicked: vi.fn(),
+  panelSecondaryClicked: vi.fn(),
+}
+
 async function renderMenuInMode(mode: VariantsMode) {
   const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
   const settledMode = Object.assign(Promise.resolve(mode), {
@@ -70,6 +87,7 @@ async function renderMenuInMode(mode: VariantsMode) {
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useUpsellDataMock.mockReturnValue({upsellData$: variantsUpsellData$, telemetryLogs})
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
@@ -95,16 +113,37 @@ describe('VariantsMenu', () => {
     return view
   }
 
+  /**
+   * The menu moves the focus to its selected row one animation frame after it opens. Typing before
+   * that frame loses the first characters to the row, so wait for it, then type in the field.
+   */
+  async function typeInFilter(text: string) {
+    await waitFor(() => expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem'))
+    await userEvent.type(screen.getByPlaceholderText('Search variant definitions…'), text)
+  }
+
   it('marks the variant selected by the perspective provider', async () => {
     perspectiveContextValueMock.selectedVariants = [variantAlphaAudience]
     perspectiveContextValueMock.selectedVariantNames = [getVariantId(variantAlphaAudience._id)]
 
     await renderMenu()
 
-    expect(screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)).toHaveAttribute(
-      'data-selected',
+    const selectedItem = screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)
+    expect(selectedItem).toHaveAttribute('data-selected')
+    expect(selectedItem).toHaveAttribute('role', 'menuitemradio')
+    expect(selectedItem).toHaveAttribute('aria-checked', 'true')
+    const defaultItem = screen.getByTestId('variant-default')
+    expect(defaultItem).not.toHaveAttribute('data-selected')
+    expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
+    expect(defaultItem).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('labels the filter input', async () => {
+    await renderMenu()
+
+    expect(screen.getByLabelText('Search variant definitions…')).toBe(
+      screen.getByPlaceholderText('Search variant definitions…'),
     )
-    expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
   it('links view all to the variants tool overview', async () => {
@@ -119,12 +158,80 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).toHaveTextContent('Default')
   })
 
-  it('filters the default option with the rest of the list', async () => {
-    const user = userEvent.setup()
-
+  it('shows the variant diamond on the default option, like every other variant', async () => {
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'alpha')
+    expect(
+      screen.getByTestId('variant-default').querySelector('[data-ui="VariantMark"]'),
+    ).not.toBeNull()
+  })
+
+  it('draws every variant row with the shared VariantMark, not only the chip', async () => {
+    await renderMenu()
+
+    const marks = [
+      ...document.querySelectorAll('[data-ui="MenuItem"] [data-ui="VariantMark"]'),
+    ].filter((mark) => !mark.closest('[data-testid="view-all"]'))
+    expect(marks.length).toBeGreaterThan(1)
+    for (const mark of marks) {
+      expect(mark.getAttribute('data-size')).toBe('row')
+      expect(mark.getAttribute('data-fill')).toBe('filled')
+    }
+  })
+
+  describe('search field focus', () => {
+    const searchPlaceholder = 'Search variant definitions…'
+
+    // The test environment mocks `matchMedia` as matching nothing, which reads as a touch device
+    function stubPointer({finePointerWithHover}: {finePointerWithHover: boolean}) {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: finePointerWithHover,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }))
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('focuses the search field when the menu opens', async () => {
+      stubPointer({finePointerWithHover: true})
+
+      await renderMenu()
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+    })
+
+    it('moves to the list with the arrow keys from the search field', async () => {
+      stubPointer({finePointerWithHover: true})
+      const user = userEvent.setup()
+
+      await renderMenu()
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+
+      await user.keyboard('{ArrowDown}')
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus())
+      expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem')
+    })
+
+    it('leaves the field alone on a touch device, where focus opens the on-screen keyboard', async () => {
+      stubPointer({finePointerWithHover: false})
+
+      await renderMenu()
+      // Two animation frames are the longest the field would wait to take the focus
+      await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+
+      expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus()
+    })
+  })
+
+  it('filters the default option with the rest of the list', async () => {
+    await renderMenu()
+
+    await typeInFilter('alpha')
 
     expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
     expect(
@@ -133,11 +240,9 @@ describe('VariantsMenu', () => {
   })
 
   it('keeps the default option when the query matches its label', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'default')
+    await typeInFilter('default')
 
     expect(screen.getByTestId('variant-default')).toBeInTheDocument()
     expect(
@@ -147,11 +252,9 @@ describe('VariantsMenu', () => {
   })
 
   it('shows a message when the filter matches nothing', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'zzz')
+    await typeInFilter('zzz')
 
     expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
       'Nothing matches "zzz"',
@@ -172,7 +275,8 @@ describe('VariantsMenu', () => {
       },
     })
 
-    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+    // The icon itself, not a wrapper: a wrapper takes the icon's colour and lifts it off centre
+    expect(screen.getByTestId('variant-condition-mismatch').tagName).toBe('svg')
   })
 
   it('does not show a mismatch error in freeform mode', async () => {

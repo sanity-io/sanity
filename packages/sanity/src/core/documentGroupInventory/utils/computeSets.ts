@@ -1,8 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 
 import {type TFunction} from '../../i18n/types'
+import {buildInventoryIndex, toVersionStub} from '../../inventoryModel/buildInventoryIndex'
+import {documentLens} from '../../inventoryModel/lenses'
+import {type ReleaseOrderOptions, type VersionStub} from '../../inventoryModel/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../util/versionsUtils'
@@ -15,6 +17,32 @@ import {
 import {type Variant} from '../machines/selectionMachine'
 
 /**
+ * Where the two sets whose position is still an open product question go.
+ *
+ * @internal
+ */
+export interface InventorySetPlacement {
+  /** `first` puts Proposed changes above Drafts; `afterDrafts` puts it between Drafts and the releases. */
+  proposedChanges: 'first' | 'afterDrafts'
+  /**
+   * `byDate` sorts scheduled drafts among the scheduled releases by publish date; `afterReleases`
+   * puts them after every other release.
+   */
+  scheduledDrafts: NonNullable<ReleaseOrderOptions['scheduledDrafts']>
+}
+
+/**
+ * Placement pending the Q3 decision on Proposed changes and scheduled drafts. Change it here
+ * once that decision lands rather than at the call sites.
+ *
+ * @internal
+ */
+const DEFAULT_INVENTORY_SET_PLACEMENT: InventorySetPlacement = {
+  proposedChanges: 'first',
+  scheduledDrafts: 'byDate',
+}
+
+/**
  * @internal
  */
 export function computeSets({
@@ -22,11 +50,13 @@ export function computeSets({
   current,
   t,
   variantsEnabled,
+  placement = DEFAULT_INVENTORY_SET_PLACEMENT,
 }: {
   meta: Meta | undefined
   current: VariantSet[]
   t: TFunction
   variantsEnabled: boolean | undefined
+  placement?: InventorySetPlacement
 }): VariantSet[] {
   if (!meta) {
     return current
@@ -35,6 +65,21 @@ export function computeSets({
   const {releases} = meta.releases
   const {variants} = meta.variants
   const userBundleIds = new Set(meta.agentBundles.bundles.map(({id}) => id))
+
+  const documents = new Map(meta.versionState.versions.map((version) => [version._id, version]))
+  const index = buildInventoryIndex({
+    versions: meta.versionState.versions
+      .map(toVersionStub)
+      .filter((stub): stub is VersionStub => Boolean(stub)),
+    releases,
+    scheduledDrafts: placement.scheduledDrafts,
+  })
+  // Every version but agent bundles, in the shared version order: Published, Drafts, then
+  // releases in the order they go out.
+  const ordered = documentLens(index).flatMap((stub) => {
+    const document = documents.get(stub._id)
+    return document ? [{stub, document}] : []
+  })
 
   const proposedChanges = meta.versionState.versions.find((version) => {
     const bundleId = getVersionFromId(version._id)
@@ -51,20 +96,32 @@ export function computeSets({
 Switch Content Variants on in your Studio configuration to ensure variants are displayed correctly (set \`beta.variants.enabled\` to \`true\`).`)
     }
 
-    const variants: Variant[] = meta.versionState.versions
-      .filter((version) => !isAgentBundleName(getVersionFromId(version._id)))
-      .map<Variant>((version) => ({
-        id: version._id,
-        name: getVersionName({document: version, releases, t}),
-        document: version,
-      }))
+    // A version the model cannot classify still shows, after everything it can.
+    const classified = new Set(index.versions.map(({_id}) => _id))
+    const unclassified = meta.versionState.versions.filter(({_id}) => !classified.has(_id))
+
+    const variants: Variant[] = [
+      ...ordered.map(({document}) => document),
+      ...unclassified,
+    ].map<Variant>((version) => ({
+      id: version._id,
+      name: getVersionName({document: version, releases, t}),
+      document: version,
+    }))
 
     if (proposedChanges) {
-      variants.unshift({
-        id: proposedChanges._id,
-        name: t('version.agent-bundle.proposed-changes'),
-        document: proposedChanges,
-      })
+      variants.splice(
+        getProposedChangesIndex(
+          placement,
+          ordered.findLastIndex(({stub}) => stub.kind === 'draft'),
+        ),
+        0,
+        {
+          id: proposedChanges._id,
+          name: t('version.agent-bundle.proposed-changes'),
+          document: proposedChanges,
+        },
+      )
     }
 
     return [
@@ -81,38 +138,18 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
     ]
   }
 
-  const variantsByRelease = meta.versionState.versions
-    .filter((version) => !isAgentBundleName(getVersionFromId(version._id)))
-    .reduce<Map<string, VersionInfoDocumentStub[]>>((currentVariantsByRelease, version) => {
-      let bundle
+  // One set per bundle, in the order the bundles first appear in the shared version order.
+  const variantsByBundle = new Map<string, VersionInfoDocumentStub[]>()
+  for (const {stub, document} of ordered) {
+    const bundleVersions = variantsByBundle.get(stub.bundle)
+    if (bundleVersions) {
+      bundleVersions.push(document)
+    } else {
+      variantsByBundle.set(stub.bundle, [document])
+    }
+  }
 
-      switch (readVersionType(version)) {
-        case 'release':
-          bundle = version._system.release?._ref
-          break
-        case 'published':
-          bundle = 'published'
-          break
-        case 'draft':
-          bundle = 'drafts'
-          break
-      }
-
-      if (typeof bundle === 'undefined') {
-        return currentVariantsByRelease
-      }
-
-      if (!currentVariantsByRelease.has(bundle)) {
-        currentVariantsByRelease.set(bundle, [])
-      }
-
-      const currentVersions = currentVariantsByRelease.get(bundle)
-      currentVersions?.push(version)
-
-      return currentVariantsByRelease
-    }, new Map())
-
-  const sets = [...variantsByRelease.entries()].map<VariantSet>(([releaseId, releaseVariants]) => {
+  const sets = [...variantsByBundle.entries()].map<VariantSet>(([releaseId, releaseVariants]) => {
     return {
       key: releaseId,
       name: getReleaseName({releaseId, releases, t}),
@@ -127,21 +164,35 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
   })
 
   if (proposedChanges) {
-    return sets.toSpliced(0, 0, {
-      key: 'studio:content-agent',
-      name: t('content-agent'),
-      bundle: {type: 'agent'},
-      variants: [
-        {
-          id: proposedChanges._id,
-          name: t('version.agent-bundle.proposed-changes'),
-          document: proposedChanges,
-        },
-      ],
-    })
+    return sets.toSpliced(
+      getProposedChangesIndex(
+        placement,
+        sets.findIndex(({key}) => key === 'drafts'),
+      ),
+      0,
+      {
+        key: 'studio:content-agent',
+        name: t('content-agent'),
+        bundle: {type: 'agent'},
+        variants: [
+          {
+            id: proposedChanges._id,
+            name: t('version.agent-bundle.proposed-changes'),
+            document: proposedChanges,
+          },
+        ],
+      },
+    )
   }
 
   return sets
+}
+
+function getProposedChangesIndex(
+  placement: InventorySetPlacement,
+  lastDraftsIndex: number,
+): number {
+  return placement.proposedChanges === 'afterDrafts' ? lastDraftsIndex + 1 : 0
 }
 
 interface GetNameOptions {

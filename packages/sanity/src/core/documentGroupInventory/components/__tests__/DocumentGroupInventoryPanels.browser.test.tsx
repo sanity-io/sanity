@@ -167,6 +167,29 @@ const REFERRING_DOCUMENTS: ReferringDocuments = {
   },
 }
 
+/** Strong and weak links, as the reference query marks them once it has read the referrers. */
+const REQUIRED_REFERRING_DOCUMENTS: ReferringDocuments = {
+  ...REFERRING_DOCUMENTS,
+  totalCount: 2,
+  internalReferences: {
+    totalCount: 2,
+    references: [
+      {_id: 'referrer-b', _type: DOCUMENT_TYPE, required: false},
+      {_id: 'referrer-a', _type: DOCUMENT_TYPE, required: true},
+    ],
+  },
+  crossDatasetReferences: {totalCount: 0, references: []},
+}
+
+const OPTIONAL_REFERRING_DOCUMENTS: ReferringDocuments = {
+  ...REQUIRED_REFERRING_DOCUMENTS,
+  totalCount: 1,
+  internalReferences: {
+    totalCount: 1,
+    references: [{_id: 'referrer-b', _type: DOCUMENT_TYPE, required: false}],
+  },
+}
+
 const COMPONENTS: DocumentGroupInventoryComponents = {
   DocTitle: ({document}) => <>{document._id === PUBLISHED_ID ? 'Ursula K. Le Guin' : 'Untitled'}</>,
   ReferencePreviewLink: ({value}) => (
@@ -200,6 +223,7 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
  */
 const harnessMachine = setup({
   types: {} as {
+    input: {referringDocuments: ReferringDocuments}
     context: {
       selectionRef: ActorRefFromLogic<typeof selectionMachine>
       deletionRef: ActorRefFromLogic<typeof deletionMachine>
@@ -214,12 +238,12 @@ const harnessMachine = setup({
   },
 }).createMachine({
   id: 'documentGroupInventoryPanelsHarness',
-  context: ({spawn}) => ({
+  context: ({spawn, input}) => ({
     selectionRef: spawn(selectionMachine, {input: undefined}),
     deletionRef: spawn(
       deletionMachine.provide({
         actors: {
-          referringDocuments: fromObservable(() => new BehaviorSubject(REFERRING_DOCUMENTS)),
+          referringDocuments: fromObservable(() => new BehaviorSubject(input.referringDocuments)),
         },
       }),
       {input: undefined},
@@ -251,8 +275,8 @@ type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 
 let harness: HarnessActor | undefined
 
-function startHarness() {
-  harness = createActor(harnessMachine).start()
+function startHarness(referringDocuments: ReferringDocuments = REFERRING_DOCUMENTS) {
+  harness = createActor(harnessMachine, {input: {referringDocuments}}).start()
   const {selectionRef, deletionRef, variantCreationRef} = harness.getSnapshot().context
   selectionRef.send({type: 'variants.changed', variants: VARIANTS, loaded: true})
   return {selectionRef, deletionRef, variantCreationRef}
@@ -346,10 +370,10 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    await expect.element(page.getByRole('heading', {name: 'Create version'})).toBeVisible()
-    await expect.element(page.getByText('A new version of Ursula K. Le Guin')).toBeVisible()
+    await expect.element(page.getByRole('heading', {name: 'Create variant'})).toBeVisible()
+    await expect.element(page.getByText('A new variant of Ursula K. Le Guin')).toBeVisible()
     await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('Who sees this version')).toBeVisible()
+    await expect.element(page.getByText('Who sees this variant')).toBeVisible()
     await expect.element($variantTrigger).toMatchTextContent('Summer sale')
     await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
     await expect.element(page.getByText('Where it lives')).toBeVisible()
@@ -359,7 +383,7 @@ describe('CreateVariant', () => {
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
     await expect.element(page.getByRole('button', {name: 'Cancel'})).toBeEnabled()
 
-    const $create = page.getByRole('button', {name: 'Create version'})
+    const $create = page.getByRole('button', {name: 'Create variant'})
     await expect.element($create).toBeEnabled()
     expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
@@ -385,18 +409,20 @@ describe('CreateVariant', () => {
 
     await userEvent.click($baseTrigger)
     // "Nearest version" comes first, in a section of its own.
-    const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitem').all()
+    const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitemradio').all()
     await expect.element($nearest).toHaveTextContent('Nearest version')
     expect($firstVersion.element().previousElementSibling).toBe(
       $baseMenu.element().querySelector('[data-ui="MenuDivider"]'),
     )
     await expect
-      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
       .toBeVisible()
-    await expect.element($baseMenu.getByRole('menuitem', {name: 'Default · Draft'})).toBeVisible()
+    await expect
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Draft'}))
+      .toBeVisible()
     await expect
       .element(
-        $baseMenu.getByRole('menuitem', {
+        $baseMenu.getByRole('menuitemradio', {
           name: `Summer sale · ${activeASAPRelease.metadata.title}`,
         }),
       )
@@ -406,22 +432,22 @@ describe('CreateVariant', () => {
 
     await userEvent.click($targetTrigger)
     await userEvent.click(
-      $targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}),
+      $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
     )
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
 
     await userEvent.click($baseTrigger)
-    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+    await userEvent.click($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
     await expect.element($baseTrigger).toMatchTextContent('Default · Published')
 
     await userEvent.click($targetTrigger)
-    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
     await expect.element($baseTrigger).toMatchTextContent('Default · Published')
     expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBe(PUBLISHED.id)
 
     // Picking "Nearest version" again drops the picked version.
     await userEvent.click($baseTrigger)
-    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Nearest version'}))
+    await userEvent.click($baseMenu.getByRole('menuitemradio', {name: 'Nearest version'}))
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
     expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBeUndefined()
     await expect.element($baseMenu).not.toBeVisible()
@@ -456,7 +482,7 @@ describe('CreateVariant', () => {
 
     await userEvent.click($baseTrigger)
     await expect
-      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
       .toBeVisible()
     await expect.element($baseMenu.getByText(/Proposed changes/)).not.toBeInTheDocument()
   })
@@ -470,26 +496,30 @@ describe('CreateVariant', () => {
 
     await userEvent.click($targetTrigger)
     await expect.element($targetMenu).toBeVisible()
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeScheduledRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeScheduledRelease.metadata.title}),
+      )
       .toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
       .toBeVisible()
     // Already holds a "Summer sale" variant.
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}))
+      .element($targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}))
       .not.toBeInTheDocument()
-    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
 
     // "vip-users" exists in no release yet, so the ASAP release can be picked for it.
     await userEvent.click($variantTrigger)
-    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'vip-users'}))
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'vip-users'}))
     await expect.element($variantTrigger).toMatchTextContent('vip-users')
     await userEvent.click($targetTrigger)
     await userEvent.click(
-      $targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}),
+      $targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}),
     )
     await expect.element($targetTrigger).toMatchTextContent(activeASAPRelease.metadata.title)
     expect(variantCreationRef.getSnapshot().context.selectedBundle).toEqual({
@@ -499,7 +529,7 @@ describe('CreateVariant', () => {
 
     // Switching back to "Summer sale" falls back to the first target.
     await userEvent.click($variantTrigger)
-    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'Summer sale'}))
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'Summer sale'}))
     await expect.element($targetTrigger).toMatchTextContent('Drafts')
     expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
@@ -516,15 +546,17 @@ describe('CreateVariant', () => {
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
     await userEvent.click($targetTrigger)
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
     await expect.element($filter).toBeVisible()
 
     await userEvent.type($filter, 'undecided')
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
       .toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+      .element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
       .not.toBeInTheDocument()
 
     await userEvent.clear($filter)
@@ -536,8 +568,17 @@ describe('CreateVariant', () => {
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     await userEvent.click($targetTrigger)
-    await expect.element($targetMenu.getByPlaceholder('Find')).toHaveValue('')
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+    await expect.element($targetMenu.getByPlaceholder('Search…')).toHaveValue('')
+    await expect.element($targetMenu.getByLabelText('Search…')).toHaveValue('')
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
+      .toHaveAttribute('aria-checked', 'true')
+    await expect
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
+      .toHaveAttribute('aria-checked', 'false')
 
     // The filter only narrows the list; the current option is unchanged.
     await userEvent.keyboard('{Escape}')
@@ -554,22 +595,25 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    const $filter = $targetMenu.getByPlaceholder('Find')
+    const $filter = $targetMenu.getByPlaceholder('Search…')
 
     await userEvent.click($targetTrigger)
     await expect.element($filter).toHaveFocus()
 
     // The arrow keys still move from the filter into the options.
     await userEvent.keyboard('{ArrowDown}')
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toHaveFocus()
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toHaveFocus()
 
     // The menu stays mounted while closed, so the filter is focused again on the next open.
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     // Keep the pointer off the options, which take focus when hovered.
-    await userEvent.hover(page.getByRole('heading', {name: 'Create version'}))
+    await userEvent.hover(page.getByRole('heading', {name: 'Create variant'}))
 
     const openFromKeyboard = async (key: string) => {
+      // Focus the trigger explicitly: whether closing the menu hands focus back to it is the menu's
+      // behaviour, and Firefox does not always do it. This test is about what keyboard opening does.
+      $targetTrigger.element().focus()
       await expect.element($targetTrigger).toHaveFocus()
       await userEvent.keyboard(key)
       await expect.element($filter).toHaveFocus()
@@ -608,7 +652,9 @@ describe('ConfirmDeleteDialog', () => {
 
     const $dialog = page.getByRole('dialog')
     await expect.element($dialog).toBeVisible()
-    await expect.element($dialog.getByText('Delete 2 versions')).toBeVisible()
+    await expect
+      .element($dialog.getByText('Delete 2 versions, including the Default?'))
+      .toBeVisible()
     await expect
       .element($dialog.getByTestId('versions-preview-list'))
       .toHaveTextContent(`${PUBLISHED.id}, ${DRAFT.id}`)
@@ -640,10 +686,87 @@ describe('ConfirmDeleteDialog', () => {
     )
 
     const $dialog = page.getByRole('dialog')
-    await expect.element($dialog.getByText('Delete 1 version')).toBeVisible()
+    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
     await userEvent.click($dialog.getByText('Dataset: production'))
     await expect.element($dialog.getByText('Project ID')).toBeVisible()
     await expect.element($dialog.getByText('remote-doc')).toBeVisible()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+})
+
+describe('ConfirmDeleteDialog, option C', () => {
+  it('blocks the Default while required links point at it, and offers the other versions', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {selectionRef, deletionRef} = startHarness(REQUIRED_REFERRING_DOCUMENTS)
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+    deletionRef.send({type: 'delete.request'})
+
+    void render(
+      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+    )
+
+    const $dialog = page.getByRole('dialog')
+    await expect
+      .element($dialog.getByText('Delete 2 versions, including the Default?'))
+      .toBeVisible()
+    await expect
+      .element($dialog.getByTestId('default-blocked'))
+      .toMatchTextContent("The Default document can't be deleted yet: 1 document needs it")
+    // Required links lead the list.
+    await expect
+      .element($dialog.getByTestId('internal-references').getByRole('listitem').first())
+      .toMatchTextContent('referrer-a')
+    await expect
+      .element($dialog.getByTestId('reference-tag-referrer-a'))
+      .toHaveTextContent('Required')
+    await expect
+      .element($dialog.getByTestId('reference-tag-referrer-b'))
+      .toHaveTextContent('Optional')
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 other version', exact: true}))
+      .toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+
+  it('names the Default, its optional links and the variants that stay', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {selectionRef, deletionRef} = startHarness(OPTIONAL_REFERRING_DOCUMENTS)
+    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
+    deletionRef.send({type: 'delete.request'})
+
+    void render(
+      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+    )
+
+    const $dialog = page.getByRole('dialog')
+    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
+    await expect
+      .element($dialog.getByTestId('optional-links'))
+      .toMatchTextContent('1 document links to “Ursula K. Le Guin” with an optional link.')
+    await expect.element($dialog.getByText('1 variant stays. It loses its Default.')).toBeVisible()
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+
+  it('says that deleting variants breaks no links', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const {selectionRef, deletionRef} = startHarness(REQUIRED_REFERRING_DOCUMENTS)
+    selectionRef.send({type: 'selection.add', variantId: SUMMER_SALE_IN_ASAP.id})
+    deletionRef.send({type: 'delete.request'})
+
+    void render(
+      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+    )
+
+    const $dialog = page.getByRole('dialog')
+    await expect.element($dialog.getByText('Delete 1 version')).toBeVisible()
+    await expect.element($dialog.getByText('Nothing links to these versions')).toBeVisible()
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
     await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
 
     await settleChromaticEndState()

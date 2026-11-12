@@ -119,12 +119,23 @@ describe('DocumentStatusBarActions', () => {
     expect(screen.queryByTestId('action-menu-button')).not.toBeInTheDocument()
   })
 
+  it('greys every action when the bar is disabled', () => {
+    render(
+      <DocumentActionsStateContext.Provider value={[PUBLISH_ACTION]}>
+        <DocumentStatusBarActions disabled />
+      </DocumentActionsStateContext.Provider>,
+      {wrapper: TestProvider},
+    )
+
+    expect(screen.getByTestId('action-publish')).toBeDisabled()
+  })
+
   describe('live-edit documents', () => {
     beforeEach(() => {
       const value = buildDocumentPaneValue()
       mockUseDocumentPane.mockReturnValue({
         ...value,
-        editState: {...value.editState!, liveEdit: true, draft: null},
+        editState: {...value.editState!, liveEdit: true, liveEditSchemaType: true, draft: null},
       })
     })
 
@@ -145,6 +156,34 @@ describe('DocumentStatusBarActions', () => {
       ])
 
       expect(screen.queryByTestId('action-duplicate')).not.toBeInTheDocument()
+      expect(screen.getByTestId('action-menu-button')).toBeInTheDocument()
+    })
+  })
+
+  describe('variant documents with a forced live edit', () => {
+    beforeEach(() => {
+      const value = buildDocumentPaneValue()
+      // A variant that is published but not yet drafted: the variant's version slot forces
+      // `liveEdit`, but the schema type is not live edit.
+      mockUseDocumentPane.mockReturnValue({
+        ...value,
+        editState: {
+          ...value.editState!,
+          liveEdit: true,
+          liveEditSchemaType: false,
+          version: null,
+          draft: null,
+        },
+      })
+    })
+
+    it('keeps a Sanity-defined first action such as Publish as primary', () => {
+      renderActions([
+        {...PUBLISH_ACTION, disabled: true},
+        {label: 'Duplicate', onHandle: vi.fn(), action: 'duplicate'},
+      ])
+
+      expect(screen.getByTestId('action-publish')).toBeInTheDocument()
       expect(screen.getByTestId('action-menu-button')).toBeInTheDocument()
     })
   })

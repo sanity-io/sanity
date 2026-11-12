@@ -5,9 +5,8 @@ import {page} from 'vitest/browser'
 
 import {expectStable} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
-import {suggestIconColor} from '../variants/VariantsNav.css'
 
 const LONG_LABEL = 'A release title long enough to overflow the drawer pill'
 const CONTAINER_WIDTH = 220
@@ -21,7 +20,7 @@ describe('GlobalPerspectiveButton', () => {
             data-testid="full-width-trigger"
             fullWidth
             handleClearPerspective={noop}
-            icon={<RhombusIcon className={suggestIconColor} />}
+            icon={<VariantMark />}
             text={LONG_LABEL}
           />
         </div>
@@ -49,5 +48,45 @@ describe('GlobalPerspectiveButton', () => {
     expect(caret.getBoundingClientRect().right).toBeLessThanOrEqual(
       trigger.element().getBoundingClientRect().right,
     )
+  })
+  it('cuts a long label so the chip does not push the navbar aside, and keeps it in full for the tooltip', async () => {
+    const longName = 'Regional Marketing Launch: birmingham / rich-customers / brand-z'
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="cut-trigger"
+          icon={<VariantMark />}
+          text={longName}
+          pickerLabel="Variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('cut-trigger')
+    await expect.element(trigger).toHaveTextContent('Regional Marketing Launch: birmi…')
+    await expect.element(trigger).toHaveAccessibleName(longName)
+    await trigger.hover()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    await expect.element(page.getByText(longName)).toBeVisible()
+  })
+
+  it('shows the picker and its current value in the tooltip when the label is short', async () => {
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="short-trigger"
+          icon={<VariantMark />}
+          text="Default"
+          pickerLabel="Variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('short-trigger')
+    await expect.element(trigger).toHaveTextContent('Default')
+    await trigger.hover()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    // The chip's label and the tooltip's current value
+    await expect.poll(() => page.getByText('Default', {exact: true}).elements()).toHaveLength(2)
   })
 })

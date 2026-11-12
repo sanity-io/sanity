@@ -1,6 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {getPublishedId} from '@sanity/id-utils'
@@ -18,9 +19,12 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {Translate} from '../../i18n/Translate'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
+import {isPublishedId} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {
   type CrossDatasetReferences,
   type deletionMachine,
+  type IncomingReference,
   type InternalReferences,
 } from '../machines/deletionMachine'
 import {type selectionMachine} from '../machines/selectionMachine'
@@ -65,6 +69,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const {DocTitle, ReferencePreviewLink, VersionsPreviewList} = components
 
   const variantIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const variants = useSelector(selectionRef, ({context}) => context.variants)
 
   const internalReferences =
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
@@ -92,9 +97,38 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const canConfirmDeletion = useSelector(deletionRef, (snapshot) =>
     snapshot.can({type: 'delete.confirm'}),
   )
+  const canConfirmDeletionExcludingPublished = useSelector(deletionRef, (snapshot) =>
+    snapshot.can({type: 'delete.confirmExcludingPublished'}),
+  )
 
   const subjectCount = variantIds.size
   const subject = t('document-group.subject.version', {count: subjectCount})
+
+  const selectedIds = [...variantIds]
+  // The published document is the Default: the only version other documents can link to.
+  const includesDefault = selectedIds.some(isPublishedId)
+  const otherVersionCount = selectedIds.filter((id) => !isPublishedId(id)).length
+  const remainingVariantCount = includesDefault
+    ? variants.filter(
+        (variant) =>
+          !variantIds.has(variant.id) &&
+          getDocumentVersionVariantId(variant.document) !== undefined,
+      ).length
+    : 0
+  const requiredReferenceCount = internalReferences.references.filter(
+    (reference) => reference.required === true,
+  ).length
+  const isStrengthKnown =
+    internalReferences.references.length > 0 &&
+    internalReferences.references.every((reference) => typeof reference.required === 'boolean')
+  const isDefaultBlocked = includesDefault && requiredReferenceCount > 0
+  const offerExcludingDefault = isDefaultBlocked && canConfirmDeletionExcludingPublished
+
+  const header = includesDefault
+    ? subjectCount === 1
+      ? t('document-group.delete.default-title')
+      : t('document-group.delete.with-default-title', {count: subjectCount})
+    : t('document-group.delete.title', {count: subjectCount, subject})
 
   const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
 
@@ -115,17 +149,24 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
       id="confirmVariantDeletion"
       width={1}
       portal={portalElementName}
-      header={t('document-group.delete.title', {count: subjectCount, subject})}
+      header={header}
       footer={{
         cancelButton: {
           onClick: () => deletionRef.send({type: 'delete.cancel'}),
           text: t('document-group.delete.cancel-button.text'),
         },
-        confirmButton: {
-          text: t('document-group.delete.confirm-button.text'),
-          onClick: () => deletionRef.send({type: 'delete.confirm'}),
-          disabled: !canConfirmDeletion,
-        },
+        confirmButton: offerExcludingDefault
+          ? {
+              text: t('document-group.delete.confirm-excluding-published-button.text', {
+                count: otherVersionCount,
+              }),
+              onClick: () => deletionRef.send({type: 'delete.confirmExcludingPublished'}),
+            }
+          : {
+              text: t('document-group.delete.confirm-button.text'),
+              onClick: () => deletionRef.send({type: 'delete.confirm'}),
+              disabled: !canConfirmDeletion,
+            },
       }}
       onClose={() => deletionRef.send({type: 'delete.cancel'})}
     >
@@ -137,31 +178,61 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             </Text>
           </Card>
         ) : null}
-        <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
+        <VersionsPreviewList documentType={documentType} documentVersions={selectedIds} />
+        {!includesDefault && (
+          <Notice
+            tone="neutral"
+            title={t('document-group.delete.no-links.title')}
+            description={t('document-group.delete.no-links.description')}
+          />
+        )}
+        {isDefaultBlocked && (
+          <Notice
+            tone="critical"
+            title={t('document-group.delete.blocked.title', {count: requiredReferenceCount})}
+            description={t('document-group.delete.blocked.description')}
+            testId="default-blocked"
+          />
+        )}
+        {warnIncomingReferences && !isDefaultBlocked && isStrengthKnown && (
+          <Card padding={3} radius={2} tone="caution" flex="none" data-testid="optional-links">
+            <Text size={1} as="div" trim={true} tone="caution">
+              <Translate
+                i18nKey="document-group.delete.optional-links.text"
+                components={{DocumentTitle}}
+                componentProps={{documentTitle}}
+                t={t}
+                values={{count: totalCount}}
+              />
+            </Text>
+          </Card>
+        )}
         {warnIncomingReferences && (
           <>
-            <Card padding={3} radius={2} tone="caution" flex="none">
-              <Flex>
-                <Icon
-                  icon={WarningOutlineIcon}
-                  aria-hidden="true"
-                  size={1}
-                  style={{margin: '-0.375rem'}}
-                  tone="caution"
-                />
-                <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                  <Text size={1} as="div" trim={true} tone="caution">
-                    <Translate
-                      i18nKey="document-group.delete.referring-document-count.text"
-                      components={{DocumentTitle}}
-                      componentProps={{documentTitle}}
-                      t={t}
-                      values={{count: totalCount}}
-                    />
-                  </Text>
-                </Box>
-              </Flex>
-            </Card>
+            {!isDefaultBlocked && !isStrengthKnown && (
+              <Card padding={3} radius={2} tone="caution" flex="none">
+                <Flex>
+                  <Icon
+                    icon={WarningOutlineIcon}
+                    aria-hidden="true"
+                    size={1}
+                    style={{margin: '-0.375rem'}}
+                    tone="caution"
+                  />
+                  <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                    <Text size={1} as="div" trim={true} tone="caution">
+                      <Translate
+                        i18nKey="document-group.delete.referring-document-count.text"
+                        components={{DocumentTitle}}
+                        componentProps={{documentTitle}}
+                        t={t}
+                        values={{count: totalCount}}
+                      />
+                    </Text>
+                  </Box>
+                </Flex>
+              </Card>
+            )}
             <References
               documentId={documentId}
               documentTitle={documentTitle}
@@ -173,9 +244,64 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             />
           </>
         )}
+        {includesDefault && remainingVariantCount > 0 && (
+          <Notice
+            tone="neutral"
+            title={t('document-group.delete.variants-stay.text', {count: remainingVariantCount})}
+          />
+        )}
       </VStack>
     </Dialog>
   )
+}
+
+function Notice({
+  tone,
+  title,
+  description,
+  testId,
+}: {
+  tone: 'neutral' | 'critical'
+  title: string
+  description?: string
+  testId?: string
+}) {
+  return (
+    <Card padding={3} radius={2} tone={tone} flex="none" data-testid={testId}>
+      <Flex>
+        <Icon
+          icon={tone === 'critical' ? WarningOutlineIcon : InfoOutlineIcon}
+          aria-hidden="true"
+          size={1}
+          style={{margin: '-0.375rem'}}
+          tone={tone === 'critical' ? 'critical' : undefined}
+        />
+        <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+          <VStack gap={3}>
+            <Text
+              size={1}
+              as="div"
+              trim={true}
+              weight="medium"
+              tone={tone === 'critical' ? 'critical' : undefined}
+            >
+              {title}
+            </Text>
+            {description ? (
+              <Text size={1} as="div" trim={true} muted>
+                {description}
+              </Text>
+            ) : null}
+          </VStack>
+        </Box>
+      </Flex>
+    </Card>
+  )
+}
+
+/** Required references first, so the ones that block the delete lead the list. */
+function sortRequiredFirst(references: IncomingReference[]): IncomingReference[] {
+  return [...references].sort((a, b) => Number(b.required === true) - Number(a.required === true))
 }
 
 interface ReferencesProps {
@@ -204,10 +330,41 @@ const References: ComponentType<ReferencesProps> = ({
   const {t} = useTranslation(studioLocaleNamespace)
 
   const renderPreviewItem = useCallback(
-    (item: {_id: string; _type: string}) => {
+    (item: IncomingReference) => {
       const type = schema.get(item._type)
       if (type) {
-        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+        const preview = (
+          <ReferencePreviewLink
+            type={type}
+            value={{_id: item._id, _type: item._type}}
+            onClick={onReferenceLinkClick}
+          />
+        )
+        if (typeof item.required !== 'boolean') return preview
+        return (
+          <Flex alignItems="center" gap={2}>
+            <Box flexBasis="0%" flexGrow={1}>
+              {preview}
+            </Box>
+            <Box paddingRight={2} flexShrink={0}>
+              <Text
+                size={0}
+                weight="medium"
+                as="div"
+                trim={true}
+                tone={item.required ? 'critical' : undefined}
+                muted={!item.required}
+                data-testid={`reference-tag-${item._id}`}
+              >
+                {t(
+                  item.required
+                    ? 'document-group.delete.reference-tag.required'
+                    : 'document-group.delete.reference-tag.optional',
+                )}
+              </Text>
+            </Box>
+          </Flex>
+        )
       }
 
       return (
@@ -260,7 +417,7 @@ const References: ComponentType<ReferencesProps> = ({
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <VStack as="ul" gap={2} data-testid="internal-references">
-              {internalReferences.references.map((item) => (
+              {sortRequiredFirst(internalReferences.references).map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>

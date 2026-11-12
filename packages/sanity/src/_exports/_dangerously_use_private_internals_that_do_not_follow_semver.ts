@@ -82,6 +82,7 @@ export {
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
+export {DocumentVersionsFlyoutList} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
@@ -795,7 +796,7 @@ export {
 } from '../core/store/history/useTimelineStore'
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-export {createPresenceStore, SESSION_ID} from '../core/store/presence/presence-store'
+export {createPresenceStore, getSessionId} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
   type GlobalPresence,

@@ -180,6 +180,18 @@ describe('DocumentGroupInspector', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
+  test('puts the documents icon of the bottom bar button before the title', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    const heading = screen.getByRole('heading', {name: 'Manage versions'})
+    const icon = heading.parentElement?.querySelector('[data-sanity-icon="documents"]')
+
+    expect(icon).not.toBeNull()
+    expect(icon?.compareDocumentPosition(heading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+  })
+
   test('renders the inventory in manage mode for the displayed document', async ({
     renderInspector,
   }) => {

@@ -114,6 +114,7 @@ export {Delay} from '../core/components/Delay'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
+export {DocumentVersionsFlyoutList} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
@@ -1468,11 +1469,7 @@ export {
 /* oxlint-enable no-deprecated */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-export {
-  createPresenceStore,
-  type PresenceStore,
-  SESSION_ID,
-} from '../core/store/presence/presence-store'
+export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
   type GlobalPresence,

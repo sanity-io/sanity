@@ -21,10 +21,10 @@ import {useRouter} from 'sanity/router'
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
+import {useScheduledDraftParam} from '../../useScheduledDraftParam'
 
 /**
  * The two copy actions of the document panel header:
@@ -39,14 +39,13 @@ export function useCopyDocumentActions() {
   const siblings = getTargetSiblings(targetDocumentState)
   const {selectedReleaseId, selectedPerspectiveName, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
-  const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
   const {buildIntentUrl} = useStudioUrl()
   const {t} = useTranslation(structureLocaleNamespace)
   const telemetry = useTelemetry()
   const {push: pushToast} = useToast()
 
-  const scheduledDraft = params?.scheduledDraft
+  const scheduledDraft = useScheduledDraftParam(documentId)
 
   const contextAwareDocumentId = useMemo(() => {
     const versionReleaseId = scheduledDraft || selectedReleaseId

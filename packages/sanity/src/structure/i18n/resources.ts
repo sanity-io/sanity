@@ -14,8 +14,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.copy-document-url.label': 'Copy',
   /** Label for the "Copy document URL" menu item */
   'action.copy-link-to-document.label': 'Copy document URL',
-  /** Label for the "Share" command in the document pane's "..." menu (copies the link to the document) */
-  'action.share-document.label': 'Share',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.delete.disabled.not-ready': 'Operation not ready',
   /** Tooltip when action button is disabled because the document does not exist */
@@ -216,10 +214,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.action.add-to-bundle': 'Add to bundle',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
-  /** The add-to-release button's text while the document is being added */
-  'banners.release.action.adding': 'Adding…',
-  /** The locked banner's button: opens the scheduled release in the Releases tool, where it can be unscheduled */
-  'banners.release.action.open-release': 'Open release',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.open-to-edit': 'Open release to edit',
   /** Toast description in case an error occurs when adding a document to a release  */
@@ -239,6 +233,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /**
+   * The word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it on one line
+   * with the name, so the sentences leave it out.
+   */
+  'banners.release.lead.release': 'release',
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
@@ -250,22 +249,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release':
     "This document isn't in the <VersionBadge>{{title}}</VersionBadge> yet.",
-  /** PROPOSED: the not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's identity */
+  /** The not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's name */
   'banners.release.not-in-release-asap':
     "This document isn't in the ASAP <VersionBadge>{{title}}</VersionBadge> yet.",
-  /** PROPOSED: the not-in-release banner for an undecided release */
+  /** The not-in-release banner for an undecided release */
   'banners.release.not-in-release-undecided':
     "This document isn't in the undecided <VersionBadge>{{title}}</VersionBadge> yet.",
-  /** The not-in-release banner's text when the release is scheduled: why nothing can be added, and where to go */
-  'banners.release.scheduled-locked':
-    'The scheduled <VersionBadge>{{title}}</VersionBadge> publishes <DateBadge>{{date}}</DateBadge> and is locked. Unschedule it to add this version.',
-  /**
-   * PROPOSED: the word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it, on one line with
-   * the name (a line never breaks between them), so the sentences above leave it out.
-   */
-  'banners.release.lead.release': 'release',
-  /** PROPOSED: the word before a date's chip in the release banners ("publishes on [Nov 20, 9:00 AM]"), kept on one line with it */
-  'banners.release.lead.on': 'on',
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.description':
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
@@ -285,17 +274,54 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
   'banners.variant.action.add-to-variant': 'Create variant',
-  /** The text for the banner that appears when the selected variant matches no variant definition */
+  /** The action on the variant-not-found banner: clears the selected variant, back to the Default content */
+  'banners.variant.action.back-to-default': 'Back to Default',
+  /** The action on the banner of a scheduled (locked) release: opens the release in the Releases tool */
+  'banners.variant.action.open-release': 'Open release',
+  /** The action on the Published banner when the selected variant has a draft: switches to Drafts, keeping the variant */
+  'banners.variant.action.switch-to-drafts': 'Switch to Drafts',
+  /**
+   * The text for the banner that appears when the selected variant matches no variant definition (it was deleted).
+   * `VariantName` renders the word "variant" and the variant's chip.
+   */
   'banners.variant.definition-not-found':
-    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
+    'The <VariantName>{{name}}</VariantName> no longer exists.',
+  /** The variant-not-found banner when the variant's title is not known (it was deleted before this session saw it) */
+  'banners.variant.definition-not-found-unknown': 'The selected variant no longer exists.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
-  /** The text for the banner that appears when a document is not in the selected variant */
+  /** The word before a variant's chip in the variant banners ("the variant [Alpha]"), kept on one line with the chip */
+  'banners.variant.lead.variant': 'variant',
+  /**
+   * The text for the banner that appears in Drafts when the document has no draft for the selected variant.
+   * `VariantBadge` renders the word "variant" and the variant's chip.
+   */
   'banners.variant.not-in-variant':
-    'No <PerspectiveTitle>{{perspectiveTitle}}</PerspectiveTitle> variant document exists for <VariantBadge>{{variantTitle}}</VariantBadge>.',
+    'This document has no draft for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one to start editing.',
+  /** The variant banner in a scheduled release, which is locked. `ReleaseBadge` renders the word "release" and the release's chip */
+  'banners.variant.not-in-variant-locked-release':
+    'The scheduled <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> is locked. Unschedule it to add a version for the <VariantBadge>{{variantTitle}}</VariantBadge>.',
+  /** The variant banner in Published, for a document without Drafts (live edit, or drafts off): the variant is created in place */
+  'banners.variant.not-in-variant-published':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one to start editing.',
+  /** The variant banner in Published when the variant has no draft either: the action creates the draft and switches to Drafts */
+  'banners.variant.not-in-variant-published-create-in-drafts':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one in <DraftsBadge>{{draftsTitle}}</DraftsBadge> to start editing.',
+  /** The variant banner in Published when the variant has a draft: the action switches to Drafts */
+  'banners.variant.not-in-variant-published-switch-to-drafts':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Its draft is in <DraftsBadge>{{draftsTitle}}</DraftsBadge>.',
+  /** The variant banner in an open release (at a time, not yet scheduled) when the document has no version for the variant in it */
+  'banners.variant.not-in-variant-release':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /** The variant banner in an ASAP release */
+  'banners.variant.not-in-variant-release-asap':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the ASAP <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /** The variant banner in an undecided release */
+  'banners.variant.not-in-variant-release-undecided':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the undecided <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',
@@ -356,8 +382,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The tooltip for the changes banner */
   'changes.banner.tooltip':
     'This view shows the changes that occurred in a specific version of this document. Select a different version to see its changes',
-  /** Label for the switch at the top of Review changes that shows the changes in the form (replaces the Inline changes menu item) */
-  'changes.inline-switch.label': 'Show changes in the form',
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/
@@ -532,6 +556,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Placeholder of the filter input in the variants and releases menus of the document header */
   'document-panel-navigation.filter-placeholder': 'Find',
+  /** Placeholder of the search field in the releases menu of the document header */
+  'document-panel-navigation.releases.filter-placeholder': 'Search releases…',
   /** Label of the releases menu trigger in the document header when no release is selected */
   'document-panel-navigation.releases.button.text': 'Releases',
   /** A scheduled release in the releases menu of the document header: its title and publish date */
@@ -545,10 +571,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     "This document isn't in any release yet. Pick one below to add it.",
   /** Section header listing the releases the document has no version in */
   'document-panel-navigation.releases.section.other': 'Other releases',
+  /** Placeholder of the search field in the scheduled drafts menu of the document header */
+  'document-panel-navigation.scheduled-drafts.filter-placeholder': 'Search scheduled drafts…',
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
-  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for',
+  /** Placeholder of the search field in the variants menu of the document header */
+  'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */
@@ -557,7 +587,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
   /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
   'document-panel-navigation.variants.section.no-variants-tooltip':
-    "This document isn't in any variant yet. Pick one below to create it.",
+    "This document doesn't have any variants yet. Pick one below to create a variant",
   /** Section header listing the variants the document has no version in */
   'document-panel-navigation.variants.section.other': 'Other variants',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
@@ -699,6 +729,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'pane-item.published-status.has-published.tooltip': 'Published <RelativeTime/>',
   /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
   'pane-item.published-status.no-published.tooltip': 'No unpublished edits',
+  /** The hint at the bottom of the versions popover on document list rows, when a click on the status icons opens the document group inventory */
+  'pane-item.versions-status.open-inventory.hint': 'Click the status icons to see every version',
   /** The text used in the document header title if there is an error */
   'panes.document-header-title.error.text': 'Error: {{error}}',
   /** The text used in the document header title if creating a new item */
