@@ -33,6 +33,17 @@ describe('getSearchableTypes', () => {
     expect(searchable).toEqual(['author'])
   })
 
+  it('does not include the `system.release` document type by default', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [],
+    })
+
+    expect(schema.get('system.release')).toBeDefined()
+    expect(getSearchableTypeNames(schema)).toEqual([])
+    expect(getSearchableTypeNames(schema, ['system.release'])).toEqual(['system.release'])
+  })
+
   it('allows "preview url secrets"', () => {
     const schema = createSchema({
       name: 'default',

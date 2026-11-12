@@ -14,6 +14,7 @@ import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
 import {LATEST} from '../../util/const'
+import {isVersionableDocumentType} from '../../util/isVersionableDocumentType'
 import {Chip} from '../Chip'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenuDialogs} from './contextMenu/VersionContextMenuDialogs'
@@ -117,7 +118,10 @@ export const VersionChip = memo(function VersionChip(props: {
     onCopyToDraftsComplete,
   })
 
-  const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
+  const contextMenuHandler =
+    disabled || !releasesToolAvailable || !isVersionableDocumentType(documentType)
+      ? undefined
+      : handleContextMenu
 
   const isPaused = isPausedCardinalityOneRelease(release)
   // Draft chips may act on the published document when no draft exists (so "add

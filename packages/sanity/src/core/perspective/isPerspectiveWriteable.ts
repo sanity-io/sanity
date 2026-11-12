@@ -1,6 +1,7 @@
 import {type ObjectSchemaType} from '@sanity/types'
 
 import {isReleaseDocument} from '../releases/store/types'
+import {isVersionableDocumentType} from '../releases/util/isVersionableDocumentType'
 import {isDraftPerspective, isPublishedPerspective} from '../releases/util/util'
 import {type TargetPerspective} from './types'
 
@@ -12,6 +13,7 @@ export type PerspectiveNotWriteableReason =
   | 'RELEASE_NOT_ACTIVE'
   | 'PUBLISHED_NOT_WRITEABLE'
   | 'DRAFTS_NOT_WRITEABLE'
+  | 'VERSIONS_NOT_SUPPORTED'
 
 /**
  * Check whether the provided schema type can be written to the provided perspective. This depends
@@ -34,6 +36,17 @@ export function isPerspectiveWriteable({
     return {
       result: false,
       reason: 'INSUFFICIENT_DATA',
+    }
+  }
+
+  if (
+    !isPublishedPerspective(selectedPerspective) &&
+    !isDraftPerspective(selectedPerspective) &&
+    !isVersionableDocumentType(schemaType.name)
+  ) {
+    return {
+      result: false,
+      reason: 'VERSIONS_NOT_SUPPORTED',
     }
   }
 

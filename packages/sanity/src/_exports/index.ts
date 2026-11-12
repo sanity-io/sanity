@@ -1133,6 +1133,10 @@ export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 export {sortReleases} from '../core/releases/hooks/utils'
+export {
+  defineReleaseMetadata,
+  type ReleaseMetadataDefinition,
+} from '../core/releases/metadata/defineReleaseMetadata'
 export {RELEASES_INTENT} from '../core/releases/plugin'
 export {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
@@ -1146,6 +1150,7 @@ export {getReleaseDocumentIdFromReleaseId} from '../core/releases/util/getReleas
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
 export {getReleaseTone} from '../core/releases/util/getReleaseTone'
 export {isGoingToUnpublish} from '../core/releases/util/isGoingToUnpublish'
+export {isVersionableDocumentType} from '../core/releases/util/isVersionableDocumentType'
 export {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,

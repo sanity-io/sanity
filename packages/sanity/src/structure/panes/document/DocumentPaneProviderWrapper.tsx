@@ -29,7 +29,7 @@ export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProp
   )
 
   return (
-    <DocumentPerspectiveProvider>
+    <DocumentPerspectiveProvider documentType={props.pane.options.type}>
       <SingleDocReleaseProvider onSetScheduledDraftPerspective={handleSetScheduledDraftPerspective}>
         {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
