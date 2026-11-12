@@ -2,24 +2,25 @@ import {styled} from 'styled-components'
 
 import {VariantSetEntry} from './VariantSetEntry'
 
+/**
+ * A set's header row. Its checkbox sits in the same column as the rows' checkboxes, and its icon in
+ * the shared leading column with the rows' marks, so the icon is never covered or swapped out.
+ */
 export const VariantSetHeader = styled(VariantSetEntry)`
   position: sticky;
   inset-block-start: 0;
   z-index: 2;
   background-color: var(--card-muted-bg-color);
 
-  .variant-set-leading {
+  .variant-set-icon {
     display: flex;
-    position: relative;
+    grid-column: mark;
+    align-items: center;
     justify-content: center;
-    align-content: center;
   }
 
-  /* After a checkbox, the icon shares its spot, and the checkbox is revealed in its place. */
-  * + .variant-set-icon {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 50%;
-    transform: translate(-50%, -50%);
+  .variant-set-text {
+    grid-column: text;
+    min-inline-size: 0;
   }
 `

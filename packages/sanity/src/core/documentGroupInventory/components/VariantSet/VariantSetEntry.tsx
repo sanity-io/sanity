@@ -1,7 +1,7 @@
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {inventoryContainerName} from '../CreateVariant/CreateVariant.css'
+import {LEADING_COLUMN_WIDTH} from './VariantSet'
 
 export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
@@ -9,55 +9,76 @@ export const VariantSetEntry = styled.div(({theme}) => {
   return css`
     display: grid;
     position: relative;
-    grid-column: 1 / -1;
+    grid-column: row-start / row-end;
     grid-template-columns: subgrid;
-    padding: ${space[3]}px;
+    /* The inline padding is the set grid's edge tracks, so a subgrid's own would shrink them. */
+    padding-block: ${space[3]}px;
     align-items: center;
 
     * + & {
       border-block-start: 1px solid ${color.border};
     }
 
+    /*
+     * The text column keeps at least 140px with the mark column and its gap, the same minimum as
+     * before the mark moved into the shared leading column.
+     */
+    --version-text-min: 140px;
+    --version-lines-min: calc(
+      var(--version-text-min) - ${LEADING_COLUMN_WIDTH}px - var(--inventory-leading-gap)
+    );
+
+    /* The selection checkbox, at the far left of every row and every group header. */
     .atom {
       display: flex;
+      position: relative;
+      z-index: 1;
+      grid-column: check;
       align-items: center;
+      justify-content: center;
     }
 
     /*
-     * The second grid column. It must be allowed to shrink below its content, or a long name would
-     * widen the row instead of ending in an ellipsis.
+     * Quiet at rest: an empty checkbox is a muted outline, so the column reads as a rail. It goes to
+     * full contrast while its row is hovered or holds focus, and once checked or partly checked.
+     * A blocked checkbox stays muted.
      */
-    .row-content {
-      min-inline-size: 0;
+    .selection-checkbox {
+      display: flex;
+      opacity: 0.4;
+      transition: opacity 100ms ease-out;
+    }
+
+    &:hover .selection-checkbox:not([data-blocked]),
+    &:focus-within .selection-checkbox:not([data-blocked]),
+    .selection-checkbox:not([data-blocked]):has(:checked, :indeterminate) {
+      opacity: 1;
+    }
+
+    .selection-checkbox[data-blocked] input {
+      cursor: not-allowed;
+    }
+
+    /* The checkbox's hit area reaches into the row's padding, but not over the mark. */
+    .selection-checkbox input::before {
+      display: block;
+      position: absolute;
+      content: '';
+      inset-block: -${space[3]}px;
+      inset-inline: -${space[3]}px -${space[1]}px;
     }
 
     /*
-     * A 25px column for the variant diamond, the width of the leading slot of the document list's
-     * versions flyout, then the body. The diamond is centred on the whole block. A Default row
-     * keeps the empty column, so every name and every second line start at the same place.
+     * The shared leading column, holding the variant diamond. A Default row has no mark: the column
+     * stays empty, so every name and every second line start at the same x as the group's name. The
+     * diamond is centred on the whole row.
      */
-    .version-text {
-      --variant-mark-column: 25px;
-      --variant-mark-gap: ${space[2]}px;
-      /* The text column, the diamond included, is never narrower than 140px. */
-      --version-text-min: 140px;
-      --version-lines-min: calc(
-        var(--version-text-min) - var(--variant-mark-column) - var(--variant-mark-gap)
-      );
-
-      display: grid;
-      grid-template-columns: var(--variant-mark-column) minmax(0, 1fr);
-      column-gap: var(--variant-mark-gap);
-      align-items: center;
-    }
-
     .variant-mark {
       display: flex;
-      grid-column: 1;
+      grid-column: mark;
       align-items: center;
       align-self: stretch;
       justify-content: center;
-      width: var(--variant-mark-column);
 
       /* The variant colour, like the menus' and the navbar chip's diamond. */
       svg {
@@ -68,14 +89,22 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
+     * The text column. It must be allowed to shrink below its content, or a long name would widen
+     * the row instead of ending in an ellipsis.
+     */
+    .row-content {
+      grid-column: text;
+      min-inline-size: 0;
+    }
+
+    /*
      * The text and the badge group wrap as two items. The text column keeps at least 140px with the
-     * diamond's slot; when that and the group do not fit on one line, the group moves whole to the next line, where it starts at
+     * mark column; when that and the group do not fit on one line, the group moves whole to the next line, where it starts at
      * the body's left edge, which is the text's left edge. The wrap point follows the inventory
      * panel's own width and the badges' real width, not the viewport.
      */
     .version-body {
       display: flex;
-      grid-column: 2;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
@@ -110,14 +139,6 @@ export const VariantSetEntry = styled.div(({theme}) => {
       flex-wrap: nowrap;
       gap: ${space[1]}px;
       align-items: center;
-    }
-
-    /*
-     * Below this the row's own padding would leave the text column less than its 140px, so the row
-     * gives up some of its padding before the text gives up any width.
-     */
-    @container ${inventoryContainerName} (width < 240px) {
-      padding-inline: ${space[2]}px;
     }
 
     .primary-action {

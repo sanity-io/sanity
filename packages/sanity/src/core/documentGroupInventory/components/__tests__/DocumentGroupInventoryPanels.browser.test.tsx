@@ -2,10 +2,11 @@ import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
-import {type ComponentType, useMemo, useState} from 'react'
+import {useSelector} from '@xstate/react'
+import {type ComponentType, useMemo, useRef, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import {Text} from 'ui5'
-import {afterEach, describe, expect, it} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 import {
@@ -18,12 +19,15 @@ import {
   setup,
 } from 'xstate'
 
-import {testHelpers} from '../../../../../test/browser/testHelpers'
+import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
   activeASAPRelease,
   activeScheduledRelease,
   activeUndecidedRelease,
+  scheduledRelease,
 } from '../../../releases/__fixtures__/release.fixture'
 import {type ReleasesReducerState} from '../../../releases/store/reducer'
 import {type VariantStoreState} from '../../../variants/store/reducer'
@@ -33,11 +37,20 @@ import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
+import {
+  getRowToggle,
+  getSetSelection,
+  type RangeAnchor,
+  SELECTION_BLOCKED_REASON_KEYS,
+} from '../../utils/selection'
 import {Body} from '../Body'
 import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {Container} from '../Container'
 import {CreateVariant} from '../CreateVariant/CreateVariant'
+import {DocumentGroupEntry} from '../DocumentGroupEntry'
+import {DocumentGroupSet} from '../DocumentGroupSet'
 import {InventoryHeader} from '../InventoryHeader'
+import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
 
 const PUBLISHED_ID = 'panels-document'
 const DOCUMENT_TYPE = 'author'
@@ -727,7 +740,7 @@ describe('InventoryHeader', () => {
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
   })
 
-  it('swaps the group actions for deselect all while versions are selected', async () => {
+  it('swaps the group actions for clear while versions are selected', async () => {
     // The selected header is archived by the test above, and this one ends
     // back on the empty header.
     configure({disableAutoSnapshot: true})
@@ -738,12 +751,12 @@ describe('InventoryHeader', () => {
 
     void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
 
-    const $deselectAll = page.getByRole('button', {name: 'Deselect all'})
-    await expect.element($deselectAll).toBeVisible()
+    const $clear = page.getByRole('button', {name: 'Clear', exact: true})
+    await expect.element($clear).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Create version'})).not.toBeInTheDocument()
     await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
 
-    await userEvent.click($deselectAll)
+    await userEvent.click($clear)
 
     expect(selectionRef.getSnapshot().context.selectedIds.size).toBe(0)
     await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
@@ -761,5 +774,415 @@ describe('InventoryHeader', () => {
     await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
 
     await settleChromaticEndState()
+  })
+})
+
+const DRAFT_VIP = variant(`versions.drafts-vip.${PUBLISHED_ID}`, 'VIP users', {
+  bundleId: 'drafts',
+  variants: [{_ref: VIP_USERS._id, _key: 'vip-users'}],
+})
+const DRAFT_SUMMER = variant(`versions.drafts-summer.${PUBLISHED_ID}`, 'Summer sale', {
+  bundleId: 'drafts',
+  variants: [{_ref: SUMMER_SALE._id, _key: 'summer-sale'}],
+})
+// Core locks a version in a scheduled release, so it cannot be selected for deletion.
+const IN_SCHEDULED_RELEASE = variant(
+  `versions.${scheduledRelease.name}.${PUBLISHED_ID}`,
+  'Default',
+  {bundleId: scheduledRelease.name, release: {_ref: scheduledRelease._id, _weak: true}},
+)
+
+const SELECTION_SETS: VariantSet[] = [
+  {
+    key: 'published',
+    name: 'Published',
+    bundle: {type: 'perspective', perspective: 'published'},
+    variants: [{...PUBLISHED, name: 'Default'}],
+  },
+  {
+    key: 'drafts',
+    name: 'Draft',
+    bundle: {type: 'perspective', perspective: 'drafts'},
+    variants: [{...DRAFT, name: 'Default'}, DRAFT_VIP, DRAFT_SUMMER],
+  },
+  {
+    key: scheduledRelease._id,
+    name: scheduledRelease.metadata.title,
+    bundle: {type: 'perspective', perspective: scheduledRelease},
+    variants: [IN_SCHEDULED_RELEASE],
+  },
+]
+const SELECTION_VARIANTS = SELECTION_SETS.flatMap((set) => set.variants)
+const SELECTION_RELEASES = new Map<string, ReleaseDocument>([
+  [scheduledRelease._id, scheduledRelease],
+])
+
+const SCHEDULED_REASON =
+  'This version is in a scheduled release. Unschedule the release to delete it.'
+
+/**
+ * The inventory panel at 300px: the header, then every set and its rows, wired to a real selection
+ * machine through the same helpers the inventory's `Select` uses.
+ */
+function SelectionPanel({
+  refs,
+  onOpen = () => undefined,
+}: {
+  refs: ReturnType<typeof startHarness>
+  onOpen?: (entry: Variant) => void
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <div style={{display: 'flex', flexDirection: 'column', width: 300, height: 600}}>
+        <Container>
+          <InventoryHeader {...refs} components={COMPONENTS} />
+          <Body>
+            <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} />
+          </Body>
+        </Container>
+      </div>
+    </TestWrapper>
+  )
+}
+
+function SelectionSets({
+  selectionRef,
+  onOpen,
+}: {
+  selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  onOpen: (entry: Variant) => void
+}) {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const rangeAnchorRef = useRef<RangeAnchor>(null)
+
+  return SELECTION_SETS.map((set) => {
+    const selection = getSetSelection({
+      variants: set.variants,
+      selectedIds,
+      getRelease: ({document}) =>
+        document._system.release
+          ? SELECTION_RELEASES.get(document._system.release._ref)
+          : undefined,
+    })
+
+    const toggle = (variantId: string, shiftKey: boolean) => {
+      const next = getRowToggle({
+        setKey: set.key,
+        selectableIds: selection.selectableIds,
+        selectedIds,
+        anchor: rangeAnchorRef.current,
+        variantId,
+        shiftKey,
+      })
+      selectionRef.send(next.event)
+      rangeAnchorRef.current = next.anchor
+    }
+
+    return (
+      <DocumentGroupSet
+        key={set.key}
+        name={set.name}
+        bundle={set.bundle}
+        selectionState={selection.state}
+        blockedReason={
+          selection.groupBlockedReason
+            ? t(SELECTION_BLOCKED_REASON_KEYS[selection.groupBlockedReason])
+            : undefined
+        }
+        onCheckedChange={(checked) =>
+          selectionRef.send({
+            type: checked ? 'selection.addMany' : 'selection.removeMany',
+            variantIds: selection.selectableIds,
+          })
+        }
+      >
+        {set.variants.map((entry) => {
+          const blocked = selection.blockedReasons.get(entry.id)
+
+          return (
+            <DocumentGroupEntry
+              key={entry.id}
+              variant={entry}
+              releases={SELECTION_RELEASES}
+              onPrimaryAction={() => onOpen(entry)}
+              onToggleSelection={blocked ? undefined : () => toggle(entry.id, false)}
+              leading={
+                <VariantCheckbox
+                  label={t('document-group.select-version', {name: entry.name})}
+                  checked={selectedIds.has(entry.id)}
+                  blockedReason={blocked ? t(SELECTION_BLOCKED_REASON_KEYS[blocked]) : undefined}
+                  onChange={(_checked, {shiftKey}) => toggle(entry.id, shiftKey)}
+                />
+              }
+            />
+          )
+        })}
+      </DocumentGroupSet>
+    )
+  })
+}
+
+function startSelectionHarness() {
+  const refs = startHarness()
+  refs.selectionRef.send({type: 'variants.changed', variants: SELECTION_VARIANTS, loaded: true})
+  return refs
+}
+
+function selectionSet(name: string): HTMLElement {
+  const set = document.querySelector<HTMLElement>(`[data-variant-set="${name}"]`)
+  if (!set) throw new Error(`Expected the "${name}" set to have rendered`)
+  return set
+}
+
+function selectionRow(setName: string, rowName: string): HTMLElement {
+  const row = selectionSet(setName).querySelector<HTMLElement>(`[data-variant-name="${rowName}"]`)
+  if (!row) throw new Error(`Expected the "${rowName}" row in "${setName}" to have rendered`)
+  return row
+}
+
+function rowCheckbox(setName: string, rowName: string): HTMLInputElement {
+  return selectionRow(setName, rowName).querySelector<HTMLInputElement>('input[type="checkbox"]')!
+}
+
+function groupCheckbox(setName: string): HTMLInputElement {
+  return selectionSet(setName).querySelector<HTMLInputElement>('header input[type="checkbox"]')!
+}
+
+function centreX(element: Element): number {
+  const rect = element.getBoundingClientRect()
+  return rect.left + rect.width / 2
+}
+
+function checkboxOpacity(checkbox: HTMLInputElement): number {
+  return Number(getComputedStyle(checkbox.closest('.selection-checkbox')!).opacity)
+}
+
+function selected(refs: ReturnType<typeof startHarness>): string[] {
+  return [...refs.selectionRef.getSnapshot().context.selectedIds].toSorted()
+}
+
+describe('Inventory selection', () => {
+  it('lines the group icons and the row marks up in one column', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await settleChromaticEndState()
+
+    const mark = selectionRow('Draft', 'VIP users').querySelector('.variant-mark svg')!
+    for (const setName of ['Published', 'Draft', scheduledRelease.metadata.title]) {
+      const icon = selectionSet(setName).querySelector('header .variant-set-icon svg')!
+      expect(Math.abs(centreX(icon) - centreX(mark))).toBeLessThanOrEqual(1)
+    }
+    // 12px padding, the 17px checkbox, an 8px gap, then the middle of the 21px column
+    expect(
+      Math.abs(centreX(mark) - selectionSet('Draft').getBoundingClientRect().left - 47.5),
+    ).toBeLessThanOrEqual(1)
+  })
+
+  it('mutes an empty checkbox at rest, and brings it to full contrast on hover, focus and when checked', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    const vip = rowCheckbox('Draft', 'VIP users')
+    const summer = rowCheckbox('Draft', 'Summer sale')
+
+    await expect.poll(() => checkboxOpacity(vip)).toBeLessThan(0.5)
+    expect(checkboxOpacity(groupCheckbox('Draft'))).toBeLessThan(0.5)
+
+    // Row hover
+    await userEvent.hover(page.elementLocator(selectionRow('Draft', 'VIP users')))
+    await expect.poll(() => checkboxOpacity(vip)).toBe(1)
+    expect(checkboxOpacity(summer)).toBeLessThan(0.5)
+
+    // Keyboard focus
+    await userEvent.unhover(page.elementLocator(selectionRow('Draft', 'VIP users')))
+    summer.focus()
+    await expect.poll(() => checkboxOpacity(summer)).toBe(1)
+    await expect.poll(() => checkboxOpacity(vip)).toBeLessThan(0.5)
+    summer.blur()
+
+    // Checked
+    refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
+    await expect.poll(() => vip.checked).toBe(true)
+    await expect.poll(() => checkboxOpacity(vip)).toBe(1)
+    await expect.poll(() => checkboxOpacity(summer)).toBeLessThan(0.5)
+  })
+
+  it('selects every selectable row from the group checkbox, and shows a dash when only some are selected', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const $group = page.getByRole('checkbox', {name: 'Select all in Draft'})
+    await expect.element($group).toBeVisible()
+
+    await userEvent.click($group)
+    expect(selected(refs)).toEqual([DRAFT.id, DRAFT_SUMMER.id, DRAFT_VIP.id].toSorted())
+    await expect.element($group).toBeChecked()
+    expect(groupCheckbox('Draft').indeterminate).toBe(false)
+
+    await userEvent.click(page.getByRole('checkbox', {name: 'Select VIP users'}))
+    await expect.element($group).not.toBeChecked()
+    await expect.poll(() => groupCheckbox('Draft').indeterminate).toBe(true)
+
+    // From the partly checked state, the group checkbox selects the rest
+    await userEvent.click($group)
+    await expect.element($group).toBeChecked()
+    expect(selected(refs)).toHaveLength(3)
+
+    await userEvent.click($group)
+    expect(selected(refs)).toEqual([])
+    await expect.poll(() => groupCheckbox('Draft').indeterminate).toBe(false)
+  })
+
+  it('replaces the header row with the action bar while anything is checked', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const $create = page.getByRole('button', {name: 'Create version'})
+    await expect.element($create).toBeVisible()
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+
+    await userEvent.click(page.getByRole('checkbox', {name: 'Select VIP users'}))
+
+    await expect.element(page.getByText('1 selected', {exact: true})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Delete', exact: true})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Clear', exact: true})).toBeVisible()
+    await expect.element($create).not.toBeInTheDocument()
+
+    await userEvent.click(page.getByRole('button', {name: 'Clear', exact: true}))
+
+    expect(selected(refs)).toEqual([])
+    await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+    await expect.element($create).toBeVisible()
+  })
+
+  it('opens a version when its row is clicked, without selecting it', async () => {
+    const refs = startSelectionHarness()
+    const onOpen = vi.fn<(entry: Variant) => void>()
+    void render(<SelectionPanel refs={refs} onOpen={onOpen} />)
+
+    await userEvent.click(page.getByRole('button', {name: 'VIP users', exact: true}))
+
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith(DRAFT_VIP)
+    expect(selected(refs)).toEqual([])
+  })
+
+  it('toggles the focused row with Space, while Enter still opens it', async () => {
+    const refs = startSelectionHarness()
+    const onOpen = vi.fn<(entry: Variant) => void>()
+    void render(<SelectionPanel refs={refs} onOpen={onOpen} />)
+
+    const $row = page.getByRole('button', {name: 'VIP users', exact: true})
+    await expect.element($row).toBeInTheDocument()
+    ;($row.element() as HTMLButtonElement).focus()
+
+    await userEvent.keyboard(' ')
+    await expect.poll(() => selected(refs)).toEqual([DRAFT_VIP.id])
+    expect(onOpen).not.toHaveBeenCalled()
+    await expect.element($row).toHaveFocus()
+
+    await userEvent.keyboard(' ')
+    await expect.poll(() => selected(refs)).toEqual([])
+
+    await userEvent.keyboard('{Enter}')
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith(DRAFT_VIP)
+    expect(selected(refs)).toEqual([])
+  })
+
+  it('selects a range within the group with Shift-click', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'Summer sale', exact: true}))
+      .toBeInTheDocument()
+
+    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'Default')))
+    await userEvent.keyboard('{Shift>}')
+    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'Summer sale')))
+    await userEvent.keyboard('{/Shift}')
+
+    expect(selected(refs)).toEqual([DRAFT.id, DRAFT_SUMMER.id, DRAFT_VIP.id].toSorted())
+
+    // A range never reaches into another group: Shift-click there toggles that row alone
+    await userEvent.keyboard('{Shift>}')
+    await userEvent.click(page.elementLocator(rowCheckbox('Published', 'Default')))
+    await userEvent.keyboard('{/Shift}')
+
+    expect(selected(refs)).toEqual(
+      [PUBLISHED.id, DRAFT.id, DRAFT_SUMMER.id, DRAFT_VIP.id].toSorted(),
+    )
+
+    // Shift-click back on a checked row in the same group deselects the range
+    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'Summer sale')))
+    await userEvent.keyboard('{Shift>}')
+    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'VIP users')))
+    await userEvent.keyboard('{/Shift}')
+
+    expect(selected(refs)).toEqual([PUBLISHED.id, DRAFT.id].toSorted())
+  })
+
+  it('keeps a disabled checkbox on a row that cannot be selected, with the reason in a tooltip', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const setName = scheduledRelease.metadata.title
+    await expect.element(page.getByText(setName, {exact: true})).toBeVisible()
+
+    const checkbox = rowCheckbox(setName, 'Default')
+    expect(isShown(checkbox)).toBe(true)
+    expect(checkbox.getAttribute('aria-disabled')).toBe('true')
+    expect(checkboxOpacity(checkbox)).toBeLessThan(0.5)
+    // Still reachable by keyboard, so the reason is too
+    expect(checkbox.disabled).toBe(false)
+
+    await userEvent.hover(page.elementLocator(checkbox))
+    // Its row's hover does not bring it to full contrast
+    expect(checkboxOpacity(checkbox)).toBeLessThan(0.5)
+    // Closed tooltips stay mounted, so look for the open one
+    await expect
+      .poll(() =>
+        [...document.querySelectorAll('[data-ui="Tooltip"]')]
+          .filter(isShown)
+          .map((tooltip) => tooltip.textContent),
+      )
+      .toEqual([SCHEDULED_REASON])
+
+    // A blocked checkbox reads as disabled, so the pointer has to be forced onto it
+    await userEvent.click(page.elementLocator(checkbox), {force: true})
+    expect(selected(refs)).toEqual([])
+    expect(checkbox.checked).toBe(false)
+
+    // Nothing in the group can be selected, so the group checkbox is blocked for the same reason
+    expect(groupCheckbox(setName).getAttribute('aria-disabled')).toBe('true')
+    await userEvent.click(page.elementLocator(groupCheckbox(setName)), {force: true})
+    expect(selected(refs)).toEqual([])
+
+    await settleChromaticEndState()
+  })
+
+  it('reaches the group checkbox by keyboard while nothing is selected', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const $create = page.getByRole('button', {name: 'Create version'})
+    await expect.element($create).toBeVisible()
+    ;($create.element() as HTMLButtonElement).focus()
+
+    await userEvent.tab()
+    await expect
+      .element(page.getByRole('checkbox', {name: 'Select all in Published'}))
+      .toHaveFocus()
+
+    await userEvent.keyboard(' ')
+    expect(selected(refs)).toEqual([PUBLISHED.id])
   })
 })
