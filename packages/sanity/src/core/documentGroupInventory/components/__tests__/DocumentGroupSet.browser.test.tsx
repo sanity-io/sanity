@@ -109,6 +109,7 @@ function SetHarness({
               readOnly ? undefined : (
                 <VariantCheckbox
                   label={`Select ${entry.name}`}
+                  tabbable={false}
                   checked={selectedIds.has(entry.id)}
                   locked={locked}
                   onChange={() => onToggle(entry)}
@@ -273,18 +274,20 @@ describe('DocumentGroupSet', () => {
     expect(isShown(getRowCheckbox(WINTER_SALE))).toBe(true)
   })
 
-  it('reaches the set checkbox and each row checkbox by keyboard before anything is selected', async () => {
+  it('makes the set checkbox and each row tab stops, but not the row checkboxes', async () => {
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
 
-    // The set checkbox comes first, then each row's checkbox and its primary action.
+    // The set checkbox comes first, even before anything is selected. Then each row: the row is
+    // the tab stop, and Space on it toggles its checkbox.
     await userEvent.tab()
     expect(document.activeElement).toBe(getSetCheckbox())
     await userEvent.tab()
-    expect(document.activeElement).toBe(getRowCheckbox(SUMMER_SALE))
-    await userEvent.tab()
     await expect.element(page.getByRole('button', {name: SUMMER_SALE.name})).toHaveFocus()
+    await userEvent.tab()
+    await expect.element(page.getByRole('button', {name: WINTER_SALE.name})).toHaveFocus()
+    expect(getRowCheckbox(SUMMER_SALE).tabIndex).toBe(-1)
   })
 
   it('names each checkbox after what it selects', async () => {

@@ -37,6 +37,7 @@ import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
+import {contrastRatio, parseColor} from '../../utils/contrast'
 import {
   getRowToggle,
   getSetSelection,
@@ -648,6 +649,10 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($dialog.getByTestId('reference-referrer-a')).toBeVisible()
     await expect.element($dialog.getByText('Preview unavailable')).toBeVisible()
     await expect.element($dialog.getByText('1 other reference not show')).toBeVisible()
+    // The info icon's tooltip is reachable by keyboard, and its text is the icon's name
+    const $info = $dialog.getByTestId('other-reference-count-info')
+    await expect.element($info).toHaveAttribute('tabindex', '0')
+    await expect.element($info).toHaveAccessibleName(/.+/)
     // WebKit reports the truncated text spans inside the `<summary>` as not
     // visible, so check the summary lines through the details element's text.
     const $crossDataset = $dialog.getByTestId('cross-dataset-references')
@@ -827,20 +832,26 @@ const SCHEDULED_REASON =
 function SelectionPanel({
   refs,
   onOpen = () => undefined,
+  scheme = 'light',
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
+  scheme?: 'light' | 'dark'
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <div style={{display: 'flex', flexDirection: 'column', width: 300, height: 600}}>
+      <Card
+        scheme={scheme}
+        style={{display: 'flex', flexDirection: 'column', width: 300, height: 600}}
+        data-testid="selection-panel"
+      >
         <Container>
           <InventoryHeader {...refs} components={COMPONENTS} />
           <Body>
             <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} />
           </Body>
         </Container>
-      </div>
+      </Card>
     </TestWrapper>
   )
 }
@@ -907,9 +918,13 @@ function SelectionSets({
               releases={SELECTION_RELEASES}
               onPrimaryAction={() => onOpen(entry)}
               onToggleSelection={blocked ? undefined : () => toggle(entry.id, false)}
+              selectionBlockedReason={
+                blocked ? t(SELECTION_BLOCKED_REASON_KEYS[blocked]) : undefined
+              }
               leading={
                 <VariantCheckbox
                   label={t('document-group.select-version', {name: entry.name})}
+                  tabbable={false}
                   checked={selectedIds.has(entry.id)}
                   blockedReason={blocked ? t(SELECTION_BLOCKED_REASON_KEYS[blocked]) : undefined}
                   onChange={(_checked, {shiftKey}) => toggle(entry.id, shiftKey)}
@@ -954,8 +969,34 @@ function centreX(element: Element): number {
   return rect.left + rect.width / 2
 }
 
-function checkboxOpacity(checkbox: HTMLInputElement): number {
-  return Number(getComputedStyle(checkbox.closest('.selection-checkbox')!).opacity)
+function rgb(value: string) {
+  const color = parseColor(value)
+  if (!color) throw new Error(`Could not read the colour "${value}"`)
+  return color
+}
+
+/** The colour of the 1px border Sanity UI draws as an inset box shadow on the checkbox's box. */
+function checkboxBorder(checkbox: HTMLInputElement) {
+  const shadow = getComputedStyle(checkbox.nextElementSibling!).boxShadow
+  return rgb(/(rgba?\([^)]*\)|color\([^)]*\))/.exec(shadow)![1])
+}
+
+/** The background painted behind an element: its own, or the nearest ancestor's. */
+function background(element: HTMLElement) {
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    const value = getComputedStyle(node).backgroundColor
+    if (!/^rgba\(.*,\s*0\)$/.test(value) && value !== 'transparent') return rgb(value)
+  }
+  return rgb('#ffffff')
+}
+
+/** The contrast of a checkbox's border against the row behind it. */
+function railContrast(checkbox: HTMLInputElement, row: HTMLElement) {
+  return contrastRatio(checkboxBorder(checkbox), background(row))
+}
+
+function textContrast(text: HTMLElement, row: HTMLElement) {
+  return contrastRatio(rgb(getComputedStyle(text).color), background(row))
 }
 
 function selected(refs: ReturnType<typeof startHarness>): string[] {
@@ -983,36 +1024,117 @@ describe('Inventory selection', () => {
     ).toBeLessThanOrEqual(1)
   })
 
-  it('mutes an empty checkbox at rest, and brings it to full contrast on hover, focus and when checked', async () => {
+  it('keeps an empty checkbox quiet at rest at 3:1, and at full contrast on hover and focus', async () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
 
     await expect
       .element(page.getByRole('button', {name: 'VIP users', exact: true}))
       .toBeInTheDocument()
+    const vipRow = selectionRow('Draft', 'VIP users')
+    const summerRow = selectionRow('Draft', 'Summer sale')
     const vip = rowCheckbox('Draft', 'VIP users')
     const summer = rowCheckbox('Draft', 'Summer sale')
 
-    await expect.poll(() => checkboxOpacity(vip)).toBeLessThan(0.5)
-    expect(checkboxOpacity(groupCheckbox('Draft'))).toBeLessThan(0.5)
+    // At rest: the quietest border that still meets WCAG 1.4.11, on rows and on group headers
+    const rest = railContrast(vip, vipRow)
+    expect(rest).toBeGreaterThanOrEqual(3)
+    expect(rest).toBeLessThan(3.3)
+    expect(
+      railContrast(groupCheckbox('Draft'), selectionSet('Draft').querySelector('header')!),
+    ).toBeGreaterThanOrEqual(3)
+    // Not faded: the control itself stays fully opaque
+    expect(getComputedStyle(vip.closest('.selection-checkbox')!).opacity).toBe('1')
 
     // Row hover
-    await userEvent.hover(page.elementLocator(selectionRow('Draft', 'VIP users')))
-    await expect.poll(() => checkboxOpacity(vip)).toBe(1)
-    expect(checkboxOpacity(summer)).toBeLessThan(0.5)
+    await userEvent.hover(page.elementLocator(vipRow))
+    await expect.poll(() => railContrast(vip, vipRow)).toBeGreaterThan(rest + 2)
+    expect(railContrast(summer, summerRow)).toBeLessThan(3.3)
 
-    // Keyboard focus
-    await userEvent.unhover(page.elementLocator(selectionRow('Draft', 'VIP users')))
-    summer.focus()
-    await expect.poll(() => checkboxOpacity(summer)).toBe(1)
-    await expect.poll(() => checkboxOpacity(vip)).toBeLessThan(0.5)
-    summer.blur()
+    // Keyboard focus on the row
+    await userEvent.unhover(page.elementLocator(vipRow))
+    ;(summerRow.querySelector('.primary-action') as HTMLButtonElement).focus()
+    await expect.poll(() => railContrast(summer, summerRow)).toBeGreaterThan(rest + 2)
+    await expect.poll(() => railContrast(vip, vipRow)).toBeLessThan(3.3)
+  })
 
-    // Checked
-    refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
-    await expect.poll(() => vip.checked).toBe(true)
-    await expect.poll(() => checkboxOpacity(vip)).toBe(1)
-    await expect.poll(() => checkboxOpacity(summer)).toBeLessThan(0.5)
+  it.each(['light', 'dark'] as const)(
+    'tints a checked row lightly and keeps its text at 4.5:1 or more, in %s mode',
+    async (scheme) => {
+      const refs = startSelectionHarness()
+      void render(<SelectionPanel refs={refs} scheme={scheme} />)
+
+      await expect
+        .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+        .toBeInTheDocument()
+      const row = selectionRow('Draft', 'VIP users')
+      const panel = page.getByTestId('selection-panel').element() as HTMLElement
+      const plain = background(panel)
+
+      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
+      await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+
+      // A light tint: close to the panel's own background, not the saturated selection colour
+      const tint = background(row)
+      expect(tint).not.toEqual(plain)
+      expect(contrastRatio(tint, plain)).toBeLessThan(1.3)
+
+      const title = row.querySelector<HTMLElement>('[data-testid="version-title"]')!
+      const meta = row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
+      expect(textContrast(title, row)).toBeGreaterThanOrEqual(4.5)
+      expect(textContrast(meta, row)).toBeGreaterThanOrEqual(4.5)
+    },
+  )
+
+  it('draws a visible focus ring on the row, its tab stop', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    const $group = page.getByRole('checkbox', {name: 'Select all in Draft'})
+    await expect.element($group).toBeVisible()
+    ;($group.element() as HTMLInputElement).focus()
+    await userEvent.tab()
+
+    const row = selectionRow('Draft', 'Default')
+    await expect.element(page.elementLocator(row.querySelector('.primary-action')!)).toHaveFocus()
+    const style = getComputedStyle(row)
+    expect(style.outlineStyle).toBe('solid')
+    expect(style.outlineWidth).toBe('2px')
+    expect(contrastRatio(rgb(style.outlineColor), background(row))).toBeGreaterThanOrEqual(3)
+  })
+
+  it('announces the selected count through a polite live region', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    // Mounted and empty before anything is selected, so the first count is announced
+    const $status = page.getByRole('status')
+    await expect.element($status).toBeInTheDocument()
+    await expect.element($status).toHaveAttribute('aria-live', 'polite')
+    await expect.element($status).toHaveTextContent('')
+
+    await userEvent.click(page.getByRole('checkbox', {name: 'Select VIP users'}))
+    await expect.element($status).toHaveTextContent('1 selected')
+  })
+
+  it('describes the row with the Served tooltip text, for keyboard and screen reader users', async () => {
+    void render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet name="Draft" selectionState="unchecked" onCheckedChange={() => undefined}>
+          <DocumentGroupEntry
+            variant={DRAFT_VIP}
+            releases={SELECTION_RELEASES}
+            servedStatus="primary"
+            onPrimaryAction={() => undefined}
+          />
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toHaveAccessibleDescription(/will see this version/)
   })
 
   it('selects every selectable row from the group checkbox, and shows a dash when only some are selected', async () => {
@@ -1140,13 +1262,17 @@ describe('Inventory selection', () => {
     const checkbox = rowCheckbox(setName, 'Default')
     expect(isShown(checkbox)).toBe(true)
     expect(checkbox.getAttribute('aria-disabled')).toBe('true')
-    expect(checkboxOpacity(checkbox)).toBeLessThan(0.5)
-    // Still reachable by keyboard, so the reason is too
+    // Not natively disabled, so it still takes focus and shows its tooltip
     expect(checkbox.disabled).toBe(false)
 
+    // The row is the keyboard's tab stop, and carries the reason as its description
+    await expect
+      .element(
+        page.elementLocator(selectionRow(setName, 'Default').querySelector('.primary-action')!),
+      )
+      .toHaveAccessibleDescription(SCHEDULED_REASON)
+
     await userEvent.hover(page.elementLocator(checkbox))
-    // Its row's hover does not bring it to full contrast
-    expect(checkboxOpacity(checkbox)).toBeLessThan(0.5)
     // Closed tooltips stay mounted, so look for the open one
     await expect
       .poll(() =>

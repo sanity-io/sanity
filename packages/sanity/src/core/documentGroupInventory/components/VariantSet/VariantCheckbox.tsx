@@ -7,9 +7,13 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
  * The selection checkbox at the far left of every inventory row and group header. It is always
  * there: quiet at rest, full contrast on hover, focus or when checked (see `VariantSetEntry`).
  *
+ * A row's checkbox is not a tab stop of its own: the row is, and Space on it toggles the checkbox.
+ * A group header has nothing else to focus, so its checkbox is a tab stop.
+ *
  * A row that cannot be selected keeps its checkbox, dimmed and with a tooltip giving the reason,
- * so the column keeps its shape. The checkbox stays focusable, so the reason is reachable by
- * keyboard too; it only refuses to change.
+ * so the column keeps its shape. It uses `aria-disabled` rather than `disabled`, so it still takes
+ * focus and shows the reason; it only refuses to change. Keyboard users also get the reason as the
+ * row's description.
  *
  * @internal
  */
@@ -19,6 +23,7 @@ export function VariantCheckbox({
   indeterminate,
   locked,
   blockedReason,
+  tabbable = true,
   onChange,
 }: {
   /** The accessible name, such as "Select Summer". */
@@ -29,6 +34,8 @@ export function VariantCheckbox({
   locked?: boolean
   /** Why this checkbox cannot be checked. Shown as a tooltip. */
   blockedReason?: string
+  /** Whether the checkbox is a tab stop. A row's is not, since the row itself is. */
+  tabbable?: boolean
   /** Called with the requested state, and whether Shift was held, for range selection. */
   onChange: (checked: boolean, options: {shiftKey: boolean}) => void
 }) {
@@ -40,6 +47,7 @@ export function VariantCheckbox({
             aria-label={label}
             aria-disabled="true"
             checked={false}
+            tabIndex={tabbable ? undefined : -1}
             // Read-only styling, without `disabled`, which would take it out of the tab order
             data-read-only=""
             onClick={preventDefault}
@@ -56,6 +64,7 @@ export function VariantCheckbox({
         aria-label={label}
         checked={checked}
         indeterminate={indeterminate}
+        tabIndex={tabbable ? undefined : -1}
         readOnly={locked}
         onChange={(event) =>
           onChange(event.currentTarget.checked, {

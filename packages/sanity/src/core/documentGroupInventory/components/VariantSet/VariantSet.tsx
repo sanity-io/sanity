@@ -9,7 +9,7 @@ import {inventoryContainerName} from '../CreateVariant/CreateVariant.css'
  *
  * @internal
  */
-export const CHECKBOX_COLUMN_WIDTH = 17
+const CHECKBOX_COLUMN_WIDTH = 17
 
 /**
  * The shared leading column for group icons (the Published and Draft dots, a release bolt or clock)

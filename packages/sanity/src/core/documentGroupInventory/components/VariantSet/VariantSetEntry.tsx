@@ -1,7 +1,11 @@
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
+import {mixToContrast} from '../../utils/contrast'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
+
+/** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
+const CHECKBOX_REST_CONTRAST = 3
 
 export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
@@ -39,20 +43,25 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * Quiet at rest: an empty checkbox is a muted outline, so the column reads as a rail. It goes to
-     * full contrast while its row is hovered or holds focus, and once checked or partly checked.
-     * A blocked checkbox stays muted.
+     * Quiet at rest: an empty checkbox's border is the quietest colour that still reaches the 3:1
+     * WCAG asks of a control's boundary, so the column reads as a rail. It goes to full contrast
+     * while its row is hovered or holds focus. A checked or partly checked box keeps Sanity UI's
+     * filled style, and a blocked one its read-only style.
      */
     .selection-checkbox {
       display: flex;
-      opacity: 0.4;
-      transition: opacity 100ms ease-out;
+      --selection-checkbox-border: ${mixToContrast(color.fg, color.bg, CHECKBOX_REST_CONTRAST)};
     }
 
-    &:hover .selection-checkbox:not([data-blocked]),
-    &:focus-within .selection-checkbox:not([data-blocked]),
-    .selection-checkbox:not([data-blocked]):has(:checked, :indeterminate) {
-      opacity: 1;
+    &:hover .selection-checkbox,
+    &:focus-within .selection-checkbox {
+      --selection-checkbox-border: ${color.fg};
+    }
+
+    .selection-checkbox
+      input:not(:checked):not(:indeterminate):not(:disabled):not([data-read-only])
+      + span {
+      box-shadow: inset 0 0 0 1px var(--selection-checkbox-border);
     }
 
     .selection-checkbox[data-blocked] input {
@@ -158,39 +167,20 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * A checked row (or set header) is filled with the focus ring colour. Everything on it takes
-     * the inverse of the card colour, the way a selected menu item does: the text, the muted
-     * secondary line, and the variant diamond. A badge keeps its shape but loses its tone: a tinted
-     * fill would vanish into the blue, so it is outlined in the same colour instead.
+     * The row's tab stop is its invisible primary action, so its focus ring is drawn on the row.
      */
-    &:has(:checked) {
-      background-color: ${color.focusRing};
-      color: ${color.bg};
-      --card-fg-color: ${color.bg};
-      --card-muted-fg-color: color-mix(in srgb, ${color.bg} 72%, transparent);
+    &:has(.primary-action:focus-visible) {
+      outline: 2px solid ${color.focusRing};
+      outline-offset: -2px;
+    }
 
-      /* A ui5 Text reads its own --text-color, and the muted variant has its own rule. */
-      [data-ui='Text'] {
-        --text-color: ${color.bg};
-        color: ${color.bg};
-      }
-
-      [data-ui='Text'][data-testid='version-secondary-line'] {
-        color: color-mix(in srgb, ${color.bg} 72%, transparent);
-      }
-
-      .variant-mark svg {
-        --card-icon-color: ${color.bg};
-        --icon-color: ${color.bg};
-        color: ${color.bg};
-      }
-
-      [data-ui='Badge'] {
-        background-color: transparent;
-        box-shadow: inset 0 0 0 1px ${color.bg};
-        color: ${color.bg};
-        --card-fg-color: ${color.bg};
-      }
+    /*
+     * A checked row (or set header) takes a light tint of the selection colour, so its text keeps
+     * its own colours and contrast. The tint is mixed from theme colours, so it holds in light and
+     * dark.
+     */
+    &:has(.atom :checked) {
+      background-color: color-mix(in srgb, ${color.focusRing} 14%, ${color.bg});
     }
   `
 })

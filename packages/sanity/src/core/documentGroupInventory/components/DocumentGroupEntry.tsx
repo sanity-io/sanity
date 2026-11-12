@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type KeyboardEvent, type MouseEventHandler, type ReactNode, type Ref} from 'react'
+import {type KeyboardEvent, type MouseEventHandler, type ReactNode, type Ref, useId} from 'react'
 import {Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -32,6 +32,7 @@ export function DocumentGroupEntry({
   leading,
   onPrimaryAction,
   onToggleSelection,
+  selectionBlockedReason,
   onContextMenu,
   primaryActionRef,
 }: {
@@ -50,6 +51,11 @@ export function DocumentGroupEntry({
   onPrimaryAction: () => void
   /** Toggles the row's selection. Space on the focused row does this, as on the checkbox itself. */
   onToggleSelection?: () => void
+  /**
+   * Why the row cannot be selected. Its checkbox shows it as a tooltip; the row, which is the tab
+   * stop, carries it as its description so keyboard and screen reader users get it too.
+   */
+  selectionBlockedReason?: string
   onContextMenu?: MouseEventHandler<HTMLButtonElement>
   primaryActionRef?: Ref<HTMLButtonElement>
 }) {
@@ -57,6 +63,9 @@ export function DocumentGroupEntry({
   const {document} = variant
   const release = resolveVariantRelease(variant, releases)
   const isVariantRow = getDocumentVersionVariantId(document) !== undefined
+  const descriptionId = useId()
+  const servedDescription = servedStatus ? t('document-group.version.served.tooltip') : undefined
+  const hasDescription = Boolean(servedDescription || selectionBlockedReason)
   const neverPublished =
     !release && documentVersions !== undefined && isNeverPublishedDraft(document, documentVersions)
 
@@ -83,10 +92,19 @@ export function DocumentGroupEntry({
             onToggleSelection ? (event) => handleSpace(event, onToggleSelection) : undefined
           }
           onKeyUp={onToggleSelection ? preventSpaceActivation : undefined}
+          aria-keyshortcuts={onToggleSelection ? 'Space' : undefined}
+          aria-describedby={hasDescription ? descriptionId : undefined}
           onContextMenu={onContextMenu}
         >
           {variant.name}
         </button>
+        {hasDescription && (
+          // The tooltips on the Served badge and the blocked checkbox only open on pointer hover,
+          // so their text is also the row's description, read when the row takes focus.
+          <span id={descriptionId} hidden>
+            {[servedDescription, selectionBlockedReason].filter(Boolean).join(' ')}
+          </span>
+        )}
         {/*
          * The text and the badges share one wrapping body, so a badge group that does not fit
          * beside the text drops to its own line under it, starting where the text starts.

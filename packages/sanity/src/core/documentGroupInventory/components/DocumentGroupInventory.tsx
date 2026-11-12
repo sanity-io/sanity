@@ -671,9 +671,15 @@ const ManagedVariantRow: ComponentType<{
         onToggleSelection={
           isLocked || selectionBlockedReason ? undefined : () => onToggleSelection(false)
         }
+        selectionBlockedReason={
+          selectionBlockedReason
+            ? t(SELECTION_BLOCKED_REASON_KEYS[selectionBlockedReason])
+            : undefined
+        }
         leading={
           <VariantCheckbox
             label={t('document-group.select-version', {name: variant.name})}
+            tabbable={false}
             checked={selectedIds.has(variant.id)}
             locked={isLocked}
             blockedReason={
