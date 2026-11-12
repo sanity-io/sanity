@@ -1,8 +1,13 @@
-import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {catchError, of} from 'rxjs'
+import {catchError, EMPTY} from 'rxjs'
 
 import {type ReleaseId} from '../../perspective/types'
+import {
+  type AddonDatasetDocument,
+  type AddonDatasetListenerEvent,
+  type AddonDatasetListenerStore,
+} from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
@@ -12,6 +17,10 @@ type TransactionId = string
 
 export interface CommentsStoreOptions {
   client: SanityClient | null
+  /**
+   * The shared listener on the addon dataset, `null` while the workspace has none
+   */
+  listenerStore: AddonDatasetListenerStore | null
   documentId: string
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
   transactionsIdMap: Map<DocumentId, TransactionId>
@@ -24,14 +33,6 @@ interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
 
 const INITIAL_STATE: CommentsReducerState = {
   comments: {},
-}
-
-const LISTEN_OPTIONS: ListenOptions = {
-  events: ['welcome', 'mutation', 'reconnect'],
-  includeResult: true,
-  includeAllVersions: true,
-  visibility: 'query',
-  tag: 'comments-store',
 }
 
 const SORT_FIELD = '_createdAt'
@@ -60,8 +61,32 @@ const QUERY_PROJECTION = `{
 // Newest comments first
 const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
+/**
+ * Whether a document from the shared listener is one of the comments the store's query reads:
+ * the same filters, applied to the document.
+ */
+function isCommentInQuery(
+  document: AddonDatasetDocument,
+  options: {publishedId: string; releaseId?: ReleaseId},
+): document is CommentDocument {
+  if (document._type !== 'comment' || document.target?.document?._ref !== options.publishedId) {
+    return false
+  }
+
+  return options.releaseId
+    ? document.target.documentVersionId === options.releaseId
+    : document.target.documentVersionId === undefined
+}
+
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap, releaseId} = opts
+  const {
+    client,
+    listenerStore,
+    documentId,
+    onLatestTransactionIdReceived,
+    transactionsIdMap,
+    releaseId,
+  } = opts
 
   const filters = [...QUERY_FILTERS, releaseId ? VERSION_FILTER : NO_VERSION_FILTER].join(' && ')
   const query = useMemo(() => `*[${filters}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`, [filters])
@@ -72,12 +97,13 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
   const didInitialFetch = useRef<boolean>(false)
 
+  const publishedId = getPublishedId(documentId)
   const params = useMemo(
     () => ({
-      documentId: getPublishedId(documentId),
+      documentId: publishedId,
       ...(releaseId ? {documentVersionId: releaseId} : {}),
     }),
-    [documentId, releaseId],
+    [publishedId, releaseId],
   )
 
   const initialFetch = useCallback(async () => {
@@ -96,7 +122,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   }, [client, params, query])
 
   const handleListenerEvent = useCallback(
-    async (event: ListenEvent<Record<string, CommentDocument>>) => {
+    async (event: AddonDatasetListenerEvent) => {
       // Fetch all comments on initial connection
       if (event.type === 'welcome' && !didInitialFetch.current) {
         setLoading(true)
@@ -117,25 +143,30 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       // Handle mutations (create, update, delete) from the realtime listener
       // and update the comments store accordingly
       if (event.type === 'mutation') {
-        if (event.transition === 'appear') {
-          const nextComment = event.result as CommentDocument | undefined
-
-          if (nextComment) {
-            dispatch({
-              type: 'COMMENT_RECEIVED',
-              payload: nextComment,
-            })
-          }
-        }
-
         if (event.transition === 'disappear') {
           dispatch({type: 'COMMENT_DELETED', id: event.documentId})
+          return
+        }
+
+        const document = event.result
+        if (!document) return
+
+        // The shared listener reports every comment and task in the addon dataset. One that is
+        // not in this store's query, or no longer is after an edit, is dropped if the store had it.
+        if (!isCommentInQuery(document, {publishedId, releaseId})) {
+          dispatch({type: 'COMMENT_DELETED', id: document._id})
+          return
+        }
+
+        if (event.transition === 'appear') {
+          dispatch({
+            type: 'COMMENT_RECEIVED',
+            payload: document,
+          })
         }
 
         if (event.transition === 'update') {
-          const updatedComment = event.result as CommentDocument | undefined
-
-          const id = event.result?._id || ''
+          const id = document._id
           const transactionId = event.transactionId
           const latestTransactionId = transactionsIdMap.get(id)
           const isLatestTransaction = transactionId === latestTransactionId
@@ -146,39 +177,38 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
           // transaction id when multiple transactions are started in a short time span.
           if (!isLatestTransaction && latestTransactionId) return
 
-          if (updatedComment) {
-            dispatch({
-              type: 'COMMENT_UPDATED',
-              payload: updatedComment,
-            })
+          dispatch({
+            type: 'COMMENT_UPDATED',
+            payload: document,
+          })
 
-            // If the received transaction id is the latest, we'll call the
-            // `onLatestTransactionIdReceived` callback to let the parent consumer
-            // know that the transaction id has been received.
-            if (isLatestTransaction) {
-              onLatestTransactionIdReceived(id)
-            }
+          // If the received transaction id is the latest, we'll call the
+          // `onLatestTransactionIdReceived` callback to let the parent consumer
+          // know that the transaction id has been received.
+          if (isLatestTransaction) {
+            onLatestTransactionIdReceived(id)
           }
         }
       }
     },
-    [initialFetch, onLatestTransactionIdReceived, transactionsIdMap],
+    [initialFetch, onLatestTransactionIdReceived, publishedId, releaseId, transactionsIdMap],
   )
 
   const listener$ = useMemo(() => {
-    if (!client) return of()
+    if (!listenerStore) return EMPTY
 
-    const events$ = client.observable.listen(`*[${filters}]`, params, LISTEN_OPTIONS).pipe(
+    return listenerStore.events.pipe(
       catchError((err) => {
         setError(err)
-        return of(err)
+        return EMPTY
       }),
     )
-
-    return events$
-  }, [client, filters, params])
+  }, [listenerStore])
 
   useEffect(() => {
+    // The shared listener replays its `welcome` to every new subscription, so a resubscription
+    // for a different document or release fetches that one's comments.
+    didInitialFetch.current = false
     const sub = listener$.subscribe(handleListenerEvent)
 
     return () => {

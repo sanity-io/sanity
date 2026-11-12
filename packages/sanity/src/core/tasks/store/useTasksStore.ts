@@ -1,8 +1,9 @@
-import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
-import {catchError, of} from 'rxjs'
+import {catchError, EMPTY} from 'rxjs'
 
+import {type AddonDatasetListenerEvent} from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
+import {useAddonDatasetListenerStore} from '../../studio/addonDataset/useAddonDatasetListenerStore'
 import {getPublishedId} from '../../util/draftUtils'
 import {type Loadable, type TaskDocument} from '../types'
 import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'
@@ -17,14 +18,6 @@ interface TasksStoreReturnType extends Loadable<TaskDocument[]> {
 
 const INITIAL_STATE: TasksReducerState = {
   tasks: {},
-}
-
-const LISTEN_OPTIONS: ListenOptions = {
-  events: ['welcome', 'mutation', 'reconnect'],
-  includeResult: true,
-  visibility: 'query',
-  includeAllVersions: true,
-  tag: 'tasks-store',
 }
 
 const SORT_FIELD = '_createdAt'
@@ -43,6 +36,7 @@ const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SO
 
 export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   const {client} = useAddonDataset()
+  const listenerStore = useAddonDatasetListenerStore()
   const {documentId} = opts
 
   const [state, dispatch] = useReducer(tasksReducer, INITIAL_STATE)
@@ -70,7 +64,7 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   }, [client, params])
 
   const handleListenerEvent = useCallback(
-    async (event: ListenEvent<Record<string, TaskDocument>>) => {
+    async (event: AddonDatasetListenerEvent) => {
       // Fetch all tasks on initial connection
       if (event.type === 'welcome') {
         setIsLoading(true)
@@ -87,32 +81,29 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
-      // and update the tasks store accordingly
+      // and update the tasks store accordingly. The shared listener also reports comments,
+      // which the reducer ignores on delete and which are never added.
       if (event.type === 'mutation') {
-        if (event.transition === 'appear') {
-          const nextTask = event.result as TaskDocument | undefined
-
-          if (nextTask) {
-            dispatch({
-              type: 'TASK_RECEIVED',
-              payload: nextTask,
-            })
-          }
-        }
-
         if (event.transition === 'disappear') {
           dispatch({type: 'TASK_DELETED', id: event.documentId})
+          return
+        }
+
+        const document = event.result
+        if (document?._type !== 'tasks.task') return
+
+        if (event.transition === 'appear') {
+          dispatch({
+            type: 'TASK_RECEIVED',
+            payload: document,
+          })
         }
 
         if (event.transition === 'update') {
-          const updatedTask = event.result as TaskDocument | undefined
-
-          if (updatedTask) {
-            dispatch({
-              type: 'TASK_UPDATED',
-              payload: updatedTask,
-            })
-          }
+          dispatch({
+            type: 'TASK_UPDATED',
+            payload: document,
+          })
         }
       }
     },
@@ -120,17 +111,15 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   )
 
   const listener$ = useMemo(() => {
-    if (!client) return of()
+    if (!listenerStore) return EMPTY
 
-    const events$ = client.observable.listen(QUERY, params, LISTEN_OPTIONS).pipe(
+    return listenerStore.events.pipe(
       catchError((err) => {
         setError(err)
-        return of(err)
+        return EMPTY
       }),
     )
-
-    return events$
-  }, [client, params])
+  }, [listenerStore])
 
   useEffect(() => {
     const sub = listener$.subscribe(handleListenerEvent)
