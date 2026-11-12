@@ -629,6 +629,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-section.has-variants_other': 'Has {{count}} variants',
   /** The heading above the variants the document has no version in yet, in the variant creation form's picker */
   'document-group.create-variant.variant-section.other': 'Other variants',
+  /** PROPOSED: the header of the inset variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
+  'document-group.create-variant.form.header': 'New variant of <DocumentTitle/>',
+  /** PROPOSED: the title above the picker for the draft or release the variant is added to, in the inset variant creation form */
+  'document-group.create-variant.form.target-label': 'Add to',
+  /** PROPOSED: the hint in the empty picker for the draft or release, in the inset variant creation form */
+  'document-group.create-variant.form.target-hint': 'Choose where it goes',
+  /** PROPOSED: the title above the picker for the version the variant starts from, in the inset variant creation form */
+  'document-group.create-variant.form.base-label': 'Start from',
+  /** PROPOSED: the hint in the empty picker for the variant, in the inset variant creation form */
+  'document-group.create-variant.form.variant-hint': 'Choose who sees it',
+  /** PROPOSED: the second line of the nearest version option, in the inset variant creation form. `{{target}}` is the draft or release the variant is added to */
+  'document-group.create-variant.form.nearest-subtitle': 'Copies from Default in {{target}}',
   /** Describes the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-description': 'Who sees this variant',
   /** The label of the variant creation form's picker for the variant definition to create */

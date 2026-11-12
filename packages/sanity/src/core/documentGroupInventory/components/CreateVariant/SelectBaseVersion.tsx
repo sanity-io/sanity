@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import DocumentsIcon from '@sanity/icons/Documents'
-import {type ComponentType} from 'react'
+import {type ComponentType, useContext} from 'react'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -21,6 +22,8 @@ interface Props {
   /** Called with the picked version's id, or `undefined` when the nearest version is picked. */
   onChange: (versionId: string | undefined) => void
   disabled: boolean
+  /** PROPOSED: the name of the draft or release the variant is added to; the inset form's nearest version row says it copies from Default there. */
+  targetText?: string
 }
 
 const NEAREST_VERSION_KEY = '#nearest-version'
@@ -31,8 +34,10 @@ export const SelectBaseVersion: ComponentType<Props> = ({
   value,
   onChange,
   disabled,
+  targetText,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const inset = useContext(CreateVariantFormContext) === 'final'
 
   // The agent's proposed changes are not offered as a version to start from.
   const options = sets.flatMap((set) =>
@@ -51,14 +56,23 @@ export const SelectBaseVersion: ComponentType<Props> = ({
   const nearestVersionOption: CreateVariantPickerOption = {
     key: NEAREST_VERSION_KEY,
     text: t('document-group.create-variant.base-option-nearest'),
+    subtitle: targetText
+      ? t('document-group.create-variant.form.nearest-subtitle', {target: targetText})
+      : undefined,
   }
 
   return (
     <CreateVariantPicker
       icon={DocumentsIcon}
-      label={t('document-group.create-variant.base-label')}
+      label={t(
+        inset
+          ? 'document-group.create-variant.form.base-label'
+          : 'document-group.create-variant.base-label',
+      )}
       description={t('document-group.create-variant.base-description')}
       testId="create-variant-base-menu"
+      placeholder={inset ? t('document-group.create-variant.base-option-nearest') : undefined}
+      emptyIcon={<DocumentsIcon />}
       leadingOptions={[nearestVersionOption]}
       options={options}
       value={

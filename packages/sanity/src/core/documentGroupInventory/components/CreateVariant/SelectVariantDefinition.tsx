@@ -1,4 +1,5 @@
-import {type ComponentType} from 'react'
+import {type ComponentType, useContext} from 'react'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 
 import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -29,6 +30,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
   disabled,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const inset = useContext(CreateVariantFormContext) === 'final'
   const existing = variantDefinitions.filter(({_id}) => existingVariantIds.has(_id))
   const other = variantDefinitions.filter(({_id}) => !existingVariantIds.has(_id))
 
@@ -38,6 +40,8 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
       label={t('document-group.create-variant.variant-label')}
       description={t('document-group.create-variant.variant-description')}
       testId="create-variant-variant-menu"
+      placeholder={inset ? t('document-group.create-variant.form.variant-hint') : undefined}
+      emptyIcon={<VariantMark size="inline" />}
       filterPlaceholder={t('document-group.create-variant.variant-filter-placeholder')}
       leadingOptions={existing.map((definition) => toOption(definition, true))}
       leadingLabel={t('document-group.create-variant.variant-section.has-variants', {
@@ -67,5 +71,7 @@ function toOption(
     text: getVariantTitle(variantDefinition),
     // A filled diamond for a variant the document has a version in, an outline for one it has not
     icon: <VariantMark fill={hasVersion ? 'filled' : 'outline'} size="row" />,
+    // PROPOSED: the inset form shows a variant's mark inline (8px) everywhere
+    formIcon: <VariantMark fill={hasVersion ? 'filled' : 'outline'} size="inline" />,
   }
 }

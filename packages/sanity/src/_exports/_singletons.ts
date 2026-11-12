@@ -128,6 +128,7 @@ export {
 } from '../_singletons/context/PortalBoundaryContext'
 export {ParseErrorsContext, type SetParseError} from '../_singletons/context/ParseErrorsContext'
 export {PerspectiveContext} from '../_singletons/context/PerspectiveContext'
+export {CreateVariantFormContext} from '../_singletons/context/CreateVariantFormContext'
 export {NavbarNeutralContext} from '../_singletons/context/NavbarNeutralContext'
 export {PerspectiveMenuExtensionContext} from '../_singletons/context/PerspectiveMenuExtensionContext'
 export {PortableTextMarkersContext} from '../_singletons/context/PortableTextMarkersContext'

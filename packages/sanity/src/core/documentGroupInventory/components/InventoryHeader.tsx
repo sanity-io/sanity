@@ -1,4 +1,6 @@
 import {useSelector} from '@xstate/react'
+import {useContext} from 'react'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 import {Text, Button as Ui5Button} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
@@ -28,6 +30,11 @@ export function InventoryHeader({
   components: DocumentGroupInventoryComponents | undefined
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
+  // PROPOSED: the inset form is called "Create variant" on the inventory button as well, so the button and the form's primary action agree.
+  const createVariantText =
+    useContext(CreateVariantFormContext) === 'final'
+      ? t('document-group.create-variant.confirm')
+      : t('document-group.create-variant')
   const selectedCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
@@ -61,7 +68,7 @@ export function InventoryHeader({
           {components && <components.CompareVersionsAction />}
           {canCreateVariant && (
             <Button
-              text={t('document-group.create-variant')}
+              text={createVariantText}
               onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
             />
           )}

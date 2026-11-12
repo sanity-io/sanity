@@ -25,3 +25,17 @@ export const createVariantPickerMenu = css({
     overflow: 'hidden',
   },
 })
+
+/**
+ * PROPOSED: the select of the inset form is the size of a Studio string input: 35px high, 15px text (the input measures 35px, 15px, 6px 12px).
+ */
+export const createVariantPickerInsetTrigger = css({
+  '& button': {
+    blockSize: '35px',
+    minBlockSize: '35px',
+  },
+  '& button [data-ui="Text"]': {
+    fontSize: '15px',
+    lineHeight: '19px',
+  },
+})

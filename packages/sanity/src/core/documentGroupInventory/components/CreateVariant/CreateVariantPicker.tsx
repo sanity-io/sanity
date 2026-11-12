@@ -1,7 +1,16 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {type ComponentProps, type ComponentType, useId, useState} from 'react'
+import {
+  type ComponentProps,
+  type ComponentType,
+  type CSSProperties,
+  type ReactNode,
+  useContext,
+  useId,
+  useState,
+} from 'react'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 import {Box, Flex, Icon, type IconProps, Text} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -14,12 +23,40 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {createVariantPickerLabel, createVariantPickerTrigger} from './CreateVariant.css'
-import {createVariantPickerMenu} from './CreateVariantPicker.css'
+import {createVariantPickerInsetTrigger, createVariantPickerMenu} from './CreateVariantPicker.css'
 
 export interface CreateVariantPickerOption {
   key: string
   text: string
   icon?: ComponentProps<typeof MenuItem>['icon']
+  /** PROPOSED: the glyph in the inset form (a variant's mark is inline there, not row-sized). Falls back to `icon`. */
+  formIcon?: ReactNode
+  /** PROPOSED: a second line under the text of the option's menu row, in the inset form. */
+  subtitle?: string
+}
+
+/**
+ * PROPOSED: a glyph in the inset form's select, in a trimmed box (1.25rem high, pulled in by 0.375rem each way) so its ink starts at the box
+ * edge and lines up with the title above it.
+ */
+function TrimmedGlyph({children, muted}: {children: ReactNode; muted?: boolean}) {
+  const color = muted ? 'var(--card-muted-fg-color)' : undefined
+  return (
+    <span
+      aria-hidden
+      style={{
+        alignItems: 'center',
+        display: 'inline-flex',
+        height: '1.25rem',
+        marginBlock: '-0.375rem',
+        ...(color
+          ? ({color, '--icon-color': color, '--card-icon-color': color} as CSSProperties)
+          : null),
+      }}
+    >
+      {children}
+    </span>
+  )
 }
 
 const NO_OPTIONS: CreateVariantPickerOption[] = []
@@ -44,6 +81,10 @@ export const CreateVariantPicker: ComponentType<{
   optionsLabel?: string
   /** The search field's placeholder; "Search…" when absent. */
   filterPlaceholder?: string
+  /** PROPOSED: the hint of an empty select, in the inset form. */
+  placeholder?: string
+  /** PROPOSED: the glyph of an empty select, in the inset form (muted). */
+  emptyIcon?: ReactNode
   value: CreateVariantPickerOption | undefined
   onChange: (key: string) => void
   disabled: boolean
@@ -57,11 +98,15 @@ export const CreateVariantPicker: ComponentType<{
   options,
   optionsLabel,
   filterPlaceholder,
+  placeholder,
+  emptyIcon,
   value,
   onChange,
   disabled,
   testId,
 }) => {
+  const formStyle = useContext(CreateVariantFormContext)
+  const inset = formStyle === 'final'
   const {t} = useTranslation(studioLocaleNamespace)
   const id = useId()
   const descriptionId = useId()
@@ -84,7 +129,8 @@ export const CreateVariantPicker: ComponentType<{
     <MenuItem
       key={option.key}
       aria-checked={option.key === value?.key}
-      icon={option.icon}
+      __unstable_subtitle={inset ? option.subtitle : undefined}
+      icon={inset ? (option.formIcon ?? option.icon) : option.icon}
       role="menuitemradio"
       text={option.text}
       pressed={option.key === value?.key}
@@ -94,20 +140,29 @@ export const CreateVariantPicker: ComponentType<{
 
   return (
     <>
-      <Flex gap={3} className={createVariantPickerLabel}>
-        <Icon icon={icon} size={1} aria-hidden />
-        <div>
+      {inset ? (
+        // PROPOSED: the title alone, inset by the select's padding so it starts where the select's first glyph starts. No icon, no description.
+        <Flex alignItems="center" style={{paddingLeft: 12}}>
           <Text size={1} weight="medium" as="label" htmlFor={id}>
             {label}
           </Text>
-          {description && (
-            <Text size={1} muted as="div" id={descriptionId}>
-              {description}
+        </Flex>
+      ) : (
+        <Flex gap={3} className={createVariantPickerLabel}>
+          <Icon icon={icon} size={1} aria-hidden />
+          <div>
+            <Text size={1} weight="medium" as="label" htmlFor={id}>
+              {label}
             </Text>
-          )}
-        </div>
-      </Flex>
-      <div className={createVariantPickerTrigger}>
+            {description && (
+              <Text size={1} muted as="div" id={descriptionId}>
+                {description}
+              </Text>
+            )}
+          </div>
+        </Flex>
+      )}
+      <div className={inset ? createVariantPickerInsetTrigger : createVariantPickerTrigger}>
         <MenuButton
           id={id}
           onClose={() => {
@@ -122,9 +177,18 @@ export const CreateVariantPicker: ComponentType<{
               mode="ghost"
               width="fill"
               justify="flex-start"
-              icon={value?.icon}
+              {...(inset ? {size: 'large' as const} : null)}
+              icon={
+                inset ? (
+                  <TrimmedGlyph muted={!value}>
+                    {value ? ((value.formIcon ?? value.icon) as ReactNode) : emptyIcon}
+                  </TrimmedGlyph>
+                ) : (
+                  value?.icon
+                )
+              }
               iconRight={ChevronDownIcon}
-              text={value?.text ?? ''}
+              text={value?.text ?? (inset ? (placeholder ?? '') : '')}
               disabled={disabled || leadingOptions.length + options.length === 0}
             />
           }

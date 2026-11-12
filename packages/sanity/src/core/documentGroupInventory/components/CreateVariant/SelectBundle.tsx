@@ -1,5 +1,6 @@
 import {PackageIcon} from '@sanity/icons/Package'
-import {type ComponentType} from 'react'
+import {type ComponentType, useContext} from 'react'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -17,14 +18,22 @@ interface Props {
 
 export const SelectBundle: ComponentType<Props> = ({bundles, value, onChange, disabled}) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const inset = useContext(CreateVariantFormContext) === 'final'
   const options = bundles.map((bundle) => toOption(bundle, t))
 
   return (
     <CreateVariantPicker
       icon={PackageIcon}
-      label={t('document-group.create-variant.target-label')}
+      label={t(
+        inset
+          ? 'document-group.create-variant.form.target-label'
+          : 'document-group.create-variant.target-label',
+      )}
       description={t('document-group.create-variant.target-description')}
       testId="create-variant-target-menu"
+      placeholder={inset ? t('document-group.create-variant.form.target-hint') : undefined}
+      // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+      emptyIcon={<ReleaseAvatarIcon release="drafts" />}
       options={options}
       value={typeof value === 'undefined' ? undefined : toOption(value, t)}
       onChange={onChange}
