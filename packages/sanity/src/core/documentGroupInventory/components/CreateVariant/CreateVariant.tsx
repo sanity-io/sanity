@@ -11,6 +11,7 @@ import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
+import {readVersionType} from '../../../util/versionsUtils'
 import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {
   type VariantCreationBundle,
@@ -154,7 +155,11 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
           variantName:
             nearestBaseSet.variants.find(({id}) => id === nearestBaseVersion._id)?.name ??
             t('document-group.base-variant'),
-          bundleName: nearestBaseSet.name,
+          // Drafts reads as the Add to select names it; the inventory's set is called Draft.
+          bundleName:
+            readVersionType(nearestBaseVersion) === 'draft'
+              ? t('release.chip.global.drafts')
+              : nearestBaseSet.name,
         }
       : undefined
 
