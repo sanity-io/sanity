@@ -151,7 +151,7 @@ describe('DocumentVariantsMenu', () => {
     expect(setVariant).toHaveBeenCalledWith({type: 'variant', variantId: undefined})
   })
 
-  it('shows an empty "Has 0 variants" section when the document is in no variant', async () => {
+  it('shows an empty "Has no variants" section when the document is in no variant', async () => {
     mockVersions([createVersion({bundle: 'published'}), createVersion({bundle: 'drafts'})])
     render(<DocumentVariantsMenu />, {wrapper})
 
@@ -162,7 +162,7 @@ describe('DocumentVariantsMenu', () => {
     expect(within(defaultItem).getByTestId('variant-version-count')).toHaveTextContent('2')
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
-    expect(documentSection).toHaveTextContent('Has 0 variants')
+    expect(documentSection).toHaveTextContent('Has no variants')
     expect(within(documentSection).queryAllByRole('menuitemradio', {hidden: true})).toHaveLength(0)
     expect(
       within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
@@ -288,7 +288,7 @@ describe('DocumentVariantsMenu', () => {
     expect(within(menu).getByTestId(`document-variant-${lapsed._id}`)).toBeInTheDocument()
     expect(within(menu).queryByTestId(`document-variant-${firstTime._id}`)).toBeNull()
     expect(within(menu).queryByTestId('document-variant-default')).toBeNull()
-    // A filter hides the sections it leaves empty, the "Has 0 variants" one included.
+    // A filter hides the sections it leaves empty, the "Has no variants" one included.
     expect(within(menu).queryByTestId('document-variants-menu-section-document')).toBeNull()
 
     await userEvent.clear(input)
