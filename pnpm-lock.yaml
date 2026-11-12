@@ -2143,7 +2143,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       json-2-csv:
-        specifier: ^5.5.9
+        specifier: ^5.6.0
         version: 5.6.0
       json5:
         specifier: ^2.2.3
