@@ -36,6 +36,8 @@ import {scrubAutomaticPii, studioSentryDataCollection} from './sentryPrivacy'
 export const STUDIO_DSN =
   'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
+const STUDIO_TUNNEL = 'https://api.sanity.io/vX/intake/tracing'
+
 const IS_EMBEDDED_STUDIO = !('__sanityErrorChannel' in globalScope)
 
 const DEBUG_ERROR_REPORTING =
@@ -45,7 +47,7 @@ const IS_BROWSER = typeof window !== 'undefined'
 
 const clientOptions: BrowserOptions = {
   dsn: STUDIO_DSN,
-  tunnel: 'https://api.sanity.io/vX/intake/tracing',
+  tunnel: STUDIO_TUNNEL,
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
@@ -116,6 +118,7 @@ export function getSentryErrorReporter(): ErrorReporter {
     if (hasThirdPartySentry) {
       client = new BrowserClient({
         ...clientOptions,
+        tunnel: STUDIO_TUNNEL,
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
