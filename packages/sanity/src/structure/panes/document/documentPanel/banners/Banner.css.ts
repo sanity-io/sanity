@@ -34,10 +34,10 @@ export const text = css({
   maxWidth: '720px',
 })
 
-/** The icon, top aligned with the text's first line. */
+/** The icon, top aligned with the text's first line. 8px is UI 5's space-2, the nearest scale step to the 9px it was. */
 export const icon = css({
   flex: 'none',
-  paddingTop: '9px',
+  paddingTop: '8px',
 })
 
 /** The text column: it wraps, in roughly equal lines (a progressive enhancement, inherited by the text). */
