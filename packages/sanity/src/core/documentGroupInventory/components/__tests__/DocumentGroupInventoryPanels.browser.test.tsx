@@ -4,6 +4,7 @@ import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {type ComponentType, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
+import {PerspectiveContext} from 'sanity/_singletons'
 import {Text} from 'ui5'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -20,6 +21,7 @@ import {
 
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {type PerspectiveContextValue} from '../../../perspective/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -315,21 +317,56 @@ const CreateVariantHarness: ComponentType<{
   sets?: VariantSet[]
   /** The width of the inspector-like frame; the selects fill it, less the card's padding. */
   width?: number
-}> = ({variantCreationRef, sets = VERSION_SETS, width = 360}) => {
+  /** The studio's perspective, for the variant selected in it. The wrapper's own when absent. */
+  perspective?: PerspectiveContextValue
+}> = ({variantCreationRef, sets = VERSION_SETS, width = 360, perspective}) => {
+  const form = (
+    <CreateVariant
+      variantCreationRef={variantCreationRef}
+      sets={sets}
+      documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
+    />
+  )
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <Card border radius={3} style={{display: 'flex', width, height: 480}}>
         <Container>
-          <CreateVariant
-            variantCreationRef={variantCreationRef}
-            sets={sets}
-            documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
-          />
+          {perspective ? (
+            <PerspectiveContext.Provider value={perspective}>{form}</PerspectiveContext.Provider>
+          ) : (
+            form
+          )}
           <Body />
         </Container>
       </Card>
     </TestWrapper>
   )
+}
+
+/** The perspective with a variant selected in the studio (the variant pill), in Drafts or a release. */
+function perspectiveWith({
+  variant,
+  release,
+}: {
+  variant?: SystemVariant
+  release?: ReleaseDocument
+}): PerspectiveContextValue {
+  const releaseId = release?.name
+  const variantNames = variant ? [variant._id.replace('_.variants.', '')] : []
+  return {
+    selectedPerspectiveName: releaseId,
+    selectedReleaseId: releaseId,
+    selectedPerspective: release ?? 'drafts',
+    perspectiveStack: releaseId ? [releaseId, 'drafts'] : ['drafts'],
+    excludedPerspectives: [],
+    selectedVariantNames: variantNames,
+    selectedVariants: variant ? [variant] : [],
+    // oxlint-disable-next-line typescript/no-deprecated -- the context value still carries it
+    selectedVariantName: variantNames[0],
+    // oxlint-disable-next-line typescript/no-deprecated -- the context value still carries it
+    selectedVariant: variant,
+    bundle: releaseId ?? 'drafts',
+  }
 }
 
 const $variantTrigger = page.getByTestId('create-variant-variant-menu-button')
@@ -699,6 +736,95 @@ describe('CreateVariant', () => {
     }
     // The select is still named by its title.
     await expect.element(page.getByRole('button', {name: /^Add to/})).toBeVisible()
+  })
+
+  it('starts Variant on the variant selected in the studio when the document has no version of it yet', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: VIP_USERS})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('vip-users')
+    await expect.element($targetTrigger).toHaveTextContent('Drafts')
+    const $create = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($create).toBeEnabled()
+
+    await userEvent.click($create)
+    const snapshot = variantCreationRef.getSnapshot()
+    expect(snapshot.matches({active: 'creating'})).toBe(true)
+    expect(snapshot.context.selectedVariantId).toBe(VIP_USERS._id)
+    expect(snapshot.context.selectedBundle).toEqual({type: 'drafts'})
+  })
+
+  it('leaves Variant empty while Default is selected', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeDisabled()
+  })
+
+  it('leaves Variant empty when the selected variant already has a version in the Add to bundle', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Summer sale already has a version in the ASAP release, the release in view.
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: SUMMER_SALE, release: activeASAPRelease})}
+      />,
+    )
+
+    await expect.element($targetTrigger).toHaveTextContent(activeASAPRelease.metadata.title)
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeDisabled()
+  })
+
+  it('clears the pre-filled Variant when Add to moves to a bundle that already has that variant', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Summer sale has no draft yet, but has a version in the ASAP release.
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: SUMMER_SALE})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('Summer sale')
+    const $create = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($create).toBeEnabled()
+
+    await userEvent.click($targetTrigger)
+    await userEvent.click(
+      $targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}),
+    )
+    await expect.element($targetTrigger).toHaveTextContent(activeASAPRelease.metadata.title)
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element($create).toBeDisabled()
+
+    // Back in Drafts, where it has no version, the selected variant is offered again.
+    await userEvent.click($targetTrigger)
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
+    await expect.element($variantTrigger).toHaveTextContent('Summer sale')
   })
 
   it('names the version Nearest version copies from on its second line', async () => {
