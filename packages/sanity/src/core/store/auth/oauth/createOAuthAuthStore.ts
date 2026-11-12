@@ -644,10 +644,14 @@ export function _createOAuthAuthStore({
         throw err
       }
       // The request was sent in a session that has since ended: a logout and a new sign-in,
-      // possibly as someone else. Retrying it with the current token would run it as them.
+      // possibly as someone else. Retrying it with the current token would run it as them. Its
+      // rejection says nothing about the current session either, so it is not passed on as an
+      // invalid session: the Studio would take it for the current one and sign the user out.
       if (session !== current.signedInAt) {
         debug('request rejected: %s was sent in an earlier session, not retrying', request.url)
-        throw err
+        throw new Error('The request was sent in an OAuth session that has since ended', {
+          cause: err,
+        })
       }
       // A request that went out before a renewal only needs the pair that replaced its token,
       // unless that one has expired too.
