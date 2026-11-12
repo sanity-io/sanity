@@ -138,7 +138,9 @@ export const CreateVariantPicker: ComponentType<{
             >
               <Box flexShrink={0} padding={1}>
                 <TextInput
-                  aria-label={t('document-group.create-variant.filter-placeholder')}
+                  aria-label={
+                    filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+                  }
                   ref={focusSearchField}
                   fontSize={1}
                   onChange={(event) => setFilterQuery(event.currentTarget.value)}
