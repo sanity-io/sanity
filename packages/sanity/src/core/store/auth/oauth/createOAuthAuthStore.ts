@@ -778,10 +778,13 @@ export function _createOAuthAuthStore({
     ) {
       debug('access token %s has expired, renewing before use', tokenTag(accessToken))
       const renewed = await renewAtBoot(stored, 'expired')
-      // The new token is probed in its own turn. A failure keeps the pair (`renewAtBoot` has
-      // shown it) and shows the signed-out state.
-      if (renewed && renewed.accessToken !== accessToken) tokenRenewedByProbe = renewed.accessToken
-      return unauthenticated
+      // A failure keeps the pair (`renewAtBoot` has shown it) and shows the signed-out state.
+      if (!renewed) return unauthenticated
+      // One renewal per token: if the API rejects the renewed token too, it is not renewed again.
+      tokenRenewedByProbe = renewed.accessToken
+      // A new access token is probed in its own turn. A renewal that kept the access token (a new
+      // expiry or refresh token only) emits no new token, so it is probed here.
+      if (renewed.accessToken !== accessToken) return unauthenticated
     }
     const state = await probeClient()
     if (state.authenticated) return state
