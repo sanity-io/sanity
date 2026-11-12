@@ -2,11 +2,11 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Card, Skeleton} from '@sanity/ui'
+import {Badge, Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -15,16 +15,11 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
-import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
-import {
-  getVariantConditionsText,
-  getVariantId,
-  getVariantTitle,
-} from '../../../../variants/tool/util'
+import {getVariantId, getVariantTitle} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -32,6 +27,7 @@ import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentInten
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
+import {MemoVariantCell} from '../../components/VariantCell'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
@@ -203,12 +199,6 @@ const documentActionColumn: (
   },
 })
 
-// Purple, matching the perspective bar's variant motif. The perspective bar gets its purple from a
-// `tone="suggest"` Card context (which defines --card-icon-color as the suggest purple); the
-// --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
-// suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
-const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
-
 /** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
@@ -218,58 +208,17 @@ function resolveDocumentVariant(
   return variantId ? variantsById.get(variantId) : undefined
 }
 
-// Which variant a release document targets: ◆ diamond + the variant title, with the full
-// conditions ("flags") on hover. Empty for base (non-variant) documents.
-const VariantCell = memo(
-  function VariantCell({
-    document,
-    variantsById,
-  }: {
-    document: BundleDocumentRow['document']
-    variantsById: Map<string, SystemVariant>
-  }) {
-    const variant = resolveDocumentVariant(document, variantsById)
-    if (!variant) return null
-
-    const conditions = getVariantConditionsText(variant.conditions)
-
-    return (
-      <Tooltip
-        portal
-        placement="bottom-start"
-        disabled={!conditions}
-        content={
-          conditions ? (
-            <Box padding={2}>
-              <Text size={1} as="div" trim={true}>
-                {conditions}
-              </Text>
-            </Box>
-          ) : undefined
-        }
-      >
-        <Flex alignItems="center" gap={2}>
-          <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Icon size={2} style={{margin: '-0.4375rem'}} icon={RhombusIcon} tone="suggest" />
-          </Card>
-          {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
-              truncates with an ellipsis instead of overflowing the column. */}
-          <Text
-            size={1}
-            truncate={1}
-            weight="medium"
-            style={{flex: 1, minWidth: 0}}
-            as="div"
-            trim={true}
-          >
-            {getVariantTitle(variant)}
-          </Text>
-        </Flex>
-      </Tooltip>
-    )
-  },
-  (prev, next) => prev.document === next.document && prev.variantsById === next.variantsById,
-)
+// Empty for base (non-variant) documents.
+function DocumentVariantCell({
+  document,
+  variantsById,
+}: {
+  document: BundleDocumentRow['document']
+  variantsById: Map<string, SystemVariant>
+}) {
+  const variant = resolveDocumentVariant(document, variantsById)
+  return variant ? <MemoVariantCell variant={variant} /> : null
+}
 
 export const getDocumentTableColumnDefs: (
   releaseId: string,
@@ -351,7 +300,10 @@ export const getDocumentTableColumnDefs: (
                     (variantsLoading ? (
                       <Skeleton animated radius={1} style={{width: 60, height: 11}} />
                     ) : (
-                      <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                      <DocumentVariantCell
+                        document={datum.document}
+                        variantsById={options.variantsById!}
+                      />
                     ))}
                 </Box>
               </Flex>

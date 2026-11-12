@@ -342,7 +342,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         onEditorChange(change, legacyEditorRef.current)
       }
     },
-    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
     [
       legacyEditorRef,
       editorRef,
@@ -388,7 +387,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
-    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
   }, [legacyEditorRef, isActive])
 
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
