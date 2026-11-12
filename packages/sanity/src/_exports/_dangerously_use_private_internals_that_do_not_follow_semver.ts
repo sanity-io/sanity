@@ -393,7 +393,7 @@ export {
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
+export {MemberFieldSet} from '../core/form/lazy'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
 export {
   ObjectInputMembers,

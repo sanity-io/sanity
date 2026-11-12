@@ -332,6 +332,7 @@ export {
   FormInput,
   MemberField,
   MemberFieldError,
+  MemberFieldSet,
   ObjectInputMember,
   PortableTextInput as BlockEditor,
   PortableTextInput,

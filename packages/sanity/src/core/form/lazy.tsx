@@ -6,6 +6,7 @@ import {type FormField as FormFieldImplementation} from './components/formField/
 import {type FormInput as FormInputImplementation} from './components/FormInput'
 import {type MemberItemProps} from './members/array/items/ArrayOfObjectsItem'
 import {type MemberFieldProps} from './members/object/MemberField'
+import {type MemberFieldSet as MemberFieldSetImplementation} from './members/object/MemberFieldset'
 import {type ObjectInputMemberProps} from './members/object/ObjectInputMember'
 import {type FieldError} from './store/types/memberErrors'
 import {type FormBuilderProps} from './studio/FormBuilder'
@@ -77,6 +78,11 @@ export const MemberField = createLazyComponent<MemberFieldProps>(
 export const MemberFieldError = createLazyComponent<{member: FieldError}>(
   () => import('./members/object/MemberFieldError.lazy'),
 )
+
+/** @internal */
+export const MemberFieldSet = createLazyComponent<
+  ComponentProps<typeof MemberFieldSetImplementation>
+>(() => import('./members/object/MemberFieldset.lazy'))
 
 /**
  * @public
