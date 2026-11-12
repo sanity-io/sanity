@@ -1,10 +1,15 @@
-import {type SanityClient} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
+import {type DocumentSystem} from '@sanity/types'
 import {
   bufferTime,
   catchError,
+  defer,
   EMPTY,
   filter,
+  first,
+  forkJoin,
   iif,
+  map,
   merge,
   type Observable,
   of,
@@ -12,6 +17,7 @@ import {
   switchMap,
 } from 'rxjs'
 
+import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {getVersionFromId} from '../../util/draftUtils'
 import {getReleaseDocumentIdFromReleaseId} from '../util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -108,13 +114,38 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
 
     const releaseIds = releaseDocumentIds.map(getReleaseIdFromReleaseDocumentId)
 
+    // A document whose `_system` names an unwatched release, or none (a variant of published),
+    // resolves to no release; one without `_system` can't tell, so it resolves to all of them
+    const getWatchedReleaseDocumentIds = (
+      system: Partial<DocumentSystem> | undefined,
+    ): string[] => {
+      if (!system) return releaseDocumentIds
+      const {release, bundleId} = system
+      const releaseDocumentId =
+        release?._ref ?? (bundleId ? getReleaseDocumentIdFromReleaseId(bundleId) : undefined)
+      return releaseDocumentId && releaseDocumentIds.includes(releaseDocumentId)
+        ? [releaseDocumentId]
+        : []
+    }
+
     // The id of a release-scoped variant document carries an opaque hash instead of the release
-    // id, so a mutation that can't be attributed to one watched release refetches all of them
-    const getMutatedReleaseDocumentIds = (documentId: string): string[] => {
-      const releaseId = getVersionFromId(documentId)
-      return releaseId && releaseIds.includes(releaseId)
-        ? [getReleaseDocumentIdFromReleaseId(releaseId)]
-        : releaseDocumentIds
+    // id, so its release is read from `_system`: on the result, or in history once it is deleted
+    const getMutatedReleaseDocumentIds = (event: MutationEvent): Observable<string[]> => {
+      const releaseId = getVersionFromId(event.documentId)
+      if (releaseId && releaseIds.includes(releaseId)) {
+        return of([getReleaseDocumentIdFromReleaseId(releaseId)])
+      }
+      if (event.transition !== 'disappear') {
+        return of(getWatchedReleaseDocumentIds(event.result?._system))
+      }
+      const {documentId, previousRev} = event
+      if (!previousRev) return of(releaseDocumentIds)
+
+      return defer(() => getDocumentAtRevision({client, documentId, revisionId: previousRev})).pipe(
+        first((revision) => !revision?.loading, null),
+        map((revision) => getWatchedReleaseDocumentIds(revision?.document?._system)),
+        catchError(() => of(releaseDocumentIds)),
+      )
     }
 
     return client.observable
@@ -140,21 +171,25 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         }),
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
-        switchMap((entriesArray) => {
-          const mutatedReleaseDocumentIds = new Set(
+        switchMap((entriesArray) =>
+          forkJoin(
             entriesArray.flatMap((event) =>
               'type' in event && event.type === 'mutation'
-                ? getMutatedReleaseDocumentIds(event.documentId)
+                ? [getMutatedReleaseDocumentIds(event)]
                 : [],
             ),
-          )
+          ).pipe(
+            switchMap((releaseDocumentIdsPerEvent) => {
+              const mutatedReleaseDocumentIds = new Set(releaseDocumentIdsPerEvent.flat())
 
-          if (mutatedReleaseDocumentIds.size) {
-            return aggregatorFetch$([...mutatedReleaseDocumentIds])
-          }
+              if (mutatedReleaseDocumentIds.size) {
+                return aggregatorFetch$([...mutatedReleaseDocumentIds])
+              }
 
-          return EMPTY
-        }),
+              return EMPTY
+            }),
+          ),
+        ),
       )
   }
 
