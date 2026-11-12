@@ -22,7 +22,7 @@ export interface IncomingReference {
  *
  * @internal
  */
-export function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
+function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
   return internalReferences?.references.some((reference) => reference.required === true) ?? false
 }
 
