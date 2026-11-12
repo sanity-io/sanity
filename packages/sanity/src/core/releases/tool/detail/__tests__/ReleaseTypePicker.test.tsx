@@ -28,9 +28,13 @@ vi.mock('../../../hooks/useTimeZone', async (importOriginal) => ({
   useTimeZone: vi.fn(() => useTimeZoneMockReturn),
 }))
 
-const renderComponent = async (release = activeASAPRelease) => {
+const renderComponent = async (
+  release = activeASAPRelease,
+  options?: {variantsEnabled?: boolean},
+) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
+    config: options?.variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined,
   })
 
   // @ts-expect-error -- pre-existing, fix later
@@ -306,6 +310,34 @@ describe('ReleaseTypePicker', () => {
         // Check if the spinner is displayed while updating
         screen.queryByTestId('updating-release-spinner')
       })
+    })
+  })
+
+  // With variants enabled the locked picker is wrapped in a Tooltip. The Popover attaches its
+  // reference ref to its direct child, and a Tooltip forwards that ref to its floating element,
+  // which is `null` while closed, so the Tooltip must not be the Popover's direct child.
+  describe('with variants enabled', () => {
+    it('renders a published release without crashing', async () => {
+      await renderComponent(publishedASAPRelease, {variantsEnabled: true})
+
+      expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
+      expect(screen.getByTestId('release-type-label')).toHaveTextContent('Oct 10, 2023')
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    })
+
+    it('renders a scheduled release without crashing', async () => {
+      await renderComponent(scheduledRelease, {variantsEnabled: true})
+
+      expect(screen.getByTestId('release-type-picker')).toBeInTheDocument()
+      expect(screen.getByTestId('release-type-label')).toHaveTextContent('Oct 10, 2023')
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    })
+
+    it('renders the schedule trigger for an active release', async () => {
+      await renderComponent(activeASAPRelease, {variantsEnabled: true})
+
+      expect(screen.getByTestId('release-type-picker')).toBeInTheDocument()
+      expect(screen.getByRole('button')).toHaveTextContent('As soon as possible')
     })
   })
 })

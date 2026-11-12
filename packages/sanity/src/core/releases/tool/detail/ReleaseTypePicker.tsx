@@ -343,18 +343,24 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
       {release.state === 'published' || isReleaseScheduled ? (
         // When the schedule is locked because the release is scheduled, keep the same explanation the
         // production disabled control shows. Disabled for published releases (no scheduled tooltip).
-        <Tooltip content={tRelease('type-picker.tooltip.scheduled')} disabled={!isReleaseScheduled}>
-          <Card
-            tone={tone}
-            padding={0}
-            style={{background: 'transparent'}}
-            data-testid={
-              release.state === 'published' ? 'published-release-type-label' : 'release-type-picker'
-            }
+        // The Card, not the Tooltip, is the Popover's direct child: the Popover attaches its
+        // reference ref to that child, and a Tooltip forwards its ref to its floating element,
+        // which is `null` while the tooltip is closed.
+        <Card
+          tone={tone}
+          padding={0}
+          style={{background: 'transparent'}}
+          data-testid={
+            release.state === 'published' ? 'published-release-type-label' : 'release-type-picker'
+          }
+        >
+          <Tooltip
+            content={tRelease('type-picker.tooltip.scheduled')}
+            disabled={!isReleaseScheduled}
           >
             {valueText}
-          </Card>
-        </Tooltip>
+          </Tooltip>
+        </Card>
       ) : (
         <Card tone={tone} padding={0} style={{background: 'transparent'}}>
           <ScheduleTrigger
