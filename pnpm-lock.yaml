@@ -2530,8 +2530,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(rxjs@7.8.2)
       scroll-into-view-if-needed:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.2.0
+        version: 3.2.0
       scrollmirror:
         specifier: ^1.2.4
         version: 1.2.4
@@ -15420,8 +15420,9 @@ packages:
   scheduler@0.28.0:
     resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
 
-  scroll-into-view-if-needed@3.1.0:
-    resolution: {integrity: sha512-49oNpRjWRvnU8NyGVmUaYG4jtTkNonFZI86MmGRDqBphEK2EXT9gdEUoQPZhuBM8yWHxCWbobltqYO5M4XrUvQ==}
+  scroll-into-view-if-needed@3.2.0:
+    resolution: {integrity: sha512-mnlrulRcw9gQR/HI0SlT56kmyCS/Z1tH/By43m8v8kHBjD8XecscweRcjKAk3kt4WLeyJQaSSQ8efy5f+r/dqA==}
+    engines: {node: '>=26'}
 
   scrollmirror@1.2.4:
     resolution: {integrity: sha512-UkEHHOV6j5cE3IsObQRK6vO4twSuhE4vtLD4UmX+doHgrtg2jRwXkz4O6cz0jcoxK5NGU7rFjyvLcWHzw7eQ5A==}
@@ -21713,7 +21714,7 @@ snapshots:
       '@xstate/react': 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.4)
       obug: 3.0.0
       react: 19.3.1
-      scroll-into-view-if-needed: 3.1.0
+      scroll-into-view-if-needed: 3.2.0
       xstate: 5.33.4
     transitivePeerDependencies:
       - '@types/react'
@@ -22924,7 +22925,7 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       react-refractor: 4.0.0(react@19.3.1)
       refractor: 5.0.0
-      scroll-into-view-if-needed: 3.1.0
+      scroll-into-view-if-needed: 3.2.0
       valibot: 1.5.0(typescript@7.0.2)
       xstate: 5.33.4
     optionalDependencies:
@@ -23067,7 +23068,7 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       react-is: 19.3.1
       rxjs: 7.8.2
-      scroll-into-view-if-needed: 3.1.0
+      scroll-into-view-if-needed: 3.2.0
       styled-components: 6.6.0(react-dom@19.3.1)(react@19.3.1)
       xstate: 5.33.4
     optionalDependencies:
@@ -30411,7 +30412,7 @@ snapshots:
 
   scheduler@0.28.0: {}
 
-  scroll-into-view-if-needed@3.1.0:
+  scroll-into-view-if-needed@3.2.0:
     dependencies:
       compute-scroll-into-view: 3.1.1
 
