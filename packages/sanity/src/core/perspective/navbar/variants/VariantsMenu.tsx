@@ -91,12 +91,14 @@ function VariantMenuItem(props: {
     <div className={variantMenuItemRow} data-detail-link-row="">
       <MenuItem
         {...detailLinkMenuItemProps}
+        aria-checked={isSelected}
         data-testid={`variant-${variantId}`}
         icon={<VariantMark size="row" />}
         iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}
+        role="menuitemradio"
         selected={isSelected}
         text={title}
         tooltipProps={
@@ -262,6 +264,7 @@ export function VariantsMenu({
           >
             <Box flexShrink={0} padding={2}>
               <TextInput
+                aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
@@ -290,12 +293,14 @@ export function VariantsMenu({
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
+                        aria-checked={isDefaultSelected}
                         data-testid="variant-default"
                         // The same diamond as every other variant row and the navbar chip
                         icon={<VariantMark size="row" />}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
+                        role="menuitemradio"
                         selected={isDefaultSelected}
                         text={variant.title}
                       />

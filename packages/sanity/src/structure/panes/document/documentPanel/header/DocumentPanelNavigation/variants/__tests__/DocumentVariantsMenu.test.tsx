@@ -163,7 +163,7 @@ describe('DocumentVariantsMenu', () => {
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
     expect(documentSection).toHaveTextContent('Has 0 variants')
-    expect(within(documentSection).queryAllByRole('menuitem', {hidden: true})).toHaveLength(0)
+    expect(within(documentSection).queryAllByRole('menuitemradio', {hidden: true})).toHaveLength(0)
     expect(
       within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
     ).toHaveAccessibleName(
@@ -250,6 +250,21 @@ describe('DocumentVariantsMenu', () => {
     const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
     const firstTimeItem = within(otherSection).getByTestId(`document-variant-${firstTime._id}`)
     expect(within(firstTimeItem).queryByTestId('variant-version-count')).toBeNull()
+  })
+
+  it('exposes the selected variant as the checked radio item', async () => {
+    mockUsePerspective.mockReturnValue(createPerspective({selectedVariants: [firstTime]}))
+    render(<DocumentVariantsMenu />, {wrapper})
+
+    const menu = await openMenu()
+
+    const selectedItem = within(menu).getByTestId(`document-variant-${firstTime._id}`)
+    expect(selectedItem).toHaveAttribute('role', 'menuitemradio')
+    expect(selectedItem).toHaveAttribute('aria-checked', 'true')
+    const defaultItem = within(menu).getByTestId('document-variant-default')
+    expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
+    expect(defaultItem).toHaveAttribute('aria-checked', 'false')
+    expect(within(menu).getByLabelText('Find')).toBe(within(menu).getByPlaceholderText('Find'))
   })
 
   it('selects a variant of the default type', async () => {

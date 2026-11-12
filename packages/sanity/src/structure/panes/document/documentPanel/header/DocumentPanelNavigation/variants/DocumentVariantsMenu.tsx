@@ -82,11 +82,13 @@ function VariantMenuItem(props: {
 
   return (
     <MenuItem
+      aria-checked={isSelected}
       data-testid={`document-variant-${variant._id}`}
       icon={<VariantMark fill={hasVersions ? 'filled' : 'outline'} size="row" />}
       iconRight={hasVersions ? <VersionCount bundleTitles={bundleTitles} /> : undefined}
       onClick={handleClick}
       pressed={isSelected}
+      role="menuitemradio"
       selected={isSelected}
       text={getVariantTitle(variant)}
     />
@@ -278,6 +280,7 @@ export function DocumentVariantsMenu() {
         leadingItems={
           showDefault ? (
             <MenuItem
+              aria-checked={isDefaultSelected}
               data-testid="document-variant-default"
               icon={
                 <VariantMark
@@ -292,6 +295,7 @@ export function DocumentVariantsMenu() {
               }
               onClick={handleSelectDefault}
               pressed={isDefaultSelected}
+              role="menuitemradio"
               selected={isDefaultSelected}
               text={defaultLabel}
             />

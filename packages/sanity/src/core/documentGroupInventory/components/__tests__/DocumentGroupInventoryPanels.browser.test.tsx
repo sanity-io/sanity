@@ -409,18 +409,20 @@ describe('CreateVariant', () => {
 
     await userEvent.click($baseTrigger)
     // "Nearest version" comes first, in a section of its own.
-    const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitem').all()
+    const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitemradio').all()
     await expect.element($nearest).toHaveTextContent('Nearest version')
     expect($firstVersion.element().previousElementSibling).toBe(
       $baseMenu.element().querySelector('[data-ui="MenuDivider"]'),
     )
     await expect
-      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
       .toBeVisible()
-    await expect.element($baseMenu.getByRole('menuitem', {name: 'Default · Draft'})).toBeVisible()
+    await expect
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Draft'}))
+      .toBeVisible()
     await expect
       .element(
-        $baseMenu.getByRole('menuitem', {
+        $baseMenu.getByRole('menuitemradio', {
           name: `Summer sale · ${activeASAPRelease.metadata.title}`,
         }),
       )
@@ -430,22 +432,22 @@ describe('CreateVariant', () => {
 
     await userEvent.click($targetTrigger)
     await userEvent.click(
-      $targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}),
+      $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
     )
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
 
     await userEvent.click($baseTrigger)
-    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+    await userEvent.click($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
     await expect.element($baseTrigger).toMatchTextContent('Default · Published')
 
     await userEvent.click($targetTrigger)
-    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
     await expect.element($baseTrigger).toMatchTextContent('Default · Published')
     expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBe(PUBLISHED.id)
 
     // Picking "Nearest version" again drops the picked version.
     await userEvent.click($baseTrigger)
-    await userEvent.click($baseMenu.getByRole('menuitem', {name: 'Nearest version'}))
+    await userEvent.click($baseMenu.getByRole('menuitemradio', {name: 'Nearest version'}))
     await expect.element($baseTrigger).toMatchTextContent('Nearest version')
     expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBeUndefined()
     await expect.element($baseMenu).not.toBeVisible()
@@ -480,7 +482,7 @@ describe('CreateVariant', () => {
 
     await userEvent.click($baseTrigger)
     await expect
-      .element($baseMenu.getByRole('menuitem', {name: 'Default · Published'}))
+      .element($baseMenu.getByRole('menuitemradio', {name: 'Default · Published'}))
       .toBeVisible()
     await expect.element($baseMenu.getByText(/Proposed changes/)).not.toBeInTheDocument()
   })
@@ -494,26 +496,30 @@ describe('CreateVariant', () => {
 
     await userEvent.click($targetTrigger)
     await expect.element($targetMenu).toBeVisible()
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeScheduledRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeScheduledRelease.metadata.title}),
+      )
       .toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
       .toBeVisible()
     // Already holds a "Summer sale" variant.
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}))
+      .element($targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}))
       .not.toBeInTheDocument()
-    await userEvent.click($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
 
     // "vip-users" exists in no release yet, so the ASAP release can be picked for it.
     await userEvent.click($variantTrigger)
-    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'vip-users'}))
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'vip-users'}))
     await expect.element($variantTrigger).toMatchTextContent('vip-users')
     await userEvent.click($targetTrigger)
     await userEvent.click(
-      $targetMenu.getByRole('menuitem', {name: activeASAPRelease.metadata.title}),
+      $targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}),
     )
     await expect.element($targetTrigger).toMatchTextContent(activeASAPRelease.metadata.title)
     expect(variantCreationRef.getSnapshot().context.selectedBundle).toEqual({
@@ -523,7 +529,7 @@ describe('CreateVariant', () => {
 
     // Switching back to "Summer sale" falls back to the first target.
     await userEvent.click($variantTrigger)
-    await userEvent.click($variantMenu.getByRole('menuitem', {name: 'Summer sale'}))
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'Summer sale'}))
     await expect.element($targetTrigger).toMatchTextContent('Drafts')
     expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
@@ -545,10 +551,12 @@ describe('CreateVariant', () => {
 
     await userEvent.type($filter, 'undecided')
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: activeUndecidedRelease.metadata.title}))
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
       .toBeVisible()
     await expect
-      .element($targetMenu.getByRole('menuitem', {name: 'Drafts'}))
+      .element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
       .not.toBeInTheDocument()
 
     await userEvent.clear($filter)
@@ -561,7 +569,16 @@ describe('CreateVariant', () => {
     await expect.element($targetMenu).not.toBeVisible()
     await userEvent.click($targetTrigger)
     await expect.element($targetMenu.getByPlaceholder('Search…')).toHaveValue('')
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toBeVisible()
+    await expect.element($targetMenu.getByLabelText('Search…')).toHaveValue('')
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toBeVisible()
+    await expect
+      .element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
+      .toHaveAttribute('aria-checked', 'true')
+    await expect
+      .element(
+        $targetMenu.getByRole('menuitemradio', {name: activeUndecidedRelease.metadata.title}),
+      )
+      .toHaveAttribute('aria-checked', 'false')
 
     // The filter only narrows the list; the current option is unchanged.
     await userEvent.keyboard('{Escape}')
@@ -585,7 +602,7 @@ describe('CreateVariant', () => {
 
     // The arrow keys still move from the filter into the options.
     await userEvent.keyboard('{ArrowDown}')
-    await expect.element($targetMenu.getByRole('menuitem', {name: 'Drafts'})).toHaveFocus()
+    await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toHaveFocus()
 
     // The menu stays mounted while closed, so the filter is focused again on the next open.
     await userEvent.keyboard('{Escape}')

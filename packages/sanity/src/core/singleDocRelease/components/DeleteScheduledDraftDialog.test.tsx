@@ -7,6 +7,8 @@ import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useSchema} from '../../hooks/useSchema'
 import {useUnstableObserveDocument} from '../../preview/useObserveDocument'
 import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
+import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {
   mockUseScheduleDraftOperations,
   useScheduleDraftOperationsMockReturn,
@@ -17,6 +19,7 @@ import {DeleteScheduledDraftDialog} from './DeleteScheduledDraftDialog'
 vi.mock('../hooks/useScheduledDraftDocument')
 vi.mock('../hooks/useScheduleDraftOperations')
 vi.mock('../../preview/useObserveDocument')
+vi.mock('../../releases/hooks/useDocumentVersions')
 vi.mock('../../hooks/useSchema', async () => {
   const actual = await vi.importActual('../../hooks/useSchema')
   return {
@@ -32,6 +35,16 @@ const mockUseUnstableObserveDocument = useUnstableObserveDocument as MockedFunct
   typeof useUnstableObserveDocument
 >
 const mockUseSchema = useSchema as MockedFunction<typeof useSchema>
+const mockUseDocumentVersions = vi.mocked(useDocumentVersions)
+
+function mockDocumentVersions(versions: VersionInfoDocumentStub[]) {
+  mockUseDocumentVersions.mockReturnValue({
+    data: versions.map((version) => version._id),
+    versions,
+    loading: false,
+    error: null,
+  })
+}
 
 // `_system.base` is absent from the repo's `DocumentSystem` type, so fixtures carrying it cannot
 // be typed as documents directly.
@@ -126,6 +139,7 @@ describe('DeleteScheduledDraftDialog', () => {
       previewLoading: false,
     })
     mockObservedDocuments({[VERSION_ID]: scheduledDraft, [DRAFT_ID]: draftAtBaseRevision})
+    mockDocumentVersions([])
     TestProvider = await createTestProvider()
   })
 
@@ -633,6 +647,119 @@ describe('DeleteScheduledDraftDialog', () => {
         expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalled()
       })
       expect(mockOnDeleteComplete).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('scheduled draft of a variant', () => {
+    const VARIANT_REF = '_.variants.loyal'
+    const VARIANT_VERSION_ID = 'versions.scope-scheduled.article-123'
+    const VARIANT_DRAFT_ID = 'versions.scope-drafts.article-123'
+    const variantSystem = {
+      group: {_ref: 'article-123', _weak: true as const},
+      variants: [{_ref: VARIANT_REF, _key: 'loyal'}],
+    }
+
+    const variantScheduledDraft = {
+      ...scheduledDraft,
+      _id: VARIANT_VERSION_ID,
+      _system: {
+        ...variantSystem,
+        bundleId: 'rScheduled',
+        scopeId: 'scope-scheduled',
+        base: {id: VARIANT_DRAFT_ID, rev: 'base-rev-456'},
+      },
+    }
+    const variantDraftWithOwnEdits = {...draftWithOwnEdits, _id: VARIANT_DRAFT_ID}
+    const variantDraftStub: VersionInfoDocumentStub = {
+      _id: VARIANT_DRAFT_ID,
+      _rev: variantDraftWithOwnEdits._rev,
+      _createdAt: variantDraftWithOwnEdits._createdAt,
+      _updatedAt: variantDraftWithOwnEdits._updatedAt,
+      _type: 'article',
+      _system: {...variantSystem, bundleId: 'drafts', scopeId: 'scope-drafts'},
+    }
+
+    beforeEach(() => {
+      mockUseScheduledDraftDocument.mockReturnValue({
+        firstDocument: decorated(variantScheduledDraft),
+        firstDocumentPreview: {title: variantScheduledDraft.title},
+        firstDocumentValidation: undefined,
+        documentsCount: 1,
+        loading: false,
+        error: null,
+        previewLoading: false,
+      })
+    })
+
+    it('compares against the variant draft and copies back into it', async () => {
+      mockDocumentVersions([variantDraftStub])
+      mockObservedDocuments({
+        [VARIANT_VERSION_ID]: variantScheduledDraft,
+        [VARIANT_DRAFT_ID]: variantDraftWithOwnEdits,
+        [DRAFT_ID]: draftAtBaseRevision,
+      })
+
+      render(
+        <TestProvider>
+          <DeleteScheduledDraftDialog
+            documentId="article-123"
+            documentType="article"
+            release={scheduledRelease}
+            onClose={mockOnClose}
+          />
+        </TestProvider>,
+      )
+
+      expect(screen.getByText('Delete this scheduled draft?')).toBeInTheDocument()
+      expect(screen.getByRole('checkbox')).toBeChecked()
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          scheduledRelease._id,
+          true,
+          'article-123',
+          undefined,
+          {variantId: VARIANT_REF, versionId: VARIANT_VERSION_ID, hasDraft: true},
+        )
+      })
+    })
+
+    it('saves to a new variant draft when the variant has none, ignoring the base draft', async () => {
+      mockDocumentVersions([])
+      mockObservedDocuments({
+        [VARIANT_VERSION_ID]: variantScheduledDraft,
+        [DRAFT_ID]: draftWithOwnEdits,
+      })
+
+      render(
+        <TestProvider>
+          <DeleteScheduledDraftDialog
+            documentId="article-123"
+            documentType="article"
+            release={scheduledRelease}
+            onClose={mockOnClose}
+          />
+        </TestProvider>,
+      )
+
+      expect(
+        screen.getByText('Delete this scheduled draft? Your changes will be saved to draft.'),
+      ).toBeInTheDocument()
+      expect(mockUseUnstableObserveDocument).not.toHaveBeenCalledWith(DRAFT_ID, expect.anything())
+
+      await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+      await waitFor(() => {
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          scheduledRelease._id,
+          true,
+          'article-123',
+          undefined,
+          {variantId: VARIANT_REF, versionId: VARIANT_VERSION_ID, hasDraft: false},
+        )
+      })
     })
   })
 })

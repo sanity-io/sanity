@@ -13,18 +13,13 @@ import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {VariantMark} from '../../../../../ui-components/variantMark'
 import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
-import {
-  getVariantConditionsText,
-  getVariantId,
-  getVariantTitle,
-} from '../../../../variants/tool/util'
+import {getVariantId, getVariantTitle} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -32,6 +27,7 @@ import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentInten
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
+import {MemoVariantCell} from '../../components/VariantCell'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
@@ -212,56 +208,17 @@ function resolveDocumentVariant(
   return variantId ? variantsById.get(variantId) : undefined
 }
 
-// Which variant a release document targets: ◆ diamond + the variant title, with the full
-// conditions ("flags") on hover. Empty for base (non-variant) documents.
-const VariantCell = memo(
-  function VariantCell({
-    document,
-    variantsById,
-  }: {
-    document: BundleDocumentRow['document']
-    variantsById: Map<string, SystemVariant>
-  }) {
-    const variant = resolveDocumentVariant(document, variantsById)
-    if (!variant) return null
-
-    const conditions = getVariantConditionsText(variant.conditions)
-
-    return (
-      <Tooltip
-        portal
-        placement="bottom-start"
-        disabled={!conditions}
-        content={
-          conditions ? (
-            <Box padding={2}>
-              <Text size={1} as="div" trim={true}>
-                {conditions}
-              </Text>
-            </Box>
-          ) : undefined
-        }
-      >
-        <Flex alignItems="center" gap={2}>
-          <VariantMark size="inline" />
-          {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
-              truncates with an ellipsis instead of overflowing the column. */}
-          <Text
-            size={1}
-            truncate={1}
-            weight="medium"
-            style={{flex: 1, minWidth: 0}}
-            as="div"
-            trim={true}
-          >
-            {getVariantTitle(variant)}
-          </Text>
-        </Flex>
-      </Tooltip>
-    )
-  },
-  (prev, next) => prev.document === next.document && prev.variantsById === next.variantsById,
-)
+// Empty for base (non-variant) documents.
+function DocumentVariantCell({
+  document,
+  variantsById,
+}: {
+  document: BundleDocumentRow['document']
+  variantsById: Map<string, SystemVariant>
+}) {
+  const variant = resolveDocumentVariant(document, variantsById)
+  return variant ? <MemoVariantCell variant={variant} /> : null
+}
 
 export const getDocumentTableColumnDefs: (
   releaseId: string,
@@ -343,7 +300,10 @@ export const getDocumentTableColumnDefs: (
                     (variantsLoading ? (
                       <Skeleton animated radius={1} style={{width: 60, height: 11}} />
                     ) : (
-                      <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                      <DocumentVariantCell
+                        document={datum.document}
+                        variantsById={options.variantsById!}
+                      />
                     ))}
                 </Box>
               </Flex>
