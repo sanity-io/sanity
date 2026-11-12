@@ -62,53 +62,66 @@ export function DocumentGroupEntry({
       data-served={servedStatus}
     >
       <div className="atom">{leading}</div>
-      <div className="atom">
-        <div className="atom">
-          <button
-            type="button"
-            className="primary-action"
-            ref={primaryActionRef}
-            onClick={onPrimaryAction}
-            onContextMenu={onContextMenu}
-          >
-            {variant.name}
-          </button>
-          <div className="version-text">
-            {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
-            <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
-              {isVariantRow && <VariantMark size="row" style={{marginInline: '-0.375rem'}} />}
-            </span>
-            <div className="version-title">
-              <Text size={1} weight="medium" trim={true}>
-                {variant.name}
-              </Text>
+      <div className="row-content">
+        <button
+          type="button"
+          className="primary-action"
+          ref={primaryActionRef}
+          onClick={onPrimaryAction}
+          onContextMenu={onContextMenu}
+        >
+          {variant.name}
+        </button>
+        <div className="version-text">
+          {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
+          <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
+            {isVariantRow && <VariantMark size="row" style={{marginInline: '-0.375rem'}} />}
+          </span>
+          {/*
+           * The text and the badges share one wrapping body, so a badge group that does not fit
+           * beside the text drops to its own line under it, starting where the text starts.
+           */}
+          <div className="version-body">
+            <div className="version-lines" data-testid="version-lines">
+              <div className="version-title">
+                <Text size={1} weight="medium" trim={true} data-testid="version-title">
+                  {variant.name}
+                </Text>
+              </div>
+              <div className="version-secondary">
+                <Text muted size={1} as="div" trim={true} data-testid="version-secondary-line">
+                  {release ? (
+                    <ReleaseDateLine release={release} />
+                  ) : (
+                    <EditedLine neverPublished={neverPublished} version={document} />
+                  )}
+                </Text>
+              </div>
             </div>
-            <div className="version-secondary">
-              <Text muted size={1} as="div" trim={true} data-testid="version-secondary-line">
-                {release ? (
-                  <ReleaseDateLine release={release} />
-                ) : (
-                  <EditedLine neverPublished={neverPublished} version={document} />
+            {(isSelected || servedStatus) && (
+              // One group, in a fixed order: Editing, Served, then the rest.
+              <div className="version-badges" data-testid="version-badges">
+                {isSelected && (
+                  <StatusBadge radius={2} tone="primary" data-badge="editing">
+                    {t('document-group-inventory.viewing-item-label')}
+                  </StatusBadge>
                 )}
-              </Text>
-            </div>
+                {servedStatus && (
+                  <Tooltip content={t('document-group.version.served.tooltip')}>
+                    <StatusBadge
+                      radius={2}
+                      tone={servedStatus === 'primary' ? 'positive' : 'suggest'}
+                      data-badge="served"
+                    >
+                      {servedStatus === 'primary'
+                        ? t('document-group.version.served')
+                        : t('document-group.version.served-instead')}
+                    </StatusBadge>
+                  </Tooltip>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-        <div className="atom">
-          {isSelected && (
-            <StatusBadge radius={2} tone="primary">
-              {t('document-group-inventory.viewing-item-label')}
-            </StatusBadge>
-          )}
-          {servedStatus && (
-            <Tooltip content={t('document-group.version.served.tooltip')}>
-              <StatusBadge radius={2} tone={servedStatus === 'primary' ? 'positive' : 'suggest'}>
-                {servedStatus === 'primary'
-                  ? t('document-group.version.served')
-                  : t('document-group.version.served-instead')}
-              </StatusBadge>
-            </Tooltip>
-          )}
         </div>
       </div>
     </VariantSetEntry>
