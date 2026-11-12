@@ -32,13 +32,18 @@ function referringDocuments(references: IncomingReference[]): ReferringDocuments
  * The machine reports to a parent (`deletion.activated` / `deletion.deactivated`), so it runs as a
  * child of a minimal parent, as in `documentGroupInventoryMachine`.
  */
-function start(references: IncomingReference[], selectedIds: string[]) {
+function start(
+  references: IncomingReference[],
+  selectedIds: string[],
+  options?: {failFirstDelete?: boolean},
+) {
   const deleted: string[][] = []
   const deletion = deletionMachine.provide({
     actors: {
       referringDocuments: fromObservable(() => new BehaviorSubject(referringDocuments(references))),
       deleteVariants: fromPromise(async ({input}) => {
         deleted.push(input.ids)
+        if (options?.failFirstDelete && deleted.length === 1) throw new Error('network')
         return {} as MultipleMutationResult
       }),
     },
@@ -83,6 +88,23 @@ describe('deletionMachine', () => {
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
 
     expect(deleted).toEqual([[VARIANT_DRAFT_ID, DRAFT_ID]])
+    parent.stop()
+  })
+
+  it('keeps the Default blocked when deleting the others fails and is retried', async () => {
+    const {actor, parent, deleted} = start([REQUIRED], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
+      failFirstDelete: true,
+    })
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    await waitFor(actor, (snapshot) => snapshot.matches({active: {deletion: 'error'}}))
+
+    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[VARIANT_DRAFT_ID], [VARIANT_DRAFT_ID]])
     parent.stop()
   })
 

@@ -22,7 +22,7 @@ export interface IncomingReference {
  *
  * @internal
  */
-export function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
+function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
   return internalReferences?.references.some((reference) => reference.required === true) ?? false
 }
 
@@ -73,6 +73,11 @@ interface DeletionContext {
   hasUnknownDatasetNames: boolean
   error?: unknown
   incomingReferencesChecked: boolean
+  /**
+   * Set when the user chose to delete the other versions and leave the blocked Default. `ids`
+   * keeps the whole selection, so a failed attempt that is retried still sees the Default blocked.
+   */
+  leavePublished: boolean
   /** Whether this instance may never delete anything. */
   readOnly: boolean
 }
@@ -102,7 +107,7 @@ export const deletionMachine = setup({
   },
   actions: {
     requestDeletionConfirmation: () => {},
-    excludePublished: assign({ids: ({context}) => context.ids.filter((id) => !isPublishedId(id))}),
+    excludePublished: assign({leavePublished: true}),
   },
   guards: {
     hasSelection: ({context}) => context.ids.length !== 0,
@@ -141,11 +146,12 @@ export const deletionMachine = setup({
     hasUnknownDatasetNames: false,
     error: undefined,
     incomingReferencesChecked: false,
+    leavePublished: false,
     readOnly: input?.readOnly ?? false,
   }),
   on: {
     'selection.changed': {
-      actions: assign({ids: ({event}) => [...event.selectedIds]}),
+      actions: assign({ids: ({event}) => [...event.selectedIds], leavePublished: false}),
     },
   },
   initial: 'idle',
@@ -162,7 +168,10 @@ export const deletionMachine = setup({
       type: 'parallel',
       // Each flow re-runs the check, so the previous flow's result must not
       // carry over into this one.
-      entry: [sendParent({type: 'deletion.activated'}), assign({incomingReferencesChecked: false})],
+      entry: [
+        sendParent({type: 'deletion.activated'}),
+        assign({incomingReferencesChecked: false, leavePublished: false}),
+      ],
       exit: sendParent({type: 'deletion.deactivated'}),
       on: {
         'delete.cancel': {
@@ -226,7 +235,11 @@ export const deletionMachine = setup({
             deleting: {
               invoke: {
                 src: 'deleteVariants',
-                input: ({context}) => ({ids: context.ids}),
+                input: ({context}) => ({
+                  ids: context.leavePublished
+                    ? context.ids.filter((id) => !isPublishedId(id))
+                    : context.ids,
+                }),
                 onDone: {
                   target: '#deletion.idle',
                 },
