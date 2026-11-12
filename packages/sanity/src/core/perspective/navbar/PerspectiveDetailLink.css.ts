@@ -47,6 +47,9 @@ export const detailLink = css({
   '[data-detail-link-row]:has([data-ui="MenuItem"][data-selected]) &&': {
     '--foreground-color': 'var(--detail-link-selected-fg)',
     '&:hover': {color: 'var(--detail-link-selected-fg)'},
+    // The default focus ring is the accent colour, the colour of the selected row's fill, so it
+    // vanishes there. The row's text colour stays at 3:1 or more against that fill.
+    '&:focus-visible': {outlineColor: 'var(--detail-link-selected-fg)'},
   },
 })
 

@@ -188,6 +188,9 @@ export function PerspectiveDetailLink(
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           ref={ref}
+          // The link sits in a `role="menu"`, whose children must be menu items; the menu's own
+          // arrow-key handling still skips it, since it is not one of the menu's registered items
+          role="menuitem"
           style={linkStyle}
           // Menu items leave the tab order to the menu; the right arrow key reaches the link
           tabIndex={-1}

@@ -96,7 +96,6 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
-  - '@sentry/conventions@0.27.0'
   # yuku 0.19 moved the native bindings from @yuku-codegen/* and @yuku-parser/* to this scope
   - '@yuku-core/*'
   - '@yuku-parser/*'
