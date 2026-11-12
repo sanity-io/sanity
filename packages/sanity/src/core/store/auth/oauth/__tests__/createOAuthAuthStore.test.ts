@@ -10,6 +10,7 @@ import {firstValueFrom, lastValueFrom, Subject} from 'rxjs'
 import {filter, take, toArray} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {isInvalidSessionError} from '../../../../util/apiErrors'
 import {getClientCredentialSegments} from '../../../document/utils/memoKey'
 import {type AuthState} from '../../types'
 import {
@@ -1649,10 +1650,18 @@ describe('createOAuthAuthStore', () => {
       await settle(50)
 
       const next = vi.fn().mockRejectedValue(createExpiredSessionError())
-      await expect(
-        requestHandler({url: '/data/mutate', headers: {Authorization: 'Bearer access-1'}}, next),
-      ).rejects.toThrow()
+      const rejection = await requestHandler(
+        {url: '/data/mutate', headers: {Authorization: 'Bearer access-1'}},
+        next,
+      ).then(
+        () => undefined,
+        (err: unknown) => err,
+      )
       expect(next).toHaveBeenCalledTimes(1)
+      // Not as an invalid session: the Studio would take that for the current session and sign
+      // the new user out.
+      expect(rejection).toBeInstanceOf(Error)
+      expect(isInvalidSessionError(rejection)).toBe(false)
     })
 
     it('passes a second invalid-session rejection on to the studio', async () => {
