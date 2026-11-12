@@ -32,6 +32,14 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          # Renovate's documented GitHub App permissions, minus administration, Dependabot alerts,
+          # merge queues and organization members, which nothing in this repo's Renovate setup uses
+          permission-checks: read
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+          permission-statuses: write
+          permission-workflows: write
 
       - uses: actions/checkout@v7
         with:
