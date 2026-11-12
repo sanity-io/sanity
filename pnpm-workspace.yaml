@@ -37,7 +37,7 @@ catalog:
   '@sanity/schema-descriptor-utils': 1.4.0
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.31.2
-  '@sanity/ui': ^4.4.10
+  '@sanity/ui': ^4.4.12
   '@types/node': ^24.19.2
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
