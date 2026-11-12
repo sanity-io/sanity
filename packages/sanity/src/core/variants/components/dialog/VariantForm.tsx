@@ -1,10 +1,9 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon} from '@sanity/icons/Add'
-import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Inline, TextArea, TextInput} from '@sanity/ui'
+import {TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
   type ChangeEvent,
@@ -19,7 +18,6 @@ import {IntentLink} from 'sanity/router'
 import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -250,8 +248,12 @@ export function VariantForm(props: {
       : undefined
   const mappedLoading = conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'loading'
   const titleId = useId()
+  const titleErrorId = useId()
   const descriptionId = useId()
   const priorityId = useId()
+  const priorityDescriptionId = useId()
+  const priorityErrorId = useId()
+  const conditionErrorIdPrefix = useId()
   // `conditions` is stored as an object, but object keys are awkward to edit live:
   // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
   // Keep rows locally while editing, then commit back once they serialize cleanly.
@@ -415,7 +417,9 @@ export function VariantForm(props: {
         </Text>
         <TextInput
           autoFocus
+          aria-describedby={showTitleError ? titleErrorId : undefined}
           aria-invalid={showTitleError ? 'true' : undefined}
+          aria-required="true"
           customValidity={titleCustomValidity}
           data-testid="variant-form-title"
           fontSize={2}
@@ -425,7 +429,12 @@ export function VariantForm(props: {
           value={typeof value.metadata?.title === 'string' ? value.metadata.title : ''}
         />
         {showTitleError && (
-          <TextWithTone data-testid="variant-form-title-error" size={1} tone="critical">
+          <TextWithTone
+            data-testid="variant-form-title-error"
+            id={titleErrorId}
+            size={1}
+            tone="critical"
+          >
             {duplicateTitleVariant ? (
               <Translate
                 t={t}
@@ -457,15 +466,24 @@ export function VariantForm(props: {
       </VStack>
 
       <VStack gap={3}>
-        <Inline gap={1}>
-          <Text as="label" htmlFor={priorityId} size={1} weight="medium" trim={true}>
-            {t('dialog.create.priority.label')}
-          </Text>
-          <Tooltip content={t('dialog.create.priority.tooltip')} placement="right">
-            <HelpCircleIcon data-testid="variant-form-priority-help" />
-          </Tooltip>
-        </Inline>
+        <Text as="label" htmlFor={priorityId} size={1} weight="medium" trim={true}>
+          {t('dialog.create.priority.label')}
+        </Text>
+        <Text
+          data-testid="variant-form-priority-description"
+          id={priorityDescriptionId}
+          muted
+          size={1}
+          trim={true}
+        >
+          {t('dialog.create.priority.tooltip')}
+        </Text>
         <TextInput
+          aria-describedby={
+            showPriorityError
+              ? `${priorityDescriptionId} ${priorityErrorId}`
+              : priorityDescriptionId
+          }
           aria-invalid={showPriorityError ? 'true' : undefined}
           customValidity={
             showPriorityError && priorityValidationError
@@ -481,7 +499,12 @@ export function VariantForm(props: {
           value={priorityInput}
         />
         {showPriorityError && priorityValidationError && (
-          <TextWithTone data-testid="variant-form-priority-error" size={1} tone="critical">
+          <TextWithTone
+            data-testid="variant-form-priority-error"
+            id={priorityErrorId}
+            size={1}
+            tone="critical"
+          >
             {t(`dialog.create.priority.${priorityValidationError}`)}
           </TextWithTone>
         )}
@@ -561,6 +584,7 @@ export function VariantForm(props: {
                   onRemove={() => handleRemoveCondition(index)}
                   onSelectKey={(nextKey) => handleMappedKeyChange(index, nextKey)}
                   onSelectValue={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                  position={index + 1}
                   selectedKey={row.key}
                   selectedValue={row.value}
                   usedKeys={usedConditionKeys}
@@ -581,6 +605,7 @@ export function VariantForm(props: {
               const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
               const valueValidation = showValidation ? validation.value : null
               const conditionValidationError = validation.key || valueValidation
+              const errorId = `${conditionErrorIdPrefix}-${row.id}`
 
               return (
                 <VStack key={row.id} gap={2}>
@@ -594,6 +619,7 @@ export function VariantForm(props: {
                             ? translateConditionValidation(validation.key, row)
                             : undefined
                         }
+                        describedBy={validation.key ? errorId : undefined}
                         invalid={Boolean(validation.key)}
                         onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
                         options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
@@ -610,6 +636,7 @@ export function VariantForm(props: {
                             ? translateConditionValidation(valueValidation, row)
                             : undefined
                         }
+                        describedBy={!validation.key && valueValidation ? errorId : undefined}
                         invalid={Boolean(valueValidation)}
                         onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
                         options={getConditionValueOptions(suggestionIndex, row.key)}
@@ -619,6 +646,9 @@ export function VariantForm(props: {
                       />
                     </Box>
                     <Button
+                      aria-label={t('dialog.create.remove-condition.aria-label', {
+                        position: index + 1,
+                      })}
                       data-testid="variant-form-remove-condition"
                       disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
                       icon={TrashIcon}
@@ -636,6 +666,7 @@ export function VariantForm(props: {
                           ? 'variant-form-condition-key-error'
                           : 'variant-form-condition-value-error'
                       }
+                      id={errorId}
                       size={1}
                       tone="critical"
                     >

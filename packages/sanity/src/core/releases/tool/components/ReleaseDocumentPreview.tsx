@@ -81,6 +81,9 @@ export function ReleaseDocumentPreview({
     documentId: isGoingToUnpublish ? getPublishedId(documentId) : documentId,
     documentType: documentTypeName,
     perspectiveStack,
+    // Previews resolve by the document group, so a variant version needs its variant to be
+    // previewed instead of the base document.
+    variant: variantId,
   })
 
   return (
