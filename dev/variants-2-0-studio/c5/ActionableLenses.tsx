@@ -1,21 +1,31 @@
-import {Badge, Box, Button as SortHeaderButton, Card, Flex, Select, Stack, Text, TextInput} from '@sanity/ui'
-import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
-import {Dialog} from '../../../packages/sanity/src/ui-components/dialog/Dialog'
-import {CONTROL_HEIGHT} from '../shared/sizes'
+import {
+  Badge,
+  Box,
+  Button as SortHeaderButton,
+  Card,
+  Flex,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useMemo, useState} from 'react'
 import {useSetVariant} from 'sanity'
 
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {Dialog} from '../../../packages/sanity/src/ui-components/dialog/Dialog'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-
-import {StateDot, type StateKind} from '../c3/StateGlyph'
 import {type SystemVariant} from '../c1/model'
+import {StateDot, type StateKind} from '../c3/StateGlyph'
+import {eligibleTypes, MOCK_NOTE} from '../mocks/serverGrounds'
+import {CONTROL_HEIGHT} from '../shared/sizes'
 import {applies, BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
-import {useOpenVersion} from './openVersion'
 import {type Column, DataTable, type RowGroup} from './DataTable'
-import type {Target} from './operations'
-import type {Corpus, DocRow, VersionRow} from './useCorpus'
+import {useOpenVersion} from './openVersion'
+import {type Target} from './operations'
+import {type Corpus, type DocRow, type VersionRow} from './useCorpus'
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 const text = (value: ReactNode) => <Text size={1}>{value}</Text>
@@ -54,8 +64,19 @@ function Chip({children, tone}: {children: ReactNode; tone?: 'caution'}) {
   )
 }
 
-const dialogFor = (bulk: ReturnType<typeof useBulk>, corpus: Corpus, address: string, definitions: SystemVariant[]) => (
-  <ConfirmDialog address={address} bulk={bulk} corpus={corpus} definitions={definitions} onDone={() => undefined} />
+const dialogFor = (
+  bulk: ReturnType<typeof useBulk>,
+  corpus: Corpus,
+  address: string,
+  definitions: SystemVariant[],
+) => (
+  <ConfirmDialog
+    address={address}
+    bulk={bulk}
+    corpus={corpus}
+    definitions={definitions}
+    onDone={() => undefined}
+  />
 )
 
 export function Notice({bulk}: {bulk: ReturnType<typeof useBulk>}) {
@@ -86,13 +107,30 @@ interface LensFilter {
   release: string[]
 }
 const NO_LENS_FILTER: LensFilter = {text: '', state: [], address: [], release: []}
-const toggleIn = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item])
+const toggleIn = <T,>(list: T[], item: T) =>
+  list.includes(item) ? list.filter((x) => x !== item) : [...list, item]
 
 /** Saved views: a filter set and a grouping. FAST FOLLOW, shown as a candidate (no saving yet). */
-const SAVED_VIEWS = (addresses: string[]): {id: string; label: string; filter: LensFilter; group: 'date' | 'none'}[] => [
+const SAVED_VIEWS = (
+  addresses: string[],
+): {id: string; label: string; filter: LensFilter; group: 'date' | 'none'}[] => [
   {id: 'all', label: 'All versions', filter: NO_LENS_FILTER, group: 'none'},
-  {id: 'to-publish', label: 'Drafts to publish', filter: {...NO_LENS_FILTER, state: ['draft']}, group: 'none'},
-  {id: 'live-variants', label: 'Live variants', filter: {...NO_LENS_FILTER, state: ['published'], address: addresses.filter((a) => !a.startsWith('Base'))}, group: 'none'},
+  {
+    id: 'to-publish',
+    label: 'Drafts to publish',
+    filter: {...NO_LENS_FILTER, state: ['draft']},
+    group: 'none',
+  },
+  {
+    id: 'live-variants',
+    label: 'Live variants',
+    filter: {
+      ...NO_LENS_FILTER,
+      state: ['published'],
+      address: addresses.filter((a) => !a.startsWith('Base')),
+    },
+    group: 'none',
+  },
   {id: 'by-date', label: 'By publish date', filter: NO_LENS_FILTER, group: 'date'},
 ]
 
@@ -131,32 +169,48 @@ export function DocumentVersionsLens(props: {
   const [shown, setShown] = useState<string | null>(null)
   // The command lane (Andrej's intent): group by publish date, sort, filter. Saved views are a fast-follow candidate.
   const [groupBy, setGroupBy] = useState<'date' | 'none'>('none')
-  const [sort, setSort] = useState<{by: 'address' | 'state' | 'updated'; order: 'asc' | 'desc'}>({by: 'address', order: 'asc'})
+  const [sort, setSort] = useState<{by: 'address' | 'state' | 'updated'; order: 'asc' | 'desc'}>({
+    by: 'address',
+    order: 'asc',
+  })
   const [filter, setFilter] = useState<LensFilter>(NO_LENS_FILTER)
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
   const doc = corpus.docs.find((d) => d.id === docId) ?? corpus.docs[0]
   const rows: VRow[] = useMemo(() => {
     if (!doc) return []
     const out = doc.list.map((row): VRow => {
-      const def = row.variantId ? definitions.find((d) => shortId(d._id) === row.variantId) : undefined
-      const title = row.variantId ? (corpus.definitions.find((d) => d.id === row.variantId)?.title ?? row.variantId) : 'Base (no conditions)'
+      const def = row.variantId
+        ? definitions.find((d) => shortId(d._id) === row.variantId)
+        : undefined
+      const title = row.variantId
+        ? (corpus.definitions.find((d) => d.id === row.variantId)?.title ?? row.variantId)
+        : 'Base (no conditions)'
       return {
         id: `${row.variantId ?? 'base'}|${row.bundle}`,
         row,
         address: title,
         rank: row.variantId ? String(def?.priority ?? 0) : '—',
-        stateKind: row.bundle === 'published' ? 'published' : row.bundle === 'drafts' ? 'draft' : 'release',
-        stateText: row.bundle === 'published' ? 'Published' : row.bundle === 'drafts' ? 'Draft' : releaseTitle(corpus, row.bundle),
+        stateKind:
+          row.bundle === 'published' ? 'published' : row.bundle === 'drafts' ? 'draft' : 'release',
+        stateText:
+          row.bundle === 'published'
+            ? 'Published'
+            : row.bundle === 'drafts'
+              ? 'Draft'
+              : releaseTitle(corpus, row.bundle),
       }
     })
-    const weight = (r: VRow) => (r.row.variantId ? 1 : 0) * 10 + (r.row.bundle === 'published' ? 0 : r.row.bundle === 'drafts' ? 1 : 2)
+    const weight = (r: VRow) =>
+      (r.row.variantId ? 1 : 0) * 10 +
+      (r.row.bundle === 'published' ? 0 : r.row.bundle === 'drafts' ? 1 : 2)
     return out.sort((a, b) => weight(a) - weight(b) || a.address.localeCompare(b.address))
   }, [doc, corpus, definitions])
 
   if (!doc) return muted('No documents yet.')
 
   // Filter, then sort; groups are built from what is left.
-  const stateWeight = (r: VRow) => (r.stateKind === 'published' ? 0 : r.stateKind === 'draft' ? 1 : 2)
+  const stateWeight = (r: VRow) =>
+    r.stateKind === 'published' ? 0 : r.stateKind === 'draft' ? 1 : 2
   const visible = rows
     .filter(
       (r) =>
@@ -167,15 +221,21 @@ export function DocumentVersionsLens(props: {
     )
     .sort((a, b) => {
       const dir = sort.order === 'asc' ? 1 : -1
-      if (sort.by === 'state') return dir * (stateWeight(a) - stateWeight(b) || a.address.localeCompare(b.address))
-      if (sort.by === 'updated') return dir * (a.row.updated < b.row.updated ? -1 : a.row.updated > b.row.updated ? 1 : 0)
+      if (sort.by === 'state')
+        return dir * (stateWeight(a) - stateWeight(b) || a.address.localeCompare(b.address))
+      if (sort.by === 'updated')
+        return dir * (a.row.updated < b.row.updated ? -1 : a.row.updated > b.row.updated ? 1 : 0)
       return dir * a.address.localeCompare(b.address)
     })
   const groupTitle = (bundle: string) => {
     if (bundle === 'published') return 'Published'
     if (bundle === 'drafts') return 'Drafts'
     const release = corpus.releases.find((r) => r.id === bundle)
-    const when = release?.at ? new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short'}).format(new Date(release.at)) : null
+    const when = release?.at
+      ? new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short'}).format(
+          new Date(release.at),
+        )
+      : null
     return `${when ? `${when} · ` : ''}${release?.title ?? bundle}`
   }
   const groupOrder = (bundle: string) => {
@@ -206,11 +266,22 @@ export function DocumentVersionsLens(props: {
               }),
           }))
       : undefined
-  const releaseIds = [...new Set(rows.filter((r) => r.stateKind === 'release').map((r) => r.row.bundle))]
-  const activeFilters = filter.state.length + filter.address.length + filter.release.length + (filter.text.trim() ? 1 : 0)
+  const releaseIds = [
+    ...new Set(rows.filter((r) => r.stateKind === 'release').map((r) => r.row.bundle)),
+  ]
+  const activeFilters =
+    filter.state.length +
+    filter.address.length +
+    filter.release.length +
+    (filter.text.trim() ? 1 : 0)
   const addressList = [...new Set(rows.map((r) => r.address))].sort()
   const views = SAVED_VIEWS(addressList)
-  const currentView = views.find((v) => v.group === groupBy && JSON.stringify(v.filter) === JSON.stringify({...filter, text: ''}) && !filter.text.trim())
+  const currentView = views.find(
+    (v) =>
+      v.group === groupBy &&
+      JSON.stringify(v.filter) === JSON.stringify({...filter, text: ''}) &&
+      !filter.text.trim(),
+  )
   const SORTS = [
     ['address', 'Address'],
     ['state', 'State'],
@@ -231,7 +302,9 @@ export function DocumentVersionsLens(props: {
     <SortHeaderButton
       data-testid={`sort-${by}`}
       mode="bleed"
-      onClick={() => setSort((cur) => ({by, order: cur.by === by && cur.order === 'asc' ? 'desc' : 'asc'}))}
+      onClick={() =>
+        setSort((cur) => ({by, order: cur.by === by && cur.order === 'asc' ? 'desc' : 'asc'}))
+      }
       padding={1}
       text={`${label}${sort.by === by ? (sort.order === 'asc' ? ' ↑' : ' ↓') : ''}`}
     />
@@ -241,17 +314,53 @@ export function DocumentVersionsLens(props: {
     {
       key: 'sel',
       title: '',
-      header: <Check checked={all} indeterminate={selectedRows.length > 0 && !all} label="Select all" onChange={() => bulk.setAll(visible.map((r) => r.id), !all)} />,
+      header: (
+        <Check
+          checked={all}
+          indeterminate={selectedRows.length > 0 && !all}
+          label="Select all"
+          onChange={() =>
+            bulk.setAll(
+              visible.map((r) => r.id),
+              !all,
+            )
+          }
+        />
+      ),
       width: 44,
-      render: (r) => <Check checked={bulk.selected.has(r.id)} label={`Select ${r.address}`} onChange={() => bulk.toggle(r.id)} />,
+      render: (r) => (
+        <Check
+          checked={bulk.selected.has(r.id)}
+          label={`Select ${r.address}`}
+          onChange={() => bulk.toggle(r.id)}
+        />
+      ),
     },
-    {key: 'address', title: 'Address', header: sortHeader('address', 'Address'), width: mini ? 136 : 300, render: (r) => text(r.address)},
-    {key: 'state', title: 'State', header: sortHeader('state', 'State'), width: mini ? 100 : 220, render: (r) => <State kind={r.stateKind}>{r.stateText}</State>},
+    {
+      key: 'address',
+      title: 'Address',
+      header: sortHeader('address', 'Address'),
+      width: mini ? 136 : 300,
+      render: (r) => text(r.address),
+    },
+    {
+      key: 'state',
+      title: 'State',
+      header: sortHeader('state', 'State'),
+      width: mini ? 100 : 220,
+      render: (r) => <State kind={r.stateKind}>{r.stateText}</State>,
+    },
     ...(mini
       ? []
       : [
           {key: 'rank', title: 'Rank', width: 100, render: (r: VRow) => muted(r.rank)},
-          {key: 'updated', title: 'Updated', header: sortHeader('updated', 'Updated'), width: 180, render: (r: VRow) => muted(ago(r.row.updated))},
+          {
+            key: 'updated',
+            title: 'Updated',
+            header: sortHeader('updated', 'Updated'),
+            width: 180,
+            render: (r: VRow) => muted(ago(r.row.updated)),
+          },
         ]),
     {
       key: 'act',
@@ -259,17 +368,37 @@ export function DocumentVersionsLens(props: {
       width: 44,
       render: (r) => {
         const target = targetOf(r)
-        const items = (['publish', 'unpublish', 'delete', 'deleteAll', 'addToRelease'] as const).filter((op) => applies(op, target))
-        const label = {publish: 'Publish', unpublish: 'Unpublish', delete: 'Delete this version', deleteAll: 'Delete all versions', addToRelease: 'Add to release'}
+        const items = (
+          ['publish', 'unpublish', 'delete', 'deleteAll', 'addToRelease'] as const
+        ).filter((op) => applies(op, target))
+        const label = {
+          publish: 'Publish',
+          unpublish: 'Unpublish',
+          delete: 'Delete this version',
+          deleteAll: 'Delete all versions',
+          addToRelease: 'Add to release',
+        }
         return (
           <span onClick={(event) => event.stopPropagation()}>
             <MenuButton
-              button={<Button aria-label={`Actions for ${r.address}`} mode="bleed" style={{height: CONTROL_HEIGHT, width: CONTROL_HEIGHT}} text="⋯" />}
+              button={
+                <Button
+                  aria-label={`Actions for ${r.address}`}
+                  mode="bleed"
+                  style={{height: CONTROL_HEIGHT, width: CONTROL_HEIGHT}}
+                  text="⋯"
+                />
+              }
               id={`row-menu-${r.id}`}
               menu={
                 <Menu>
                   {items.map((op) => (
-                    <MenuItem key={op} onClick={() => bulk.open(op, [target])} text={label[op]} tone={op === 'delete' || op === 'deleteAll' ? 'critical' : 'default'} />
+                    <MenuItem
+                      key={op}
+                      onClick={() => bulk.open(op, [target])}
+                      text={label[op]}
+                      tone={op === 'delete' || op === 'deleteAll' ? 'critical' : 'default'}
+                    />
                   ))}
                 </Menu>
               }
@@ -286,7 +415,10 @@ export function DocumentVersionsLens(props: {
   const showVersion = (r: VRow) => {
     setShown(r.id)
     if (inPane) {
-      setVariant({variantId: r.row.variantId ? (`_.variants.${r.row.variantId}` as never) : undefined, perspective: r.row.bundle as never})
+      setVariant({
+        variantId: r.row.variantId ? (`_.variants.${r.row.variantId}` as never) : undefined,
+        perspective: r.row.bundle as never,
+      })
     } else {
       openVersion(doc.id, doc.type, r.row.variantId, r.row.bundle)
     }
@@ -334,38 +466,122 @@ export function DocumentVersionsLens(props: {
           value={filter.text}
         />
         <MenuButton
-          button={<Button data-testid="filter-button" mode="ghost" text={filter.state.length + filter.address.length + filter.release.length ? `Filter · ${filter.state.length + filter.address.length + filter.release.length}` : 'Filter'} />}
+          button={
+            <Button
+              data-testid="filter-button"
+              mode="ghost"
+              text={
+                filter.state.length + filter.address.length + filter.release.length
+                  ? `Filter · ${filter.state.length + filter.address.length + filter.release.length}`
+                  : 'Filter'
+              }
+            />
+          }
           id="lens-filter-menu"
           menu={
             <Menu data-testid="filter-menu" padding={0}>
-              <Box paddingX={3} paddingY={2}><Text muted size={0} weight="medium">State</Text></Box>
-              {([['published', 'Published'], ['draft', 'Draft'], ['release', 'In a release']] as const).map(([key, label]) => (
-                <MenuItem data-testid={`filter-state-${key}`} key={key} onClick={() => setFilter((f) => ({...f, state: toggleIn(f.state, key)}))} pressed={filter.state.includes(key)} selected={filter.state.includes(key)} text={label} />
+              <Box paddingX={3} paddingY={2}>
+                <Text muted size={0} weight="medium">
+                  State
+                </Text>
+              </Box>
+              {(
+                [
+                  ['published', 'Published'],
+                  ['draft', 'Draft'],
+                  ['release', 'In a release'],
+                ] as const
+              ).map(([key, label]) => (
+                <MenuItem
+                  data-testid={`filter-state-${key}`}
+                  key={key}
+                  onClick={() => setFilter((f) => ({...f, state: toggleIn(f.state, key)}))}
+                  pressed={filter.state.includes(key)}
+                  selected={filter.state.includes(key)}
+                  text={label}
+                />
               ))}
               <MenuDivider />
-              <Box paddingX={3} paddingY={2}><Text muted size={0} weight="medium">Address</Text></Box>
+              <Box paddingX={3} paddingY={2}>
+                <Text muted size={0} weight="medium">
+                  Address
+                </Text>
+              </Box>
               {addressList.map((a) => (
-                <MenuItem data-testid={`filter-address-${a}`} key={a} onClick={() => setFilter((f) => ({...f, address: toggleIn(f.address, a)}))} pressed={filter.address.includes(a)} selected={filter.address.includes(a)} text={a} />
+                <MenuItem
+                  data-testid={`filter-address-${a}`}
+                  key={a}
+                  onClick={() => setFilter((f) => ({...f, address: toggleIn(f.address, a)}))}
+                  pressed={filter.address.includes(a)}
+                  selected={filter.address.includes(a)}
+                  text={a}
+                />
               ))}
               {releaseIds.length ? <MenuDivider /> : null}
-              {releaseIds.length ? <Box paddingX={3} paddingY={2}><Text muted size={0} weight="medium">Release</Text></Box> : null}
+              {releaseIds.length ? (
+                <Box paddingX={3} paddingY={2}>
+                  <Text muted size={0} weight="medium">
+                    Release
+                  </Text>
+                </Box>
+              ) : null}
               {releaseIds.map((id) => (
-                <MenuItem data-testid={`filter-release-${id}`} key={id} onClick={() => setFilter((f) => ({...f, release: toggleIn(f.release, id)}))} pressed={filter.release.includes(id)} selected={filter.release.includes(id)} text={releaseTitle(corpus, id)} />
+                <MenuItem
+                  data-testid={`filter-release-${id}`}
+                  key={id}
+                  onClick={() => setFilter((f) => ({...f, release: toggleIn(f.release, id)}))}
+                  pressed={filter.release.includes(id)}
+                  selected={filter.release.includes(id)}
+                  text={releaseTitle(corpus, id)}
+                />
               ))}
             </Menu>
           }
           popover={{portal: true, placement: 'bottom-start'}}
         />
-        {activeFilters ? <Button data-testid="filter-clear" mode="bleed" onClick={() => setFilter(NO_LENS_FILTER)} text="Clear filters" /> : null}
-        <Button data-testid="group-toggle" mode="ghost" onClick={() => setGroupBy(groupBy === 'date' ? 'none' : 'date')} selected={groupBy === 'date'} text={mini ? 'Group' : 'Group by publish date'} />
+        {activeFilters ? (
+          <Button
+            data-testid="filter-clear"
+            mode="bleed"
+            onClick={() => setFilter(NO_LENS_FILTER)}
+            text="Clear filters"
+          />
+        ) : null}
+        <Button
+          data-testid="group-toggle"
+          mode="ghost"
+          onClick={() => setGroupBy(groupBy === 'date' ? 'none' : 'date')}
+          selected={groupBy === 'date'}
+          text={mini ? 'Group' : 'Group by publish date'}
+        />
         <MenuButton
-          button={<Button data-testid="view-picker" mode="ghost" text={mini ? 'View' : `View: ${currentView?.label ?? 'Custom'}`} />}
+          button={
+            <Button
+              data-testid="view-picker"
+              mode="ghost"
+              text={mini ? 'View' : `View: ${currentView?.label ?? 'Custom'}`}
+            />
+          }
           id="lens-view-menu"
           menu={
             <Menu data-testid="view-menu" padding={0}>
-              <Box paddingX={3} paddingY={2}><Text muted size={0} weight="medium">Saved views</Text></Box>
+              <Box paddingX={3} paddingY={2}>
+                <Text muted size={0} weight="medium">
+                  Saved views
+                </Text>
+              </Box>
               {views.map((v) => (
-                <MenuItem data-testid={`view-${v.id}`} key={v.id} onClick={() => { setFilter(v.filter); setGroupBy(v.group) }} pressed={currentView?.id === v.id} selected={currentView?.id === v.id} text={v.label} />
+                <MenuItem
+                  data-testid={`view-${v.id}`}
+                  key={v.id}
+                  onClick={() => {
+                    setFilter(v.filter)
+                    setGroupBy(v.group)
+                  }}
+                  pressed={currentView?.id === v.id}
+                  selected={currentView?.id === v.id}
+                  text={v.label}
+                />
               ))}
               <MenuDivider />
               <MenuItem disabled text="Save current view" />
@@ -373,10 +589,22 @@ export function DocumentVersionsLens(props: {
           }
           popover={{portal: true, placement: 'bottom-start'}}
         />
-        {mini ? null : <Badge data-testid="view-candidate" tone="suggest">Candidate, fast follow</Badge>}
+        {mini ? null : (
+          <Badge data-testid="view-candidate" tone="suggest">
+            Candidate, fast follow
+          </Badge>
+        )}
       </Flex>
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} />
-      <DataTable columns={columns} empty={rows.length ? 'No version matches the filter.' : 'This document has no versions.'} groups={groups} onRowClick={showVersion} rows={visible} selectedId={shown} testId={mini ? 'lens-doc-versions-mini' : 'lens-doc-versions'} />
+      <DataTable
+        columns={columns}
+        empty={rows.length ? 'No version matches the filter.' : 'This document has no versions.'}
+        groups={groups}
+        onRowClick={showVersion}
+        rows={visible}
+        selectedId={shown}
+        testId={mini ? 'lens-doc-versions-mini' : 'lens-doc-versions'}
+      />
       {dialogFor(bulk, corpus, doc.title, definitions)}
     </Stack>
   )
@@ -399,15 +627,21 @@ interface DRow {
  * a Create action; the absent block disappears once none is left. Delete removes that row's version only; "Delete all
  * versions" is a separate, more strongly confirmed item.
  */
-export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: SystemVariant[]; variantId: string | null; onPin: (id: string) => void}) {
+export function DefinitionDocumentsLens(props: {
+  corpus: Corpus
+  definitions: SystemVariant[]
+  variantId: string | null
+  onPin: (id: string) => void
+}) {
   const {corpus, definitions, onPin} = props
   const bulk = useBulk()
   const openVersion = useOpenVersion()
+  const [typeFilter, setTypeFilter] = useState('all')
   const variantId = props.variantId ?? (definitions[0] ? shortId(definitions[0]._id) : null)
   const def = definitions.find((d) => shortId(d._id) === variantId)
   const title = def?.metadata?.title ?? variantId ?? ''
 
-  const rows: DRow[] = useMemo(() => {
+  const allRows: DRow[] = useMemo(() => {
     if (!variantId) return []
     const order = (b: string) => (b === 'published' ? 0 : b === 'drafts' ? 1 : 2)
     const present = corpus.docs.flatMap((doc) =>
@@ -418,20 +652,45 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
           id: `${doc.id}|${version.bundle}`,
           doc,
           version,
-          kind: version.bundle === 'published' ? 'published' : version.bundle === 'drafts' ? 'draft' : 'release',
-          text: version.bundle === 'published' ? 'Published' : version.bundle === 'drafts' ? 'Draft' : `${releaseTitle(corpus, version.bundle)} · draft`,
+          kind:
+            version.bundle === 'published'
+              ? 'published'
+              : version.bundle === 'drafts'
+                ? 'draft'
+                : 'release',
+          text:
+            version.bundle === 'published'
+              ? 'Published'
+              : version.bundle === 'drafts'
+                ? 'Draft'
+                : `${releaseTitle(corpus, version.bundle)} · draft`,
         })),
     )
     const absent = corpus.docs
       .filter((d) => !d.list.some((r) => r.variantId === variantId))
       .map((doc): DRow => ({id: doc.id, doc, kind: 'absent', text: `No ${title} version`}))
-    return [...present.sort((a, b) => a.doc.title.localeCompare(b.doc.title) || order(a.version!.bundle) - order(b.version!.bundle)), ...absent.sort((a, b) => a.doc.title.localeCompare(b.doc.title))]
+    return [
+      ...present.sort(
+        (a, b) =>
+          a.doc.title.localeCompare(b.doc.title) ||
+          order(a.version!.bundle) - order(b.version!.bundle),
+      ),
+      ...absent.sort((a, b) => a.doc.title.localeCompare(b.doc.title)),
+    ]
   }, [corpus, variantId, title])
 
   if (!variantId) return muted('No variant definitions yet.')
 
-  const present = rows.filter((r) => r.kind !== 'absent')
-  const absent = rows.filter((r) => r.kind === 'absent')
+  const present = allRows.filter((r) => r.kind !== 'absent')
+  // Missing = documents of an eligible type with no version of this definition (per-type eligibility is MOCKED: mocks/serverGrounds.ts).
+  const eligibility = eligibleTypes([...new Set(corpus.docs.map((d) => d.type))])
+  const allAbsent = allRows.filter((r) => r.kind === 'absent')
+  const notEligible = allAbsent.filter((r) => !eligibility[r.doc.type]?.eligible)
+  const absentEligible = allAbsent.filter((r) => eligibility[r.doc.type]?.eligible)
+  const absent =
+    typeFilter === 'all' ? absentEligible : absentEligible.filter((r) => r.doc.type === typeFilter)
+  const rows = [...present, ...absent]
+  const missingTypes = [...new Set(absentEligible.map((r) => r.doc.type))]
   const docsWith = new Set(present.map((r) => r.doc.id))
   const targetOf = (r: DRow): Target => ({
     docId: r.doc.id,
@@ -447,13 +706,54 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
     {
       key: 'sel',
       title: '',
-      header: <Check checked={all} indeterminate={selectedRows.length > 0 && !all} label="Select all" onChange={() => bulk.setAll(rows.map((r) => r.id), !all)} />,
+      header: (
+        <Check
+          checked={all}
+          indeterminate={selectedRows.length > 0 && !all}
+          label="Select all"
+          onChange={() =>
+            bulk.setAll(
+              rows.map((r) => r.id),
+              !all,
+            )
+          }
+        />
+      ),
       width: 44,
-      render: (r) => <Check checked={bulk.selected.has(r.id)} label={`Select ${r.doc.title} ${r.text}`} onChange={() => bulk.toggle(r.id)} />,
+      render: (r) => (
+        <Check
+          checked={bulk.selected.has(r.id)}
+          label={`Select ${r.doc.title} ${r.text}`}
+          onChange={() => bulk.toggle(r.id)}
+        />
+      ),
     },
-    {key: 'title', title: 'Document', width: 300, render: (r) => <Text muted={r.kind === 'absent'} size={1}>{r.doc.title}</Text>},
-    {key: 'state', title: title, width: 260, render: (r) => <State faint={r.kind === 'absent'} kind={r.kind}>{r.text}</State>},
-    {key: 'updated', title: 'Updated', width: 140, render: (r) => muted(r.version ? ago(r.version.updated) : '—')},
+    {
+      key: 'title',
+      title: 'Document',
+      width: 300,
+      render: (r) => (
+        <Text muted={r.kind === 'absent'} size={1}>
+          {r.doc.title}
+        </Text>
+      ),
+    },
+    {
+      key: 'state',
+      title: title,
+      width: 260,
+      render: (r) => (
+        <State faint={r.kind === 'absent'} kind={r.kind}>
+          {r.text}
+        </State>
+      ),
+    },
+    {
+      key: 'updated',
+      title: 'Updated',
+      width: 140,
+      render: (r) => muted(r.version ? ago(r.version.updated) : '—'),
+    },
     {
       key: 'act',
       title: '',
@@ -488,14 +788,79 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
         <Chip>
           {docsWith.size} of {corpus.docs.length} documents have {title}
         </Chip>
-        <Chip>{present.length} stored {present.length === 1 ? 'version' : 'versions'}</Chip>
-        {present.filter((r) => r.kind === 'published').length ? <Chip>{present.filter((r) => r.kind === 'published').length} published</Chip> : null}
-        {present.filter((r) => r.kind === 'draft').length ? <Chip tone="caution">{present.filter((r) => r.kind === 'draft').length} draft</Chip> : null}
-        {present.filter((r) => r.kind === 'release').length ? <Chip tone="caution">{present.filter((r) => r.kind === 'release').length} pending in a release</Chip> : null}
+        <Chip>
+          {present.length} stored {present.length === 1 ? 'version' : 'versions'}
+        </Chip>
+        {present.filter((r) => r.kind === 'published').length ? (
+          <Chip>{present.filter((r) => r.kind === 'published').length} published</Chip>
+        ) : null}
+        {present.filter((r) => r.kind === 'draft').length ? (
+          <Chip tone="caution">{present.filter((r) => r.kind === 'draft').length} draft</Chip>
+        ) : null}
+        {present.filter((r) => r.kind === 'release').length ? (
+          <Chip tone="caution">
+            {present.filter((r) => r.kind === 'release').length} pending in a release
+          </Chip>
+        ) : null}
         {absent.length ? <Chip tone="caution">{absent.length} missing</Chip> : null}
+        {notEligible.length ? (
+          <Chip>
+            {notEligible.length} not eligible ({MOCK_NOTE.toLowerCase()}):{' '}
+            {[...new Set(notEligible.map((r) => r.doc.type))]
+              .map((t) => `${t}. ${eligibility[t]?.reason ?? ''}`)
+              .join(' ')}
+          </Chip>
+        ) : null}
       </Flex>
+      {absentEligible.length ? (
+        <Flex align="center" gap={2} wrap="wrap" data-testid="def-lens-missing">
+          <Text muted size={1}>
+            Missing, by type
+          </Text>
+          <Select
+            fontSize={1}
+            onChange={(e) => setTypeFilter(e.currentTarget.value)}
+            value={typeFilter}
+          >
+            <option value="all">All eligible types ({absentEligible.length})</option>
+            {missingTypes.map((t) => (
+              <option key={t} value={t}>
+                {t} ({absentEligible.filter((r) => r.doc.type === t).length})
+              </option>
+            ))}
+          </Select>
+          <Button
+            data-testid="def-lens-select-missing"
+            mode="ghost"
+            onClick={() =>
+              bulk.setAll(
+                absent.map((r) => r.id),
+                true,
+              )
+            }
+            text={`Select all ${absent.length} missing`}
+          />
+          <Text muted size={0}>
+            Then Create in the bar below, one confirmed action for all of them. Eligible types:{' '}
+            {MOCK_NOTE.toLowerCase()}.
+          </Text>
+        </Flex>
+      ) : null}
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} variantLabel={title} />
-      <DataTable columns={columns} empty="No documents." onRowClick={(r) => openVersion(r.doc.id, r.doc.type, r.version ? variantId : null, r.version?.bundle ?? 'drafts')} rows={rows} testId="lens-def-docs" />
+      <DataTable
+        columns={columns}
+        empty="No documents."
+        onRowClick={(r) =>
+          openVersion(
+            r.doc.id,
+            r.doc.type,
+            r.version ? variantId : null,
+            r.version?.bundle ?? 'drafts',
+          )
+        }
+        rows={rows}
+        testId="lens-def-docs"
+      />
       {dialogFor(bulk, corpus, title, definitions)}
     </Stack>
   )
@@ -521,16 +886,39 @@ export function WideOverlay(props: {title: string; onClose: () => void; children
  * the same lens at full width, pinned to the same document. In the expanded view the pin picker can move to another
  * document, and "Back to this document" returns to the one the inventory sits in.
  */
-export function SharedInventory(props: {corpus: Corpus; definitions: SystemVariant[]; docId: string; bare?: boolean}) {
+export function SharedInventory(props: {
+  corpus: Corpus
+  definitions: SystemVariant[]
+  docId: string
+  bare?: boolean
+}) {
   const {corpus, definitions, docId, bare} = props
   const [expanded, setExpanded] = useState(false)
   const [pin, setPin] = useState(docId)
   return (
     <Box data-testid="shared-inventory" padding={bare ? 0 : 3} style={{maxWidth: 340}}>
-      <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docId} hidePin inPane mini onExpand={() => { setPin(docId); setExpanded(true) }} onPin={() => undefined} />
+      <DocumentVersionsLens
+        corpus={corpus}
+        definitions={definitions}
+        docId={docId}
+        hidePin
+        inPane
+        mini
+        onExpand={() => {
+          setPin(docId)
+          setExpanded(true)
+        }}
+        onPin={() => undefined}
+      />
       {expanded ? (
         <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
-          <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={pin} onBack={pin !== docId ? () => setPin(docId) : undefined} onPin={setPin} />
+          <DocumentVersionsLens
+            corpus={corpus}
+            definitions={definitions}
+            docId={pin}
+            onBack={pin !== docId ? () => setPin(docId) : undefined}
+            onPin={setPin}
+          />
         </WideOverlay>
       ) : null}
     </Box>

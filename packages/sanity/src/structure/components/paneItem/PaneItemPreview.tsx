@@ -27,6 +27,7 @@ import {PreviewCardContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useDocumentListItemOverride} from './DocumentListItemOverride'
 import {PaneItemVersionsFlyout} from './PaneItemVersionsFlyout'
 
 export interface PaneItemPreviewProps {
@@ -113,7 +114,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const isLoading = previewIsLoading
 
-  const status = isLoading ? null : (
+  const defaultStatus = (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
@@ -125,8 +126,19 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
+  // PROPOSED: a host (the Variants 2.0 test studio) may replace the status area and the tooltip.
+  const override = useDocumentListItemOverride({
+    documentId: publishedId,
+    documentType: schemaType.name,
+    presence,
+    defaultStatus,
+  })
+  const status = isLoading ? null : override ? override.status : defaultStatus
+
   // With the inventory on, the flyout of the row replaces the read-only versions popover.
-  const tooltip = versionsLinkChildId ? undefined : (
+  const tooltip = override ? (
+    override.tooltip
+  ) : versionsLinkChildId ? undefined : (
     <DocumentVersionsStatus documentGroupId={publishedId} />
   )
 

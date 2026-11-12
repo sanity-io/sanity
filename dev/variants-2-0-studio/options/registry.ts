@@ -161,7 +161,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'd',
         label: 'Grouped list',
         summary:
-          'With a perspective active the list is in two sections, "Has variant" and "No variant for this perspective" (the second collapses), or with the matching documents first (Look > List when a perspective is active). The rows carry no diamond: the section says it. The control on the row is the same as A; the tooltip stays the near-term overlay and there is no double click.',
+          'With a perspective active the list is in two sections, "Has variant" and "No variant for this perspective" (the second collapses), or with the matching documents first (Look > List when a perspective is active). The rows carry no diamond: the section says it. The control on the row is the same as A; the tooltip stays the near-term overlay and there is no double click. To see it: choose a variant in the Perspective bar (Variants, e.g. Loyal customers; or add &variant=aud-loyal-customers to the URL); with no variant chosen the list is plain.',
         status: 'candidate',
         refs: 'Figma C3 page, section Document list indicator: L4 option D grouped 341:1720 (L3 sorted 341:1305)',
       },
@@ -169,7 +169,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'e',
         label: 'Grouped list + flyout',
         summary:
-          'D and B together: with a perspective active the list is in two sections ("Has variant", "No variant for this perspective"), and the control on each row opens the v2 flyout (clickable version rows, it stays open while the pointer travels to it) instead of the read-only popover.',
+          'D and B together: with a perspective active the list is in two sections ("Has variant", "No variant for this perspective"), and the control on each row opens the v2 flyout (clickable version rows, it stays open while the pointer travels to it) instead of the read-only popover. To see it: choose a variant in the Perspective bar (Variants, e.g. Loyal customers; or add &variant=aud-loyal-customers to the URL); with no variant chosen the list is plain.',
         status: 'candidate',
       },
       {
@@ -186,6 +186,13 @@ export const COMPONENTS: ComponentDef[] = [
         summary:
           'No control on the rows: core\'s status dots exactly as shipped. Only their hover changed, in core: it opens from the dots (not the row) and is the v1 popover (option A\'s: one line per audience with its states as flat labels, five lines then "and N more versions"), with no dates and nothing clickable. Open beta pick (22 Oct call with Pedro, Ash and Jordan), reversing option A.',
         status: 'candidate',
+      },
+      {
+        id: 'h',
+        label: 'Grouped by definition (GA)',
+        summary:
+          'With a perspective active the list is in one section per matching variant definition, in the order Content Lake ranks them (most conditions, then priority, then earlier creation, then id), and a last section for the base. A document sits under the first ranked definition that has a version of it: the per-document fall-through. To see it: choose a variant in the Perspective bar (Variants, e.g. Loyal customers; or add &variant=aud-loyal-customers to the URL); with no variant chosen the list is plain.',
+        status: 'exploration',
       },
     ],
   },
