@@ -25,10 +25,6 @@ export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSV
   )
 }
 
-export function RhombusIconLarge(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
-  return <RhombusIcon viewBox="3.5 3.5 18 18" {...props} />
-}
-
 /** A variant the document has no version in. */
 export function RhombusOutlineIcon(props: IconProps) {
   return (
