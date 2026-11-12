@@ -57,7 +57,7 @@ catalog:
   react-is: ^19.3.1
   react-rx: ^7.1.0
   rimraf: ^6.1.4
-  storybook: ^10.6.2
+  storybook: ^10.6.7
   styled-components: ^6.6.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
