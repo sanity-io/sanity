@@ -474,10 +474,11 @@ const Select: ComponentType<{
     getRelease: (variant) => resolveVariantRelease(variant, releases),
   })
   const blockedSelectedKey = blockedSelectedIds.join(',')
+  // The machine ignores changes while a deletion holds the selection, so this retries on unlock.
   useEffect(() => {
-    if (blockedSelectedKey === '') return
+    if (blockedSelectedKey === '' || isLocked) return
     machine.send({type: 'selection.removeMany', variantIds: blockedSelectedKey.split(',')})
-  }, [blockedSelectedKey, machine])
+  }, [blockedSelectedKey, isLocked, machine])
 
   return (
     <>
