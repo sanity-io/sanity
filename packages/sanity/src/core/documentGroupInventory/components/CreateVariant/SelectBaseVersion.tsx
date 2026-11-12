@@ -56,6 +56,8 @@ export const SelectBaseVersion: ComponentType<Props> = ({
   const nearestVersionOption: CreateVariantPickerOption = {
     key: NEAREST_VERSION_KEY,
     text: t('document-group.create-variant.base-option-nearest'),
+    // PROPOSED: the inset form shows the documents icon on the nearest version too
+    formIcon: <DocumentsIcon />,
     subtitle: targetText
       ? t('document-group.create-variant.form.nearest-subtitle', {target: targetText})
       : undefined,

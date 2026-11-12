@@ -1,13 +1,17 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Label, TextInput} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- the inset form's select is a raw ghost Button holding its own layout (glyph, value, chevron), as in the signed-off spec
+import {Button as UIButton, Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type ComponentType,
   type CSSProperties,
+  type ReactElement,
   type ReactNode,
   useContext,
   useId,
+  useLayoutEffect,
+  useRef,
   useState,
 } from 'react'
 import {CreateVariantFormContext} from 'sanity/_singletons'
@@ -23,7 +27,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {createVariantPickerLabel, createVariantPickerTrigger} from './CreateVariant.css'
-import {createVariantPickerInsetTrigger, createVariantPickerMenu} from './CreateVariantPicker.css'
+import {createVariantPickerMenu, finalMutedGlyph} from './CreateVariantPicker.css'
 
 export interface CreateVariantPickerOption {
   key: string
@@ -36,26 +40,97 @@ export interface CreateVariantPickerOption {
 }
 
 /**
- * PROPOSED: a glyph in the inset form's select, in a trimmed box (1.25rem high, pulled in by 0.375rem each way) so its ink starts at the box
- * edge and lines up with the title above it.
+ * PROPOSED (Storybook "A final", `Trimmed`): a Sanity icon in a box as wide as what it paints, 1.25rem high with a -0.375rem block margin, so it
+ * centres on its text line and its left edge is the ink's left edge. Sanity icons draw into a 25-unit box with their own margins, so without this the
+ * Drafts dot and the documents icon start about 6px left of the title above them.
  */
-function TrimmedGlyph({children, muted}: {children: ReactNode; muted?: boolean}) {
-  const color = muted ? 'var(--card-muted-fg-color)' : undefined
+function Trimmed({children, muted}: {children: ReactNode; muted?: boolean}) {
+  const ref = useRef<HTMLSpanElement>(null)
+  useLayoutEffect(() => {
+    const box = ref.current
+    const svg = box?.querySelector('svg')
+    if (!box || !svg) return
+    svg.style.marginLeft = '0px'
+    const origin = svg.getBoundingClientRect().left
+    let left = Infinity
+    let right = -Infinity
+    for (const shape of svg.querySelectorAll('path, circle, rect, ellipse, polygon')) {
+      const r = shape.getBoundingClientRect()
+      if (!r.width) continue
+      left = Math.min(left, r.left)
+      right = Math.max(right, r.right)
+    }
+    if (right <= left) return
+    box.style.width = `${right - left}px`
+    svg.style.marginLeft = `${origin - left}px`
+  })
   return (
     <span
       aria-hidden
+      className={muted ? finalMutedGlyph : undefined}
+      ref={ref}
       style={{
         alignItems: 'center',
+        boxSizing: 'content-box',
         display: 'inline-flex',
+        flexShrink: 0,
         height: '1.25rem',
+        justifyContent: 'center',
+        lineHeight: 0,
         marginBlock: '-0.375rem',
-        ...(color
-          ? ({color, '--icon-color': color, '--card-icon-color': color} as CSSProperties)
-          : null),
+        overflow: 'hidden',
       }}
     >
       {children}
     </span>
+  )
+}
+
+/**
+ * PROPOSED (Storybook "A final", `Pick`): the inset form's select. A ghost button, padding 3, radius 2, holding the glyph, the value (or the hint,
+ * muted) and the chevron pinned to the right edge; text size 2 throughout, the size of a Studio string field's input.
+ */
+function FinalSelectTrigger({
+  disabled,
+  glyph,
+  testId,
+  text,
+  placeholder,
+  ...rest
+}: {
+  disabled: boolean
+  glyph: ReactNode
+  testId: string
+  text: string | undefined
+  placeholder: string
+}) {
+  const empty = text === undefined
+  return (
+    <UIButton
+      {...rest}
+      data-testid={testId}
+      disabled={disabled}
+      mode="ghost"
+      padding={0}
+      radius={2}
+      // The Studio string input's box: 35px high (6px over a 23px text line), 12px in at the sides.
+      style={{minWidth: 0, padding: '6px 12px', width: '100%'}}
+      title={text}
+    >
+      <Flex alignItems="center" style={{gap: 8, minWidth: 0}}>
+        <span style={{alignItems: 'center', display: 'inline-flex', flexShrink: 0, fontSize: 15}}>
+          <Trimmed muted={empty}>{glyph}</Trimmed>
+        </span>
+        <Box flexGrow={1} style={{minWidth: 0, textAlign: 'left'}}>
+          <Text data-testid={`${testId}-value`} muted={empty} size={2} truncate={1}>
+            {text ?? placeholder}
+          </Text>
+        </Box>
+        <Text muted size={2}>
+          <ChevronDownIcon />
+        </Text>
+      </Flex>
+    </UIButton>
   )
 }
 
@@ -138,135 +213,141 @@ export const CreateVariantPicker: ComponentType<{
     />
   )
 
-  return (
-    <>
-      {inset ? (
-        // PROPOSED: the title alone, inset by the select's padding so it starts where the select's first glyph starts. No icon, no description.
-        <Flex alignItems="center" style={{paddingLeft: 12}}>
+  const renderMenuButton = (button: ReactElement) => (
+    <MenuButton
+      id={id}
+      onClose={() => {
+        resetMenuWidth()
+        setFilterQuery('')
+      }}
+      onOpen={lockMenuWidth}
+      button={button}
+      menu={
+        <FilterMenu
+          className={createVariantPickerMenu}
+          data-testid={testId}
+          padding={1}
+          ref={menuRef}
+          style={menuStyle}
+        >
+          <Box flexShrink={0} padding={1}>
+            <TextInput
+              aria-label={t('document-group.create-variant.filter-placeholder')}
+              ref={focusSearchField}
+              fontSize={1}
+              onChange={(event) => setFilterQuery(event.currentTarget.value)}
+              placeholder={
+                filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+              }
+              radius={2}
+              value={filterQuery}
+            />
+          </Box>
+          {sections.length === 0 ? (
+            <Box data-testid={`${testId}-no-matches`} paddingX={3} paddingY={3}>
+              <Text muted size={1}>
+                {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
+              </Text>
+            </Box>
+          ) : (
+            <Flex
+              className={menuOverflowScroller}
+              flexDirection="column"
+              flexGrow={1}
+              flexShrink={1}
+              minHeight="0"
+              overflowY="auto"
+              ref={scrollerRef}
+            >
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingBottom={1} paddingX={1}>
+                {sections.flatMap((section, index) => [
+                  ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
+                  ...(section.label
+                    ? [
+                        <Box
+                          key={`${section.key}-label`}
+                          paddingX={3}
+                          paddingTop={3}
+                          paddingBottom={2}
+                        >
+                          <Label muted size={1} style={{textTransform: 'uppercase'}}>
+                            {section.label}
+                          </Label>
+                        </Box>,
+                      ]
+                    : []),
+                  ...section.options.map(renderOption),
+                ])}
+              </Flex>
+            </Flex>
+          )}
+        </FilterMenu>
+      }
+      popover={{
+        constrainSize: true,
+        fallbackPlacements: ['bottom-end'],
+        overflow: 'hidden',
+        placement: 'bottom-start',
+        portal: true,
+      }}
+    />
+  )
+
+  if (inset) {
+    // PROPOSED (the signed-off spec, Storybook "A final": FINAL_SPEC and OptionAFinal): a title over a full-width select, 8px apart, the title
+    // inset 12px so it starts where the select's first glyph starts. Pixel values, not the space scale, so they are the spec's.
+    return (
+      <div
+        data-testid={`${testId}-field`}
+        style={{display: 'flex', flexDirection: 'column', gap: 8}}
+      >
+        <div style={{alignItems: 'center', display: 'flex', paddingLeft: 12}}>
           <Text size={1} weight="medium" as="label" htmlFor={id}>
             {label}
           </Text>
-        </Flex>
-      ) : (
-        <Flex gap={3} className={createVariantPickerLabel}>
-          <Icon icon={icon} size={1} aria-hidden />
-          <div>
-            <Text size={1} weight="medium" as="label" htmlFor={id}>
-              {label}
+        </div>
+        {renderMenuButton(
+          <FinalSelectTrigger
+            disabled={disabled || leadingOptions.length + options.length === 0}
+            glyph={value ? ((value.formIcon ?? value.icon) as ReactNode) : emptyIcon}
+            testId={`${testId}-button`}
+            text={value?.text}
+            placeholder={placeholder ?? ''}
+          />,
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <Flex gap={3} className={createVariantPickerLabel}>
+        <Icon icon={icon} size={1} aria-hidden />
+        <div>
+          <Text size={1} weight="medium" as="label" htmlFor={id}>
+            {label}
+          </Text>
+          {description && (
+            <Text size={1} muted as="div" id={descriptionId}>
+              {description}
             </Text>
-            {description && (
-              <Text size={1} muted as="div" id={descriptionId}>
-                {description}
-              </Text>
-            )}
-          </div>
-        </Flex>
-      )}
-      <div className={inset ? createVariantPickerInsetTrigger : createVariantPickerTrigger}>
-        <MenuButton
-          id={id}
-          onClose={() => {
-            resetMenuWidth()
-            setFilterQuery('')
-          }}
-          onOpen={lockMenuWidth}
-          button={
-            <Button
-              data-testid={`${testId}-button`}
-              aria-describedby={description ? descriptionId : undefined}
-              mode="ghost"
-              width="fill"
-              justify="flex-start"
-              {...(inset ? {size: 'large' as const} : null)}
-              icon={
-                inset ? (
-                  <TrimmedGlyph muted={!value}>
-                    {value ? ((value.formIcon ?? value.icon) as ReactNode) : emptyIcon}
-                  </TrimmedGlyph>
-                ) : (
-                  value?.icon
-                )
-              }
-              iconRight={ChevronDownIcon}
-              text={value?.text ?? (inset ? (placeholder ?? '') : '')}
-              disabled={disabled || leadingOptions.length + options.length === 0}
-            />
-          }
-          menu={
-            <FilterMenu
-              className={createVariantPickerMenu}
-              data-testid={testId}
-              padding={1}
-              ref={menuRef}
-              style={menuStyle}
-            >
-              <Box flexShrink={0} padding={1}>
-                <TextInput
-                  aria-label={t('document-group.create-variant.filter-placeholder')}
-                  ref={focusSearchField}
-                  fontSize={1}
-                  onChange={(event) => setFilterQuery(event.currentTarget.value)}
-                  placeholder={
-                    filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
-                  }
-                  radius={2}
-                  value={filterQuery}
-                />
-              </Box>
-              {sections.length === 0 ? (
-                <Box data-testid={`${testId}-no-matches`} paddingX={3} paddingY={3}>
-                  <Text muted size={1}>
-                    {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
-                  </Text>
-                </Box>
-              ) : (
-                <Flex
-                  className={menuOverflowScroller}
-                  flexDirection="column"
-                  flexGrow={1}
-                  flexShrink={1}
-                  minHeight="0"
-                  overflowY="auto"
-                  ref={scrollerRef}
-                >
-                  <Flex
-                    flexDirection="column"
-                    flexShrink={0}
-                    gap={1}
-                    paddingBottom={1}
-                    paddingX={1}
-                  >
-                    {sections.flatMap((section, index) => [
-                      ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
-                      ...(section.label
-                        ? [
-                            <Box
-                              key={`${section.key}-label`}
-                              paddingX={3}
-                              paddingTop={3}
-                              paddingBottom={2}
-                            >
-                              <Label muted size={1} style={{textTransform: 'uppercase'}}>
-                                {section.label}
-                              </Label>
-                            </Box>,
-                          ]
-                        : []),
-                      ...section.options.map(renderOption),
-                    ])}
-                  </Flex>
-                </Flex>
-              )}
-            </FilterMenu>
-          }
-          popover={{
-            constrainSize: true,
-            fallbackPlacements: ['bottom-end'],
-            overflow: 'hidden',
-            placement: 'bottom-start',
-            portal: true,
-          }}
-        />
+          )}
+        </div>
+      </Flex>
+      <div className={createVariantPickerTrigger}>
+        {renderMenuButton(
+          <Button
+            data-testid={`${testId}-button`}
+            aria-describedby={description ? descriptionId : undefined}
+            mode="ghost"
+            width="fill"
+            justify="flex-start"
+            icon={value?.icon}
+            iconRight={ChevronDownIcon}
+            text={value?.text ?? ''}
+            disabled={disabled || leadingOptions.length + options.length === 0}
+          />,
+        )}
       </div>
     </>
   )

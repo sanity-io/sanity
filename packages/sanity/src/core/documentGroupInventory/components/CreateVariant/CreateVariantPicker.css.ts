@@ -27,15 +27,13 @@ export const createVariantPickerMenu = css({
 })
 
 /**
- * PROPOSED: the select of the inset form is the size of a Studio string input: 35px high, 15px text (the input measures 35px, 15px, 6px 12px).
+ * PROPOSED: the glyph of an empty select in the inset form is muted, whatever colour the glyph owns (a variant mark paints itself in the variant
+ * tone; the spec wants `--card-muted-fg-color` on its colour, `--icon-color` and `--card-icon-color` until a variant is picked).
  */
-export const createVariantPickerInsetTrigger = css({
-  '& button': {
-    blockSize: '35px',
-    minBlockSize: '35px',
-  },
-  '& button [data-ui="Text"]': {
-    fontSize: '15px',
-    lineHeight: '19px',
+export const finalMutedGlyph = css({
+  '&&, && [data-ui="VariantMark"]': {
+    'color': 'var(--card-muted-fg-color)',
+    '--icon-color': 'var(--card-muted-fg-color)',
+    '--card-icon-color': 'var(--card-muted-fg-color)',
   },
 })

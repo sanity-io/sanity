@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useContext, useEffect, useRef} from 'react'
 import {CreateVariantFormContext} from 'sanity/_singletons'
-import {Box, Flex, Text, VStack} from 'ui5'
+import {Box, Text, VStack} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -165,18 +165,20 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
           ? bundle.release.metadata.title || t('release.placeholder-untitled-release')
           : undefined
     return (
-      <Box flexShrink={0} padding={2}>
+      <Box flexShrink={0} style={{padding: 8}}>
         <Card
           border
           data-testid="create-variant-form"
-          padding={4}
+          padding={0}
           radius={3}
           ref={cardRef}
+          style={{padding: 20}}
           tone="transparent"
         >
-          <Stack gap={4}>
-            {/* Text trims its line box to the cap height, so 5px each way puts the visible gaps at the spec's 20px. */}
-            <div style={{margin: '-5px 0 5px'}}>
+          {/* The signed-off spec's values, in pixels: 20 round the card, 20 header to field, field to field and last field to the actions;
+              8 title to select (in the picker) and 8 between the buttons. */}
+          <div style={{display: 'flex', flexDirection: 'column', gap: 20}}>
+            <div data-testid="create-variant-header">
               <Text size={1} weight="medium" as="h2">
                 <Translate
                   t={t}
@@ -186,52 +188,58 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
                 />
               </Text>
             </div>
-            <Stack gap={4}>
-              <Stack gap={4}>
-                <SelectVariantDefinition
-                  variantDefinitions={variantDefinitionOptions}
-                  existingVariantIds={existingVariantIds}
-                  value={variantDefinition}
-                  onChange={(variantId) =>
-                    variantCreationRef.send({type: 'createVariant.selectVariant', variantId})
-                  }
-                  disabled={isVariantCreationPending}
-                />
-                <SelectBundle
-                  bundles={bundleOptions}
-                  value={bundle}
-                  onChange={handleSelectBundle}
-                  disabled={isVariantCreationPending}
-                />
-                <SelectBaseVersion
-                  sets={sets}
-                  releases={releases ?? NO_RELEASES}
-                  value={baseVersion}
-                  onChange={(baseId) =>
-                    variantCreationRef.send({type: 'createVariant.selectBase', baseId})
-                  }
-                  disabled={isVariantCreationPending}
-                  targetText={targetText}
-                />
-              </Stack>
-              <Flex gap={2} justifyContent="flex-end">
-                <Button
-                  mode="bleed"
-                  text={t('document-group.create-variant.cancel-button.text')}
-                  onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
-                />
-                <Button
-                  text={t('document-group.create-variant.confirm')}
-                  disabled={
-                    typeof variantDefinition === 'undefined' ||
-                    typeof bundle === 'undefined' ||
-                    isVariantCreationPending
-                  }
-                  onClick={handleCreate}
-                />
-              </Flex>
-            </Stack>
-          </Stack>
+            <div
+              data-testid="refined-fields"
+              style={{display: 'flex', flexDirection: 'column', gap: 20}}
+            >
+              <SelectVariantDefinition
+                variantDefinitions={variantDefinitionOptions}
+                existingVariantIds={existingVariantIds}
+                value={variantDefinition}
+                onChange={(variantId) =>
+                  variantCreationRef.send({type: 'createVariant.selectVariant', variantId})
+                }
+                disabled={isVariantCreationPending}
+              />
+              <SelectBundle
+                bundles={bundleOptions}
+                value={bundle}
+                onChange={handleSelectBundle}
+                disabled={isVariantCreationPending}
+              />
+              <SelectBaseVersion
+                sets={sets}
+                releases={releases ?? NO_RELEASES}
+                value={baseVersion}
+                onChange={(baseId) =>
+                  variantCreationRef.send({type: 'createVariant.selectBase', baseId})
+                }
+                disabled={isVariantCreationPending}
+                targetText={targetText}
+              />
+            </div>
+            <div
+              data-testid="refined-actions"
+              style={{display: 'flex', gap: 8, justifyContent: 'flex-end'}}
+            >
+              <Button
+                data-testid="create-variant-cancel"
+                mode="bleed"
+                text={t('document-group.create-variant.cancel-button.text')}
+                onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
+              />
+              <Button
+                data-testid="create-variant-commit"
+                text={t('document-group.create-variant.confirm')}
+                disabled={
+                  typeof variantDefinition === 'undefined' ||
+                  typeof bundle === 'undefined' ||
+                  isVariantCreationPending
+                }
+                onClick={handleCreate}
+              />
+            </div>
+          </div>
         </Card>
       </Box>
     )
