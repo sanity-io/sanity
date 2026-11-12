@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {expectStable} from '../../../../../../test/browser/testHelpers'
 import {
@@ -108,5 +108,25 @@ describe('VariantsMenu row action', () => {
     expect(visibleOpacity(alpha.element())).toBe(0)
     expect(visibleOpacity(norwegian.element())).toBe(1)
     expect(openTooltips()).toBe(0)
+  })
+
+  it('keeps the action showing and focused when the right arrow key moves focus onto it', async () => {
+    void render(<VariantsMenuStory />)
+    await page.getByTestId('variants-nav-menu-button').click()
+    await expect.element(page.getByTestId('variants-nav-menu')).toBeVisible()
+
+    const alpha = page.getByTestId(`variant-detail-link-${getVariantId(variantAlphaAudience._id)}`)
+    const alphaRow = page.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)
+
+    await alphaRow.hover()
+    await expect.element(alphaRow).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    await expect.element(alpha).toHaveFocus()
+
+    await expectStable(() => `${visibleOpacity(alpha.element())}`)
+    // Still focused, and showing, and the menu is still open
+    expect(document.activeElement).toBe(alpha.element())
+    expect(visibleOpacity(alpha.element())).toBe(1)
+    await expect.element(page.getByTestId('variants-nav-menu')).toBeVisible()
   })
 })
