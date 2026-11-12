@@ -127,6 +127,59 @@ describe('toVersionStub', () => {
       goingToUnpublish: true,
     })
   })
+
+  // The shapes Content Lake returns today for documents that are not variant versions.
+  describe('documents without _system.group', () => {
+    const raw = {_type: 'author', _updatedAt: '2026-11-02T00:00:00Z'}
+
+    it('reads a published document whose _system only has base', () => {
+      // `base` is not part of the typed _system, as in a raw query result.
+      const system = {base: {id: 'jane', rev: 'r1'}}
+      expect(toVersionStub({...raw, _id: 'jane', _system: system})).toMatchObject({
+        groupId: 'jane',
+        kind: 'published',
+        bundle: 'published',
+        variantId: undefined,
+      })
+    })
+
+    it('reads a classic draft whose _system is null', () => {
+      expect(toVersionStub({...raw, _id: 'drafts.jane', _system: null})).toMatchObject({
+        groupId: 'jane',
+        kind: 'draft',
+        bundle: 'drafts',
+      })
+    })
+
+    it('reads a release version from its id, whether its release has loaded or not', () => {
+      expect(toVersionStub({...raw, _id: 'versions.rSpring.jane'})).toMatchObject({
+        groupId: 'jane',
+        kind: 'release',
+        bundle: '_.releases.rSpring',
+        goingToUnpublish: false,
+      })
+    })
+
+    it('keeps the dots of a group id inside a release version id', () => {
+      expect(
+        toVersionStub({...raw, _id: 'versions.rSpring.authors.jane', _system: null}),
+      ).toMatchObject({groupId: 'authors.jane', kind: 'release'})
+    })
+
+    it('reads an agent version as agent, not as a release', () => {
+      expect(toVersionStub({...raw, _id: 'versions.agent-abc.jane', _system: null})).toMatchObject({
+        groupId: 'jane',
+        kind: 'agent',
+        bundle: 'agent-abc',
+      })
+    })
+
+    it('keeps the fields a partial _system does have', () => {
+      expect(
+        toVersionStub({...raw, _id: 'versions.rSpring.jane', _system: {delete: true}}),
+      ).toMatchObject({kind: 'release', goingToUnpublish: true})
+    })
+  })
 })
 
 describe('buildInventoryIndex', () => {
@@ -153,6 +206,39 @@ describe('buildInventoryIndex', () => {
     })
 
     expect(ordered.versions.map(({_id}) => _id)).toEqual(['asap', 'early', 'late', 'u', 'missing'])
+  })
+
+  describe('scheduled drafts', () => {
+    const scheduledDraft = {
+      ...release('rScheduledDraft', 'scheduled', {publishAt: '2026-12-10T00:00:00Z'}),
+      metadata: {
+        title: 'rScheduledDraft',
+        releaseType: 'scheduled',
+        intendedPublishAt: '2026-12-10T00:00:00Z',
+        cardinality: 'one',
+      },
+    } as ReleaseDocument
+    const withScheduledDraft = new Map([...releases, [scheduledDraft._id, scheduledDraft]])
+    const versions = [
+      stub({_id: 'u', groupId: 'g', kind: 'release', bundle: '_.releases.rUndecided'}),
+      stub({_id: 'sd', groupId: 'g', kind: 'release', bundle: '_.releases.rScheduledDraft'}),
+      stub({_id: 'late', groupId: 'g', kind: 'release', bundle: '_.releases.rLate'}),
+      stub({_id: 'early', groupId: 'g', kind: 'release', bundle: '_.releases.rEarly'}),
+    ]
+
+    it('sorts them among the scheduled releases by date by default', () => {
+      const ordered = buildInventoryIndex({versions, releases: withScheduledDraft})
+      expect(ordered.versions.map(({_id}) => _id)).toEqual(['early', 'sd', 'late', 'u'])
+    })
+
+    it('moves them after every other release with afterReleases', () => {
+      const ordered = buildInventoryIndex({
+        versions,
+        releases: withScheduledDraft,
+        scheduledDrafts: 'afterReleases',
+      })
+      expect(ordered.versions.map(({_id}) => _id)).toEqual(['early', 'late', 'u', 'sd'])
+    })
   })
 
   it('records which documents have a version for each definition', () => {
