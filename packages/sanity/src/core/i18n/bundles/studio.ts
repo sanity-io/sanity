@@ -593,11 +593,23 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
-  /** The text of the actions that open the variant creation form and confirm the creation */
+  /**
+   * The text of the actions that open the variant creation form and confirm the creation
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant': 'Create version',
-  /** Describes the variant creation form's picker for the version the new variant starts from */
+  /**
+   * Describes the variant creation form's picker for the version the new variant starts from
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.base-description': 'What it starts from',
-  /** The label of the variant creation form's picker for the version the new variant starts from */
+  /**
+   * The label of the variant creation form's picker for the version the new variant starts from
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.base-label': 'Document',
   /** An option of the variant creation form's picker for the version to start from, while Content Variants is switched on: the version's variant and the draft, release or published bundle it is in */
   'document-group.create-variant.base-option': '{{variantName}} · {{bundleName}}',
@@ -605,13 +617,44 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.base-option-nearest': 'Nearest version',
   /** The text of the button that closes the variant creation form without creating anything */
   'document-group.create-variant.cancel-button.text': 'Cancel',
-  /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
+  /** The text of the button that creates the variant picked in the variant creation form */
+  'document-group.create-variant.confirm': 'Create variant',
+  /**
+   * Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
   /** Placeholder of the filter input in the variant creation form's pickers */
   'document-group.create-variant.filter-placeholder': 'Find',
-  /** Describes the variant creation form's picker for the draft or release to create the variant in */
+  /** The title of the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.form.base-label': 'Start from',
+  /** The header of the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
+  'document-group.create-variant.form.header': 'New variant of <DocumentTitle/>',
+  /** The second line of the "Nearest version" option: the variant and the draft or release the new variant is copied from */
+  'document-group.create-variant.form.nearest-subtitle':
+    'Copies from {{variantName}} in {{bundleName}}',
+  /** The second line of the "Nearest version" option when there is no version to copy from */
+  'document-group.create-variant.form.nearest-subtitle-empty': 'Starts empty',
+  /** The hint of the variant creation form's picker for the draft or release, shown while nothing is picked */
+  'document-group.create-variant.form.target-hint': 'Choose where it goes',
+  /** The title of the variant creation form's picker for the draft or release to create the variant in */
+  'document-group.create-variant.form.target-label': 'Add to',
+  /** The hint of the variant creation form's picker for the variant definition, shown while nothing is picked */
+  'document-group.create-variant.form.variant-hint': 'Choose who sees it',
+  /** The text of the inventory header button that opens the variant creation form */
+  'document-group.create-variant.open-button.text': 'Create variant',
+  /**
+   * Describes the variant creation form's picker for the draft or release to create the variant in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.target-description': 'Where it lives',
-  /** The label of the variant creation form's picker for the draft or release to create the variant in */
+  /**
+   * The label of the variant creation form's picker for the draft or release to create the variant in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.target-label': 'Target',
   /** The search field placeholder in the variant creation form's picker for the variant definition */
   'document-group.create-variant.variant-filter-placeholder': 'Search variant definitions…',
@@ -621,7 +664,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-section.has-variants_other': 'Has {{count}} variants',
   /** The heading above the variants the document has no version in yet, in the variant creation form's picker */
   'document-group.create-variant.variant-section.other': 'Other variants',
-  /** Describes the variant creation form's picker for the variant definition to create */
+  /**
+   * Describes the variant creation form's picker for the variant definition to create
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.variant-description': 'Who sees this version',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',

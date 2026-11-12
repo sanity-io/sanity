@@ -1,26 +1,28 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {Card} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type ComponentType, type ReactNode} from 'react'
-import {Text, VStack} from 'ui5'
+import {type ComponentType, type ReactNode, useEffect, useRef} from 'react'
+import {Box, Text} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {Translate} from '../../../i18n/Translate'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
 import {
   type VariantCreationBundle,
   type variantCreationMachine,
 } from '../../machines/variantCreationMachine'
-import {Header} from '../Header'
-import {createVariantForm, createVariantFormFooter, createVariantFormRow} from './CreateVariant.css'
+import {createVariantActions, createVariantCard, createVariantStack} from './CreateVariant.css'
 import {
   type CreateVariantBundleOption,
   getAvailableBundles,
   getBundleKey,
 } from './getAvailableBundles'
+import {getNearestBaseVersion} from './getNearestBaseVersion'
 import {SelectBaseVersion} from './SelectBaseVersion'
 import {SelectBundle} from './SelectBundle'
 import {SelectVariantDefinition} from './SelectVariantDefinition'
@@ -41,8 +43,33 @@ const DocumentTitle: ComponentType<{children?: ReactNode; documentTitle?: ReactN
   return documentTitle
 }
 
+/**
+ * The Create variant form: an inset card in the Manage versions panel, with three stacked fields
+ * (Variant, Add to, Start from). Only Variant starts empty; Add to starts on the current
+ * perspective and Start from on the nearest version. Cancel and Escape close it.
+ */
 export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, documentTitle}) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const {selectedPerspective} = usePerspective()
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const card = cardRef.current
+      // Escape closes the form while the focus is in it. While one of its menus is open, the menu
+      // takes the Escape. This listens in the capture phase, so the select still reads as expanded
+      // when the menu's own handler closes it.
+      if (
+        event.key === 'Escape' &&
+        card?.contains(event.target as Node) &&
+        !card.querySelector('[aria-expanded="true"]')
+      ) {
+        variantCreationRef.send({type: 'createVariant.cancel'})
+      }
+    }
+    document.addEventListener('keydown', onKeyDown, true)
+    return () => document.removeEventListener('keydown', onKeyDown, true)
+  }, [variantCreationRef])
 
   const variantDefinitions = useSelector(
     variantCreationRef,
@@ -71,25 +98,57 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
 
   const variantDefinitionOptions = [...(variantDefinitions?.values() ?? [])]
 
-  const variantDefinition =
-    variantDefinitions?.get(selectedVariantId ?? '') ?? variantDefinitionOptions[0]
+  // The form starts with no variant; "Create variant" waits for one to be picked.
+  const variantDefinition = variantDefinitions?.get(selectedVariantId ?? '')
 
+  // With no variant picked, every draft and release is offered: the Default variant's own draft is
+  // not a reason to leave out Drafts.
   const bundleOptions = getAvailableBundles({
     variantId: variantDefinition?._id,
     releases: releases ?? NO_RELEASES,
-    existingVariants,
+    existingVariants: variantDefinition ? existingVariants : [],
   })
+
+  // Add to starts on the current perspective: the release in view, or Drafts.
+  const currentPerspectiveBundle = bundleOptions.find((option) =>
+    typeof selectedPerspective === 'object'
+      ? option.type === 'release' && option.release._id === selectedPerspective._id
+      : option.type === 'drafts',
+  )
 
   const bundle =
     bundleOptions.find(
       (option) =>
         typeof selectedBundle !== 'undefined' &&
         getBundleKey(option) === getBundleKey(selectedBundle),
-    ) ?? bundleOptions[0]
+    ) ??
+    currentPerspectiveBundle ??
+    bundleOptions[0]
 
   const existingVersions = existingVariants.map(({document}) => document)
 
   const baseVersion = existingVersions.find(({_id}) => _id === selectedBaseId)
+
+  // The version "Nearest version" resolves to for the picked variant and bundle, named in its row.
+  const nearestBaseVersion = bundle
+    ? getNearestBaseVersion({
+        variantId: variantDefinition?._id,
+        bundle: toVariantCreationBundle(bundle),
+        versions: existingVersions,
+      })
+    : undefined
+  const nearestBaseSet = nearestBaseVersion
+    ? sets.find((set) => set.variants.some(({id}) => id === nearestBaseVersion._id))
+    : undefined
+  const nearestBase =
+    nearestBaseVersion && nearestBaseSet
+      ? {
+          variantName:
+            nearestBaseSet.variants.find(({id}) => id === nearestBaseVersion._id)?.name ??
+            t('document-group.base-variant'),
+          bundleName: nearestBaseSet.name,
+        }
+      : undefined
 
   const handleSelectBundle = (bundleKey: string) => {
     const option = bundleOptions.find((candidate) => getBundleKey(candidate) === bundleKey)
@@ -126,24 +185,25 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
   }
 
   return (
-    <>
-      <Header>
-        <VStack gap={2}>
-          <Text size={1} weight="medium" as="h2">
-            {t('document-group.create-variant')}
-          </Text>
-          <Text size={1} muted>
+    <Box flexShrink={0} padding={2}>
+      <Card
+        border
+        className={createVariantCard}
+        data-testid="create-variant-form"
+        padding={4}
+        radius={3}
+        ref={cardRef}
+        tone="transparent"
+      >
+        <div className={createVariantStack}>
+          <Text data-testid="create-variant-header" size={1} weight="medium" as="h2">
             <Translate
               t={t}
-              i18nKey="document-group.create-variant.description"
+              i18nKey="document-group.create-variant.form.header"
               components={{DocumentTitle}}
               componentProps={{documentTitle}}
             />
           </Text>
-        </VStack>
-      </Header>
-      <div data-testid="create-variant-form" className={createVariantForm}>
-        <div className={createVariantFormRow}>
           <SelectVariantDefinition
             variantDefinitions={variantDefinitionOptions}
             existingVariantIds={existingVariantIds}
@@ -153,45 +213,44 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
             }
             disabled={isVariantCreationPending}
           />
-        </div>
-        <div className={createVariantFormRow}>
           <SelectBundle
             bundles={bundleOptions}
             value={bundle}
             onChange={handleSelectBundle}
             disabled={isVariantCreationPending}
           />
-        </div>
-        <div className={createVariantFormRow}>
           <SelectBaseVersion
             sets={sets}
             releases={releases ?? NO_RELEASES}
             value={baseVersion}
+            nearestBase={nearestBase}
             onChange={(baseId) =>
               variantCreationRef.send({type: 'createVariant.selectBase', baseId})
             }
             disabled={isVariantCreationPending}
           />
+          <div className={createVariantActions}>
+            <Button
+              data-testid="create-variant-cancel"
+              mode="bleed"
+              text={t('document-group.create-variant.cancel-button.text')}
+              onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
+            />
+            <Button
+              data-testid="create-variant-confirm"
+              text={t('document-group.create-variant.confirm')}
+              loading={isVariantCreationPending}
+              disabled={
+                typeof variantDefinition === 'undefined' ||
+                typeof bundle === 'undefined' ||
+                isVariantCreationPending
+              }
+              onClick={handleCreate}
+            />
+          </div>
         </div>
-        <div className={createVariantFormFooter}>
-          <Button
-            mode="bleed"
-            text={t('document-group.create-variant.cancel-button.text')}
-            onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
-          />
-          <Button
-            text={t('document-group.create-variant')}
-            loading={isVariantCreationPending}
-            disabled={
-              typeof variantDefinition === 'undefined' ||
-              typeof bundle === 'undefined' ||
-              isVariantCreationPending
-            }
-            onClick={handleCreate}
-          />
-        </div>
-      </div>
-    </>
+      </Card>
+    </Box>
   )
 }
 

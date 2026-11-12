@@ -5,21 +5,22 @@ import {type VariantId} from '../../../variants/types'
 import {type VariantCreationBundle} from '../../machines/variantCreationMachine'
 
 /**
- * The version a new variant starts from when no other is picked.
+ * The version a new variant starts from when no other is picked. With no variant (the form
+ * before a variant is picked), it is the Default variant's version for the bundle.
  */
 export function getNearestBaseVersion({
   variantId,
   bundle,
   versions,
 }: {
-  variantId: VariantId
+  variantId: VariantId | undefined
   bundle: VariantCreationBundle
   versions: VersionInfoDocumentStub[]
 }): VersionInfoDocumentStub | undefined {
-  const publishedVariant = getVariantPublishedSibling({
-    variant: variantId,
-    documentVersions: versions,
-  })
+  const publishedVariant =
+    typeof variantId === 'undefined'
+      ? undefined
+      : getVariantPublishedSibling({variant: variantId, documentVersions: versions})
 
   if (publishedVariant) {
     return publishedVariant

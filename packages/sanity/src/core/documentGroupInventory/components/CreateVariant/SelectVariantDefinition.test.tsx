@@ -4,6 +4,7 @@ import {afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SystemVariant} from '../../../variants/types'
+import {MIN_MENU_WIDTH} from './CreateVariantPicker'
 import {SelectVariantDefinition} from './SelectVariantDefinition'
 
 function definition(id: string, title: string): SystemVariant {
@@ -59,22 +60,71 @@ describe('SelectVariantDefinition', () => {
     vi.unstubAllGlobals()
   })
 
-  it('keeps the width the picker had when it opened while the filter narrows the list', async () => {
-    // jsdom has no layout: the menu "measures" 320px when it opens
-    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
+  it('opens the menu as wide as the select, and keeps that width while the filter narrows the list', async () => {
+    // jsdom has no layout: the select "measures" 320px when the menu opens
+    const rect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue(new DOMRect(0, 0, 320, 33))
     try {
       const menu = await openMenu(new Set([NORDIC._id]))
-      await waitFor(() => expect(menu).toHaveStyle({width: '320px', minWidth: '320px'}))
+      await waitFor(() => expect(menu).toHaveStyle({width: '320px'}))
 
-      // The rows that are left are narrower, so the menu would shrink without the lock
-      offsetWidth.mockReturnValue(200)
       await userEvent.type(screen.getByPlaceholderText('Search variant definitions…'), 'dan')
 
       expect(within(menu).queryByText('German')).not.toBeInTheDocument()
-      expect(menu).toHaveStyle({width: '320px', minWidth: '320px', maxWidth: '320px'})
+      expect(menu).toHaveStyle({width: '320px'})
     } finally {
-      offsetWidth.mockRestore()
+      rect.mockRestore()
     }
+  })
+
+  it('never opens the menu narrower than MIN_MENU_WIDTH', async () => {
+    const menu = await openMenu(new Set())
+
+    expect(MIN_MENU_WIDTH).toBe(288)
+    expect(menu.style.minWidth).toBe(`min(${MIN_MENU_WIDTH}px, calc(100vw - 24px))`)
+  })
+
+  it('starts empty, with the hint and a variant mark', () => {
+    render(
+      <SelectVariantDefinition
+        variantDefinitions={[NORDIC, DANISH, GERMAN]}
+        existingVariantIds={new Set()}
+        value={undefined}
+        onChange={vi.fn()}
+        disabled={false}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByTestId('create-variant-variant-menu-value')).toHaveTextContent(
+      'Choose who sees it',
+    )
+    expect(
+      screen
+        .getByTestId('create-variant-variant-menu-glyph')
+        .querySelector('[data-ui="VariantMark"]'),
+    ).toBeInTheDocument()
+  })
+
+  it('shows the picked variant with its mark', () => {
+    render(
+      <SelectVariantDefinition
+        variantDefinitions={[NORDIC, DANISH, GERMAN]}
+        existingVariantIds={new Set([DANISH._id])}
+        value={DANISH}
+        onChange={vi.fn()}
+        disabled={false}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByTestId('create-variant-variant-menu-value')).toHaveTextContent('Danish')
+    expect(
+      screen
+        .getByTestId('create-variant-variant-menu-glyph')
+        .querySelector('[data-ui="VariantMark"][data-fill="filled"]'),
+    ).toBeInTheDocument()
   })
 
   it('focuses the search field when the picker opens, and the arrow keys move into the list', async () => {
