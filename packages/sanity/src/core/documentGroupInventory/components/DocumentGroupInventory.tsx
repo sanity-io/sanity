@@ -5,6 +5,7 @@ import {
   type RefAttributes,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react'
 import {
   combineLatest,
@@ -56,6 +57,13 @@ import {
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
 import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
+import {
+  getRowToggle,
+  getSetSelection,
+  type RangeAnchor,
+  SELECTION_BLOCKED_REASON_KEYS,
+  type SelectionBlockedReason,
+} from '../utils/selection'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -423,6 +431,7 @@ const Select: ComponentType<{
   /** Absent in read-only mode, where the version context menu is not rendered. */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
+  const {t} = useTranslation(studioLocaleNamespace)
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
   const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
   const perspective = usePerspective()
@@ -450,10 +459,34 @@ const Select: ComponentType<{
     ({context}) => context.filterMatchingVariantIds,
   )
 
+  const releases = useSelector(inventoryRef, ({context}) => context.releases)
+
+  const rangeAnchorRef = useRef<RangeAnchor>(null)
+
   return (
     <>
       {sets.map((set) => {
-        const variantIds = set.variants.map(({id}) => id)
+        const visibleVariants = set.variants.filter(
+          ({id}) => !hasFilterString || filterMatchingVariantIds.has(id),
+        )
+        const setSelection = getSetSelection({
+          variants: visibleVariants,
+          selectedIds,
+          getRelease: (variant) => resolveVariantRelease(variant, releases),
+        })
+
+        const toggleVariant = (variantId: string, shiftKey: boolean) => {
+          const toggle = getRowToggle({
+            setKey: set.key,
+            selectableIds: setSelection.selectableIds,
+            selectedIds,
+            anchor: rangeAnchorRef.current,
+            variantId,
+            shiftKey,
+          })
+          machine.send(toggle.event)
+          rangeAnchorRef.current = toggle.anchor
+        }
 
         return (
           <DocumentGroupSet
@@ -465,46 +498,48 @@ const Select: ComponentType<{
             bundle={set.bundle}
             readOnly={readOnly}
             locked={isLocked}
-            selectedIds={selectedIds}
-            checked={variantIds.length !== 0 && variantIds.every((id) => selectedIds.has(id))}
+            selectionState={setSelection.state}
+            blockedReason={
+              setSelection.groupBlockedReason
+                ? t(SELECTION_BLOCKED_REASON_KEYS[setSelection.groupBlockedReason])
+                : undefined
+            }
             onCheckedChange={(checked) =>
               machine.send({
                 type: checked ? 'selection.addMany' : 'selection.removeMany',
-                variantIds,
+                variantIds: setSelection.selectableIds,
               })
             }
           >
-            {set.variants
-              .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
+            {visibleVariants.map((variant) =>
               // The version context menu is a hook, so the two rows have to be
               // separate components rather than one row that skips the actions.
-              .map((variant) =>
-                readOnly ? (
-                  <ReadOnlyVariantRow
-                    key={variant.id}
-                    variant={variant}
-                    documentVersions={documentVersions}
-                    inventoryRef={inventoryRef}
-                    onSelect={onSelect}
-                    isSelected={selectedId === variant.id}
-                  />
-                ) : (
-                  <ManagedVariantRow
-                    key={variant.id}
-                    variant={variant}
-                    documentVersions={documentVersions}
-                    machine={machine}
-                    inventoryRef={inventoryRef}
-                    documentType={documentType}
-                    onSelect={onSelect}
-                    isSelected={selectedId === variant.id}
-                    servedStatus={
-                      servedVersion?.id === variant.id ? servedVersion.status : undefined
-                    }
-                    perspectiveList={perspectiveList}
-                  />
-                ),
-              )}
+              readOnly ? (
+                <ReadOnlyVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  documentVersions={documentVersions}
+                  inventoryRef={inventoryRef}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                />
+              ) : (
+                <ManagedVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  documentVersions={documentVersions}
+                  machine={machine}
+                  inventoryRef={inventoryRef}
+                  documentType={documentType}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                  servedStatus={servedVersion?.id === variant.id ? servedVersion.status : undefined}
+                  perspectiveList={perspectiveList}
+                  selectionBlockedReason={setSelection.blockedReasons.get(variant.id)}
+                  onToggleSelection={(shiftKey) => toggleVariant(variant.id, shiftKey)}
+                />
+              ),
+            )}
           </DocumentGroupSet>
         )
       })}
@@ -550,6 +585,10 @@ const ManagedVariantRow: ComponentType<{
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
+  /** Why this version cannot be selected for deletion, if it cannot. */
+  selectionBlockedReason: SelectionBlockedReason | undefined
+  /** Toggles this version's selection; with Shift, selects a range within its group. */
+  onToggleSelection: (shiftKey: boolean) => void
 }> = ({
   variant,
   documentVersions,
@@ -560,7 +599,10 @@ const ManagedVariantRow: ComponentType<{
   isSelected,
   servedStatus,
   perspectiveList,
+  selectionBlockedReason,
+  onToggleSelection,
 }) => {
+  const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -626,17 +668,26 @@ const ManagedVariantRow: ComponentType<{
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}
+        onToggleSelection={
+          isLocked || selectionBlockedReason ? undefined : () => onToggleSelection(false)
+        }
+        selectionBlockedReason={
+          selectionBlockedReason
+            ? t(SELECTION_BLOCKED_REASON_KEYS[selectionBlockedReason])
+            : undefined
+        }
         leading={
           <VariantCheckbox
-            data-visible={selectedIds.size !== 0}
+            label={t('document-group.select-version', {name: variant.name})}
+            tabbable={false}
             checked={selectedIds.has(variant.id)}
-            readOnly={isLocked}
-            onChange={() => {
-              machine.send({
-                type: 'selection.toggle',
-                variantId: variant.id,
-              })
-            }}
+            locked={isLocked}
+            blockedReason={
+              selectionBlockedReason
+                ? t(SELECTION_BLOCKED_REASON_KEYS[selectionBlockedReason])
+                : undefined
+            }
+            onChange={(_checked, {shiftKey}) => onToggleSelection(shiftKey)}
           />
         }
       />

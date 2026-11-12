@@ -595,6 +595,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
+  /** The button in the inventory's action bar that clears the selection */
+  'document-group.clear-selection': 'Clear',
   /**
    * The text of the actions that open the variant creation form and confirm the creation
    * @deprecated no longer in use
@@ -783,6 +785,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
   /** Accessible name of the versions flyout on a document list row */
   'document-group.flyout.title': 'Versions',
+  /** Accessible name of a group checkbox in the document group inventory, which selects every version in the group */
+  'document-group.select-group': 'Select all in {{name}}',
+  /** Accessible name of a version's checkbox in the document group inventory */
+  'document-group.select-version': 'Select {{name}}',
+  /** Why a version in a scheduled release cannot be selected for deletion in the document group inventory */
+  'document-group.select.blocked.scheduled-release':
+    'This version is in a scheduled release. Unschedule the release to delete it.',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */

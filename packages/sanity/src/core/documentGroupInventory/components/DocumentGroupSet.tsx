@@ -1,8 +1,11 @@
 import {type ComponentType, type ReactNode} from 'react'
 import {Flex, Text} from 'ui5'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
+import {type GroupSelectionState} from '../utils/selection'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 import {VariantSet} from './VariantSet/VariantSet'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
@@ -20,10 +23,12 @@ export const DocumentGroupSet: ComponentType<{
   headerActions?: ReactNode
   children: ReactNode
   bundle?: VariantSetBundle
-  selectedIds: ReadonlySet<string>
-  /** Whether every version in the set is selected. */
-  checked: boolean
+  /** The group checkbox's state, from the selectable versions in the set. */
+  selectionState: GroupSelectionState
+  /** Called with `true` to select every selectable version in the set, `false` to deselect them. */
   onCheckedChange: (checked: boolean) => void
+  /** Why no version in the set can be selected. Shown on the group checkbox. */
+  blockedReason?: string
   /** Whether the set's versions can never be selected, as in the picker. Omits the checkbox. */
   readOnly?: boolean
   /** Whether the selection is frozen, as it is while a deletion is in flight. */
@@ -34,45 +39,51 @@ export const DocumentGroupSet: ComponentType<{
   headerActions,
   children,
   bundle,
-  selectedIds,
-  checked,
+  selectionState,
   onCheckedChange,
+  blockedReason,
   readOnly,
   locked,
-}) => (
-  <VariantSet data-variant-set={name}>
-    <VariantSetHeader as="header">
-      <div className="variant-set-leading">
+}) => {
+  const {t} = useTranslation(studioLocaleNamespace)
+
+  return (
+    <VariantSet data-variant-set={name} data-selectable={!readOnly}>
+      <VariantSetHeader as="header">
         {!readOnly && (
-          <VariantCheckbox
-            data-visible={selectedIds.size !== 0}
-            checked={checked}
-            readOnly={locked}
-            onChange={(event) => onCheckedChange(event.currentTarget.checked)}
-          />
+          <div className="atom">
+            <VariantCheckbox
+              label={t('document-group.select-group', {name})}
+              checked={selectionState === 'checked'}
+              indeterminate={selectionState === 'indeterminate'}
+              locked={locked}
+              blockedReason={blockedReason}
+              onChange={(checked) => onCheckedChange(checked)}
+            />
+          </div>
         )}
-        <div className="variant-set-icon">
+        <div className="variant-set-icon" data-testid="variant-set-icon">
           {bundle?.type === 'agent' && (
             // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             <ReleaseAvatarIcon tone="suggest" />
           )}
           {bundle?.type === 'perspective' && <ReleaseAvatarIcon release={bundle.perspective} />}
         </div>
-      </div>
-      <div>
-        <Flex gap={2} alignItems="center">
-          <Text size={1} weight="medium" as="div" trim={true}>
-            {name}
-          </Text>
-          {typeof count === 'number' && (
-            <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
-              {count}
+        <div className="variant-set-text">
+          <Flex gap={2} alignItems="center">
+            <Text size={1} weight="medium" as="div" trim={true} data-testid="variant-set-name">
+              {name}
             </Text>
-          )}
-        </Flex>
-        {headerActions}
-      </div>
-    </VariantSetHeader>
-    {children}
-  </VariantSet>
-)
+            {typeof count === 'number' && (
+              <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
+                {count}
+              </Text>
+            )}
+          </Flex>
+          {headerActions}
+        </div>
+      </VariantSetHeader>
+      {children}
+    </VariantSet>
+  )
+}

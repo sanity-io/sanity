@@ -14,6 +14,9 @@ import {Header} from './Header'
 /**
  * The inventory's header, holding the actions that apply to the document group
  * as a whole. Each action is offered only while its machine accepts it.
+ *
+ * While at least one version is checked, the header row becomes the action bar:
+ * "N selected · Delete · Clear", the same bulk bar the Releases tool's document table shows.
  */
 export function InventoryHeader({
   selectionRef,
@@ -41,11 +44,14 @@ export function InventoryHeader({
   return (
     <Header>
       <div className="atom">
-        {selectedCount !== 0 && (
-          <Text size={1} as="div" trim={true}>
-            {t('document-group.selected-count', {count: selectedCount})}
-          </Text>
-        )}
+        {/* Always mounted, so the count is announced as it changes */}
+        <div role="status" aria-live="polite" data-testid="selected-count-status">
+          {selectedCount !== 0 && (
+            <Text size={1} as="div" trim={true}>
+              {t('document-group.selected-count', {count: selectedCount})}
+            </Text>
+          )}
+        </div>
         {canRequestDeletion && (
           <Ui5Button
             // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
@@ -71,7 +77,7 @@ export function InventoryHeader({
           <Ui5Button
             // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- button level, not user-facing copy
             level="tertiary"
-            text={t('document-group.deselect-all')}
+            text={t('document-group.clear-selection')}
             onClick={() => selectionRef.send({type: 'selection.clear'})}
           />
         </div>
