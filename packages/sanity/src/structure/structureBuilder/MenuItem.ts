@@ -113,7 +113,23 @@ export type PartialMenuItem = Partial<MenuItem>
 /**
  * Class for building menu items.
  *
- * @public */
+ * Menu items are added to a list with `menuItems()`, and are usually built with
+ * `S.menuItem()` rather than constructed directly.
+ *
+ * @public
+ *
+ * @example Adding a custom menu item to a document list
+ * ```ts
+ * S.documentTypeList('article')
+ *   .menuItems([
+ *     ...S.documentTypeList('article').getMenuItems() || [],
+ *     S.menuItem()
+ *       .title('Open docs')
+ *       .icon(DocumentIcon)
+ *       .action(() => window.open('https://www.sanity.io/docs'))
+ *   ])
+ * ```
+ */
 export class MenuItemBuilder implements Serializable<MenuItem> {
   /** menu item option object. See {@link PartialMenuItem} */
   protected spec: PartialMenuItem
@@ -137,6 +153,15 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Use with action 'setMenuItemState' to enable automatic selected state tracking.
    * @param id - unique identifier for the menu item
    * @returns menu item builder based on id provided. See {@link MenuItemBuilder}
+   *
+   * @example Two items sharing selected state, like radio buttons
+   * ```ts
+   * S.menuItem()
+   *   .id('density')
+   *   .title('Comfortable')
+   *   .action('setMenuItemState')
+   *   .params({value: 'comfortable'})
+   * ```
    */
   id(id: string): MenuItemBuilder {
     return this.clone({id})
@@ -154,6 +179,21 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item action
    * @param action - menu item action. See {@link MenuItemActionType}
    * @returns menu item builder based on action provided. See {@link MenuItemBuilder}
+   *
+   * @example A callback action
+   * ```ts
+   * S.menuItem()
+   *   .title('Refresh')
+   *   .action(() => window.location.reload())
+   * ```
+   *
+   * @example A built-in action, driven by `params()`
+   * ```ts
+   * S.menuItem()
+   *   .title('Sort by title')
+   *   .action('setSortOrder')
+   *   .params({by: [{field: 'title', direction: 'asc'}]})
+   * ```
    */
   action(action: MenuItemActionType): MenuItemBuilder {
     return this.clone({action})
@@ -171,6 +211,14 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item intent
    * @param intent - menu item intent. See {@link Intent}
    * @returns menu item builder based on intent provided. See {@link MenuItemBuilder}
+   *
+   * @example Navigating to a new document of a given type
+   * ```ts
+   * S.menuItem()
+   *   .title('Create article')
+   *   .icon(ComposeIcon)
+   *   .intent({type: 'create', params: {type: 'article'}})
+   * ```
    */
   intent(intent: Intent): MenuItemBuilder {
     return this.clone({intent})
@@ -188,6 +236,11 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item title
    * @param title - menu item title
    * @returns menu item builder based on title provided. See {@link MenuItemBuilder}
+   *
+   * @example
+   * ```ts
+   * S.menuItem().title('Open in new tab')
+   * ```
    */
   title(title: string): MenuItemBuilder {
     return this.clone({title})
@@ -206,6 +259,13 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set the i18n key and namespace used to populate the localized title.
    * @param i18n - object with i18n key and related namespace
    * @returns menu item builder based on i18n config provided. See {@link MenuItemBuilder}
+   *
+   * @example Preferred over `title()` in a localized studio
+   * ```ts
+   * S.menuItem()
+   *   .title('Open in new tab') // fallback when the key is missing
+   *   .i18n({title: {key: 'action.open-in-new-tab', ns: 'my-plugin'}})
+   * ```
    */
   i18n(i18n: I18nTextRecord<'title'>): MenuItemBuilder {
     return this.clone({i18n})
@@ -223,6 +283,11 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item group
    * @param group - menu item group
    * @returns menu item builder based on group provided. See {@link MenuItemBuilder}
+   *
+   * @example Grouping related items together in the menu
+   * ```ts
+   * S.menuItem().title('Sort by title').group('sorting')
+   * ```
    */
   group(group: string): MenuItemBuilder {
     return this.clone({group})
@@ -240,6 +305,13 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item icon
    * @param icon - menu item icon
    * @returns menu item builder based on icon provided. See {@link MenuItemBuilder}
+   *
+   * @example
+   * ```ts
+   * import {EarthGlobeIcon} from '@sanity/icons'
+   *
+   * S.menuItem().title('Preview').icon(EarthGlobeIcon)
+   * ```
    */
   icon(icon: React.ComponentType | React.ReactNode): MenuItemBuilder {
     return this.clone({icon})
@@ -257,6 +329,14 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item parameters
    * @param params - menu item parameters. See {@link MenuItemParamsType}
    * @returns menu item builder based on parameters provided. See {@link MenuItemBuilder}
+   *
+   * @example Parameters for a built-in action. See {@link KnownMenuItemParams}
+   * ```ts
+   * S.menuItem()
+   *   .title('Compact')
+   *   .action('setLayout')
+   *   .params({layout: 'compact'})
+   * ```
    */
   params(params: MenuItemParamsType): MenuItemBuilder {
     return this.clone({params})
@@ -274,6 +354,15 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Set menu item to show as action
    * @param showAsAction - determine if menu item should show as action
    * @returns menu item builder based on if it should show as action. See {@link MenuItemBuilder}
+   *
+   * @example Surfacing the item as a button rather than hiding it in the menu
+   * ```ts
+   * S.menuItem()
+   *   .title('Create article')
+   *   .icon(ComposeIcon)
+   *   .intent({type: 'create', params: {type: 'article'}})
+   *   .showAsAction()
+   * ```
    */
   showAsAction(showAsAction = true): MenuItemBuilder {
     return this.clone({showAsAction: Boolean(showAsAction)})
