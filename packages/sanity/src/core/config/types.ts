@@ -1805,7 +1805,7 @@ export interface BetaFeatures {
   /**
    * Config for the opt-in Comments API implementation.
    *
-   * @internal
+   * @beta
    */
   comments?: {
     v2?: boolean

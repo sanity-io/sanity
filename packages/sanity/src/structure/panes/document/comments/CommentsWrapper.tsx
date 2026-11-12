@@ -20,6 +20,7 @@ import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
+import {useScheduledDraftParam} from '../useScheduledDraftParam'
 
 interface CommentsWrapperProps {
   children: React.ReactNode
@@ -79,7 +80,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const scopeId = getTargetScopeId(targetDocumentState)
 
   const selectedCommentId = params?.comment
-  const scheduledDraft = params?.scheduledDraft
+  const scheduledDraft = useScheduledDraftParam(documentId)
   const paramsRef = useRef(params)
 
   useLayoutEffect(() => {
