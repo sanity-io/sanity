@@ -30,6 +30,10 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          # moving the PR branch onto the latest main can bring in workflow file changes
+          permission-workflows: write
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         id: create-pull-request
         with:
