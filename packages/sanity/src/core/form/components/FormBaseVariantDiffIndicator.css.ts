@@ -36,6 +36,9 @@ export const markButton = css({
   'display': 'inline-flex',
   'alignItems': 'center',
   'justifyContent': 'center',
+  // A 24x24 target whatever the glyph's size (WCAG 2.5.8): the drawn rhombus can be smaller.
+  'minWidth': '24px',
+  'minHeight': '24px',
   'padding': 0,
   'border': 0,
   'background': 'transparent',
