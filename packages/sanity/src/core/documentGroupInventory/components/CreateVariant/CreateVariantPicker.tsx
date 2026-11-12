@@ -50,6 +50,8 @@ function Trimmed({children, muted}: {children: ReactNode; muted?: boolean}) {
     const box = ref.current
     const svg = box?.querySelector('svg')
     if (!box || !svg) return
+    // The icon keeps its natural size: the box is as wide as the ink, the icon is shifted by a negative margin and never cropped or shrunk.
+    svg.style.flexShrink = '0'
     svg.style.marginLeft = '0px'
     const origin = svg.getBoundingClientRect().left
     let left = Infinity
@@ -78,7 +80,7 @@ function Trimmed({children, muted}: {children: ReactNode; muted?: boolean}) {
         justifyContent: 'center',
         lineHeight: 0,
         marginBlock: '-0.375rem',
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
     >
       {children}
