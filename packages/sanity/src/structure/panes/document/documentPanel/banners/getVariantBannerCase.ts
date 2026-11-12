@@ -70,7 +70,8 @@ export function getVariantBannerCase(input: VariantBannerCaseInput): VariantBann
 
   switch (perspective) {
     case 'drafts':
-      return {kind: 'create', perspective: 'drafts'}
+      // A live edit type has no drafts lane, so the variant is created as a published one: say so.
+      return {kind: 'create', perspective: hasDrafts ? 'drafts' : 'published'}
     case 'release':
       return {kind: 'create', perspective: 'release'}
     case 'locked-release':
