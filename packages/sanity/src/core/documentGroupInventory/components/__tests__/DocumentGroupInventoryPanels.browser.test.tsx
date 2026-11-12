@@ -676,6 +676,18 @@ describe('CreateVariant', () => {
     expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
   })
 
+  it('takes the focus when it opens, so Escape closes it without a click into the form', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await expect.element($variantTrigger).toHaveFocus()
+    await userEvent.keyboard('{Escape}')
+    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
   it('names the version Nearest version copies from on its second line', async () => {
     configure({disableAutoSnapshot: true})
     const {variantCreationRef} = startHarness()
@@ -725,6 +737,31 @@ describe('CreateVariant', () => {
     expect(Math.round($targetMenu.element().getBoundingClientRect().left)).toBe(
       Math.round(select.left),
     )
+  })
+
+  it('keeps a 288px menu inside the viewport when the select sits against its right edge', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <div style={{position: 'fixed', top: 0, right: 0}}>
+        <CreateVariantHarness variantCreationRef={variantCreationRef} width={280} />
+      </div>,
+    )
+
+    await userEvent.click($variantTrigger)
+    await expect.element($variantMenu).toBeVisible()
+    const select = $variantTrigger.element().getBoundingClientRect()
+    // Less room right of the select than the menu needs.
+    expect(window.innerWidth - select.left).toBeLessThan(MIN_MENU_WIDTH)
+    await expect
+      .poll(() => Math.round($variantMenu.element().getBoundingClientRect().width))
+      .toBe(MIN_MENU_WIDTH)
+    const menu = $variantMenu.element().getBoundingClientRect()
+    expect(menu.right).toBeLessThanOrEqual(window.innerWidth)
+    // Shifted left to fit, so it starts left of the select instead of on its edge.
+    expect(menu.left).toBeLessThan(select.left)
   })
 
   it('sets the select text at the size of the menu rows', async () => {
