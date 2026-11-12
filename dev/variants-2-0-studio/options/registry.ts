@@ -633,6 +633,72 @@ const STORIES: Record<string, Record<string, string>> = {
   },
 }
 
+// ---- Retired options (13 Nov 2026) ---------------------------------------------------------------------------------------------
+// The open-beta integration branch (preview/open-beta-2026-11-11) now ships these UIs, so their options are out of the picker. Their code is
+// still in this folder; `useOption` answers the stock baseline for them (design-options/store.ts), so the studio renders what ships.
+// To bring one back: restore its entry in COMPONENTS from commit c6ea4c11c0 (`git show c6ea4c11c0:dev/variants-2-0-studio/options/registry.ts`) and
+// remove its id here. Every retired option is still viewable as it was in the frozen archive:
+export const ARCHIVE_URL = 'https://variants-design-studio-archive.sanity.studio/'
+export const RETIRED: {id: string; tag: string; title: string; replacedBy: string}[] = [
+  {
+    id: 'c1',
+    tag: 'T1',
+    title: 'C1 Perspective bar',
+    replacedBy: '#15831 navbar menu rows, #15832 navbar chips',
+  },
+  {id: 'c2', tag: 'T2', title: 'C2 Document pills', replacedBy: '#15833 document pills'},
+  {
+    id: 'c4',
+    tag: 'T4',
+    title: 'C4 Inventory pane',
+    replacedBy: '#15883 night table, #15896 stays open, #15897 Manage versions in the bottom bar',
+  },
+  {
+    id: 'c7',
+    tag: 'T6',
+    title: 'C7 Banners',
+    replacedBy: '#15955, #15964 banner layout and variant banners',
+  },
+  {id: 'c9', tag: 'T5', title: 'C9 Field marks', replacedBy: '#15909 field marks'},
+  {
+    id: 'c14',
+    tag: 'C14',
+    title: 'C14 Manage versions placement',
+    replacedBy: '#15897 Manage versions in the bottom bar',
+  },
+  {id: 'fieldMarks', tag: 'FM', title: 'Field marks (E9)', replacedBy: '#15909 field marks'},
+  {id: 'listFlyout', tag: 'LF', title: 'List flyout', replacedBy: '#15884 list dots flyout'},
+  {id: 'listMark', tag: 'LM', title: 'List mark', replacedBy: '#15884 list dots flyout'},
+  {
+    id: 'markSelected',
+    tag: 'IC1',
+    title: 'Version mark on a selected row',
+    replacedBy: '#15884 list dots flyout (no code read this option)',
+  },
+  {id: 'navLayout', tag: 'NV', title: 'Navbar layout', replacedBy: '#15831 navbar menu rows'},
+  {
+    id: 'rowWidth',
+    tag: 'RW',
+    title: 'Address row width',
+    replacedBy: '#15831, #15832 navbar (the address row is gone with C1)',
+  },
+]
+const RETIRED_IDS = new Set(RETIRED.map((r) => r.id))
+
+// C3 keeps two options: the shipped dots flyout (#15884) as the baseline, and h, which no PR covers. a to f are retired with the rest of the list overlay.
+const c3 = COMPONENTS.find((c) => c.id === 'c3')
+if (c3) {
+  c3.options = c3.options.filter((o) => o.id === 'g' || o.id === 'h')
+  c3.defaultOption = 'g'
+  const shipped = c3.options.find((o) => o.id === 'g')
+  if (shipped) {
+    shipped.label = 'As shipped (dots flyout)'
+    shipped.summary =
+      "Core's status dots and their hover flyout exactly as shipped (#15884). Options a to f (the popover, the contained tile, the grouped lists) are retired; see the archive."
+  }
+}
+COMPONENTS.splice(0, COMPONENTS.length, ...COMPONENTS.filter((c) => !RETIRED_IDS.has(c.id)))
+
 for (const component of COMPONENTS) {
   // Card letters, rail letters and Options for all all read the option's place, so the place follows the id (C1 was a, b, d, e, c).
   component.options.sort((x, y) => x.id.localeCompare(y.id))
@@ -650,16 +716,36 @@ for (const component of COMPONENTS) {
   }
 }
 
+// The saved presets name options by `component.option`; parts that name a retired component, or an option a trimmed component no longer has,
+// are dropped so a preset still applies cleanly. Presets that end up identical to an earlier one are dropped too.
+const optionIds = new Map(COMPONENTS.map((c) => [c.id, new Set(c.options.map((o) => o.id))]))
+const seenDesigns = new Set<string>()
+const cleanPresets = (presets as {id: string; design: string}[]).flatMap((preset) => {
+  const design = preset.design
+    .split(',')
+    .filter((part) => {
+      const [key, val] = part.split('.')
+      if (RETIRED_IDS.has(key)) return false
+      const known = optionIds.get(key)
+      return !known || known.has(val)
+    })
+    .join(',')
+  if (seenDesigns.has(design)) return []
+  seenDesigns.add(design)
+  return [{...preset, design}]
+})
+
 defineDesignOptions({
   title: 'Design options',
   storageKey: 'variants-2-0-studio',
   components: COMPONENTS,
+  retired: [...RETIRED_IDS],
   groups: [
     // The open beta tickets first, under their ticket names (T1 to T6); everything else is an exploration, collapsed.
     {
-      label: 'Open beta · T1 to T6',
-      ids: ['c1', 'c2', 'c3', 'c4', 'c9', 'c7'],
-      tags: {c1: 'T1', c2: 'T2', c3: 'T3', c4: 'T4', c9: 'T5', c7: 'T6'},
+      label: 'Open beta',
+      ids: ['c3'],
+      tags: {c3: 'T3'},
     },
     {
       label: 'GA candidates',
@@ -682,7 +768,7 @@ defineDesignOptions({
       ],
       collapsed: true,
     },
-  ],
+  ].map((group) => ({...group, ids: group.ids.filter((id) => !RETIRED_IDS.has(id))})),
   scenario: {
     stages: [
       {id: 'open-beta', label: 'Open beta'},
@@ -698,12 +784,13 @@ defineDesignOptions({
       {value: 5, label: '5', title: 'Five and more: the rail and definitions'},
     ],
   },
-  presets,
+  presets: cleanPresets as unknown as typeof presets,
   defaultPreset: 'open-beta-locked',
   // The global pill shape (docs/initiatives/curation-perspective-selector/SHAPE-TOKEN.md): Round = shipped, Box = 3px.
   shape: {variable: '--v2-pill-radius', round: '999px', box: '3px'},
   diagrams: diagrams as unknown as DiagramFile,
   links: {
+    archive: ARCHIVE_URL,
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
     // The Options and Journeys remotes (static/options-remote.html, static/remote.html) are off until walkthroughs are rebuilt
     // inside the studio (DESIGN-STUDIO-AUDIT-2026-10-23.md). Add the two links back to turn their buttons on.

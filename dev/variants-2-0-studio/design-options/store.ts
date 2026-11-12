@@ -374,6 +374,7 @@ export function useOptionState(): State {
  */
 export function useOption(componentId: string): string {
   return useSyncExternalStore(subscribe, () => {
+    if (getConfig().retired?.includes(componentId)) return STOCK_OPTION
     const component = getComponent(componentId)
     return component ? resolveOption(component, current()) : 'a'
   })

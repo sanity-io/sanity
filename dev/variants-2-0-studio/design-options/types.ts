@@ -112,6 +112,11 @@ export interface DesignOptionsConfig {
   /** localStorage prefix; keep it unique per project. */
   storageKey: string
   components: ComponentDef[]
+  /**
+   * Component ids that are out of the picker because a shipped feature now builds that UI. `useOption` answers the stock baseline for them, so
+   * code that still reads them renders as the studio ships. The code stays in git; see RETIRED in options/registry.ts for how to restore one.
+   */
+  retired?: string[]
   groups: {
     label: string
     ids: string[]
@@ -132,6 +137,8 @@ export interface DesignOptionsConfig {
     storybookBase?: string
     /** A page that drives this window from another window (a remote). */ remote?: string
     /** The remote for the journeys, next to the options remote. */ journeysRemote?: string
+    /** The frozen archive that still shows the retired options as they were. */
+    archive?: string
   }
   /** The shared diagram spec (options/diagrams.json). Options with a `diagramKey` draw from it. */
   diagrams?: DiagramFile

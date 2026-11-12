@@ -9,6 +9,7 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {LinkIcon} from '@sanity/icons/Link'
 import {PlayIcon} from '@sanity/icons/Play'
@@ -1185,6 +1186,14 @@ function ConfigBody({
                   'popup,width=1280,height=860',
                 )
               }
+            />
+          ) : null}
+          {getConfig().links?.archive ? (
+            <FooterAction
+              icon={EyeOpenIcon}
+              iconOnly={iconOnly}
+              label="See retired options"
+              onClick={() => window.open(getConfig().links!.archive, '_blank', 'noopener')}
             />
           ) : null}
           <FooterAction
