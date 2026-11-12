@@ -142,6 +142,7 @@ export const CreateVariantPicker: ComponentType<{
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const id = useId()
+  const titleId = useId()
   const [filterQuery, setFilterQuery] = useState('')
   const [menuWidth, setMenuWidth] = useState<number | undefined>(undefined)
   const focusSearchField = useFocusSearchOnOpen()
@@ -175,7 +176,9 @@ export const CreateVariantPicker: ComponentType<{
 
   return (
     <div className={createVariantPickerField} data-testid={`${testId}-field`}>
-      <Text size={1} weight="medium" as="label" htmlFor={id}>
+      {/* A plain title, not a <label>: clicking a label for a button clicks the button, which
+          would open the menu from the title. The select takes its name from the title instead. */}
+      <Text size={1} weight="medium" id={titleId} data-testid={`${testId}-title`}>
         {label}
       </Text>
       <MenuButton
@@ -188,6 +191,7 @@ export const CreateVariantPicker: ComponentType<{
         }}
         button={
           <UIButton
+            aria-labelledby={`${titleId} ${id}`}
             className={createVariantPickerSelect}
             data-testid={`${testId}-button`}
             disabled={disabled || leadingOptions.length + options.length === 0}
