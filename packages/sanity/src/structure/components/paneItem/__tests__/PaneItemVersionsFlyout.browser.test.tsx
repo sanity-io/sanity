@@ -1,10 +1,11 @@
+import {useEffect, useState} from 'react'
 import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
 import {describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {PaneItemVersionsFlyout} from '../PaneItemVersionsFlyout'
+import {CLOSE_DELAY, PaneItemVersionsFlyout} from '../PaneItemVersionsFlyout'
 
 const paneRouterContextValue = {
   index: 1,
@@ -28,6 +29,16 @@ function renderList({onPick}: {onOpenInventory: () => void; onPick: () => void})
       </button>
     </div>
   )
+}
+
+/** The row's preview loads first, so the flyout mounts after the pointer is already over the row. */
+function LateFlyout() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 200)
+    return () => clearTimeout(timer)
+  }, [])
+  return mounted ? <PaneItemVersionsFlyout childId="winterhold" renderList={renderList} /> : null
 }
 
 function renderRow(onRowClick = vi.fn()) {
@@ -91,5 +102,52 @@ describe('PaneItemVersionsFlyout', () => {
     // A second tap closes it
     tap(dots.element())
     await expect.poll(() => page.getByRole('menu', {name: 'Versions'}).elements().length).toBe(0)
+  })
+
+  it('stays open after the finger lifts, which sends the row a pointerleave', async () => {
+    renderRow()
+    const dots = page.getByTestId('dots')
+    await expect.element(dots).toBeVisible()
+
+    tap(dots.element())
+    await expect.element(page.getByRole('menu', {name: 'Versions'})).toBeVisible()
+
+    // A touch pointer leaves the row as soon as the finger lifts
+    page
+      .getByTestId('row')
+      .element()
+      .dispatchEvent(new PointerEvent('pointerleave', {pointerType: 'touch', bubbles: false}))
+    await new Promise((resolve) => setTimeout(resolve, CLOSE_DELAY + 500))
+
+    expect(page.getByRole('menu', {name: 'Versions'}).elements()).toHaveLength(1)
+  })
+
+  it('moves focus into the flyout on the right arrow key when hover already opened it', async () => {
+    renderRow()
+    const row = page.getByTestId('row')
+    await row.hover()
+    await expect.element(page.getByRole('menu', {name: 'Versions'})).toBeVisible()
+
+    ;(row.element() as HTMLElement).focus()
+    await userEvent.keyboard('{ArrowRight}')
+
+    await expect.element(page.getByRole('menuitem', {name: 'Default'})).toHaveFocus()
+  })
+
+  it('opens when the pointer was already over the row before the flyout mounted', async () => {
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <PaneRouterContext.Provider value={paneRouterContextValue}>
+          <div style={{padding: 40}}>
+            <a data-pane-item-row="" data-testid="row" href="#row" tabIndex={-1}>
+              Winterhold
+              <LateFlyout />
+            </a>
+          </div>
+        </PaneRouterContext.Provider>
+      </TestWrapper>,
+    )
+    await page.getByTestId('row').hover()
+    await expect.element(page.getByRole('menu', {name: 'Versions'})).toBeVisible()
   })
 })
