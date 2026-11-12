@@ -117,9 +117,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentVersionsStatusIndicator documentVersions={versions} />
-        {versionsLinkChildId && (
-          <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList} />
+        {versionsLinkChildId ? (
+          <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList}>
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
+          </PaneItemVersionsFlyout>
+        ) : (
+          <DocumentVersionsStatusIndicator documentVersions={versions} />
         )}
       </Flex>
     </TooltipDelayGroupProvider>

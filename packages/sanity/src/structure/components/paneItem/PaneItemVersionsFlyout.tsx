@@ -1,5 +1,6 @@
 import {
   type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   type MouseEvent,
   useCallback,
@@ -18,6 +19,8 @@ import {insideTriangle, type Point} from './hoverIntent'
 /** Attribute on the row of a document list item the flyout opens from. */
 const PANE_ITEM_ROW_ATTRIBUTE = 'data-pane-item-row'
 
+const DOTS_STYLE = {display: 'contents'} as const
+
 /** How long the pointer rests on a row before its flyout opens, so sweeping down a list shows none. */
 export const OPEN_DELAY = 300
 /** How long the flyout stays open after the pointer left the row and the flyout. */
@@ -27,7 +30,8 @@ const STALL_DELAY = 250
 
 /**
  * The flyout of a document list row: the document's versions, opened by hovering anywhere on the
- * row (after a short delay) or with ArrowRight on the focused row. Picking a version opens the
+ * row (after a short delay), with ArrowRight on the focused row, or by a tap on the version dots
+ * (`children`) on a touch screen, which has no hover. Picking a version opens the
  * document with the document group inventory open beside it.
  *
  * Renders nothing in place: it finds its row through the `data-pane-item-row` ancestor and listens
@@ -37,10 +41,12 @@ const STALL_DELAY = 250
  */
 export function PaneItemVersionsFlyout(props: {
   childId: string
+  /** The version dots of the row. A tap on them opens the flyout on a touch screen. */
+  children?: ReactNode
   /** Renders the flyout's content. A pick or the inventory row opens the inventory. */
   renderList: (actions: {onOpenInventory: () => void; onPick: () => void}) => ReactNode
 }) {
-  const {childId, renderList} = props
+  const {childId, children, renderList} = props
   const {navigate} = useRouter()
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
 
@@ -53,6 +59,7 @@ export function PaneItemVersionsFlyout(props: {
   const lastPoint = useRef<Point | null>(null)
   const stopTracking = useRef<(() => void) | null>(null)
   const focusFirst = useRef(false)
+  const touchToggled = useRef(false)
 
   const clearTimers = useCallback(() => {
     clearTimeout(openTimer.current)
@@ -144,6 +151,37 @@ export function PaneItemVersionsFlyout(props: {
     }
   }, [clearTimers, closeSoon, keepOpen, row])
 
+  // The row is the flyout's trigger: say that it opens a menu, and whether it is open.
+  useEffect(() => {
+    if (!row) return undefined
+    row.setAttribute('aria-haspopup', 'menu')
+    return () => {
+      row.removeAttribute('aria-haspopup')
+      row.removeAttribute('aria-expanded')
+    }
+  }, [row])
+  useEffect(() => {
+    row?.setAttribute('aria-expanded', String(open))
+  }, [open, row])
+
+  // A touch screen has no hover, so a tap on the dots opens the flyout (and a second tap closes
+  // it). The tap would also follow the row's link, so the click that comes after it is stopped.
+  const handleDotsPointerUp = useCallback(
+    (event: ReactPointerEvent<HTMLSpanElement>) => {
+      if (event.pointerType !== 'touch') return
+      touchToggled.current = true
+      clearTimers()
+      setOpen((current) => !current)
+    },
+    [clearTimers],
+  )
+  const handleDotsClick = useCallback((event: MouseEvent<HTMLSpanElement>) => {
+    if (!touchToggled.current) return
+    touchToggled.current = false
+    event.preventDefault()
+    event.stopPropagation()
+  }, [])
+
   // Escape and scrolling close it.
   useEffect(() => {
     if (!open) return undefined
@@ -233,6 +271,13 @@ export function PaneItemVersionsFlyout(props: {
   return (
     <>
       <span aria-hidden hidden ref={setAnchor} />
+      {children !== undefined && (
+        // `display: contents` keeps the dots laid out as they were; the handlers see the taps
+        // that bubble up from them
+        <span onClick={handleDotsClick} onPointerUp={handleDotsPointerUp} style={DOTS_STYLE}>
+          {children}
+        </span>
+      )}
       {open && row && (
         <Popover
           arrow={false}
