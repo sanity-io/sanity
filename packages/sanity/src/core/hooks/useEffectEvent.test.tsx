@@ -24,7 +24,6 @@ describe('useEffectEvent', () => {
         return () => {
           listeners.delete(onEvent)
         }
-        // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
       }, [])
     }
 
