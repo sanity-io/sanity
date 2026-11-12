@@ -652,6 +652,18 @@ describe('CreateVariant', () => {
     expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
   })
 
+  it('takes the focus when it opens, so Escape closes it without a click into the form', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await expect.element($variantTrigger).toHaveFocus()
+    await userEvent.keyboard('{Escape}')
+    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
   it('names the version Nearest version copies from on its second line', async () => {
     configure({disableAutoSnapshot: true})
     const {variantCreationRef} = startHarness()

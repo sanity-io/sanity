@@ -54,6 +54,14 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // The header button that opened the form is gone, so focus would fall to the page and Escape
+    // would not reach the form. Focus moves to the first select instead.
+    cardRef.current
+      ?.querySelector<HTMLElement>('[data-testid="create-variant-variant-menu-button"]')
+      ?.focus({preventScroll: true})
+  }, [])
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const card = cardRef.current
       // Escape closes the form while the focus is in it. While one of its menus is open, the menu
