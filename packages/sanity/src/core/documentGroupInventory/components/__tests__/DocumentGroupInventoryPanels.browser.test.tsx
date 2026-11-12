@@ -664,6 +664,43 @@ describe('CreateVariant', () => {
     expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
   })
 
+  it('opens a menu from its select only, not from the field title or the space beside it', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    const fields = [
+      {title: 'create-variant-variant-menu-title', $trigger: $variantTrigger, $menu: $variantMenu},
+      {title: 'create-variant-target-menu-title', $trigger: $targetTrigger, $menu: $targetMenu},
+      {title: 'create-variant-base-menu-title', $trigger: $baseTrigger, $menu: $baseMenu},
+    ]
+    // A menu that never opened is not mounted yet; one that closed is hidden. Neither is open.
+    const isOpen = ($menu: typeof $variantMenu) =>
+      $menu.elements().some((element) => element.checkVisibility())
+    for (const {title, $trigger, $menu} of fields) {
+      const $title = page.getByTestId(title)
+      await userEvent.click($title)
+      await expect.poll(() => isOpen($menu)).toBe(false)
+
+      // The empty space right of the title, on the same line.
+      const titleBox = $title.element().getBoundingClientRect()
+      const triggerBox = $trigger.element().getBoundingClientRect()
+      await userEvent.click($title, {
+        position: {x: triggerBox.right - titleBox.left - 4, y: titleBox.height / 2},
+      })
+      await expect.poll(() => isOpen($menu)).toBe(false)
+
+      await userEvent.click($trigger)
+      await expect.element($menu).toBeVisible()
+      await userEvent.keyboard('{Escape}')
+      await expect.element($menu).not.toBeVisible()
+    }
+    // The select is still named by its title.
+    await expect.element(page.getByRole('button', {name: /^Add to/})).toBeVisible()
+  })
+
   it('names the version Nearest version copies from on its second line', async () => {
     configure({disableAutoSnapshot: true})
     const {variantCreationRef} = startHarness()
