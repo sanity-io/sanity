@@ -1310,8 +1310,8 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0
       semver:
-        specifier: ^7.8.5
-        version: 7.8.5
+        specifier: ^7.8.6
+        version: 7.8.6
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1323,7 +1323,7 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: ^7.8.0
         version: 7.8.0
       vite:
         specifier: 'catalog:'
@@ -1521,8 +1521,8 @@ importers:
         specifier: ^7.0.8
         version: 7.1.1
       semver:
-        specifier: ^7.8.5
-        version: 7.8.5
+        specifier: ^7.8.6
+        version: 7.8.6
       turndown:
         specifier: ^7.2.5
         version: 7.2.5
@@ -1543,7 +1543,7 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: ^7.8.0
         version: 7.8.0
       '@types/turndown':
         specifier: ^5.0.6
@@ -2536,8 +2536,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4
       semver:
-        specifier: ^7.8.5
-        version: 7.8.5
+        specifier: ^7.8.6
+        version: 7.8.6
       speakingurl:
         specifier: ^14.0.1
         version: 14.0.1
@@ -2636,7 +2636,7 @@ importers:
         specifier: 'catalog:'
         version: 19.3.0
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: ^7.8.0
         version: 7.8.0
       '@types/speakingurl':
         specifier: ^13.0.6
@@ -2888,7 +2888,7 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: ^7.8.0
         version: 7.8.0
       chalk:
         specifier: ^6.0.1
@@ -2903,8 +2903,8 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
       semver:
-        specifier: ^7.8.5
-        version: 7.8.5
+        specifier: ^7.8.6
+        version: 7.8.6
 
 packages:
 
@@ -15328,8 +15328,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.8.5:
-    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
+  semver@7.8.6:
+    resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -19946,7 +19946,7 @@ snapshots:
       https-proxy-agent: 7.0.6(supports-color@8.1.1)
       node-fetch: 2.7.0
       nopt: 8.1.0
-      semver: 7.8.5
+      semver: 7.8.6
       tar: 7.5.22
     transitivePeerDependencies:
       - encoding
@@ -20340,7 +20340,7 @@ snapshots:
       indent-string: 4.0.0
       lilconfig: 3.1.3
       minimatch: 10.2.6
-      semver: 7.8.5
+      semver: 7.8.6
       string-width: 4.2.3
       supports-color: 8.1.1
       tinyglobby: 0.2.17
@@ -22100,7 +22100,7 @@ snapshots:
       picomatch: 4.0.7
       react: 19.3.1
       react-is: 19.3.1
-      semver: 7.8.5
+      semver: 7.8.6
       vite: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       zod: 4.6.7
     optionalDependencies:
@@ -22224,7 +22224,7 @@ snapshots:
       pretty-ms: 9.3.1
       promise-props-recursive: 2.0.2
       rxjs: 7.8.2
-      semver: 7.8.5
+      semver: 7.8.6
       skills: 1.7.2
       smol-toml: 1.9.1
       string-argv: 0.3.2
@@ -22910,7 +22910,7 @@ snapshots:
       '@vitejs/plugin-react': 6.3.0(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.155.0)(vite@8.3.6)
       form-data: 4.0.6
       rxjs: 7.8.2
-      semver: 7.8.5
+      semver: 7.8.6
       tar: 7.5.22
       vite: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       zod: 4.6.7
@@ -23098,7 +23098,7 @@ snapshots:
   '@simple-libs/normalize-package-data@1.0.0':
     dependencies:
       '@simple-libs/hosted-git-info': 2.0.0
-      semver: 7.8.5
+      semver: 7.8.6
 
   '@simple-libs/stream-utils@2.0.0': {}
 
@@ -23286,7 +23286,7 @@ snapshots:
       npm-run-path: 6.0.0
       progress: 2.0.3
       rxjs: 7.8.2
-      semver: 7.8.5
+      semver: 7.8.6
       source-map: 0.7.6
       tree-kill: 1.2.2
       tslib: 2.8.1
@@ -23308,7 +23308,7 @@ snapshots:
       '@stryker-mutator/api': 10.0.0
       '@stryker-mutator/util': 10.0.0
       angular-html-parser: 10.11.0
-      semver: 7.8.5
+      semver: 7.8.6
       tslib: 2.8.1
       weapon-regex: 2.0.6
 
@@ -23319,7 +23319,7 @@ snapshots:
       '@stryker-mutator/api': 10.0.0
       '@stryker-mutator/core': 10.0.0(@types/node@24.19.2)
       '@stryker-mutator/util': 10.0.0
-      semver: 7.8.5
+      semver: 7.8.6
       tslib: 2.8.1
       vitest: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.6)
 
@@ -23808,7 +23808,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.56.1
       debug: 4.4.3(supports-color@8.1.1)
       minimatch: 10.2.6
-      semver: 7.8.5
+      semver: 7.8.6
       tinyglobby: 0.2.17
       ts-api-utils: 2.5.0(typescript@7.0.2)
       typescript: 7.0.2
@@ -23823,7 +23823,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.71.2
       debug: 4.4.3(supports-color@8.1.1)
       minimatch: 10.2.6
-      semver: 7.8.5
+      semver: 7.8.6
       tinyglobby: 0.2.17
       ts-api-utils: 2.5.0(typescript@7.0.2)
       typescript: 7.0.2
@@ -25325,7 +25325,7 @@ snapshots:
 
   chromatic@18.13.6(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1):
     dependencies:
-      semver: 7.8.5
+      semver: 7.8.6
     optionalDependencies:
       '@chromatic-com/playwright': 1.0.0(@playwright/test@1.64.0)(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)
       '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.0.4)
@@ -26833,7 +26833,7 @@ snapshots:
       get-it: 8.8.3
       registry-auth-token: 5.1.1
       registry-url: 7.2.0
-      semver: 7.8.5
+      semver: 7.8.6
 
   get-package-type@0.1.0: {}
 
@@ -26918,7 +26918,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.8.5
+      semver: 7.8.6
       serialize-error: 7.0.1
     optional: true
 
@@ -27330,7 +27330,7 @@ snapshots:
 
   is-bun-module@2.0.0:
     dependencies:
-      semver: 7.8.5
+      semver: 7.8.6
 
   is-core-module@2.17.0:
     dependencies:
@@ -27636,7 +27636,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.5
+      semver: 7.8.6
     optional: true
 
   jwa@2.0.1:
@@ -28285,7 +28285,7 @@ snapshots:
 
   node-abi@3.98.0:
     dependencies:
-      semver: 7.8.5
+      semver: 7.8.6
 
   node-addon-api@7.1.1: {}
 
@@ -28339,7 +28339,7 @@ snapshots:
   normalize-package-data@8.0.0:
     dependencies:
       hosted-git-info: 9.0.3
-      semver: 7.8.5
+      semver: 7.8.6
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -29249,7 +29249,7 @@ snapshots:
       react: 19.3.1
       rfdc: 1.4.1
       rxjs: 7.8.2
-      semver: 7.8.5
+      semver: 7.8.6
       simple-git: 3.36.0(supports-color@8.1.1)
       socket.io: 4.8.4(supports-color@8.1.1)
       socket.io-client: 4.8.4(supports-color@8.1.1)
@@ -30224,7 +30224,7 @@ snapshots:
 
   semver@7.7.4: {}
 
-  semver@7.8.5: {}
+  semver@7.8.6: {}
 
   send@1.2.1(supports-color@8.1.1):
     dependencies:
@@ -30287,7 +30287,7 @@ snapshots:
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
-      semver: 7.8.5
+      semver: 7.8.6
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.5
       '@img/sharp-darwin-x64': 0.34.5
@@ -30555,7 +30555,7 @@ snapshots:
       esbuild: 0.27.7
       open: 10.2.0
       recast: 0.23.21
-      semver: 7.8.5
+      semver: 7.8.6
       use-sync-external-store: 1.7.0(react@19.3.1)
       ws: 8.22.0
     optionalDependencies:
@@ -30582,7 +30582,7 @@ snapshots:
       oxc-parser: 0.127.0
       oxc-resolver: 11.21.2
       recast: 0.23.21
-      semver: 7.8.5
+      semver: 7.8.6
       use-sync-external-store: 1.7.0(react@19.3.1)
       ws: 8.22.0
     optionalDependencies:
