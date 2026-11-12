@@ -1987,6 +1987,97 @@ describe('createOAuthAuthStore', () => {
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
     })
 
+    it.each([
+      // Another tab holds the refresh lock while its token request hangs.
+      ['the refresh lock is held elsewhere', () => new Promise<never>(() => {})],
+      ['the refresh lock cannot be taken', () => Promise.reject(new Error('SecurityError'))],
+    ])(
+      'signs out at once when %s',
+      async (_case, withLock: OAuthAuthStoreEnvironment['withLock']) => {
+        // A logout that waits for the lock leaves the pair behind if the tab closes first, and
+        // the next person to open the Studio in that browser is signed in as this user.
+        localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+        const {factory} = createMockClientFactory(new Set(['access-1']))
+        const endpoints = createMockEndpoints()
+        const store = _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints,
+          ...createEnvironment(),
+          withLock,
+        })
+        await authenticatedState(store.state)
+
+        void store.logout!().catch(() => {})
+        await settle(0)
+
+        expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+        await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
+        expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
+      },
+    )
+
+    it('does not let a renewal in another tab sign the user back in when the logout could not be recorded', async () => {
+      // Tab A renews while tab B signs out. Tab B cannot write the logout epoch (full storage),
+      // so tab A stores and broadcasts its new pair as if nothing happened. Tab B ended that
+      // session, so it clears the pair again and revokes it.
+      const signedInAt = Date.now() - 60_000
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          expiresAt: Date.now() - 1000,
+          signedInAt,
+        }),
+      )
+      let resolveRefresh: (response: OAuthTokenResponse) => void = () => {}
+      const endpoints = createMockEndpoints({
+        refresh: vi.fn(
+          () =>
+            new Promise<OAuthTokenResponse>((resolve) => {
+              resolveRefresh = resolve
+            }),
+        ),
+      })
+      const {factory} = createMockClientFactory(new Set(['access-2']))
+      const createTab = () =>
+        _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints,
+          ...createEnvironment(),
+        })
+      const tabA = createTab()
+      const tabB = createTab()
+      const subscription = tabA.state.subscribe({error: () => {}})
+      await vi.waitFor(() => expect(endpoints.refresh).toHaveBeenCalledTimes(1))
+
+      const setItem = Storage.prototype.setItem
+      const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (
+        this: Storage,
+        key: string,
+        value: string,
+      ) {
+        if (key.endsWith('_logout')) throw new DOMException('full', 'QuotaExceededError')
+        setItem.call(this, key, value)
+      })
+      await tabB.logout!()
+      spy.mockRestore()
+      resolveRefresh(tokenResponse('access-2', 'refresh-2'))
+
+      await vi.waitFor(() => expect(localStorage.getItem(TOKENS_KEY)).toBeNull())
+      await settle(50)
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      await expect(firstValueFrom(tabB.state)).resolves.toMatchObject({authenticated: false})
+      await expect(firstValueFrom(tabA.state)).resolves.toMatchObject({authenticated: false})
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'})
+      subscription.unsubscribe()
+    })
+
     it('does not let a refresh that was in flight sign the user back in', async () => {
       localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
       const {factory} = createMockClientFactory(new Set(['access-1', 'access-2']))

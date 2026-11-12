@@ -47,11 +47,7 @@ import {canonicalHash} from '../../../util/canonicalHash'
 import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 import {type AuthState, type AuthStore} from '../types'
 import {createAuthIdProbe} from '../utils/createAuthIdProbe'
-import {
-  type BroadcastedState,
-  createBroadcastState,
-  createLocalStorageStorage,
-} from '../utils/createBroadcastState'
+import {createLocalStorageStorage} from '../utils/createBroadcastState'
 import {getCurrentUser} from '../utils/getCurrentUser'
 import {
   keepAuthorizationResponse,
@@ -87,6 +83,7 @@ import {
   sessionAgeBucket,
   tokenLifetimeBucket,
 } from './telemetry'
+import {createOAuthTokenStorage} from './tokenStorage'
 import {type OAuthCallbackResult} from './types'
 
 /** How long before expiry the access token is renewed, unless configured. */
@@ -261,16 +258,6 @@ function exchangeFailureReason(err: unknown): string {
   return 'code exchange failed'
 }
 
-/** State kept in this tab only, with the shape of a broadcast state. */
-function createTabState<T>(): Pick<BroadcastedState<T>, 'value' | 'get' | 'update'> {
-  const subject = new BehaviorSubject<T | undefined>(undefined)
-  return {
-    value: subject.asObservable(),
-    get: () => subject.getValue(),
-    update: (value) => subject.next(value),
-  }
-}
-
 /**
  * Refuses a redirect URL the authorization server would reject, before the flow is stored: it has
  * to be absolute and without a fragment (RFC 6749 section 3.1.2). `redirectUri` also has to be on
@@ -409,16 +396,14 @@ export function _createOAuthAuthStore({
   // another tab already rotated, redeem its used refresh token, and sign both tabs out.
   const tokensStorageKey = getOAuthTokensStorageKey(projectId, clientId)
   const persistedTokens = createLocalStorageStorage<OAuthTokens>(tokensStorageKey)
-  const tokenStorage: Pick<
-    BroadcastedState<OAuthTokens>,
-    'value' | 'get' | 'update'
-  > = supportsLocalStorage
-    ? createBroadcastState<OAuthTokens>(
-        `${tokensStorageKey}_broadcast`,
-        (current) => current,
-        persistedTokens,
-      )
-    : createTabState<OAuthTokens>()
+  const tokenStorage = createOAuthTokenStorage({
+    broadcastKey: `${tokensStorageKey}_broadcast`,
+    persisted: supportsLocalStorage ? persistedTokens : undefined,
+    onDiscard: (tokens) => {
+      debug('a pair from a session this tab signed out of was stored, clearing and revoking it')
+      void revokeTokens(tokens)
+    },
+  })
 
   debug('store created for project %s, client %s, issuer %s', projectId, clientId, issuer)
 
@@ -630,16 +615,6 @@ export function _createOAuthAuthStore({
   }
 
   /**
-   * Every access token this store has held, from this tab or another one, with the session it
-   * belongs to (`signedInAt`, which renewals carry over). One is added per sign-in or renewal, so
-   * the map stays small.
-   */
-  const issuedAccessTokens = new Map<string, number | undefined>()
-  tokenStorage.value.subscribe((tokens) => {
-    if (tokens) issuedAccessTokens.set(tokens.accessToken, tokens.signedInAt)
-  })
-
-  /**
    * Renews the access token when a request is rejected with an invalid session, and retries the
    * request once. Only a request that carried one of this store's tokens is retried: one with a
    * credential of its own, or none, is passed on as it is. Installed inside the Studio's request
@@ -663,13 +638,14 @@ export function _createOAuthAuthStore({
       // The request came from a client with a credential of its own: a `token` on the request,
       // or a `withConfig({token})`, `withConfig({withCredentials: true})` or anonymous copy of a
       // studio client. Retrying with the user's token would send it where it wasn't meant to go.
-      if (!sent || !issuedAccessTokens.has(sent)) {
+      const session = sent === undefined ? null : tokenStorage.sessionOf(sent)
+      if (session === null) {
         debug('request rejected: %s did not carry a token of ours, not retrying', request.url)
         throw err
       }
       // The request was sent in a session that has since ended: a logout and a new sign-in,
       // possibly as someone else. Retrying it with the current token would run it as them.
-      if (issuedAccessTokens.get(sent) !== current.signedInAt) {
+      if (session !== current.signedInAt) {
         debug('request rejected: %s was sent in an earlier session, not retrying', request.url)
         throw err
       }
@@ -1328,23 +1304,24 @@ export function _createOAuthAuthStore({
     try {
       if (supportsLocalStorage) localStorage.setItem(logoutEpochKey, createState())
     } catch {
-      // Best-effort: other tabs then only stop at the lock.
+      // Best-effort: when storage refuses the write, only this tab's requests in flight see the
+      // logout.
     }
-    // Under the refresh lock, so a refresh in flight in any tab settles first, and the pair
-    // revoked here is the latest one rather than the one it was about to replace.
-    const revoked = await withLock(refreshLockName, async () => {
-      const tokens = latestTokens() ?? tokenStorage.get()
-      clearFlow(flowStorageKey)
-      tokenStorage.update(undefined)
-      if (tokens) reportSessionEnded(options?.reason ?? 'user-signed-out', tokens)
-      return tokens
-    })
+    // Cleared right away, not under the refresh lock: another tab can hold that lock for as long
+    // as a token request takes, and a tab closed while waiting for it would leave the pair for the
+    // next person to open the Studio in this browser. A refresh or code exchange in flight sees
+    // the epoch change above and revokes the pair it obtains instead of storing it.
+    const tokens = latestTokens() ?? tokenStorage.get()
+    if (tokens) tokenStorage.endSession(tokens)
+    clearFlow(flowStorageKey)
+    tokenStorage.update(undefined)
     // Best-effort and not awaited, like `createLegacyAuthStore`: a forced logout reacting to a 401
     // revokes tokens that are already dead, and a slow or failed revocation must not keep the
     // user signed in.
-    if (revoked) {
-      debug('logout: revoking %s', describeTokens(revoked))
-      void revokeTokens(revoked)
+    if (tokens) {
+      reportSessionEnded(options?.reason ?? 'user-signed-out', tokens)
+      debug('logout: revoking %s', describeTokens(tokens))
+      void revokeTokens(tokens)
     }
     debug('logout: done')
   }
