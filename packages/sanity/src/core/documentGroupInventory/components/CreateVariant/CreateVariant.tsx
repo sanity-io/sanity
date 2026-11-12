@@ -9,6 +9,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {Translate} from '../../../i18n/Translate'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../../util/versionsUtils'
@@ -51,7 +52,7 @@ const DocumentTitle: ComponentType<{children?: ReactNode; documentTitle?: ReactN
  */
 export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, documentTitle}) => {
   const {t} = useTranslation(studioLocaleNamespace)
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, selectedVariants} = usePerspective()
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -108,14 +109,21 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
   const variantDefinitionOptions = [...(variantDefinitions?.values() ?? [])]
 
   // The form starts with no variant; "Create variant" waits for one to be picked.
-  const variantDefinition = variantDefinitions?.get(selectedVariantId ?? '')
+  // The variant picked in the form, if any.
+  const pickedVariantDefinition = variantDefinitions?.get(selectedVariantId ?? '')
+
+  // The variant selected in the studio (the variant pill), read as the perspective reads it.
+  // Default is no selected variant.
+  const selectedVariantDefinition = variantDefinitions?.get(
+    getDefaultVariant(selectedVariants)?._id ?? '',
+  )
 
   // With no variant picked, every draft and release is offered: the Default variant's own draft is
   // not a reason to leave out Drafts.
   const bundleOptions = getAvailableBundles({
-    variantId: variantDefinition?._id,
+    variantId: pickedVariantDefinition?._id,
     releases: releases ?? NO_RELEASES,
-    existingVariants: variantDefinition ? existingVariants : [],
+    existingVariants: pickedVariantDefinition ? existingVariants : [],
   })
 
   // Add to starts on the current perspective: the release in view, or Drafts.
@@ -133,6 +141,23 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
     ) ??
     currentPerspectiveBundle ??
     bundleOptions[0]
+
+  // Until a variant is picked, Variant starts on the selected variant when the document has no
+  // version of it in the Add to bundle yet. Where it already has one, Variant stays empty rather
+  // than offering a duplicate, also when the user moves Add to onto such a bundle.
+  const prefilledVariantDefinition =
+    !pickedVariantDefinition &&
+    selectedVariantDefinition &&
+    bundle &&
+    getAvailableBundles({
+      variantId: selectedVariantDefinition._id,
+      releases: releases ?? NO_RELEASES,
+      existingVariants,
+    }).some((option) => getBundleKey(option) === getBundleKey(bundle))
+      ? selectedVariantDefinition
+      : undefined
+
+  const variantDefinition = pickedVariantDefinition ?? prefilledVariantDefinition
 
   const existingVersions = existingVariants.map(({document}) => document)
 
