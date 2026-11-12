@@ -205,7 +205,7 @@ catalogs:
       specifier: ^0.23.2
       version: 0.23.2
     '@types/node':
-      specifier: ^24.13.3
+      specifier: ^24.19.2
       version: 24.19.2
     '@types/react':
       specifier: ^19.3.0
@@ -313,7 +313,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@types/node':
-        specifier: ^24.13.3
+        specifier: ^24.19.2
         version: 24.19.2
       '@vitest/coverage-v8':
         specifier: ^5.1.0
