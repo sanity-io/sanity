@@ -1335,8 +1335,8 @@ importers:
   packages/@repo/css-modules-kit:
     devDependencies:
       '@css-modules-kit/codegen':
-        specifier: ^1.4.0
-        version: 1.4.0(@typescript/typescript6@6.0.2)
+        specifier: ^1.4.2
+        version: 1.4.2(@typescript/typescript6@6.0.2)
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -4186,18 +4186,22 @@ packages:
     resolution: {integrity: sha512-aalGyl7dbB5PArRebDIX43ZvBlXrYm9uWzGJ26t+4SzJVPsOuvfILGGbw5X4yX7i50YEmJ8zvbiWnqH/AAnZqg==}
     engines: {node: '>=22'}
 
-  '@css-modules-kit/codegen@1.4.0':
-    resolution: {integrity: sha512-omJi7jiIg7QEe2e7FP+SIAfSOereG/5xS38y2V3B6817gL3dwA0Yz8kLVeBJ9ovziiwdQhrnIytDUULX4jmbuQ==}
+  '@css-modules-kit/codegen@1.4.2':
+    resolution: {integrity: sha512-wVjjKh0dTu4iCXV9m6Hqv5EDO1SuU8BKwKff2EDf3tr83Kumzm3tH7OZ2Uqc+BJjKmnuYqUAF3+cvf83OVYS7w==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
       typescript: ^5.7.3 || ^6.0.0
 
-  '@css-modules-kit/core@1.4.0':
-    resolution: {integrity: sha512-WXw8BHVvr4Tvp9Wfp1vz9hZoANq2Se5wc9V+GvDpkKY56Z5Uy5hb+o+gfD0JrvYJgUft0IHe7v4StE6370Z0HQ==}
+  '@css-modules-kit/core-strada@1.4.2':
+    resolution: {integrity: sha512-IS4HsgxQ1h1qA6XfqJUfzRViq+iDx6K7wH71FxuvDmGNZZJfKXWJdRthIwx/xh7rPs3I2DfffZ2REH1EyXxgjQ==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       typescript: ^5.7.3 || ^6.0.0
+
+  '@css-modules-kit/core@1.4.2':
+    resolution: {integrity: sha512-S+PUmpByTIR2QQrGa9SEBMd1d4rFLux9vkbWZdO/d46zFsWdM41Idut1nexxWpG43YC/7Z6P8h6lF+TL2Ezm9w==}
+    engines: {node: '>=22.12.0'}
 
   '@csstools/color-helpers@6.1.2':
     resolution: {integrity: sha512-grhRy3OKmniaAEKXMjua5z/EODX0MSqBGjunw8+j/3HQjOnahs2AGhvEOIYVUWcU6ScApbhLhVrQTX8XqrMrow==}
@@ -10967,10 +10971,6 @@ packages:
 
   chokidar@4.0.0:
     resolution: {integrity: sha512-mxIojEAQcuEvT/lyXq+jf/3cO/KoA6z4CeNDGGevTybECPOMFCnQy3OPahluUkbqgPNGw5Bi78UC7Po6Lhy+NA==}
-    engines: {node: '>= 14.16.0'}
-
-  chokidar@4.0.3:
-    resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
   chokidar@5.0.0:
@@ -18704,19 +18704,24 @@ snapshots:
 
   '@conventional-changelog/template@1.4.0': {}
 
-  '@css-modules-kit/codegen@1.4.0(@typescript/typescript6@6.0.2)':
+  '@css-modules-kit/codegen@1.4.2(@typescript/typescript6@6.0.2)':
     dependencies:
-      '@css-modules-kit/core': 1.4.0(@typescript/typescript6@6.0.2)
-      chokidar: 4.0.3
+      '@css-modules-kit/core': 1.4.2
+      '@css-modules-kit/core-strada': 1.4.2(@typescript/typescript6@6.0.2)
+      chokidar: 5.0.0
       typescript: '@typescript/typescript6@6.0.2'
 
-  '@css-modules-kit/core@1.4.0(@typescript/typescript6@6.0.2)':
+  '@css-modules-kit/core-strada@1.4.2(@typescript/typescript6@6.0.2)':
+    dependencies:
+      '@css-modules-kit/core': 1.4.2
+      typescript: '@typescript/typescript6@6.0.2'
+
+  '@css-modules-kit/core@1.4.2':
     dependencies:
       postcss: 8.5.32
       postcss-safe-parser: 7.1.0(postcss@8.5.32)
       postcss-selector-parser: 7.1.7
       postcss-value-parser: 4.2.0
-      typescript: '@typescript/typescript6@6.0.2'
 
   '@csstools/color-helpers@6.1.2': {}
 
@@ -25307,10 +25312,6 @@ snapshots:
       fsevents: 2.3.3
 
   chokidar@4.0.0:
-    dependencies:
-      readdirp: 4.1.2
-
-  chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
 
