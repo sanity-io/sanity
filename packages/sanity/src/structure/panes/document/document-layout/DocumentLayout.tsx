@@ -29,6 +29,7 @@ import {
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
 } from '../constants'
+import {useInspectorBesideForm} from '../documentInspector/useInspectorBesideForm'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel/DocumentPanel'
@@ -109,9 +110,10 @@ export function DocumentLayout() {
   const headerSize = useElementSize(headerElement)
   const footerHeight = footerSize?.border.height
   const headerHeight = headerSize?.border.height
-  const currentMinWidth =
-    DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
-  const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
+  const inspectorBesideForm = useInspectorBesideForm()
+  const inspectorWidth = inspector && inspectorBesideForm ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0
+  const currentMinWidth = DOCUMENT_PANEL_INITIAL_MIN_WIDTH + inspectorWidth
+  const minWidth = DOCUMENT_PANEL_MIN_WIDTH + inspectorWidth
 
   const currentInspector = useMemo(
     () => inspectors?.find((i) => i.name === inspector?.name),
@@ -229,7 +231,11 @@ export function DocumentLayout() {
               >
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
-                  isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
+                  isReviewChangesOpen={
+                    inspectorBesideForm &&
+                    changesOpen &&
+                    paneParams?.changesInspectorTab === 'review'
+                  }
                   onOpenReviewChanges={onHistoryOpen}
                   onSetFocus={onConnectorSetFocus}
                 >

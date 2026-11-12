@@ -26,7 +26,7 @@ export function DocumentPanel(props: {
     structureParams,
   } = props
   return (
-    <StructureToolProvider>
+    <StructureToolProvider responsiveInspector>
       <DocumentPane
         documentId={documentId}
         documentType={documentType}
