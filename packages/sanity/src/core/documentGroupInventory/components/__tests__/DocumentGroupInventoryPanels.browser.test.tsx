@@ -674,7 +674,7 @@ describe('CreateVariant', () => {
     await userEvent.click($baseTrigger)
     await expect
       .element($baseMenu.getByRole('menuitemradio', {name: /Nearest version/}))
-      .toMatchTextContent('Copies from Default in Draft')
+      .toMatchTextContent('Copies from Default in Drafts')
   })
 
   it('opens each menu as wide as its select, from its left edge', async () => {
