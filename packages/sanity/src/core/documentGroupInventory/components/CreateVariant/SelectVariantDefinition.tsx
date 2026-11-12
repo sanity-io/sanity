@@ -19,7 +19,8 @@ interface Props {
 /**
  * The variant picker groups the definitions the way the Variants pill menu does: "Has N variants"
  * (a new version can still go to another draft or release), then "Other variants". There is no
- * Default row, since Default is not a variant one creates.
+ * Default row, since Default is not a variant one creates. It starts empty, showing a muted
+ * variant mark and a hint.
  */
 export const SelectVariantDefinition: ComponentType<Props> = ({
   variantDefinitions,
@@ -34,10 +35,10 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
 
   return (
     <CreateVariantPicker
-      icon={<VariantMark size="row" />}
       label={t('document-group.create-variant.variant-label')}
-      description={t('document-group.create-variant.variant-description')}
       testId="create-variant-variant-menu"
+      placeholder={t('document-group.create-variant.form.variant-hint')}
+      emptyIcon={<VariantMark />}
       filterPlaceholder={t('document-group.create-variant.variant-filter-placeholder')}
       leadingOptions={existing.map((definition) => toOption(definition, true))}
       leadingLabel={t('document-group.create-variant.variant-section.has-variants', {
@@ -62,10 +63,13 @@ function toOption(
   variantDefinition: SystemVariant,
   hasVersion: boolean,
 ): CreateVariantPickerOption {
+  // A filled diamond for a variant the document has a version in, an outline for one it has not.
+  const fill = hasVersion ? 'filled' : 'outline'
   return {
     key: variantDefinition._id,
     text: getVariantTitle(variantDefinition),
-    // A filled diamond for a variant the document has a version in, an outline for one it has not
-    icon: <VariantMark fill={hasVersion ? 'filled' : 'outline'} size="row" />,
+    icon: <VariantMark fill={fill} size="row" />,
+    // In the select, the variant's mark is inline (8px).
+    selectIcon: <VariantMark fill={fill} />,
   }
 }

@@ -61,7 +61,7 @@ export function InventoryHeader({
           {components && <components.CompareVersionsAction />}
           {canCreateVariant && (
             <Button
-              text={t('document-group.create-variant')}
+              text={t('document-group.create-variant.open-button.text')}
               onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
             />
           )}

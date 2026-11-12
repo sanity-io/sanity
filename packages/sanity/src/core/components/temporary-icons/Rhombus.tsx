@@ -2,7 +2,6 @@
 
 import {type RefAttributes, type SVGProps} from 'react'
 
-
 export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
