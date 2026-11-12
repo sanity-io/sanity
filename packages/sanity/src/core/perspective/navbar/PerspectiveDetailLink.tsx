@@ -6,6 +6,7 @@ import {
   type ReactNode,
   type RefAttributes,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -30,11 +31,38 @@ const LINK_BUTTON_PROPS = {density: 'regular', icon: ArrowTopRightIcon, level: '
  * as the menu's active item.
  *
  * `selected` is whether the row's perspective is the selected one.
+ *
+ * The link shows on one row at a time, the active row: the row the menu treats as active, which
+ * is the one under the pointer or with keyboard focus (the menu marks its item `data-selected`),
+ * or the row whose link the pointer is over, because the link lies outside the item and
+ * hovering it ends the item's own hover. The menu moves its active item with the pointer and the
+ * arrow keys, so the link needs no hover or focus state of its own.
  */
 export function usePerspectiveDetailLink({selected}: {selected: boolean}) {
   const menuItemRef = useRef<HTMLButtonElement>(null)
   const linkRef = useRef<HTMLAnchorElement>(null)
   const [linkHovered, setLinkHovered] = useState(false)
+  const [itemActive, setItemActive] = useState(false)
+
+  useEffect(() => {
+    const item = menuItemRef.current
+    if (!item) return undefined
+    const readActive = () => setItemActive(item.hasAttribute('data-selected'))
+    readActive()
+    const observer = new MutationObserver(readActive)
+    observer.observe(item, {attributeFilter: ['data-selected'], attributes: true})
+    return () => observer.disconnect()
+  }, [])
+
+  const active = itemActive || linkHovered
+
+  // A link the row's end shows is the one that may hold focus. When the menu moves on to another
+  // row, focus leaves the link, which also closes its tooltip.
+  useEffect(() => {
+    if (!active && linkRef.current && linkRef.current === document.activeElement) {
+      linkRef.current.blur()
+    }
+  }, [active])
 
   const handleMenuItemKeyDown = useCallback((event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key !== 'ArrowRight' || !linkRef.current) return
@@ -65,6 +93,7 @@ export function usePerspectiveDetailLink({selected}: {selected: boolean}) {
       'ref': menuItemRef,
     },
     linkProps: {
+      active,
       onKeyDown: handleLinkKeyDown,
       onMouseEnter: handleLinkMouseEnter,
       onMouseLeave: handleLinkMouseLeave,
@@ -97,6 +126,8 @@ export function usePerspectiveDetailLinkTrigger() {
  */
 export function PerspectiveDetailLink(
   props: {
+    /** Whether the row is the active one: the link shows and its tooltip can open only then. */
+    'active': boolean
     'aria-label': string
     'data-testid': string
     'intent': string
@@ -112,6 +143,7 @@ export function PerspectiveDetailLink(
     RefAttributes<HTMLAnchorElement>,
 ) {
   const {
+    active,
     'aria-label': ariaLabel,
     'data-testid': testId,
     intent,
@@ -136,8 +168,14 @@ export function PerspectiveDetailLink(
 
   return (
     // Centred on the row, like the menu item's own right icon
-    <Flex alignItems="center" className={detailLinkContainer} style={style} {...paddingProps}>
-      <Tooltip portal content={tooltip} placement="bottom">
+    <Flex
+      alignItems="center"
+      className={detailLinkContainer}
+      data-active={active ? '' : undefined}
+      style={style}
+      {...paddingProps}
+    >
+      <Tooltip disabled={!active} portal content={tooltip} placement="bottom">
         <IconButton
           {...LINK_BUTTON_PROPS}
           aria-label={ariaLabel}
