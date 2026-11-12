@@ -910,12 +910,12 @@ describe('CreateVariant', () => {
     await userEvent.click($baseTrigger)
     await expect.element($baseMenu).toBeVisible()
     await expect.poll(() => listScroller()?.scrollTop).toBe(0)
-    await expect.element($baseMenu.getByPlaceholder('Find')).toHaveFocus()
+    await expect.element($baseMenu.getByPlaceholder('Search…')).toHaveFocus()
 
     // Scrolled, then the search changes: back at the top.
     listScroller()!.scrollTop = 200
     await expect.poll(() => listScroller()?.scrollTop).toBeGreaterThan(0)
-    await userEvent.type($baseMenu.getByPlaceholder('Find'), 'Version')
+    await userEvent.type($baseMenu.getByPlaceholder('Search…'), 'Version')
     await expect.poll(() => listScroller()?.scrollTop).toBe(0)
   })
 

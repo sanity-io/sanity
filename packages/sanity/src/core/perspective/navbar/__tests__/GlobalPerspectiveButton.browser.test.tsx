@@ -96,7 +96,7 @@ describe('GlobalPerspectiveButton', () => {
         <GlobalPerspectiveButton
           aria-expanded
           data-testid="open-trigger"
-          icon={<RhombusIcon className={suggestIconColor} />}
+          icon={<VariantMark />}
           text="Default"
           pickerLabel="Variant"
         />

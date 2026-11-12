@@ -630,7 +630,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
   /** Placeholder of the filter input in the variant creation form's pickers */
-  'document-group.create-variant.filter-placeholder': 'Find',
+  'document-group.create-variant.filter-placeholder': 'Search…',
   /** The title of the variant creation form's picker for the version the new variant starts from */
   'document-group.create-variant.form.base-label': 'Start from',
   /** The header of the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
