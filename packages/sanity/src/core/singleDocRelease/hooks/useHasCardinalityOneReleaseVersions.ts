@@ -16,17 +16,19 @@ import {type VariantId} from '../../variants/types'
  * @param documentId - The ID of the document to check
  * @param variantId - The variant document id (`_.variants.<name>`) whose versions are checked, or
  * `undefined` for the versions outside any variant
- * @returns boolean - true if the document has versions in any cardinality one releases
+ * @returns `hasCardinalityOneReleaseVersions`: true if the document has versions in any cardinality
+ * one releases. `loading`: true until the releases and the document's version stubs have loaded;
+ * until then `hasCardinalityOneReleaseVersions` is false even when such a version exists.
  * @internal
  */
 export function useHasCardinalityOneReleaseVersions(
   documentId: string,
   variantId?: VariantId,
-): boolean {
-  const {data: allReleases} = useActiveReleases()
-  const {versions} = useDocumentVersions({documentId})
+): {hasCardinalityOneReleaseVersions: boolean; loading: boolean} {
+  const {data: allReleases, loading: releasesLoading} = useActiveReleases()
+  const {versions, loading: versionsLoading} = useDocumentVersions({documentId})
 
-  return useMemo(() => {
+  const hasCardinalityOneReleaseVersions = useMemo(() => {
     if (!allReleases || !versions) return false
 
     const documentReleaseIds = new Set(
@@ -42,4 +44,6 @@ export function useHasCardinalityOneReleaseVersions(
       return documentReleaseIds.has(releaseId) && isCardinalityOneRelease(release)
     })
   }, [allReleases, versions, variantId])
+
+  return {hasCardinalityOneReleaseVersions, loading: releasesLoading || versionsLoading}
 }

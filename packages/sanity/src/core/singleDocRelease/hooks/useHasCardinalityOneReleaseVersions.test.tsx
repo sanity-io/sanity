@@ -83,7 +83,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
-    expect(result.current).toBe(false)
+    expect(result.current.hasCardinalityOneReleaseVersions).toBe(false)
   })
 
   it('should return false when document only has cardinality many releases', () => {
@@ -96,7 +96,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
-    expect(result.current).toBe(false)
+    expect(result.current.hasCardinalityOneReleaseVersions).toBe(false)
   })
 
   it('should return true when document has versions in cardinality one releases', () => {
@@ -109,7 +109,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
-    expect(result.current).toBe(true)
+    expect(result.current.hasCardinalityOneReleaseVersions).toBe(true)
   })
 
   it('should filter out non-version documents correctly', () => {
@@ -126,7 +126,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
-    expect(result.current).toBe(true)
+    expect(result.current.hasCardinalityOneReleaseVersions).toBe(true)
   })
 
   it('only counts the scheduled drafts of the selected variant', () => {
@@ -144,8 +144,45 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       useHasCardinalityOneReleaseVersions(mockDocumentId, VARIANT_ID),
     )
 
-    expect(baseResult.current).toBe(false)
-    expect(variantResult.current).toBe(true)
+    expect(baseResult.current.hasCardinalityOneReleaseVersions).toBe(false)
+    expect(variantResult.current.hasCardinalityOneReleaseVersions).toBe(true)
+  })
+
+  it('reports loading until the version stubs have loaded', () => {
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [cardinalityOneRelease],
+      byId: new Map([[cardinalityOneRelease._id, cardinalityOneRelease]]),
+    })
+    // The cold start of `useDocumentVersions`: the ids are known, the stubs are not yet.
+    useDocumentVersions.mockReturnValue({
+      loading: true,
+      error: null,
+      data: [baseScheduledVersion._id],
+      versions: [],
+    })
+
+    const {result, rerender} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
+
+    expect(result.current).toEqual({hasCardinalityOneReleaseVersions: false, loading: true})
+
+    mockDocumentVersions([baseScheduledVersion])
+    rerender()
+
+    expect(result.current).toEqual({hasCardinalityOneReleaseVersions: true, loading: false})
+  })
+
+  it('reports loading until the releases have loaded', () => {
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      loading: true,
+      data: [],
+    })
+    mockDocumentVersions([baseScheduledVersion])
+
+    const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
+
+    expect(result.current).toEqual({hasCardinalityOneReleaseVersions: false, loading: true})
   })
 
   it('does not count a scheduled draft of the base document for a variant', () => {
@@ -160,6 +197,6 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       useHasCardinalityOneReleaseVersions(mockDocumentId, VARIANT_ID),
     )
 
-    expect(result.current).toBe(false)
+    expect(result.current.hasCardinalityOneReleaseVersions).toBe(false)
   })
 })

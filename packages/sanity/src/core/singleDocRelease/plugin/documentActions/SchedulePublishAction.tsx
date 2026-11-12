@@ -68,10 +68,8 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if the document (or the selected variant) has versions in cardinality one releases
-  const hasCardinalityOneReleaseVersions = useHasCardinalityOneReleaseVersions(
-    id,
-    getDefaultVariant(perspective.selectedVariants)?._id,
-  )
+  const {hasCardinalityOneReleaseVersions, loading: cardinalityOneReleaseVersionsLoading} =
+    useHasCardinalityOneReleaseVersions(id, getDefaultVariant(perspective.selectedVariants)?._id)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
@@ -153,9 +151,13 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     ],
   )
 
+  // While the check loads, an existing scheduled draft is not detected yet, and scheduling would
+  // create a second one.
   const disabled = isPaused
     ? hasValidationErrors // Only check validation errors for paused drafts
-    : hasCardinalityOneReleaseVersions || hasValidationErrors // Full check for regular drafts
+    : cardinalityOneReleaseVersionsLoading ||
+      hasCardinalityOneReleaseVersions ||
+      hasValidationErrors // Full check for regular drafts
 
   const title = useMemo(() => {
     if (isPaused && hasValidationErrors) {
