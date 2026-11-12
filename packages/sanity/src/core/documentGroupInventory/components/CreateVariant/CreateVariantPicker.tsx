@@ -27,7 +27,11 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {createVariantPickerLabel, createVariantPickerTrigger} from './CreateVariant.css'
-import {createVariantPickerMenu, finalMutedGlyph} from './CreateVariantPicker.css'
+import {
+  createVariantPickerFitMenu,
+  createVariantPickerMenu,
+  finalMutedGlyph,
+} from './CreateVariantPicker.css'
 
 export interface CreateVariantPickerOption {
   key: string
@@ -237,15 +241,16 @@ export const CreateVariantPicker: ComponentType<{
         resetMenuWidth()
         setFilterQuery('')
       }}
-      onOpen={lockMenuWidth}
+      // The inset form's menu is as wide as its select (matchReferenceWidth below); the stable-width lock is for the stock form's menus.
+      onOpen={inset ? undefined : lockMenuWidth}
       button={button}
       menu={
         <FilterMenu
-          className={createVariantPickerMenu}
+          className={inset ? createVariantPickerFitMenu : createVariantPickerMenu}
           data-testid={testId}
           padding={1}
           ref={menuRef}
-          style={menuStyle}
+          style={inset ? undefined : menuStyle}
         >
           <Box flexShrink={0} padding={1}>
             <TextInput
@@ -302,7 +307,9 @@ export const CreateVariantPicker: ComponentType<{
       }
       popover={{
         constrainSize: true,
-        fallbackPlacements: ['bottom-end'],
+        // The inset form's menu opens from the select's left edge and extends right; if that leaves the viewport the popover shifts, it does not flip.
+        fallbackPlacements: inset ? [] : ['bottom-end'],
+        matchReferenceWidth: inset,
         overflow: 'hidden',
         placement: 'bottom-start',
         portal: true,
