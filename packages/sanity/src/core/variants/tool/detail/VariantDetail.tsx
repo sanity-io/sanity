@@ -33,6 +33,7 @@ import {
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
 import {VariantActionRail} from './VariantActionRail'
 import {getVariantConditionIcon} from './variantConditionIcons'
+import {useVariantDetailHeader} from './VariantDetailHeader'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 import {VariantMissingDocumentsTable} from './VariantMissingDocumentsTable'
 
@@ -59,6 +60,8 @@ export function VariantDetail() {
     error: variantDocumentsError,
   } = useVariantDocuments(variant?._id)
 
+  // PROPOSED: a host-supplied header block (see VariantDetailHeader); `null` keeps the stock header below.
+  const renderHeader = useVariantDetailHeader()
   const tableRows = useMemo(
     () => groupVariantDocumentsByGroup(variantDocuments),
     [variantDocuments],
@@ -259,30 +262,34 @@ export function VariantDetail() {
                   />
                 </Flex>
               </Flex>
-              <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
-                <Box flexBasis="0%" flexGrow={1} style={{minWidth: 280}}>
-                  <DetailIdentity
-                    description={description || undefined}
-                    descriptionTestId="variant-description-display"
-                    title={getVariantTitle(variant)}
-                    titleAs="h1"
-                    titlePlaceholder={t('overview.table.variant')}
-                    titleTestId="variant-title-display"
-                  />
-                </Box>
-                {/* Both panels are direct children of the wrapping row (not a nested flex="none"
+              {renderHeader ? (
+                renderHeader({variant, documentCount: tableRows.length, documentsLoading})
+              ) : (
+                <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
+                  <Box flexBasis="0%" flexGrow={1} style={{minWidth: 280}}>
+                    <DetailIdentity
+                      description={description || undefined}
+                      descriptionTestId="variant-description-display"
+                      title={getVariantTitle(variant)}
+                      titleAs="h1"
+                      titlePlaceholder={t('overview.table.variant')}
+                      titleTestId="variant-title-display"
+                    />
+                  </Box>
+                  {/* Both panels are direct children of the wrapping row (not a nested flex="none"
                     group) so each can wrap onto its own line when the viewport is too narrow to hold
                     them side by side — otherwise the fit-content panels overflow on small screens. */}
-                <DetailPropertiesPanel
-                  maxWidth={480}
-                  sections={definitionSections}
-                  testId="variant-detail-definition"
-                />
-                <DetailPropertiesPanel
-                  sections={documentSections}
-                  testId="variant-detail-documents"
-                />
-              </Flex>
+                  <DetailPropertiesPanel
+                    maxWidth={480}
+                    sections={definitionSections}
+                    testId="variant-detail-definition"
+                  />
+                  <DetailPropertiesPanel
+                    sections={documentSections}
+                    testId="variant-detail-documents"
+                  />
+                </Flex>
+              )}
             </VStack>
           </Box>
         </Container>
