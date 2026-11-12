@@ -6,6 +6,7 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
+  isDraftVersion,
   isGoingToUnpublish,
   isNewDocument,
   isPausedCardinalityOneRelease,
@@ -18,6 +19,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -57,6 +59,7 @@ import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
 import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
+import {getNavigationBadges} from './header/DocumentPanelNavigation/badges/getNavigationBadges'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -199,6 +202,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     displayed,
     documentId,
   })
+  const {versions: documentVersions} = useDocumentVersions({documentId})
 
   const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
@@ -233,10 +237,20 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
 
+    // Variant versions have opaque ids, so whether a variant document is displayed comes from the
+    // resolved target rather than from the id.
+    const displayedVariantTarget =
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant &&
+      displayed?._id &&
+      targetDocumentState.targetDocument?._id === displayed._id
+        ? targetDocumentState.targetDocument
+        : undefined
+
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
       displayed?._id &&
-      getVersionFromId(displayed?._id) === selectedReleaseId,
+      (getVersionFromId(displayed?._id) === selectedReleaseId || displayedVariantTarget),
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
@@ -277,13 +291,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ...filteredReleases.currentReleases,
       ...filteredReleases.notCurrentReleases,
     ]
+    // A document can have one scheduled draft per variant, so only the releases the current lane
+    // (the selected variant, or the base document) has a version in are considered.
+    const laneReleaseIds = new Set(
+      getNavigationBadges({
+        versions: documentVersions,
+        variantId:
+          targetDocumentState.status === 'ready' ? targetDocumentState.variant?._id : undefined,
+      }).releaseIds,
+    )
     // if the scheduled draft is paused then it will be available in notCurrentReleases
     // otherwise a locked-in scheduled draft will be available in currentReleases
     // so must look across both to find the scheduled draft release
     const scheduledCardinalityOneRelease = allFilteredReleases.find(
       (release) =>
         isCardinalityOneRelease(release) &&
-        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)) &&
+        laneReleaseIds.has(getReleaseIdFromReleaseDocumentId(release._id)),
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -353,7 +377,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
-    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
+    const displayedIsDraft =
+      displayed?._id &&
+      (isDraftId(displayed._id) ||
+        (displayedVariantTarget && isDraftVersion(displayedVariantTarget)))
 
     return (
       <>
@@ -397,6 +424,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     value._id,
     schemaType,
     filteredReleases,
+    documentVersions,
     workspace,
     isPausedDraft,
     targetDocumentState,

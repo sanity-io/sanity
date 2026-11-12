@@ -6,6 +6,8 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
+import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
+import {getVariantId} from '../../../../variants/tool/util'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
@@ -34,6 +36,8 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
 
   const validationErrorCount =
     firstDocumentValidation?.filter((validation) => validation.level === 'error').length || 0
+  const variantRef = getDocumentVersionVariantId({_system: firstDocument._system})
+  const variantId = variantRef ? getVariantId(variantRef) : undefined
 
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} padding={1} paddingLeft={2} paddingRight={2}>
@@ -48,6 +52,7 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
               isCardinalityOneRelease
               documentRevision={firstDocument._rev}
               layout="default"
+              variantId={variantId}
             />
           </Box>
           {validationErrorCount > 0 && (
