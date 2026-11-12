@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
@@ -43,5 +43,27 @@ describe('FormBaseVariantDiffIndicator', () => {
 
     await rerender(<Fixture changedFromBaseVariant={false} />)
     await expect.element(page.getByTestId('base-variant-diff-indicator')).not.toBeInTheDocument()
+  })
+
+  it('is a focusable button with an accessible name, described by the full sentence', async () => {
+    void render(<Fixture changedFromBaseVariant />)
+
+    const mark = page.getByRole('button', {name: 'Changed from base variant'})
+    await expect.element(mark).toBeVisible()
+
+    const button = mark.element()
+    const description = document.getElementById(button.getAttribute('aria-describedby') ?? '')
+    expect(description?.textContent).toBe('Differs from Default Draft')
+
+    await userEvent.tab()
+    expect(document.activeElement).toBe(button)
+  })
+
+  it('shows the tooltip when the mark takes keyboard focus', async () => {
+    void render(<Fixture changedFromBaseVariant />)
+
+    await userEvent.tab()
+    // The tooltip opens after its delay, so wait for the sentence to be on screen.
+    await vi.waitFor(() => expect(labelIsVisible()).toBe(true), {timeout: 3000})
   })
 })

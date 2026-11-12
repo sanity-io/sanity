@@ -27,3 +27,23 @@ export const chipGlyph = css({
   width: '1em',
   height: '1em',
 })
+
+/**
+ * The mark's button, drawn as the bare icon it was before: no chrome, and a focus ring that follows the
+ * icon so a keyboard user can see where focus is.
+ */
+export const markButton = css({
+  'display': 'inline-flex',
+  'alignItems': 'center',
+  'justifyContent': 'center',
+  'padding': 0,
+  'border': 0,
+  'background': 'transparent',
+  'color': 'inherit',
+  'cursor': 'default',
+  'borderRadius': '50%',
+  '&:focus-visible': {
+    outline: '2px solid var(--card-focus-ring-color, currentColor)',
+    outlineOffset: '1px',
+  },
+})
