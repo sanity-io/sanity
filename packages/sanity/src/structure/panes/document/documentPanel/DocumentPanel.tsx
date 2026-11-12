@@ -1,6 +1,6 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -28,6 +28,7 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
+import {VariantBannerReplacedContext} from 'sanity/_singletons'
 import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
@@ -61,6 +62,7 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {useDocumentPaneExtension} from './DocumentPaneExtension'
 import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {getNavigationBadges} from './header/DocumentPanelNavigation/badges/getNavigationBadges'
@@ -108,6 +110,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
+  // PROPOSED: a host may add banners and a row of version pills to the pane.
+  const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
+  // PROPOSED: the host draws its own missing-variant banner, so the stock one is not drawn (one banner, not two).
+  const replacesVariantBanner = useContext(VariantBannerReplacedContext)
   // The variant-not-found banner names a deleted variant by the title it had earlier this session.
   useRememberVariantTitles()
 
@@ -342,7 +348,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (variantBannerCase.kind !== 'none') {
-      return <DocumentNotInVariantBanner bannerCase={variantBannerCase} />
+      return replacesVariantBanner ? null : (
+        <DocumentNotInVariantBanner bannerCase={variantBannerCase} />
+      )
     }
 
     const isCurrentVersionGoingToUnpublish =
@@ -446,6 +454,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     workspace,
     isPausedDraft,
     targetDocumentState,
+    replacesVariantBanner,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
@@ -468,7 +477,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
-              <DocumentPanelSubHeader />
+              {paneExtension?.banners}
+              {/* PROPOSED: the compact header drops the title row; the form names the document. A row of view tabs stays. */}
+              {paneExtension?.compactHeader && views.length <= 1 ? null : (
+                <DocumentPanelSubHeader />
+              )}
             </LegacyLayerProvider>
             <Box className={documentBox} flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane
