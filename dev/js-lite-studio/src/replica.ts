@@ -337,6 +337,8 @@ let metaSaved = false
 /** Persisted types the schema no longer has, or whose records cannot be read, to delete. */
 const orphans: string[] = []
 let persisted: [number, number, number] | undefined
+/** The dataset listener; replaced when the schema grows new document types after a cache hit. */
+let listener: {unsubscribe: () => void} | undefined
 
 /** Per type: changes of what lists sort and filter on, and of anything a row shows. */
 const lists = new Emitter()
@@ -632,13 +634,13 @@ export function forgetReplica(): Promise<void> {
   return persistence.forget()
 }
 
-/** Restores the persisted replica of `userId`, opens the listener for every document type of the
- * schema, and warms up (or revalidates what was restored) once both are done. */
-export function startReplica(userId: string): void {
-  if (started) return
-  started = performance.now()
-  user = userId
+/** Registers document types from the current schema that the replica does not know yet. Returns
+ * whether any were added (so a listener started against a cached schema can pick up a later
+ * deploy). */
+function registerSchemaTypes(): boolean {
+  let added = false
   for (const def of schema().documentTypes) {
+    if (typeIndex.has(def.name)) continue
     typeIndex.set(def.name, types.length)
     types.push({
       name: def.name,
@@ -650,9 +652,15 @@ export function startReplica(userId: string): void {
       dirty: false,
       generation: 0,
     })
+    queue.push(types.length - 1)
+    added = true
   }
-  queue.push(...types.map((_, index) => index))
-  client()
+  return added
+}
+
+function openListener(): void {
+  listener?.unsubscribe()
+  listener = client()
     .listen('*[_type in $types]', {types: types.map((state) => state.name)}, {
       includeResult: true,
       includeAllVersions: true,
@@ -660,6 +668,24 @@ export function startReplica(userId: string): void {
       tag: 'replica.listener',
     } as never)
     .subscribe({next: (event) => onEvent(event as never), error: () => undefined})
+}
+
+/** Restores the persisted replica of `userId`, opens the listener for every document type of the
+ * schema, and warms up (or revalidates what was restored) once both are done. Safe to call again
+ * after a schema deploy: new document types are registered, queued for warm-up, and included in
+ * the listener. */
+export function startReplica(userId: string): void {
+  if (started) {
+    if (!registerSchemaTypes()) return
+    openListener()
+    spawnWorkers()
+    updateStatus()
+    return
+  }
+  started = performance.now()
+  user = userId
+  registerSchemaTypes()
+  openListener()
   if (persist) {
     void restore()
     // A tab that is hidden may be closed or discarded next: save what changed.

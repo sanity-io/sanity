@@ -103,8 +103,13 @@ function FormSkeleton() {
   )
 }
 
-/** The references of the document to documents that aren't published, which block publishing. */
-function useUnpublishedReferences(typeName: string, doc: JsonObject | null | undefined): Marker[] {
+/** The references of the document to documents that aren't published, which block publishing.
+ * `ready` is false while the async check for the current references is in flight, so Publish
+ * stays disabled until the result is known. */
+function useUnpublishedReferences(
+  typeName: string,
+  doc: JsonObject | null | undefined,
+): {markers: Marker[]; ready: boolean} {
   const references = doc ? referencesToPublish(typeName, doc) : []
   const key = JSON.stringify(references)
   const [checked, setChecked] = useState<{key: string; markers: Marker[]}>({key: '[]', markers: []})
@@ -130,7 +135,11 @@ function useUnpublishedReferences(typeName: string, doc: JsonObject | null | und
       cancelled = true
     }
   }, [key])
-  return checked.key === key ? checked.markers : []
+  // No references to check, or the check for this snapshot finished.
+  if (key === '[]' || checked.key === key) {
+    return {markers: checked.key === key ? checked.markers : [], ready: true}
+  }
+  return {markers: [], ready: false}
 }
 
 function SyncStatus(props: {busy: string | undefined; stale: boolean}) {
@@ -403,9 +412,13 @@ export function DocumentPane(props: {typeName: string; id: string}) {
     perspective.kind === 'published' ||
     (release !== undefined && !inRelease)
 
-  const unpublishedReferences = useUnpublishedReferences(typeName, doc)
+  const {markers: unpublishedReferences, ready: referencesReady} = useUnpublishedReferences(
+    typeName,
+    doc,
+  )
   const markers = [...documentMarkers(typeName, doc), ...unpublishedReferences]
   const errors = markers.filter((marker) => marker.level === 'error').length
+  const canPublish = hasDraft && errors === 0 && referencesReady && release === undefined
 
   const run = (label: string, action: () => Promise<boolean>, done: (ok: boolean) => void) => {
     if (busy !== undefined) return
@@ -417,7 +430,7 @@ export function DocumentPane(props: {typeName: string; id: string}) {
   }
 
   const publish = () => {
-    if (!hasDraft || errors > 0 || release !== undefined) return
+    if (!canPublish) return
     run(
       'Publishing…',
       () => store.publishDocument(id),
@@ -741,7 +754,7 @@ export function DocumentPane(props: {typeName: string; id: string}) {
                     icon={PublishIcon}
                     text={publishLabel}
                     title="Publish (Ctrl+Alt+P)"
-                    disabled={!hasDraft || errors > 0 || busy !== undefined}
+                    disabled={!canPublish || busy !== undefined}
                     loading={busy === 'Publishing…'}
                     onClick={publish}
                   />
