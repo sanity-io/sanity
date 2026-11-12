@@ -81,7 +81,7 @@
     "@sanity-labs/groq-wasm": "^1.2.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.9",
-    "@sanity/icons": "^5.2.3",
+    "@sanity/icons": "^5.3.0",
     "@sanity/lezer-groq": "^1.0.4",
     "@sanity/schema": "workspace:*",
     "@sanity/ui": "catalog:",
