@@ -51,16 +51,41 @@ const INVENTORY = 'variants-inventory'
  */
 function VariantChip({title}: {title: string}) {
   return (
-    <VersionInlineBadge $tone="suggest" icon={<RhombusIcon />}>
-      {title}
+    <VersionInlineBadge $tone="suggest">
+      <RhombusIcon /> {title}
     </VersionInlineBadge>
+  )
+}
+
+/**
+ * A glyph inside a chip, kept on the text line. Main's release avatar draws a block svg, which in an inline chip broke onto its own line and
+ * sat by the banner icon (10 Nov); 4 px before the name, as the copy rule asks.
+ */
+function Glyph({children}: {children: ReactNode}) {
+  return (
+    <span
+      // The icon is 21px with -6px margins (a 9px box) and its glyph fills it, so it is drawn at the text's size (0.7) and kept inside the
+      // chip, 4px before the name.
+      style={{
+        display: 'inline-flex',
+        marginInline: '2px 4px',
+        transform: 'scale(0.7)',
+        verticalAlign: '-3px',
+      }}
+      aria-hidden
+    >
+      {children}
+    </span>
   )
 }
 
 /** "Drafts", where the Published banner points: a display chip, not a control. */
 function DraftsChip() {
   return (
-    <VersionInlineBadge $tone="caution" icon={<ReleaseAvatarIcon release="drafts" />}>
+    <VersionInlineBadge $tone="caution">
+      <Glyph>
+        <ReleaseAvatarIcon release="drafts" />
+      </Glyph>
       Drafts
     </VersionInlineBadge>
   )
@@ -97,10 +122,12 @@ function Keep({children}: {children?: ReactNode}) {
 /** A release by its name, glyph and tone (its date, if any, is its own chip in the sentence). */
 function ReleaseChip({release, title}: {release: ReleaseDocument | undefined; title: string}) {
   return (
-    <VersionInlineBadge
-      $tone={getReleaseTone(release ?? 'drafts')}
-      icon={release ? <ReleaseAvatarIcon release={release} /> : undefined}
-    >
+    <VersionInlineBadge $tone={getReleaseTone(release ?? 'drafts')}>
+      {release ? (
+        <Glyph>
+          <ReleaseAvatarIcon release={release} />
+        </Glyph>
+      ) : null}
       {title}
     </VersionInlineBadge>
   )

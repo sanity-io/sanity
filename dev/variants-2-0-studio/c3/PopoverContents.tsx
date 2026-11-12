@@ -1,20 +1,19 @@
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Fragment} from 'react'
+
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/PopoverContents.tsx).
 // Only the imports differ from the original (they point at this monorepo and ./types).
 import {ReleaseAvatar} from '../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
-
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {Fragment} from 'react'
-
-import {
-  titleStack,
-  updatedAtText,
-  versionStatusItem,
-} from '../../../packages/sanity/src/core/components/documentStatus/DocumentVersionsStatus.css'
-import {type AudienceVersion, type State} from './types'
 import {MorePill, StatePill} from './StatePill'
 import {VersionTime} from './time'
+import {type AudienceVersion, type State} from './types'
+
+// Main replaced the vanilla-extract file these styles lived in (Panda CSS migration); the three rules are inline here.
+const versionStatusItem = {padding: '2px 0'}
+const titleStack = {minWidth: 0, width: '100%'}
+const updatedAtText = {flex: 'none', whiteSpace: 'nowrap'} as const
 
 /** The content options of the time and edited exploration. `pills` is today's design. */
 export type PopoverContent = 'pills' | 'pt1' | 'pt2' | 'pt3' | 'pt4'
@@ -127,14 +126,14 @@ function PT1({groups}: {groups: PopoverGroup[]}) {
           {group.states.map((v, i) => (
             <VersionTime key={`${v.state}-${i}`} version={v}>
               {(time) => (
-                <Box className={versionStatusItem} data-testid="status-item" paddingX={2}>
+                <Box style={versionStatusItem} data-testid="status-item" paddingX={2}>
                   <Flex gap={2} justify="space-between" paddingY={2}>
-                    <Stack className={titleStack} gap={2}>
+                    <Stack style={titleStack} gap={2}>
                       <Text size={1} weight="medium">
                         {`${group.audience} · ${stateName(v)}`}
                       </Text>
                       {time ? (
-                        <Text className={updatedAtText} muted size={1}>
+                        <Text style={updatedAtText} muted size={1}>
                           {time}
                         </Text>
                       ) : null}

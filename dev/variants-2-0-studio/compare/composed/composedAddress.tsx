@@ -38,7 +38,6 @@ import {
 import {RhombusIcon} from '../../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {AnimatedTextWidth} from '../../../../packages/sanity/src/core/perspective/navbar/AnimatedTextWidth'
 import {ReleaseAvatarIcon} from '../../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
-import {PerspectiveFilter} from '../../../../packages/sanity/src/core/variants/plugin/components/PerspectiveFilter'
 import {
   buildConditionFacets,
   type ConditionFacet,
@@ -57,6 +56,7 @@ import {type Affordance, AffordanceValueList, COMPARE_ACTION_WIDTH} from './addr
 import {axisIcon} from './axisIcons'
 import {candidateLayerCount, fallbackVariants, RESOLUTION_LIMITS} from './comparisonFixtures'
 import {chipHeightFor, useCsChrome, useRowActionMode} from './csChrome'
+import {PerspectiveFilter} from './PerspectiveFilter'
 
 /** The shape token (options/ShapeStyles.tsx, options/registry.ts): the Design options window sets `--v2-pill-radius`. Round = 999px. */
 const PILL_RADIUS = 'var(--v2-pill-radius, 999px)'

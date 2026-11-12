@@ -84,6 +84,7 @@ export function ReleasesMenu({
   menuItemProps,
   showDetailLinks = false,
   variantsEnabled = false,
+  trigger,
 }: {
   /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
@@ -100,6 +101,8 @@ export function ReleasesMenu({
    * Everyone else gets the chevron that sits in the classic releases pill.
    */
   variantsEnabled?: boolean
+  /** PROPOSED (Variants 2.0 Design Studio): a caller-supplied trigger that replaces the built-in one. */
+  trigger?: React.ReactElement
 }): React.JSX.Element {
   const {t} = useTranslation()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
@@ -140,7 +143,9 @@ export function ReleasesMenu({
     <>
       <MenuButton
         button={
-          variantsEnabled ? (
+          trigger ? (
+            trigger
+          ) : variantsEnabled ? (
             <ReleasesMenuChip fullWidth={fullWidth} />
           ) : (
             <OversizedButton

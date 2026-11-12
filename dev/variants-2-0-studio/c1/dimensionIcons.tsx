@@ -8,8 +8,10 @@ import {type ComponentType, type CSSProperties, type SVGProps} from 'react'
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 2700f4cf07, lib/explorations/variants-2-0/perspective/dimensionIcons.tsx).
 // Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
-import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
-import {RhombusOutlinedIcon} from '../../../packages/sanity/src/core/components/temporary-icons/RhombusOutlined'
+import {
+  RhombusIcon,
+  RhombusOutlineIcon,
+} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 
 /**
  * The variant diamond at the size of the other dimension icons: the bare RhombusIcon draws the diamond in the middle third of a
@@ -44,7 +46,7 @@ const PURPLE = {'--card-icon-color': 'var(--card-badge-suggest-icon-color)'} as 
  */
 export function VariantDiamondOutline(props: {style?: CSSProperties}) {
   return (
-    <RhombusOutlinedIcon viewBox="3.5 3.5 18 18" {...props} style={{...PURPLE, ...props.style}} />
+    <RhombusOutlineIcon viewBox="3.5 3.5 18 18" {...props} style={{...PURPLE, ...props.style}} />
   )
 }
 

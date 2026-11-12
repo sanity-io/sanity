@@ -1,8 +1,7 @@
-import {type ReactElement, forwardRef} from 'react'
-import {GlobalPerspectiveMenu, ReleaseAvatarIcon, useActiveReleases, usePerspective} from 'sanity'
-
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
+import {type ReactElement, type RefAttributes} from 'react'
+import {ReleaseAvatarIcon, ReleasesMenu, useActiveReleases, usePerspective} from 'sanity'
 
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 
@@ -27,26 +26,35 @@ interface DimensionButtonProps {
   'height'?: number
 }
 
-export const DimensionButton = forwardRef<HTMLButtonElement, DimensionButtonProps>(
-  function DimensionButton(props, ref) {
-    const {icon, text, open, selected, testId, maxWidth = 260, shape = 'box', height, ...rest} = props
-    return (
-      <Button
-        {...rest}
-        data-testid={testId}
-        icon={icon}
-        iconRight={open ? ChevronUpIcon : ChevronDownIcon}
-        mode="ghost"
-        radius={shape === 'round' ? 'full' : undefined}
-        ref={ref}
-        selected={selected}
-        style={{...(shape === 'round' ? {maxWidth} : {maxWidth}), ...(height ? {height} : {})}}
-        text={text}
-        tooltipProps={null}
-      />
-    )
-  },
-)
+export function DimensionButton(props: DimensionButtonProps & RefAttributes<HTMLButtonElement>) {
+  const {
+    ref,
+    icon,
+    text,
+    open,
+    selected,
+    testId,
+    maxWidth = 260,
+    shape = 'box',
+    height,
+    ...rest
+  } = props
+  return (
+    <Button
+      {...rest}
+      data-testid={testId}
+      icon={icon}
+      iconRight={open ? ChevronUpIcon : ChevronDownIcon}
+      mode="ghost"
+      radius={shape === 'round' ? 'full' : undefined}
+      ref={ref}
+      selected={selected}
+      style={{...(shape === 'round' ? {maxWidth} : {maxWidth}), ...(height ? {height} : {})}}
+      text={text}
+      tooltipProps={null}
+    />
+  )
+}
 
 /** The icon of a version: the real release avatar for Published, Drafts or a release (LIVE: from the real releases). */
 export function VersionGlyph({version}: {version: string}) {
@@ -62,7 +70,7 @@ export function VersionGlyph({version}: {version: string}) {
 export function StateMenu(props: {trigger: ReactElement}) {
   const {selectedPerspectiveName} = usePerspective()
   return (
-    <GlobalPerspectiveMenu
+    <ReleasesMenu
       areReleasesEnabled
       selectedPerspectiveName={selectedPerspectiveName}
       trigger={props.trigger}

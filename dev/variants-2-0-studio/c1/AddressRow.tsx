@@ -4,7 +4,6 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Flex, Text} from '@sanity/ui'
 import {type ReactElement, useEffect, useState} from 'react'
 
-import {SegmentDivider} from '../../../packages/sanity/src/core/variants/plugin/components/PerspectiveFilter.css'
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit c9557870aa, lib/explorations/variants-2-0/perspective/AddressRow.tsx).
 // Changes: imports point at this monorepo and ./model. LIVE: the Stage setting (open beta = one dimension, no
@@ -99,7 +98,9 @@ export function AddressChip(props: {
           text={text}
           tooltipProps={tooltip ? {content: tooltip} : null}
         />
-        <div className={SegmentDivider} />
+        <div
+          style={{alignSelf: 'stretch', backgroundColor: 'var(--card-border-color)', width: 1}}
+        />
         <Button
           aria-label={removeLabel}
           data-testid={removeTestId}

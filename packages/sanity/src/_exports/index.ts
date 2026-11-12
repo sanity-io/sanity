@@ -1034,6 +1034,8 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
+// PROPOSED: the releases menu with a caller-supplied trigger (Variants 2.0 Design Studio).
+export {ReleasesMenu} from '../core/perspective/navbar/releases/ReleasesMenu'
 export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 // PROPOSED: keep the navbar's tone neutral whatever the perspective (Variants 2.0 test studio).
 export {NavbarNeutralProvider} from '../core/studio/components/navbar/NavbarNeutral'
