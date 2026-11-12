@@ -776,7 +776,7 @@ importers:
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.6.0
-        version: 5.6.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.7)
+        version: 5.6.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)(storybook@10.6.7)
       '@repo/pandacss':
         specifier: workspace:*
         version: link:../../packages/@repo/pandacss
@@ -800,7 +800,7 @@ importers:
         version: 5.1.0(playwright@1.64.0)(vite@8.3.6)(vitest@5.1.0)
       chromatic:
         specifier: ^18.13.6
-        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.158.0
@@ -1125,7 +1125,7 @@ importers:
         version: 3.0.3
       chromatic:
         specifier: ^18.14.3
-        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -2573,8 +2573,8 @@ importers:
         version: 5.33.4
     devDependencies:
       '@chromatic-com/vitest':
-        specifier: ^1.0.1
-        version: 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)
+        specifier: ^1.0.2
+        version: 1.0.2(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)
       '@pandacss/dev':
         specifier: 'catalog:'
         version: 2.5.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(postcss@8.5.32)
@@ -2658,7 +2658,7 @@ importers:
         version: 9.0.20240710
       chromatic:
         specifier: ^18.14.3
-        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        version: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)
       fast-check:
         specifier: ^4.10.2
         version: 4.10.2
@@ -4087,8 +4087,9 @@ packages:
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0
 
-  '@chromatic-com/vitest@1.0.1':
-    resolution: {integrity: sha512-A6slRcJ8FxT++X3YUJ3sPySiXGARplSKWh5yrZDr/WA8FK86NBGrtDpe3E6uhYFvOpqzMiR2z3kM0dcMrZWfqw==}
+  '@chromatic-com/vitest@1.0.2':
+    resolution: {integrity: sha512-2shTn2PcPa3x2W4YDlqm1CAYRL0UJnwCrQ5CtvaijQbt3mBnYxFH2637Nyi1tZ5FNa+6IQf02kXtlLS8oTJwJQ==}
+    engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
       vitest: ^5.1.0
@@ -18638,10 +18639,10 @@ snapshots:
       - react
       - utf-8-validate
 
-  '@chromatic-com/storybook@5.6.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.7)':
+  '@chromatic-com/storybook@5.6.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)(storybook@10.6.7)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+      chromatic: 18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2)
       jsonfile: 6.2.1
       storybook: 10.6.7(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)
       strip-ansi: 7.2.0
@@ -18650,7 +18651,7 @@ snapshots:
       - '@chromatic-com/playwright'
       - '@chromatic-com/vitest'
 
-  '@chromatic-com/vitest@1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)':
+  '@chromatic-com/vitest@1.0.2(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)':
     dependencies:
       '@chromaui/rrweb-snapshot': 2.0.0-alpha.19-noAbsolute
       std-env: 4.3.0
@@ -25508,12 +25509,12 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chromatic@18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1):
+  chromatic@18.14.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.2):
     dependencies:
       semver: 7.8.6
     optionalDependencies:
       '@chromatic-com/playwright': 1.0.0(@playwright/test@1.64.0)(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)
-      '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)
+      '@chromatic-com/vitest': 1.0.2(@testing-library/dom@10.4.2)(prettier@3.9.10)(react@19.3.1)(vitest@5.1.0)
 
   citty@0.2.2: {}
 
