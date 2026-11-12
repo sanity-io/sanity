@@ -827,6 +827,60 @@ describe('CreateVariant', () => {
     await expect.element($variantTrigger).toHaveTextContent('Summer sale')
   })
 
+  it('opens every menu at the top of its list, and goes back to the top when the search changes', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Enough versions that the Start from list scrolls inside its 320px menu.
+    const manyVersions = Array.from({length: 14}, (_, index) =>
+      variant(`versions.r${index}.${PUBLISHED_ID}`, `Version ${index + 1}`, {
+        bundleId: `r${index}`,
+      }),
+    )
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        sets={[
+          ...VERSION_SETS,
+          {
+            key: 'many',
+            name: 'Many',
+            bundle: {type: 'perspective', perspective: 'drafts'},
+            variants: manyVersions,
+          },
+        ]}
+      />,
+    )
+
+    const listScroller = () => {
+      // The element that scrolls: the list under the pinned search field.
+      const candidates = [...$baseMenu.element().querySelectorAll<HTMLElement>('*')]
+      return candidates.find((element) => element.scrollHeight > element.clientHeight + 1)
+    }
+
+    await userEvent.click($baseTrigger)
+    await expect.element($baseMenu).toBeVisible()
+    await expect.poll(() => listScroller()).toBeTruthy()
+    const $list = listScroller()!
+    $list.scrollTop = 200
+    await expect.poll(() => $list.scrollTop).toBeGreaterThan(0)
+
+    // Closed and opened again: back at the top, with the search field still focused.
+    await userEvent.keyboard('{Escape}')
+    await expect.element($baseMenu).not.toBeVisible()
+    await userEvent.click($baseTrigger)
+    await expect.element($baseMenu).toBeVisible()
+    await expect.poll(() => listScroller()?.scrollTop).toBe(0)
+    await expect.element($baseMenu.getByPlaceholder('Find')).toHaveFocus()
+
+    // Scrolled, then the search changes: back at the top.
+    listScroller()!.scrollTop = 200
+    await expect.poll(() => listScroller()?.scrollTop).toBeGreaterThan(0)
+    await userEvent.type($baseMenu.getByPlaceholder('Find'), 'Version')
+    await expect.poll(() => listScroller()?.scrollTop).toBe(0)
+  })
+
   it('names the version Nearest version copies from on its second line', async () => {
     configure({disableAutoSnapshot: true})
     const {variantCreationRef} = startHarness()

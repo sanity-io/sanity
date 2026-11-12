@@ -7,6 +7,7 @@ import {
   type ComponentType,
   type CSSProperties,
   type ReactNode,
+  useCallback,
   useId,
   useLayoutEffect,
   useRef,
@@ -146,7 +147,24 @@ export const CreateVariantPicker: ComponentType<{
   const [filterQuery, setFilterQuery] = useState('')
   const [menuWidth, setMenuWidth] = useState<number | undefined>(undefined)
   const focusSearchField = useFocusSearchOnOpen()
-  const scrollerRef = useMenuOverflow()
+  const overflowRef = useMenuOverflow()
+  // The list stays mounted while the menu is closed, so it keeps its scroll position. Each open,
+  // and each change to the search, starts it at the top again.
+  const listElement = useRef<HTMLDivElement | null>(null)
+  const scrollListToTop = useCallback(() => {
+    if (listElement.current) listElement.current.scrollTop = 0
+  }, [])
+  const scrollerRef = useCallback(
+    (element: HTMLDivElement | null) => {
+      listElement.current = element
+      const cleanup = overflowRef(element)
+      return () => {
+        listElement.current = null
+        cleanup?.()
+      }
+    },
+    [overflowRef],
+  )
 
   const query = filterQuery.trim().toLowerCase()
 
@@ -188,6 +206,11 @@ export const CreateVariantPicker: ComponentType<{
           // The menu is as wide as its select, and never narrower than MIN_MENU_WIDTH.
           const trigger = document.getElementById(id)
           setMenuWidth(trigger ? trigger.getBoundingClientRect().width : undefined)
+          // A hidden list can't be scrolled, so this waits until the menu is showing.
+          requestAnimationFrame(() => {
+            scrollListToTop()
+            requestAnimationFrame(scrollListToTop)
+          })
         }}
         button={
           <UIButton
@@ -241,7 +264,10 @@ export const CreateVariantPicker: ComponentType<{
                 aria-label={t('document-group.create-variant.filter-placeholder')}
                 ref={focusSearchField}
                 fontSize={1}
-                onChange={(event) => setFilterQuery(event.currentTarget.value)}
+                onChange={(event) => {
+                  setFilterQuery(event.currentTarget.value)
+                  scrollListToTop()
+                }}
                 placeholder={
                   filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
                 }
