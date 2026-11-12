@@ -45,24 +45,41 @@ describe('FormBaseVariantDiffIndicator', () => {
     await expect.element(page.getByTestId('base-variant-diff-indicator')).not.toBeInTheDocument()
   })
 
-  it('is a focusable button with an accessible name, described by the full sentence', async () => {
+  it('is a focusable button named by the full sentence', async () => {
     void render(<Fixture changedFromBaseVariant />)
 
-    const mark = page.getByRole('button', {name: 'Changed from base variant'})
+    const mark = page.getByRole('button', {name: 'Differs from Default Draft'})
     await expect.element(mark).toBeVisible()
 
     const button = mark.element()
-    const description = document.getElementById(button.getAttribute('aria-describedby') ?? '')
-    expect(description?.textContent).toBe('Differs from Default Draft')
-
     await userEvent.tab()
     expect(document.activeElement).toBe(button)
+  })
+
+  it('has a hit area of at least 24x24 pixels', async () => {
+    void render(<Fixture changedFromBaseVariant />)
+
+    const mark = page.getByRole('button', {name: 'Differs from Default Draft'})
+    await expect.element(mark).toBeVisible()
+    const {width, height} = mark.element().getBoundingClientRect()
+    expect(width).toBeGreaterThanOrEqual(24)
+    expect(height).toBeGreaterThanOrEqual(24)
+  })
+
+  it('shows the tooltip on hover as well as focus', async () => {
+    void render(<Fixture changedFromBaseVariant />)
+
+    await userEvent.hover(page.getByRole('button', {name: 'Differs from Default Draft'}))
+    await vi.waitFor(() => expect(labelIsVisible()).toBe(true), {timeout: 3000})
   })
 
   it('shows the tooltip when the mark takes keyboard focus', async () => {
     void render(<Fixture changedFromBaseVariant />)
 
+    const mark = page.getByRole('button', {name: 'Differs from Default Draft'})
+    await expect.element(mark).toBeVisible()
     await userEvent.tab()
+    expect(document.activeElement).toBe(mark.element())
     // The tooltip opens after its delay, so wait for the sentence to be on screen.
     await vi.waitFor(() => expect(labelIsVisible()).toBe(true), {timeout: 3000})
   })
