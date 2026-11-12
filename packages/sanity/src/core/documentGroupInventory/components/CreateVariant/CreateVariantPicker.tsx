@@ -261,7 +261,11 @@ export const CreateVariantPicker: ComponentType<{
           >
             <Box flexShrink={0} padding={1}>
               <TextInput
-                aria-label={t('document-group.create-variant.filter-placeholder')}
+                // Named by the same text it shows, so a field with its own placeholder (the variant
+                // search) is not announced as the generic "Find".
+                aria-label={
+                  filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+                }
                 ref={focusSearchField}
                 fontSize={1}
                 onChange={(event) => {
