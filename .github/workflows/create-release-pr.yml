@@ -38,6 +38,10 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          # moving the release branch onto the latest main can bring in workflow file changes
+          permission-workflows: write
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
