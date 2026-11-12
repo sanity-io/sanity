@@ -123,6 +123,99 @@ describe('VariantDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('marks the title as required and links its error once validation shows', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    const title = screen.getByTestId('variant-form-title')
+    expect(title).toHaveAttribute('aria-required', 'true')
+    expect(title).not.toHaveAttribute('aria-describedby')
+
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    const error = screen.getByTestId('variant-form-title-error')
+    expect(error.id).not.toBe('')
+    expect(title).toHaveAttribute('aria-describedby', error.id)
+    expect(title).toHaveAccessibleDescription('Title is required')
+  })
+
+  it('describes the priority field with help text that is always visible', async () => {
+    const user = userEvent.setup()
+    const helpText =
+      'When multiple variant definitions match with the same specificity, the one with the higher priority wins.'
+
+    await renderDialog()
+
+    const priority = screen.getByTestId('variant-form-priority')
+    expect(screen.getByTestId('variant-form-priority-description')).toHaveTextContent(helpText)
+    expect(priority).toHaveAccessibleDescription(helpText)
+
+    await user.clear(priority)
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    expect(priority).toHaveAccessibleDescription(`${helpText} Priority must be a number`)
+  })
+
+  it('links a condition key error to the key input', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    const keyInput = screen.getByTestId('variant-form-condition-key')
+    await user.type(keyInput, 'Bad Key')
+
+    const error = screen.getByTestId('variant-form-condition-key-error')
+    expect(keyInput).toHaveAttribute('aria-describedby', error.id)
+    expect(keyInput).toHaveAccessibleDescription(error.textContent ?? '')
+    expect(screen.getByTestId('variant-form-condition-value')).not.toHaveAttribute(
+      'aria-describedby',
+    )
+  })
+
+  it('names each freeform remove condition button by its row', async () => {
+    await renderDialog({
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Alpha audience', description: []},
+        conditions: {audience: 'alpha', locale: 'en-US'},
+      },
+    })
+
+    expect(screen.getByRole('button', {name: 'Remove condition 1'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Remove condition 2'})).toBeInTheDocument()
+  })
+
+  it('names the remove condition button of a configured condition row', async () => {
+    await renderDialog({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [{value: 'loyal', title: 'Loyal customers'}],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Loyal audience', description: []},
+        conditions: {audience: 'loyal'},
+      },
+    })
+
+    expect(await screen.findByRole('button', {name: 'Remove condition 1'})).toBeInTheDocument()
+  })
+
   it('shows priority validation when the field is cleared', async () => {
     const user = userEvent.setup()
 
