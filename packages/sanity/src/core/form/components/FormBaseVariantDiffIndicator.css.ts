@@ -33,6 +33,9 @@ export const chipGlyph = css({
  * icon so a keyboard user can see where focus is.
  */
 export const markButton = css({
+  // A 24x24 target (WCAG 2.5.8) whatever the glyph's own size: the inline variant mark is 8px.
+  'minWidth': '24px',
+  'minHeight': '24px',
   'display': 'inline-flex',
   'alignItems': 'center',
   'justifyContent': 'center',
