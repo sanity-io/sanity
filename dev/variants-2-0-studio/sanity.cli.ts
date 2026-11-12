@@ -12,7 +12,7 @@ export default defineCliConfig({
   // ARCHIVE_DEPLOY=1 is the frozen archive of the Design Studio as it was on 12 Nov 2026 before the open-beta merge. It has its own host, so it
   // must never carry the live studio's appId (lyjm24rvng2r6lf48zvkkl5p): with that appId a deploy overwrites variants-design-studio.
   deployment: process.env.ARCHIVE_DEPLOY
-    ? {autoUpdates: false}
+    ? {appId: 'oocjayje9usne5ptlsqudjx4', autoUpdates: false}
     : {appId: 'lyjm24rvng2r6lf48zvkkl5p'},
   reactStrictMode: true,
   unstable_bundledDev: false,
