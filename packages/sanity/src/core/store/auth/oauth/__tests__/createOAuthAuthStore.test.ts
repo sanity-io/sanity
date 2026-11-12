@@ -907,6 +907,35 @@ describe('createOAuthAuthStore', () => {
       expect(await tokenOf(state.client)).toBe('access-2')
     })
 
+    it('signs in with an expired pair whose renewal keeps the access token', async () => {
+      // A renewal can return the same access token with a new expiry or refresh token. That pair
+      // is valid, so it must be probed rather than shown as signed out.
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({...storedTokens('access-1', 'refresh-1'), expiresAt: Date.now() - 1000}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const endpoints = createMockEndpoints({
+        refresh: vi.fn(async () => tokenResponse('access-1', 'refresh-2')),
+      })
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+
+      const state = await Promise.race([
+        authenticatedState(store.state),
+        settle(500).then(() => 'still signed out' as const),
+      ])
+
+      expect(state).toMatchObject({authenticated: true})
+      expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+    })
+
     it('stops renewing when the renewed access token is rejected by /users/me as well', async () => {
       // Every renewal succeeds at the token endpoint, but /users/me rejects every access token
       // (a grant problem, not a session problem). One renewal per rejected access token is the
