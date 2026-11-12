@@ -1,8 +1,46 @@
-import {type SanityClient} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {catchError, firstValueFrom, Observable, of, Subject, take, toArray} from 'rxjs'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi} from 'vitest'
 
-import {createReleaseMetadataAggregator} from '../createReleaseMetadataAggregator'
+import {
+  createReleaseMetadataAggregator,
+  type MetadataWrapper,
+} from '../createReleaseMetadataAggregator'
+
+const UPDATED_AT = '2024-01-02T00:00:00Z'
+
+const getPartOfReleaseIds = (query: string) =>
+  Array.from(query.matchAll(/sanity::partOfRelease\("([^"]+)"\)/g), ([, releaseId]) => releaseId)
+
+const getProjectedReleaseDocumentIds = (query: string) =>
+  Array.from(
+    query.matchAll(/"(_\.releases\.[^"]+)": \{/g),
+    ([, releaseDocumentId]) => releaseDocumentId,
+  )
+
+const answerMetadataQuery = (query: string) =>
+  of(
+    Object.fromEntries(
+      getProjectedReleaseDocumentIds(query).map((releaseDocumentId) => [
+        releaseDocumentId,
+        {updatedAt: UPDATED_AT, documentIds: ['doc']},
+      ]),
+    ),
+  )
+
+const mutationEvent = (documentId: string): MutationEvent => ({
+  type: 'mutation',
+  documentId,
+  eventId: `tx#${documentId}`,
+  identity: 'user',
+  mutations: [],
+  timestamp: UPDATED_AT,
+  transactionId: 'tx',
+  transition: 'update',
+  visibility: 'query',
+  transactionTotalEvents: 1,
+  transactionCurrentEvent: 0,
+})
 
 describe('createReleaseMetadataAggregator', () => {
   const mockClient = {
@@ -12,10 +50,23 @@ describe('createReleaseMetadataAggregator', () => {
     },
   } as unknown as SanityClient & {
     observable: {
-      fetch: Mock<SanityClient['observable']['fetch']>
+      fetch: Mock<(query: string) => Observable<Record<string, unknown>>>
       listen: Mock<SanityClient['observable']['listen']>
     }
   }
+
+  const subscribe = (releaseDocumentIds: string[]) => {
+    const values: MetadataWrapper[] = []
+    const error = vi.fn()
+    const subscription = createReleaseMetadataAggregator(mockClient)(releaseDocumentIds).subscribe({
+      next: (value) => values.push(value),
+      error,
+    })
+    onTestFinished(() => subscription.unsubscribe())
+    return {values, error}
+  }
+
+  const getFetchedQuery = (call: number) => mockClient.observable.fetch.mock.calls[call][0]
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -134,5 +185,100 @@ describe('createReleaseMetadataAggregator', () => {
         },
       },
     ])
+  })
+
+  describe('when documents in the watched releases change', () => {
+    const VARIANT_SCOPE_HASH = 'Tqa2GgX2epJOVp3Q'
+    let listener$: Subject<MutationEvent>
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      listener$ = new Subject()
+      mockClient.observable.listen.mockReturnValue(listener$)
+      mockClient.observable.fetch.mockImplementation(answerMetadataQuery)
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('listens with the bare release ids that sanity::partOfRelease() takes', () => {
+      subscribe(['_.releases.rABC', '_.releases.rDEF'])
+
+      const [listenQuery] = mockClient.observable.listen.mock.calls[0]
+      expect(getPartOfReleaseIds(listenQuery)).toEqual(['rABC', 'rDEF'])
+      expect(getPartOfReleaseIds(getFetchedQuery(0))).toEqual(['rABC', 'rDEF'])
+    })
+
+    it('refetches only the release a version document belongs to, keyed by its release document id', () => {
+      const {values, error} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+
+      listener$.next(mutationEvent('versions.rABC.doc'))
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(1)
+
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC'])
+      expect(getProjectedReleaseDocumentIds(getFetchedQuery(1))).toEqual(['_.releases.rABC'])
+      expect(values.at(-1)).toEqual({
+        loading: false,
+        error: null,
+        data: {'_.releases.rABC': {updatedAt: UPDATED_AT, documentIds: ['doc'], documentCount: 1}},
+      })
+      expect(error).not.toHaveBeenCalled()
+    })
+
+    it('refetches every watched release when a variant document changes', () => {
+      const {values, error} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+
+      listener$.next(mutationEvent(`versions.${VARIANT_SCOPE_HASH}.doc`))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC', 'rDEF'])
+      expect(Object.keys(values.at(-1)?.data ?? {})).toEqual(['_.releases.rABC', '_.releases.rDEF'])
+      expect(error).not.toHaveBeenCalled()
+    })
+
+    it('refetches each mutated release once per buffered batch', () => {
+      subscribe(['_.releases.rABC', '_.releases.rDEF', '_.releases.rGHI'])
+
+      listener$.next(mutationEvent('versions.rABC.doc-1'))
+      listener$.next(mutationEvent('versions.rDEF.doc-1'))
+      listener$.next(mutationEvent('versions.rABC.doc-2'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getProjectedReleaseDocumentIds(getFetchedQuery(1))).toEqual([
+        '_.releases.rABC',
+        '_.releases.rDEF',
+      ])
+
+      listener$.next(mutationEvent('versions.rGHI.doc'))
+      listener$.next(mutationEvent(`versions.${VARIANT_SCOPE_HASH}.doc`))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
+      expect(getProjectedReleaseDocumentIds(getFetchedQuery(2))).toEqual([
+        '_.releases.rGHI',
+        '_.releases.rABC',
+        '_.releases.rDEF',
+      ])
+    })
+
+    it('keeps listening after refetching', () => {
+      const {error} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+
+      listener$.next(mutationEvent(`versions.${VARIANT_SCOPE_HASH}.doc`))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(mutationEvent('versions.rDEF.doc'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
+      expect(getPartOfReleaseIds(getFetchedQuery(2))).toEqual(['rDEF'])
+      expect(error).not.toHaveBeenCalled()
+      expect(listener$.observed).toBe(true)
+    })
   })
 })

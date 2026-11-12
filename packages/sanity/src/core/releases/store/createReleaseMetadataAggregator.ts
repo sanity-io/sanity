@@ -12,6 +12,8 @@ import {
   switchMap,
 } from 'rxjs'
 
+import {getVersionFromId} from '../../util/draftUtils'
+import {getReleaseDocumentIdFromReleaseId} from '../util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleasesMetadata} from './useReleasesMetadata'
 
@@ -101,8 +103,19 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
     )
   }
 
-  const aggregatorListener$ = (releaseIds: string[]) => {
-    if (!releaseIds?.length || !client) return EMPTY
+  const aggregatorListener$ = (releaseDocumentIds: string[]) => {
+    if (!releaseDocumentIds?.length || !client) return EMPTY
+
+    const releaseIds = releaseDocumentIds.map(getReleaseIdFromReleaseDocumentId)
+
+    // The id of a release-scoped variant document carries an opaque hash instead of the release
+    // id, so a mutation that can't be attributed to one watched release refetches all of them
+    const getMutatedReleaseDocumentIds = (documentId: string): string[] => {
+      const releaseId = getVersionFromId(documentId)
+      return releaseId && releaseIds.includes(releaseId)
+        ? [getReleaseDocumentIdFromReleaseId(releaseId)]
+        : releaseDocumentIds
+    }
 
     return client.observable
       .listen(
@@ -128,19 +141,16 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
         switchMap((entriesArray) => {
-          const mutatedReleaseIds = entriesArray.reduce<string[]>((accReleaseIds, event) => {
-            if ('type' in event && event.type === 'mutation') {
-              const releaseId = event.documentId.split('.')[1]
-              // de-dup mutated bundle slugs
-              if (accReleaseIds.includes(releaseId)) return accReleaseIds
+          const mutatedReleaseDocumentIds = new Set(
+            entriesArray.flatMap((event) =>
+              'type' in event && event.type === 'mutation'
+                ? getMutatedReleaseDocumentIds(event.documentId)
+                : [],
+            ),
+          )
 
-              return [...accReleaseIds, releaseId]
-            }
-            return accReleaseIds
-          }, [])
-
-          if (mutatedReleaseIds.length) {
-            return aggregatorFetch$(mutatedReleaseIds)
+          if (mutatedReleaseDocumentIds.size) {
+            return aggregatorFetch$([...mutatedReleaseDocumentIds])
           }
 
           return EMPTY
