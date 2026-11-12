@@ -382,6 +382,59 @@ describe('VariantDialog', () => {
     })
   })
 
+  it('exposes the chosen configured key and value as the checked radio items', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [
+                      {value: 'loyal', title: 'Loyal customers'},
+                      {value: 'new', title: 'New customers'},
+                    ],
+                  },
+                  {name: 'market', title: 'Market', values: [{value: 'nordics', title: 'Nordics'}]},
+                ],
+              },
+            },
+          },
+        },
+      },
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Loyal audience', description: []},
+        conditions: {audience: 'loyal'},
+      },
+    })
+
+    await user.click(screen.getByTestId('variant-form-condition-key-menu-button'))
+    const audience = screen.getByTestId('variant-form-condition-key-option-audience')
+    const market = screen.getByTestId('variant-form-condition-key-option-market')
+    expect(audience).toHaveAttribute('role', 'menuitemradio')
+    expect(audience).toHaveAttribute('aria-checked', 'true')
+    expect(market).toHaveAttribute('role', 'menuitemradio')
+    expect(market).toHaveAttribute('aria-checked', 'false')
+    await user.keyboard('{Escape}')
+
+    await user.click(screen.getByTestId('variant-form-condition-value-menu-button'))
+    expect(screen.getByTestId('variant-form-condition-value-option-loyal')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+    expect(screen.getByTestId('variant-form-condition-value-option-new')).toHaveAttribute(
+      'aria-checked',
+      'false',
+    )
+  })
+
   it('marks an unknown value as an error and blocks save', async () => {
     await renderDialog({
       config: {
