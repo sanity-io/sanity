@@ -539,6 +539,64 @@ importers:
         specifier: 'catalog:'
         version: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
+  dev/js-lite-studio:
+    dependencies:
+      '@portabletext/editor':
+        specifier: ^8.2.12
+        version: 8.2.12(@types/react@19.3.0)(react@19.3.1)
+      '@sanity/bifur-client':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.15.1(vitest@5.0.4)
+      '@sanity/color':
+        specifier: ^3.0.9
+        version: 3.0.9
+      '@sanity/diff-match-patch':
+        specifier: ^3.2.1
+        version: 3.2.1
+      '@sanity/icons':
+        specifier: ^5.2.3
+        version: 5.2.3(react@19.3.1)
+      '@sanity/mutator':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/mutator
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.3.0(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.155.0)(vite@8.3.6)
+      oxc-transform-react:
+        specifier: 'catalog:'
+        version: 0.155.0
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.4
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.6(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+
   dev/media-library-aspects-studio:
     dependencies:
       sanity:
