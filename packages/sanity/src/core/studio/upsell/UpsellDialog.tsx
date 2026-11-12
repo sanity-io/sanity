@@ -105,7 +105,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
         tooltipProps={null}
       />
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
-      <Box padding={3} marginTop={2}>
+      <Box padding={3} marginTop={data.image ? 2 : 0} paddingTop={data.image ? 0 : 4}>
         <Flex gap={4} paddingBottom={2} flexDirection="column">
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}

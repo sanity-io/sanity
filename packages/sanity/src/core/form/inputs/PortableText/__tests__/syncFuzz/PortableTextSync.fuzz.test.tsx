@@ -274,7 +274,7 @@ async function checkProperty(
           throw error
         }
       }),
-      {numRuns, seed, path, verbose: 1},
+      {numRuns, seed, path, verbose: fc.VerbosityLevel.Verbose},
     )
   } catch (error) {
     if (failedRunErrors.length > 0) {

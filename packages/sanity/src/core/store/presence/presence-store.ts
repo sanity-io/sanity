@@ -117,7 +117,7 @@ const generate = () => nanoid(16)
 //      which differs from how session cookies work.
 //      More at https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 //  This is _probably_ a quite marginal case and not going to be much of a issue in practice
-function getSessionId() {
+function readStoredSessionId() {
   try {
     return window.sessionStorage.getItem(KEY)
   } catch {
@@ -126,7 +126,7 @@ function getSessionId() {
   return null
 }
 
-function setSessionId(id: string) {
+function storeSessionId(id: string) {
   try {
     window.sessionStorage.setItem(KEY, id)
   } catch {
@@ -138,8 +138,18 @@ function setSessionId(id: string) {
 /** How long document presence keeps running after the last document stops using it. */
 const DOCUMENT_PRESENCE_GRACE = 5_000
 
-/** @internal */
-export const SESSION_ID = getSessionId() || setSessionId(generate())
+let sessionId: string | undefined
+
+/**
+ * The presence session id of this browsing context, created on first call rather than at import
+ * so that importing `sanity` doesn't need random values (Cloudflare Workers forbid them there).
+ *
+ * @internal
+ */
+export function getSessionId(): string {
+  sessionId ??= readStoredSessionId() || storeSessionId(generate())
+  return sessionId
+}
 
 const isBifurError = (error: unknown): error is RpcError | WebSocketError =>
   error instanceof RpcError || error instanceof WebSocketError
@@ -165,8 +175,9 @@ export function createPresenceStore(context: {
   userStore: UserStore
 }): PresenceStore {
   const {bifur, connectionStatusStore, userStore} = context
+  const ownSessionId = getSessionId()
 
-  const [transportEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+  const [transportEvents$, sendMessage] = createBifurTransport(bifur, ownSessionId)
 
   // A closed socket ends the presence subscription. In bifur-client v3 the same close also takes
   // the connection status through `error`, and the presence store subscribes again on reconnect.
@@ -204,7 +215,7 @@ export function createPresenceStore(context: {
   const rollCallRequests$ = presenceEvents$.pipe(
     filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall'),
     // do not respond to my own rollcall requests
-    filter((event: RollCallEvent) => event.sessionId !== SESSION_ID),
+    filter((event: RollCallEvent) => event.sessionId !== ownSessionId),
   )
 
   const REPORT_MIN_INTERVAL = 30000
@@ -362,7 +373,8 @@ export function createPresenceStore(context: {
     map(([userAndSessions, debugIntrospect]) =>
       userAndSessions.filter(
         (userAndSession) =>
-          debugIntrospect || !userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID),
+          debugIntrospect ||
+          !userAndSession.sessions.some((sess) => sess.sessionId === ownSessionId),
       ),
     ),
     map((userAndSessions) =>
@@ -402,7 +414,7 @@ export function createPresenceStore(context: {
             },
           })),
         )
-        .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
+        .filter((item) => debugIntrospect || item.presence.sessionId !== ownSessionId),
     ),
     // Presence stops once no document has used it for a while, as when the login screen replaces
     // the studio after a session ends. The delay keeps it running while switching documents, when

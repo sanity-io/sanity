@@ -4,7 +4,7 @@ import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
-import {Button, Text as LegacyText} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
@@ -234,9 +234,9 @@ export function ReleasesMenuItem(
           release.metadata.releaseType === 'scheduled' &&
           (release.publishAt || release.metadata.intendedPublishAt) && (
             // Muted on hover menu items is not working properly, the text is not readable when hovered
-            <LegacyText muted size={1} as="div">
+            <Text muted size={1} as="div" trim style={{color: 'inherit'}}>
               {formatPublishDate(release)}
-            </LegacyText>
+            </Text>
           )}
       </Flex>
       {/* Centred on the row, so the lock and the layer toggle sit between the title and date lines */}

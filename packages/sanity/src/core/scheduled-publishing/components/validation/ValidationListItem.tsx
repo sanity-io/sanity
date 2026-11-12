@@ -44,8 +44,12 @@ export function ValidationListItem(props: ValidationListItemProps) {
   const children = (
     <Flex>
       <Box>
-        {marker.level === 'error' && <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />}
-        {marker.level === 'warning' && <Icon icon={WarningOutlineIcon} size={1} tone="caution" />}
+        {marker.level === 'error' && (
+          <Icon icon={ErrorOutlineIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
+        )}
+        {marker.level === 'warning' && (
+          <Icon icon={WarningOutlineIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
+        )}
         {marker.level === 'info' && (
           <Icon icon={InfoOutlineIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
         )}
@@ -59,10 +63,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
             weight="semibold"
             as="div"
             trim={true}
-            tone={
-              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
-            }
-            style={menuItemTone === 'primary' ? {color: 'var(--card-fg-color)'} : undefined}
+            style={{color: 'var(--card-fg-color)'}}
           >
             {path}
           </Text>
@@ -70,15 +71,11 @@ export function ValidationListItem(props: ValidationListItemProps) {
         {message && (
           <Text
             className={wrappingText}
-            muted
             size={1}
             truncate={truncate ? 1 : undefined}
             as="div"
             trim={true}
-            tone={
-              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
-            }
-            style={menuItemTone === 'primary' ? {color: 'var(--card-muted-fg-color)'} : undefined}
+            style={{color: 'var(--card-muted-fg-color)'}}
           >
             {message}
           </Text>
