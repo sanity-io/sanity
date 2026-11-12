@@ -96,7 +96,6 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
-  - '@sentry/conventions@0.27.0'
   # yuku 0.19 moved the native bindings from @yuku-codegen/* and @yuku-parser/* to this scope
   - '@yuku-core/*'
   - '@yuku-parser/*'
@@ -112,8 +111,6 @@ minimumReleaseAgeExclude:
   - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'groq-js'
-  # Fresh patch; exclude so 26.4.4 can install before the age gate
-  - 'i18next@26.4.4'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
