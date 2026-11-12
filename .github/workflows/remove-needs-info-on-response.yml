@@ -1,7 +1,7 @@
 name: Remove needs-more-info Label on Response
 
 on:
-  issue_comment:
+  issue_comment: # zizmor: ignore[dangerous-triggers] only edits labels and comments on the commented issue; no checkout, no comment content used
     types: [created]
 
 permissions:
