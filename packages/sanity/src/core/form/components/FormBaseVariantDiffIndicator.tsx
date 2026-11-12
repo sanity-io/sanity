@@ -1,7 +1,7 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type ReactNode, useContext, useId} from 'react'
+import {type ComponentType, type ReactNode, useContext} from 'react'
 import {BaseVariantComparisonContext} from 'sanity/_singletons'
-import {Flex, Text, VisuallyHidden} from 'ui5'
+import {Flex, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {VariantMark} from '../../../ui-components/variantMark'
@@ -38,32 +38,25 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
 
 /**
  * The mark itself. UI 5 puts a tooltip on a focusable trigger, and a bare icon cannot take focus, so the
- * mark is a button with its own accessible name. The full sentence ("Differs from Default Draft") is a
- * visually hidden description linked with `aria-describedby`, because this tooltip only mounts while it
- * is open and cannot be the description. The gutter shows one mark per field (`formFieldGutter`), so
- * this adds one tab stop only to a field that actually differs.
+ * mark is a button. Its accessible name is the full sentence ("Differs from Default Draft"), the same
+ * words the tooltip shows, so a screen reader announces what a sighted user reads on hover or focus.
+ * The drawn mark is small, so the button pads out to a 24x24 target (WCAG 2.5.8). The gutter shows one
+ * mark per field (`formFieldGutter`), so a tab stop is added only to a field that actually differs.
  */
 function DiffersFromMark() {
   const {t} = useTranslation()
-  const descriptionId = useId()
   const slotName = useComparedSlotName()
   return (
-    <>
-      <Tooltip content={<DiffersFrom />} placement="left">
-        <button
-          type="button"
-          className={markButton}
-          aria-label={t('changes.from-base-variant.label')}
-          aria-describedby={descriptionId}
-          data-testid="base-variant-diff-mark"
-        >
-          <VariantMark size="inline" />
-        </button>
-      </Tooltip>
-      <VisuallyHidden id={descriptionId}>
-        {t('changes.from-base-variant.differs-from')} {t('document-group.base-variant')} {slotName}
-      </VisuallyHidden>
-    </>
+    <Tooltip content={<DiffersFrom />} placement="left">
+      <button
+        type="button"
+        className={markButton}
+        aria-label={`${t('changes.from-base-variant.differs-from')} ${t('document-group.base-variant')} ${slotName}`}
+        data-testid="base-variant-diff-mark"
+      >
+        <VariantMark size="inline" />
+      </button>
+    </Tooltip>
   )
 }
 
