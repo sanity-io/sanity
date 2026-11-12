@@ -1518,7 +1518,7 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       p-map:
-        specifier: ^7.0.8
+        specifier: ^7.1.1
         version: 7.1.1
       semver:
         specifier: ^7.8.6
