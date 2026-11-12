@@ -15,6 +15,7 @@ import {
   type DiagramSpec,
   type OptionStatus,
 } from '../design-options/types'
+import {CREATE_VARIANT_FORM} from './createVariantForm'
 import diagrams from './diagrams.json'
 import {DOC_TABS} from './docTabs'
 import {DRAWINGS} from './drawings'
@@ -479,6 +480,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
 
 // The E9 switches (options/e9.ts) come after C1 to C9.
 COMPONENTS.push(
+  CREATE_VARIANT_FORM,
   ...E9_COMPONENTS,
   LOCAL_MATCH,
   ROW_WIDTH,
@@ -744,7 +746,7 @@ defineDesignOptions({
     // The open beta tickets first, under their ticket names (T1 to T6); everything else is an exploration, collapsed.
     {
       label: 'Open beta',
-      ids: ['c3'],
+      ids: ['c3', 'createVariantForm'],
       tags: {c3: 'T3'},
     },
     {

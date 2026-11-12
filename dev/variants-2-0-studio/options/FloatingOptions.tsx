@@ -11,6 +11,7 @@ import {
   VariantEditNoticeProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
+import {CreateVariantFormContext} from 'sanity/_singletons'
 import {
   DocumentListItemOverrideProvider,
   DocumentPaneExtensionProvider,
@@ -102,48 +103,54 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
   // Handoff Studio's FloatingOptions, which hides it always (the Design Studio's first port missed it; the Design-Studio-Agent found it, 26 Oct).
   const c4 = useOption('c4')
   const c11 = useOption('c11')
+  // CV: the Create variant form of the inventory (core's, or the inset card of the signed-off spec).
+  const createVariantForm = useOption('createVariantForm') === 'b' ? 'final' : 'stock'
   return (
-    <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b' || c7 === 'd'}>
-      <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
-        <PerspectiveProvider>
-          <PerspectiveMenuHost>
-            <NeutralNavbarHost>
-              <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
-                <VariantEditNoticeProvider value={EditNotice}>
-                  <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
-                    <VariantDetailHeaderProvider value={c11 === 'b' ? renderTargetingHeader : null}>
-                      <DocumentPaneHost>
-                        <VariantFilterAddControlProvider
-                          value={stock ? null : renderPickerAddFilter}
-                        >
-                          <FieldSetRollupProvider value={renderFieldSetRollup}>
-                            {/* C13: the create menus show "<Type> as a variant…" only with option B. */}
-                            <AsVariantSourceProvider>
-                              {props.renderDefault(props)}
-                            </AsVariantSourceProvider>
-                          </FieldSetRollupProvider>
-                        </VariantFilterAddControlProvider>
-                        <DesignOptions />
-                        {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
-                        <AddressPickerHost />
-                        {/* C13 B: takes the "as a variant" items' clicks (nothing on A). */}
-                        <AsVariantCreateHost />
-                        <ShapeStyles />
-                        <MarkStyles />
-                        <ChromeStyles />
-                        {c4 !== STOCK_OPTION ? (
-                          <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
-                        ) : null}
-                        <ResultToastStyles />
-                      </DocumentPaneHost>
-                    </VariantDetailHeaderProvider>
-                  </VariantDetailExtensionProvider>
-                </VariantEditNoticeProvider>
-              </ShippedPerspectiveBarProvider>
-            </NeutralNavbarHost>
-          </PerspectiveMenuHost>
-        </PerspectiveProvider>
-      </DocumentListItemOverrideProvider>
-    </VariantBannerReplacedProvider>
+    <CreateVariantFormContext.Provider value={createVariantForm}>
+      <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b' || c7 === 'd'}>
+        <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
+          <PerspectiveProvider>
+            <PerspectiveMenuHost>
+              <NeutralNavbarHost>
+                <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
+                  <VariantEditNoticeProvider value={EditNotice}>
+                    <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
+                      <VariantDetailHeaderProvider
+                        value={c11 === 'b' ? renderTargetingHeader : null}
+                      >
+                        <DocumentPaneHost>
+                          <VariantFilterAddControlProvider
+                            value={stock ? null : renderPickerAddFilter}
+                          >
+                            <FieldSetRollupProvider value={renderFieldSetRollup}>
+                              {/* C13: the create menus show "<Type> as a variant…" only with option B. */}
+                              <AsVariantSourceProvider>
+                                {props.renderDefault(props)}
+                              </AsVariantSourceProvider>
+                            </FieldSetRollupProvider>
+                          </VariantFilterAddControlProvider>
+                          <DesignOptions />
+                          {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
+                          <AddressPickerHost />
+                          {/* C13 B: takes the "as a variant" items' clicks (nothing on A). */}
+                          <AsVariantCreateHost />
+                          <ShapeStyles />
+                          <MarkStyles />
+                          <ChromeStyles />
+                          {c4 !== STOCK_OPTION ? (
+                            <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
+                          ) : null}
+                          <ResultToastStyles />
+                        </DocumentPaneHost>
+                      </VariantDetailHeaderProvider>
+                    </VariantDetailExtensionProvider>
+                  </VariantEditNoticeProvider>
+                </ShippedPerspectiveBarProvider>
+              </NeutralNavbarHost>
+            </PerspectiveMenuHost>
+          </PerspectiveProvider>
+        </DocumentListItemOverrideProvider>
+      </VariantBannerReplacedProvider>
+    </CreateVariantFormContext.Provider>
   )
 }
