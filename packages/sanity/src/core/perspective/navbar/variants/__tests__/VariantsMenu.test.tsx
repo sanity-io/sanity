@@ -141,8 +141,8 @@ describe('VariantsMenu', () => {
   it('labels the filter input', async () => {
     await renderMenu()
 
-    expect(screen.getByLabelText('Find audience')).toBe(
-      screen.getByPlaceholderText('Find audience'),
+    expect(screen.getByLabelText('Search variant definitions…')).toBe(
+      screen.getByPlaceholderText('Search variant definitions…'),
     )
   })
 
