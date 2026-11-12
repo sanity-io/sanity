@@ -115,7 +115,7 @@
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {
-    "@babel/core": "7.29.7",
+    "@babel/core": "7.29.13",
     "@repo/bundle-manager": "workspace:*",
     "@repo/oxlint-plugin-i18n": "workspace:*",
     "@repo/release-notes": "workspace:*",
