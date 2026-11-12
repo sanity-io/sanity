@@ -122,9 +122,10 @@ describe('SelectVariantDefinition', () => {
   })
 
   it('names the search field with the variant search placeholder', async () => {
-    await openMenu(new Set())
+    const menu = await openMenu(new Set())
 
-    expect(screen.getByRole('textbox', {name: 'Search variant definitions…'})).toBeInTheDocument()
+    // The accessible name, not only the visible placeholder
+    expect(within(menu).getByLabelText('Search variant definitions…')).toBeInTheDocument()
   })
 
   it('uses the variant search placeholder', async () => {
