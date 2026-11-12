@@ -90,7 +90,7 @@ function Trimmed({children, muted}: {children: ReactNode; muted?: boolean}) {
 
 /**
  * PROPOSED (Storybook "A final", `Pick`): the inset form's select. A ghost button, padding 3, radius 2, holding the glyph, the value (or the hint,
- * muted) and the chevron pinned to the right edge; text size 2 throughout, the size of a Studio string field's input.
+ * muted) and the chevron pinned to the right edge; text size 1 (13px), the size of the "Create variant definition" dialog's condition selects and of the menu rows it opens.
  */
 function FinalSelectTrigger({
   disabled,
@@ -115,8 +115,8 @@ function FinalSelectTrigger({
       mode="ghost"
       padding={0}
       radius={2}
-      // The Studio string input's box: 35px high (6px over a 23px text line), 12px in at the sides.
-      style={{minWidth: 0, padding: '6px 12px', width: '100%'}}
+      // The box of the "Create variant definition" dialog's condition selects: 13px text (size 1) in 33px, 12px in at the sides.
+      style={{height: 33, minWidth: 0, padding: '0 12px', width: '100%'}}
       title={text}
     >
       <Flex alignItems="center" style={{gap: 8, minWidth: 0}}>
@@ -124,13 +124,28 @@ function FinalSelectTrigger({
           <Trimmed muted={empty}>{glyph}</Trimmed>
         </span>
         <Box flexGrow={1} style={{minWidth: 0, textAlign: 'left'}}>
-          <Text data-testid={`${testId}-value`} muted={empty} size={2} truncate={1}>
+          <Text
+            data-testid={`${testId}-value`}
+            muted={empty}
+            size={1}
+            truncate={1}
+            // The value reads like the menu rows it opens (13px, medium); the hint stays regular and muted.
+            weight={empty ? undefined : 'medium'}
+          >
             {text ?? placeholder}
           </Text>
         </Box>
-        <Text muted size={2}>
+        <span
+          style={{
+            color: 'var(--card-muted-fg-color)',
+            display: 'inline-flex',
+            flexShrink: 0,
+            fontSize: 15,
+            lineHeight: 0,
+          }}
+        >
           <ChevronDownIcon />
-        </Text>
+        </span>
       </Flex>
     </UIButton>
   )
@@ -297,13 +312,13 @@ export const CreateVariantPicker: ComponentType<{
 
   if (inset) {
     // PROPOSED (the signed-off spec, Storybook "A final": FINAL_SPEC and OptionAFinal): a title over a full-width select, 8px apart, the title
-    // inset 12px so it starts where the select's first glyph starts. Pixel values, not the space scale, so they are the spec's.
+    // flush with the select's outer left edge, as in the "Create variant definition" dialog. Pixel values, not the space scale, so they are the spec's.
     return (
       <div
         data-testid={`${testId}-field`}
         style={{display: 'flex', flexDirection: 'column', gap: 8}}
       >
-        <div style={{alignItems: 'center', display: 'flex', paddingLeft: 12}}>
+        <div style={{alignItems: 'center', display: 'flex'}}>
           <Text size={1} weight="medium" as="label" htmlFor={id}>
             {label}
           </Text>
