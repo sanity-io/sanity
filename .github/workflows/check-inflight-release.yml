@@ -32,6 +32,8 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-checks: write
+          permission-pull-requests: read
 
       - name: Update in-flight release status check for open PRs
         run: |
@@ -59,6 +61,8 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-checks: write
+          permission-pull-requests: read
 
       - name: Check if there is an in-flight release
         run: |
@@ -93,6 +97,8 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-checks: write
+          permission-pull-requests: read
 
       - name: Reconcile in-flight release status checks for all open PRs
         run: |
