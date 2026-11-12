@@ -5,8 +5,10 @@ import {css} from '#styled-system/css'
  * `renderWithDetailLinkSpace`. The caller's padding mirrors the menu item's own, so the link
  * covers the reserved space.
  *
- * The row renders `data-detail-link-row`. The link shows while the row is hovered, and while
- * focus is in it: the menu focuses the item it makes active, on hover and with the arrow keys.
+ * The link shows on the active row only (`data-active`, from `usePerspectiveDetailLink`): the one
+ * under the pointer or with keyboard focus. It does not read `:hover` or `:focus-within`, which
+ * disagree with the menu's active row: focus can stay on a row the pointer has left, and keep its
+ * link showing next to the new active row's.
  * Devices without hover always show it: an invisible link would still take taps.
  */
 export const detailLinkContainer = css({
@@ -16,8 +18,7 @@ export const detailLinkContainer = css({
   'bottom': 0,
   'pointerEvents': 'none',
   'opacity': 0,
-  '[data-detail-link-row]:hover &': {opacity: 1},
-  '[data-detail-link-row]:focus-within &': {opacity: 1},
+  '&[data-active]': {opacity: 1},
   '@media (hover: none)': {opacity: 1},
 })
 

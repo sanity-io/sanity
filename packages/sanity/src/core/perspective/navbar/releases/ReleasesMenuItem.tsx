@@ -11,6 +11,7 @@ import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {MenuLeadingColumn} from '../../../../ui-components/menuLeadingColumn/MenuLeadingColumn'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -178,13 +179,14 @@ export function ReleasesMenuItem(
         flexGrow={0}
         flexShrink={0}
         data-testid="release-indicator-icon"
-        // The left padding centres the icon on the layer line (`INDICATOR_LEFT_OFFSET`); the right
-        // padding puts the title where other studio menus start their labels
-        paddingLeft={3}
-        paddingRight={1}
-        paddingY={2}
+        // The column starts 6px from the row's edge, where the icon column of every other menu row
+        // starts (the menu item's 4px padding and 2px here), and its centre is where the layer line
+        // runs (`INDICATOR_LEFT_OFFSET`). It starts on the first text line: the text has 8px above it
+        style={{padding: '2px 2px 0'}}
       >
-        <ReleaseAvatarIcon size="small" release={release} />
+        <MenuLeadingColumn>
+          <ReleaseAvatarIcon size="small" release={release} />
+        </MenuLeadingColumn>
       </IconWrapperBox>
       <Flex
         flexBasis="0%"

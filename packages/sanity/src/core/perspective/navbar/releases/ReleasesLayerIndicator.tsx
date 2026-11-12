@@ -1,7 +1,8 @@
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
-const INDICATOR_LEFT_OFFSET = 20
+// The centre of the 21px leading column of a menu row, less half the line's width
+const INDICATOR_LEFT_OFFSET = 16
 const INDICATOR_WIDTH = 1
 const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
 const INDICATOR_BOTTOM_OFFSET = 4

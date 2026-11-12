@@ -4,6 +4,7 @@ import {MenuItem} from '@sanity/ui/menu'
 import {type CSSProperties, memo, useCallback} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {MenuLeadingColumn} from '../../../../ui-components/menuLeadingColumn/MenuLeadingColumn'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type AgentBundle} from '../../../store/agent/createAgentBundlesStore'
 import {usePerspective} from '../../usePerspective'
@@ -38,8 +39,10 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
   return (
     <MenuItem onClick={handleClick} padding={1} pressed={active} selected={active}>
       <Flex alignItems="flex-start" gap={1}>
-        <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={3} paddingY={2}>
-          <Icon size={1} style={iconStyle} icon={SparkleIcon} />
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} style={{padding: '2px 2px 0'}}>
+          <MenuLeadingColumn>
+            <Icon size={1} style={iconStyle} icon={SparkleIcon} />
+          </MenuLeadingColumn>
         </Box>
         <Flex
           flexBasis="0%"
