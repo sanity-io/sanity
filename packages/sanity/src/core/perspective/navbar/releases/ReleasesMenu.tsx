@@ -167,6 +167,7 @@ export function ReleasesMenu({
           >
             <Box flexShrink={0} padding={2} borderBottom>
               <TextInput
+                aria-label={t('release.navbar.filter-placeholder')}
                 data-testid="global-perspective-filter"
                 fontSize={1}
                 icon={SearchIcon}

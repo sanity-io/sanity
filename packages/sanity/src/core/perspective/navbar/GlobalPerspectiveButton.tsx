@@ -86,6 +86,9 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
   // The full-width chip has room to show what fits, and cuts the rest with an ellipsis
   const label = fullWidth ? text : truncateString(uncutText, LABEL_CHARACTER_LIMIT)
   const showFullText = uncutText !== label
+  // `MenuButton` forwards `aria-expanded` to its trigger. While the menu is open the tooltip would
+  // sit over the menu's search field, so it is off.
+  const menuOpen = buttonProps['aria-expanded'] === true || buttonProps['aria-expanded'] === 'true'
 
   const handleClearMouseDown = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -122,7 +125,7 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
           </VStack>
         }
         portal
-        disabled={!pickerLabel && !showFullText}
+        disabled={menuOpen || (!pickerLabel && !showFullText)}
       >
         <UIButton
           {...buttonProps}
