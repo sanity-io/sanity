@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {RenderVariantFilterAddControl} from '../../core/variants/tool/overview/VariantFilterAddControl'
 
@@ -7,6 +7,5 @@ import type {RenderVariantFilterAddControl} from '../../core/variants/tool/overv
  * @internal
  */
 export const VariantFilterAddControlContext = createContext<RenderVariantFilterAddControl | null>(
-  'sanity/_singletons/context/variant-filter-add-control',
   null,
 )

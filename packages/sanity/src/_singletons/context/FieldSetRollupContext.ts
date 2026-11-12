@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {RenderFieldSetRollup} from '../../core/form/members/object/fieldSetRollup'
 
@@ -6,7 +6,4 @@ import type {RenderFieldSetRollup} from '../../core/form/members/object/fieldSet
  * PROPOSED (Variants 2.0 test studio). A function that draws a roll-up mark in a field set's header; `null` draws nothing.
  * @internal
  */
-export const FieldSetRollupContext = createContext<RenderFieldSetRollup | null>(
-  'sanity/_singletons/context/field-set-rollup',
-  null,
-)
+export const FieldSetRollupContext = createContext<RenderFieldSetRollup | null>(null)

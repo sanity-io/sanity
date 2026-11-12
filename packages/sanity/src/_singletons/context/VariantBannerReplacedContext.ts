@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * PROPOSED (Variants 2.0 test studio). True when the host draws its own "no version for this variant" banner, so the document pane does not draw
  * the stock one. Default false.
  * @internal
  */
-export const VariantBannerReplacedContext = createContext<boolean>(
-  'sanity/_singletons/context/variant-banner-replaced',
-  false,
-)
+export const VariantBannerReplacedContext = createContext<boolean>(false)

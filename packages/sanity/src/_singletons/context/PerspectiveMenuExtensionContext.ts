@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {PerspectiveMenuExtension} from '../../core/perspective/navbar/PerspectiveMenuExtension'
 
@@ -7,6 +7,5 @@ import type {PerspectiveMenuExtension} from '../../core/perspective/navbar/Persp
  * @internal
  */
 export const PerspectiveMenuExtensionContext = createContext<PerspectiveMenuExtension | undefined>(
-  'sanity/_singletons/context/perspective-menu-extension',
   undefined,
 )
