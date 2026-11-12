@@ -123,6 +123,34 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.validating': 'Validating',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
+  /** Tab for the documents that have a version for the variant definition, with their count. */
+  'detail.half.present': 'Has a version ({{total}})',
+  /** Tab for the documents of the chosen type that have no version for the variant definition yet, with their count. */
+  'detail.half.missing': 'Missing ({{total}})',
+  /** Type picker option: compare against the document types that already have a version for the variant definition. */
+  'detail.missing.type-picker.default': 'Types with a version',
+  /** Row action that creates the missing version of a document for the variant definition, naming where it goes: a release title, Drafts or Published. */
+  'detail.missing.create-in': 'Create in {{destination}}',
+  /** Destination of a new version: Drafts. */
+  'detail.missing.destination.drafts': 'Drafts',
+  /** Destination of a new version for live-edit types: Published. */
+  'detail.missing.destination.published': 'Published',
+  /** Tooltip when the selected release is scheduled, so the version goes elsewhere. */
+  'detail.missing.fallback.scheduled':
+    '{{release}} is scheduled, so this creates in {{destination}}',
+  /** Tooltip when the selected release can no longer change (archived or published), so the version goes elsewhere. */
+  'detail.missing.fallback.locked':
+    '{{release}} can no longer change, so this creates in {{destination}}',
+  /** Fallback name for a release without a title. */
+  'detail.missing.untitled-release': 'Untitled release',
+  /** Error toast title when creating a missing version fails. */
+  'detail.missing.create.error': 'Unable to create version',
+  /** Shown in the Missing tab when every document of the chosen type has a version. */
+  'detail.missing.no-documents': 'Every document of this type has a version',
+  /** Shown in the Missing tab when no type is chosen and no document has a version yet. */
+  'detail.missing.no-types': 'Pick a document type to see which documents are missing a version',
+  /** Shown in the Missing tab when the documents could not be loaded. */
+  'detail.missing.error': 'Unable to load the documents missing a version',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant definition could not be found.',
   /** Title for the missing Variant detail page. */
