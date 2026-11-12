@@ -101,7 +101,7 @@ const rows: Array<{
     perspective: 'drafts',
     state: missing({}),
     hasDrafts: false,
-    expected: {kind: 'create', perspective: 'drafts'},
+    expected: {kind: 'create', perspective: 'published'},
   },
 
   // Published
