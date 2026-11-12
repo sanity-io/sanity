@@ -2,6 +2,7 @@ import {PortalProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ReactElement} from 'react'
+import {type PerspectiveContextValue, type ReleaseDocument, type SystemVariant} from 'sanity'
 import {PerspectiveContext} from 'sanity/_singletons'
 import {test as baseTest, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -38,6 +39,10 @@ vi.mock('../../../../hasObsoleteDraft', () => ({
 
 vi.mock('../header/DocumentPanelSubHeader', () => ({
   DocumentPanelSubHeader: () => null,
+}))
+
+vi.mock('../../useDocumentTitle', () => ({
+  useDocumentTitle: () => ({title: 'Test document'}),
 }))
 
 const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
@@ -97,6 +102,7 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', async () => {
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useArchivedReleases: vi.fn(() => ({data: []})),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
 }))
@@ -307,5 +313,120 @@ describe('DocumentPanel banners', () => {
 
     expect(screen.getByTestId('choose-new-document-destination-banner')).toBeInTheDocument()
     expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
+  })
+})
+
+const loyalVariant: SystemVariant = {
+  _id: '_.variants.loyal',
+  _type: 'system.variant',
+  _createdAt: '2026-01-01T00:00:00Z',
+  _updatedAt: '2026-01-01T00:00:00Z',
+  _rev: 'rev-loyal',
+  conditions: {audience: 'loyal'},
+  priority: 0,
+  metadata: {title: 'Loyal'},
+}
+
+const scheduledDraftRelease: ReleaseDocument = {
+  _id: '_.releases.rScheduled',
+  _type: 'system.release',
+  _rev: 'rev-scheduled',
+  _createdAt: '2026-01-01T00:00:00Z',
+  _updatedAt: '2026-01-01T00:00:00Z',
+  name: 'rScheduled',
+  state: 'scheduled',
+  publishAt: '2026-12-01T10:00:00Z',
+  metadata: {
+    title: 'Scheduled publish',
+    releaseType: 'scheduled',
+    intendedPublishAt: '2026-12-01T10:00:00Z',
+    cardinality: 'one',
+  },
+}
+
+describe('DocumentPanel scheduled draft banners', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  function renderInPerspective(perspective: Partial<PerspectiveContextValue>) {
+    return renderBannersIn({...perspectiveContextValueMock, ...perspective})
+  }
+
+  async function renderBannersIn(perspective: PerspectiveContextValue) {
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+    return render(
+      <PerspectiveContext.Provider value={perspective}>
+        {renderDocumentPanel()}
+      </PerspectiveContext.Provider>,
+      {wrapper},
+    )
+  }
+
+  function versionPaneValue(version: {_id: string; _system: object}, variant?: SystemVariant) {
+    const document = {...version, _type: 'simpleBlock', _createdAt: '2026-01-01T00:00:00Z'}
+    return {
+      ...documentPaneValue(),
+      displayed: document,
+      value: document,
+      editState: {ready: true, draft: null, published: null, version: document},
+      targetDocumentState: {
+        status: 'ready',
+        targetDocument: version,
+        scopeId: version._id.split('.')[1],
+        variant,
+        siblings: {published: undefined, draft: undefined, version},
+      },
+    } as unknown as ReturnType<typeof useDocumentPane>
+  }
+
+  const scheduledDraftPerspective: Partial<PerspectiveContextValue> = {
+    selectedPerspective: scheduledDraftRelease,
+    selectedPerspectiveName: 'rScheduled',
+    selectedReleaseId: 'rScheduled',
+    perspectiveStack: ['rScheduled', 'drafts'],
+    bundle: 'rScheduled',
+  }
+
+  it('shows the scheduled banner for the scheduled version of the base document', async () => {
+    mockUseDocumentPane.mockReturnValue(
+      versionPaneValue({
+        _id: 'versions.rScheduled.doc-1',
+        _system: {bundleId: 'rScheduled', group: {_ref: 'doc-1', _weak: true}},
+      }),
+    )
+
+    await renderInPerspective(scheduledDraftPerspective)
+
+    expect(screen.getByTestId('scheduled-release-banner')).toBeInTheDocument()
+  })
+
+  it('shows the scheduled banner for the scheduled version of a variant', async () => {
+    mockUseDocumentPane.mockReturnValue(
+      versionPaneValue(
+        {
+          _id: 'versions.scope-loyal.doc-1',
+          _system: {
+            bundleId: 'rScheduled',
+            scopeId: 'scope-loyal',
+            group: {_ref: 'doc-1', _weak: true},
+            release: {_ref: scheduledDraftRelease._id, _weak: true},
+            variants: [{_ref: loyalVariant._id, _key: 'loyal'}],
+          },
+        },
+        loyalVariant,
+      ),
+    )
+
+    await renderInPerspective({
+      ...scheduledDraftPerspective,
+      selectedVariantNames: ['loyal'],
+      selectedVariants: [loyalVariant],
+    })
+
+    expect(screen.getByTestId('scheduled-release-banner')).toBeInTheDocument()
   })
 })
