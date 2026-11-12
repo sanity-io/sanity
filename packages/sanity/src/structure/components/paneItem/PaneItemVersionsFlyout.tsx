@@ -60,6 +60,7 @@ export function PaneItemVersionsFlyout(props: {
   const stopTracking = useRef<(() => void) | null>(null)
   const focusFirst = useRef(false)
   const touchToggled = useRef(false)
+  const dotsRef = useRef<HTMLSpanElement | null>(null)
 
   const clearTimers = useCallback(() => {
     clearTimeout(openTimer.current)
@@ -128,14 +129,31 @@ export function PaneItemVersionsFlyout(props: {
     const handleMove = (event: PointerEvent) => {
       lastPoint.current = {x: event.clientX, y: event.clientY}
     }
-    const handleLeave = () => closeSoon()
+    // A touch pointer leaves the row as soon as the finger lifts, which must not close a flyout the
+    // tap just opened. It closes with another tap on the dots, a tap outside, Escape or scrolling.
+    const handleLeave = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return
+      closeSoon()
+    }
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'ArrowRight' || event.target !== row) return
       event.preventDefault()
       event.stopPropagation()
       clearTimers()
+      // Already open (hover opened it): the open effect will not run again, so focus it here
+      const first = flyoutRef.current?.querySelector<HTMLElement>('[role="menuitem"]')
+      if (first) {
+        first.focus()
+        return
+      }
       focusFirst.current = true
       setOpen(true)
+    }
+
+    // The pointer may already be over the row when this mounts (the row's preview loads first), so
+    // `pointerenter` has already fired
+    if (row.matches(':hover') && window.matchMedia?.('(hover: hover)').matches) {
+      openTimer.current = setTimeout(() => setOpen(true), OPEN_DELAY)
     }
 
     row.addEventListener('pointerenter', handleEnter)
@@ -192,11 +210,20 @@ export function PaneItemVersionsFlyout(props: {
       close()
       if (hadFocus) row?.focus()
     }
+    // A touch screen has no pointer leaving to close it: a tap outside the flyout and the dots does
+    const handleTouchOutside = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') return
+      const target = event.target as Node | null
+      if (flyoutRef.current?.contains(target) || dotsRef.current?.contains(target)) return
+      close()
+    }
     document.addEventListener('keydown', handleKeyDown, true)
     document.addEventListener('scroll', close, true)
+    document.addEventListener('pointerdown', handleTouchOutside, true)
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true)
       document.removeEventListener('scroll', close, true)
+      document.removeEventListener('pointerdown', handleTouchOutside, true)
     }
   }, [close, open, row])
 
@@ -274,7 +301,12 @@ export function PaneItemVersionsFlyout(props: {
       {children !== undefined && (
         // `display: contents` keeps the dots laid out as they were; the handlers see the taps
         // that bubble up from them
-        <span onClick={handleDotsClick} onPointerUp={handleDotsPointerUp} style={DOTS_STYLE}>
+        <span
+          onClick={handleDotsClick}
+          onPointerUp={handleDotsPointerUp}
+          ref={dotsRef}
+          style={DOTS_STYLE}
+        >
           {children}
         </span>
       )}
