@@ -99,6 +99,7 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
         <Menu className={documentNavigationMenu} data-testid={testId} padding={1}>
           <Box flexShrink={0} padding={1}>
             <TextInput
+              aria-label={filterPlaceholder}
               fontSize={1}
               onChange={handleFilterChange}
               placeholder={filterPlaceholder}

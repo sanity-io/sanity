@@ -8,6 +8,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {getTargetSiblings, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
@@ -15,6 +16,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getDraftId} from '../../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
@@ -35,16 +37,39 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const toast = useToast()
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
+  const perspective = usePerspective()
+  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantNames))
+  const targetDocumentState = useTargetDocumentState(id)
+
+  // With a variant selected, the variant's own draft is scheduled instead of the base draft. Its id
+  // is opaque, so it is discovered from the resolved siblings rather than derived with `getDraftId`.
+  const variantDraft = isVariantSelected ? getTargetSiblings(targetDocumentState)?.draft : undefined
+  const variantDraftId = variantDraft?._id
+  const variantDraftVariantId = getDocumentVersionVariantId(variantDraft)
+  const variantSource = useMemo(
+    () =>
+      variantDraftId && variantDraftVariantId
+        ? {baseId: variantDraftId, variantId: variantDraftVariantId}
+        : undefined,
+    [variantDraftId, variantDraftVariantId],
+  )
+
   // Check validation status.
   // No `getTargetScopeId(useTargetDocumentState())` here: scheduling a draft publish deliberately validates the
-  // explicit draft of the document, independent of the selected perspective. This is safe because
-  // the action is disabled while a variant is selected (see `isVariantSelected` below).
-  // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
-  const validationStatus = useValidationStatus(getDraftId(id), type)
+  // explicit draft of the document's lane (the base draft, or the variant draft), independent of the
+  // selected perspective. A variant without a draft (resuming a paused scheduled draft) validates the
+  // resolved variant target instead.
+  const resolvedTargetId =
+    targetDocumentState.status === 'ready' ? targetDocumentState.targetDocument?._id : undefined
+  const validationTargetId = isVariantSelected
+    ? (variantDraftId ?? resolvedTargetId ?? getDraftId(id))
+    : getDraftId(id)
+  const validationStatus = useValidationStatus(validationTargetId, type)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
-  // Check if document has versions in cardinality one releases
-  const hasCardinalityOneReleaseVersions = useHasCardinalityOneReleaseVersions(id)
+  // Check if the document (or the selected variant) has versions in cardinality one releases
+  const {hasCardinalityOneReleaseVersions, loading: cardinalityOneReleaseVersionsLoading} =
+    useHasCardinalityOneReleaseVersions(id, getDefaultVariant(perspective.selectedVariants)?._id)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
@@ -52,11 +77,6 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 
   // Check if current release is a paused scheduled draft
   const {data: releases = []} = useActiveReleases()
-  const perspective = usePerspective()
-
-  // Scheduling operates on the base draft, so it is not available while a variant is selected —
-  // it would silently schedule the base document instead of the variant (SAPP-3986).
-  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantNames))
 
   const currentRelease = useMemo(
     () =>
@@ -93,7 +113,12 @@ export const useSchedulePublishAction: DocumentActionComponent = (
           await rescheduleScheduledDraft(currentRelease, publishAt)
         } else {
           // Normal flow: create new scheduled draft
-          const releaseDocumentId = await createScheduledDraft(id, publishAt)
+          const releaseDocumentId = await createScheduledDraft(
+            id,
+            publishAt,
+            undefined,
+            variantSource,
+          )
           onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         }
 
@@ -116,6 +141,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     [
       id,
       createScheduledDraft,
+      variantSource,
       toast,
       t,
       onSetScheduledDraftPerspective,
@@ -125,17 +151,15 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     ],
   )
 
-  const disabled =
-    isVariantSelected ||
-    (isPaused
-      ? hasValidationErrors // Only check validation errors for paused drafts
-      : hasCardinalityOneReleaseVersions || hasValidationErrors) // Full check for regular drafts
+  // While the check loads, an existing scheduled draft is not detected yet, and scheduling would
+  // create a second one.
+  const disabled = isPaused
+    ? hasValidationErrors // Only check validation errors for paused drafts
+    : cardinalityOneReleaseVersionsLoading ||
+      hasCardinalityOneReleaseVersions ||
+      hasValidationErrors // Full check for regular drafts
 
   const title = useMemo(() => {
-    if (isVariantSelected) {
-      return t('action.schedule-publish.disabled.variant')
-    }
-
     if (isPaused && hasValidationErrors) {
       return t('action.schedule-publish.disabled.validation-issues')
     }
@@ -149,14 +173,16 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     }
 
     return t('action.schedule-publish')
-  }, [isVariantSelected, isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
+  }, [isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
 
   if (!singleDocReleaseEnabled) {
     return null
   }
 
-  // Show for drafts OR paused scheduled drafts
-  if (!draft && !isPaused) {
+  // Show for drafts OR paused scheduled drafts. `draft` is always the base draft, so with a variant
+  // selected the variant's own draft decides.
+  const hasDraft = isVariantSelected ? Boolean(variantSource) : Boolean(draft)
+  if (!hasDraft && !isPaused) {
     return null
   }
 
