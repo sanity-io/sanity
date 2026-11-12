@@ -77,12 +77,14 @@ export function ConditionMenu(props: ConditionMenuProps): React.JSX.Element {
 
         return (
           <MenuItem
+            aria-checked={isSelected}
             data-testid={`${testId}-option-${option.value}`}
             icon={option.icon}
             iconRight={isSelected ? CheckmarkIcon : undefined}
             key={option.value}
             onClick={isSelected ? undefined : () => onSelect(option.value)}
             pressed={isSelected}
+            role="menuitemradio"
             selected={isSelected}
             text={option.title}
             __unstable_subtitle={option.description}
