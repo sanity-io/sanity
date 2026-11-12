@@ -8,7 +8,7 @@ import {
   useMediaIndex,
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {NavbarContext} from 'sanity/_singletons'
+import {NavbarContext, NavbarNeutralContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Grid, Flex, Box} from 'ui5'
@@ -84,6 +84,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   // Variants beta keeps one navbar color. Otherwise the bar follows the release tone.
   const variantsEnabled = Boolean(beta?.variants?.enabled)
+  // PROPOSED: a host can keep the navbar's tone neutral (no perspective colouring).
+  const neutralNavbar = useContext(NavbarNeutralContext)
 
   const ToolMenu = useToolMenuComponent()
 
@@ -161,35 +163,44 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
-  const actionNodes = useMemo(() => {
-    if (!shouldRender.tools) return null
+  const renderActions = useCallback(
+    (location: 'topbar' | 'topbar-before-perspective') => {
+      if (!shouldRender.tools) return null
 
-    return actions
-      ?.filter((v) => v.location === 'topbar')
-      ?.map((action) => {
-        const {render: ActionComponent} = action
+      return actions
+        ?.filter((v) => v.location === location)
+        ?.map((action) => {
+          const {render: ActionComponent} = action
 
-        if (ActionComponent) return <ActionComponent key={action.name} />
+          if (ActionComponent) return <ActionComponent key={action.name} />
 
-        return (
-          <Button
-            key={action.name}
-            iconRight={action?.icon}
-            mode="bleed"
-            onClick={action?.onAction}
-            selected={action.selected}
-            text={action.title}
-          />
-        )
-      })
-  }, [actions, shouldRender.tools])
+          return (
+            <Button
+              key={action.name}
+              iconRight={action?.icon}
+              mode="bleed"
+              onClick={action?.onAction}
+              selected={action.selected}
+              text={action.title}
+            />
+          )
+        })
+    },
+    [actions, shouldRender.tools],
+  )
+  const actionNodes = useMemo(() => renderActions('topbar'), [renderActions])
+  // PROPOSED: actions that read before the perspective chip (an audience chip: "who, then where").
+  const beforePerspectiveNodes = useMemo(
+    () => renderActions('topbar-before-perspective'),
+    [renderActions],
+  )
 
   return (
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
           className={navbar}
-          tone={variantsEnabled ? 'default' : getReleaseTone(selectedPerspective)}
+          tone={variantsEnabled || neutralNavbar ? 'default' : getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -274,6 +285,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
+                {beforePerspectiveNodes}
                 {!shouldRender.perspectivesInDrawer && <GlobalPerspectiveNav />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}

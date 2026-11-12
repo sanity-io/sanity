@@ -1,6 +1,7 @@
 import {BoundaryElementProvider} from '@sanity/ui'
 
 import {useWorkspace} from '../../studio/workspace'
+import {useShippedPerspectiveBar} from '../../variants/plugin/components/ShippedPerspectiveBar'
 import {ReleasesNav} from './releases/ReleasesNav'
 import {VariantsStudioNavbarLayout} from './variants/VariantsStudioNavbarLayout'
 
@@ -20,10 +21,14 @@ export function GlobalPerspectiveNav(props: {
 }) {
   const {fullWidth} = props
   const {beta} = useWorkspace()
+  // PROPOSED: false when a host supplies its own perspective design (the releases pill stays, the shipped variants filters are hidden).
+  const showShippedPerspectiveBar = useShippedPerspectiveBar()
 
   return (
     <BoundaryElementProvider element={typeof document === 'undefined' ? null : document.body}>
-      {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout fullWidth={fullWidth} />}
+      {Boolean(beta?.variants?.enabled) && showShippedPerspectiveBar && (
+        <VariantsStudioNavbarLayout fullWidth={fullWidth} />
+      )}
       <ReleasesNav fullWidth={fullWidth} showDetailLinks withReleasesToolButton />
     </BoundaryElementProvider>
   )
