@@ -1129,7 +1129,7 @@ importers:
     dependencies:
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.15.1(vitest@5.0.4)
+        version: 8.15.1(vitest@5.1.0)
       '@sanity/document-internationalization':
         specifier: 6.2.43
         version: 6.2.43(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.9)(sanity@packages+sanity)(styled-components@6.6.0)
@@ -1144,7 +1144,7 @@ importers:
         version: 4.4.10(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.155.0
+        version: 0.158.0
       react:
         specifier: 'catalog:'
         version: 19.3.1
