@@ -1,5 +1,5 @@
 import {createDocumentHandle, useDocumentProjection} from '@sanity/sdk-react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {
   type ArrayOfObjectsInputProps,
@@ -11,6 +11,7 @@ import {
   type ItemProps,
   useFormValue,
 } from 'sanity'
+import {Text} from 'ui5'
 
 const DOCUMENT_TYPE = 'sdkProjectionNoSuspense'
 
@@ -35,7 +36,9 @@ function ModelNamesInput(props: ArrayOfObjectsInputProps) {
   return (
     <>
       <Card padding={2} radius={2} tone={missingNames > 0 ? 'critical' : 'positive'}>
-        <Text size={1}>Input projection: {missingNames} models without a name</Text>
+        <Text size={1} as="div" trim={true} tone={missingNames > 0 ? 'critical' : 'positive'}>
+          Input projection: {missingNames} models without a name
+        </Text>
       </Card>
       {props.renderDefault(props)}
     </>
@@ -48,7 +51,9 @@ function ModelCountField(props: FieldProps) {
   return (
     <>
       <Card padding={2} radius={2} tone="primary">
-        <Text size={1}>Field projection: {data.count ?? 0} models</Text>
+        <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+          Field projection: {data.count ?? 0} models
+        </Text>
       </Card>
       {props.renderDefault(props)}
     </>
@@ -69,7 +74,7 @@ function AuthorName(props: {authorId: string; children: ReactNode}) {
   })
   return (
     <>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         Item projection: {data.name ?? 'unnamed'}
       </Text>
       {props.children}

@@ -4,10 +4,49 @@ import {mergeMap, scan} from 'rxjs/operators'
 
 import {debug} from '../debug'
 import {type ListenerEvent} from '../getPairListener'
-import {type MutationEvent} from '../types'
 import {discardChainTo, toOrderedChains} from './eventChainUtils'
 
-interface ListenerSequenceState {
+/**
+ * What putting a mutation event in sequence reads from it.
+ *
+ * @internal
+ */
+export interface SequenceableMutationEvent {
+  type: 'mutation'
+  previousRev?: string
+  resultRev: string
+  messageReceivedAt: string
+  transition?: 'update' | 'appear' | 'disappear'
+}
+
+/**
+ * What putting events in sequence reads from a snapshot of the document.
+ *
+ * @internal
+ */
+export interface SequenceableSnapshotEvent {
+  type: 'snapshot'
+  document: {_rev?: string} | null
+}
+
+/**
+ * An event that can be put in sequence. Listener events other than mutations and snapshots are
+ * passed on as they are.
+ *
+ * @internal
+ */
+export type SequenceableEvent =
+  | SequenceableMutationEvent
+  | SequenceableSnapshotEvent
+  | Exclude<ListenerEvent, {type: 'mutation' | 'snapshot'}>
+
+function isMutationEvent<Event extends SequenceableEvent>(
+  event: Event,
+): event is Event & SequenceableMutationEvent {
+  return event.type === 'mutation'
+}
+
+interface ListenerSequenceState<Event extends SequenceableEvent = SequenceableEvent> {
   /**
    * Tracks the latest revision from the server that can be applied locally
    * Once we receive a mutation event that has a `previousRev` that equals `base.revision`
@@ -19,12 +58,12 @@ interface ListenerSequenceState {
   /**
    * Array of events to pass on to the stream, e.g. when mutation applies to current head revision, or a chain is complete
    */
-  emitEvents: ListenerEvent[]
+  emitEvents: Event[]
   /**
    * Buffer to keep track of events that doesn't line up in a [previousRev, resultRev] -- [previousRev, resultRev] sequence
    * This can happen if events arrive out of order, or if an event in the middle for some reason gets lost
    */
-  buffer: MutationEvent[]
+  buffer: (Event & SequenceableMutationEvent)[]
 }
 
 const DEFAULT_MAX_BUFFER_SIZE = 20
@@ -42,17 +81,16 @@ const EMPTY_ARRAY: never[] = []
  *
  * @internal
  */
-export function sequentializeListenerEvents(options?: {
-  maxBufferSize?: number
-  resolveChainDeadline?: number
-}) {
+export function sequentializeListenerEvents<
+  Event extends SequenceableEvent = ListenerEvent,
+>(options?: {maxBufferSize?: number; resolveChainDeadline?: number}) {
   const {resolveChainDeadline = DEFAULT_DEADLINE_MS, maxBufferSize = DEFAULT_MAX_BUFFER_SIZE} =
     options || {}
 
-  return (input$: Observable<ListenerEvent>): Observable<ListenerEvent> => {
+  return (input$: Observable<Event>): Observable<Event> => {
     return input$.pipe(
       scan(
-        (state: ListenerSequenceState, event: ListenerEvent): ListenerSequenceState => {
+        (state: ListenerSequenceState<Event>, event: Event): ListenerSequenceState<Event> => {
           if (event.type === 'mutation' && !state.base) {
             throw new Error('Invalid state. Cannot create a sequence without a base')
           }
@@ -65,7 +103,7 @@ export function sequentializeListenerEvents(options?: {
             }
           }
 
-          if (event.type === 'mutation') {
+          if (isMutationEvent(event)) {
             // Note: the buffer may have multiple holes in it (this is a worst case scenario, and probably not likely, but still),
             // so we need to consider all possible chains
             // `toOrderedChains` will return all detected chains and each of the returned chains will be orderered

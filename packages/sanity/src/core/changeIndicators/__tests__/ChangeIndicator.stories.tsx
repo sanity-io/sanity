@@ -1,7 +1,7 @@
-import {Card, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, waitFor} from 'storybook/test'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
@@ -40,7 +40,7 @@ export const States: Story = {
     <Card padding={4}>
       <VStack gap={4}>
         <VStack gap={2}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             changed
           </Text>
           <ChangeIndicator path={TITLE_PATH} hasFocus={false} isChanged>
@@ -48,7 +48,7 @@ export const States: Story = {
           </ChangeIndicator>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             changed + focus
           </Text>
           <ChangeIndicator path={TITLE_PATH} hasFocus isChanged>
@@ -56,7 +56,7 @@ export const States: Story = {
           </ChangeIndicator>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             changed + hover effect
           </Text>
           <ChangeIndicator path={TITLE_PATH} hasFocus={false} isChanged withHoverEffect>
@@ -64,7 +64,7 @@ export const States: Story = {
           </ChangeIndicator>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             unchanged
           </Text>
           <ChangeIndicator path={TITLE_PATH} hasFocus={false} isChanged={false}>
@@ -89,7 +89,7 @@ export const Connector: Story = {
       <ChangeConnectorRoot isReviewChangesOpen onOpenReviewChanges={NOOP} onSetFocus={NOOP}>
         <Flex gap={6} padding={4}>
           <VStack gap={2} style={{flex: 1}}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               form field
             </Text>
             <ChangeIndicator path={TITLE_PATH} hasFocus isChanged>
@@ -97,12 +97,12 @@ export const Connector: Story = {
             </ChangeIndicator>
           </VStack>
           <VStack gap={2} style={{flex: 1}}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               review changes
             </Text>
             <ChangeFieldWrapper path={TITLE_PATH} hasRevertHover={false}>
               <Card border padding={3} radius={2}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <del>An old title</del> A brave new title
                 </Text>
               </Card>

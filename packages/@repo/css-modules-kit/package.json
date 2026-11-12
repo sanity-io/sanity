@@ -15,7 +15,7 @@
     "prepare": "pnpm run generate"
   },
   "devDependencies": {
-    "@css-modules-kit/codegen": "^1.4.0",
+    "@css-modules-kit/codegen": "^1.4.2",
     "@repo/tsconfig": "workspace:*",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   }
