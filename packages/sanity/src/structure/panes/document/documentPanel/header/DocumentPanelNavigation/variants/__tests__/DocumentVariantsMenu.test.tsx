@@ -264,7 +264,9 @@ describe('DocumentVariantsMenu', () => {
     const defaultItem = within(menu).getByTestId('document-variant-default')
     expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
     expect(defaultItem).toHaveAttribute('aria-checked', 'false')
-    expect(within(menu).getByLabelText('Find')).toBe(within(menu).getByPlaceholderText('Find'))
+    expect(within(menu).getByLabelText('Search variant definitions…')).toBe(
+      within(menu).getByPlaceholderText('Search variant definitions…'),
+    )
   })
 
   it('selects a variant of the default type', async () => {
