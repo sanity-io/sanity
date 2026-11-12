@@ -171,6 +171,13 @@ describe('SelectVariantDefinition', () => {
     expect(within(menu).getByText('Nordic region')).toBeInTheDocument()
   })
 
+  it('names the search field with the variant search placeholder', async () => {
+    const menu = await openMenu(new Set())
+
+    // The accessible name, not only the visible placeholder
+    expect(within(menu).getByLabelText('Search variant definitions…')).toBeInTheDocument()
+  })
+
   it('uses the variant search placeholder', async () => {
     const menu = await openMenu(new Set())
 
