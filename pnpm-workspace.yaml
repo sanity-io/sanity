@@ -104,7 +104,6 @@ minimumReleaseAgeExclude:
   - '@codemirror/view'
   - 'csstype'
   - 'eslint-plugin-boundaries'
-  - 'eventsource-parser@4.1.2'
   - 'get-it'
   - 'groq-js'
   # Fresh patch; exclude so 26.4.4 can install before the age gate
@@ -183,8 +182,6 @@ trustPolicyExclude:
   # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
   # @pierre/diffs (which has never shipped provenance)
   - '@pierre/theme@2.0.0'
-  # Published without the provenance of 4.0.2; @css-modules-kit/codegen depends on ^4.0.3
-  - chokidar@4.0.3
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
