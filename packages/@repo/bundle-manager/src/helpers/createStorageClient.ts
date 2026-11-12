@@ -7,8 +7,7 @@ import {type KnownEnvVar} from '../types'
 
 /**
  * Creates the GCS `Storage` client used to publish bundles, configured from the
- * standard `GOOGLE_PROJECT_ID`, `GCLOUD_SERVICE_KEY` and `GCLOUD_BUCKET`
- * environment variables.
+ * standard `GOOGLE_PROJECT_ID` and `GCLOUD_BUCKET` environment variables.
  *
  * The auth transporter (gaxios → `node-fetch@2`) is given an agent with
  * keep-alive disabled. Node 24.17.0's fix for CVE-2026-48931 added a public
@@ -30,7 +29,6 @@ import {type KnownEnvVar} from '../types'
 export function createStorageClient(): Storage {
   return new Storage({
     projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
-    credentials: JSON.parse(readEnv<KnownEnvVar>('GCLOUD_SERVICE_KEY')),
     clientOptions: {transporterOptions: {agent: new Agent({keepAlive: false})}},
   })
 }
