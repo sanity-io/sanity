@@ -585,7 +585,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.variants.section.has-variants_one': 'Has {{count}} variant',
   /** Section header listing the variants the document has versions in */
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
-  /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
+  /** Section header when the document has no variants; "Has 0 variants" reads like the letter O */
+  'document-panel-navigation.variants.section.has-variants_zero': 'Has no variants',
+  /** Tooltip on the "Has no variants" section header of the variants menu in the document header */
   'document-panel-navigation.variants.section.no-variants-tooltip':
     "This document doesn't have any variants yet. Pick one below to create a variant",
   /** Section header listing the variants the document has no version in */
