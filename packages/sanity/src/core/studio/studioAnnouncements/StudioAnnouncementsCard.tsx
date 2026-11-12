@@ -1,10 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useEffect} from 'react'
 import {css, keyframes, styled} from 'styled-components'
-import {VStack, Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
@@ -138,11 +138,11 @@ export function StudioAnnouncementsCard({
           >
             <VStack gap={3}>
               <Box marginRight={6}>
-                <Text as={'h3'} size={1} muted>
+                <Text as={'h3'} size={1} muted trim={true}>
                   {preHeader}
                 </Text>
               </Box>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {title}
               </Text>
             </VStack>

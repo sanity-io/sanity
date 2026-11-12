@@ -31,6 +31,7 @@
     "@sanity/google-maps-input": "^6.1.17",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-icons": "^5.7.0",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   },

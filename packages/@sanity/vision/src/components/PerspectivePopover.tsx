@@ -3,7 +3,7 @@ import {Badge, Button, Card, type CardTone, Inline, useClickOutsideEvent} from '
 import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {Text, Box, VStack} from 'ui5'
+import {Text, Box, VStack, Link, type LinkProps} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import * as styles from './PerspectivePopover.module.css'
@@ -12,8 +12,8 @@ function PerspectivePopoverContent(props: ComponentProps<typeof Box>) {
   return <Box {...props} className={styles.perspectivePopoverContent} />
 }
 
-function PerspectivePopoverLink(props: ComponentProps<'a'>) {
-  return <a {...props} className={styles.perspectivePopoverLink} />
+function PerspectivePopoverLink(props: LinkProps) {
+  return <Link {...props} className={styles.perspectivePopoverLink} />
 }
 
 function Dot({tone}: {tone: CardTone}) {
@@ -83,8 +83,8 @@ export function PerspectivePopover() {
               <Text as="div" trim={true}>
                 <PerspectivePopoverLink
                   href="https://www.sanity.io/docs/perspectives"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  openInNewTab
+                  underlined={false}
                 >
                   {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
