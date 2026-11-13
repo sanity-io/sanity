@@ -8,6 +8,7 @@ import {
   type RefObject,
   useCallback,
   useEffect,
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
