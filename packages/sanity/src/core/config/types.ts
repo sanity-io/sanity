@@ -339,8 +339,7 @@ export type NewDocumentCreationContext =
  *
  * Each falls back to the schema type's own configuration if omitted.
  *
- * @hidden
- * @beta
+ * @public
  */
 export interface SingletonDefinition extends Pick<
   BaseSchemaType,
@@ -413,8 +412,7 @@ export interface SingletonDefinition extends Pick<
 /**
  * A singleton definition as provided by the developer.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type UnresolvedSingletonDefinition =
   | (Omit<SingletonDefinition, 'id'> & {
@@ -437,8 +435,7 @@ export type UnresolvedSingletonDefinition =
  * ({@link UnresolvedSingletonDefinition}); Studio resolves the returned
  * definitions before the next resolver sees them.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type SingletonsResolver = (
   prev: SingletonDefinition[],
@@ -511,8 +508,7 @@ export interface DocumentPluginOptions {
    * }
    * ```
    *
-   * @hidden
-   * @beta
+   * @public
    */
   singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
@@ -1133,8 +1129,7 @@ export interface Source {
     /**
      * The resolved singleton definitions.
      *
-     * @hidden
-     * @beta
+     * @public
      */
     singletons: SingletonDefinition[]
 
