@@ -104,16 +104,20 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
+const {mockNavigate, mockNavigateUrl, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
   const mockNavigate = vi.fn()
-  const mockResolveIntentLink = vi.fn(() => '/test')
+  const mockNavigateUrl = vi.fn()
+  const mockResolveIntentLink = vi.fn((intent: string, params?: {id?: string}) =>
+    intent === 'release' && params?.id ? `/intent/release/id=${params.id}/` : '/test',
+  )
   // Stable reference so the `[router]` effect dependency doesn't fire on every render
   const mockRouterReturn = {
     state: {},
     navigate: mockNavigate,
+    navigateUrl: mockNavigateUrl,
     resolveIntentLink: mockResolveIntentLink,
   }
-  return {mockNavigate, mockResolveIntentLink, mockRouterReturn}
+  return {mockNavigate, mockNavigateUrl, mockResolveIntentLink, mockRouterReturn}
 })
 
 // Mock the router at module level
@@ -779,7 +783,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('should navigate to release when row clicked', async () => {
-      mockNavigate.mockClear()
+      mockNavigateUrl.mockClear()
 
       // Row 1 is activeASAPRelease (row 0 is activeScheduledRelease)
       const releaseRows = screen.getAllByTestId('table-row')
@@ -789,23 +793,20 @@ describe('ReleasesOverview', () => {
 
       expect(asapReleaseRow).toBeDefined()
 
-      // Click on the card within the row
-      const card = within(asapReleaseRow!).getByText('active asap Release')
-      expect(card).toBeInTheDocument()
+      const link = within(asapReleaseRow!).getByRole('link', {name: 'active asap Release'})
+      expect(link).toHaveAttribute('href', '/intent/release/id=rASAP/')
 
-      await userEvent.click(card)
+      await userEvent.click(link)
 
-      // Wait for navigate to be called
       await waitFor(
         () => {
-          expect(mockNavigate).toHaveBeenCalled()
+          expect(mockNavigateUrl).toHaveBeenCalledWith({
+            path: '/intent/release/id=rASAP/',
+            replace: false,
+          })
         },
         {timeout: 3000},
       )
-
-      // The mock was called, which means the card click triggered navigation
-      // This verifies the navigation functionality works
-      expect(mockNavigate).toHaveBeenCalled()
     })
   })
 
