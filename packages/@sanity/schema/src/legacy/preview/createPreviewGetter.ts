@@ -27,11 +27,26 @@ function parsePreview(preview: any) {
   }
 }
 
+const guessedPreviews = new WeakSet<object>()
+
+/**
+ * True when the preview was inferred from the type's fields rather than declared by the type
+ * definition.
+ */
+export function isGuessedPreview(preview: unknown): boolean {
+  return typeof preview === 'object' && preview !== null && guessedPreviews.has(preview)
+}
+
 export default function createPreviewGetter(objectTypeDef: any) {
   return function previewGetter() {
     warnIfPreviewOnOptions(objectTypeDef)
     warnIfPreviewHasFields(objectTypeDef)
     const preview = parsePreview(objectTypeDef.preview || (objectTypeDef.options || {}).preview)
-    return preview || guessPreviewConfig(objectTypeDef)
+    if (preview) {
+      return preview
+    }
+    const guessed = guessPreviewConfig(objectTypeDef)
+    guessedPreviews.add(guessed)
+    return guessed
   }
 }
