@@ -21,7 +21,9 @@ import {
 import {useRouter} from 'sanity/router'
 import {Text} from 'ui5'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 import {findVariantCreateBaseDocument} from './findVariantCreateBaseDocument'
@@ -49,7 +51,12 @@ const chips = {VariantBadge, ReleaseBadge, DraftsBadge}
 export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVariantBannerCase}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {value, documentId, schemaType} = useDocumentPane()
+  const {value, documentId, schemaType, inspector} = useDocumentPane()
+  const {params} = usePaneRouter()
+  // Manage versions has its Create variant form open (see CREATE_VARIANT_PARAM). That form's Create
+  // is the view's one filled button, so the banner drops its own and points to the form.
+  const createsInManageVersions =
+    Boolean(params?.[CREATE_VARIANT_PARAM]) && inspector?.name === DOCUMENT_GROUP_INSPECTOR_NAME
   const {selectedPerspective, selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const {versions} = useDocumentVersions({documentId})
@@ -202,6 +209,8 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
       break
   }
 
+  const handOff = createsInManageVersions && action === createAction
+
   return (
     <Banner
       tone="neutral"
@@ -231,9 +240,17 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
               draftsTone: 'caution' as const,
             }}
           />
+          {handOff ? (
+            <>
+              {' '}
+              <span data-testid="document-not-in-variant-banner-hand-off">
+                {t('banners.variant.finish-in-manage-versions')}
+              </span>
+            </>
+          ) : null}
         </Text>
       }
-      action={action}
+      action={handOff ? undefined : action}
     />
   )
 }

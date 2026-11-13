@@ -11,10 +11,12 @@ import {
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {
   DocumentNotInVariantBanner,
@@ -177,12 +179,20 @@ async function expectBannerMessage(expected: string) {
 
 const CREATE_IN_DRAFTS: NotInVariantBannerCase = {kind: 'create', perspective: 'drafts'}
 
-async function renderBanner(bannerCase: NotInVariantBannerCase = CREATE_IN_DRAFTS) {
+async function renderBanner(
+  bannerCase: NotInVariantBannerCase = CREATE_IN_DRAFTS,
+  paneParams: Record<string, string> = {},
+) {
   const wrapper = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
   })
 
-  return render(<DocumentNotInVariantBanner bannerCase={bannerCase} />, {wrapper})
+  return render(
+    <PaneRouterContext.Provider value={{params: paneParams} as unknown as PaneRouterContextValue}>
+      <DocumentNotInVariantBanner bannerCase={bannerCase} />
+    </PaneRouterContext.Provider>,
+    {wrapper},
+  )
 }
 
 describe('DocumentNotInVariantBanner', () => {
@@ -562,6 +572,74 @@ describe('DocumentNotInVariantBanner', () => {
         screen.getByText('An error occurred when adding document to the variant: create failed'),
       ).toBeInTheDocument()
       expect(button).not.toBeDisabled()
+    })
+  })
+
+  describe('while Manage versions creates the variant', () => {
+    const CREATE_IN_RELEASE: NotInVariantBannerCase = {kind: 'create', perspective: 'release'}
+    const CREATING = {
+      inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+      [CREATE_VARIANT_PARAM]: variantAlphaAudience._id,
+    }
+
+    beforeEach(() => {
+      mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
+      } as unknown as ReturnType<typeof useDocumentPane>)
+    })
+
+    it('keeps its sentence, drops Create variant and points to Manage versions', async () => {
+      await renderBanner(CREATE_IN_RELEASE, CREATING)
+
+      await expectBannerMessage(
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing. Finish creating it in Manage versions.',
+      )
+      expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+    })
+
+    it('drops the create action in Drafts too', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState('drafts', undefined))
+      await renderBanner(CREATE_IN_DRAFTS, CREATING)
+
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+      expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
+    })
+
+    it('offers Create variant again once the form is gone', async () => {
+      await renderBanner(CREATE_IN_RELEASE, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME})
+
+      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
+    })
+
+    it('keeps Create variant while Manage versions is closed, even with the param', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        inspector: null,
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      await renderBanner(CREATE_IN_RELEASE, CREATING)
+
+      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
+    })
+
+    it('keeps actions that do not create, such as Open release', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(scheduledRelease, 'rScheduled'))
+      await renderBanner({kind: 'locked-release'}, CREATING)
+
+      expect(screen.getByRole('button', {name: 'Open release'})).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
     })
   })
 })
