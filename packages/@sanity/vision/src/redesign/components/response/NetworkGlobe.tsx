@@ -4,6 +4,7 @@ import {useEffect, useRef} from 'react'
 
 import {type ApproximateLocation} from '../../util/timeZoneLocation'
 import * as styles from './NetworkGlobe.module.css'
+import * as motion from './responseTabs.module.css'
 
 const SIZE = 168
 const SETTLE_MS = 1200
@@ -113,6 +114,7 @@ export function NetworkGlobe({you, api: apiProp, reachedApi, local = false}: Net
     const container = containerRef.current
     if (!container || (!you && !api)) return undefined
     const canvas = document.createElement('canvas')
+    canvas.className = motion.globe
     canvas.style.width = `${SIZE}px`
     canvas.style.height = `${SIZE}px`
     container.append(canvas)
@@ -165,6 +167,7 @@ export function NetworkGlobe({you, api: apiProp, reachedApi, local = false}: Net
               phi: from.phi + (to.phi - from.phi) * eased,
               theta: from.theta + (to.theta - from.theta) * eased,
             })
+            canvas.dataset.ready = ''
             if (progress < 1) frame = requestAnimationFrame(draw)
           }
           frame = requestAnimationFrame(draw)

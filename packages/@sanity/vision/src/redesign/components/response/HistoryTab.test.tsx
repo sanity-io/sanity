@@ -195,6 +195,15 @@ describe('HistoryTab', () => {
     expect(within(changed).queryByTestId('vision-history-changes')).toBeNull()
   })
 
+  it('turns the same chevron to show the changes, rather than swapping it for another', () => {
+    const [changed] = renderTab()
+    const toggle = within(changed).getByTestId('vision-history-changes-toggle')
+    const chevron = toggle.querySelector('svg')
+    expect(chevron).not.toBeNull()
+    fireEvent.click(toggle)
+    expect(toggle.querySelector('svg')).toBe(chevron)
+  })
+
   it('leaves the hidden fields out of the diff, and shows them on request', async () => {
     const [latest] = renderTab(
       twoFetches(
