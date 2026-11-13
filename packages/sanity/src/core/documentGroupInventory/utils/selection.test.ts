@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 
 import {activeASAPRelease, scheduledRelease} from '../../releases/__fixtures__/release.fixture'
 import {
+  getBlockedSelectedIds,
   getGroupSelectionState,
   getRangeIds,
   getRowToggle,
@@ -97,5 +98,21 @@ describe('getRowToggle', () => {
       type: 'selection.toggle',
       variantId: 'c',
     })
+  })
+})
+
+describe('getBlockedSelectedIds', () => {
+  it('finds selected versions whose release has since been scheduled', () => {
+    const releases: Record<string, ReleaseDocument | undefined> = {
+      scheduled: scheduledRelease,
+      asap: activeASAPRelease,
+    }
+    expect(
+      getBlockedSelectedIds({
+        variants: [{id: 'asap'}, {id: 'scheduled'}, {id: 'draft'}],
+        selectedIds: new Set(['asap', 'scheduled']),
+        getRelease: ({id}) => releases[id],
+      }),
+    ).toEqual(['scheduled'])
   })
 })

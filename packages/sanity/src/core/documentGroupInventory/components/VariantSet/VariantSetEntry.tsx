@@ -46,7 +46,7 @@ export const VariantSetEntry = styled.div(({theme}) => {
      * Quiet at rest: an empty checkbox's border is the quietest colour that still reaches the 3:1
      * WCAG asks of a control's boundary, so the column reads as a rail. It goes to full contrast
      * while its row is hovered or holds focus. A checked or partly checked box keeps Sanity UI's
-     * filled style, and a blocked one its read-only style.
+     * filled style, a blocked one its read-only style, and a focused one Sanity UI's focus ring.
      */
     .selection-checkbox {
       display: flex;
@@ -59,7 +59,7 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     .selection-checkbox
-      input:not(:checked):not(:indeterminate):not(:disabled):not([data-read-only])
+      input:not(:checked, :indeterminate, :disabled, [data-read-only], :focus-visible)
       + span {
       box-shadow: inset 0 0 0 1px var(--selection-checkbox-border);
     }
