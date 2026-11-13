@@ -102,9 +102,18 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', async () => {
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useArchivedReleases: vi.fn(() => ({data: []})),
   useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
+}))
+
+// DocumentPanel imports these @internal hooks from their declaring modules, so that is where the
+// mocks go; a mock of the `sanity` barrel would not reach them.
+vi.mock('../../../../../core/hooks/useFilteredReleases', () => ({
   useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
+}))
+vi.mock('../../../../../core/releases/store/useArchivedReleases', () => ({
+  useArchivedReleases: vi.fn(() => ({data: []})),
+}))
+vi.mock('../../../../../core/singleDocRelease/hooks/usePausedScheduledDraft', () => ({
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
 }))
 
