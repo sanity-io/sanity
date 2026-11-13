@@ -26,20 +26,10 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
-import {
-  hiddenSentence,
-  inlineAction,
-  sentence,
-  sentenceStack,
-} from './DocumentNotInVariantBanner.css'
+import {inlineAction} from './DocumentNotInVariantBanner.css'
 import {findVariantCreateBaseDocument} from './findVariantCreateBaseDocument'
 import {type VariantBannerCase} from './getVariantBannerCase'
-import {
-  DraftsBadge,
-  ReleaseBadge,
-  VariantBadge,
-  type VariantBannerChipProps,
-} from './VariantBannerChips'
+import {DraftsBadge, ReleaseBadge, VariantBadge} from './VariantBannerChips'
 
 // Once the create action resolves, there's a short delay before the new variant-scoped version
 // propagates and this banner unmounts. Surface a toast if that window exceeds this threshold.
@@ -244,125 +234,62 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   }
   // While it yields, the sentence stops before its own instruction ("Create one to start editing"),
   // and the link or the pointer says where to do it instead.
-  // The three states of the create action: the filled button, the link into the open inventory,
-  // and the pointer to its open form.
-  const hasCreateAction = action === createAction
-  let sentenceState: SentenceState = 'button'
-  if (yields) sentenceState = formOpen ? 'pointer' : 'link'
-  const sentenceProps = {
-    bannerCase: bannerCase.kind,
-    i18nKey,
-    statementKey: STATEMENT_KEYS[i18nKey] ?? i18nKey,
-    values: {variantTitle, releaseTitle, draftsTitle: tCore('release.chip.global.drafts')},
-    componentProps: {
-      variantLead: t('banners.variant.lead.variant'),
-      releaseLead: t('banners.release.lead.release'),
-      releaseTone: getReleaseTone(selectedPerspective),
-      // The Draft pill's orange, not core's grey drafts tone
-      draftsTone: 'caution' as const,
-    },
-    busy,
-    onCreateInInventory: handleCreateInInventory,
-  }
+  const sentenceKey = yields ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
 
   return (
     <Banner
       tone="neutral"
       icon={InfoOutlineIcon}
       content={
-        hasCreateAction ? (
-          // Every state's sentence keeps its space, so the banner's height does not change as
-          // the inventory and its form open and close
-          <div className={sentenceStack}>
-            {SENTENCE_STATES.map((state) => (
-              <BannerSentence
-                key={state}
-                {...sentenceProps}
-                state={state}
-                current={sentenceState}
-                stacked
-              />
-            ))}
-          </div>
-        ) : (
-          <BannerSentence {...sentenceProps} state="button" current="button" />
-        )
+        <Text
+          size={1}
+          as="div"
+          trim={true}
+          data-testid="document-not-in-variant-banner"
+          data-case={bannerCase.kind}
+        >
+          <Translate
+            i18nKey={sentenceKey}
+            t={t}
+            values={{
+              variantTitle,
+              releaseTitle,
+              draftsTitle: tCore('release.chip.global.drafts'),
+            }}
+            components={chips}
+            componentProps={{
+              variantLead: t('banners.variant.lead.variant'),
+              releaseLead: t('banners.release.lead.release'),
+              releaseTone: getReleaseTone(selectedPerspective),
+              // The Draft pill's orange, not core's grey drafts tone
+              draftsTone: 'caution' as const,
+            }}
+          />
+          {yields && formOpen ? (
+            <>
+              {' '}
+              <span data-testid="document-not-in-variant-banner-hand-off">
+                {t('banners.variant.finish-in-document-inventory')}
+              </span>
+            </>
+          ) : null}
+          {yields && !formOpen ? (
+            <>
+              {' '}
+              <button
+                className={inlineAction}
+                data-testid="document-not-in-variant-banner-inventory-link"
+                disabled={busy}
+                onClick={handleCreateInInventory}
+                type="button"
+              >
+                {t('banners.variant.action.create-in-document-inventory')}
+              </button>
+            </>
+          ) : null}
+        </Text>
       }
-      // While it yields, the action keeps its space (hidden), so the banner keeps its height at
-      // every width and the form below does not move
-      action={action}
-      reserveAction={yields}
+      action={yields ? undefined : action}
     />
-  )
-}
-
-const SENTENCE_STATES = ['button', 'link', 'pointer'] as const
-type SentenceState = (typeof SENTENCE_STATES)[number]
-
-/**
- * The banner's sentence in one state of its create action. Stacked, every state is rendered in the
- * same grid cell and only the current one is visible; the others keep their space but are hidden
- * from sight, focus and assistive technology.
- */
-function BannerSentence(props: {
-  state: SentenceState
-  current: SentenceState
-  stacked?: boolean
-  bannerCase: string
-  i18nKey: string
-  statementKey: string
-  values: Record<string, string>
-  componentProps: VariantBannerChipProps
-  busy: boolean
-  onCreateInInventory: () => void
-}) {
-  const {state, current, stacked = false, bannerCase, busy, onCreateInInventory} = props
-  const {t} = useTranslation(structureLocaleNamespace)
-  const visible = state === current
-  let className: string | undefined
-  if (stacked) className = visible ? sentence : hiddenSentence
-  return (
-    <Text
-      size={1}
-      as="div"
-      trim={true}
-      aria-hidden={visible ? undefined : true}
-      className={className}
-      data-testid={visible ? 'document-not-in-variant-banner' : undefined}
-      data-case={visible ? bannerCase : undefined}
-      inert={visible ? undefined : true}
-    >
-      <Translate
-        // Without the action, the sentence stops before its own instruction ("Create one to start
-        // editing"), and the link or the pointer says where to do it instead.
-        i18nKey={state === 'button' ? props.i18nKey : props.statementKey}
-        t={t}
-        values={props.values}
-        components={chips}
-        componentProps={props.componentProps}
-      />
-      {state === 'pointer' ? (
-        <>
-          {' '}
-          <span data-testid={visible ? 'document-not-in-variant-banner-hand-off' : undefined}>
-            {t('banners.variant.finish-in-document-inventory')}
-          </span>
-        </>
-      ) : null}
-      {state === 'link' ? (
-        <>
-          {' '}
-          <button
-            className={inlineAction}
-            data-testid={visible ? 'document-not-in-variant-banner-inventory-link' : undefined}
-            disabled={busy}
-            onClick={onCreateInInventory}
-            type="button"
-          >
-            {t('banners.variant.action.create-in-document-inventory')}
-          </button>
-        </>
-      ) : null}
-    </Text>
   )
 }

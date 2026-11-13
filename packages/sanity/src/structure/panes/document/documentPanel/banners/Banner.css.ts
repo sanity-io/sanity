@@ -70,15 +70,6 @@ export const action = css({
   },
 })
 
-/**
- * An action whose space is kept while the banner hands it elsewhere: hidden, but still in the flow,
- * so the text keeps the same width and the banner the same height, and nothing below it moves when
- * the action comes back.
- */
-export const reservedAction = css({
-  visibility: 'hidden',
-})
-
 /** Several actions side by side; they wrap under each other when the column is too narrow. */
 export const actionGroup = css({
   display: 'flex',

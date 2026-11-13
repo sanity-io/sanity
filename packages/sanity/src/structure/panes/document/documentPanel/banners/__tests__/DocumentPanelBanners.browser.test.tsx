@@ -601,7 +601,7 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
-  it.each([420, 520, 640, 900])(
+  it.each([420, 900])(
     'follows the document inventory and its form opening and closing while it is on screen, %ipx wide',
     async (width) => {
       vi.mocked(useDocumentVersions).mockReturnValue({
@@ -646,7 +646,6 @@ describe('document panel banners', () => {
       const $filled = $host.getByRole('button', {name: 'Create variant'})
       const $link = $host.getByRole('button', {name: 'Create it in the document inventory.'})
       const $pointer = $host.getByTestId('document-not-in-variant-banner-hand-off')
-      const heights: number[] = []
       for (const step of ['closed', 'open', 'closed', 'open', 'form', 'open', 'closed'] as const) {
         await page.getByRole('button', {name: `Go ${step}`}).click()
         if (step === 'closed') {
@@ -660,10 +659,7 @@ describe('document panel banners', () => {
           await expect.element($link).not.toBeInTheDocument()
           await expect.element($filled).not.toBeInTheDocument()
         }
-        heights.push($host.element().getBoundingClientRect().height)
       }
-      // The form below does not move when the button becomes the inline link or the pointer
-      expect(new Set(heights).size, JSON.stringify(heights)).toBe(1)
       await settleChromaticEndState()
     },
   )
