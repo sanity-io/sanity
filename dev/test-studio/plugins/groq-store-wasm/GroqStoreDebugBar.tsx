@@ -164,14 +164,16 @@ function Details({status}: {status: GroqStoreStatus}) {
   )
 }
 
-const grip: CSSProperties = {
+// The one-line summary is both the toggle and the drag surface; the details below it
+// stay an ordinary surface, so their text can still be selected.
+const summary: CSSProperties = {
   ...plain,
+  display: 'block',
   cursor: 'grab',
-  // A touch drag on the grip moves the bar instead of scrolling the studio behind it.
+  // A touch drag on the summary moves the bar instead of scrolling the studio behind it.
   touchAction: 'none',
-  padding: '0 6px 0 0',
-  color: '#9ca3af',
 }
+const gripHint: CSSProperties = {color: '#9ca3af', marginRight: 6}
 
 interface Insets {
   top: number
@@ -306,7 +308,7 @@ function GroqStoreDebugBar() {
   }
 
   // Motion only reports a drag once the pointer has passed its own threshold, so a tap
-  // on the grip still toggles the details and a drop never does.
+  // on the summary still toggles the details and a drop never does.
   const beginDrag = () => {
     droppedRef.current = true
     setDragging(true)
@@ -345,27 +347,22 @@ function GroqStoreDebugBar() {
       dragMomentum={false}
       onDragStart={beginDrag}
       onDragEnd={(_event, info) => drop(info.velocity)}
-      onKeyDown={nudge}
       data-corner={corner}
       data-testid="groq-store-wasm-debug-bar"
     >
       <div ref={probeRef} style={safeAreaProbe} aria-hidden />
       <button
         type="button"
-        style={dragging ? {...grip, cursor: 'grabbing'} : grip}
+        style={dragging ? {...summary, cursor: 'grabbing'} : summary}
         onPointerDown={startDrag}
         onClick={toggleOpen}
-        title="Drag to a corner (or use the arrow keys); click for details"
-        aria-label="Move the groq-store-wasm debug bar"
+        onKeyDown={nudge}
+        title="groq-store-wasm: click for details, drag (or arrow keys) to move to a corner"
+        aria-expanded={open}
       >
-        ⠿
-      </button>
-      <button
-        type="button"
-        style={plain}
-        onClick={() => setOpen((value) => !value)}
-        title="groq-store-wasm: click for details"
-      >
+        <span style={gripHint} aria-hidden>
+          ⠿
+        </span>
         {status.enabled ? (
           <>
             <span style={dot('#4ade80')}>●</span>wasm {status.answered}
