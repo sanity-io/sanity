@@ -645,13 +645,19 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
-### Effect events: use `use-effect-event`, not React's native hook
+### Effect events: native `useEffectEvent`, never in dependency arrays
 
-Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
-returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
-([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
-`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one.
+Import `useEffectEvent` from `react`. The studio requires React `^19.3.1`: that is the first
+release where the native hook is safe to call, including from `forwardRef` and `memo` components
+([facebook/react#34818](https://github.com/facebook/react/issues/34818)).
+`core/hooks/useEffectEvent.test.tsx` guards that, and CI's React minimum run installs 19.3.1 from
+the `sanity` peer range. The `use-effect-event` ponyfill is gone.
+
+Unlike the ponyfill, the native hook returns a new function on every render. Call it only from
+inside effects or from callbacks an effect creates, and never list it in a dependency array, pass it
+as a prop or key anything on its identity: an effect that depends on it re-runs on every render.
+An older copy of the function still calls the latest callback, so a closure that captured one stays
+correct.
 
 ### react-rx: stable observables, explicit initial values
 

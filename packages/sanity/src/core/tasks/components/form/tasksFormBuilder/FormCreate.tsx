@@ -2,9 +2,8 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Switch} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState, useEffectEvent} from 'react'
 import {Text, Flex, Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {set} from '../../../../form/patch/patch'
@@ -71,9 +70,9 @@ export function FormCreate(props: ObjectInputProps) {
     // This useEffect takes care of closing the form when a task entered the "creation" state.
     // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
     if (creating && savedTask?.createdByUser) {
+      // oxlint-disable-next-line react/set-state-in-effect -- closes the form once the task, created asynchronously elsewhere, shows up in the store
       handleCreatingSuccess()
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating, savedTask?.createdByUser])
 
   const handleCreatingTimeout = useEffectEvent(() => {
@@ -94,7 +93,6 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating])
 
   const handleCreate = useCallback(async () => {

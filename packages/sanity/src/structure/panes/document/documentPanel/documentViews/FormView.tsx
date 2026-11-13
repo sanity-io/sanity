@@ -1,5 +1,13 @@
 import {focusFirstDescendant, Spinner} from '@sanity/ui'
-import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type RefAttributes,
+  useEffectEvent,
+} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -21,7 +29,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {Text, Flex, Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -175,7 +182,6 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       handleInitialValue()
     }
     // React to changes in hasRev only
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)

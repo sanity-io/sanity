@@ -26,11 +26,11 @@ import {
   useState,
   useSyncExternalStore,
   type RefAttributes,
+  useEffectEvent,
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
 import {Text, Flex, VStack} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
