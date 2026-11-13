@@ -156,13 +156,16 @@ async function open(depth: Depth, handlers: HandlerProps, selection: 'word' | 'c
     </Context.Provider>,
   )
   await waitForDocumentState((state) => JSON.stringify(state) === JSON.stringify(DOCUMENT))
-  const editable = await vi.waitFor(() => {
-    const element = window.document.querySelector<HTMLElement>(
-      nested ? NESTED_EDITABLE : '[data-testid="field-body"] [contenteditable="true"]',
-    )
-    expect(element?.textContent).toContain(TEXT[depth])
-    return element!
-  })
+  const editable = await vi.waitFor(
+    () => {
+      const element = window.document.querySelector<HTMLElement>(
+        nested ? NESTED_EDITABLE : '[data-testid="field-body"] [contenteditable="true"]',
+      )
+      expect(element?.textContent).toContain(TEXT[depth])
+      return element!
+    },
+    {timeout: 10_000},
+  )
   if (nested) {
     await userEvent.click(editable)
     await userEvent.keyboard(
@@ -216,7 +219,10 @@ const clipboardEvent = (type: 'copy' | 'paste', text?: string) => {
     clipboardData.setData('text/plain', text)
     clipboardData.setData('text/html', text)
   }
-  return new ClipboardEvent(type, {bubbles: true, cancelable: true, clipboardData})
+  const event = new ClipboardEvent(type, {bubbles: true, cancelable: true, clipboardData})
+  // Firefox ignores the `clipboardData` init member and gives the event an empty DataTransfer
+  Object.defineProperty(event, 'clipboardData', {value: clipboardData})
+  return event
 }
 
 describe.each(DEPTHS)('Portable Text Input handler props at %s', (depth) => {
@@ -323,6 +329,23 @@ describe.each(DEPTHS)('Portable Text Input handler props at %s', (depth) => {
 
       await waitForDocumentState((state) => documentIncludes(state, `${text}Inserted`))
       expect(event.defaultPrevented).toBe(true)
+    })
+
+    it("onPaste's event carries the pasted data", async () => {
+      const received: string[] = []
+      const onPaste = vi.fn(({event}: {event: ReactClipboardEvent}) => {
+        received.push(
+          event.clipboardData.getData('text/plain'),
+          event.nativeEvent.clipboardData!.getData('text/plain'),
+        )
+        return {insert: [INSERTED_BLOCK]}
+      })
+      const {editable} = await open(depth, {onPaste: onPaste as never}, 'caret')
+
+      editable.dispatchEvent(clipboardEvent('paste', 'pasted'))
+
+      await waitForDocumentState((state) => documentIncludes(state, `${text}Inserted`))
+      expect(received).toEqual(['pasted', 'pasted'])
     })
 
     it('onPaste returning undefined falls through to the editor paste', async () => {
