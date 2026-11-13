@@ -40,6 +40,7 @@ const NAMED_KEY_CODES: Record<string, number> = {
   BracketLeft: 219,
   BracketRight: 221,
   CapsLock: 20,
+  Clear: 12,
   Comma: 188,
   ControlLeft: 17,
   ControlRight: 17,
@@ -71,19 +72,22 @@ const NAMED_KEY_CODES: Record<string, number> = {
 
 /**
  * Best-effort legacy matching from Behavior data. The original keyCode is not
- * available, so layouts and numpad keys can differ from native-event matching.
+ * available, so keyboard layouts can differ from native-event matching.
  */
 function toKeyCode({key, code}: KeyboardOriginEvent): number | undefined {
+  if (NAMED_KEY_CODES[key] !== undefined) {
+    return NAMED_KEY_CODES[key]
+  }
+  const numpad = /^Numpad([0-9])$/.exec(code)
+  if (numpad && /^[0-9]$/.test(key)) {
+    return 96 + Number(numpad[1])
+  }
   if (/^[a-z0-9]$/i.test(key)) {
     return key.toUpperCase().charCodeAt(0)
   }
   const physical = /^(?:Key([A-Z])|Digit([0-9]))$/.exec(code)
   if (physical) {
     return (physical[1] ?? physical[2]).charCodeAt(0)
-  }
-  const numpad = /^Numpad([0-9])$/.exec(code)
-  if (numpad) {
-    return 96 + Number(numpad[1])
   }
   const functionKey = /^F([0-9]{1,2})$/.exec(code)
   if (functionKey) {
@@ -211,7 +215,25 @@ export function useHandlerBehaviors(props: {
               const eventLike = Object.assign(
                 createEventLike('keydown', originEvent),
                 originEvent,
-                {keyCode, which: keyCode},
+                {
+                  keyCode,
+                  which: keyCode,
+                  // Behaviors carry these four modifiers only, not lock-key state.
+                  getModifierState: (key: string) => {
+                    switch (key) {
+                      case 'Alt':
+                        return originEvent.altKey
+                      case 'Control':
+                        return originEvent.ctrlKey
+                      case 'Meta':
+                        return originEvent.metaKey
+                      case 'Shift':
+                        return originEvent.shiftKey
+                      default:
+                        return false
+                    }
+                  },
+                },
               )
               // Multiple spellings can match the same key. Like the legacy prop,
               // run every matching mark and custom callback before consuming it.
