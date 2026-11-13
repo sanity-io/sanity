@@ -617,13 +617,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-description': 'Who sees this version',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',
-  /** Body of the notice in the delete dialog when required links stop the published Default document from being deleted */
+  /** Heading of the delete dialog's notice that lists why the published Default document can't be deleted yet */
+  'document-group.delete.blocked.heading': "The Default document can't be deleted yet",
+  /** Reason in the delete dialog's blocked notice: documents link to the Default document with a required (strong) link (singular) */
+  'document-group.delete.blocked.links-reason_one':
+    '1 document links to it with a required link. Change or remove that link first.',
+  /** Reason in the delete dialog's blocked notice: documents link to the Default document with a required (strong) link (plural) */
+  'document-group.delete.blocked.links-reason_other':
+    '{{count}} documents link to it with required links. Change or remove those links first.',
+  /** Reason in the delete dialog's blocked notice: the document has variants, which need their Default document. Counts variants, not copies (singular) */
+  'document-group.delete.blocked.variants-reason_one':
+    '1 variant exists. Delete the variant first.',
+  /** Reason in the delete dialog's blocked notice: the document has variants, which need their Default document. Counts variants, not copies (plural) */
+  'document-group.delete.blocked.variants-reason_other':
+    '{{count}} variants exist. Delete the variants first.',
+  /** Heading above the versions in the delete dialog that can't be deleted yet */
+  'document-group.delete.blocked-versions.heading': "Can't be deleted yet",
+  /** @deprecated no longer in use. Body of the notice in the delete dialog when required links stop the published Default document from being deleted */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.blocked.description':
     'They link to it with a required link. Change or remove those links first.',
-  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (singular) */
+  /** @deprecated no longer in use. Title of the notice in the delete dialog when required links stop the published Default document from being deleted (singular) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.blocked.title_one':
     "The Default document can't be deleted yet: 1 document needs it",
-  /** Title of the notice in the delete dialog when required links stop the published Default document from being deleted (plural) */
+  /** @deprecated no longer in use. Title of the notice in the delete dialog when required links stop the published Default document from being deleted (plural) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.blocked.title_other':
     "The Default document can't be deleted yet: {{count}} documents need it",
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
@@ -656,16 +675,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
   /** The label given to the delete action */
   'document-group.delete.confirm-button.text': 'Delete',
-  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (singular) */
+  /** @deprecated no longer in use. The label of the delete dialog's action that deletes every selected version except the blocked Default document (singular) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.confirm-excluding-published-button.text_one': 'Delete 1 other version',
-  /** The label of the delete dialog's action that deletes every selected version except the blocked Default document (plural) */
+  /** @deprecated no longer in use. The label of the delete dialog's action that deletes every selected version except the blocked Default document (plural) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.confirm-excluding-published-button.text_other':
     'Delete {{count}} other versions',
+  /** The label of the delete dialog's confirm action. `count` is the number of versions it deletes (singular) */
+  'document-group.delete.confirm-count-button.text_one': 'Delete 1 version',
+  /** The label of the delete dialog's confirm action. `count` is the number of versions it deletes (plural) */
+  'document-group.delete.confirm-count-button.text_other': 'Delete {{count}} versions',
   /** Header of the delete dialog when only the published Default document is selected */
   'document-group.delete.default-title': 'Delete the Default document?',
+  /** Heading above the versions in the delete dialog that the confirm action deletes, shown when some selected versions can't be deleted yet */
+  'document-group.delete.deletable-versions.heading': 'Will be deleted',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Notice in the delete dialog when release copies link to the published Default document with a required link: the delete goes through, and the release fails when it is published (singular) */
+  'document-group.delete.fails-later.text_one':
+    "1 document in a release links here with a required link. The delete goes through, but that release will fail when it's published.",
+  /** Notice in the delete dialog when release copies link to the published Default document with a required link: the delete goes through, and the releases fail when they are published (plural) */
+  'document-group.delete.fails-later.text_other':
+    "{{count}} documents in releases link here with required links. The delete goes through, but those releases will fail when they're published.",
+  /** Introduces the list of documents that link to the published Default document in the delete dialog, when the strength of each link is known */
+  'document-group.delete.linked-from.text': 'Documents that link to “<DocumentTitle/>”:',
   /** Body of the notice in the delete dialog when no published Default document is selected */
   'document-group.delete.no-links.description':
     'Links point at the Default document, so deleting these versions breaks no links.',
@@ -677,6 +712,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Notice in the delete dialog when only optional links point at the published Default document (plural) */
   'document-group.delete.optional-links.text_other':
     '{{count}} documents link to “<DocumentTitle/>” with optional links. They will point at nothing.',
+  /** Notice in the delete dialog when more documents link to the published Default document than were read, and none of those read link with a required link. The Content Lake decides on delete (singular) */
+  'document-group.delete.partial-links.text_one':
+    '1 document links here. Some links may be required.',
+  /** Notice in the delete dialog when more documents link to the published Default document than were read, and none of those read link with a required link. The Content Lake decides on delete (plural) */
+  'document-group.delete.partial-links.text_other':
+    '{{count}} documents link here. Some links may be required.',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
   'document-group.delete.other-reference-count.title_one': '1 other reference not show',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
@@ -688,6 +729,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Tag on a referring release copy in the delete dialog that links to the deleted document with a required link: the delete goes through, and the release fails when it is published */
+  'document-group.delete.reference-tag.fails-later': 'Fails later',
   /** Tag on a referring document in the delete dialog whose link to the deleted document is optional (weak) */
   'document-group.delete.reference-tag.optional': 'Optional',
   /** Tag on a referring document in the delete dialog whose link to the deleted document is required (strong) */
@@ -705,9 +748,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
-  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (singular) */
+  /** Header of the delete dialog when some of the selected versions can't be deleted yet. `count` is the number it deletes, `total` the number selected (singular) */
+  'document-group.delete.some-of-title_one': 'Delete 1 of {{total}} versions?',
+  /** Header of the delete dialog when some of the selected versions can't be deleted yet. `count` is the number it deletes, `total` the number selected (plural) */
+  'document-group.delete.some-of-title_other': 'Delete {{count}} of {{total}} versions?',
+  /** Header of the delete dialog when the published Default document is not selected (singular) */
+  'document-group.delete.question-title_one': 'Delete 1 version?',
+  /** Header of the delete dialog when the published Default document is not selected (plural) */
+  'document-group.delete.question-title_other': 'Delete {{count}} versions?',
+  /** @deprecated no longer in use. Notice in the delete dialog when the published Default document is selected and variants of it are not (singular) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.variants-stay.text_one': '1 variant stays. It loses its Default.',
-  /** Notice in the delete dialog when the published Default document is selected and variants of it are not (plural) */
+  /** @deprecated no longer in use. Notice in the delete dialog when the published Default document is selected and variants of it are not (plural) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.variants-stay.text_other':
     '{{count}} variants stay. They lose their Default.',
   /** Header of the delete dialog when the published Default document is selected along with other versions (singular) */

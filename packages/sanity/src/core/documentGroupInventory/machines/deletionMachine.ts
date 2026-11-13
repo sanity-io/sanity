@@ -1,6 +1,6 @@
 import {type MultipleMutationResult} from '@sanity/client'
 import {EMPTY} from 'rxjs'
-import {and, assign, fromObservable, fromPromise, not, or, sendParent, setup} from 'xstate'
+import {and, assign, emit, fromObservable, fromPromise, not, or, sendParent, setup} from 'xstate'
 
 import {isPublishedId} from '../../util/draftUtils'
 
@@ -13,8 +13,14 @@ export interface IncomingReference {
   /**
    * Whether the referring document holds a strong (required) reference. Content Lake refuses to
    * delete the published document while one exists. `undefined` when the strength is unknown.
+   * A strong reference stored only in a release copy is not required (see `failsLater`).
    */
   required?: boolean
+  /**
+   * Whether the referring document is a release copy with a strong reference. The Content Lake
+   * allows the delete, and the release fails when it is published.
+   */
+  failsLater?: boolean
 }
 
 /**
@@ -66,6 +72,14 @@ export interface ReferringDocuments {
 
 interface DeletionContext {
   ids: string[]
+  /** Every version of the document group, selected or not. */
+  versionIds: string[]
+  /**
+   * The distinct variants the document group has, counted by variant id: a draft and a published
+   * copy of the same variant are one variant. While any exist, the published Default can't be
+   * deleted.
+   */
+  variantIds: string[]
   internalReferences?: InternalReferences
   crossDatasetReferences?: CrossDatasetReferences
   projectIds: string[]
@@ -89,6 +103,7 @@ type DeletionEvents =
   | {type: 'delete.confirmExcludingPublished'}
   | {type: 'delete.cancel'}
   | {type: 'selection.changed'; selectedIds: Set<string>}
+  | {type: 'versions.changed'; versionIds: string[]; variantIds: string[]}
 
 export const deletionMachine = setup({
   types: {} as {
@@ -96,6 +111,7 @@ export const deletionMachine = setup({
     events: DeletionEvents
     input: {readOnly?: boolean} | undefined
     tags: 'awaitingDeletionConfirmation' | 'warnIncomingReferences'
+    emitted: {type: 'allVersionsDeleted'}
   },
   actors: {
     referringDocuments: fromObservable<ReferringDocuments, unknown>(() => {
@@ -108,6 +124,8 @@ export const deletionMachine = setup({
   actions: {
     requestDeletionConfirmation: () => {},
     excludePublished: assign({leavePublished: true}),
+    /** Tells the inventory's consumer that the delete left the document group with no versions. */
+    allVersionsDeleted: emit({type: 'allVersionsDeleted'}),
   },
   guards: {
     hasSelection: ({context}) => context.ids.length !== 0,
@@ -117,19 +135,28 @@ export const deletionMachine = setup({
     canRequestDeletion: and(['hasSelection', 'isMutable']),
     publishedBlockedByRequiredReferences: ({context}) =>
       context.ids.some(isPublishedId) && hasRequiredReferences(context.internalReferences),
+    publishedBlockedByVariants: ({context}) =>
+      context.ids.some(isPublishedId) && context.variantIds.length > 0,
+    publishedBlocked: or([
+      'publishedBlockedByVariants',
+      and(['hasCheckedIncomingReferences', 'publishedBlockedByRequiredReferences']),
+    ]),
     hasUnpublishedSelection: ({context}) => context.ids.some((id) => !isPublishedId(id)),
     canConfirmDeletion: and([
       'hasSelection',
       'isMutable',
       or(['selectionExcludesPublished', 'hasCheckedIncomingReferences']),
-      not('publishedBlockedByRequiredReferences'),
+      not('publishedBlocked'),
     ]),
     canConfirmDeletionExcludingPublished: and([
       'isMutable',
-      'hasCheckedIncomingReferences',
-      'publishedBlockedByRequiredReferences',
+      'publishedBlocked',
       'hasUnpublishedSelection',
     ]),
+    deletedEveryVersion: ({context}) => {
+      const deleted = new Set(deletedIds(context))
+      return context.versionIds.length > 0 && context.versionIds.every((id) => deleted.has(id))
+    },
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
       ((context.internalReferences?.references.length ?? 0) > 0 ||
@@ -139,6 +166,8 @@ export const deletionMachine = setup({
   id: 'deletion',
   context: ({input}) => ({
     ids: [],
+    versionIds: [],
+    variantIds: [],
     internalReferences: undefined,
     crossDatasetReferences: undefined,
     projectIds: [],
@@ -152,6 +181,12 @@ export const deletionMachine = setup({
   on: {
     'selection.changed': {
       actions: assign({ids: ({event}) => [...event.selectedIds], leavePublished: false}),
+    },
+    'versions.changed': {
+      actions: assign({
+        versionIds: ({event}) => event.versionIds,
+        variantIds: ({event}) => event.variantIds,
+      }),
     },
   },
   initial: 'idle',
@@ -235,14 +270,15 @@ export const deletionMachine = setup({
             deleting: {
               invoke: {
                 src: 'deleteVariants',
-                input: ({context}) => ({
-                  ids: context.leavePublished
-                    ? context.ids.filter((id) => !isPublishedId(id))
-                    : context.ids,
-                }),
-                onDone: {
-                  target: '#deletion.idle',
-                },
+                input: ({context}) => ({ids: deletedIds(context)}),
+                onDone: [
+                  {
+                    guard: 'deletedEveryVersion',
+                    target: '#deletion.idle',
+                    actions: 'allVersionsDeleted',
+                  },
+                  {target: '#deletion.idle'},
+                ],
                 onError: {
                   target: '#deletion.active.deletion.error',
                   actions: assign({error: ({event}) => event.error}),
@@ -286,3 +322,8 @@ export const deletionMachine = setup({
     },
   },
 })
+
+/** The versions a confirmed delete removes: the selection, less the Default when it is left. */
+function deletedIds(context: DeletionContext): string[] {
+  return context.leavePublished ? context.ids.filter((id) => !isPublishedId(id)) : context.ids
+}

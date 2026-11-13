@@ -23,6 +23,7 @@ import {referringDocuments} from '../../../../components/confirmDeleteDialog/use
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../../components/DocTitle'
 import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../../constants'
 import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspectiveList'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -54,6 +55,13 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   )
 
   const setVariant = useSetVariant()
+  const paneRouter = usePaneRouter()
+
+  // Once the last version is gone there is no document left to show: close the pane, as the
+  // document menu's delete does, rather than leave an empty, editable form behind.
+  function handleAllVersionsDeleted() {
+    paneRouter.closeCurrentAndAfter()
+  }
 
   const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
 
@@ -119,6 +127,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}
             onSelect={selectDocumentGroupVariant}
+            onAllVersionsDeleted={handleAllVersionsDeleted}
           />
         )}
       </div>
