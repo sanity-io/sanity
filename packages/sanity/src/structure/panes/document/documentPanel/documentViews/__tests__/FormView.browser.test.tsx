@@ -8,6 +8,7 @@ import {page} from 'vitest/browser'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
+import {CREATE_VARIANT_PARAM} from '../../../constants'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {FormView} from '../FormView'
 
@@ -86,10 +87,11 @@ function editState(overrides: Partial<EditStateFor> = {}): EditStateFor {
 interface FormViewHarnessProps {
   pane?: Partial<DocumentPaneContextValue>
   hideForm?: boolean
+  paneParams?: Record<string, string>
 }
 
 function FormViewHarness(props: FormViewHarnessProps) {
-  const {pane, hideForm = false} = props
+  const {pane, hideForm = false, paneParams} = props
   const schemaType = useSchema().get('article') as ObjectSchemaType
   const formState = useFormState({
     schemaType,
@@ -139,7 +141,7 @@ function FormViewHarness(props: FormViewHarnessProps) {
   } as DocumentPaneContextValue
 
   return (
-    <PaneRouterContext value={paneRouter}>
+    <PaneRouterContext value={paneParams ? {...paneRouter, params: paneParams} : paneRouter}>
       <DocumentPaneContext value={value}>
         <FormView hidden={false} margins={MARGINS} />
       </DocumentPaneContext>
@@ -148,6 +150,34 @@ function FormViewHarness(props: FormViewHarnessProps) {
 }
 
 describe('form view', () => {
+  it('moves focus into the form when it opens', async () => {
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <FormViewHarness />
+      </TestWrapper>,
+    )
+
+    const form = page.getByTestId('form-view')
+    await expect.poll(() => form.element().contains(document.activeElement)).toBe(true)
+  })
+
+  it('leaves focus alone while the document inventory creates a variant', async () => {
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <button type="button" autoFocus>
+          Create variant
+        </button>
+        <FormViewHarness paneParams={{[CREATE_VARIANT_PARAM]: '_.variants.students'}} />
+      </TestWrapper>,
+    )
+
+    await expect
+      .element(page.getByRole('textbox', {name: 'Title'}))
+      .toHaveValue('Spring launch article')
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toHaveFocus()
+    expect(page.getByTestId('form-view').element().contains(document.activeElement)).toBe(false)
+  })
+
   it('renders the document form', async () => {
     await render(
       <TestWrapper schemaTypes={schemaTypes}>

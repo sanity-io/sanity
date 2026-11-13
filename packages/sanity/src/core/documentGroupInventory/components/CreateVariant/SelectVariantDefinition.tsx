@@ -1,12 +1,10 @@
-import {clsx} from 'clsx'
-import {type ComponentType, type RefAttributes, type SVGProps} from 'react'
+import {type ComponentType} from 'react'
 
-import {RhombusIconLarge, RhombusOutlineIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
-import {createVariantDefinitionIcon} from './CreateVariant.css'
 import {CreateVariantPicker, type CreateVariantPickerOption} from './CreateVariantPicker'
 
 interface Props {
@@ -18,27 +16,11 @@ interface Props {
   disabled: boolean
 }
 
-// As in the document's Variants pill menu: a filled diamond for a variant the document has a
-// version in, an outline for one it has not, both in the variant colour.
-// The menu item's `Icon` clones the icon with its own class, so the variant colour is merged with it.
-type IconProps = SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>
-
-function FilledVariantIcon(props: IconProps) {
-  return (
-    <RhombusIconLarge {...props} className={clsx(props.className, createVariantDefinitionIcon)} />
-  )
-}
-
-function OutlineVariantIcon(props: IconProps) {
-  return (
-    <RhombusOutlineIcon {...props} className={clsx(props.className, createVariantDefinitionIcon)} />
-  )
-}
-
 /**
  * The variant picker groups the definitions the way the Variants pill menu does: "Has N variants"
  * (a new version can still go to another draft or release), then "Other variants". There is no
- * Default row, since Default is not a variant one creates.
+ * Default row, since Default is not a variant one creates. It starts empty, showing a muted
+ * variant mark and a hint.
  */
 export const SelectVariantDefinition: ComponentType<Props> = ({
   variantDefinitions,
@@ -53,10 +35,10 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
 
   return (
     <CreateVariantPicker
-      icon={RhombusIconLarge}
       label={t('document-group.create-variant.variant-label')}
-      description={t('document-group.create-variant.variant-description')}
       testId="create-variant-variant-menu"
+      placeholder={t('document-group.create-variant.form.variant-hint')}
+      emptyIcon={<VariantMark />}
       filterPlaceholder={t('document-group.create-variant.variant-filter-placeholder')}
       leadingOptions={existing.map((definition) => toOption(definition, true))}
       leadingLabel={t('document-group.create-variant.variant-section.has-variants', {
@@ -81,9 +63,13 @@ function toOption(
   variantDefinition: SystemVariant,
   hasVersion: boolean,
 ): CreateVariantPickerOption {
+  // A filled diamond for a variant the document has a version in, an outline for one it has not.
+  const fill = hasVersion ? 'filled' : 'outline'
   return {
     key: variantDefinition._id,
     text: getVariantTitle(variantDefinition),
-    icon: hasVersion ? FilledVariantIcon : OutlineVariantIcon,
+    icon: <VariantMark fill={fill} size="row" />,
+    // In the select, the variant's mark is inline (8px).
+    selectIcon: <VariantMark fill={fill} />,
   }
 }

@@ -85,4 +85,13 @@ describe('getNearestBaseVersion', () => {
       getNearestBaseVersion({variantId: SUMMER_SALE, bundle: ASAP, versions: [PUBLISHED, DRAFT]}),
     ).toBeUndefined()
   })
+
+  it('starts from the default version of the bundle while no variant is picked', () => {
+    const versions = [PUBLISHED, DRAFT, IN_ASAP, SUMMER_SALE_PUBLISHED]
+
+    expect(getNearestBaseVersion({variantId: undefined, bundle: {type: 'drafts'}, versions})).toBe(
+      DRAFT,
+    )
+    expect(getNearestBaseVersion({variantId: undefined, bundle: ASAP, versions})).toBe(IN_ASAP)
+  })
 })

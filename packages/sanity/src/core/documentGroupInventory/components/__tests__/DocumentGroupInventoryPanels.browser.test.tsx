@@ -4,6 +4,7 @@ import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {type ComponentType, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
+import {PerspectiveContext} from 'sanity/_singletons'
 import {Text} from 'ui5'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -20,6 +21,7 @@ import {
 
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {type PerspectiveContextValue} from '../../../perspective/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -37,6 +39,7 @@ import {Body} from '../Body'
 import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {Container} from '../Container'
 import {CreateVariant} from '../CreateVariant/CreateVariant'
+import {MIN_MENU_WIDTH} from '../CreateVariant/CreateVariantPicker'
 import {InventoryHeader} from '../InventoryHeader'
 
 const PUBLISHED_ID = 'panels-document'
@@ -312,21 +315,58 @@ const CREATE_VARIANT_TITLE_DOCUMENT = {_id: PUBLISHED_ID, _type: DOCUMENT_TYPE}
 const CreateVariantHarness: ComponentType<{
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
   sets?: VariantSet[]
-}> = ({variantCreationRef, sets = VERSION_SETS}) => {
+  /** The width of the inspector-like frame; the selects fill it, less the card's padding. */
+  width?: number
+  /** The studio's perspective, for the variant selected in it. The wrapper's own when absent. */
+  perspective?: PerspectiveContextValue
+}> = ({variantCreationRef, sets = VERSION_SETS, width = 360, perspective}) => {
+  const form = (
+    <CreateVariant
+      variantCreationRef={variantCreationRef}
+      sets={sets}
+      documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
+    />
+  )
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <Card border radius={3} style={{display: 'flex', width: 360, height: 480}}>
+      <Card border radius={3} style={{display: 'flex', width, height: 480}}>
         <Container>
-          <CreateVariant
-            variantCreationRef={variantCreationRef}
-            sets={sets}
-            documentTitle={<COMPONENTS.DocTitle document={CREATE_VARIANT_TITLE_DOCUMENT} />}
-          />
+          {perspective ? (
+            <PerspectiveContext.Provider value={perspective}>{form}</PerspectiveContext.Provider>
+          ) : (
+            form
+          )}
           <Body />
         </Container>
       </Card>
     </TestWrapper>
   )
+}
+
+/** The perspective with a variant selected in the studio (the variant pill), in Drafts or a release. */
+function perspectiveWith({
+  variant,
+  release,
+}: {
+  variant?: SystemVariant
+  release?: ReleaseDocument
+}): PerspectiveContextValue {
+  const releaseId = release?.name
+  const variantNames = variant ? [variant._id.replace('_.variants.', '')] : []
+  return {
+    selectedPerspectiveName: releaseId,
+    selectedReleaseId: releaseId,
+    selectedPerspective: release ?? 'drafts',
+    perspectiveStack: releaseId ? [releaseId, 'drafts'] : ['drafts'],
+    excludedPerspectives: [],
+    selectedVariantNames: variantNames,
+    selectedVariants: variant ? [variant] : [],
+    // oxlint-disable-next-line typescript/no-deprecated -- the context value still carries it
+    selectedVariantName: variantNames[0],
+    // oxlint-disable-next-line typescript/no-deprecated -- the context value still carries it
+    selectedVariant: variant,
+    bundle: releaseId ?? 'drafts',
+  }
 }
 
 const $variantTrigger = page.getByTestId('create-variant-variant-menu-button')
@@ -337,7 +377,7 @@ const $targetMenu = page.getByTestId('create-variant-target-menu')
 const $baseMenu = page.getByTestId('create-variant-base-menu')
 
 describe('CreateVariant', () => {
-  it('shows the first variant and target, and creates nothing until confirmed', async () => {
+  it('starts with no variant, Add to on the current perspective and Start from on the nearest version, and creates nothing until confirmed', async () => {
     // Confirming swaps the button for a spinner, so archive the form before the click.
     configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
@@ -346,26 +386,40 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
-    await expect.element(page.getByRole('heading', {name: 'Create version'})).toBeVisible()
-    await expect.element(page.getByText('A new version of Ursula K. Le Guin')).toBeVisible()
+    await expect
+      .element(page.getByRole('heading', {name: 'New variant of Ursula K. Le Guin'}))
+      .toBeVisible()
     await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('Who sees this version')).toBeVisible()
-    await expect.element($variantTrigger).toMatchTextContent('Summer sale')
-    await expect.element(page.getByText('Target', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('Where it lives')).toBeVisible()
-    await expect.element($targetTrigger).toMatchTextContent('Drafts')
-    await expect.element(page.getByText('Document', {exact: true})).toBeVisible()
-    await expect.element(page.getByText('What it starts from')).toBeVisible()
-    await expect.element($baseTrigger).toMatchTextContent('Nearest version')
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element(page.getByText('Add to', {exact: true})).toBeVisible()
+    await expect.element($targetTrigger).toHaveTextContent('Drafts')
+    await expect.element(page.getByText('Start from', {exact: true})).toBeVisible()
+    await expect.element($baseTrigger).toHaveTextContent('Nearest version')
+    // Every select shows a glyph, the empty Variant select too.
+    // The glyph's box is zero high (it does not set the select's height), so check what it paints.
+    for (const field of ['variant', 'target', 'base']) {
+      const $glyph = page.getByTestId(`create-variant-${field}-menu-glyph`)
+      await expect.element($glyph).toBeInTheDocument()
+      const ink = $glyph.element().querySelector('svg')?.getBoundingClientRect()
+      expect(ink?.width).toBeGreaterThan(0)
+      expect(ink?.height).toBeGreaterThan(0)
+    }
     await expect.element(page.getByRole('button', {name: 'Cancel'})).toBeEnabled()
 
-    const $create = page.getByRole('button', {name: 'Create version'})
-    await expect.element($create).toBeEnabled()
+    // Create variant waits for a variant.
+    const $create = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($create).toBeDisabled()
     expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
 
     await settleChromaticEndState()
-
     await takeSnapshot('defaults')
+
+    await userEvent.click($variantTrigger)
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'Summer sale'}))
+    await expect.element($variantTrigger).toHaveTextContent('Summer sale')
+    await expect.element($create).toBeEnabled()
+    await expect.element($variantMenu).not.toBeVisible()
+    await settleChromaticEndState()
 
     await userEvent.click($create)
     const snapshot = variantCreationRef.getSnapshot()
@@ -386,7 +440,7 @@ describe('CreateVariant', () => {
     await userEvent.click($baseTrigger)
     // "Nearest version" comes first, in a section of its own.
     const [$nearest, $firstVersion] = $baseMenu.getByRole('menuitemradio').all()
-    await expect.element($nearest).toHaveTextContent('Nearest version')
+    await expect.element($nearest).toMatchTextContent('Nearest version')
     expect($firstVersion.element().previousElementSibling).toBe(
       $baseMenu.element().querySelector('[data-ui="MenuDivider"]'),
     )
@@ -470,6 +524,10 @@ describe('CreateVariant', () => {
 
     void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
 
+    await userEvent.click($variantTrigger)
+    await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'Summer sale'}))
+    await expect.element($variantMenu).not.toBeVisible()
+
     await userEvent.click($targetTrigger)
     await expect.element($targetMenu).toBeVisible()
     await expect.element($targetMenu.getByRole('menuitemradio', {name: 'Drafts'})).toBeVisible()
@@ -503,7 +561,7 @@ describe('CreateVariant', () => {
       releaseId: activeASAPRelease._id,
     })
 
-    // Switching back to "Summer sale" falls back to the first target.
+    // Switching back to "Summer sale" falls back to the current perspective, Drafts.
     await userEvent.click($variantTrigger)
     await userEvent.click($variantMenu.getByRole('menuitemradio', {name: 'Summer sale'}))
     await expect.element($targetTrigger).toMatchTextContent('Drafts')
@@ -584,7 +642,7 @@ describe('CreateVariant', () => {
     await userEvent.keyboard('{Escape}')
     await expect.element($targetMenu).not.toBeVisible()
     // Keep the pointer off the options, which take focus when hovered.
-    await userEvent.hover(page.getByRole('heading', {name: 'Create version'}))
+    await userEvent.hover(page.getByRole('heading', {name: 'New variant of Ursula K. Le Guin'}))
 
     const openFromKeyboard = async (key: string) => {
       // Focus the trigger explicitly: whether closing the menu hands focus back to it is the menu's
@@ -611,6 +669,315 @@ describe('CreateVariant', () => {
 
     await userEvent.click(page.getByRole('button', {name: 'Cancel'}))
     expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('closes on Escape, and an open menu takes the first Escape', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click($targetTrigger)
+    await expect.element($targetMenu).toBeVisible()
+    await userEvent.keyboard('{Escape}')
+    await expect.element($targetMenu).not.toBeVisible()
+    expect(variantCreationRef.getSnapshot().matches({active: 'configuring'})).toBe(true)
+
+    $targetTrigger.element().focus()
+    await userEvent.keyboard('{Escape}')
+    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('takes the focus when it opens, so Escape closes it without a click into the form', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await expect.element($variantTrigger).toHaveFocus()
+    await userEvent.keyboard('{Escape}')
+    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('opens a menu from its select only, not from the field title or the space beside it', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    const fields = [
+      {title: 'create-variant-variant-menu-title', $trigger: $variantTrigger, $menu: $variantMenu},
+      {title: 'create-variant-target-menu-title', $trigger: $targetTrigger, $menu: $targetMenu},
+      {title: 'create-variant-base-menu-title', $trigger: $baseTrigger, $menu: $baseMenu},
+    ]
+    // A menu that never opened is not mounted yet; one that closed is hidden. Neither is open.
+    const isOpen = ($menu: typeof $variantMenu) =>
+      $menu.elements().some((element) => element.checkVisibility())
+    for (const {title, $trigger, $menu} of fields) {
+      const $title = page.getByTestId(title)
+      await userEvent.click($title)
+      await expect.poll(() => isOpen($menu)).toBe(false)
+
+      // The empty space right of the title, on the same line.
+      const titleBox = $title.element().getBoundingClientRect()
+      const triggerBox = $trigger.element().getBoundingClientRect()
+      await userEvent.click($title, {
+        position: {x: triggerBox.right - titleBox.left - 4, y: titleBox.height / 2},
+      })
+      await expect.poll(() => isOpen($menu)).toBe(false)
+
+      await userEvent.click($trigger)
+      await expect.element($menu).toBeVisible()
+      await userEvent.keyboard('{Escape}')
+      await expect.element($menu).not.toBeVisible()
+    }
+    // The select is still named by its title.
+    await expect.element(page.getByRole('button', {name: /^Add to/})).toBeVisible()
+  })
+
+  it('starts Variant on the variant selected in the studio when the document has no version of it yet', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: VIP_USERS})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('vip-users')
+    await expect.element($targetTrigger).toHaveTextContent('Drafts')
+    const $create = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($create).toBeEnabled()
+
+    await userEvent.click($create)
+    const snapshot = variantCreationRef.getSnapshot()
+    expect(snapshot.matches({active: 'creating'})).toBe(true)
+    expect(snapshot.context.selectedVariantId).toBe(VIP_USERS._id)
+    expect(snapshot.context.selectedBundle).toEqual({type: 'drafts'})
+  })
+
+  it('leaves Variant empty while Default is selected', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeDisabled()
+  })
+
+  it('leaves Variant empty when the selected variant already has a version in the Add to bundle', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Summer sale already has a version in the ASAP release, the release in view.
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: SUMMER_SALE, release: activeASAPRelease})}
+      />,
+    )
+
+    await expect.element($targetTrigger).toHaveTextContent(activeASAPRelease.metadata.title)
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeDisabled()
+  })
+
+  it('clears the pre-filled Variant when Add to moves to a bundle that already has that variant', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Summer sale has no draft yet, but has a version in the ASAP release.
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        perspective={perspectiveWith({variant: SUMMER_SALE})}
+      />,
+    )
+
+    await expect.element($variantTrigger).toHaveTextContent('Summer sale')
+    const $create = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($create).toBeEnabled()
+
+    await userEvent.click($targetTrigger)
+    await userEvent.click(
+      $targetMenu.getByRole('menuitemradio', {name: activeASAPRelease.metadata.title}),
+    )
+    await expect.element($targetTrigger).toHaveTextContent(activeASAPRelease.metadata.title)
+    await expect.element($variantTrigger).toHaveTextContent('Choose who sees it')
+    await expect.element($create).toBeDisabled()
+
+    // Back in Drafts, where it has no version, the selected variant is offered again.
+    await userEvent.click($targetTrigger)
+    await userEvent.click($targetMenu.getByRole('menuitemradio', {name: 'Drafts'}))
+    await expect.element($variantTrigger).toHaveTextContent('Summer sale')
+  })
+
+  it('opens every menu at the top of its list, and goes back to the top when the search changes', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // Enough versions that the Start from list scrolls inside its 320px menu.
+    const manyVersions = Array.from({length: 14}, (_, index) =>
+      variant(`versions.r${index}.${PUBLISHED_ID}`, `Version ${index + 1}`, {
+        bundleId: `r${index}`,
+      }),
+    )
+    void render(
+      <CreateVariantHarness
+        variantCreationRef={variantCreationRef}
+        sets={[
+          ...VERSION_SETS,
+          {
+            key: 'many',
+            name: 'Many',
+            bundle: {type: 'perspective', perspective: 'drafts'},
+            variants: manyVersions,
+          },
+        ]}
+      />,
+    )
+
+    const listScroller = () => {
+      // The element that scrolls: the list under the pinned search field.
+      const candidates = [...$baseMenu.element().querySelectorAll<HTMLElement>('*')]
+      return candidates.find((element) => element.scrollHeight > element.clientHeight + 1)
+    }
+
+    await userEvent.click($baseTrigger)
+    await expect.element($baseMenu).toBeVisible()
+    await expect.poll(() => listScroller()).toBeTruthy()
+    const $list = listScroller()!
+    $list.scrollTop = 200
+    await expect.poll(() => $list.scrollTop).toBeGreaterThan(0)
+
+    // Closed and opened again: back at the top, with the search field still focused.
+    await userEvent.keyboard('{Escape}')
+    await expect.element($baseMenu).not.toBeVisible()
+    await userEvent.click($baseTrigger)
+    await expect.element($baseMenu).toBeVisible()
+    await expect.poll(() => listScroller()?.scrollTop).toBe(0)
+    await expect.element($baseMenu.getByPlaceholder('Find')).toHaveFocus()
+
+    // Scrolled, then the search changes: back at the top.
+    listScroller()!.scrollTop = 200
+    await expect.poll(() => listScroller()?.scrollTop).toBeGreaterThan(0)
+    await userEvent.type($baseMenu.getByPlaceholder('Find'), 'Version')
+    await expect.poll(() => listScroller()?.scrollTop).toBe(0)
+  })
+
+  it('names the version Nearest version copies from on its second line', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    await userEvent.click($baseTrigger)
+    await expect
+      .element($baseMenu.getByRole('menuitemradio', {name: /Nearest version/}))
+      .toMatchTextContent('Copies from Default in Drafts')
+  })
+
+  it('opens each menu as wide as its select, from its left edge', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} width={480} />)
+
+    await userEvent.click($variantTrigger)
+    await expect.element($variantMenu).toBeVisible()
+    const select = $variantTrigger.element().getBoundingClientRect()
+    expect(select.width).toBeGreaterThan(MIN_MENU_WIDTH)
+    await expect
+      .poll(() => Math.round($variantMenu.element().getBoundingClientRect().width))
+      .toBe(Math.round(select.width))
+    expect(Math.round($variantMenu.element().getBoundingClientRect().left)).toBe(
+      Math.round(select.left),
+    )
+  })
+
+  it('never opens a menu narrower than 288px, from the left edge of a narrower select', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} width={280} />)
+
+    await userEvent.click($targetTrigger)
+    await expect.element($targetMenu).toBeVisible()
+    const select = $targetTrigger.element().getBoundingClientRect()
+    expect(select.width).toBeLessThan(MIN_MENU_WIDTH)
+    await expect
+      .poll(() => Math.round($targetMenu.element().getBoundingClientRect().width))
+      .toBe(MIN_MENU_WIDTH)
+    expect(Math.round($targetMenu.element().getBoundingClientRect().left)).toBe(
+      Math.round(select.left),
+    )
+  })
+
+  it('keeps a 288px menu inside the viewport when the select sits against its right edge', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(
+      <div style={{position: 'fixed', top: 0, right: 0}}>
+        <CreateVariantHarness variantCreationRef={variantCreationRef} width={280} />
+      </div>,
+    )
+
+    await userEvent.click($variantTrigger)
+    await expect.element($variantMenu).toBeVisible()
+    const select = $variantTrigger.element().getBoundingClientRect()
+    // Less room right of the select than the menu needs.
+    expect(window.innerWidth - select.left).toBeLessThan(MIN_MENU_WIDTH)
+    await expect
+      .poll(() => Math.round($variantMenu.element().getBoundingClientRect().width))
+      .toBe(MIN_MENU_WIDTH)
+    const menu = $variantMenu.element().getBoundingClientRect()
+    expect(menu.right).toBeLessThanOrEqual(window.innerWidth)
+    // Shifted left to fit, so it starts left of the select instead of on its edge.
+    expect(menu.left).toBeLessThan(select.left)
+  })
+
+  it('sets the select text at the size of the menu rows', async () => {
+    configure({disableAutoSnapshot: true})
+    const {variantCreationRef} = startHarness()
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    void render(<CreateVariantHarness variantCreationRef={variantCreationRef} />)
+
+    const fontSize = (element: Element) => getComputedStyle(element).fontSize
+    const $value = page.getByTestId('create-variant-target-menu-value')
+    await expect.element($value).toBeVisible()
+    const valueText = $value.element().querySelector('span') ?? $value.element()
+
+    await userEvent.click($targetTrigger)
+    const $row = $targetMenu.getByRole('menuitemradio', {name: 'Drafts'})
+    await expect.element($row).toBeVisible()
+    const rowText = $row.element().querySelector('[data-ui="Text"] span')
+    expect(rowText).not.toBeNull()
+    expect(fontSize(valueText)).toBe(fontSize(rowText!))
+    expect(fontSize(valueText)).toBe('13px')
+    // The select is the height of the Variants tool's "Create variant definition" dialog inputs.
+    expect(Math.round($targetTrigger.element().getBoundingClientRect().height)).toBe(33)
   })
 })
 
@@ -692,7 +1059,7 @@ describe('InventoryHeader', () => {
 
     void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
 
-    const $createVariant = page.getByRole('button', {name: 'Create version'})
+    const $createVariant = page.getByRole('button', {name: 'Create variant'})
     await expect.element($createVariant).toBeVisible()
     await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
     await settleChromaticEndState()
@@ -711,7 +1078,7 @@ describe('InventoryHeader', () => {
 
     void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
 
-    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Delete'})).not.toBeInTheDocument()
     await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
 
@@ -743,13 +1110,13 @@ describe('InventoryHeader', () => {
 
     const $deselectAll = page.getByRole('button', {name: 'Deselect all'})
     await expect.element($deselectAll).toBeVisible()
-    await expect.element(page.getByRole('button', {name: 'Create version'})).not.toBeInTheDocument()
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
     await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
 
     await userEvent.click($deselectAll)
 
     expect(selectionRef.getSnapshot().context.selectedIds.size).toBe(0)
-    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
     await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
     await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
   })
@@ -760,7 +1127,7 @@ describe('InventoryHeader', () => {
 
     void render(<InventoryHeaderHarness {...refs} components={undefined} />)
 
-    await expect.element(page.getByRole('button', {name: 'Create version'})).toBeVisible()
+    await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
     await expect.element(page.getByTestId('compare-versions-action')).not.toBeInTheDocument()
 
     await settleChromaticEndState()

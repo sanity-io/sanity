@@ -1,7 +1,6 @@
-import {clsx} from 'clsx'
 import {useCallback} from 'react'
 
-import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantTypes} from '../../../variants/hooks/useVariantConditions'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -12,7 +11,6 @@ import {DEFAULT_VARIANT_TYPE_KEY} from '../../../variants/util/variantType'
 import {useSetVariant} from '../../useSetVariant'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {VariantsMenu} from './VariantsMenu'
-import {rhombusIconLarge, suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
   fullWidth?: boolean
@@ -46,7 +44,7 @@ function VariantTypeFilter(props: {
           }
           fullWidth={fullWidth}
           handleClearPerspective={selectedId ? handleClear : undefined}
-          icon={<RhombusIconLarge className={clsx(suggestIconColor, rhombusIconLarge)} />}
+          icon={<VariantMark size="inline" />}
           text={variantLabel}
         />
       }
