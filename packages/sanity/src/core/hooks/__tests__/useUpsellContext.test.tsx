@@ -89,6 +89,28 @@ function answer(result: UpsellDataResult) {
 }
 
 describe('useUpsellContext', () => {
+  it('forwards enabled and fallbackData to the data hook', async () => {
+    function ForwardingHarness() {
+      useUpsellContext({
+        dataUri: '/journey/test',
+        feature: 'test',
+        enabled: false,
+        fallbackData: upsellData,
+      })
+      return null
+    }
+
+    const TestProvider = await createTestProvider()
+    render(<ForwardingHarness />, {wrapper: TestProvider})
+
+    expect(useUpsellDataMock).toHaveBeenCalledWith({
+      dataUri: '/journey/test',
+      feature: 'test',
+      enabled: false,
+      fallbackData: upsellData,
+    })
+  })
+
   it('starts the request once when the provider commits, without waiting for a consumer', async () => {
     await renderHarness()
 

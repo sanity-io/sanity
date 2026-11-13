@@ -12,6 +12,8 @@ const harness = vi.hoisted(() => ({
   // Set before render so the claim lands in the channel's BehaviorSubject
   // during the useState initializer, before WorkspacesClaimProvider mounts.
   claimProjectId: undefined as string | undefined,
+  // The auth store of the client that got the invalid session, when the claim names one.
+  claimAuthStore: undefined as AuthStore | undefined,
   onRequestFailure: undefined as
     | ((
         result: {type: 'cors'; allowed: boolean; withCredentials: boolean},
@@ -52,7 +54,8 @@ vi.mock('../../requestErrors/createRequestErrorChannel', async (importOriginal) 
       if (projectId) {
         // `handle` claims synchronously before its first await, so the
         // unauthorized claim is already current when the provider mounts.
-        void channel.handle(invalidSessionError(projectId))
+        const authStore = harness.claimAuthStore
+        void channel.handle(invalidSessionError(projectId), authStore ? {authStore} : undefined)
       }
       return channel
     },
@@ -128,6 +131,22 @@ describe('WorkspacesProvider forced logout', () => {
       </WorkspacesProvider>,
     )
     expect(matchingLogout).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs out the auth store named on the claim, not the first workspace of the project', async () => {
+    // An OAuth workspace keeps its own session next to the legacy workspaces of the same project.
+    const legacyLogout = vi.fn(() => Promise.resolve())
+    const oauthLogout = vi.fn(() => Promise.resolve())
+    const oauthWorkspace = workspace('proja', oauthLogout)
+    harness.workspaces = [workspace('proja', legacyLogout), oauthWorkspace]
+    harness.claimProjectId = 'proja'
+    harness.claimAuthStore = oauthWorkspace.auth
+
+    renderProvider()
+
+    await waitFor(() => expect(oauthLogout).toHaveBeenCalledTimes(1))
+    expect(legacyLogout).not.toHaveBeenCalled()
+    harness.claimAuthStore = undefined
   })
 
   it('logs out a nested source whose project differs from every root workspace', async () => {

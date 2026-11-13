@@ -51,7 +51,13 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
           flexDirection="column"
         >
           <Flex gap={3} alignItems="center">
-            <Text size={1} weight="medium" style={{minWidth: 0}} as="div" trim={true}>
+            <Text
+              size={1}
+              weight="medium"
+              style={{minWidth: 0, color: 'var(--card-fg-color)'}}
+              as="div"
+              trim={true}
+            >
               {label}
             </Text>
           </Flex>

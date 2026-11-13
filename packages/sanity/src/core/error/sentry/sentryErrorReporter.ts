@@ -43,7 +43,9 @@ const DEBUG_ERROR_REPORTING =
 
 const IS_BROWSER = typeof window !== 'undefined'
 
-const clientOptions: BrowserOptions = {
+// Keep this inferred. Annotating it as `BrowserOptions` widens `tunnel` to
+// `string | true | BrowserTunnelOptions`, which `BrowserClient` does not accept.
+const clientOptions = {
   dsn: STUDIO_DSN,
   tunnel: 'https://api.sanity.io/vX/intake/tracing',
   release: SANITY_VERSION,
@@ -51,7 +53,7 @@ const clientOptions: BrowserOptions = {
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
   dataCollection: studioSentryDataCollection,
-}
+} satisfies BrowserOptions
 
 const integrations = [
   eventFiltersIntegration(),

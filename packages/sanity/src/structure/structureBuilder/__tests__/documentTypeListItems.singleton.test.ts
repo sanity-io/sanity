@@ -176,3 +176,33 @@ describe('explicit document type lists', () => {
     expect(item.id).toBe('settings')
   })
 })
+
+describe('default content list filtering with `allowNonSingletonDocuments`', () => {
+  it('keeps schema types whose singleton allows non-singleton documents', async () => {
+    const S = await createBuilder([
+      'settings',
+      {documentId: 'featuredArticle', schemaType: 'article', allowNonSingletonDocuments: true},
+    ])
+    const ids = S.documentTypeListItems().map((item) => item.getId())
+    expect(ids).toContain('article')
+    expect(ids).not.toContain('settings')
+  })
+
+  it('keeps a shared schema type when any singleton sharing it sets the option', async () => {
+    const S = await createBuilder([
+      {documentId: 'featuredArticle', schemaType: 'article', allowNonSingletonDocuments: true},
+      {documentId: 'editorsPick', schemaType: 'article'},
+    ])
+    const ids = S.documentTypeListItems().map((item) => item.getId())
+    expect(ids).toContain('article')
+  })
+
+  it('lists both the type and the singleton in the default structure', async () => {
+    const S = await createBuilder([
+      {documentId: 'featuredArticle', schemaType: 'article', allowNonSingletonDocuments: true},
+    ])
+    const list = S.defaults().serialize()
+
+    expect(contentItemIds(list)).toEqual(['settings', 'article', 'featuredArticle'])
+  })
+})

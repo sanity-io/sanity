@@ -1,9 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {type CurrentUser} from '@sanity/types'
-import {Inline, Text} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {Fragment, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Icon} from 'ui5'
 
 import {useListFormat} from '../hooks/useListFormat'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -65,15 +65,13 @@ export function InsufficientPermissionsMessage({
   return (
     <Box>
       <Inline gap={2}>
-        <Text size={0}>
-          <AccessDeniedIcon />
-        </Text>
-        <Text size={1} weight="medium">
+        <Icon size={0} icon={AccessDeniedIcon} style={{margin: '-0.3125rem'}} />
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('insufficient-permissions-message.title')}
         </Text>
       </Inline>
       <Inline marginTop={4}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="insufficient-permissions-message.not-authorized-explanation"
             t={t}
@@ -82,7 +80,7 @@ export function InsufficientPermissionsMessage({
         </Text>
       </Inline>
       <Inline marginTop={4} marginBottom={1}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="insufficient-permissions-message.roles"
             t={t}

@@ -1,7 +1,8 @@
 import {CircleIcon} from '@sanity/icons/Circle'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type ButtonTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {StatusButton} from '../StatusButton'
 
@@ -48,7 +49,7 @@ export const AllVariants: Story = {
               tone={tone}
               tooltipProps={null}
             />
-            <Text align="center" muted size={0}>
+            <Text align="center" muted size={0} as="div" trim={true}>
               {tone}
             </Text>
           </Stack>
@@ -66,7 +67,7 @@ export const AllVariants: Story = {
                 {...props}
               />
             </Card>
-            <Text align="center" muted size={0}>
+            <Text align="center" muted size={0} as="div" trim={true}>
               {label}
             </Text>
           </Stack>
@@ -75,10 +76,10 @@ export const AllVariants: Story = {
       <Card padding={2} radius={2} shadow={1} style={{maxWidth: 420}}>
         <Flex align="center" gap={3} paddingLeft={2}>
           <Stack flex={1} gap={2}>
-            <Text size={1} textOverflow="ellipsis" weight="medium">
+            <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
               Anna Karenina
             </Text>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               Draft · edited just now
             </Text>
           </Stack>
