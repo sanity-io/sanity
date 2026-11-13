@@ -3,6 +3,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 
 import {expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
 import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
+import {captureUnhandledRejections} from '../../../../../test/sync/unhandledRejections'
 import {createSchema} from '../../../schema/createSchema'
 
 const schema = createSchema({
@@ -105,5 +106,45 @@ describe('editOperations and editState, two clients', () => {
     expect(world.lake.get(PUBLISHED_ID)?.title).toBe('Published')
     expect(world.lake.get(DRAFT_ID)?._system).toEqual({base: {id: PUBLISHED_ID, rev: 'seed'}})
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
+  })
+
+  // Cancelling the first save rejects the queued save's promise, and nothing in Studio handles it.
+  test.fails('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE: a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-REJECTED-SAVE-WITH-QUEUED-SAVE',
+      title: 'A holds a save, queues a second behind it, and the server answers 403 to the first',
+      seam: 'operations',
+      evidence: 'L2',
+      knownBug: 'B1',
+      initial: [document(PUBLISHED_ID, 'Published'), document(DRAFT_ID, 'Draft')],
+      idPair,
+      clients: ['A'],
+      steps: [
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
+        {
+          client: 'A',
+          do: 'patch',
+          id: DRAFT_ID,
+          patches: [{set: {'items[_key=="a"].title': 'one'}}],
+        },
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'one'}}]},
+        {client: 'A', do: 'commit'},
+        {
+          client: 'A',
+          do: 'rejectCommit',
+          statusCode: 403,
+          represents: 'permission revoked mid-session',
+        },
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'commit'},
+        {do: 'advance', ms: 5_000},
+      ],
+    }
+    const unhandled = captureUnhandledRejections()
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'}).finally(unhandled.stop)
+
+    expect(unhandled.reasons).toEqual([])
+    expect(world.clients.A.localDocument(DRAFT_ID)?.title).toBe('Draft')
+    expect(world.lake.transactions).toHaveLength(0)
   })
 })

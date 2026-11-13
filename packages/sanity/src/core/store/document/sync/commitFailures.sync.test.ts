@@ -1,8 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {expectRevisionsAgree} from '../../../../../test/sync/oracles'
+import {expectQuiescent, expectRevisionsAgree} from '../../../../../test/sync/oracles'
 import {
+  createWorld,
+  runSteps,
   runSyncTest,
   type Step,
   type SyncTestDefinition,
@@ -40,36 +42,51 @@ const PERMISSION_REVOKED: Rejection = {
 }
 const TRANSIENT_FAILURE: Rejection = {statusCode: 500, represents: 'a transient server error'}
 
-function rejectedCommit(rejection: Rejection, typingDuringFlight: boolean): SyncTestDefinition {
+interface TitleEdits {
+  initialTitle: string
+  sent: string
+  typedDuringFlight?: string
+}
+
+const SENT_ONLY: TitleEdits = {initialTitle: 'seed', sent: 'one'}
+const SHORT_TYPING: TitleEdits = {initialTitle: 'seed', sent: 'one', typedDuringFlight: 'two'}
+// Short strings rebase cleanly by luck; a realistic same-field edit shows what the rebase does to text.
+const REALISTIC_TYPING: TitleEdits = {
+  initialTitle: 'Hello',
+  sent: 'Hello wor',
+  typedDuringFlight: 'Hello world',
+}
+
+function rejectedCommit(rejection: Rejection, edits: TitleEdits): SyncTestDefinition {
   const {statusCode, represents} = rejection
-  const typed: Step[] = typingDuringFlight
-    ? [{client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'two'}}]}]
+  const {initialTitle, sent, typedDuringFlight} = edits
+  const typed: Step[] = typedDuringFlight
+    ? [{client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: typedDuringFlight}}]}]
     : []
   return {
-    id: `CMT-${statusCode < 500 ? 'REJECT' : 'RETRY'}-${statusCode}${typingDuringFlight ? '-TYPING' : ''}`,
-    title: `A commits "one"${typingDuringFlight ? ', types "two" while it is in flight,' : ''} and the server answers ${statusCode}`,
+    id: `CMT-${statusCode < 500 ? 'REJECT' : 'RETRY'}-${statusCode}${typedDuringFlight ? '-TYPING' : ''}`,
+    title: `A commits "${sent}"${typedDuringFlight ? `, types "${typedDuringFlight}" while it is in flight,` : ''} and the server answers ${statusCode}`,
     seam: 'pair',
     evidence: 'L2',
-    initial: [initial],
+    initial: [{...initial, title: initialTitle}],
     idPair,
     clients: ['A'],
     steps: [
       {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
-      {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'one'}}]},
+      {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: sent}}]},
       {client: 'A', do: 'commit'},
       ...typed,
       {client: 'A', do: 'rejectCommit', statusCode, represents},
       {client: 'A', do: 'commits', mode: 'auto'},
       {do: 'advance', ms: 10},
       {client: 'A', do: 'commit'},
-      {do: 'settle'},
     ],
   }
 }
 
 describe('commit failures', () => {
   test('CMT-REJECT-403: a terminal rejection resets the client to the server copy', async () => {
-    world = await runSyncTest(rejectedCommit(PERMISSION_REVOKED, false))
+    world = await runSyncTest(rejectedCommit(PERMISSION_REVOKED, SENT_ONLY))
 
     expectRevisionsAgree(world)
     expect(world.lake.transactions).toHaveLength(0)
@@ -79,13 +96,74 @@ describe('commit failures', () => {
     expect(world.clients.A.localDocument(DRAFT_ID)?.title).toBe('seed')
   })
 
-  // The edit typed while the rejected save was in flight stays on screen, is never sent, and the document never becomes consistent again.
-  test.fails('CMT-REJECT-403-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
-    world = await runSyncTest({...rejectedCommit(PERMISSION_REVOKED, true), knownBug: 'B1'})
+  // The edit typed during the rejected save is rebased onto the last confirmed copy, so the screen shows "Hellold" and the document never becomes consistent again.
+  test.fails('CMT-REJECT-403-TYPING: a terminal rejection while typing drops the typing and shows what the server holds', async () => {
+    const definition = {...rejectedCommit(PERMISSION_REVOKED, REALISTIC_TYPING), knownBug: 'B1'}
+    world = await createWorld(definition)
+    // Checked before settling, so the failure shows what the user sees rather than only that the world never settled.
+    await runSteps(world, definition.steps)
+
+    expect({
+      local: world.clients.A.localDocument(DRAFT_ID)?.title,
+      server: world.lake.get(DRAFT_ID)?.title,
+    }).toEqual({local: 'Hello', server: 'Hello'})
+
+    await world.settle()
+    expectQuiescent(world)
+    expect(world.lake.transactions).toHaveLength(0)
+  })
+
+  // The reset goes back to the last confirmed copy, which lacks A's accepted save and the outside edit until their held events arrive.
+  test.fails('CMT-REJECT-403-REFETCHES: a terminal rejection refetches the document, including an accepted save whose echo has not arrived', async () => {
+    const definition: SyncTestDefinition = {
+      id: 'CMT-REJECT-403-REFETCHES',
+      title:
+        'A saves "one", B edits from outside, both echoes are held, then A types again and the server answers 403',
+      seam: 'pair',
+      evidence: 'L2',
+      knownBug: 'B2',
+      initial: [initial],
+      idPair,
+      clients: ['A'],
+      steps: [
+        {client: 'A', do: 'listener', mode: 'hold', represents: 'a slow listener connection'},
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'one'}}]},
+        {client: 'A', do: 'commit'},
+        {client: 'A', do: 'acceptCommit'},
+        {do: 'outside', mutations: [{patch: {id: DRAFT_ID, set: {subtitle: 'from outside'}}}]},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {body: 'two'}}]},
+        {client: 'A', do: 'commit'},
+        {
+          client: 'A',
+          do: 'rejectCommit',
+          statusCode: 403,
+          represents: 'permission revoked mid-session',
+        },
+        {do: 'advance', ms: 100},
+      ],
+    }
+    world = await createWorld(definition)
+    await runSteps(world, definition.steps)
+
+    expect(world.clients.A.localDocument(DRAFT_ID)).toEqual(world.lake.get(DRAFT_ID))
+    expect(world.clients.A.consistent()).toBe(true)
+    expect(world.clients.A.syncErrorRecoveries()).toEqual([
+      expect.objectContaining({name: 'RejectedSaveResyncError'}),
+    ])
+
+    await runSteps(world, [
+      {client: 'A', do: 'listener', mode: 'auto'},
+      {client: 'A', do: 'commits', mode: 'auto'},
+    ])
+    await world.settle()
+    expectQuiescent(world)
+    expect(world.lake.get(DRAFT_ID)).toMatchObject({title: 'one', subtitle: 'from outside'})
+    expect(world.lake.get(DRAFT_ID)?.body).toBeUndefined()
   })
 
   test('CMT-RETRY-500-TYPING: a transient failure is retried and every edit lands', async () => {
-    world = await runSyncTest(rejectedCommit(TRANSIENT_FAILURE, true))
+    world = await runSyncTest(rejectedCommit(TRANSIENT_FAILURE, SHORT_TYPING))
 
     expectRevisionsAgree(world)
     expect(world.lake.get(DRAFT_ID)?.title).toBe('two')
