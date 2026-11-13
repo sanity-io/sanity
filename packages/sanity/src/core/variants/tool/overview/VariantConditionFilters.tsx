@@ -7,8 +7,10 @@ import {Card, TextInput, useClickOutsideEvent} from '@sanity/ui'
 import {
   type ComponentType,
   type CSSProperties,
+  type KeyboardEvent,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -49,6 +51,8 @@ function AddFilterMenu({
   const [query, setQuery] = useState('')
   const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null)
   const [popoverEl, setPopoverEl] = useState<HTMLElement | null>(null)
+  const searchInputRef = useRef<HTMLInputElement | null>(null)
+  const contentId = useId()
 
   const close = useCallback(() => {
     setOpen(false)
@@ -57,6 +61,20 @@ function AddFilterMenu({
   }, [])
 
   useClickOutsideEvent(close, () => [buttonEl, popoverEl])
+
+  useEffect(() => {
+    if (open) searchInputRef.current?.focus()
+  }, [open])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !open) return
+      event.stopPropagation()
+      close()
+      buttonEl?.focus()
+    },
+    [buttonEl, close, open],
+  )
 
   const activeFacet = facets.find((facet) => facet.key === dimensionKey)
 
@@ -69,14 +87,23 @@ function AddFilterMenu({
   // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
   // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
   const content = (
-    <VStack gap={0} style={{width: 520}}>
+    <VStack
+      aria-label={t('overview.filter.add')}
+      gap={0}
+      id={contentId}
+      onKeyDown={handleKeyDown}
+      role="dialog"
+      style={{width: 520}}
+    >
       <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
+          aria-label={t('overview.filter.find-dimension')}
           fontSize={1}
           icon={SearchIcon}
           onChange={(event) => setQuery(event.currentTarget.value)}
           placeholder={t('overview.filter.find-dimension')}
           radius={2}
+          ref={searchInputRef}
           value={query}
         />
       </Box>
@@ -97,6 +124,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={facet.key}
+                    aria-current={facet.key === dimensionKey ? 'true' : undefined}
                     data-testid={`variant-filter-dimension-${facet.key}`}
                     icon={getVariantConditionIcon(facet.key)}
                     justify="flex-start"
@@ -114,9 +142,22 @@ function AddFilterMenu({
             values (text left, selected checkmark pinned right via space-between). */}
         <Box style={{flex: 1}}>
           {activeFacet ? (
-            <Flex padding={2} gap={1} flexDirection="column">
+            <Flex
+              aria-labelledby={`${contentId}-values`}
+              flexDirection="column"
+              gap={1}
+              padding={2}
+              role="group"
+            >
               <Box paddingBottom={1} paddingTop={1} paddingX={2}>
-                <Text muted size={0} weight="medium" as="div" trim={true}>
+                <Text
+                  as="div"
+                  id={`${contentId}-values`}
+                  muted
+                  size={0}
+                  trim={true}
+                  weight="medium"
+                >
                   {facetLabel(activeFacet.key)}
                 </Text>
               </Box>
@@ -125,6 +166,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={val}
+                    aria-pressed={isSelected}
                     data-testid={`variant-filter-value-${activeFacet.key}-${val}`}
                     iconRight={isSelected ? CheckmarkIcon : undefined}
                     justify="space-between"
@@ -152,8 +194,12 @@ function AddFilterMenu({
     <Popover ref={setPopoverEl} content={content} open={open} placement="bottom-start" portal>
       <Button
         ref={setButtonEl}
+        aria-controls={contentId}
+        aria-expanded={open}
+        aria-haspopup="dialog"
         icon={AddIcon}
         mode="ghost"
+        onKeyDown={handleKeyDown}
         onClick={() => {
           if (open) {
             close()
@@ -225,6 +271,7 @@ function FilterChip({
           </Text>
         )}
         <Button
+          aria-label={t('overview.filter.remove-value.aria-label', {title: chip.title})}
           icon={CloseIcon}
           mode="bleed"
           onClick={onRemove}
