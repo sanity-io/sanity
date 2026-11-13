@@ -329,6 +329,81 @@ test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', a
   expect(350 - new Date().getTime() - start.getTime()).toBeLessThan(50)
 })
 
+function documentExistsAfter(events: ListenerEvent[]): boolean {
+  return events.reduce((exists, event) => {
+    if (event.type === 'snapshot') return event.document !== null
+    if (event.type === 'mutation' && event.transition === 'appear') return true
+    if (event.type === 'mutation' && event.transition === 'disappear') return false
+    return exists
+  }, false)
+}
+
+const nullSnapshot = {type: 'snapshot', documentId: 'test', document: null} as const
+
+const create = creationEvent({
+  resultRev: 'one',
+  messageReceivedAt: now(),
+})
+
+const update = mutationEvent({
+  previousRev: 'one',
+  resultRev: 'two',
+  mutations: [{patch: {set: {name: 'two'}}}],
+  messageReceivedAt: now(),
+})
+
+function deleteAfter(previousRev: string) {
+  return mutationEvent({
+    previousRev,
+    resultRev: `delete-after-${previousRev}`,
+    transition: 'disappear',
+    mutations: [{delete: {id: 'test'}}],
+    messageReceivedAt: now(),
+  })
+}
+
+function sequentialize(events: ListenerEvent[]) {
+  return lastValueFrom(
+    from(events).pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray()),
+  )
+}
+
+// Waits out the 30s deadline and resyncs: safe but slow. A shorter grace period needs onSyncErrorRecovery data.
+test.fails('a delete committed while the snapshot was read ends consistent with the server', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('one')])
+
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test.fails('an update and a delete committed while the snapshot was read end consistent with the server', async () => {
+  const emitted = await sequentialize([nullSnapshot, update, deleteAfter('two')])
+
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test('a create and its delete arriving reversed after a null snapshot are both applied', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('one'), create])
+
+  expect(emitted.map((event) => event.type === 'mutation' && event.transition)).toEqual([
+    false,
+    'appear',
+    'disappear',
+  ])
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
+test('a reversed create, update and delete after a null snapshot are applied in order', async () => {
+  const emitted = await sequentialize([nullSnapshot, deleteAfter('two'), create, update])
+
+  expect(emitted.map((event) => event.type === 'mutation' && event.transition)).toEqual([
+    false,
+    'appear',
+    'update',
+    'disappear',
+  ])
+  expect(documentExistsAfter(emitted)).toBe(false)
+})
+
 function snapshot(revision: string | null): InitialSnapshotEvent {
   return {
     type: 'snapshot',

@@ -52,6 +52,5 @@ export function creationEvent({
     transition: 'appear',
     messageReceivedAt,
   })
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the listener omits `previousRev` here
   return event as MutationEvent
 }

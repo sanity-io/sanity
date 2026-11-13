@@ -8,7 +8,7 @@ export interface MutationEvent {
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
 
-  previousRev: string
+  previousRev?: string
   resultRev: string
   transactionTotalEvents: number
   transactionCurrentEvent: number
