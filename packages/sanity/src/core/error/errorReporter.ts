@@ -8,6 +8,9 @@ import {getSentryErrorReporter} from './sentry/sentryErrorReporter'
 export interface ErrorInfo {
   reactErrorInfo?: ReactErrorInfo
   errorBoundary?: string
+  /** Whether Studio recovered from the error. Defaults to `false` */
+  handled?: boolean
+  tags?: Record<string, string | number | undefined>
 }
 
 /**

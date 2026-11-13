@@ -719,6 +719,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating that the revision was not found */
   'document-status.revision-not-found': 'Revision not found',
 
+  /** Button in the rejected-save toast that copies the text the user lost to the clipboard */
+  'document-store.save-rejected.copy-discarded-text': 'Copy discarded text',
+  /** Toast description shown when the server rejected a save and the document was fetched again */
+  'document-store.save-rejected.description': '“{{documentTitle}}” has been reloaded.',
+  /** Toast title shown when the server rejected a save and the unsaved changes were dropped */
+  'document-store.save-rejected.title': "Your latest changes couldn't be saved and were discarded.",
+
   /** Toast description shown when saving changes is taking longer than expected */
   'document-store.slow-commit.description': 'Your changes are still being saved.',
   /** Toast title shown when saving changes is taking longer than expected */

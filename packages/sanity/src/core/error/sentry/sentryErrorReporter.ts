@@ -160,7 +160,7 @@ export function getSentryErrorReporter(): ErrorReporter {
       return null
     }
 
-    const {reactErrorInfo = {}, errorBoundary} = options
+    const {reactErrorInfo = {}, errorBoundary, handled = false, tags: extraTags = {}} = options
     const {componentStack} = reactErrorInfo
 
     // Decorate the error report with relevant context and tags
@@ -170,7 +170,8 @@ export function getSentryErrorReporter(): ErrorReporter {
     }
 
     const tags: {[key: string]: number | string | boolean | null | undefined} = {
-      handled: 'no',
+      ...extraTags,
+      handled: handled ? 'yes' : 'no',
     }
 
     if (errorBoundary) {
@@ -189,7 +190,7 @@ export function getSentryErrorReporter(): ErrorReporter {
       }
 
       eventId = captureException(error, {
-        mechanism: {handled: false},
+        mechanism: {handled},
         captureContext: {contexts, tags},
       })
     })

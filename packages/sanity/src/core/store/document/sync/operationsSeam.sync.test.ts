@@ -108,14 +108,12 @@ describe('editOperations and editState, two clients', () => {
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
   })
 
-  // Cancelling the first save rejects the queued save's promise, and nothing in Studio handles it.
-  test.fails('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE: a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
+  test('OPS-REJECTED-SAVE-WITH-QUEUED-SAVE: a terminal rejection with a save queued behind it raises no unhandled rejection', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'OPS-REJECTED-SAVE-WITH-QUEUED-SAVE',
       title: 'A holds a save, queues a second behind it, and the server answers 403 to the first',
       seam: 'operations',
       evidence: 'L2',
-      knownBug: 'B1',
       initial: [document(PUBLISHED_ID, 'Published'), document(DRAFT_ID, 'Draft')],
       idPair,
       clients: ['A'],

@@ -96,9 +96,8 @@ describe('commit failures', () => {
     expect(world.clients.A.localDocument(DRAFT_ID)?.title).toBe('seed')
   })
 
-  // The edit typed during the rejected save is rebased onto the last confirmed copy, so the screen shows "Hellold" and the document never becomes consistent again.
-  test.fails('CMT-REJECT-403-TYPING: a terminal rejection while typing drops the typing and shows what the server holds', async () => {
-    const definition = {...rejectedCommit(PERMISSION_REVOKED, REALISTIC_TYPING), knownBug: 'B1'}
+  test('CMT-REJECT-403-TYPING: a terminal rejection while typing drops the typing and shows what the server holds', async () => {
+    const definition = rejectedCommit(PERMISSION_REVOKED, REALISTIC_TYPING)
     world = await createWorld(definition)
     // Checked before settling, so the failure shows what the user sees rather than only that the world never settled.
     await runSteps(world, definition.steps)
@@ -113,15 +112,13 @@ describe('commit failures', () => {
     expect(world.lake.transactions).toHaveLength(0)
   })
 
-  // The reset goes back to the last confirmed copy, which lacks A's accepted save and the outside edit until their held events arrive.
-  test.fails('CMT-REJECT-403-REFETCHES: a terminal rejection refetches the document, including an accepted save whose echo has not arrived', async () => {
+  test('CMT-REJECT-403-REFETCHES: a terminal rejection refetches the document, including an accepted save whose echo has not arrived', async () => {
     const definition: SyncTestDefinition = {
       id: 'CMT-REJECT-403-REFETCHES',
       title:
         'A saves "one", B edits from outside, both echoes are held, then A types again and the server answers 403',
       seam: 'pair',
       evidence: 'L2',
-      knownBug: 'B2',
       initial: [initial],
       idPair,
       clients: ['A'],

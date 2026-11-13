@@ -7,7 +7,7 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {combineLatest, defer, EMPTY, from, merge, Observable, of, timer} from 'rxjs'
+import {combineLatest, defer, EMPTY, from, merge, Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -25,7 +25,8 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
-import {isInvalidSessionError} from '../../../util/apiErrors'
+import {errorReporter} from '../../../error/errorReporter'
+import {getStatusCode, isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {isRecord} from '../../../util/isRecord'
@@ -61,6 +62,7 @@ import {
   type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
+import {getDiscardedText} from './getDiscardedText'
 import {getShardInfo$} from './getShardInfo'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
@@ -313,17 +315,6 @@ type CommitAttemptResult =
   | {type: 'failure'; error: unknown}
   | {type: 'cancel'; error: unknown}
 
-// `error` can be any thrown value — guard before using `in`, which throws on
-// primitives.
-function getStatusCode(error: unknown): number | undefined {
-  return typeof error === 'object' &&
-    error !== null &&
-    'statusCode' in error &&
-    typeof error.statusCode === 'number'
-    ? error.statusCode
-    : undefined
-}
-
 /**
  * The error type from an API error response body
  * (`{error: {type: 'documentRevisionIDDoesNotMatchError', …}}`), if present.
@@ -441,6 +432,7 @@ export function checkoutPair(
     onReportMutationPerformance,
     onDocumentRebase,
     onCommitCancelled,
+    onSaveRejected,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
     snapshotFetchErrorHandler,
@@ -455,19 +447,26 @@ export function checkoutPair(
     published.hasPendingMutations() ||
     Boolean(version?.hasPendingMutations())
 
-  const listenerEvents$ = getPairListener(client, idPair, {
-    onSyncErrorRecovery: onSyncErrorRecovery
-      ? (error) => {
-          try {
-            onSyncErrorRecovery(error, {hadPendingMutations: hasPendingMutations()})
-          } catch {
-            // Telemetry callbacks must never kill the document pipeline
+  const resyncRequests = new Subject<void>()
+
+  const listenerEvents$ = getPairListener(
+    client,
+    idPair,
+    {
+      onSyncErrorRecovery: onSyncErrorRecovery
+        ? (error) => {
+            try {
+              onSyncErrorRecovery(error, {hadPendingMutations: hasPendingMutations()})
+            } catch {
+              // Telemetry callbacks must never kill the document pipeline
+            }
           }
-        }
-      : undefined,
-    tag,
-    snapshotFetchErrorHandler,
-  }).pipe(share())
+        : undefined,
+      tag,
+      snapshotFetchErrorHandler,
+    },
+    resyncRequests,
+  ).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),
@@ -551,9 +550,17 @@ export function checkoutPair(
     beforeCancel: (request, error, statusCode) => {
       const owner = request.owner ?? unownedRequests
       endCommitRetries(owner, 'cancelled', statusCode)
-      if (!onCommitCancelled) return
+      const errorType = getResponseErrorType(error)
       try {
-        onCommitCancelled({statusCode, errorType: getResponseErrorType(error)})
+        errorReporter.reportError(error instanceof Error ? error : new Error(String(error)), {
+          handled: true,
+          tags: {statusCode, errorType},
+        })
+      } catch {
+        // Error reporting must never kill the document pipeline
+      }
+      try {
+        onCommitCancelled?.({statusCode, errorType})
       } catch {
         // Telemetry callbacks must never kill the document pipeline
       }
@@ -704,6 +711,27 @@ export function checkoutPair(
       )
     : EMPTY
 
+  // HEAD can lack accepted saves and buffered remote edits, so refetch
+  const saveRejectedEvents$ = merge(
+    draft.saveRejected$,
+    published.saveRejected$,
+    version ? version.saveRejected$ : EMPTY,
+  ).pipe(
+    tap((event) => {
+      try {
+        onSaveRejected?.({
+          documentId: publishedId,
+          document: event.discardedDocument,
+          statusCode: getStatusCode(event.error),
+          discardedText: getDiscardedText(event.discardedDocument, event.restoredDocument),
+        })
+      } catch {
+        // Telemetry callbacks must never kill the document pipeline
+      }
+      resyncRequests.next()
+    }),
+  )
+
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
     merge(
@@ -721,6 +749,7 @@ export function checkoutPair(
       commitError$,
       commitRetriesEvents$,
       pendingMutationsAtTeardown$,
+      saveRejectedEvents$,
     ),
   ).pipe(
     mergeMap(() => EMPTY),
