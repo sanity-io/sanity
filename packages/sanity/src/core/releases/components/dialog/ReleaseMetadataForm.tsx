@@ -9,6 +9,7 @@ import {
 } from '@sanity/types'
 import {validateItem} from '@sanity/validation/_internal'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -16,6 +17,10 @@ import {ChangeIndicatorsTracker} from '../../../changeIndicators/tracker'
 import {SuppressFormRowGutter} from '../../../form/components/layout/FormRow'
 import {createPatchChannel} from '../../../form/patch/PatchChannel'
 import {useFormState} from '../../../form/store/useFormState'
+import {
+  type EditReferenceLinkComponentProps,
+  ReferenceInputOptionsProvider,
+} from '../../../form/studio/contexts/ReferenceInputOptions'
 import {FormBuilder} from '../../../form/studio/FormBuilder'
 import {type FormDocumentValue} from '../../../form/types/formDocumentValue'
 import {
@@ -25,6 +30,7 @@ import {
 } from '../../../form/useFormBuilderState'
 import {useClient} from '../../../hooks/useClient'
 import {useSchema} from '../../../hooks/useSchema'
+import {PerspectiveProvider} from '../../../perspective/PerspectiveProvider'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
@@ -44,6 +50,8 @@ import {
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
 import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {weakenReleaseMetadataReferences} from '../../metadata/weakenReleaseMetadataReferences'
+import {PUBLISHED} from '../../util/const'
 
 const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
@@ -95,6 +103,28 @@ function sameConfiguredFields(
     if (!fieldNames.includes(key)) return false
   }
   return true
+}
+
+function NewTabReferenceLink(props: EditReferenceLinkComponentProps) {
+  const {
+    documentId,
+    documentType,
+    parentRefPath: _parentRefPath,
+    template: _template,
+    children,
+    ...rest
+  } = props
+  return (
+    <IntentLink
+      {...rest}
+      intent="edit"
+      params={{id: documentId, type: documentType}}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+    </IntentLink>
+  )
 }
 
 function isSeedableInitialValue(value: unknown): boolean {
@@ -207,8 +237,8 @@ function ReleaseMetadataFieldsForm(
       changed = true
     }
     if (!changed) return
-    onChange(asReleaseMetadata(next))
-  }, [commitInitialValues, initialValues, metadata, onChange, seedNames])
+    onChange(asReleaseMetadata(weakenReleaseMetadataReferences(next, compiled.schemaType)))
+  }, [commitInitialValues, compiled.schemaType, initialValues, metadata, onChange, seedNames])
 
   useEffect(() => {
     const id = ++requestId.current
@@ -268,7 +298,10 @@ function ReleaseMetadataFieldsForm(
 
   const handleChange = useFormPatchHandler(formValue, (next) => {
     if (!isRecord(next)) return
-    const merged = mergeReleaseMetadata(metadata, next, fieldNames)
+    const merged = weakenReleaseMetadataReferences(
+      mergeReleaseMetadata(metadata, next, fieldNames),
+      compiled.schemaType,
+    )
     for (const name of fieldNames) {
       if (metadata[name] !== merged[name]) seedNames.delete(name)
     }
@@ -300,33 +333,40 @@ function ReleaseMetadataFieldsForm(
     <ChangeIndicatorsTracker>
       <SuppressFormRowGutter>
         <MetadataFormAlign data-testid="release-metadata-form-align">
-          <FormBuilder
-            __internal_patchChannel={patchChannel}
-            id="root"
-            onChange={handleChange}
-            onPathFocus={builderState.onPathFocus}
-            onPathBlur={builderState.onPathBlur}
-            onPathOpen={builderState.onPathOpen}
-            onFieldGroupSelect={builderState.onFieldGroupSelect}
-            onSetFieldSetCollapsed={builderState.onSetFieldSetCollapsed}
-            onSetPathCollapsed={builderState.onSetPathCollapsed}
-            collapsedPaths={builderState.collapsedPaths}
-            collapsedFieldSets={builderState.collapsedFieldSets}
-            changed={false}
-            focusPath={formState.focusPath}
-            focused={formState.focused}
-            groups={formState.groups}
-            validation={markers}
-            members={formState.members}
-            presence={EMPTY_ARRAY}
-            schemaType={compiled.schemaType}
-            value={formValue}
-            openPath={builderState.openPath}
-            readOnly={readOnly}
-            hasUpstreamVersion={false}
-            hasBaseVariant={false}
-            changesOpen={false}
-          />
+          <PerspectiveProvider selectedPerspectiveName={PUBLISHED}>
+            <ReferenceInputOptionsProvider
+              disableNew
+              EditReferenceLinkComponent={NewTabReferenceLink}
+            >
+              <FormBuilder
+                __internal_patchChannel={patchChannel}
+                id="root"
+                onChange={handleChange}
+                onPathFocus={builderState.onPathFocus}
+                onPathBlur={builderState.onPathBlur}
+                onPathOpen={builderState.onPathOpen}
+                onFieldGroupSelect={builderState.onFieldGroupSelect}
+                onSetFieldSetCollapsed={builderState.onSetFieldSetCollapsed}
+                onSetPathCollapsed={builderState.onSetPathCollapsed}
+                collapsedPaths={builderState.collapsedPaths}
+                collapsedFieldSets={builderState.collapsedFieldSets}
+                changed={false}
+                focusPath={formState.focusPath}
+                focused={formState.focused}
+                groups={formState.groups}
+                validation={markers}
+                members={formState.members}
+                presence={EMPTY_ARRAY}
+                schemaType={compiled.schemaType}
+                value={formValue}
+                openPath={builderState.openPath}
+                readOnly={readOnly}
+                hasUpstreamVersion={false}
+                hasBaseVariant={false}
+                changesOpen={false}
+              />
+            </ReferenceInputOptionsProvider>
+          </PerspectiveProvider>
         </MetadataFormAlign>
       </SuppressFormRowGutter>
     </ChangeIndicatorsTracker>

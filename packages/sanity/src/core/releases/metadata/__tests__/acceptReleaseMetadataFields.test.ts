@@ -20,6 +20,13 @@ function parentSchema() {
       }),
       defineType({name: 'reviewStatus', type: 'string'}),
       defineType({name: 'heroImage', type: 'image'}),
+      defineType({name: 'authorRef', type: 'reference', to: [{type: 'author'}]}),
+      defineType({name: 'weakAuthorRef', type: 'reference', weak: true, to: [{type: 'author'}]}),
+      defineType({
+        name: 'strongSignOff',
+        type: 'object',
+        fields: [defineField({name: 'owner', type: 'reference', to: [{type: 'author'}]})],
+      }),
     ],
   })
 }
@@ -61,14 +68,6 @@ describe('acceptReleaseMetadataFields', () => {
   })
 
   it.each([
-    {
-      name: 'reference',
-      field: defineField({
-        name: 'related',
-        type: 'reference',
-        to: [{type: 'author'}],
-      }),
-    },
     {
       name: 'crossDatasetReference',
       field: defineField({
@@ -116,6 +115,87 @@ describe('acceptReleaseMetadataFields', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "missing"'))
   })
 
+  describe('reference fields', () => {
+    const related = defineField({name: 'related', type: 'reference', to: [{type: 'author'}]})
+
+    it('accepts a reference and forces it weak without warning', () => {
+      expect(findAcceptedField([related], 'related')).toMatchObject({type: 'reference', weak: true})
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('does not mutate the configured definition', () => {
+      acceptedNames([related])
+      expect(related).not.toHaveProperty('weak')
+    })
+
+    it('forces weak and warns when the config sets weak: false', () => {
+      const strong = defineField({
+        name: 'related',
+        type: 'reference',
+        weak: false,
+        to: [{type: 'author'}],
+      })
+
+      expect(findAcceptedField([strong], 'related')).toMatchObject({weak: true})
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('"related"'))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('weak: false is not supported'))
+    })
+
+    it('keeps an alias that resolves to a weak reference', () => {
+      expect(acceptedNames([defineField({name: 'related', type: 'weakAuthorRef'})])).toEqual([
+        'note',
+        'related',
+      ])
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('drops an alias that resolves to a reference that is not weak', () => {
+      expect(acceptedNames([defineField({name: 'related', type: 'authorRef'})])).toEqual(['note'])
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "related"'))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('must set weak: true on the type'))
+    })
+
+    it('forces weak on a reference inside an inline object', () => {
+      const signOff = defineField({
+        name: 'signOff',
+        type: 'object',
+        fields: [defineField({name: 'owner', type: 'reference', to: [{type: 'author'}]})],
+      })
+
+      const accepted = findAcceptedField([signOff], 'signOff')
+      expect(accepted.fields).toEqual([expect.objectContaining({name: 'owner', weak: true})])
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('drops a named object that holds a reference that is not weak', () => {
+      expect(acceptedNames([defineField({name: 'signOff', type: 'strongSignOff'})])).toEqual([
+        'note',
+      ])
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "signOff"'))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('must set weak: true on the type'))
+    })
+
+    it('keeps initialValue on a reference without warning', () => {
+      const initialValue = {_type: 'reference', _ref: 'author-1'}
+      const seeded = defineField({
+        name: 'related',
+        type: 'reference',
+        to: [{type: 'author'}],
+        initialValue,
+      })
+
+      expect(findAcceptedField([seeded], 'related')).toMatchObject({weak: true, initialValue})
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('compiles the weak reference into a weak schema type', () => {
+      const accepted = acceptReleaseMetadataFields([related], parentSchema())
+      const compiled = compileReleaseMetadataSchema(accepted, parentSchema())
+
+      expect(compiled?.schemaType.fields[0]?.type).toMatchObject({name: 'reference', weak: true})
+    })
+  })
+
   it('drops an unsupported field inside an object and keeps the object', () => {
     const accepted = acceptReleaseMetadataFields(
       [
@@ -139,6 +219,13 @@ describe('acceptReleaseMetadataFields', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "signOff.picture"'))
   })
 })
+
+function findAcceptedField(fields: FieldDefinition[], name: string): Record<string, unknown> {
+  const accepted = acceptReleaseMetadataFields(fields, parentSchema()).find(
+    (field) => field.name === name,
+  )
+  return {...accepted}
+}
 
 function isObjectField(
   field: FieldDefinition,

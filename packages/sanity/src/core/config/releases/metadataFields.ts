@@ -35,6 +35,11 @@ export function warnRejectedReleaseMetadataField(name: string, reason: string): 
   console.warn(`[releases.metadata.fields] Dropped field "${name}": ${reason}`)
 }
 
+export function warnAdjustedReleaseMetadataField(name: string, reason: string): void {
+  if (process.env.NODE_ENV === 'production') return
+  console.warn(`[releases.metadata.fields] Adjusted field "${name}": ${reason}`)
+}
+
 function rejectionForDefinition(value: unknown): {name: string; reason: string} | undefined {
   if (isFieldDefinition(value)) return undefined
   if (!isRecord(value) || typeof value.name !== 'string') {
