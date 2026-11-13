@@ -71,6 +71,7 @@ import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
+import {useCreateVariantRequest} from './CreateVariant/useCreateVariantRequest'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
@@ -118,6 +119,18 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * Pane-coupled presentational components injected by the consumer.
    */
   components: DocumentGroupInventoryComponents
+  /**
+   * A variant to create: when set, the inventory opens its Create variant form with Variant set
+   * to this variant id (Add to and Start from keep their own defaults: the current perspective and
+   * the nearest version), and focus goes to the form's Create button. The structure tool sets it
+   * from the document pane's `createVariant` param.
+   */
+  createVariantId?: string
+  /**
+   * Called once the form that `createVariantId` opened closes, by creating the variant or by
+   * cancelling, or straight away when the form cannot open. The consumer clears its request here.
+   */
+  onCreateVariantClose?: () => void
 }
 
 /**
@@ -159,6 +172,8 @@ export function DocumentGroupInventory(
   const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
   const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
   const components = props.mode === 'readOnly' ? undefined : props.components
+  const createVariantId = props.mode === 'readOnly' ? undefined : props.createVariantId
+  const onCreateVariantClose = props.mode === 'readOnly' ? undefined : props.onCreateVariantClose
 
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
@@ -358,6 +373,15 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
+  const isCreateVariantOpen = isVariantCreationActive || isVariantCreationPending
+
+  useCreateVariantRequest({
+    variantCreationRef,
+    variantId: createVariantId,
+    isOpen: isCreateVariantOpen,
+    onClose: onCreateVariantClose,
+  })
+
   const titleDocument = useMemo(
     () => ({_id: documentId, _type: documentType}),
     [documentId, documentType],
@@ -368,8 +392,9 @@ export function DocumentGroupInventory(
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
-        {isVariantCreationActive || isVariantCreationPending ? (
+        {isCreateVariantOpen ? (
           <CreateVariant
+            focusCreate={typeof createVariantId !== 'undefined'}
             variantCreationRef={variantCreationRef}
             sets={sets}
             documentTitle={components && <components.DocTitle document={titleDocument} />}
