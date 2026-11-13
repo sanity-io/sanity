@@ -3,6 +3,9 @@ import {defineConfig, definePlugin} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
+// Review build only: the UI 5 selected blue from #16035 applied to this studio's own theme (#16035 changes Studio's
+// default theme, which a custom theme like this one doesn't use). Not part of any PR.
+import {applyUi5SelectedColors} from '../../packages/sanity/src/core/theme/ui5SelectedColors'
 // OPEN-BETA PREVIEW (11 Nov): this copy runs on the open-beta preview branch (main + today's PRs), not on the Handoff branch. The Handoff-only
 // layers are switched off so the Studio shows what main + the PRs ship: the layout (options/FloatingOptions.tsx) and the navbar
 // (c1/NavbarWithVariants.tsx) need core seams this code does not have (DocumentPaneExtensionProvider, VariantBannerReplacedProvider,
@@ -164,7 +167,7 @@ export default defineConfig({
     }),
     variantsHandoffOptions(),
   ],
-  theme: primaryButtonTheme,
+  theme: applyUi5SelectedColors(primaryButtonTheme),
   schema: {types: schemaTypesFor(dataset)},
   scheduledDrafts: {enabled: true},
   // The Variants flag is ON: today's open-beta baseline (the shipped Variants tool, variant UI in the Studio). The
