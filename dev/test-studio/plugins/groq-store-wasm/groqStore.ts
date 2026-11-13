@@ -141,17 +141,33 @@ function isLastRun(value: unknown): value is LastRun {
   )
 }
 
-function storedLastRun(): LastRun | undefined {
+/** Per-store breadcrumbs. Accepts the older single-record shape too. */
+function storedLastRuns(): Record<string, LastRun> {
   try {
     const value: unknown = JSON.parse(readStorage('localStorage', LAST_RUN_KEY) ?? 'null')
-    return isLastRun(value) ? value : undefined
+    if (isLastRun(value)) return {[value.key]: value}
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return {}
+    const runs: Record<string, LastRun> = {}
+    for (const entry of Object.values(value)) {
+      if (isLastRun(entry)) runs[entry.key] = entry
+    }
+    return runs
   } catch {
-    return undefined
+    return {}
   }
 }
 
+/** The most recent non-live, non-guarded run — what the bar shows after a crash. */
+function lastStoppedFrom(runs: Record<string, LastRun>): LastRun | undefined {
+  let chosen: LastRun | undefined
+  for (const run of Object.values(runs)) {
+    if (run.phase === 'live' || run.phase === 'guarded') continue
+    if (chosen === undefined || run.at > chosen.at) chosen = run
+  }
+  return chosen
+}
+
 const mode = initialMode()
-const previousRun = storedLastRun()
 
 let status: GroqStoreStatus = {
   boot: {started: false, reason: mode.enabled ? 'not started' : mode.reason},
@@ -166,10 +182,7 @@ let status: GroqStoreStatus = {
   routed: {},
   exportBytes: {},
   guardOff: initialGuardOff(),
-  lastStopped:
-    previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
-      ? previousRun
-      : undefined,
+  lastStopped: lastStoppedFrom(storedLastRuns()),
   mutations: {applied: 0, stale: 0},
   fences: {count: 0, lifted: 0, ms: 0, how: {}},
   latency: {count: 0, p50: 0, p95: 0},
@@ -231,12 +244,20 @@ function route(store: string | undefined, outcome: 'answered' | 'passthrough') {
 
 function onMetric(metric: Metric): void {
   if (metric.type === 'stores') {
-    update({
-      stores: {
-        ...status.stores,
-        [metric.host]: Object.fromEntries(metric.stores.map((store) => [store.key, store])),
-      },
-    })
+    const stores: Record<string, Record<string, StoreSummary>> = {
+      ...status.stores,
+      [metric.host]: Object.fromEntries(metric.stores.map((store) => [store.key, store])),
+    }
+    // Host keys are `name#id`. A restart (trap, crash, new SharedWorker) arrives under a
+    // new id; drop prior instances of the same SharedWorker name so the bar has no ghosts.
+    const sep = metric.host.lastIndexOf('#')
+    if (sep !== -1) {
+      const namePrefix = metric.host.slice(0, sep + 1)
+      for (const host of Object.keys(stores)) {
+        if (host !== metric.host && host.startsWith(namePrefix)) delete stores[host]
+      }
+    }
+    update({stores})
     return
   }
   if (metric.type === 'route') {
@@ -323,24 +344,28 @@ function onMetric(metric: Metric): void {
   }
 }
 
-let lastPersistedAt = 0
-/** Keeps the last store phase across a crashed tab, so the bar can say how far it got. */
+const lastPersistedAt: Record<string, number> = {}
+/** Keeps each store's last phase across a crashed tab, so the bar can say how far it got. */
 function persist(metric: Extract<Metric, {type: 'store'}>, phase: string): void {
   const now = Date.now()
-  if (metric.event === 'progress' && now - lastPersistedAt < 500) return
-  lastPersistedAt = now
-  const previous = storedLastRun()
-  const key = metric.key === '*' && previous ? previous.key : metric.key
-  const sameRun = previous?.key === key
-  const run: LastRun = {
-    key,
-    phase,
-    exportBytes: metric.exportBytes ?? (sameRun ? previous?.exportBytes : undefined),
-    memoryBytes: metric.memoryBytes ?? (sameRun ? previous?.memoryBytes : undefined),
-    documents: metric.documents ?? (sameRun ? previous?.documents : undefined),
-    at: now,
+  const runs = storedLastRuns()
+  // Host-wide events (`*`) stamp every known store; otherwise update only that key.
+  const keys =
+    metric.key === '*' ? (Object.keys(runs).length > 0 ? Object.keys(runs) : ['*']) : [metric.key]
+  for (const key of keys) {
+    if (metric.event === 'progress' && now - (lastPersistedAt[key] ?? 0) < 500) continue
+    lastPersistedAt[key] = now
+    const previous = runs[key]
+    runs[key] = {
+      key,
+      phase,
+      exportBytes: metric.exportBytes ?? previous?.exportBytes,
+      memoryBytes: metric.memoryBytes ?? previous?.memoryBytes,
+      documents: metric.documents ?? previous?.documents,
+      at: now,
+    }
   }
-  writeStorage('localStorage', LAST_RUN_KEY, JSON.stringify(run))
+  writeStorage('localStorage', LAST_RUN_KEY, JSON.stringify(runs))
 }
 
 const QUERY_PATH = /^\/v[^/]+\/data\/query\//
