@@ -4,14 +4,17 @@ import {
   type ReconnectEvent,
   type WelcomeEvent,
 } from '@sanity/client'
-import {Observable, Subject} from 'rxjs'
+import {Observable, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {LISTENER_RESET_DELAY} from '../../preview/constants'
+import {mutation, task} from './__fixtures__/addonDataset.fixture'
 import {
   type AddonDatasetDocument,
   type AddonDatasetListenerEvent,
+  type AddonDatasetQueryEvent,
   createAddonDatasetListenerStore,
+  listenAddonDatasetQuery,
 } from './createAddonDatasetListenerStore'
 
 const WELCOME: WelcomeEvent = {type: 'welcome', listenerName: 'test'}
@@ -138,5 +141,60 @@ describe('createAddonDatasetListenerStore', () => {
 
     vi.advanceTimersByTime(LISTENER_RESET_DELAY)
     expect(connections.open).toBe(0)
+  })
+})
+
+describe('listenAddonDatasetQuery', () => {
+  const LOADING = {type: 'loading'}
+
+  it('fetches on every connection, and cancels a fetch still in flight when the listener reconnects', () => {
+    const {store, server} = setup()
+    const response = new Subject<string[]>()
+    const fetches = {started: 0, open: 0}
+    const fetch = new Observable<string[]>((subscriber) => {
+      fetches.started += 1
+      fetches.open += 1
+      const subscription = response.subscribe(subscriber)
+      return () => {
+        fetches.open -= 1
+        subscription.unsubscribe()
+      }
+    })
+    const events: AddonDatasetQueryEvent<string>[] = []
+    const subscription = listenAddonDatasetQuery(store, fetch).subscribe((event) =>
+      events.push(event),
+    )
+
+    server.next(WELCOME)
+    expect(events).toEqual([LOADING])
+    expect(fetches.open).toBe(1)
+
+    server.next(RECONNECT)
+    expect(fetches.open).toBe(0)
+
+    server.next(WELCOME)
+    response.next(['a'])
+    expect(fetches.started).toBe(2)
+    expect(events).toEqual([LOADING, LOADING, LOADING, {type: 'loaded', documents: ['a']}])
+
+    subscription.unsubscribe()
+  })
+
+  it('reports a failed fetch, and keeps passing on mutations', () => {
+    const {store, server} = setup()
+    const error = new Error('fetch failed')
+    const events: AddonDatasetQueryEvent<string>[] = []
+    const subscription = listenAddonDatasetQuery<string>(
+      store,
+      throwError(() => error),
+    ).subscribe((event) => events.push(event))
+
+    const appear = mutation('appear', 't-1', task('t-1'))
+    server.next(WELCOME)
+    server.next(appear)
+
+    expect(events).toEqual([LOADING, {type: 'error', error}, appear])
+
+    subscription.unsubscribe()
   })
 })

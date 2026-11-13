@@ -1,31 +1,15 @@
-import {
-  type MutationEvent,
-  type ReconnectEvent,
-  type SanityClient,
-  type WelcomeEvent,
-} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable, useObservableSubject} from 'react-rx'
-import {
-  catchError,
-  connect,
-  distinctUntilChanged,
-  filter,
-  map,
-  merge,
-  type Observable,
-  of,
-  scan,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs'
+import {distinctUntilChanged, filter, map, merge, type Observable, of, scan, tap} from 'rxjs'
 
 import {type ReleaseId} from '../../perspective/types'
 import {
   type AddonDatasetDocument,
-  type AddonDatasetListenerEvent,
   type AddonDatasetListenerStore,
+  type AddonDatasetQueryEvent,
+  type AddonDatasetQueryStatusEvent,
+  listenAddonDatasetQuery,
 } from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
@@ -55,11 +39,10 @@ interface CommentsStoreState extends CommentsReducerState {
   error: Error | null
 }
 
-type CommentsStoreAction = CommentsReducerAction | {type: 'LOADING'} | {type: 'ERROR'; error: Error}
+type CommentsStoreAction = CommentsReducerAction | AddonDatasetQueryStatusEvent
 
 const LOADING_STATE: CommentsStoreState = {comments: {}, loading: true, error: null}
 const IDLE_STATE: CommentsStoreState = {comments: {}, loading: false, error: null}
-const LOADING: CommentsStoreAction = {type: 'LOADING'}
 
 const SORT_FIELD = '_createdAt'
 
@@ -111,20 +94,8 @@ function isCommentInQuery(document: AddonDatasetDocument, scope: CommentsQuerySc
     : document.target.documentVersionId === undefined
 }
 
-function isConnectionEvent(
-  event: AddonDatasetListenerEvent,
-): event is WelcomeEvent | ReconnectEvent {
-  return event.type === 'welcome' || event.type === 'reconnect'
-}
-
-function isMutationEvent(
-  event: AddonDatasetListenerEvent,
-): event is MutationEvent<AddonDatasetDocument> {
-  return event.type === 'mutation'
-}
-
-interface MutationOutcome {
-  action: CommentsReducerAction
+interface QueryEventOutcome {
+  action: CommentsStoreAction
   /**
    * The comment whose latest locally started transaction this event carries, if any
    */
@@ -139,7 +110,7 @@ function mutationToOutcome(
   event: MutationEvent<AddonDatasetDocument>,
   scope: CommentsQueryScope,
   transactionsIdMap: Map<DocumentId, TransactionId>,
-): MutationOutcome | null {
+): QueryEventOutcome | null {
   if (event.transition === 'disappear') {
     return {
       action: {type: 'COMMENT_DELETED', id: event.documentId},
@@ -182,6 +153,33 @@ function mutationToOutcome(
 }
 
 /**
+ * The store action for an event of the comments query, or `null` when it does not concern the
+ * store.
+ */
+function queryEventToOutcome(
+  event: AddonDatasetQueryEvent<CommentDocument>,
+  scope: CommentsQueryScope,
+  transactionsIdMap: Map<DocumentId, TransactionId>,
+): QueryEventOutcome | null {
+  switch (event.type) {
+    case 'loading':
+    case 'error':
+      return {action: event, latestTransactionReceivedFor: null}
+    case 'loaded':
+      return {
+        action: {type: 'COMMENTS_SET', comments: event.documents},
+        latestTransactionReceivedFor: null,
+      }
+    case 'mutation':
+      return mutationToOutcome(event, scope, transactionsIdMap)
+    default: {
+      const unhandled: never = event
+      return unhandled
+    }
+  }
+}
+
+/**
  * Applies `commentsReducer` to the comments, and returns `state` itself when nothing changed so
  * the consumers' data keeps its identity.
  */
@@ -190,9 +188,9 @@ function commentsStoreReducer(
   action: CommentsStoreAction,
 ): CommentsStoreState {
   switch (action.type) {
-    case 'LOADING':
+    case 'loading':
       return state.loading ? state : {...state, loading: true}
-    case 'ERROR':
+    case 'error':
       return {...state, error: action.error, loading: false}
     case 'COMMENTS_SET':
       return {...state, comments: commentsReducer(state, action).comments, loading: false}
@@ -237,38 +235,17 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       ...(releaseId ? {documentVersionId: releaseId} : {}),
     }
 
-    const remoteActions$: Observable<CommentsStoreAction> = listenerStore.events.pipe(
-      connect((events$) =>
-        merge(
-          // Fetch every comment on each connection. A reconnect, or the welcome after it,
-          // cancels a fetch still in flight.
-          events$.pipe(
-            filter(isConnectionEvent),
-            switchMap((event) =>
-              event.type === 'reconnect'
-                ? of(LOADING)
-                : client.observable.fetch<CommentDocument[]>(query, params).pipe(
-                    map((comments): CommentsStoreAction => ({type: 'COMMENTS_SET', comments})),
-                    catchError((error) => of<CommentsStoreAction>({type: 'ERROR', error})),
-                    startWith(LOADING),
-                  ),
-            ),
-          ),
-          events$.pipe(
-            filter(isMutationEvent),
-            map((event) => mutationToOutcome(event, scope, transactionsIdMap)),
-            filter((outcome) => outcome !== null),
-            tap(({latestTransactionReceivedFor}) => {
-              // Let the consumer know that the latest transaction it started has been received
-              if (latestTransactionReceivedFor) {
-                onLatestTransactionIdReceived(latestTransactionReceivedFor)
-              }
-            }),
-            map(({action}) => action),
-          ),
-        ),
-      ),
-      catchError((error) => of<CommentsStoreAction>({type: 'ERROR', error})),
+    const fetchComments = client.observable.fetch<CommentDocument[]>(query, params)
+    const remoteActions$ = listenAddonDatasetQuery(listenerStore, fetchComments).pipe(
+      map((event) => queryEventToOutcome(event, scope, transactionsIdMap)),
+      filter((outcome) => outcome !== null),
+      tap(({latestTransactionReceivedFor}) => {
+        // Let the consumer know that the latest transaction it started has been received
+        if (latestTransactionReceivedFor) {
+          onLatestTransactionIdReceived(latestTransactionReceivedFor)
+        }
+      }),
+      map(({action}) => action),
     )
 
     return merge(remoteActions$, localActions$).pipe(

@@ -118,7 +118,6 @@ export function createAddonDatasetTestClient(documents: {
       ),
     )
   }
-  const fetch = vi.spyOn(client, 'fetch').mockImplementation(fakeFetch as SanityClient['fetch'])
   const observableFetch = vi
     .spyOn(client.observable, 'fetch')
     .mockImplementation(((
@@ -141,5 +140,5 @@ export function createAddonDatasetTestClient(documents: {
     )
   }
 
-  return {client, server, connections, fetch, observableFetch, wrapper}
+  return {client, server, connections, observableFetch, wrapper}
 }

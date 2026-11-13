@@ -5,8 +5,17 @@ import {
   type SanityClient,
   type WelcomeEvent,
 } from '@sanity/client'
-import {type Observable} from 'rxjs'
-import {filter} from 'rxjs/operators'
+import {
+  catchError,
+  connect,
+  filter,
+  map,
+  merge,
+  type Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs'
 
 import {type CommentDocument} from '../../comments/types'
 import {type TaskDocument} from '../../tasks/types'
@@ -71,4 +80,73 @@ export function createAddonDatasetListenerStore({
     )
 
   return {events}
+}
+
+/**
+ * The state of a query on the addon dataset, as {@link listenAddonDatasetQuery} reports it
+ *
+ * @internal
+ */
+export type AddonDatasetQueryEvent<TDocument> =
+  | {type: 'loading'}
+  | {type: 'loaded'; documents: TDocument[]}
+  | {type: 'error'; error: Error}
+  | MutationEvent<AddonDatasetDocument>
+
+/** @internal */
+export type AddonDatasetQueryStatusEvent = Extract<
+  AddonDatasetQueryEvent<never>,
+  {type: 'loading' | 'error'}
+>
+
+function isConnectionEvent(
+  event: AddonDatasetListenerEvent,
+): event is WelcomeEvent | ReconnectEvent {
+  return event.type === 'welcome' || event.type === 'reconnect'
+}
+
+function isMutationEvent(
+  event: AddonDatasetListenerEvent,
+): event is MutationEvent<AddonDatasetDocument> {
+  return event.type === 'mutation'
+}
+
+/**
+ * Follows a query on the addon dataset through the shared listener. On every connection it emits
+ * `loading`, then `loaded` with the documents `fetch` returns, and a reconnect cancels a fetch
+ * still in flight. Every mutation is passed on as it arrives, for every comment and task, and a
+ * failed fetch or listener emits `error`.
+ *
+ * @internal
+ */
+export function listenAddonDatasetQuery<TDocument>(
+  listenerStore: AddonDatasetListenerStore,
+  fetch: Observable<TDocument[]>,
+): Observable<AddonDatasetQueryEvent<TDocument>> {
+  const loading: AddonDatasetQueryEvent<TDocument> = {type: 'loading'}
+  const toError = (error: Error) => of<AddonDatasetQueryEvent<TDocument>>({type: 'error', error})
+
+  return listenerStore.events.pipe(
+    connect((events$) =>
+      merge(
+        events$.pipe(
+          filter(isConnectionEvent),
+          switchMap((event) =>
+            event.type === 'reconnect'
+              ? of(loading)
+              : fetch.pipe(
+                  map((documents): AddonDatasetQueryEvent<TDocument> => ({
+                    type: 'loaded',
+                    documents,
+                  })),
+                  catchError(toError),
+                  startWith(loading),
+                ),
+          ),
+        ),
+        events$.pipe(filter(isMutationEvent)),
+      ),
+    ),
+    catchError(toError),
+  )
 }
