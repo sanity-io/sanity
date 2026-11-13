@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
   type SystemVariant,
@@ -11,10 +11,12 @@ import {
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {
   DocumentNotInVariantBanner,
@@ -58,6 +60,7 @@ const mockUseRouter = useRouter as Mock<typeof useRouter>
 const createVariantDocument = vi.fn()
 const setPerspective = vi.fn()
 const navigateIntent = vi.fn()
+const setParams = vi.fn()
 
 const DOCUMENT_ID = 'article-1'
 const VARIANT_TITLE = 'Alpha audience'
@@ -177,12 +180,22 @@ async function expectBannerMessage(expected: string) {
 
 const CREATE_IN_DRAFTS: NotInVariantBannerCase = {kind: 'create', perspective: 'drafts'}
 
-async function renderBanner(bannerCase: NotInVariantBannerCase = CREATE_IN_DRAFTS) {
+async function renderBanner(
+  bannerCase: NotInVariantBannerCase = CREATE_IN_DRAFTS,
+  paneParams: Record<string, string> = {},
+) {
   const wrapper = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
   })
 
-  return render(<DocumentNotInVariantBanner bannerCase={bannerCase} />, {wrapper})
+  return render(
+    <PaneRouterContext.Provider
+      value={{params: paneParams, setParams} as unknown as PaneRouterContextValue}
+    >
+      <DocumentNotInVariantBanner bannerCase={bannerCase} />
+    </PaneRouterContext.Provider>,
+    {wrapper},
+  )
 }
 
 describe('DocumentNotInVariantBanner', () => {
@@ -231,7 +244,11 @@ describe('DocumentNotInVariantBanner', () => {
       await expectBannerMessage(
         'This document has no draft for the variant Alpha audience yet. Create one to start editing.',
       )
-      expect(screen.getByTestId('variant-banner-variant-chip').textContent).toBe(VARIANT_TITLE)
+      expect(
+        within(screen.getByTestId('document-not-in-variant-banner')).getByTestId(
+          'variant-banner-variant-chip',
+        ).textContent,
+      ).toBe(VARIANT_TITLE)
       expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
     })
 
@@ -562,6 +579,105 @@ describe('DocumentNotInVariantBanner', () => {
         screen.getByText('An error occurred when adding document to the variant: create failed'),
       ).toBeInTheDocument()
       expect(button).not.toBeDisabled()
+    })
+  })
+
+  describe('while the document inventory creates the variant', () => {
+    const CREATE_IN_RELEASE: NotInVariantBannerCase = {kind: 'create', perspective: 'release'}
+    const CREATING = {
+      inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+      [CREATE_VARIANT_PARAM]: variantAlphaAudience._id,
+    }
+
+    beforeEach(() => {
+      mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
+    })
+
+    it('states what is missing, drops Create variant and points to the form in the document inventory', async () => {
+      await renderBanner(CREATE_IN_RELEASE, CREATING)
+
+      await expectBannerMessage(
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Finish creating it in the document inventory.',
+      )
+      expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', {name: /document inventory/})).not.toBeInTheDocument()
+    })
+
+    it('drops the create action in Drafts too', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState('drafts', undefined))
+      await renderBanner(CREATE_IN_DRAFTS, CREATING)
+
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+      expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
+    })
+
+    it('with the inventory open, ends its sentence with a link into the inventory instead of the filled button', async () => {
+      await renderBanner(CREATE_IN_RELEASE, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME})
+
+      await expectBannerMessage(
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create it in the document inventory.',
+      )
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+      const link = screen.getByRole('button', {name: 'Create it in the document inventory.'})
+      expect(link.tagName).toBe('BUTTON')
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
+    })
+
+    it('the link opens the Create variant form for the variant, from the keyboard too', async () => {
+      const user = userEvent.setup()
+      const params = {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, view: 'editor'}
+      await renderBanner(CREATE_IN_RELEASE, params)
+
+      await user.tab()
+      expect(
+        screen.getByRole('button', {name: 'Create it in the document inventory.'}),
+      ).toHaveFocus()
+      await user.keyboard('{Enter}')
+
+      expect(setParams).toHaveBeenCalledTimes(1)
+      expect(setParams).toHaveBeenCalledWith({
+        ...params,
+        [CREATE_VARIANT_PARAM]: variantAlphaAudience._id,
+      })
+      expect(createVariantDocument).not.toHaveBeenCalled()
+    })
+
+    it('in Published, the link replaces the create in Drafts action', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState('published', 'published'))
+      await renderBanner({kind: 'create-in-drafts'}, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME})
+
+      await expectBannerMessage(
+        'This document has no published version for the variant Alpha audience yet. Create it in the document inventory.',
+      )
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
+    })
+
+    it('keeps the filled Create variant while the document inventory is closed, even with the param', async () => {
+      await renderBanner(CREATE_IN_RELEASE, {[CREATE_VARIANT_PARAM]: variantAlphaAudience._id})
+
+      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', {name: 'Create it in the document inventory.'}),
+      ).not.toBeInTheDocument()
+    })
+
+    it('keeps actions that do not create, such as Open release', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(scheduledRelease, 'rScheduled'))
+      await renderBanner({kind: 'locked-release'}, CREATING)
+
+      expect(screen.getByRole('button', {name: 'Open release'})).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', {name: 'Create it in the document inventory.'}),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
     })
   })
 })

@@ -17,7 +17,9 @@ import {
 } from 'sanity'
 import {Text} from 'ui5'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {Banner} from './Banner'
 
 // How long to wait after user hit the "Add to release"-button before displaying the "waiting…" toast
@@ -71,6 +73,11 @@ export function DocumentNotInReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
+  // While the document inventory is open, its Create variant is the view's one filled button, so
+  // Add to release steps down to a secondary (ghost) button. It still adds the document directly.
+  // Read from the pane's router params on every render, so the banner follows the inventory
+  // opening and closing while it is on screen.
+  const inventoryOpen = usePaneRouter().params?.inspect === DOCUMENT_GROUP_INSPECTOR_NAME
 
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
@@ -160,7 +167,7 @@ export function DocumentNotInReleaseBanner({
                 : t('banners.release.action.add-to-release'),
               disabled: Boolean(versionCreateState),
               onClick: handleAddToRelease,
-              mode: 'default',
+              mode: inventoryOpen ? 'ghost' : 'default',
             }
       }
     />

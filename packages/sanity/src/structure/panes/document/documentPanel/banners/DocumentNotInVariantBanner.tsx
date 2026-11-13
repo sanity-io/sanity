@@ -21,9 +21,12 @@ import {
 import {useRouter} from 'sanity/router'
 import {Text} from 'ui5'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+import {inlineAction} from './DocumentNotInVariantBanner.css'
 import {findVariantCreateBaseDocument} from './findVariantCreateBaseDocument'
 import {type VariantBannerCase} from './getVariantBannerCase'
 import {DraftsBadge, ReleaseBadge, VariantBadge} from './VariantBannerChips'
@@ -42,6 +45,19 @@ export type NotInVariantBannerCase = Extract<
 
 const chips = {VariantBadge, ReleaseBadge, DraftsBadge}
 
+/** The sentence of each create case without its instruction, for the link into the document inventory. */
+const STATEMENT_KEYS: Record<string, string> = {
+  'banners.variant.not-in-variant': 'banners.variant.statement.no-draft',
+  'banners.variant.not-in-variant-published': 'banners.variant.statement.no-published-version',
+  'banners.variant.not-in-variant-published-create-in-drafts':
+    'banners.variant.statement.no-published-version',
+  'banners.variant.not-in-variant-release': 'banners.variant.statement.no-release-version',
+  'banners.variant.not-in-variant-release-asap':
+    'banners.variant.statement.no-release-version-asap',
+  'banners.variant.not-in-variant-release-undecided':
+    'banners.variant.statement.no-release-version-undecided',
+}
+
 /**
  * The selected variant has no version in the perspective in view (see `getVariantBannerCase`).
  * Neutral with the info icon, as the release banners; the variant chip carries the purple.
@@ -50,6 +66,15 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {value, documentId, schemaType} = useDocumentPane()
+  const {params, setParams} = usePaneRouter()
+  // While the document inventory is open, its own Create variant button is the view's one filled
+  // button, so the banner yields its create action to it. With the inventory's Create variant form
+  // open (see CREATE_VARIANT_PARAM), the banner only points to the form; otherwise its sentence ends
+  // with a link that opens the form for this variant.
+  // Both read from the pane's router params on every render, never copied into local state, so
+  // the banner follows the inventory and its form opening and closing while it is on screen.
+  const inventoryOpen = params?.inspect === DOCUMENT_GROUP_INSPECTOR_NAME
+  const formOpen = inventoryOpen && Boolean(params?.[CREATE_VARIANT_PARAM])
   const {selectedPerspective, selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const {versions} = useDocumentVersions({documentId})
@@ -202,6 +227,15 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
       break
   }
 
+  const yields = inventoryOpen && action === createAction
+  const handleCreateInInventory = () => {
+    if (!selectedVariant) return
+    setParams({...params, [CREATE_VARIANT_PARAM]: selectedVariant._id})
+  }
+  // While it yields, the sentence stops before its own instruction ("Create one to start editing"),
+  // and the link or the pointer says where to do it instead.
+  const sentenceKey = yields ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
+
   return (
     <Banner
       tone="neutral"
@@ -215,7 +249,7 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
           data-case={bannerCase.kind}
         >
           <Translate
-            i18nKey={i18nKey}
+            i18nKey={sentenceKey}
             t={t}
             values={{
               variantTitle,
@@ -231,9 +265,31 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
               draftsTone: 'caution' as const,
             }}
           />
+          {yields && formOpen ? (
+            <>
+              {' '}
+              <span data-testid="document-not-in-variant-banner-hand-off">
+                {t('banners.variant.finish-in-document-inventory')}
+              </span>
+            </>
+          ) : null}
+          {yields && !formOpen ? (
+            <>
+              {' '}
+              <button
+                className={inlineAction}
+                data-testid="document-not-in-variant-banner-inventory-link"
+                disabled={busy}
+                onClick={handleCreateInInventory}
+                type="button"
+              >
+                {t('banners.variant.action.create-in-document-inventory')}
+              </button>
+            </>
+          ) : null}
         </Text>
       }
-      action={action}
+      action={yields ? undefined : action}
     />
   )
 }
