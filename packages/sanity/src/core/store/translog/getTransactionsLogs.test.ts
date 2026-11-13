@@ -17,6 +17,7 @@ describe('getTransactionsLogs', () => {
       token: 'mockToken',
     })),
     getUrl: vi.fn((path) => `https://mock.sanity.api${path}`),
+    getAuth: vi.fn(async () => ({token: 'mockToken'})),
   } as unknown as SanityClient
 
   const mockStream = {
@@ -45,6 +46,21 @@ describe('getTransactionsLogs', () => {
       'mockToken',
     )
     expect(result).toEqual([])
+  })
+
+  it('sends the token the client resolves through getAuth(), not config().token', async () => {
+    // Under a reactive `auth`, `config().token` is the token last resolved and can be stale
+    // right after a rotation; `getAuth()` waits for the current one.
+    getJsonStreamMock.mockResolvedValueOnce(mockStream)
+    const client = {
+      config: vi.fn(() => ({dataset: 'mockDataset', token: 'staleToken'})),
+      getUrl: vi.fn((path) => `https://mock.sanity.api${path}`),
+      getAuth: vi.fn(async () => ({token: 'currentToken'})),
+    } as unknown as SanityClient
+
+    await getTransactionsLogs(client, 'doc1', {})
+
+    expect(getJsonStream).toHaveBeenCalledWith(expect.any(String), 'currentToken')
   })
 
   it('should handle multiple document IDs', async () => {

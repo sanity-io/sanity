@@ -1,6 +1,6 @@
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Container, VStack} from 'ui5'
+import {Text, Container, VStack} from 'ui5'
 
 export const ERROR_TITLE = 'Dev server stopped'
 const ERROR_DESCRIPTION =
@@ -28,7 +28,9 @@ export function DevServerStoppedErrorScreen(): ReactNode {
 
           <Card border radius={2} overflow="auto" padding={4} tone="inherit">
             <VStack gap={4}>
-              <Text size={2}>{ERROR_DESCRIPTION}</Text>
+              <Text size={2} as="div" trim={true} tone="critical">
+                {ERROR_DESCRIPTION}
+              </Text>
             </VStack>
           </Card>
         </VStack>
