@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Button, Tab, TabList, TabPanel} from '@sanity/ui'
+import {Button, Tab, TabList, TabPanel, type ButtonTone} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
@@ -17,6 +17,13 @@ export interface CollapsiblePanelTab {
   label: ReactNode
   /** Rendered after the label, for instance a count or a warning icon */
   icon?: ReactNode
+  /**
+   * Draws the tab like a Content Releases filter chip. The Lint tab uses `critical` once the
+   * query has findings, so the count in its label reads as a soft red pill in the tab row.
+   */
+  tone?: ButtonTone
+  /** Softens `tone`, the way the releases Errors chip does */
+  muted?: boolean
   content: ReactNode
 }
 
@@ -113,8 +120,10 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                       }
                     : undefined
                 }
+                muted={tab.muted}
                 padding={2}
                 title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
+                tone={tab.tone}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
               />
