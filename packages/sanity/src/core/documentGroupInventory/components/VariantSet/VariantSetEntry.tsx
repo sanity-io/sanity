@@ -1,3 +1,4 @@
+import {Card} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
@@ -5,18 +6,22 @@ import {mixToContrast} from '../../utils/contrast'
 import {selectionColors} from './selectionColors'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
 
-/** The width of the bar that marks the row of the version open in the form. */
-const CURRENT_BAR_WIDTH = 2
-
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
 
-export const VariantSetEntry = styled.div(({theme}) => {
+/**
+ * A row of a set (and, through VariantSetHeader, its header). It is a Card so the row of the version
+ * open in the form takes Studio's selected state the way the document list's selected item does:
+ * `selected` with `data-as="button"` switches it to the theme's selected palette, which sets the
+ * background, the text colours and the badge icon colours the status marks paint with.
+ */
+export const VariantSetEntry = styled(Card)(({theme}) => {
   const {color, space} = getThemeV2(theme)
   const selected = selectionColors(color)
 
   return css`
-    display: grid;
+    /* Over the Card's own display, as on the set */
+    display: grid !important;
     position: relative;
     grid-column: row-start / row-end;
     grid-template-columns: subgrid;
@@ -93,13 +98,6 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
       align-self: stretch;
       justify-content: center;
-
-      /* The variant colour, like the menus' and the navbar chip's diamond. */
-      svg {
-        --card-icon-color: var(--card-badge-suggest-icon-color);
-        --icon-color: var(--card-badge-suggest-icon-color);
-        color: var(--card-badge-suggest-icon-color);
-      }
     }
 
     /*
@@ -189,17 +187,37 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * The row of the version open in the form: a 2px bar in the text colour on the row's left edge
-     * and a semibold title. Not a tint, which means "checked", so it reads on a checked row too,
-     * and the bar keeps 3:1 or more on the plain, hovered and checked backgrounds.
+     * The row of the version open in the form: Studio's selected state, as in the document list.
+     * Its background wins over the hover and checked tints, and its text takes the selected
+     * palette's colours, which a ui5 Text does not follow by itself. The checkbox border follows
+     * the selected text colour, so an empty box stays visible on the selected background.
      */
-    &[data-current]::before {
-      position: absolute;
-      inset-block: 0;
-      inset-inline-start: 0;
-      inline-size: ${CURRENT_BAR_WIDTH}px;
-      background-color: ${color.fg};
-      content: '';
+    &&&[data-selected] {
+      background-color: var(--card-bg-color);
+    }
+
+    &[data-selected] [data-testid='version-title'] {
+      color: var(--card-fg-color);
+    }
+
+    &[data-selected] [data-testid='version-secondary-line'] {
+      color: var(--card-muted-fg-color);
+    }
+
+    &[data-selected] .selection-checkbox {
+      --selection-checkbox-border: var(--card-fg-color);
+    }
+
+    /*
+     * A checked or partly checked box keeps its fill, ringed in the selected text colour: in dark
+     * the light fill alone sits too close to the selected background. Keyboard focus keeps Sanity
+     * UI's focus ring.
+     */
+    &[data-selected]
+      .selection-checkbox
+      input:is(:checked, :indeterminate):not(:focus-visible)
+      + span {
+      box-shadow: 0 0 0 1px var(--card-fg-color);
     }
   `
 })

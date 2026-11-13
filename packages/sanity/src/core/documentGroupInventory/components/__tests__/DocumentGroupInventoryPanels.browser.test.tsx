@@ -3,7 +3,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type ComponentType, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type ReactNode, useMemo, useRef, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import {PerspectiveContext} from 'sanity/_singletons'
 import {Text} from 'ui5'
@@ -22,6 +22,12 @@ import {
 
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {
+  STATUS_MARKS,
+  type StatusMarkName,
+  statusMarkGeometry,
+} from '../../../../ui-components/statusMark/statusMarkGeometry'
+import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {type PerspectiveContextValue} from '../../../perspective/types'
@@ -40,7 +46,6 @@ import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
 import {contrastRatio, parseColor} from '../../utils/contrast'
-import {clearGlyphScaleCache} from '../../utils/fitGlyph'
 import {
   getRowToggle,
   getSetSelection,
@@ -55,7 +60,6 @@ import {MIN_MENU_WIDTH} from '../CreateVariant/CreateVariantPicker'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
 import {DocumentGroupSet} from '../DocumentGroupSet'
 import {InventoryHeader} from '../InventoryHeader'
-import {LEADING_GLYPH_SIZE} from '../VariantSet/LeadingGlyph'
 import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
 
 const PUBLISHED_ID = 'panels-document'
@@ -1351,12 +1355,15 @@ function SelectionPanel({
   onOpen = () => undefined,
   scheme = 'light',
   openId,
+  children,
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
   scheme?: 'light' | 'dark'
   /** The version open in the form. */
   openId?: string
+  /** Rendered after the sets, in the same card. */
+  children?: ReactNode
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
@@ -1370,6 +1377,7 @@ function SelectionPanel({
           <Body>
             <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} openId={openId} />
           </Body>
+          {children}
         </Container>
       </Card>
     </TestWrapper>
@@ -1524,23 +1532,26 @@ function textContrast(text: HTMLElement, row: HTMLElement) {
 }
 
 /**
- * How big an icon's glyph paints, in px: the larger side of the box around its shapes as the
- * browser lays them out, with their strokes. Measured from the rendered page, not from the CSS.
+ * A status mark's declared size, from its own attributes: its mark, its box (width and height) and
+ * the painted size its viewBox gives the drawing (the geometry at that scale, plus its fixed
+ * stroke). No layout is read, so it holds in every browser.
  */
-function paintedGlyphSize(svg: SVGSVGElement): number {
-  const pxPerUnit = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width
-  const sides = {left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity}
-  for (const shape of svg.querySelectorAll<SVGGraphicsElement>('path, circle')) {
-    const rect = shape.getBoundingClientRect()
-    const style = getComputedStyle(shape)
-    const halfStroke =
-      style.stroke === 'none' ? 0 : (Number.parseFloat(style.strokeWidth) * pxPerUnit) / 2
-    sides.left = Math.min(sides.left, rect.left - halfStroke)
-    sides.top = Math.min(sides.top, rect.top - halfStroke)
-    sides.right = Math.max(sides.right, rect.right + halfStroke)
-    sides.bottom = Math.max(sides.bottom, rect.bottom + halfStroke)
-  }
-  return Math.max(sides.right - sides.left, sides.bottom - sides.top)
+function declaredMark(svg: SVGSVGElement) {
+  const mark = svg.dataset.mark as StatusMarkName
+  const width = Number(svg.getAttribute('width'))
+  const height = Number(svg.getAttribute('height'))
+  const side = Number(svg.getAttribute('viewBox')!.split(' ')[2])
+  const {extent, stroke} = STATUS_MARKS[mark]
+  return {mark, width, height, painted: (extent * width) / side + stroke}
+}
+
+function expectDeclared(svg: SVGSVGElement, mark: StatusMarkName, painted: number, box: number) {
+  const declared = declaredMark(svg)
+  expect(declared.mark).toBe(mark)
+  expect(declared.width).toBe(box)
+  expect(declared.height).toBe(box)
+  expect(declared.painted).toBeCloseTo(painted, 2)
+  expect(statusMarkGeometry(mark, 'row')).toMatchObject({painted, box})
 }
 
 function headerGlyph(setName: string): SVGSVGElement {
@@ -1576,7 +1587,7 @@ describe('Inventory selection', () => {
     ).toBeLessThanOrEqual(1)
   })
 
-  it('paints the group icons and the row marks at one size', async () => {
+  it('declares the group marks and the row marks at their optical sizes', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<SelectionPanel refs={startSelectionHarness()} />)
 
@@ -1585,72 +1596,24 @@ describe('Inventory selection', () => {
       .toBeInTheDocument()
     await settleChromaticEndState()
 
-    // The diamond, the Published and Draft dots and a scheduled release's clock: before, 9.2px,
-    // 5.2px, 5.2px and 14.4px in the same 21px column
+    // Row marks (M = 10px): the diamond and a pictogram 10px, a disc and the Draft ring 8px
     const mark = selectionRow('Draft', 'VIP users').querySelector<SVGSVGElement>(
       '.variant-mark svg',
     )!
-    expect(paintedGlyphSize(mark)).toBeCloseTo(LEADING_GLYPH_SIZE, 0)
-    for (const setName of ['Published', 'Draft', scheduledRelease.metadata.title]) {
-      expect(
-        Math.abs(paintedGlyphSize(headerGlyph(setName)) - paintedGlyphSize(mark)),
-      ).toBeLessThan(0.5)
+    expectDeclared(mark, 'variant', 10, 12)
+    expectDeclared(headerGlyph('Published'), 'published', 8, 10)
+    expectDeclared(headerGlyph('Draft'), 'draft', 8, 10)
+    expectDeclared(headerGlyph(scheduledRelease.metadata.title), 'scheduled', 10, 12)
+
+    // Draft is a ring, and no stroke scales with the mark
+    const ring = headerGlyph('Draft').querySelector('circle')!
+    expect(ring.getAttribute('fill')).toBe('none')
+    for (const shape of document.querySelectorAll('[data-ui="StatusMark"] [stroke]')) {
+      expect(shape.getAttribute('vector-effect')).toBe('non-scaling-stroke')
     }
   })
 
-  it('measures each glyph once, not each row, and not again on a re-render', async () => {
-    clearGlyphScaleCache()
-    const getBBox = vi.spyOn(SVGGraphicsElement.prototype, 'getBBox')
-    const rows = Array.from({length: 50}, (_, index) => ({
-      ...DRAFT_VIP,
-      id: `${DRAFT_VIP.id}-${index}`,
-      name: `Variant ${index}`,
-    }))
-    const Harness = ({selectionState}: {selectionState: 'checked' | 'unchecked'}) => (
-      <TestWrapper schemaTypes={SCHEMA_TYPES}>
-        <DocumentGroupSet
-          name="Draft"
-          bundle={{type: 'perspective', perspective: 'drafts'}}
-          selectionState={selectionState}
-          onCheckedChange={() => undefined}
-        >
-          {rows.map((row) => (
-            <DocumentGroupEntry
-              key={row.id}
-              variant={row}
-              releases={SELECTION_RELEASES}
-              isSelected={selectionState === 'checked' && row === rows[0]}
-              onPrimaryAction={() => undefined}
-            />
-          ))}
-        </DocumentGroupSet>
-      </TestWrapper>
-    )
-
-    const {rerender} = await render(<Harness selectionState="unchecked" />)
-    await expect
-      .element(page.getByRole('button', {name: 'Variant 49', exact: true}))
-      .toBeInTheDocument()
-
-    // Two glyphs, one shape each: the Draft dot and the diamond. Not 51 icons
-    expect(getBBox).toHaveBeenCalledTimes(2)
-    const marks = [...document.querySelectorAll<SVGSVGElement>('.variant-mark svg')]
-    expect(marks).toHaveLength(50)
-    for (const mark of marks) {
-      expect(Math.abs(paintedGlyphSize(mark) - LEADING_GLYPH_SIZE)).toBeLessThan(0.5)
-    }
-
-    // Every row re-renders; none measures again
-    getBBox.mockClear()
-    await rerender(<Harness selectionState="checked" />)
-    await expect
-      .element(page.getByRole('button', {name: 'Variant 0', exact: true}))
-      .toHaveAttribute('aria-current', 'true')
-    expect(getBBox).not.toHaveBeenCalled()
-    getBBox.mockRestore()
-  })
-
-  it("paints an ASAP, an undecided and an agent group icon at the row marks' size", async () => {
+  it('declares an ASAP, an undecided and an agent group mark at their row sizes', async () => {
     void render(
       <TestWrapper schemaTypes={SCHEMA_TYPES}>
         {(
@@ -1678,14 +1641,9 @@ describe('Inventory selection', () => {
     )
 
     await expect.element(page.getByText('Undecided')).toBeVisible()
-    const mark = selectionRow('ASAP', 'VIP users').querySelector<SVGSVGElement>(
-      '.variant-mark svg',
-    )!
-    for (const setName of ['ASAP', 'Undecided', 'Agent']) {
-      expect(
-        Math.abs(paintedGlyphSize(headerGlyph(setName)) - paintedGlyphSize(mark)),
-      ).toBeLessThan(0.5)
-    }
+    expectDeclared(headerGlyph('ASAP'), 'asap', 10, 12)
+    expectDeclared(headerGlyph('Undecided'), 'undecided', 8, 10)
+    expectDeclared(headerGlyph('Agent'), 'agent', 10, 12)
   })
 
   it('keeps an empty checkbox quiet at rest at 3:1, and at full contrast on hover and focus', async () => {
@@ -1798,68 +1756,87 @@ describe('Inventory selection', () => {
   )
 
   it.each(['light', 'dark'] as const)(
-    'marks the row of the open version, and keeps the mark when it is checked, in %s mode',
+    "gives the open version the document list's selected state, checked or not, in %s mode",
     async (scheme) => {
       const refs = startSelectionHarness()
-      void render(<SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id} />)
+      void render(
+        <SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id}>
+          {/* The document list's selected item, as PaneItem draws it */}
+          <PreviewCard data-as="a" selected tone="inherit" data-testid="list-selected" padding={2}>
+            <Text size={1}>Selected document</Text>
+          </PreviewCard>
+        </SelectionPanel>,
+      )
 
       await expect
         .element(page.getByRole('button', {name: 'VIP users', exact: true}))
         .toHaveAttribute('aria-current', 'true')
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
       const open = selectionRow('Draft', 'VIP users')
       const other = selectionRow('Draft', 'Summer sale')
+      const list = page.getByTestId('list-selected').element() as HTMLElement
+      const listVar = (name: string) => rgb(getComputedStyle(list).getPropertyValue(name).trim())
+      const title = (row: HTMLElement) =>
+        row.querySelector<HTMLElement>('[data-testid="version-title"]')!
+      const meta = (row: HTMLElement) =>
+        row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
+      const mark = () => open.querySelector<SVGSVGElement>('.variant-mark svg')!
 
-      // Only the open row is marked
+      // Only the open row is the current item; no weight change, as in the document list
       const marked = [...document.querySelectorAll('[data-variant-name] .primary-action')].filter(
         (action) => action.hasAttribute('aria-current'),
       )
       expect(marked).toHaveLength(1)
-      expect(other.querySelector('.primary-action')).not.toHaveAttribute('aria-current')
-      expect(getComputedStyle(other, '::before').content).toBe('none')
-
-      // A semibold title, against the other rows' medium one
-      const weight = (row: HTMLElement) =>
-        Number(getComputedStyle(row.querySelector('[data-testid="version-title"]')!).fontWeight)
-      expect(weight(open)).toBe(600)
-      expect(weight(other)).toBe(500)
-
-      // A 2px bar on the row's left edge, full height, at 3:1 or more on the row; not a tint
-      const plain = background(other)
-      expect(background(open)).toEqual(plain)
-      const bar = () => {
-        const style = getComputedStyle(open, '::before')
-        return {
-          width: Number.parseFloat(style.width),
-          height: Number.parseFloat(style.height),
-          left: Number.parseFloat(style.left),
-          color: rgb(style.backgroundColor),
-        }
-      }
-      expect(bar().width).toBe(2)
-      expect(bar().left).toBe(0)
-      // Full height, under the 1px line between rows
-      expect(Math.abs(bar().height - open.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
-      expect(contrastRatio(bar().color, plain)).toBeGreaterThanOrEqual(3)
-
-      // Checked: the row takes the tint, and keeps the bar and the title
-      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
-      await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
-      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
-      expect(background(open)).not.toEqual(plain)
-      expect(bar().width).toBe(2)
-      // A neutral, the text colour, not the blue the tint is mixed from
-      expect(Math.max(...bar().color) - Math.min(...bar().color)).toBeLessThan(30)
-      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
-      expect(weight(open)).toBe(600)
-      expect(page.getByRole('button', {name: 'VIP users', exact: true}).element()).toHaveAttribute(
-        'aria-current',
-        'true',
+      expect(getComputedStyle(title(open)).fontWeight).toBe(
+        getComputedStyle(title(other)).fontWeight,
       )
 
-      // Hovered, too
-      await userEvent.hover(page.elementLocator(other))
+      const expectSelected = () => {
+        // The document list's selected background, text colours and mark tone, not a picked blue
+        expect(background(open)).toEqual(background(list))
+        expect(rgb(getComputedStyle(title(open)).color)).toEqual(listVar('--card-fg-color'))
+        expect(rgb(getComputedStyle(meta(open)).color)).toEqual(listVar('--card-muted-fg-color'))
+        expect(rgb(getComputedStyle(mark()).color)).toEqual(
+          listVar('--card-badge-suggest-icon-color'),
+        )
+        // The selected palette's own contrast, the same as on the document list's selected item
+        expect(textContrast(title(open), open)).toBeCloseTo(
+          contrastRatio(listVar('--card-fg-color'), background(list)),
+          2,
+        )
+      }
+
+      // Open, not checked
+      expect(background(open)).not.toEqual(background(other))
+      expectSelected()
+      expect(railContrast(rowCheckbox('Draft', 'VIP users'), open)).toBeGreaterThanOrEqual(3)
+
+      // Open and checked: the selected state wins over the checked tint, and the box stays visible
+      refs.selectionRef.send({
+        type: 'selection.addMany',
+        variantIds: [DRAFT_VIP.id, DRAFT_SUMMER.id],
+      })
+      await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+      expectSelected()
+      // The checked box's edge, its ring where its fill alone is too close to the selected blue,
+      // keeps 3:1 on the selected background
+      const box = rowCheckbox('Draft', 'VIP users').nextElementSibling!
+      const fill = rgb(getComputedStyle(box).backgroundColor)
+      const ring = /(rgba?\([^)]*\)|color\([^)]*\))/.exec(getComputedStyle(box).boxShadow)
+      const edge = Math.max(
+        contrastRatio(fill, background(open)),
+        ring ? contrastRatio(rgb(ring[1]), background(open)) : 0,
+      )
+      expect(edge).toBeGreaterThanOrEqual(3)
+
+      // A checked row that is not open keeps its soft tint
+      expect(background(other)).not.toEqual(background(open))
+      expect(contrastRatio(background(other), background(list))).toBeGreaterThan(1.2)
+
+      // Hovered, the open row keeps the selected state
       await userEvent.hover(page.elementLocator(open))
-      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
+      expect(background(open)).toEqual(background(list))
     },
   )
 
