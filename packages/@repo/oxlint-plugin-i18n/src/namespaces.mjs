@@ -53,7 +53,7 @@ export const namespaces = {
     ],
     // One of the two comments plugins is always included (`core/config/resolveDefaultPlugins.ts`),
     // so the namespace is always registered, but with either v1's or v2's strings
-    registeredBy: 'the comments default plugin (v1, or v2 with `beta.comments.v2`)',
+    registeredBy: 'the comments default plugin (v2, or v1 with `comments.legacy`)',
   },
   'releases': {
     constants: ['releasesLocaleNamespace'],
