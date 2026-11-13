@@ -4,8 +4,10 @@ import {Flex, Text} from 'ui5'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {isReleaseDocument} from '../../releases/store/types'
 import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
 import {type GroupSelectionState} from '../utils/selection'
+import {LeadingGlyph} from './VariantSet/LeadingGlyph'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 import {VariantSet} from './VariantSet/VariantSet'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
@@ -62,13 +64,21 @@ export const DocumentGroupSet: ComponentType<{
             />
           </div>
         )}
-        <div className="variant-set-icon" data-testid="variant-set-icon">
+        <LeadingGlyph className="variant-set-icon" data-testid="variant-set-icon">
           {bundle?.type === 'agent' && (
             // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             <ReleaseAvatarIcon tone="suggest" />
           )}
-          {bundle?.type === 'perspective' && <ReleaseAvatarIcon release={bundle.perspective} />}
-        </div>
+          {bundle?.type === 'perspective' && (
+            // A release takes the small icon set, as in the navbar's releases menu: filled glyphs
+            // drawn for this size, where the default set's thin strokes would blur once scaled
+            // down. Published and Draft keep their dots.
+            <ReleaseAvatarIcon
+              release={bundle.perspective}
+              size={isReleaseDocument(bundle.perspective) ? 'small' : 'default'}
+            />
+          )}
+        </LeadingGlyph>
         <div className="variant-set-text">
           <Flex gap={2} alignItems="center">
             <Text size={1} weight="medium" as="div" trim={true} data-testid="variant-set-name">

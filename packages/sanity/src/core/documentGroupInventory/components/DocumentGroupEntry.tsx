@@ -15,6 +15,7 @@ import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type Variant} from '../machines/selectionMachine'
 import {isNeverPublishedDraft} from '../utils/isNeverPublishedDraft'
 import {type ServedStatus} from '../utils/resolveServedVersion'
+import {LeadingGlyph} from './VariantSet/LeadingGlyph'
 import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantSetEntry} from './VariantSet/VariantSetEntry'
 
@@ -64,6 +65,7 @@ export function DocumentGroupEntry({
   const release = resolveVariantRelease(variant, releases)
   const isVariantRow = getDocumentVersionVariantId(document) !== undefined
   const descriptionId = useId()
+  const servedTone = servedStatus === 'primary' ? 'positive' : 'suggest'
   const servedDescription = servedStatus ? t('document-group.version.served.tooltip') : undefined
   const hasDescription = Boolean(servedDescription || selectionBlockedReason)
   const neverPublished =
@@ -77,11 +79,14 @@ export function DocumentGroupEntry({
     >
       {leading !== undefined && <div className="atom">{leading}</div>}
       {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
-      <span className="variant-mark" data-testid={isVariantRow ? 'variant-mark' : undefined}>
+      <LeadingGlyph
+        className="variant-mark"
+        data-testid={isVariantRow ? 'variant-mark' : undefined}
+      >
         {isVariantRow && (
           <Icon icon={RhombusIconLarge} size={1} aria-hidden style={{margin: '-0.375rem'}} />
         )}
-      </span>
+      </LeadingGlyph>
       <div className="row-content">
         <button
           type="button"
@@ -130,7 +135,7 @@ export function DocumentGroupEntry({
             // One group, in a fixed order: Editing, Served, then the rest.
             <div className="version-badges" data-testid="version-badges">
               {isSelected && (
-                <StatusBadge radius={2} tone="primary" data-badge="editing">
+                <StatusBadge radius={2} tone="primary" data-tone="primary" data-badge="editing">
                   {t('document-group-inventory.viewing-item-label')}
                 </StatusBadge>
               )}
@@ -138,7 +143,8 @@ export function DocumentGroupEntry({
                 <Tooltip content={t('document-group.version.served.tooltip')}>
                   <StatusBadge
                     radius={2}
-                    tone={servedStatus === 'primary' ? 'positive' : 'suggest'}
+                    tone={servedTone}
+                    data-tone={servedTone}
                     data-badge="served"
                   >
                     {servedStatus === 'primary'

@@ -66,3 +66,36 @@ export function mixToContrast(fg: string, bg: string, ratio: number): string {
   }
   return fg
 }
+
+/**
+ * `amountOfA` (0–1) of `a` mixed into `b`, as `color-mix(in srgb, a x%, b)` would. Falls back to `b`
+ * when either colour can't be read.
+ *
+ * @internal
+ */
+export function mixColors(a: string, b: string, amountOfA: number): string {
+  const aRgb = parseColor(a)
+  const bRgb = parseColor(b)
+  if (!aRgb || !bRgb) return b
+  return toHex(mix(aRgb, bRgb, amountOfA))
+}
+
+/**
+ * `fg` itself when it already reaches `ratio` against `bg`, otherwise the least of `strong` mixed
+ * into it that does: a colour that keeps as much of `fg`'s hue as the contrast rule allows. `strong`
+ * is a colour that reaches the ratio on its own, such as the theme's text colour.
+ *
+ * @internal
+ */
+export function ensureContrast(fg: string, bg: string, strong: string, ratio: number): string {
+  const fgRgb = parseColor(fg)
+  const bgRgb = parseColor(bg)
+  const strongRgb = parseColor(strong)
+  if (!fgRgb || !bgRgb || !strongRgb) return strong
+
+  for (let step = 0; step <= 100; step++) {
+    const candidate = mix(strongRgb, fgRgb, step / 100)
+    if (contrastRatio(candidate, bgRgb) >= ratio) return toHex(candidate)
+  }
+  return strong
+}

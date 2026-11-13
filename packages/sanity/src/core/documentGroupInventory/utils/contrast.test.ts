@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {contrastRatio, mixToContrast, parseColor} from './contrast'
+import {contrastRatio, ensureContrast, mixColors, mixToContrast, parseColor} from './contrast'
 
 describe('mixToContrast', () => {
   it.each([
@@ -26,4 +26,36 @@ describe('parseColor', () => {
     expect(parseColor('rgb(1, 2, 3)')).toEqual([1, 2, 3])
     expect(parseColor('color(srgb 1 0 0.5)')).toEqual([255, 0, 127.5])
   })
+})
+
+describe('mixColors', () => {
+  it('mixes like color-mix(in srgb)', () => {
+    expect(mixColors('#000000', '#ffffff', 0.5)).toBe('#808080')
+    expect(mixColors('#556bfc', '#ffffff', 0)).toBe('#ffffff')
+    expect(mixColors('#556bfc', '#ffffff', 1)).toBe('#556bfc')
+  })
+
+  it('falls back to the second colour when it cannot read one', () => {
+    expect(mixColors('var(--x)', '#ffffff', 0.5)).toBe('#ffffff')
+  })
+})
+
+describe('ensureContrast', () => {
+  it('keeps a colour that already reaches the ratio', () => {
+    expect(ensureContrast('#1b50d8', '#ffffff', '#252837', 4.5)).toBe('#1b50d8')
+  })
+
+  it.each([
+    ['light', '#8690fe', '#e7eafe', '#252837'],
+    ['dark', '#3c4bc4', '#1d213a', '#e4e5e9'],
+  ])(
+    'moves a weak colour toward the strong one just far enough, in %s',
+    (_name, fg, bg, strong) => {
+      const result = ensureContrast(fg, bg, strong, 4.5)
+      const ratio = contrastRatio(parseColor(result)!, parseColor(bg)!)
+      expect(contrastRatio(parseColor(fg)!, parseColor(bg)!)).toBeLessThan(4.5)
+      expect(ratio).toBeGreaterThanOrEqual(4.5)
+      expect(ratio).toBeLessThan(4.8)
+    },
+  )
 })

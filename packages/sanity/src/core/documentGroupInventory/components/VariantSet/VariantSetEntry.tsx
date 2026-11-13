@@ -2,13 +2,17 @@ import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
+import {type SelectionBadgeTone, selectionColors} from './selectionColors'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
+
+const BADGE_TONES: SelectionBadgeTone[] = ['primary', 'positive', 'suggest']
 
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
 
 export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
+  const selected = selectionColors(color)
 
   return css`
     display: grid;
@@ -175,12 +179,26 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * A checked row (or set header) takes a light tint of the selection colour, so its text keeps
-     * its own colours and contrast. The tint is mixed from theme colours, so it holds in light and
-     * dark.
+     * A checked row takes a light tint of the selection colour, so its text keeps its own colours
+     * and contrast. The tint is mixed from theme colours, so it holds in light and dark. A group
+     * header tints its own band instead, in VariantSetHeader.
      */
     &:has(.atom :checked) {
-      background-color: color-mix(in srgb, ${color.focusRing} 14%, ${color.bg});
+      background-color: ${selected.row};
     }
+
+    /*
+     * On a checked row the badges turn from filled to outlined, so their fill does not sit on the
+     * tint. Text and outline keep the badge's tone, at 4.5:1 or more on the tint.
+     */
+    ${BADGE_TONES.map(
+      (tone) => css`
+        &:has(.atom :checked) .version-badges [data-tone='${tone}'] {
+          --card-bg-color: transparent;
+          --card-fg-color: ${selected.badge(tone)};
+          box-shadow: inset 0 0 0 1px ${selected.badge(tone)};
+        }
+      `,
+    )}
   `
 })
