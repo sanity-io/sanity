@@ -1,5 +1,5 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
-import {type ReleaseDocument} from '@sanity/client'
+import {type MultipleMutationResult, type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {type ComponentType, useMemo, useState} from 'react'
@@ -26,6 +26,7 @@ import {
   activeUndecidedRelease,
 } from '../../../releases/__fixtures__/release.fixture'
 import {type ReleasesReducerState} from '../../../releases/store/reducer'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {type VariantStoreState} from '../../../variants/store/reducer'
 import {type SystemVariant} from '../../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../../machines/deletionMachine'
@@ -125,6 +126,38 @@ const SUMMER_SALE_IN_ASAP = variant(
 )
 const VARIANTS = [PUBLISHED, DRAFT, SUMMER_SALE_IN_ASAP]
 
+const DE_DE: SystemVariant = {...SUMMER_SALE, _id: '_.variants.de-DE', metadata: {title: 'de-DE'}}
+const MEMBERS: SystemVariant = {
+  ...SUMMER_SALE,
+  _id: '_.variants.members',
+  metadata: {title: 'Members'},
+}
+// Variant copies are named by their scope, never by the variant: the dialog must not show this id.
+const DE_DE_DRAFT = variant(`versions.scope-de.${PUBLISHED_ID}`, 'de-DE', {
+  bundleId: 'drafts',
+  variants: [{_ref: DE_DE._id, _key: 'de-DE'}],
+})
+const DE_DE_PUBLISHED = variant(`versions.scope-de-published.${PUBLISHED_ID}`, 'de-DE', {
+  variants: [{_ref: DE_DE._id, _key: 'de-DE'}],
+})
+const MEMBERS_DRAFT = variant(`versions.scope-members.${PUBLISHED_ID}`, 'Members', {
+  bundleId: 'drafts',
+  variants: [{_ref: MEMBERS._id, _key: 'members'}],
+})
+/** The Default's copies plus two variants: de-DE (a draft and a published copy) and Members. */
+const WITH_VARIANTS = [
+  {...PUBLISHED, name: 'Default'},
+  {...DRAFT, name: 'Default'},
+  DE_DE_DRAFT,
+  DE_DE_PUBLISHED,
+  MEMBERS_DRAFT,
+]
+/** The Default's copies and nothing else. */
+const WITHOUT_VARIANTS = [
+  {...PUBLISHED, name: 'Default'},
+  {...DRAFT, name: 'Default'},
+]
+
 // The versions as the inventory groups them while Content Variants is switched on: a set per
 // bundle, its versions named after their variant.
 const VERSION_SETS: VariantSet[] = [
@@ -190,6 +223,60 @@ const OPTIONAL_REFERRING_DOCUMENTS: ReferringDocuments = {
   },
 }
 
+function internalOnly(
+  references: NonNullable<ReferringDocuments['internalReferences']>['references'],
+  totalCount = references.length,
+): ReferringDocuments {
+  return {
+    isLoading: false,
+    totalCount,
+    projectIds: [],
+    datasetNames: [],
+    hasUnknownDatasetNames: false,
+    internalReferences: {totalCount, references},
+    crossDatasetReferences: {totalCount: 0, references: []},
+  }
+}
+
+const NO_LINKS = internalOnly([])
+
+/**
+ * More referrers than the reference query reads (it lists 100), none of the listed ones required:
+ * a required link may sit in the unread rest.
+ */
+const OVER_CAP_REFERRING_DOCUMENTS = internalOnly(
+  Array.from({length: 100}, (_, index) => ({
+    _id: `referrer-${String(index).padStart(3, '0')}`,
+    _type: DOCUMENT_TYPE,
+    required: false,
+    failsLater: false,
+  })),
+  140,
+)
+
+/** A required link that only a release copy holds, next to an optional one. */
+const RELEASE_COPY_REFERRING_DOCUMENTS = internalOnly([
+  {_id: 'referrer-b', _type: DOCUMENT_TYPE, required: false, failsLater: false},
+  {_id: 'versions.rp-release.referrer-r', _type: DOCUMENT_TYPE, required: false, failsLater: true},
+])
+
+/** Only links from other datasets. */
+const CROSS_DATASET_REFERRING_DOCUMENTS: ReferringDocuments = {
+  isLoading: false,
+  totalCount: 2,
+  projectIds: ['abc123'],
+  datasetNames: ['production', 'staging'],
+  hasUnknownDatasetNames: false,
+  internalReferences: {totalCount: 0, references: []},
+  crossDatasetReferences: {
+    totalCount: 2,
+    references: [
+      {projectId: 'abc123', datasetName: 'production', documentId: 'remote-doc'},
+      {projectId: 'abc123', datasetName: 'staging', documentId: 'remote-doc-2'},
+    ],
+  },
+}
+
 const COMPONENTS: DocumentGroupInventoryComponents = {
   DocTitle: ({document}) => <>{document._id === PUBLISHED_ID ? 'Ursula K. Le Guin' : 'Untitled'}</>,
   ReferencePreviewLink: ({value}) => (
@@ -244,6 +331,10 @@ const harnessMachine = setup({
       deletionMachine.provide({
         actors: {
           referringDocuments: fromObservable(() => new BehaviorSubject(input.referringDocuments)),
+          deleteVariants: fromPromise(async ({input: {ids}}) => {
+            deletedIds.push(ids)
+            return {} as MultipleMutationResult
+          }),
         },
       }),
       {input: undefined},
@@ -274,17 +365,35 @@ const harnessMachine = setup({
 type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 
 let harness: HarnessActor | undefined
+/** What the harness's delete actor was asked to delete, one entry per confirmed delete. */
+let deletedIds: string[][] = []
 
-function startHarness(referringDocuments: ReferringDocuments = REFERRING_DOCUMENTS) {
+function startHarness(
+  referringDocuments: ReferringDocuments = REFERRING_DOCUMENTS,
+  variants: Variant[] = VARIANTS,
+) {
   harness = createActor(harnessMachine, {input: {referringDocuments}}).start()
   const {selectionRef, deletionRef, variantCreationRef} = harness.getSnapshot().context
-  selectionRef.send({type: 'variants.changed', variants: VARIANTS, loaded: true})
+  selectionRef.send({type: 'variants.changed', variants, loaded: true})
+  // What `documentGroupInventoryMachine` tells the deletion machine about the document group.
+  deletionRef.send({
+    type: 'versions.changed',
+    versionIds: variants.map(({id}) => id),
+    variantIds: [
+      ...new Set(
+        variants
+          .map(({document}) => getDocumentVersionVariantId(document))
+          .filter((variantId) => typeof variantId === 'string'),
+      ),
+    ],
+  })
   return {selectionRef, deletionRef, variantCreationRef}
 }
 
 afterEach(() => {
   harness?.stop()
   harness = undefined
+  deletedIds = []
 })
 
 function PanelFrame({children}: {children: React.ReactNode}) {
@@ -635,29 +744,37 @@ describe('CreateVariant', () => {
   })
 })
 
+const $dialog = page.getByRole('dialog')
+const $cancel = $dialog.getByRole('button', {name: 'Cancel', exact: true})
+
+function selectAndRequest(
+  {selectionRef, deletionRef}: ReturnType<typeof startHarness>,
+  ids: string[],
+) {
+  for (const id of ids) selectionRef.send({type: 'selection.add', variantId: id})
+  deletionRef.send({type: 'delete.request'})
+}
+
 describe('ConfirmDeleteDialog', () => {
-  it('warns about incoming references when a published version is selected', async () => {
+  it('falls back to the warning while the strength of the links is unknown', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness()
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
-    await expect.element($dialog).toBeVisible()
     await expect
       .element($dialog.getByText('Delete 2 versions, including the Default?'))
       .toBeVisible()
-    await expect
-      .element($dialog.getByTestId('versions-preview-list'))
-      .toHaveTextContent(`${PUBLISHED.id}, ${DRAFT.id}`)
     // Fixture: 3 internal + 1 cross-dataset reference, one internal referrer of an
     // unknown type (falls back to the "Preview unavailable" row).
     await expect.element($dialog.getByText(/4 documents refer to/)).toBeVisible()
+    await expect.element($dialog.getByText(/You may not be able to delete/)).toBeVisible()
     await expect.element($dialog.getByTestId('reference-referrer-a')).toBeVisible()
     await expect.element($dialog.getByText('Preview unavailable')).toBeVisible()
     await expect.element($dialog.getByText('1 other reference not show')).toBeVisible()
@@ -667,52 +784,133 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($crossDataset).toBeVisible()
     await expect.element($crossDataset).toMatchTextContent('1 document in another dataset')
     await expect.element($crossDataset).toMatchTextContent('Dataset: production')
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 2 versions', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
   })
 
   it('expands the cross-dataset reference table', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness()
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
     await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
     await userEvent.click($dialog.getByText('Dataset: production'))
     await expect.element($dialog.getByText('Project ID')).toBeVisible()
     await expect.element($dialog.getByText('remote-doc')).toBeVisible()
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
   })
 })
 
-describe('ConfirmDeleteDialog, option C', () => {
-  it('blocks the Default while required links point at it, and offers the other versions', async () => {
+describe('ConfirmDeleteDialog, open beta (option C)', () => {
+  it('deletes variant versions without naming links, by variant and bundle (D2)', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness(REQUIRED_REFERRING_DOCUMENTS)
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(REQUIRED_REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [DE_DE_DRAFT.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
+    await expect.element($dialog.getByText('Delete 1 version?')).toBeVisible()
+    const $row = $dialog.getByTestId(`delete-version-${DE_DE_DRAFT.id}`)
+    await expect.element($row).toMatchTextContent('de-DE')
+    await expect.element($row).toMatchTextContent('Draft')
+    // The copy's raw scope id never shows.
+    await expect.element($dialog).not.toMatchTextContent('scope-de')
+    await expect.element($dialog.getByTestId('no-links')).toBeVisible()
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
+    await expect.element($dialog.getByTestId('internal-references')).not.toBeInTheDocument()
+    // The safe action takes the initial focus.
+    await expect.element($cancel).toHaveFocus()
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+
+  it('blocks the Default while variants exist, counting variants, not copies', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(NO_LINKS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DE_DE_DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    // The title counts what the button deletes, out of what was selected.
+    await expect.element($dialog.getByText('Delete 1 of 2 versions?')).toBeVisible()
     await expect
-      .element($dialog.getByText('Delete 2 versions, including the Default?'))
-      .toBeVisible()
+      .element($dialog.getByTestId('deletable-versions'))
+      .toMatchTextContent(/Will be deleted.*de-DE.*Draft/)
+    await expect
+      .element($dialog.getByTestId('blocked-versions'))
+      .toMatchTextContent(/Can't be deleted yet.*Default.*Published/)
+    // de-DE has a draft and a published copy: one variant. With Members, two.
+    await expect
+      .element($dialog.getByTestId('blocked-by-variants'))
+      .toHaveTextContent('2 variants exist. Delete the variants first.')
+    await expect.element($dialog.getByTestId('blocked-by-links')).not.toBeInTheDocument()
+    await expect.element($dialog.getByText(/variants stay/)).not.toBeInTheDocument()
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeEnabled()
+    // The reason the Default stays is read with the button.
+    const describedBy = $delete.element().getAttribute('aria-describedby')
+    expect(describedBy).toBe($dialog.getByTestId('default-blocked').element().id)
+
+    await settleChromaticEndState()
+    await takeSnapshot('blocked-by-variants')
+
+    await userEvent.click($delete)
+    await expect.poll(() => deletedIds).toEqual([[DE_DE_DRAFT.id]])
+  })
+
+  it('blocks the Default while required links point at it, and lists them first', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(REQUIRED_REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
     await expect
       .element($dialog.getByTestId('default-blocked'))
-      .toMatchTextContent("The Default document can't be deleted yet: 1 document needs it")
-    // Required links lead the list.
+      .toMatchTextContent("The Default document can't be deleted yet")
+    await expect
+      .element($dialog.getByTestId('blocked-by-links'))
+      .toHaveTextContent(
+        '1 document links to it with a required link. Change or remove that link first.',
+      )
+    await expect.element($dialog.getByTestId('blocked-by-variants')).not.toBeInTheDocument()
+    // Main's "You may not be able to delete" line no longer contradicts the notice.
+    await expect.element($dialog.getByText(/You may not be able to delete/)).not.toBeInTheDocument()
+    await expect.element($dialog.getByText(/Documents that link to/)).toBeVisible()
     await expect
       .element($dialog.getByTestId('internal-references').getByRole('listitem').first())
       .toMatchTextContent('referrer-a')
@@ -722,51 +920,175 @@ describe('ConfirmDeleteDialog, option C', () => {
     await expect
       .element($dialog.getByTestId('reference-tag-referrer-b'))
       .toHaveTextContent('Optional')
+    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeDisabled()
+    await expect.element($cancel).toHaveFocus()
+
+    await settleChromaticEndState()
+  })
+
+  it('names both reasons, variants first, when variants and required links block the Default', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(REQUIRED_REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, MEMBERS_DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete 1 of 2 versions?')).toBeVisible()
+    const [$first, $second] = $dialog.getByTestId('default-blocked').getByRole('listitem').all()
+    await expect.element($first).toHaveTextContent('2 variants exist. Delete the variants first.')
     await expect
-      .element($dialog.getByRole('button', {name: 'Delete 1 other version', exact: true}))
+      .element($second)
+      .toHaveTextContent(
+        '1 document links to it with a required link. Change or remove that link first.',
+      )
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
       .toBeEnabled()
 
     await settleChromaticEndState()
   })
 
-  it('names the Default, its optional links and the variants that stay', async () => {
+  it('lets the Default go with only optional links once no variants exist', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness(OPTIONAL_REFERRING_DOCUMENTS)
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(OPTIONAL_REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
     await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
     await expect
       .element($dialog.getByTestId('optional-links'))
       .toMatchTextContent('1 document links to “Ursula K. Le Guin” with an optional link.')
-    await expect.element($dialog.getByText('1 variant stays. It loses its Default.')).toBeVisible()
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
+    await expect.element($dialog.getByText(/variants stay/)).not.toBeInTheDocument()
+    await expect.element($dialog.getByText(/You may not be able to delete/)).not.toBeInTheDocument()
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeEnabled()
+
+    await settleChromaticEndState()
+    await takeSnapshot('optional-links')
+
+    await userEvent.click($delete)
+    await expect.poll(() => deletedIds).toEqual([[PUBLISHED.id]])
+  })
+
+  it('names no strength above the reference cap when none of the links read is required', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(OVER_CAP_REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
+    await expect
+      .element($dialog.getByTestId('partial-links'))
+      .toHaveTextContent('140 documents link here. Some links may be required.')
+    // It claims no strength for the links it did not read.
+    await expect.element($dialog.getByTestId('optional-links')).not.toBeInTheDocument()
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
+    await expect.element($dialog.getByText('40 other references not shown')).toBeInTheDocument()
+    // Delete stays enabled, so the Content Lake decides.
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
   })
 
-  it('says that deleting variants breaks no links', async () => {
+  it('counts cross-dataset links as optional, grouped by dataset', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness(REQUIRED_REFERRING_DOCUMENTS)
-    selectionRef.send({type: 'selection.add', variantId: SUMMER_SALE_IN_ASAP.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(CROSS_DATASET_REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
-    await expect.element($dialog.getByText('Delete 1 version')).toBeVisible()
-    await expect.element($dialog.getByText('Nothing links to these versions')).toBeVisible()
+    await expect
+      .element($dialog.getByTestId('optional-links'))
+      .toMatchTextContent('2 documents link to “Ursula K. Le Guin” with optional links.')
+    const $crossDataset = $dialog.getByTestId('cross-dataset-references')
+    await expect.element($crossDataset).toMatchTextContent('2 documents in 2 datasets')
+    await expect.element($crossDataset).toMatchTextContent('Datasets: production, staging')
     await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
+  })
+
+  it('does not block on a required link held only by a release copy, and says it fails later', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(RELEASE_COPY_REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByTestId('fails-later'))
+      .toHaveTextContent(
+        "1 document in a release links here with a required link. The delete goes through, but that release will fail when it's published.",
+      )
+    await expect
+      .element($dialog.getByTestId('reference-tag-versions.rp-release.referrer-r'))
+      .toHaveTextContent('Fails later')
+    await expect
+      .element($dialog.getByTestId('internal-references').getByRole('listitem').first())
+      .toMatchTextContent('referrer-r')
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
+      .toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+
+  it('reports a delete that leaves the document with no versions (D1)', async () => {
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness(NO_LINKS, WITHOUT_VARIANTS)
+    const emptied: string[] = []
+    refs.deletionRef.on('allVersionsDeleted', (event) => emptied.push(event.type))
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByText('Delete 2 versions, including the Default?'))
+      .toBeVisible()
+    await userEvent.click($dialog.getByRole('button', {name: 'Delete 2 versions', exact: true}))
+
+    await expect.poll(() => deletedIds).toEqual([[PUBLISHED.id, DRAFT.id]])
+    await expect.poll(() => emptied).toEqual(['allVersionsDeleted'])
   })
 })
 

@@ -158,13 +158,15 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     <Dialog
       id="confirmVariantDeletion"
       width={1}
+      // The dialog would focus its first focusable element, the close button. Cancel takes the
+      // initial focus instead (below), so Enter never deletes by accident.
+      __unstable_autoFocus={false}
       portal={portalElementName}
       header={header}
       footer={{
         cancelButton: {
           onClick: () => deletionRef.send({type: 'delete.cancel'}),
           text: t('document-group.delete.cancel-button.text'),
-          // The safe action takes the initial focus, so Enter never deletes by accident.
           autoFocus: true,
         },
         confirmButton: {
