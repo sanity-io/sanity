@@ -4,7 +4,7 @@ import {expect, test} from '@playwright/test'
 import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, setupMockAuth} from './helpers'
 
-// SSO workspaces use createAuthStore with a single SAML provider replacing
+// SSO workspaces use a single SAML provider replacing
 // the default providers. When unauthenticated, the login screen should show
 // the SAML provider button. With redirectOnSingle, it should redirect directly.
 

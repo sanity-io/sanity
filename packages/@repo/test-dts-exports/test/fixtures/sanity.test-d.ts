@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  _createAuthStore,
   _isCustomDocumentTypeDefinition,
   _isSanityDocumentTypeDefinition,
   _isType,
@@ -91,7 +90,6 @@ import type {
   AuthProvider,
   AuthState,
   AuthStore,
-  AuthStoreOptions,
   AutoCollapseMenu,
   AutocompleteString,
   AvailabilityReason,
@@ -319,8 +317,6 @@ import type {
   CorsOriginErrorScreen,
   CorsProbeOutcome,
   CreatableTargetDocument,
-  createAuthStore,
-  CreateAuthStoreOptions,
   createBufferedDocument,
   createConfig,
   createConnectionStatusStore,
@@ -1926,9 +1922,6 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity', () => {
-  test('_createAuthStore', () => {
-    expectTypeOf<typeof _createAuthStore>().toBeFunction()
-  })
   test('_isCustomDocumentTypeDefinition', () => {
     expectTypeOf<typeof _isCustomDocumentTypeDefinition>().toBeFunction()
   })
@@ -2190,9 +2183,6 @@ describe('sanity', () => {
   })
   test('AuthStore', () => {
     expectTypeOf<AuthStore>().toBeObject()
-  })
-  test('AuthStoreOptions', () => {
-    expectTypeOf<AuthStoreOptions>().toBeObject()
   })
   test('AutoCollapseMenu', () => {
     expectTypeOf<typeof AutoCollapseMenu>().toBeFunction()
@@ -2880,12 +2870,6 @@ describe('sanity', () => {
   })
   test('CreatableTargetDocument', () => {
     expectTypeOf<CreatableTargetDocument>().toBeObject()
-  })
-  test('createAuthStore', () => {
-    expectTypeOf<typeof createAuthStore>().not.toBeNever()
-  })
-  test('CreateAuthStoreOptions', () => {
-    expectTypeOf<CreateAuthStoreOptions>().not.toBeNever()
   })
   test('createBufferedDocument', () => {
     expectTypeOf<typeof createBufferedDocument>().not.toBeNever()
