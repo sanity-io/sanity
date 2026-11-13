@@ -57,7 +57,7 @@ async function renderConnected(...args: Parameters<typeof createAddonDatasetTest
 
 describe('useCommentsStore', () => {
   it('shares one addon dataset listener with every other comments store and the tasks store', async () => {
-    const {result, connections, fetch} = await renderConnected({
+    const {result, connections, fetch, observableFetch} = await renderConnected({
       comments: [
         comment('c-a', 'doc-a'),
         comment('c-b', 'doc-b'),
@@ -67,7 +67,8 @@ describe('useCommentsStore', () => {
     })
 
     expect(connections.opened).toBe(1)
-    expect(fetch).toHaveBeenCalledTimes(4)
+    expect(observableFetch).toHaveBeenCalledTimes(3)
+    expect(fetch).toHaveBeenCalledTimes(1)
     expect(ids(result.current.docA.data)).toEqual(['c-a'])
     expect(ids(result.current.docB.data)).toEqual(['c-b'])
     expect(ids(result.current.summerA.data)).toEqual(['c-summer'])
