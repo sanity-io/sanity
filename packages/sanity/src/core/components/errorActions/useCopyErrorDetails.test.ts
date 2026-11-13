@@ -44,6 +44,30 @@ describe('serializeError', () => {
     expect(eventId).toBe('123')
   })
 
+  describe('DOMException errors (aborted or timed-out requests)', () => {
+    // `@sanity/client` rejects aborted requests with `new DOMException(reason, 'AbortError')`
+    // and `get-it` rejects timed-out requests with
+    // `new DOMException('The operation was aborted due to timeout', 'TimeoutError')`.
+    // When one of these reaches `StudioErrorBoundary`, "Copy error details" is the only way a
+    // user can share what went wrong (the production fallback screen hides the message), so
+    // the copied payload must carry the error's name and message.
+    //
+    // A `DOMException` keeps `name`, `message` and `code` as accessors on its prototype, so
+    // `Object.getOwnPropertyNames()` does not list them. In Chromium a constructed
+    // `DOMException` has no own properties at all — which is what the helper below mirrors —
+    // and the current serializer therefore produces `{"error": {}}`.
+    it.each([
+      ['AbortError', 'The operation was aborted.'],
+      ['TimeoutError', 'The operation was aborted due to timeout'],
+    ])('includes name and message for a %s', async (name, message) => {
+      const {error} = await reassembleError({
+        error: createBrowserLikeDOMException(message, name),
+      })
+
+      expect(error).toMatchObject({name, message})
+    })
+  })
+
   it('should not include Authorization header in error details when using fetch', async () => {
     // Create a mock fetch error that includes Authorization header in the request
     const mockFetchError = new Error('Request failed')
@@ -85,6 +109,18 @@ describe('serializeError', () => {
     expect(errorString).toContain('x-sanity-app')
   })
 })
+
+/**
+ * Creates a `DOMException` shaped like the ones browsers hand to the studio: no own properties.
+ * Node and jsdom additionally define an own `stack` on construction; browsers do not (verified in
+ * Chromium, where `Object.getOwnPropertyNames(new DOMException('x', 'AbortError'))` is `[]`).
+ */
+function createBrowserLikeDOMException(message: string, name: string): DOMException {
+  const error = new DOMException(message, name)
+  Reflect.deleteProperty(error, 'stack')
+  expect(Object.getOwnPropertyNames(error)).toEqual([])
+  return error
+}
 
 /**
  * Helper that serializes and then immediately deserializes the provided error so that assertions
