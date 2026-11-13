@@ -1,3 +1,4 @@
+import {type HotkeyOptions, type OnCopyFn} from '@portabletext/editor'
 import {defineBehavior, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {htmlToPortableText} from '@portabletext/html'
@@ -11,7 +12,9 @@ import {type ComponentType, useMemo} from 'react'
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {type OnPasteFn} from '../../../types/inputProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {useHandlerBehaviors} from '../useHandlerBehaviors'
 import {PortableTextTablePlugin} from './TablePlugin'
 
 const markdownConfig: MarkdownConfig = {
@@ -35,7 +38,12 @@ const markdownConfig: MarkdownConfig = {
 
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
+  hotkeys?: HotkeyOptions
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
+  onToggleFullscreen: () => void
 }) => {
+  const handlerBehaviors = useHandlerBehaviors(props)
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
@@ -114,6 +122,7 @@ export const PortableTextEditorPlugins = (props: {
 
   return (
     <>
+      <BehaviorPlugin behaviors={handlerBehaviors} />
       <BehaviorPlugin behaviors={htmlPasteBehaviors} />
       {isOneLineEditor && (
         <>

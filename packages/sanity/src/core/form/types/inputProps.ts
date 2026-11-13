@@ -546,6 +546,42 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   hideToolbar?: boolean
   /**
    * Assign hotkeys that can be attached to custom editing functions
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * {@link https://www.portabletext.org/concepts/behavior/ | Behaviors} can listen to
+   * `keyboard.keydown` and raise any editor event.
+   * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
+   * compete, and the first one registered wins.
+   *
+   * @example Toggle bold with Ctrl+Shift+B
+   * ```tsx
+   * import {defineBehavior, raise} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const boldBehavior = defineBehavior({
+   *   on: 'keyboard.keydown',
+   *   guard: ({event}) =>
+   *     event.originEvent.ctrlKey && event.originEvent.shiftKey && event.originEvent.code === 'KeyB',
+   *   actions: [() => [raise({type: 'decorator.toggle', decorator: 'strong'})]],
+   * })
+   *
+   * function HotkeyPlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[boldBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: HotkeyPlugins}},
+   * })
+   * ```
    */
   hotkeys?: HotkeyOptions
   /**
@@ -577,10 +613,91 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   onFullScreenChange?: (isFullScreen: boolean) => void
   /**
    * Custom copy function
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * A {@link https://www.portabletext.org/concepts/behavior/ | Behavior} on `clipboard.copy`
+   * can write to `event.originEvent.dataTransfer`. A Behavior whose guard passes replaces the
+   * editor's copy.
+   * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
+   * compete, and the first one registered wins.
+   *
+   * @example Copy the selection as plain text only
+   * ```tsx
+   * import {defineBehavior, effect} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {getSelectionText} from '@portabletext/editor/selectors'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const copyBehavior = defineBehavior({
+   *   on: 'clipboard.copy',
+   *   actions: [
+   *     ({snapshot, event}) => [
+   *       effect(() => {
+   *         event.originEvent.dataTransfer.setData('text/plain', getSelectionText(snapshot))
+   *       }),
+   *     ],
+   *   ],
+   * })
+   *
+   * function CopyPlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[copyBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: CopyPlugins}},
+   * })
+   * ```
    */
   onCopy?: OnCopyFn
   /**
    * Custom paste function
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * A {@link https://www.portabletext.org/concepts/behavior/ | Behavior} on `clipboard.paste`
+   * can read `event.originEvent.dataTransfer` and raise `insert.blocks` or `insert.text`.
+   * Pastes that no Behavior handles fall through to the editor's paste.
+   * Render the plugin before `props.renderDefault(props)`: rendered after it, Studio's own
+   * URL paste handling runs first and wins.
+   *
+   * @example Paste the clipboard as plain text only
+   * ```tsx
+   * import {defineBehavior, raise} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const pasteBehavior = defineBehavior({
+   *   on: 'clipboard.paste',
+   *   guard: ({event}) => {
+   *     const text = event.originEvent.dataTransfer.getData('text/plain')
+   *     return text ? {text} : false
+   *   },
+   *   actions: [(_, {text}) => [raise({type: 'insert.text', text})]],
+   * })
+   *
+   * function PastePlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[pasteBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: PastePlugins}},
+   * })
+   * ```
    */
   onPaste?: OnPasteFn
   /**

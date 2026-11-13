@@ -24,6 +24,11 @@ Keep this section at the top of the file. The same rules are restated in [Pull R
 - **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
+For isolated comparisons after `pnpm install --frozen-lockfile`, pnpm versions with
+`verifyDepsBeforeRun` enabled can start another, non-frozen install before `exec` or a script.
+Use `pnpm --config.verifyDepsBeforeRun=false --config.managePackageManagerVersions=false <command>`
+for those subsequent commands to preserve the installed dependency snapshot.
+
 ## Quick Reference
 
 ```bash

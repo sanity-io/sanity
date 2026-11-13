@@ -2,7 +2,6 @@ import {
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
-  type OnPasteFn,
   PortableTextEditable,
   type PortableTextEditableProps,
   type RangeDecoration,
@@ -16,6 +15,7 @@ import {css, styled} from 'styled-components'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {PresenceOverlay} from '../../../presence/overlay/PresenceOverlay'
+import {type OnPasteFn} from '../../types/inputProps'
 import {useFormBuilder} from '../../useFormBuilder'
 import {
   EditableCard,
@@ -124,9 +124,6 @@ export function Editor(props: EditorProps): ReactNode {
   const editable = useMemo(() => {
     const editableProps = {
       'aria-describedby': ariaDescribedBy,
-      hotkeys,
-      onCopy,
-      onPaste,
       rangeDecorations,
       'ref': elementRef,
       renderPlaceholder,
@@ -140,10 +137,7 @@ export function Editor(props: EditorProps): ReactNode {
   }, [
     ariaDescribedBy,
     elementRef,
-    hotkeys,
     initialSelection,
-    onCopy,
-    onPaste,
     rangeDecorations,
     renderPlaceholder,
     scrollSelectionIntoView,
@@ -161,7 +155,11 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   const editableContent = (
-    <EditableContent $isFullscreen={isFullscreen}>
+    <EditableContent
+      $isFullscreen={isFullscreen}
+      onCopy={onCopy ? (event) => event.stopPropagation() : undefined}
+      onPaste={onPaste ? (event) => event.stopPropagation() : undefined}
+    >
       <EditableWrapper
         $isFullscreen={isFullscreen}
         $isOneLine={isOneLine}

@@ -12,8 +12,6 @@ import {
   type HotkeyOptions,
   type InlineObjectRenderProps,
   type OnCopyFn,
-  type OnPasteFn as EditorOnPasteFn,
-  type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
   type SpanRenderProps,
@@ -152,21 +150,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     annotationOpeningRef.current = false
     onItemClose()
   }, [onItemClose])
-
-  // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
-  // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
-  // EditorSchema. This shields Studio consumers from the PTE v6 type change.
-  const wrappedOnPaste: EditorOnPasteFn | undefined = useMemo(() => {
-    if (!onPaste) {
-      return undefined
-    }
-    return (data: EditorPasteData) => {
-      return onPaste({
-        ...data,
-        schemaTypes,
-      })
-    }
-  }, [onPaste, schemaTypes])
 
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -669,7 +652,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isOneLine={isOneLineEditor}
             onItemOpen={handleItemOpen}
             onCopy={onCopy}
-            onPaste={wrappedOnPaste}
+            onPaste={onPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
@@ -699,7 +682,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isOneLineEditor,
       handleItemOpen,
       onCopy,
-      wrappedOnPaste,
+      onPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,

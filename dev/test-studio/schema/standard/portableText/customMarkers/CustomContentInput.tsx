@@ -88,7 +88,7 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
     <PortableTextInput
       {...inputProps}
       // @ts-expect-error -- pre-existing, fix later
-      onPaste={handlePaste}
+      onPaste={handlePaste} // oxlint-disable-line no-deprecated -- will fix in follow up PR
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       markers={markers}
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
