@@ -143,10 +143,9 @@ export function listenQuery(
 }
 
 /**
- * Like {@link listenQuery}, but it opens no listener of its own: it follows the document preview
- * store's shared global listener, and fetches `query` once that listener has connected (right
- * away when it already has), again after every reconnect, and again after the changes
- * `shouldRefetch` accepts.
+ * Like {@link listenQuery}, but it opens no listener of its own: it follows the shared global
+ * listener, and fetches `query` once that listener has connected (right away when it already
+ * has), again after every reconnect, and again after the changes `shouldRefetch` accepts.
  *
  * The global listener reports every change in the dataset with the changed document's id but not
  * its content, so `shouldRefetch` has to recognise the documents the query reads by their ids.
@@ -157,7 +156,7 @@ export function listenQueryOnGlobalListener<Result>(
   client: SanityClient,
   query: string,
   options: {
-    /** The document preview store's `unstable_invalidationChannel` */
+    /** The global listener store's `invalidationChannel` */
     invalidationChannel: Observable<InvalidationChannelEvent>
     /**
      * Whether a change can affect the query result. Called for every change in the dataset, so it

@@ -6,7 +6,7 @@ import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 
 
 import {useClient} from '../../hooks/useClient'
 import {type InvalidationChannelEvent} from '../../preview/types'
-import {useDocumentPreviewStore} from '../../store/datastores'
+import {useGlobalListenerStore} from '../../store/datastores'
 import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
 import {isVersionId} from '../../util/draftUtils'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
@@ -51,8 +51,7 @@ const EMPTY_STATE: VariantsDocumentCountsState = {data: {}, loading: false, erro
 
 /**
  * Fetches the document counts for one set of variants with one aggregate count query, and fetches
- * them again on changes reported by the preview store's shared global listener, via
- * {@link listenQueryOnGlobalListener}.
+ * them again on changes reported by the global listener, via {@link listenQueryOnGlobalListener}.
  */
 function listenVariantsDocumentCounts(
   client: SanityClient,
@@ -135,19 +134,18 @@ export function getVariantsDocumentCounts(
 
 /**
  * Keeps a live count of the documents in each variant, using a single aggregate count query
- * refetched on changes reported by the preview store's shared global listener (see
- * {@link getVariantsDocumentCounts}).
+ * refetched on changes reported by the global listener (see {@link getVariantsDocumentCounts}).
  *
  * @internal
  */
 export function useVariantsDocumentCounts(): VariantsDocumentCountsState {
   const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
-  const previewStore = useDocumentPreviewStore()
+  const {invalidationChannel} = useGlobalListenerStore()
   const {state$} = useVariantsStore()
 
   const observable = useMemo(
-    () => getVariantsDocumentCounts(client, previewStore.unstable_invalidationChannel, state$),
-    [client, previewStore, state$],
+    () => getVariantsDocumentCounts(client, invalidationChannel, state$),
+    [client, invalidationChannel, state$],
   )
 
   return useObservable(observable, INITIAL_STATE)

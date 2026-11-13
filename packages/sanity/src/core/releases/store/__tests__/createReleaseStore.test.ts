@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {defer, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {createGlobalListenerStore} from '../../../store/globalListener/createGlobalListenerStore'
 import {createVariantsStore} from '../../../variants/store/createVariantsStore'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {createReleaseStore} from '../createReleaseStore'
@@ -54,7 +54,10 @@ describe('createReleaseStore', () => {
     fetch
       .mockReturnValueOnce(of([activeASAPRelease]))
       .mockReturnValueOnce(of([activeASAPRelease, activeScheduledRelease]))
-    const store = createReleaseStore({client, previewStore: createDocumentPreviewStore({client})})
+    const store = createReleaseStore({
+      client,
+      globalListenerStore: createGlobalListenerStore({client}),
+    })
     const states: ReleasesReducerState[] = []
     const subscription = store.state$.subscribe((state) => states.push(state))
 
@@ -90,9 +93,9 @@ describe('createReleaseStore', () => {
 
   it('shares one listener connection with the variants store', async () => {
     const {client, fetch, connections, listener$} = createMockClient()
-    const previewStore = createDocumentPreviewStore({client})
-    const releaseStore = createReleaseStore({client, previewStore})
-    const variantsStore = createVariantsStore({client, previewStore, enabled: true})
+    const globalListenerStore = createGlobalListenerStore({client})
+    const releaseStore = createReleaseStore({client, globalListenerStore})
+    const variantsStore = createVariantsStore({client, globalListenerStore, enabled: true})
     const subscriptions = [releaseStore.state$.subscribe(), variantsStore.state$.subscribe()]
 
     listener$.next({type: 'welcome'})

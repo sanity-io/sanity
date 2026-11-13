@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {useDocumentPreviewStore} from '../../store/datastores'
+import {useGlobalListenerStore} from '../../store/datastores'
 import {useResourceCache} from '../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from './constants'
@@ -13,26 +13,26 @@ export function useVariantsStore(): VariantStore {
   const variantsEnabled = Boolean(workspace.beta?.variants?.enabled)
   const resourceCache = useResourceCache()
   const studioClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
-  const previewStore = useDocumentPreviewStore()
+  const globalListenerStore = useGlobalListenerStore()
 
   return useMemo(() => {
     const variantStore =
       resourceCache.get<VariantStore>({
-        dependencies: [workspace, previewStore],
+        dependencies: [workspace, globalListenerStore],
         namespace: 'VariantsStore',
       }) ||
       createVariantsStore({
         client: studioClient,
-        previewStore,
+        globalListenerStore,
         enabled: variantsEnabled,
       })
 
     resourceCache.set({
-      dependencies: [workspace, previewStore],
+      dependencies: [workspace, globalListenerStore],
       namespace: 'VariantsStore',
       value: variantStore,
     })
 
     return variantStore
-  }, [variantsEnabled, resourceCache, workspace, studioClient, previewStore])
+  }, [variantsEnabled, resourceCache, workspace, studioClient, globalListenerStore])
 }
