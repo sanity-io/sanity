@@ -7,19 +7,20 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isVersionId,
   PreviewCard,
-  ReleaseTitle,
   SanityDefaultPreview,
-  useActiveReleases,
   useTranslation,
-  VersionInlineBadge,
 } from 'sanity'
 import {Text} from 'ui5'
+
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../core/releases/components/VersionInlineBadge'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore

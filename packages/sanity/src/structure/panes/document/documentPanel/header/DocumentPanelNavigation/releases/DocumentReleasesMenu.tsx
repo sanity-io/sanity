@@ -2,24 +2,24 @@ import {type ReleaseDocument} from '@sanity/client'
 import {DotIcon} from '@sanity/icons/Dot'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  DEFAULT_VARIANT_TYPE_KEY,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   isCardinalityOneRelease,
-  isReleaseDocument,
   ReleaseAvatar,
   ReleaseAvatarIcon,
   useActiveReleases,
   useDocumentVersions,
-  useFormatRelativeLocalePublishDate,
   useGetDefaultPerspective,
   usePerspective,
-  useReleasesToolAvailable,
   useTranslation,
   useWorkspace,
 } from 'sanity'
 
+import {useFormatRelativeLocalePublishDate} from '../../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
+import {useReleasesToolAvailable} from '../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {structureLocaleNamespace} from '../../../../../../i18n'

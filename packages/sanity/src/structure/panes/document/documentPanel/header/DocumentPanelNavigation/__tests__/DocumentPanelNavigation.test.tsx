@@ -4,17 +4,17 @@ import {
   getVersionFromId,
   type ObjectSchemaType,
   useActiveReleases,
-  useAgentVersionDisplay,
-  useAllVariants,
   useDocumentVersions,
   usePerspective,
-  useReleasesToolAvailable,
   useScheduledDraftsEnabled,
-  useSingleDocRelease,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useReleasesToolAvailable} from '../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
+import {useSingleDocRelease} from '../../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
@@ -25,13 +25,26 @@ import {createPerspective, createRelease, createVariant, createVersion, GROUP_ID
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn(),
-  useAgentVersionDisplay: vi.fn(),
-  useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useReleasesToolAvailable: vi.fn(),
   useScheduledDraftsEnabled: vi.fn(),
-  useSingleDocRelease: vi.fn(),
+}))
+
+vi.mock('../../../../../../../core/schedules/hooks/useReleasesToolAvailable', () => ({
+  useReleasesToolAvailable: vi.fn(),
+}))
+vi.mock(
+  '../../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useSingleDocRelease: vi.fn(),
+  }),
+)
+vi.mock('../../../../../../../core/store/agent/useAgentVersionDisplay', () => ({
+  useAgentVersionDisplay: vi.fn(),
+}))
+vi.mock('../../../../../../../core/variants/store/useAllVariants', () => ({
+  useAllVariants: vi.fn(),
 }))
 
 vi.mock('../../../../useDocumentPane')

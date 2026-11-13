@@ -34,7 +34,9 @@ function hasAbsolutePath(
   return 'absolutePath' in a
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export const FormInput = memo(function FormInput(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) &
     (FormInputRelativePathArg | FormInputAbsolutePathArg) & {

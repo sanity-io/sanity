@@ -1,4 +1,5 @@
-import {definePlugin, type LayoutProps, StudioDiagnosticsBridge} from 'sanity'
+import {definePlugin, type LayoutProps} from 'sanity'
+import {StudioDiagnosticsBridge} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 function DiagnosticsBridgeLayout(props: LayoutProps) {
   return (

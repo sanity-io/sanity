@@ -1,22 +1,20 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ReleaseDocument, usePauseToEditScheduledDraft} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {usePauseToEditScheduledDraft} from '../../../../../../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
 import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 
 vi.mock('../../../useDocumentTitle', () => ({
   useDocumentTitle: () => ({title: 'Test document'}),
 }))
 
-vi.mock('sanity', async () => {
-  const actual = await vi.importActual('sanity')
-  return {
-    ...actual,
-    usePauseToEditScheduledDraft: vi.fn(),
-  }
-})
+// The banner imports the hook relatively (it is an internal), so the source module is mocked
+vi.mock('../../../../../../core/singleDocRelease/hooks/usePauseToEditScheduledDraft', () => ({
+  usePauseToEditScheduledDraft: vi.fn(),
+}))
 
 const mockUsePauseToEditScheduledDraft = usePauseToEditScheduledDraft as Mock<
   typeof usePauseToEditScheduledDraft
