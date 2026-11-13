@@ -375,6 +375,7 @@ export function RequestPanel(props: RequestPanelProps) {
   return (
     <SplitWithBottomPanel
       defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
           <ApiVersionButton onReveal={revealOption} resolved={resolved} />
