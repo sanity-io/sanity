@@ -3,10 +3,12 @@ import {
   createClient,
   type ListenEvent,
   type MutationEvent,
+  type SanityClient,
   type WelcomeEvent,
 } from '@sanity/client'
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {Observable, Subject} from 'rxjs'
+import {useEffect} from 'react'
+import {defer, finalize, NEVER, Observable, Subject} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type CommentDocument} from '../../types'
@@ -116,8 +118,11 @@ function setup(comments: CommentDocument[]) {
     )
   }
   const fetch = vi
-    .spyOn(client.collaboration.comments, 'fetch')
-    .mockImplementation(fakeFetch as typeof client.collaboration.comments.fetch)
+    .spyOn(client.observable.collaboration.comments, 'fetch')
+    .mockImplementation(((query: string, params?: QueryParams) =>
+      defer(() =>
+        fakeFetch(query, params),
+      )) as typeof client.observable.collaboration.comments.fetch)
 
   const listenerStore = createCommentsApiListenerStore({client})
   function useStores({docOneVersionId}: {docOneVersionId: string}) {
@@ -133,7 +138,7 @@ function setup(comments: CommentDocument[]) {
     }
   }
 
-  return {server, connections, fetch, useStores}
+  return {client, listenerStore, server, connections, fetch, useStores}
 }
 
 function ids(documents: {_id: string}[] | null) {
@@ -227,5 +232,95 @@ describe('useCommentsStore (comments v2)', () => {
       expect.objectContaining({versionId: 'versions.rSummer.doc-1'}),
     )
     expect(connections.opened).toBe(1)
+  })
+
+  it('shows optimistic updates, and applies the listener’s changes on top of them', async () => {
+    const {result, server} = await renderConnected([])
+
+    act(() => {
+      result.current.docOne.dispatch({type: 'COMMENT_ADDED', payload: comment('c-new', 'doc-1')})
+    })
+    expect(ids(result.current.docOne.data)).toEqual(['c-new'])
+
+    await act(async () => {
+      server.next(mutation('update', 'c-new', apiComment('c-new', 'doc-1', {status: 'resolved'})))
+    })
+    expect(result.current.docOne.data?.[0]?.status).toBe('resolved')
+  })
+})
+
+describe('useCommentsStore (comments v2), when its query scope changes', () => {
+  it('cancels the previous scope’s fetch, and never shows the previous scope’s comments', async () => {
+    const testClient = setup([comment('c1', 'doc-1'), comment('c4', 'versions.rSummer.doc-1')])
+    const commits: {ids: string[]; loading: boolean}[] = []
+    const {result, rerender} = renderHook(
+      (props: {docOneVersionId: string}) => {
+        const stores = testClient.useStores(props)
+        useEffect(() => {
+          commits.push({ids: ids(stores.docOne.data), loading: stores.docOne.loading})
+        })
+        return stores
+      },
+      {initialProps: {docOneVersionId: 'drafts.doc-1'}},
+    )
+    await act(async () => {
+      testClient.server.next(WELCOME)
+    })
+    await waitFor(() => expect(ids(result.current.docOne.data)).toEqual(['c1']))
+
+    // The version's fetch stays in flight until the store switches away from it
+    let versionFetchCancelled = false
+    testClient.fetch.mockImplementationOnce((() =>
+      NEVER.pipe(
+        finalize(() => {
+          versionFetchCancelled = true
+        }),
+      )) as SanityClient['observable']['collaboration']['comments']['fetch'])
+    const commitsBeforeSwitch = commits.length
+    rerender({docOneVersionId: 'versions.rSummer.doc-1'})
+    const switchCommits = commits.slice(commitsBeforeSwitch)
+    expect(switchCommits[0]).toEqual({ids: [], loading: true})
+    expect(switchCommits).not.toContainEqual(expect.objectContaining({ids: ['c1']}))
+
+    rerender({docOneVersionId: 'drafts.doc-1'})
+    await waitFor(() => expect(versionFetchCancelled).toBe(true))
+    await waitFor(() => expect(ids(result.current.docOne.data)).toEqual(['c1']))
+    expect(result.current.docOne.loading).toBe(false)
+  })
+
+  it('stays idle while its scope is not ready, and loads once it is', async () => {
+    const testClient = setup([comment('c1', 'doc-1')])
+    const commits: {ids: string[]; loading: boolean}[] = []
+    const {result, rerender} = renderHook(
+      ({ready}: {ready: boolean}) => {
+        const store = useCommentsStore({
+          client: testClient.client,
+          listenerStore: testClient.listenerStore,
+          transactionsIdMap,
+          onLatestTransactionIdReceived,
+          groupId: 'doc-1',
+          versionId: 'doc-1',
+          type: 'field',
+          ready,
+        })
+        useEffect(() => {
+          commits.push({ids: ids(store.data), loading: store.loading})
+        })
+        return store
+      },
+      {initialProps: {ready: false}},
+    )
+    expect(result.current.loading).toBe(false)
+    expect(testClient.connections.opened).toBe(0)
+    expect(testClient.fetch).not.toHaveBeenCalled()
+
+    const commitsBeforeReady = commits.length
+    rerender({ready: true})
+    expect(commits[commitsBeforeReady]).toEqual({ids: [], loading: true})
+    await act(async () => {
+      testClient.server.next(WELCOME)
+    })
+    await waitFor(() => expect(ids(result.current.data)).toEqual(['c1']))
+    expect(result.current.loading).toBe(false)
   })
 })

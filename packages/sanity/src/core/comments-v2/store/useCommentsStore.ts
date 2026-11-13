@@ -1,13 +1,20 @@
-import {type SanityClient} from '@sanity/client'
-import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {catchError, EMPTY} from 'rxjs'
+import {
+  type CollaborationCommentDocument,
+  type MutationEvent,
+  type SanityClient,
+} from '@sanity/client'
+import {useMemo} from 'react'
+import {useObservable, useObservableSubject} from 'react-rx'
+import {distinctUntilChanged, filter, map, merge, type Observable, of, scan, tap} from 'rxjs'
 
+import {
+  followListenerQuery,
+  type ListenerQueryEvent,
+  type ListenerQueryStatusEvent,
+} from '../../store/sharedListener/followListenerQuery'
 import {type CommentDocument, type CommentsType, type Loadable} from '../types'
 import {buildCommentsQuery, matchesCommentsQuery} from './buildCommentsQuery'
-import {
-  type CommentsApiListenerEvent,
-  type CommentsApiListenerStore,
-} from './createCommentsApiListenerStore'
+import {type CommentsApiListenerStore} from './createCommentsApiListenerStore'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
 type DocumentId = string
@@ -47,8 +54,147 @@ interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
   dispatch: React.Dispatch<CommentsReducerAction>
 }
 
-const INITIAL_STATE: CommentsReducerState = {
-  comments: {},
+interface CommentsStoreState extends CommentsReducerState {
+  loading: boolean
+  error: Error | null
+}
+
+type CommentsStoreAction = CommentsReducerAction | ListenerQueryStatusEvent
+
+const LOADING_STATE: CommentsStoreState = {comments: {}, loading: true, error: null}
+const IDLE_STATE: CommentsStoreState = {comments: {}, loading: false, error: null}
+
+interface CommentsQueryScope {
+  gdr: string | null
+  versionId: string
+  type: CommentsType
+}
+
+interface QueryEventOutcome {
+  action: CommentsStoreAction
+  /**
+   * The comment whose latest locally started transaction this event carries, if any
+   */
+  latestTransactionReceivedFor: DocumentId | null
+}
+
+/**
+ * The store action for a mutation from the realtime listener, or `null` when it does not concern
+ * the store.
+ */
+function mutationToOutcome(
+  event: MutationEvent<CollaborationCommentDocument>,
+  scope: CommentsQueryScope,
+  transactionsIdMap: Map<DocumentId, TransactionId>,
+): QueryEventOutcome | null {
+  if (event.transition === 'disappear') {
+    return {
+      action: {type: 'COMMENT_DELETED', id: event.documentId},
+      latestTransactionReceivedFor: null,
+    }
+  }
+
+  const comment = event.result as CommentDocument | undefined
+  if (!comment) return null
+
+  // The shared listener reports every comment on the resource. One that is not in this
+  // store's query, or no longer is after an edit, is dropped if the store had it.
+  if (!matchesCommentsQuery(comment, scope)) {
+    return {
+      action: {type: 'COMMENT_DELETED', id: comment._id},
+      latestTransactionReceivedFor: null,
+    }
+  }
+
+  const latestTransactionId = transactionsIdMap.get(comment._id)
+
+  if (event.transition === 'appear') {
+    // A registered transaction for this comment means a local update was
+    // issued after it was created (e.g. re-anchoring an inline comment
+    // right after creating it). This create echo predates that update, so
+    // applying it would clobber the optimistic state with a stale
+    // snapshot. Skip it — the update echo carries the fresh one.
+    if (latestTransactionId && event.transactionId !== latestTransactionId) return null
+
+    return {
+      action: {type: 'COMMENT_RECEIVED', payload: comment},
+      latestTransactionReceivedFor: null,
+    }
+  }
+
+  const isLatestTransaction = event.transactionId === latestTransactionId
+
+  // If we have a transaction id stored for the received comment id, but the
+  // received transaction id is not the latest, we don't want to update the
+  // comment in the store. This is to avoid that the UI is updated with an old
+  // transaction id when multiple transactions are started in a short time span.
+  if (!isLatestTransaction && latestTransactionId) return null
+
+  return {
+    action: {type: 'COMMENT_UPDATED', payload: comment},
+    latestTransactionReceivedFor: isLatestTransaction ? comment._id : null,
+  }
+}
+
+/**
+ * The store action for an event of the comments query, or `null` when it does not concern the
+ * store.
+ */
+function queryEventToOutcome(
+  event: ListenerQueryEvent<CommentDocument, CollaborationCommentDocument>,
+  scope: CommentsQueryScope,
+  transactionsIdMap: Map<DocumentId, TransactionId>,
+): QueryEventOutcome | null {
+  switch (event.type) {
+    case 'loading':
+    case 'error':
+      return {action: event, latestTransactionReceivedFor: null}
+    case 'loaded':
+      return {
+        action: {type: 'COMMENTS_SET', comments: event.documents},
+        latestTransactionReceivedFor: null,
+      }
+    case 'mutation':
+      return mutationToOutcome(event, scope, transactionsIdMap)
+    default: {
+      const unhandled: never = event
+      return unhandled
+    }
+  }
+}
+
+/**
+ * Applies `commentsReducer` to the comments, and returns `state` itself when nothing changed so
+ * the consumers' data keeps its identity.
+ */
+function commentsStoreReducer(
+  state: CommentsStoreState,
+  action: CommentsStoreAction,
+): CommentsStoreState {
+  switch (action.type) {
+    case 'loading':
+      return state.loading ? state : {...state, loading: true}
+    case 'error':
+      return {...state, error: action.error, loading: false}
+    case 'COMMENTS_SET':
+      return {
+        ...state,
+        comments: commentsReducer(state, action).comments,
+        loading: false,
+        error: null,
+      }
+    case 'COMMENT_ADDED':
+    case 'COMMENT_DELETED':
+    case 'COMMENT_RECEIVED':
+    case 'COMMENT_UPDATED': {
+      const {comments} = commentsReducer(state, action)
+      return comments === state.comments ? state : {...state, comments}
+    }
+    default: {
+      const unhandled: never = action
+      return unhandled
+    }
+  }
 }
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
@@ -63,154 +209,61 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     ready = true,
   } = opts
 
-  const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
-  const [loading, setLoading] = useState<boolean>(client !== null && ready)
-  const [error, setError] = useState<Error | null>(null)
-
-  const didInitialFetch = useRef<boolean>(false)
-
   const gdr = useMemo(
     () => client?.collaboration.comments.getTargetDocumentRef(groupId) ?? null,
     [client, groupId],
   )
+  const enabled = Boolean(client && listenerStore && gdr && ready)
 
-  const {query, params} = useMemo(
-    () => buildCommentsQuery({gdr, versionId, type}),
-    [gdr, versionId, type],
-  )
+  // Optimistic updates from the comment operations
+  const [localActions$, dispatch] = useObservableSubject<CommentsReducerAction>()
 
-  // When the query scope changes (e.g. draft+published → version), drop stale
-  // results during render. The listen effect below resets fetch tracking when
-  // it resubscribes.
-  const queryKey = `${query}:${JSON.stringify(params)}:${ready}`
-  const [activeQueryKey, setActiveQueryKey] = useState(queryKey)
+  // One subscription per query scope: changing it (e.g. draft and published to a version) tears
+  // the previous one down, which cancels its fetch, and the shared listener replays its `welcome`
+  // to the new one, which fetches again.
+  const state$: Observable<CommentsStoreState> = useMemo(() => {
+    if (!client || !listenerStore || !gdr || !ready) return of(IDLE_STATE)
 
-  if (activeQueryKey !== queryKey) {
-    setActiveQueryKey(queryKey)
-    dispatch({type: 'COMMENTS_SET', comments: []})
-    setLoading(Boolean(client && gdr && ready))
-    setError(null)
-  }
+    const scope: CommentsQueryScope = {gdr, versionId, type}
+    const {query, params} = buildCommentsQuery(scope)
 
-  const initialFetch = useCallback(async () => {
-    if (!client || !gdr || !ready) {
-      setLoading(false)
-      return
-    }
-
-    try {
-      const res = await client.collaboration.comments.fetch<CommentDocument[]>(query, params)
-      dispatch({type: 'COMMENTS_SET', comments: res})
-      setError(null)
-      setLoading(false)
-    } catch (err) {
-      setError(err)
-    }
-  }, [client, gdr, ready, params, query])
-
-  const handleListenerEvent = useCallback(
-    async (event: CommentsApiListenerEvent) => {
-      // Fetch all comments on initial connection
-      if (event.type === 'welcome' && !didInitialFetch.current) {
-        setLoading(true)
-        await initialFetch()
-        setLoading(false)
-        didInitialFetch.current = true
-      }
-
-      // The reconnect event means that we are trying to reconnect to the realtime listener.
-      // In this case we set loading to true to indicate that we're trying to
-      // reconnect. Once a connection has been established, the welcome event
-      // will be received and we'll fetch all comments again (above)
-      if (event.type === 'reconnect') {
-        setLoading(true)
-        didInitialFetch.current = false
-      }
-
-      // Handle mutations (create, update, delete) from the realtime listener
-      // and update the comments store accordingly
-      if (event.type === 'mutation') {
-        if (event.transition === 'disappear') {
-          dispatch({type: 'COMMENT_DELETED', id: event.documentId})
-          return
-        }
-
-        // The shared listener reports every comment on the resource. One that is not in this
-        // store's query, or no longer is after an edit, is dropped if the store had it.
-        const comment = event.result as CommentDocument | undefined
-        if (!comment) return
-
-        if (!matchesCommentsQuery(comment, {gdr, versionId, type})) {
-          dispatch({type: 'COMMENT_DELETED', id: comment._id})
-          return
-        }
-
-        if (event.transition === 'appear') {
-          // A registered transaction for this comment means a local update was
-          // issued after it was created (e.g. re-anchoring an inline comment
-          // right after creating it). This create echo predates that update, so
-          // applying it would clobber the optimistic state with a stale
-          // snapshot. Skip it — the update echo carries the fresh one.
-          const latestTransactionId = transactionsIdMap.get(comment._id)
-          const isStale = latestTransactionId && event.transactionId !== latestTransactionId
-          if (isStale) return
-
-          dispatch({
-            type: 'COMMENT_RECEIVED',
-            payload: comment,
-          })
-        }
-
-        if (event.transition === 'update') {
-          const id = comment._id
-          const transactionId = event.transactionId
-          const latestTransactionId = transactionsIdMap.get(id)
-          const isLatestTransaction = transactionId === latestTransactionId
-
-          // If we have a transaction id stored for the received comment id, but the
-          // received transaction id is not the latest, we don't want to update the
-          // comment in the store. This is to avoid that the UI is updated with an old
-          // transaction id when multiple transactions are started in a short time span.
-          if (!isLatestTransaction && latestTransactionId) return
-
-          dispatch({
-            type: 'COMMENT_UPDATED',
-            payload: comment,
-          })
-
-          // If the received transaction id is the latest, we'll call the
-          // `onLatestTransactionIdReceived` callback to let the parent consumer
-          // know that the transaction id has been received.
-          if (isLatestTransaction) {
-            onLatestTransactionIdReceived(id)
-          }
-        }
-      }
-    },
-    [gdr, initialFetch, onLatestTransactionIdReceived, transactionsIdMap, type, versionId],
-  )
-
-  const listener$ = useMemo(() => {
-    if (!listenerStore || !gdr || !ready) return EMPTY
-
-    return listenerStore.events.pipe(
-      catchError((err) => {
-        setError(err)
-        return EMPTY
-      }),
+    const fetchComments = client.observable.collaboration.comments.fetch<CommentDocument[]>(
+      query,
+      params,
     )
-  }, [listenerStore, gdr, ready])
+    const remoteActions$ = listenerStore.events.pipe(
+      followListenerQuery(fetchComments),
+      map((event) => queryEventToOutcome(event, scope, transactionsIdMap)),
+      filter((outcome) => outcome !== null),
+      tap(({latestTransactionReceivedFor}) => {
+        // Let the consumer know that the latest transaction it started has been received
+        if (latestTransactionReceivedFor) {
+          onLatestTransactionIdReceived(latestTransactionReceivedFor)
+        }
+      }),
+      map(({action}) => action),
+    )
 
-  useEffect(() => {
-    // The shared listener replays its `welcome` to every new subscription, so a resubscription
-    // for a different query fetches that one's comments.
-    didInitialFetch.current = false
-    const sub = listener$.subscribe(handleListenerEvent)
+    return merge(remoteActions$, localActions$).pipe(
+      scan(commentsStoreReducer, LOADING_STATE),
+      distinctUntilChanged(),
+    )
+  }, [
+    client,
+    gdr,
+    listenerStore,
+    localActions$,
+    onLatestTransactionIdReceived,
+    ready,
+    transactionsIdMap,
+    type,
+    versionId,
+  ])
 
-    return () => {
-      sub?.unsubscribe()
-    }
-  }, [handleListenerEvent, listener$])
+  // The first render after the scope changes shows the initial value, until the new subscription
+  // emits. That is the loading state, unless the store is not following a query at all.
+  const subscribedState = useObservable(state$, LOADING_STATE)
+  const state = enabled ? subscribedState : IDLE_STATE
 
   // Transform comments object to array
   const commentsAsArray = useMemo(() => Object.values(state.comments), [state.comments])
@@ -218,7 +271,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   return {
     data: commentsAsArray,
     dispatch,
-    error,
-    loading,
+    error: state.error,
+    loading: state.loading,
   }
 }
