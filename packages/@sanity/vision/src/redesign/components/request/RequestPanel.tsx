@@ -12,7 +12,6 @@ import {
   useMemo,
   useRef,
   useState,
-  useEffectEvent,
 } from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
