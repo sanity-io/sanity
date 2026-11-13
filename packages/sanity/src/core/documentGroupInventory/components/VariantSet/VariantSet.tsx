@@ -12,19 +12,20 @@ import {inventoryContainerName} from '../CreateVariant/CreateVariant.css'
 const CHECKBOX_COLUMN_WIDTH = 17
 
 /**
- * The shared leading column for group icons (the Published and Draft dots, a release bolt or clock)
- * and row marks (the variant diamond). The same 21px as the navbar menus' leading column, so icons
- * and marks line up down the panel.
+ * The status mark column at the row's right edge, for group marks (the Published disc, the Draft
+ * ring, a release bolt or clock) and row marks (the variant diamond) alike, so they line up down the
+ * panel. The 21px slot of the navbar menus' icon column.
  *
  * @internal
  */
-export const LEADING_COLUMN_WIDTH = 21
+export const MARK_COLUMN_WIDTH = 21
 
 /**
  * One grid for a set's header and its rows, which are subgrids of it: the row padding, the
- * checkbox, a gap, the icon and mark column, a gap, then the text. Every header and row text starts
- * at the same x. A set whose versions can never be selected, as in the picker, has no checkbox
- * column.
+ * checkbox gutter, a gap, the text, a gap, the mark column, then the row padding. Every header and
+ * row text starts right after the checkbox gutter, at the same x, and every mark sits in the same
+ * trailing column. The checkbox gutter is always there, so rows never move when the checkboxes
+ * show. A set whose versions can never be selected, as in the picker, has no gutter.
  *
  * The padding and the gaps are tracks rather than the rows' own padding and a column gap: a subgrid's
  * padding would eat into its edge tracks, and a column gap would also open between the padding and
@@ -35,26 +36,26 @@ export const VariantSet = styled(Card)(({theme}) => {
 
   return `
   --inventory-row-padding: ${space[3]}px;
-  --inventory-leading-gap: ${space[2]}px;
+  --inventory-column-gap: ${space[2]}px;
 
   display: grid !important;
   grid-template-columns:
     [row-start] var(--inventory-row-padding)
     [check-start] ${CHECKBOX_COLUMN_WIDTH}px
-    [check-end] var(--inventory-leading-gap)
-    [mark-start] ${LEADING_COLUMN_WIDTH}px
-    [mark-end] var(--inventory-leading-gap)
+    [check-end] var(--inventory-column-gap)
     [text-start] minmax(0, 1fr)
-    [text-end] var(--inventory-row-padding)
+    [text-end] var(--inventory-column-gap)
+    [mark-start] ${MARK_COLUMN_WIDTH}px
+    [mark-end] var(--inventory-row-padding)
     [row-end];
 
   &[data-selectable='false'] {
     grid-template-columns:
       [row-start] var(--inventory-row-padding)
-      [mark-start] ${LEADING_COLUMN_WIDTH}px
-      [mark-end] var(--inventory-leading-gap)
       [text-start] minmax(0, 1fr)
-      [text-end] var(--inventory-row-padding)
+      [text-end] var(--inventory-column-gap)
+      [mark-start] ${MARK_COLUMN_WIDTH}px
+      [mark-end] var(--inventory-row-padding)
       [row-end];
   }
 
@@ -71,3 +72,17 @@ export const VariantSet = styled(Card)(({theme}) => {
   }
 `
 })
+
+/**
+ * A group's rows, as one element so the header's toggle can point at them (aria-controls)
+ * and hide them. It takes no box of its own, so the rows stay subgrids of the set.
+ *
+ * @internal
+ */
+export const VariantSetRows = styled.div`
+  display: contents;
+
+  &[hidden] {
+    display: none;
+  }
+`

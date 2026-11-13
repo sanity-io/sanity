@@ -387,6 +387,8 @@ export function DocumentGroupInventory(
         <Body>
           {schema && (
             <Select
+              // Groups collapse per document, for the session
+              key={documentId}
               machine={selectionRef}
               inventoryRef={inventoryRef}
               selectedId={selectedId}
@@ -515,6 +517,7 @@ const Select: ComponentType<{
             bundle={set.bundle}
             readOnly={readOnly}
             locked={isLocked}
+            containsOpen={set.variants.some(({id}) => id === selectedId)}
             selectionState={setSelection.state}
             blockedReason={
               setSelection.groupBlockedReason

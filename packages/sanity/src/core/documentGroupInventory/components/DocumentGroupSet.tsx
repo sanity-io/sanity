@@ -1,5 +1,5 @@
 import {type BadgeTone} from '@sanity/ui'
-import {type ComponentType, type ReactNode} from 'react'
+import {type ComponentType, type MouseEvent, type ReactNode, useId, useState} from 'react'
 import {Flex, Text} from 'ui5'
 
 import {type StatusMarkName} from '../../../ui-components/statusMark/statusMarkGeometry'
@@ -14,7 +14,7 @@ import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
 import {type GroupSelectionState} from '../utils/selection'
 import {LeadingGlyph} from './VariantSet/LeadingGlyph'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
-import {VariantSet} from './VariantSet/VariantSet'
+import {VariantSet, VariantSetRows} from './VariantSet/VariantSet'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
 
 /**
@@ -40,6 +40,8 @@ export const DocumentGroupSet: ComponentType<{
   readOnly?: boolean
   /** Whether the selection is frozen, as it is while a deletion is in flight. */
   locked?: boolean
+  /** Whether the version open in the form is in this set. A collapsed set then says so. */
+  containsOpen?: boolean
 }> = ({
   name,
   count,
@@ -51,14 +53,34 @@ export const DocumentGroupSet: ComponentType<{
   blockedReason,
   readOnly,
   locked,
+  containsOpen,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  // Expanded by default. The state lives for the session; the inventory remounts per document.
+  const [expanded, setExpanded] = useState(true)
+  const rowsId = useId()
+  const nameId = useId()
+  const countId = useId()
 
   return (
     <VariantSet data-variant-set={name} data-selectable={!readOnly}>
-      <VariantSetHeader as="header">
+      <VariantSetHeader
+        as="header"
+        data-collapsed={expanded ? undefined : ''}
+        data-open-inside={!expanded && containsOpen ? '' : undefined}
+      >
+        {/* The toggle covers the header; the checkbox and header actions sit above it */}
+        <button
+          type="button"
+          className="group-toggle"
+          aria-expanded={expanded}
+          aria-controls={rowsId}
+          aria-labelledby={typeof count === 'number' ? `${nameId} ${countId}` : nameId}
+          onClick={() => setExpanded((current) => !current)}
+        />
         {!readOnly && (
-          <div className="atom">
+          // The checkbox never toggles the group
+          <div className="atom" onClick={stopPropagation}>
             <VariantCheckbox
               label={t('document-group.select-group', {name})}
               checked={selectionState === 'checked'}
@@ -75,22 +97,43 @@ export const DocumentGroupSet: ComponentType<{
           {...(bundle ? bundleMark(bundle) : {})}
         />
         <div className="variant-set-text">
-          <Flex gap={2} alignItems="center">
-            <Text size={1} weight="medium" as="div" trim={true} data-testid="variant-set-name">
+          {/* Read once, as the toggle's name */}
+          <Flex gap={2} alignItems="center" aria-hidden>
+            <Text
+              size={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              id={nameId}
+              data-testid="variant-set-name"
+            >
               {name}
             </Text>
             {typeof count === 'number' && (
-              <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
+              <Text
+                size={1}
+                muted
+                as="div"
+                trim={true}
+                id={countId}
+                data-testid="variant-set-count"
+              >
                 {count}
               </Text>
             )}
           </Flex>
-          {headerActions}
+          {headerActions && <div className="header-actions">{headerActions}</div>}
         </div>
       </VariantSetHeader>
-      {children}
+      <VariantSetRows id={rowsId} hidden={!expanded}>
+        {children}
+      </VariantSetRows>
     </VariantSet>
   )
+}
+
+function stopPropagation(event: MouseEvent) {
+  event.stopPropagation()
 }
 
 /**

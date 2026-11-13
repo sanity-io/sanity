@@ -23,6 +23,12 @@ export const SELECTION = {
    * panel's own background, so hover would not show: dark takes the next step, gray-900.
    */
   hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
+  /**
+   * A hovered group header, which is already a low band (gray-50 in light): `--background-high`
+   * (gray-100) in light. In dark that token is gray-900, about the header band itself, so dark takes
+   * the next step, gray-800.
+   */
+  headerHoverBackground: 'light-dark(var(--gray-100), var(--gray-800))',
   /** A checked box: UI 5's checkbox fill and tick (`--active-background-emphasized` / `-foreground-`). */
   checkboxFill: 'var(--active-background-emphasized)',
   checkboxTick: 'var(--active-foreground-emphasized)',
