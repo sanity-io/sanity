@@ -116,6 +116,28 @@ describe('VariantsOverview', () => {
     )
   })
 
+  it('moves focus into the add filter popover and back to its trigger on Escape', async () => {
+    void render(<VariantsOverviewHarness />)
+
+    await expectRowsSettled(2)
+    const trigger = page.getByRole('button', {name: 'Add filter'})
+    await userEvent.click(trigger)
+
+    const search = page.getByLabelText('Find a dimension…')
+    await expect.element(search).toBeVisible()
+    await expect.element(search).toHaveFocus()
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await userEvent.keyboard('{Escape}')
+
+    await expect.element(search).not.toBeVisible()
+    await expect.element(trigger).toHaveFocus()
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await settleChromaticEndState()
+    await expect.element(trigger).toHaveFocus()
+  })
+
   it('narrows the list from the search box in the command lane', async () => {
     void render(<VariantsOverviewHarness />)
 

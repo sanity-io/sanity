@@ -2,6 +2,8 @@ import {defineLocalesResources} from 'sanity'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {
+  /** The text shown in the breadcrumb for a document without a title */
+  'document-breadcrumb.untitled.text': 'Untitled',
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',
   /** The text shown if the document list is unable to render */

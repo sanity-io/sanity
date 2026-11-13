@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {hasStrongReferenceTo} from '../useReferringDocuments'
+import {classifyReferrer, hasStrongReferenceTo} from '../useReferringDocuments'
 
 const TARGET = 'book-lighthouse'
 
@@ -52,5 +52,68 @@ describe('hasStrongReferenceTo', () => {
       _system: {group: {_ref: TARGET, _weak: true}, variants: [{_key: 'v', _ref: TARGET}]},
     }
     expect(hasStrongReferenceTo(variantCopy, TARGET)).toBe(false)
+  })
+})
+
+describe('classifyReferrer', () => {
+  const strong = {_type: 'reference', _ref: TARGET}
+
+  it('marks a strong link in a published document or draft as required', () => {
+    expect(classifyReferrer({_id: 'a', author: strong}, TARGET)).toEqual({
+      required: true,
+      failsLater: false,
+    })
+    expect(
+      classifyReferrer(
+        {_id: 'drafts.a', _system: {group: {_ref: 'a'}, bundleId: 'drafts'}, author: strong},
+        TARGET,
+      ),
+    ).toEqual({required: true, failsLater: false})
+  })
+
+  it('marks a strong link in a variant copy as required', () => {
+    expect(
+      classifyReferrer(
+        {
+          _id: 'versions.scope-de.a',
+          _system: {bundleId: 'drafts', variants: [{_ref: '_.variants.de-DE'}]},
+          author: strong,
+        },
+        TARGET,
+      ),
+    ).toEqual({required: true, failsLater: false})
+  })
+
+  it('marks a strong link held only by a release copy as failing later, not required', () => {
+    expect(
+      classifyReferrer(
+        {
+          _id: 'versions.rel.a',
+          _system: {bundleId: 'rel', release: {_ref: '_.releases.rel'}},
+          author: strong,
+        },
+        TARGET,
+      ),
+    ).toEqual({required: false, failsLater: true})
+  })
+
+  it('treats a version id without `_system` as a release copy', () => {
+    expect(classifyReferrer({_id: 'versions.rel.a', author: strong}, TARGET)).toEqual({
+      required: false,
+      failsLater: true,
+    })
+  })
+
+  it('marks weak links as neither', () => {
+    expect(
+      classifyReferrer(
+        {
+          _id: 'versions.rel.a',
+          _system: {release: {_ref: '_.releases.rel'}},
+          author: {...strong, _weak: true},
+        },
+        TARGET,
+      ),
+    ).toEqual({required: false, failsLater: false})
   })
 })

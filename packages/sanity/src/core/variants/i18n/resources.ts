@@ -35,6 +35,8 @@ const variantsLocaleStrings = {
     'You do not have permission to delete this variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
+  /** Accessible name of the documentation link, which opens in a new tab. */
+  'overview.action.documentation.aria-label': 'Documentation (opens in a new tab)',
   /** Description for the Variants overview empty state. */
   'overview.empty-state.description':
     'Variant definitions describe how content is personalized for audiences, locales, segments, and more.',
@@ -49,6 +51,8 @@ const variantsLocaleStrings = {
   'overview.filter.clear-all': 'Clear filters',
   /** Accessible label / tooltip for removing a single active filter value chip. */
   'overview.filter.remove-value': 'Remove filter',
+  /** Accessible name of a filter chip's remove button; `title` is "Dimension: value". */
+  'overview.filter.remove-value.aria-label': 'Remove filter {{title}}',
   /** The button that opens the add-filter menu. */
   'overview.filter.add': 'Add filter',
   /** Placeholder for the searchable dimension list in the add-filter menu. */

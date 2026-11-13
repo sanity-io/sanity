@@ -58,6 +58,13 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   )
 
   const setVariant = useSetVariant()
+  const paneRouter = usePaneRouter()
+
+  // Once the last version is gone there is no document left to show: close the pane, as the
+  // document menu's delete does, rather than leave an empty, editable form behind.
+  function handleAllVersionsDeleted() {
+    paneRouter.closeCurrentAndAfter()
+  }
 
   const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
 
@@ -150,6 +157,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             onSelect={selectDocumentGroupVariant}
             createVariantId={createVariantId}
             onCreateVariantClose={handleCreateVariantClose}
+            onAllVersionsDeleted={handleAllVersionsDeleted}
           />
         )}
       </div>

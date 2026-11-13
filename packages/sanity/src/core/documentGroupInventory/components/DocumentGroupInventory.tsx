@@ -19,6 +19,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
+import {useEffectEvent} from 'use-effect-event'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
@@ -131,6 +132,11 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * cancelling, or straight away when the form cannot open. The consumer clears its request here.
    */
   onCreateVariantClose?: () => void
+  /**
+   * Called after a delete that removed every version of the document, so the consumer can leave
+   * the document (for example by closing its pane) instead of showing an empty one.
+   */
+  onAllVersionsDeleted?: () => void
 }
 
 /**
@@ -174,6 +180,10 @@ export function DocumentGroupInventory(
   const components = props.mode === 'readOnly' ? undefined : props.components
   const createVariantId = props.mode === 'readOnly' ? undefined : props.createVariantId
   const onCreateVariantClose = props.mode === 'readOnly' ? undefined : props.onCreateVariantClose
+
+  const onAllVersionsDeleted = props.mode === 'readOnly' ? undefined : props.onAllVersionsDeleted
+
+  const handleAllVersionsDeleted = useEffectEvent(() => onAllVersionsDeleted?.())
 
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
@@ -361,6 +371,12 @@ export function DocumentGroupInventory(
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
 
   useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
+
+  useEffect(() => {
+    const subscription = deletionRef.on('allVersionsDeleted', () => handleAllVersionsDeleted())
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- handleAllVersionsDeleted is a useEffectEvent and must stay out of the dependency array
+  }, [deletionRef])
 
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
