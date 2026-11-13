@@ -1,3 +1,5 @@
+import 'ui5/styles.css'
+
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 

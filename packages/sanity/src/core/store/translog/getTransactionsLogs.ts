@@ -93,7 +93,9 @@ export async function getTransactionsLogs(
     }?${queryParams.toString()}`,
   )
 
-  const stream = await getJsonStream(transactionsUrl, clientConfig.token)
+  // `getAuth()` waits for a renewal in progress; `config().token` could hand out a stale one.
+  const {token} = await client.getAuth()
+  const stream = await getJsonStream(transactionsUrl, token)
   const transactions: (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[] = []
 
   const reader = stream.getReader()
