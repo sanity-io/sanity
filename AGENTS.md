@@ -985,7 +985,7 @@ revealed. Two consequences for Suspense code:
   consumer that cannot work without the provider reads the context through a hook that throws
   (`useTasksMode`, `useCommentsMode`); one that renders either way checks before reading,
   `promise ? use(promise) : fallback`, and the fallback is the plain value that case means
-  (`NO_UPSELL_DATA`; `null` for `ScheduledPublishingModePromiseContext`, `false` for
+  (`null` for `ScheduledPublishingModePromiseContext`, `false` for
   `HasUsedScheduledPublishingPromiseContext`), not a promise of it.
 - Whether a feature is enabled and which mode it is in are separate hooks, and a hook never
   returns a resolved mode: `useXEnabled()` answers the enabled question synchronously
@@ -1037,21 +1037,33 @@ revealed. Two consequences for Suspense code:
 - The upsell content itself follows the same rule. `useUpsellData` returns
   `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
   a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
-  into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
-  request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
-  [upsellData$])` (`useUpsellContext` does this for every upsell provider, including
-  `ReleasesUpsellProvider`), and the context values carry the promise as
-  `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
-  just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
-  is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),
-  and each upsell panel (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`,
-  the schedules panels) is a leaf that `use()`s the promise under its own `<Suspense>`. Nothing
-  outside those leaves reads it: a form field or a document action in upsell mode just calls
-  `handleOpenDialog`, so a slow `/journey/*` request can only delay the dialog or a panel, never
-  the form (`CommentsField`, `CommentsPortableTextInput`, `TaskCreateAction`). Where no provider
-  is mounted, the fallback value carries
-  `upsellDataPromise: null` and the leaf reads
-  `upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA`. Because the settled promise is
+  into a `use()`-compatible promise with `useObservablePromise(upsellData$)`; `useUpsellContext`
+  does this for every upsell provider, including `ReleasesUpsellProvider`, and the context values
+  carry the promise as `upsellDataPromise`. Whether the request starts on commit is the required
+  `preLoadData` option. A provider passes `true` only once its feature check has settled as
+  upsell (`!isLoading && !error && !enabled` from `useFeatureEnabled`, or
+  `useSingleDocReleaseEnabled().mode === 'upsell'`), so a plan that has the feature never calls
+  `/journey/*`; then the provider preloads with
+  `useEffect(() => { void preloadObservablePromise(upsellData$) }, [upsellData$])`. With `false`,
+  `useObservablePromise` is passed `{disabled: true}` (it would otherwise subscribe on commit by
+  itself) until `handleOpenDialog` runs or an `UpsellPanel` mounts. The asset and document
+  limit providers always pass `false`, and releases does for a plan that has the feature: their
+  dialog opens on a quota error, and `UpsellContextDialog` shows a loading dialog under its own
+  `<Suspense>` until the content arrives.
+  `upsellDataPromise` is only ever read with `use()`, never awaited, and only by those two
+  components: `handleOpenDialog` just opens, `UpsellContextDialog` reads the content while the
+  dialog is open (a failed request is reported there with the toast and closes the dialog again,
+  `UpsellContentUnavailable`), and `UpsellPanel` takes the feature's whole context value
+  (`<UpsellPanel upsell={useTasksUpsell()} />`), starts the request with `requestUpsellData` when
+  it mounts, reads the content in a child under its own `<Suspense>` with a `LoadingBlock`
+  fallback, and renders its `unavailable` prop (nothing by default) when the content cannot be
+  loaded or no provider is mounted (`upsellDataPromise: null`). A host renders only its own
+  layout around it (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`, the
+  schedules panels), and that layout stays on screen while the panel loads. Nothing else reads
+  the promise: a form
+  field or a document action in upsell mode just calls `handleOpenDialog`, so a slow `/journey/*`
+  request can only delay the dialog or a panel, never the form (`CommentsField`,
+  `CommentsPortableTextInput`, `TaskCreateAction`). Because the settled promise is
   fulfilled in place (stable identity), a provider's
   context value does not change when the response arrives, so its consumers do not re-render for
   it. Tests mock `useUpsellData` with a module-scoped `of(result)`

@@ -1,8 +1,6 @@
 import {motion} from 'motion/react'
-import {Suspense, use, useCallback} from 'react'
 import {Container, Flex} from 'ui5'
 
-import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
@@ -15,34 +13,12 @@ interface DocumentLimitsUpsellPanelProps {
 }
 
 /**
- * The screen shown in place of a tool that failed on the document limit. Waits for the upsell
- * content behind its own boundary, so the wait never reaches the studio's loading screen; when
- * that content cannot be loaded, the error itself is shown the way the boundary would have shown
- * it, so the user is never left with an empty tool area.
+ * The screen shown in place of a tool that failed on the document limit. When the upsell content
+ * cannot be loaded, the error screen is shown instead, so the user is never left with an empty
+ * tool area.
  */
-export function DocumentLimitsUpsellPanel(props: DocumentLimitsUpsellPanelProps) {
-  return (
-    <Suspense fallback={<LoadingBlock title="Loading documents limit" showText />}>
-      <DocumentLimitsUpsellPanelContent {...props} />
-    </Suspense>
-  )
-}
-
-function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsellPanelProps) {
-  const {upsellDataPromise, telemetryLogs} = useDocumentLimitsUpsellContext()
-  const {upsellData} = use(upsellDataPromise)
-
-  const handlePrimaryButtonClick = useCallback(() => {
-    telemetryLogs.panelPrimaryClicked()
-  }, [telemetryLogs])
-
-  const handleSecondaryButtonClick = useCallback(() => {
-    telemetryLogs.panelSecondaryClicked()
-  }, [telemetryLogs])
-
-  if (!upsellData) {
-    return <FallbackErrorScreen error={error} onReset={onReset} />
-  }
+export function DocumentLimitsUpsellPanel({error, onReset}: DocumentLimitsUpsellPanelProps) {
+  const upsell = useDocumentLimitsUpsellContext()
 
   return (
     <Flex height="100%" justifyContent="center" alignItems="center" padding={4}>
@@ -53,9 +29,8 @@ function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsell
       >
         <Container size={0}>
           <UpsellPanel
-            data={upsellData}
-            onPrimaryClick={handlePrimaryButtonClick}
-            onSecondaryClick={handleSecondaryButtonClick}
+            upsell={upsell}
+            unavailable={<FallbackErrorScreen error={error} onReset={onReset} />}
           />
         </Container>
       </motion.div>

@@ -1,4 +1,4 @@
-import {Suspense, useContext} from 'react'
+import {useContext} from 'react'
 import {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
@@ -6,22 +6,23 @@ import {
 
 import {useUpsellContext} from '../../hooks/useUpsellContext'
 import {UpsellContextDialog} from '../../studio/upsell/UpsellContextDialog'
+import {useSingleDocReleaseEnabled} from './SingleDocReleaseEnabledProvider'
 
 /**
  * @beta
  */
 export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode}) {
+  const {mode} = useSingleDocReleaseEnabled()
   const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-drafts',
     feature: 'single_doc_release',
+    preLoadData: mode === 'upsell',
   })
 
   return (
     <SingleDocReleaseUpsellContext.Provider value={contextValue}>
       {props.children}
-      <Suspense>
-        <UpsellContextDialog contextValue={contextValue} />
-      </Suspense>
+      <UpsellContextDialog contextValue={contextValue} />
     </SingleDocReleaseUpsellContext.Provider>
   )
 }

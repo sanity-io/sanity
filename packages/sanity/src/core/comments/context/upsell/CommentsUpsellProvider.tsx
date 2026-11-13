@@ -1,6 +1,7 @@
 import {Suspense, use} from 'react'
 import {CommentsUpsellContext} from 'sanity/_singletons'
 
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {type UpsellContextValue, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
 import {useCommentsMode} from '../../hooks/useCommentsMode'
@@ -15,9 +16,11 @@ import {useCommentsMode} from '../../hooks/useCommentsMode'
  * @hidden
  */
 export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
+  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.studioComments)
   const contextValue = useUpsellContext({
     dataUri: '/journey/comments',
     feature: 'comments',
+    preLoadData: !isLoading && !error && !enabled,
   })
 
   return (

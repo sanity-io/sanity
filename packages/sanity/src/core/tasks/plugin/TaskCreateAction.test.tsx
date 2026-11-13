@@ -50,6 +50,7 @@ const navigation = {
 
 const upsell = {
   upsellDataPromise: null,
+  requestUpsellData: vi.fn(),
   handleOpenDialog: vi.fn(),
   handleClose: vi.fn(),
   upsellDialogOpen: false,

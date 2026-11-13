@@ -12,6 +12,8 @@ export interface TasksUpsellContextValue {
    * Read it with `use()` in the leaf that renders the content, under a `Suspense` boundary.
    */
   upsellDataPromise: ObservablePromise<UpsellDataResult> | null
+  /** Starts the content request when the provider did not preload it */
+  requestUpsellData: () => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
