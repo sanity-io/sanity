@@ -837,3 +837,117 @@ describe('prepareConfig — singleton duplicate action filtering', () => {
     expect(settingsActions.find((action) => action.action === 'duplicate')).toBeUndefined()
   })
 })
+
+const campaignSchema = defineType({
+  name: 'campaign',
+  type: 'document',
+  fields: [{name: 'title', type: 'string'}],
+  initialValue: {title: 'Untitled campaign'},
+})
+
+describe('prepareConfig — `allowNonSingletonDocuments`', () => {
+  it('keeps the plain per-type template for the singleton schema type', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      schema: {types: [settingsSchema, campaignSchema]},
+      document: {
+        singletons: [
+          'settings',
+          {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: true},
+        ],
+      },
+    })
+
+    // The plain template is generated as it would be without a singleton…
+    const campaignTemplate = source.templates.find((template) => template.id === 'campaign')
+    expect(campaignTemplate).toMatchObject({
+      schemaType: 'campaign',
+      value: {title: 'Untitled campaign'},
+    })
+    expect(campaignTemplate?.singleton).toBeUndefined()
+    // …alongside the singleton's own tagged template.
+    expect(source.templates.find((template) => template.singleton === 'spring')).toBeDefined()
+    // Singletons without the option still claim their type exclusively: the
+    // only `settings` template is the singleton's own tagged one.
+    expect(source.templates.filter((template) => template.schemaType === 'settings')).toMatchObject(
+      [{singleton: 'settings'}],
+    )
+  })
+
+  it('offers the plain template, but not the singleton template, as a create option', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      schema: {types: [settingsSchema, campaignSchema]},
+      document: {
+        singletons: [
+          'settings',
+          {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: true},
+        ],
+      },
+    })
+
+    const globalTemplateIds = source.document
+      .resolveNewDocumentOptions({type: 'global'})
+      .map((item) => item.templateId)
+    expect(globalTemplateIds).toContain('campaign')
+    expect(globalTemplateIds).not.toContain('spring')
+    expect(globalTemplateIds).not.toContain('settings')
+
+    const structureTemplateIds = source.document
+      .resolveNewDocumentOptions({type: 'structure', schemaType: 'campaign'})
+      .map((item) => item.templateId)
+    expect(structureTemplateIds).toEqual(['campaign'])
+  })
+
+  it('keeps the plain template when only one of several singletons sharing a type sets it', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      schema: {types: [campaignSchema]},
+      document: {
+        singletons: [
+          {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: true},
+          {documentId: 'summer', schemaType: 'campaign'},
+        ],
+      },
+    })
+
+    const globalTemplateIds = source.document
+      .resolveNewDocumentOptions({type: 'global'})
+      .map((item) => item.templateId)
+    expect(globalTemplateIds).toEqual(['campaign'])
+  })
+
+  it('removes the plain template when the option is `false`', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      schema: {types: [campaignSchema]},
+      document: {
+        singletons: [
+          {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: false},
+        ],
+      },
+    })
+
+    expect(source.templates.find((template) => template.id === 'campaign')).toBeUndefined()
+    expect(source.document.resolveNewDocumentOptions({type: 'global'})).toEqual([])
+  })
+
+  it('rejects an `id` equal to the schema type name, which the plain template and list item use', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        schema: {types: [campaignSchema]},
+        document: {
+          singletons: [
+            {documentId: 'campaign', schemaType: 'campaign', allowNonSingletonDocuments: true},
+          ],
+        },
+      }),
+    ).rejects.toThrow(/Singleton definition ids collide with document type names: campaign/)
+  })
+})

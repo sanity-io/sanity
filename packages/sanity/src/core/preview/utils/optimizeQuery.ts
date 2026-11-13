@@ -53,9 +53,21 @@ export function toQuery(combinedSelections: CombinedSelection[]): string {
 }
 
 export function reassemble(
-  queryResult: Result[],
+  queryResult: Result[] | null,
   combinedSelections: CombinedSelection[],
 ): (Doc | null)[] {
+  // A null result is "nothing matched", the same as a missing document. Callers refetch a null
+  // document once; reducing over null throws and takes down the preview subscriber.
+  if (!Array.isArray(queryResult)) {
+    const missing: (Doc | null)[] = []
+    for (const selection of combinedSelections) {
+      for (const resultIdx of selection.map) {
+        missing[resultIdx] = null
+      }
+    }
+    return missing
+  }
+
   return queryResult.reduce((reprojected: (Doc | null)[], subResult, index) => {
     const map = combinedSelections[index].map
     map.forEach((resultIdx, i) => {

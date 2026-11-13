@@ -362,6 +362,7 @@ import type {
   getSchemaTypeTitle,
   getSearchableTypes,
   getSelectedVariant,
+  getSessionId,
   getTargetDocument,
   getTargetScopeId,
   getTargetSiblings,
@@ -646,7 +647,6 @@ import type {
   serializeError,
   SerializeError,
   Session,
-  SESSION_ID,
   SetActiveGroupOperation,
   setAtPath,
   shallowIntentChecker,
@@ -1986,6 +1986,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getSelectedVariant', () => {
     expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
+  test('getSessionId', () => {
+    expectTypeOf<typeof getSessionId>().toBeFunction()
+  })
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
   })
@@ -2838,9 +2841,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
-  })
-  test('SESSION_ID', () => {
-    expectTypeOf<typeof SESSION_ID>().not.toBeNever()
   })
   test('SetActiveGroupOperation', () => {
     expectTypeOf<SetActiveGroupOperation>().toBeObject()
