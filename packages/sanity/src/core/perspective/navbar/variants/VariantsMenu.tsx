@@ -3,6 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {
   type RefAttributes,
   type SVGProps,
@@ -18,8 +19,9 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
@@ -46,11 +48,39 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
-import {suggestIconColor} from './VariantsNav.css'
+import {
+  conditionMismatchIcon,
+  variantMenuItemIconColor,
+  variantMenuItemRow,
+  variantsMenu,
+} from './VariantsMenu.css'
 
+/** Where the variant diamond's 21px box starts, from the row's left edge. */
+const VARIANT_MARK_BOX_INSET = 6
+
+/**
+ * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
+ * than passed first, where the spread `className` would replace it.
+ */
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge className={suggestIconColor} {...props} />
+  return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
+}
+
+/**
+ * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
+ * `Icon` sizes and colours the svg itself: a wrapper took the colour (grey) in its place and,
+ * holding the svg inline, added a line box under it that lifted the icon off the row's centre.
+ */
+const ConditionMismatchMenuIcon = (
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
+) => {
+  return (
+    <ErrorOutlineIcon
+      {...props}
+      className={clsx(props.className, conditionMismatchIcon)}
+      data-testid="variant-condition-mismatch"
+    />
+  )
 }
 
 function VariantMenuItem(props: {
@@ -65,7 +95,7 @@ function VariantMenuItem(props: {
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
   const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
+    usePerspectiveDetailLink({selected: isSelected})
   const variantId = getVariantId(variant._id)
   const title = getVariantTitle(variant)
 
@@ -76,13 +106,7 @@ function VariantMenuItem(props: {
         aria-checked={isSelected}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
-        iconRight={
-          mismatches.length > 0 ? (
-            <Box paddingRight={1} data-testid="variant-condition-mismatch">
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </Box>
-          ) : undefined
-        }
+        iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}
@@ -103,15 +127,15 @@ function VariantMenuItem(props: {
       />
       <PerspectiveDetailLink
         {...detailLinkProps}
-        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
-        // link, so the link centers on the item instead of mirroring its top padding
-        alignItems="center"
         aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
         data-testid={`variant-detail-link-${variantId}`}
         intent={VARIANTS_INTENT}
         onNavigate={onNavigate}
-        paddingRight={3}
         params={{id: variantId}}
+        // The link's box sits as far from the row's right edge as the diamond's box does from its
+        // left edge (6px: the diamond bleeds that far into the menu item's 12px padding), and
+        // the menu item's 12px gap then separates it from a mismatch icon
+        style={{paddingRight: VARIANT_MARK_BOX_INSET}}
         tooltip={t('navbar.variant.menu.view-variant')}
       />
     </div>
@@ -159,6 +183,7 @@ export function VariantsMenu({
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -248,7 +273,7 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
+            <Box flexShrink={0} padding={2}>
               <TextInput
                 aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
@@ -263,23 +288,25 @@ export function VariantsMenu({
               <FilterNoMatches filter={filterQuery.trim()} />
             ) : (
               <Flex
+                className={menuOverflowScroller}
                 flexDirection="column"
                 flexGrow={1}
                 flexShrink={1}
                 minHeight="0"
                 overflowY="auto"
-                paddingX={3}
-                paddingBottom={2}
+                ref={scrollerRef}
               >
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1}>
+                <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={2} paddingY={1}>
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
                         aria-checked={isDefaultSelected}
                         data-testid="variant-default"
+                        // The same diamond as every other variant row and the navbar chip
+                        icon={VariantMenuItemIcon}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
@@ -305,9 +332,8 @@ export function VariantsMenu({
               flexShrink={0}
               gap={1}
               borderTop
-              paddingX={3}
-              paddingTop={2}
-              paddingBottom={3}
+              paddingX={2}
+              paddingY={1}
               hidden={filterQuery.trim().length > 0}
             >
               <MenuItem

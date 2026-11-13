@@ -170,7 +170,7 @@ export function ReleasesList({
   return (
     <Card radius={3}>
       {(showPublished || showDrafts) && (
-        <StickyTopCard borderBottom padding={1}>
+        <StickyTopCard borderBottom paddingX={2} paddingY={1}>
           <VStack gap={1}>
             {showPublished && (
               <ReleasesMenuItem
@@ -190,7 +190,7 @@ export function ReleasesList({
         </StickyTopCard>
       )}
       {showAgentBundle && agentBundles[0] && (
-        <Card borderBottom padding={1}>
+        <Card borderBottom paddingX={2} paddingY={1}>
           <VStack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
           </VStack>
@@ -213,7 +213,7 @@ export function ReleasesList({
         </VStack>
       )}
       {!isFiltering && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        <StickyBottomCard borderTop paddingX={2} paddingY={1}>
           <VStack gap={1}>
             <ScheduledDraftsMenuItem />
             {areReleasesEnabled && (

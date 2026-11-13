@@ -11,6 +11,7 @@ import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {MenuLeadingColumn} from '../../../../ui-components/menuLeadingColumn/MenuLeadingColumn'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -77,8 +78,26 @@ const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
     & svg {
       background-color: var(--card-bg-color);
     }
+    /* On the selected fill (the selected release, or the row under the pointer or keyboard focus)
+       the release icon takes the row's text colour, like the row's other icons. The avatar sets its
+       colour inline on the svg, so only !important beats it. */
+    [data-ui='MenuItem'][data-selected] & svg {
+      --card-icon-color: var(--card-fg-color) !important;
+      --icon-color: var(--card-fg-color) !important;
+    }
   `,
 )
+
+/**
+ * The lock of a scheduled release. At rest it is muted; on the selected fill the muted grey almost
+ * vanishes into the accent colour, so it takes the row's text colour.
+ */
+const LockIconBox = styled(Box)`
+  [data-ui='MenuItem'][data-selected] & svg {
+    --icon-color: var(--card-fg-color);
+    color: var(--card-fg-color);
+  }
+`
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {lastIndex} = range
@@ -101,8 +120,6 @@ export function ReleasesMenuItem(
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, release, rangePosition, onNavigateToRelease} = props
-  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
 
   const {
     document: {
@@ -124,6 +141,9 @@ export function ReleasesMenuItem(
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName
     : isDefaultPerspective
+
+  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
+    usePerspectiveDetailLink({selected: active})
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
@@ -159,10 +179,14 @@ export function ReleasesMenuItem(
         flexGrow={0}
         flexShrink={0}
         data-testid="release-indicator-icon"
-        paddingX={3}
-        paddingY={2}
+        // The column starts 6px from the row's edge, where the icon column of every other menu row
+        // starts (the menu item's 4px padding and 2px here), and its centre is where the layer line
+        // runs (`INDICATOR_LEFT_OFFSET`). It starts on the first text line: the text has 8px above it
+        style={{padding: '2px 2px 0'}}
       >
-        <ReleaseAvatarIcon size="small" release={release} fontSize={2} />
+        <MenuLeadingColumn>
+          <ReleaseAvatarIcon size="small" release={release} />
+        </MenuLeadingColumn>
       </IconWrapperBox>
       <Flex
         flexBasis="0%"
@@ -217,7 +241,8 @@ export function ReleasesMenuItem(
             </Text>
           )}
       </Flex>
-      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+      {/* Centred on the row, so the lock and the layer toggle sit between the title and date lines */}
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0} style={{alignSelf: 'center'}}>
         {canReleaseBeExcluded && (
           <Tooltip portal content={t('release.layer.hide')} placement="bottom">
             <ToggleLayerButton
@@ -232,7 +257,7 @@ export function ReleasesMenuItem(
           </Tooltip>
         )}
         {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
-          <Box padding={2}>
+          <LockIconBox padding={2}>
             <Icon
               size={1}
               muted
@@ -240,7 +265,7 @@ export function ReleasesMenuItem(
               icon={LockIcon}
               style={{margin: '-0.375rem'}}
             />
-          </Box>
+          </LockIconBox>
         )}
       </Box>
     </Flex>
@@ -270,7 +295,6 @@ export function ReleasesMenuItem(
       {hasDetailLink && (
         <PerspectiveDetailLink
           {...detailLinkProps}
-          alignItems="flex-start"
           aria-label={t('release.navbar.view-release-aria-label', {
             title: release.metadata.title || t('release.placeholder-untitled-release'),
           })}

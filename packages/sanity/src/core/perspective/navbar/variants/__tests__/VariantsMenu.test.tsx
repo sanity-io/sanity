@@ -18,6 +18,7 @@ import {getVariantId} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../variants/util/variantType'
 import {VariantsMenu} from '../VariantsMenu'
+import {variantMenuItemIconColor} from '../VariantsMenu.css'
 
 const variantsMock = vi.hoisted(() => ({
   data: [] as SystemVariant[],
@@ -113,6 +114,15 @@ describe('VariantsMenu', () => {
     return view
   }
 
+  /**
+   * The menu moves the focus to its selected row one animation frame after it opens. Typing before
+   * that frame loses the first characters to the row, so wait for it, then type in the field.
+   */
+  async function typeInFilter(text: string) {
+    await waitFor(() => expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem'))
+    await userEvent.type(screen.getByPlaceholderText('Find audience'), text)
+  }
+
   it('marks the variant selected by the perspective provider', async () => {
     perspectiveContextValueMock.selectedVariants = [variantAlphaAudience]
     perspectiveContextValueMock.selectedVariantNames = [getVariantId(variantAlphaAudience._id)]
@@ -149,12 +159,31 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).toHaveTextContent('Default')
   })
 
-  it('filters the default option with the rest of the list', async () => {
-    const user = userEvent.setup()
-
+  it('shows the variant diamond on the default option, like every other variant', async () => {
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'alpha')
+    expect(
+      screen.getByTestId('variant-default').querySelector('[data-sanity-icon="rhombus"]'),
+    ).not.toBeNull()
+  })
+
+  it('colours every row diamond with the variant colour, not only the chip', async () => {
+    await renderMenu()
+
+    const diamonds = [
+      ...document.querySelectorAll('[data-ui="MenuItem"] [data-sanity-icon="rhombus"]'),
+    ].filter((diamond) => !diamond.closest('[data-testid="view-all"]'))
+    expect(diamonds.length).toBeGreaterThan(1)
+    for (const diamond of diamonds) {
+      // Panda classes are atomic: one name per declaration
+      expect(diamond.getAttribute('class')).toContain(variantMenuItemIconColor)
+    }
+  })
+
+  it('filters the default option with the rest of the list', async () => {
+    await renderMenu()
+
+    await typeInFilter('alpha')
 
     expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
     expect(
@@ -163,11 +192,9 @@ describe('VariantsMenu', () => {
   })
 
   it('keeps the default option when the query matches its label', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'default')
+    await typeInFilter('default')
 
     expect(screen.getByTestId('variant-default')).toBeInTheDocument()
     expect(
@@ -177,11 +204,9 @@ describe('VariantsMenu', () => {
   })
 
   it('shows a message when the filter matches nothing', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'zzz')
+    await typeInFilter('zzz')
 
     expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
       'Nothing matches "zzz"',
@@ -202,7 +227,8 @@ describe('VariantsMenu', () => {
       },
     })
 
-    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+    // The icon itself, not a wrapper: a wrapper takes the icon's colour and lifts it off centre
+    expect(screen.getByTestId('variant-condition-mismatch').tagName).toBe('svg')
   })
 
   it('does not show a mismatch error in freeform mode', async () => {
