@@ -38,7 +38,6 @@ import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
 import {contrastRatio, parseColor} from '../../utils/contrast'
-import {type ServedStatus} from '../../utils/resolveServedVersion'
 import {
   getRowToggle,
   getSetSelection,
@@ -747,6 +746,48 @@ describe('InventoryHeader', () => {
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
   })
 
+  it('puts the count on the left, then Clear and an outlined Delete on the right', async () => {
+    const refs = startHarness()
+    refs.selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $delete = page.getByRole('button', {name: 'Delete', exact: true})
+    const $clear = page.getByRole('button', {name: 'Clear', exact: true})
+    await expect.element($delete).toBeVisible()
+    const status = page.getByTestId('selected-count-status').element().getBoundingClientRect()
+    const clear = ($clear.element() as HTMLElement).getBoundingClientRect()
+    const deleteButton = $delete.element() as HTMLElement
+    const del = deleteButton.getBoundingClientRect()
+
+    // Status, then Clear, then Delete, rightmost
+    expect(status.right).toBeLessThan(clear.left)
+    expect(clear.right).toBeLessThan(del.left)
+    const bar = deleteButton.closest('.atom')!.parentElement!.getBoundingClientRect()
+    expect(bar.right - del.right).toBeLessThan(bar.right - clear.right)
+
+    // At least the 24x24 a target needs
+    for (const rect of [clear, del]) {
+      expect(rect.width).toBeGreaterThanOrEqual(24)
+      expect(rect.height).toBeGreaterThanOrEqual(24)
+    }
+
+    // Outlined, not filled: ui5's secondary level, a border on a background within a hair of the
+    // bar's, with the critical text at 4.5:1 or more
+    const style = getComputedStyle(deleteButton)
+    const behind = background(deleteButton.closest('.atom')!.parentElement as HTMLElement)
+    expect(contrastRatio(background(deleteButton), behind)).toBeLessThan(1.1)
+    expect(Number.parseFloat(style.borderTopWidth) > 0 || /inset/.test(style.boxShadow)).toBe(true)
+    const label = deleteButton.querySelector<HTMLElement>('[data-ui="Text"], span') ?? deleteButton
+    expect(
+      contrastRatio(rgb(getComputedStyle(label).color), background(deleteButton)),
+    ).toBeGreaterThanOrEqual(4.5)
+
+    // Keyboard order follows the visual order
+    ;($clear.element() as HTMLElement).focus()
+    await userEvent.tab()
+    expect(document.activeElement).toBe(deleteButton)
+  })
+
   it('swaps the group actions for clear while versions are selected', async () => {
     // The selected header is archived by the test above, and this one ends
     // back on the empty header.
@@ -835,12 +876,13 @@ function SelectionPanel({
   refs,
   onOpen = () => undefined,
   scheme = 'light',
-  badges,
+  openId,
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
   scheme?: 'light' | 'dark'
-  badges?: RowBadges
+  /** The version open in the form. */
+  openId?: string
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
@@ -852,7 +894,7 @@ function SelectionPanel({
         <Container>
           <InventoryHeader {...refs} components={COMPONENTS} />
           <Body>
-            <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} badges={badges} />
+            <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} openId={openId} />
           </Body>
         </Container>
       </Card>
@@ -860,17 +902,14 @@ function SelectionPanel({
   )
 }
 
-/** The Editing and Served badges to show, by version id. */
-type RowBadges = Record<string, {isSelected?: boolean; servedStatus?: ServedStatus}>
-
 function SelectionSets({
   selectionRef,
   onOpen,
-  badges,
+  openId,
 }: {
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   onOpen: (entry: Variant) => void
-  badges?: RowBadges
+  openId?: string
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
@@ -926,8 +965,7 @@ function SelectionSets({
               key={entry.id}
               variant={entry}
               releases={SELECTION_RELEASES}
-              isSelected={badges?.[entry.id]?.isSelected}
-              servedStatus={badges?.[entry.id]?.servedStatus}
+              isSelected={entry.id === openId}
               onPrimaryAction={() => onOpen(entry)}
               onToggleSelection={blocked ? undefined : () => toggle(entry.id, false)}
               selectionBlockedReason={
@@ -1234,53 +1272,80 @@ describe('Inventory selection', () => {
   )
 
   it.each(['light', 'dark'] as const)(
-    'outlines the Editing and Served badges on a checked row, at 4.5:1 or more, in %s mode',
+    'marks the row of the open version, and keeps the mark when it is checked, in %s mode',
     async (scheme) => {
       const refs = startSelectionHarness()
-      void render(
-        <SelectionPanel
-          refs={refs}
-          scheme={scheme}
-          badges={{
-            [DRAFT.id]: {isSelected: true, servedStatus: 'primary'},
-            [DRAFT_VIP.id]: {servedStatus: 'secondary'},
-          }}
-        />,
-      )
+      void render(<SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id} />)
 
       await expect
         .element(page.getByRole('button', {name: 'VIP users', exact: true}))
-        .toBeInTheDocument()
-      const badges = () => [
-        ...selectionRow('Draft', 'Default').querySelectorAll<HTMLElement>('[data-badge]'),
-        ...selectionRow('Draft', 'VIP users').querySelectorAll<HTMLElement>('[data-badge]'),
-      ]
-      expect(badges().map((badge) => badge.dataset.tone)).toEqual([
-        'primary',
-        'positive',
-        'suggest',
-      ])
-      // Filled at rest
-      for (const badge of badges()) {
-        expect(getComputedStyle(badge).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
-      }
+        .toHaveAttribute('aria-current', 'true')
+      const open = selectionRow('Draft', 'VIP users')
+      const other = selectionRow('Draft', 'Summer sale')
 
-      refs.selectionRef.send({type: 'selection.addMany', variantIds: [DRAFT.id, DRAFT_VIP.id]})
+      // Only the open row is marked
+      const marked = [...document.querySelectorAll('[data-variant-name] .primary-action')].filter(
+        (action) => action.hasAttribute('aria-current'),
+      )
+      expect(marked).toHaveLength(1)
+      expect(other.querySelector('.primary-action')).not.toHaveAttribute('aria-current')
+      expect(getComputedStyle(other, '::before').content).toBe('none')
+
+      // A semibold title, against the other rows' medium one
+      const weight = (row: HTMLElement) =>
+        Number(getComputedStyle(row.querySelector('[data-testid="version-title"]')!).fontWeight)
+      expect(weight(open)).toBe(600)
+      expect(weight(other)).toBe(500)
+
+      // A 2px bar on the row's left edge, full height, at 3:1 or more on the row; not a tint
+      const plain = background(other)
+      expect(background(open)).toEqual(plain)
+      const bar = () => {
+        const style = getComputedStyle(open, '::before')
+        return {
+          width: Number.parseFloat(style.width),
+          height: Number.parseFloat(style.height),
+          left: Number.parseFloat(style.left),
+          color: rgb(style.backgroundColor),
+        }
+      }
+      expect(bar().width).toBe(2)
+      expect(bar().left).toBe(0)
+      // Full height, under the 1px line between rows
+      expect(Math.abs(bar().height - open.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+      expect(contrastRatio(bar().color, plain)).toBeGreaterThanOrEqual(3)
+
+      // Checked: the row takes the tint, and keeps the bar and the title
+      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
       await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
       await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+      expect(background(open)).not.toEqual(plain)
+      expect(bar().width).toBe(2)
+      // A neutral, the text colour, not the blue the tint is mixed from
+      expect(Math.max(...bar().color) - Math.min(...bar().color)).toBeLessThan(30)
+      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
+      expect(weight(open)).toBe(600)
+      expect(page.getByRole('button', {name: 'VIP users', exact: true}).element()).toHaveAttribute(
+        'aria-current',
+        'true',
+      )
 
-      for (const badge of badges()) {
-        const row = badge.closest<HTMLElement>('[data-variant-name]')!
-        const style = getComputedStyle(badge)
-        const text = getComputedStyle(badge.querySelector('[data-ui="Text"]')!).color
-        // Outlined: no fill, a 1px outline in the text colour
-        expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-        expect(style.boxShadow).toMatch(/ 0px 0px 0px 1px inset$/)
-        expect(contrastRatio(rgb(style.boxShadow), background(row))).toBeGreaterThanOrEqual(3)
-        expect(contrastRatio(rgb(text), background(row))).toBeGreaterThanOrEqual(4.5)
-      }
+      // Hovered, too
+      await userEvent.hover(page.elementLocator(other))
+      await userEvent.hover(page.elementLocator(open))
+      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
     },
   )
+
+  it('shows no Editing or Served badges in the panel', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} openId={DRAFT.id} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'Default', exact: true}).first())
+      .toBeInTheDocument()
+    expect(document.querySelector('[data-badge]')).toBeNull()
+    expect(document.querySelector('[data-testid="version-badges"]')).toBeNull()
+  })
 
   it('keeps Sanity UI focus ring on the group checkbox, over the quiet border', async () => {
     const refs = startSelectionHarness()
@@ -1342,6 +1407,7 @@ describe('Inventory selection', () => {
             variant={DRAFT_VIP}
             releases={SELECTION_RELEASES}
             servedStatus="primary"
+            showStatusBadges
             onPrimaryAction={() => undefined}
           />
         </DocumentGroupSet>

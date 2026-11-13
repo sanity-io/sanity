@@ -2,10 +2,11 @@ import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
-import {type SelectionBadgeTone, selectionColors} from './selectionColors'
+import {selectionColors} from './selectionColors'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
 
-const BADGE_TONES: SelectionBadgeTone[] = ['primary', 'positive', 'suggest']
+/** The width of the bar that marks the row of the version open in the form. */
+const CURRENT_BAR_WIDTH = 2
 
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
@@ -188,17 +189,17 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * On a checked row the badges turn from filled to outlined, so their fill does not sit on the
-     * tint. Text and outline keep the badge's tone, at 4.5:1 or more on the tint.
+     * The row of the version open in the form: a 2px bar in the text colour on the row's left edge
+     * and a semibold title. Not a tint, which means "checked", so it reads on a checked row too,
+     * and the bar keeps 3:1 or more on the plain, hovered and checked backgrounds.
      */
-    ${BADGE_TONES.map(
-      (tone) => css`
-        &:has(.atom :checked) .version-badges [data-tone='${tone}'] {
-          --card-bg-color: transparent;
-          --card-fg-color: ${selected.badge(tone)};
-          box-shadow: inset 0 0 0 1px ${selected.badge(tone)};
-        }
-      `,
-    )}
+    &[data-current]::before {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      inline-size: ${CURRENT_BAR_WIDTH}px;
+      background-color: ${color.fg};
+      content: '';
+    }
   `
 })

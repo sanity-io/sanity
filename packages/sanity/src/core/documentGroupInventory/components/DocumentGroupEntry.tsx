@@ -30,6 +30,7 @@ export function DocumentGroupEntry({
   documentVersions,
   isSelected,
   servedStatus,
+  showStatusBadges = false,
   leading,
   onPrimaryAction,
   onToggleSelection,
@@ -44,8 +45,14 @@ export function DocumentGroupEntry({
    * to say when the draft's own copy has never been published.
    */
   documentVersions?: VersionInfoDocumentStub[]
+  /** Whether this is the version open in the form. Its row is marked as the current item. */
   isSelected?: boolean
   servedStatus?: ServedStatus
+  /**
+   * Whether to show the Editing and Served badges. Off for the Open Beta, until the decision on
+   * status labels; the open version's row is marked as the current item instead.
+   */
+  showStatusBadges?: boolean
   /** The selection checkbox. Omitted where versions can never be selected, as in the picker. */
   leading?: ReactNode
   /** Opens the version. Clicking the row, or Enter on it, does this; only the checkbox selects. */
@@ -66,7 +73,8 @@ export function DocumentGroupEntry({
   const isVariantRow = getDocumentVersionVariantId(document) !== undefined
   const descriptionId = useId()
   const servedTone = servedStatus === 'primary' ? 'positive' : 'suggest'
-  const servedDescription = servedStatus ? t('document-group.version.served.tooltip') : undefined
+  const showServed = showStatusBadges && servedStatus !== undefined
+  const servedDescription = showServed ? t('document-group.version.served.tooltip') : undefined
   const hasDescription = Boolean(servedDescription || selectionBlockedReason)
   const neverPublished =
     !release && documentVersions !== undefined && isNeverPublishedDraft(document, documentVersions)
@@ -75,6 +83,7 @@ export function DocumentGroupEntry({
     <VariantSetEntry
       data-variant-name={variant.name}
       data-selected={isSelected || undefined}
+      data-current={isSelected || undefined}
       data-served={servedStatus}
     >
       {leading !== undefined && <div className="atom">{leading}</div>}
@@ -98,6 +107,8 @@ export function DocumentGroupEntry({
           }
           onKeyUp={onToggleSelection ? preventSpaceActivation : undefined}
           aria-keyshortcuts={onToggleSelection ? 'Space' : undefined}
+          // The row's tab stop, so it carries the row's current-item state
+          aria-current={isSelected ? 'true' : undefined}
           aria-describedby={hasDescription ? descriptionId : undefined}
           onContextMenu={onContextMenu}
         >
@@ -117,7 +128,12 @@ export function DocumentGroupEntry({
         <div className="version-body">
           <div className="version-lines" data-testid="version-lines">
             <div className="version-title">
-              <Text size={1} weight="medium" trim={true} data-testid="version-title">
+              <Text
+                size={1}
+                weight={isSelected ? 'semibold' : 'medium'}
+                trim={true}
+                data-testid="version-title"
+              >
                 {variant.name}
               </Text>
             </div>
@@ -131,22 +147,17 @@ export function DocumentGroupEntry({
               </Text>
             </div>
           </div>
-          {(isSelected || servedStatus) && (
+          {showStatusBadges && (isSelected || showServed) && (
             // One group, in a fixed order: Editing, Served, then the rest.
             <div className="version-badges" data-testid="version-badges">
               {isSelected && (
-                <StatusBadge radius={2} tone="primary" data-tone="primary" data-badge="editing">
+                <StatusBadge radius={2} tone="primary" data-badge="editing">
                   {t('document-group-inventory.viewing-item-label')}
                 </StatusBadge>
               )}
-              {servedStatus && (
+              {showServed && (
                 <Tooltip content={t('document-group.version.served.tooltip')}>
-                  <StatusBadge
-                    radius={2}
-                    tone={servedTone}
-                    data-tone={servedTone}
-                    data-badge="served"
-                  >
+                  <StatusBadge radius={2} tone={servedTone} data-badge="served">
                     {servedStatus === 'primary'
                       ? t('document-group.version.served')
                       : t('document-group.version.served-instead')}

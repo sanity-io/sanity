@@ -77,6 +77,7 @@ function NarrowPanel({width}: {width: number}) {
                 documentVersions={ROWS.map((row) => row.variant.document)}
                 isSelected={isSelected}
                 servedStatus={servedStatus}
+                showStatusBadges
                 onPrimaryAction={NOOP}
                 leading={
                   <VariantCheckbox
