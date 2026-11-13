@@ -1,6 +1,27 @@
-import {useState, useSyncExternalStore, type CSSProperties} from 'react'
+import {animate, motion, useDragControls, useMotionValue, useReducedMotion} from 'motion/react'
+import {
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 import {type LayoutProps} from 'sanity'
 
+import {
+  anchorOrigin,
+  type DragDirection,
+  isPanelCorner,
+  moveCorner,
+  type PanelCorner,
+  type Point,
+  rebaseAnchor,
+  releaseCorner,
+  restingAnchor,
+} from '../style-outline/corners'
 import {
   getGroqStoreStatus,
   setGroqStoreEnabled,
@@ -8,12 +29,35 @@ import {
   type GroqStoreStatus,
 } from './groqStore'
 
+// The bar can be thrown between the four corners the same way the style outline
+// panel is (see ../style-outline/corners.ts for the anchor maths), so it never has to
+// sit on top of the studio's own bottom toolbars.
+//
+// Bottom left by default: the document pane keeps its primary action (Publish) in the
+// bottom right corner, and on a phone the left of that footer only holds the status
+// text. Whatever it covers, it can be moved.
+const DEFAULT_BAR_CORNER: PanelCorner = 'bottom-left'
+const CORNER_KEY = 'groq-store-wasm:debug-bar-corner'
+
+// Fast enough to read as a snap, with enough bounce left to read as a throw.
+const SNAP_TRANSITION = {type: 'spring', visualDuration: 0.35, bounce: 0.2} as const
+
+const NO_MOMENTUM: Point = {x: 0, y: 0}
+
+const KEY_DIRECTIONS: Record<string, DragDirection | undefined> = {
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+}
+
+// Docked at the viewport origin; its corner lives in the transform Motion writes.
 const bar: CSSProperties = {
   position: 'fixed',
-  left: 8,
-  bottom: 8,
+  top: 0,
+  left: 0,
   zIndex: 100_000,
-  maxWidth: 'calc(100vw - 16px)',
+  maxWidth: 'calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))',
   padding: '4px 8px',
   borderRadius: 6,
   background: 'rgba(20, 20, 24, 0.88)',
@@ -21,6 +65,16 @@ const bar: CSSProperties = {
   font: '11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace',
   boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
   textAlign: 'left',
+}
+// Measures the safe-area insets (iOS notch, home indicator) without affecting layout.
+const safeAreaProbe: CSSProperties = {
+  position: 'absolute',
+  width: 0,
+  height: 0,
+  visibility: 'hidden',
+  pointerEvents: 'none',
+  padding:
+    'env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px)',
 }
 const plain: CSSProperties = {
   all: 'unset',
@@ -110,13 +164,202 @@ function Details({status}: {status: GroqStoreStatus}) {
   )
 }
 
+const grip: CSSProperties = {
+  ...plain,
+  cursor: 'grab',
+  // A touch drag on the grip moves the bar instead of scrolling the studio behind it.
+  touchAction: 'none',
+  padding: '0 6px 0 0',
+  color: '#9ca3af',
+}
+
+interface Insets {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
+const NO_INSETS: Insets = {top: 0, right: 0, bottom: 0, left: 0}
+
+function readCorner(): PanelCorner {
+  try {
+    const stored = localStorage.getItem(CORNER_KEY)
+    return isPanelCorner(stored) ? stored : DEFAULT_BAR_CORNER
+  } catch {
+    return DEFAULT_BAR_CORNER
+  }
+}
+
+function writeCorner(corner: PanelCorner): void {
+  try {
+    localStorage.setItem(CORNER_KEY, corner)
+  } catch {}
+}
+
+function readInsets(probe: HTMLElement | null): Insets {
+  if (probe === null) return NO_INSETS
+  const style = getComputedStyle(probe)
+  return {
+    top: Number.parseFloat(style.paddingTop) || 0,
+    right: Number.parseFloat(style.paddingRight) || 0,
+    bottom: Number.parseFloat(style.paddingBottom) || 0,
+    left: Number.parseFloat(style.paddingLeft) || 0,
+  }
+}
+
+/** Where the anchor rests in `corner`, inside the safe area rather than the full viewport. */
+function dockedAnchor(corner: PanelCorner, insets: Insets): Point {
+  const anchor = restingAnchor(corner, {
+    width: window.innerWidth - insets.left - insets.right,
+    height: window.innerHeight - insets.top - insets.bottom,
+  })
+  return {x: anchor.x + insets.left, y: anchor.y + insets.top}
+}
+
 /** Counts this tab's `/data/query` requests by who answered them. Click to expand. */
 function GroqStoreDebugBar() {
   const status = useSyncExternalStore(subscribeGroqStoreStatus, getGroqStoreStatus)
   const [open, setOpen] = useState(false)
+  const [corner, setCorner] = useState(readCorner)
+  const [dragging, setDragging] = useState(false)
+  const [initialAnchor] = useState(() => dockedAnchor(corner, NO_INSETS))
+  const x = useMotionValue(initialAnchor.x)
+  const y = useMotionValue(initialAnchor.y)
+  const dragControls = useDragControls()
+  const prefersReducedMotion = useReducedMotion()
+  const barRef = useRef<HTMLDivElement>(null)
+  const probeRef = useRef<HTMLDivElement>(null)
+  const droppedRef = useRef(false)
+  // Leads `corner`, which only persists it: the transform origin and the anchor have
+  // to change in the same Motion render or the bar would draw a corner away for a frame.
+  const anchorCornerRef = useRef(corner)
   const blocked = status.enabled ? blocker(status) : undefined
+
+  useEffect(() => writeCorner(corner), [corner])
+
+  // Docking against the far edges (and inside the safe area, which needs the probe to
+  // be mounted to measure) means a resized viewport, or Safari's toolbars showing and
+  // hiding, moves the anchor.
+  useLayoutEffect(() => {
+    const redock = () => {
+      const anchor = dockedAnchor(anchorCornerRef.current, readInsets(probeRef.current))
+      x.jump(anchor.x)
+      y.jump(anchor.y)
+    }
+    redock()
+    window.addEventListener('resize', redock)
+    window.visualViewport?.addEventListener('resize', redock)
+    return () => {
+      window.removeEventListener('resize', redock)
+      window.visualViewport?.removeEventListener('resize', redock)
+    }
+  }, [x, y])
+
+  // Carries the bar to `next` with the momentum it was released with.
+  const dock = (next: PanelCorner, momentum: Point) => {
+    const element = barRef.current
+    if (element === null) return
+    const previous = anchorCornerRef.current
+    if (next !== previous) {
+      const rebased = rebaseAnchor(
+        {x: x.get(), y: y.get()},
+        element.getBoundingClientRect(),
+        previous,
+        next,
+      )
+      anchorCornerRef.current = next
+      x.jump(rebased.x)
+      y.jump(rebased.y)
+    }
+    const anchor = dockedAnchor(next, readInsets(probeRef.current))
+    if (prefersReducedMotion === true) {
+      x.jump(anchor.x)
+      y.jump(anchor.y)
+    } else {
+      animate(x, anchor.x, {...SNAP_TRANSITION, velocity: momentum.x})
+      animate(y, anchor.y, {...SNAP_TRANSITION, velocity: momentum.y})
+    }
+    setCorner(next)
+  }
+
+  // Motion reports the release velocity in px per second; the bar's centre decides the
+  // corner so that grabbing it by one end does not skew it.
+  const drop = (momentum: Point) => {
+    setDragging(false)
+    const element = barRef.current
+    if (element === null) return
+    const rect = element.getBoundingClientRect()
+    const center = {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2}
+    dock(
+      releaseCorner(center, momentum, {width: window.innerWidth, height: window.innerHeight}),
+      momentum,
+    )
+  }
+
+  const startDrag = (event: PointerEvent<HTMLElement>) => {
+    if (event.button !== 0) return
+    // Cleared here as well as by the click it suppresses, so that a release outside
+    // the window — which fires no click — cannot swallow the next real one.
+    droppedRef.current = false
+    dragControls.start(event)
+  }
+
+  // Motion only reports a drag once the pointer has passed its own threshold, so a tap
+  // on the grip still toggles the details and a drop never does.
+  const beginDrag = () => {
+    droppedRef.current = true
+    setDragging(true)
+  }
+
+  const toggleOpen = () => {
+    if (droppedRef.current) {
+      droppedRef.current = false
+      return
+    }
+    setOpen((value) => !value)
+  }
+
+  const nudge = (event: KeyboardEvent<HTMLElement>) => {
+    const direction = KEY_DIRECTIONS[event.key]
+    if (direction === undefined) return
+    event.preventDefault()
+    // From the ref rather than from `corner`, so holding an arrow key keeps moving it.
+    dock(moveCorner(anchorCornerRef.current, direction), NO_MOMENTUM)
+  }
+
   return (
-    <div style={bar} data-testid="groq-store-wasm-debug-bar">
+    <motion.div
+      ref={barRef}
+      style={{...bar, x, y, userSelect: dragging ? 'none' : undefined}}
+      // Hangs the bar off its docked corner. Read from the ref so that the origin and
+      // the anchor it belongs to are always written in the same render.
+      transformTemplate={(_values, transform) => {
+        const origin = anchorOrigin(anchorCornerRef.current)
+        return `${transform} translate(${origin.x}, ${origin.y})`
+      }}
+      drag
+      dragListener={false}
+      dragControls={dragControls}
+      // The throw is a spring towards a corner, not Motion's free inertia.
+      dragMomentum={false}
+      onDragStart={beginDrag}
+      onDragEnd={(_event, info) => drop(info.velocity)}
+      onKeyDown={nudge}
+      data-corner={corner}
+      data-testid="groq-store-wasm-debug-bar"
+    >
+      <div ref={probeRef} style={safeAreaProbe} aria-hidden />
+      <button
+        type="button"
+        style={dragging ? {...grip, cursor: 'grabbing'} : grip}
+        onPointerDown={startDrag}
+        onClick={toggleOpen}
+        title="Drag to a corner (or use the arrow keys); click for details"
+        aria-label="Move the groq-store-wasm debug bar"
+      >
+        ⠿
+      </button>
       <button
         type="button"
         style={plain}
@@ -153,7 +396,7 @@ function GroqStoreDebugBar() {
         {blocked === undefined ? null : <span style={{color: '#f87171'}}> · {blocked}</span>}
       </button>
       {open ? <Details status={status} /> : null}
-    </div>
+    </motion.div>
   )
 }
 
