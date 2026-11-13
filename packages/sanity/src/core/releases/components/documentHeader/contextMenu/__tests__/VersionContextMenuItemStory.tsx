@@ -23,8 +23,9 @@ const scheduledWithoutDate: ReleaseDocument = {
   metadata: {...activeScheduledRelease.metadata, intendedPublishAt: undefined},
 }
 
-const ROWS: {label: string; release: ReleaseDocument}[] = [
+const ROWS: {label: string; release: ReleaseDocument; selected?: boolean}[] = [
   {label: 'asap', release: activeASAPRelease},
+  {label: 'selected asap', release: activeASAPRelease, selected: true},
   {label: 'undecided', release: activeUndecidedRelease},
   {label: 'scheduled (active, dated)', release: activeScheduledRelease},
   {label: 'scheduled (locked)', release: scheduledRelease},
@@ -35,16 +36,19 @@ const ROWS: {label: string; release: ReleaseDocument}[] = [
 /**
  * Chromatic sentinel for the copy-to-release menu row: the release avatar
  * beside a two-line title / timing column, with the lock icon on a release
- * that is already scheduled. Fixture dates sit far enough in the past that
- * the relative formatter always falls back to a plain locale date. Grid
- * harness for the co-located Storybook CSF file.
+ * that is already scheduled, plus a selected row so the muted timing line
+ * follows the menu card tone. Fixture dates sit far enough in the past that
+ * the relative formatter always falls back to a plain locale date. The
+ * selected row uses an asap release so its subtitle is the static ASAP
+ * label rather than a formatted date. Grid harness for the co-located
+ * Storybook CSF file.
  */
 export function VersionContextMenuItemStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 320}}>
         <VStack gap={4}>
-          {ROWS.map(({label, release}) => (
+          {ROWS.map(({label, release, selected}) => (
             <VStack key={label} gap={2}>
               <Text muted size={1} weight="medium">
                 {label}
@@ -53,6 +57,7 @@ export function VersionContextMenuItemStory() {
                 <Menu>
                   <MenuItem
                     as="a"
+                    selected={selected}
                     renderMenuItem={() => <VersionContextMenuItem release={release} />}
                   />
                 </Menu>
