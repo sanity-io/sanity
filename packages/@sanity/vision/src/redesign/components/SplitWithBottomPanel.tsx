@@ -105,16 +105,19 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   }, [setPanelState])
   const requestFit = useCallback(
     (tabId?: string) => {
+      const activeTabId = tabId ?? panelState.activeTabId
+      // Already open on this tab: only measure. Wrapping setFitRequest in a panel transition
+      // would snapshot the panes at their current size with nothing to animate
+      if (!panelState.collapsed && panelState.activeTabId === activeTabId) {
+        setFitRequest((count) => count + 1)
+        return
+      }
       startLayoutTransition(PANEL_TRANSITION, () => {
-        setPanelState((current) => {
-          const activeTabId = tabId ?? current.activeTabId
-          if (!current.collapsed && current.activeTabId === activeTabId) return current
-          return {...current, activeTabId, collapsed: false}
-        })
+        setPanelState((current) => ({...current, activeTabId, collapsed: false}))
         setFitRequest((count) => count + 1)
       })
     },
-    [setPanelState],
+    [panelState.activeTabId, panelState.collapsed, setPanelState],
   )
 
   useImperativeHandle(ref, () => ({fitToContent: requestFit}), [requestFit])

@@ -129,8 +129,9 @@ export function VisionSidebar() {
       flexDirection="column"
       gap={1}
       height="100%"
-      // Under a phone's full-width drawer the rail is covered and must not take focus
-      inert={isMobile && drawer !== null}
+      // Under a phone's full-width drawer the rail is covered and must not take focus.
+      // Follow shownDrawer, not the machine: inert must not land a frame before the drawer mounts
+      inert={isMobile && shownDrawer !== null}
       justifyContent="space-between"
       padding={2}
     >

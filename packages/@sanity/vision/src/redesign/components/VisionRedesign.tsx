@@ -6,6 +6,7 @@ import {Flex} from 'ui5'
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
+import {useOnValueChange} from '../hooks/useOnValueChange'
 import {
   createPendingEdits,
   PendingEditsContext,
@@ -20,7 +21,7 @@ import {
 } from '../store/VisionActorContext'
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
-import {TABS_AREA} from './panelTransitions'
+import {DRAWER_TRANSITION, startLayoutTransition, TABS_AREA} from './panelTransitions'
 import * as styles from './redesign.module.css'
 import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -80,6 +81,11 @@ export function VisionRedesign(props: VisionRedesignProps) {
 
   const activeTab = useSelector(actorRef, selectActiveTab)
   const openDrawer = useSelector(actorRef, selectOpenDrawer)
+  // Match VisionSidebar: the machine updates at once, the visible drawer follows in a transition
+  const [shownDrawer, setShownDrawer] = useState(openDrawer)
+  useOnValueChange(openDrawer, (next) => {
+    startLayoutTransition(DRAWER_TRANSITION, () => setShownDrawer(next))
+  })
   const experience = useMemo(
     (): VisionExperience => ({layout, switchToClassic: onSwitchToClassic}),
     [layout, onSwitchToClassic],
@@ -113,8 +119,9 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       flexBasis="0%"
                       flexDirection="column"
                       flexGrow={1}
-                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                      inert={layout === 'mobile' && openDrawer !== null}
+                      // Under a phone's full-width drawer the tabs area is covered and must not take focus.
+                      // Follow shownDrawer so inert does not land before the drawer mounts
+                      inert={layout === 'mobile' && shownDrawer !== null}
                       minWidth="0"
                       overflow="hidden"
                     >
