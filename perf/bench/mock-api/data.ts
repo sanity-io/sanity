@@ -1,3 +1,4 @@
+import {actionsToMutations, ContentLakeError} from '@repo/content-lake-model'
 import {type ProxyRequest, type ProxyResponse} from '@repo/debug-proxy'
 import {evaluate, parse} from 'groq-js'
 
@@ -141,67 +142,29 @@ export async function handleMutate(
     mutations: MutationPayload[]
     transactionId?: string
   }
-  const {transactionId, events, results} = store.commit(
-    body.mutations,
-    body.transactionId ?? newTransactionId(),
-  )
-  const bytes = json(req, res, 200, {transactionId, results})
-  hub.broadcast(events)
-  return bytes
-}
-
-function actionToMutations(action: BenchAction, store: DocumentStore): MutationPayload[] {
-  switch (action.actionType) {
-    case 'sanity.action.document.create': {
-      if (action.ifExists === 'fail' && store.get(action.attributes._id)) {
-        throw new ActionError(409, `Document "${action.attributes._id}" already exists`)
-      }
-      return [{createIfNotExists: action.attributes}]
-    }
-    case 'sanity.action.document.edit': {
-      const mutations: MutationPayload[] = []
-      if (!store.get(action.draftId)) {
-        // Content Lake materializes the draft from the published document
-        // (or a bare stub) before applying the edit patch.
-        const published = store.get(action.publishedId)
-        const base: BenchDocument = published
-          ? {...structuredClone(published), _id: action.draftId}
-          : {_id: action.draftId, _type: inferTypeFromPatch(action)}
-        mutations.push({createIfNotExists: base})
-      }
-      mutations.push({patch: {id: action.draftId, ...action.patch}})
-      return mutations
-    }
-    default: {
-      // Fail loudly: an unsupported action reaching the mock means the studio
-      // grew a new write path the mock must learn about (mock-drift policy).
-      throw new ActionError(
-        400,
-        `Unsupported action type: ${(action as {actionType: string}).actionType}`,
-      )
-    }
+  try {
+    const {transactionId, events, results} = store.commit(
+      body.mutations,
+      body.transactionId ?? newTransactionId(),
+    )
+    const bytes = json(req, res, 200, {transactionId, results})
+    hub.broadcast(events)
+    return bytes
+  } catch (error) {
+    return respondWithContentLakeError(req, res, error, 'mutationError')
   }
 }
 
-function inferTypeFromPatch(
-  action: Extract<BenchAction, {actionType: 'sanity.action.document.edit'}>,
-): string {
-  // An edit creating a brand-new draft (no published doc) carries the type in
-  // its `set` patch when the form initializes the document; fall back to a
-  // marker type that will fail readback validation loudly rather than
-  // silently succeeding with wrong data.
-  const set = action.patch.set as Record<string, unknown> | undefined
-  return typeof set?._type === 'string' ? set._type : 'bench.unknown'
-}
-
-class ActionError extends Error {
-  constructor(
-    public statusCode: number,
-    message: string,
-  ) {
-    super(message)
-    this.name = 'ActionError'
+function respondWithContentLakeError(
+  req: ProxyRequest,
+  res: ProxyResponse,
+  error: unknown,
+  type: 'actionError' | 'mutationError',
+): number {
+  if (error instanceof ContentLakeError) {
+    return json(req, res, error.statusCode, {error: {description: error.message, type}})
   }
+  throw error
 }
 
 /**
@@ -223,24 +186,19 @@ export async function handleActions(
     dryRun?: boolean
   }
 
-  let mutations: MutationPayload[]
   try {
-    mutations = body.actions.flatMap((action) => actionToMutations(action, store))
-  } catch (error) {
-    if (error instanceof ActionError) {
-      return json(req, res, error.statusCode, {
-        error: {description: error.message, type: 'actionError'},
-      })
+    const mutations = actionsToMutations(store.index, body.actions)
+    if (body.dryRun) {
+      return json(req, res, 200, {transactionId: body.transactionId ?? newTransactionId()})
     }
-    throw error
+    const {transactionId, events} = store.commit(
+      mutations,
+      body.transactionId ?? newTransactionId(),
+    )
+    const bytes = json(req, res, 200, {transactionId})
+    hub.broadcast(events)
+    return bytes
+  } catch (error) {
+    return respondWithContentLakeError(req, res, error, 'actionError')
   }
-
-  if (body.dryRun) {
-    return json(req, res, 200, {transactionId: body.transactionId ?? newTransactionId()})
-  }
-
-  const {transactionId, events} = store.commit(mutations, body.transactionId ?? newTransactionId())
-  const bytes = json(req, res, 200, {transactionId})
-  hub.broadcast(events)
-  return bytes
 }
