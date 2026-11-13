@@ -231,6 +231,11 @@ function GroqStoreDebugBar() {
   const barRef = useRef<HTMLDivElement>(null)
   const probeRef = useRef<HTMLDivElement>(null)
   const droppedRef = useRef(false)
+  // `x.jump`/`y.jump` cancel Motion's drag offset and any in-flight spring, so resize
+  // must not redock while a throw or finger-drag is underway (Safari's toolbars fire
+  // `visualViewport.resize` mid-gesture).
+  const redockBlockedRef = useRef(false)
+  const redockBlockGenRef = useRef(0)
   // Leads `corner`, which only persists it: the transform origin and the anchor have
   // to change in the same Motion render or the bar would draw a corner away for a frame.
   const anchorCornerRef = useRef(corner)
@@ -243,6 +248,7 @@ function GroqStoreDebugBar() {
   // hiding, moves the anchor.
   useLayoutEffect(() => {
     const redock = () => {
+      if (redockBlockedRef.current) return
       const anchor = dockedAnchor(anchorCornerRef.current, readInsets(probeRef.current))
       x.jump(anchor.x)
       y.jump(anchor.y)
@@ -276,9 +282,16 @@ function GroqStoreDebugBar() {
     if (prefersReducedMotion === true) {
       x.jump(anchor.x)
       y.jump(anchor.y)
+      redockBlockedRef.current = false
     } else {
-      animate(x, anchor.x, {...SNAP_TRANSITION, velocity: momentum.x})
-      animate(y, anchor.y, {...SNAP_TRANSITION, velocity: momentum.y})
+      const gen = ++redockBlockGenRef.current
+      redockBlockedRef.current = true
+      void Promise.all([
+        animate(x, anchor.x, {...SNAP_TRANSITION, velocity: momentum.x}),
+        animate(y, anchor.y, {...SNAP_TRANSITION, velocity: momentum.y}),
+      ]).then(() => {
+        if (gen === redockBlockGenRef.current) redockBlockedRef.current = false
+      })
     }
     setCorner(next)
   }
@@ -288,7 +301,10 @@ function GroqStoreDebugBar() {
   const drop = (momentum: Point) => {
     setDragging(false)
     const element = barRef.current
-    if (element === null) return
+    if (element === null) {
+      redockBlockedRef.current = false
+      return
+    }
     const rect = element.getBoundingClientRect()
     const center = {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2}
     dock(
@@ -309,6 +325,7 @@ function GroqStoreDebugBar() {
   // on the grip still toggles the details and a drop never does.
   const beginDrag = () => {
     droppedRef.current = true
+    redockBlockedRef.current = true
     setDragging(true)
   }
 
