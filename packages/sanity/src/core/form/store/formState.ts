@@ -180,7 +180,7 @@ function findDuplicateKeyEntries(array: {_key: string}[]) {
 }
 
 function hasKey<T extends object>(value: T): value is T & {_key: string} {
-  return '_key' in value
+  return isKeyedObject(value) && value._key.length > 0
 }
 
 function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: string})[] {
