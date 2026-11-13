@@ -18,6 +18,8 @@ import {
 import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
+import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 // How long to wait after user hit the "Add to release"-button before displaying the "waiting…" toast
@@ -71,6 +73,10 @@ export function DocumentNotInReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
+  // While the document inventory is open, its Create variant is the view's one filled button, so
+  // Add to release steps down to a secondary (ghost) button. It still adds the document directly.
+  const {inspector} = useDocumentPane()
+  const inventoryOpen = inspector?.name === DOCUMENT_GROUP_INSPECTOR_NAME
 
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
@@ -160,7 +166,7 @@ export function DocumentNotInReleaseBanner({
                 : t('banners.release.action.add-to-release'),
               disabled: Boolean(versionCreateState),
               onClick: handleAddToRelease,
-              mode: 'default',
+              mode: inventoryOpen ? 'ghost' : 'default',
             }
       }
     />

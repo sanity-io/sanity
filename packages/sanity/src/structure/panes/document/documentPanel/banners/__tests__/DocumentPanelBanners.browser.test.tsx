@@ -1,6 +1,7 @@
 import {takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
+import {ThemeColorProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import type * as SanityExports from 'sanity'
@@ -38,6 +39,7 @@ import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {ArchivedReleaseDocumentBanner} from '../ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from '../CanvasLinkedBanner'
@@ -55,6 +57,7 @@ import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
+import {backgroundBehind, contrastRatio} from './contrast'
 
 vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<typeof SanityExports>()
@@ -435,6 +438,58 @@ describe('document panel banners', () => {
     await expect
       .poll(() => page.getByRole('button', {name: 'Add to release'}).elements().length)
       .toBe(1)
+    await settleChromaticEndState()
+  })
+
+  it('steps Add to release down to a secondary button while the document inventory is open', async () => {
+    const inventoryOpen = {
+      inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
+    } as Partial<DocumentPaneContextValue>
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <div data-testid="closed">
+          <BannerHarness>
+            <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+          </BannerHarness>
+        </div>
+        {(['light', 'dark'] as const).map((scheme) => (
+          <ThemeColorProvider key={scheme} scheme={scheme}>
+            <div data-testid={`open-${scheme}`}>
+              <BannerHarness pane={inventoryOpen}>
+                <DocumentNotInReleaseBanner
+                  documentId={DOCUMENT_ID}
+                  currentRelease={springRelease}
+                />
+              </BannerHarness>
+            </div>
+          </ThemeColorProvider>
+        ))}
+      </TestWrapper>,
+    )
+
+    const button = (testId: string) =>
+      page.getByTestId(testId).getByRole('button', {name: 'Add to release'})
+    await expect.element(button('closed')).toBeEnabled()
+    // How far a button's fill stands out from the banner behind it
+    const fillContrast = (element: Element) =>
+      contrastRatio(
+        getComputedStyle(element).backgroundColor,
+        backgroundBehind(element.parentElement ?? element),
+      )
+    // Closed: the filled default primary, a solid block against the banner
+    expect(fillContrast(button('closed').element())).toBeGreaterThanOrEqual(3)
+
+    for (const scheme of ['light', 'dark'] as const) {
+      const element = button(`open-${scheme}`).element()
+      await expect.element(button(`open-${scheme}`)).toBeEnabled()
+      // Open: a ghost (outlined) button: its fill barely departs from the banner, it has an
+      // outline, and its text keeps at least 3:1 (it reaches 4.5:1)
+      expect(fillContrast(element), `${scheme} fill`).toBeLessThan(1.5)
+      expect(getComputedStyle(element).boxShadow, `${scheme} outline`).not.toBe('none')
+      const label = element.querySelector('[data-ui="Text"]') ?? element
+      const ratio = contrastRatio(getComputedStyle(label).color, backgroundBehind(element))
+      expect(ratio, `${scheme} text`).toBeGreaterThanOrEqual(4.5)
+    }
     await settleChromaticEndState()
   })
 
