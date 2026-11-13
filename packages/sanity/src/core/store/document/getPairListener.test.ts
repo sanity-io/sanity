@@ -5,7 +5,11 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
-import {OutOfSyncError} from './utils/sequentializeListenerEvents'
+import {
+  DEFAULT_DEADLINE_MS,
+  DeadlineExceededError,
+  OutOfSyncError,
+} from './utils/sequentializeListenerEvents'
 
 function createMutationEvent(
   overrides: Partial<MutationEvent> & Pick<MutationEvent, 'documentId'>,
@@ -160,6 +164,95 @@ describe('getPairListener', () => {
       expect(events.filter((e) => e.type === 'mutation')).toHaveLength(2)
 
       sub.unsubscribe()
+    })
+
+    describe('connection drops in the middle of a multi-event transaction', () => {
+      const firstHalf = createMultiTxMutationEvent(DRAFT_ID, {
+        transactionId: 'multi-tx',
+        transactionTotalEvents: 2,
+        transactionCurrentEvent: 1,
+        previousRev: 'draft-rev',
+        resultRev: 'draft-rev-2',
+      })
+      const secondHalf = createMultiTxMutationEvent(PUBLISHED_ID, {
+        transactionId: 'multi-tx',
+        transactionTotalEvents: 2,
+        transactionCurrentEvent: 2,
+        previousRev: 'pub-rev',
+        resultRev: 'pub-rev-2',
+      })
+
+      function pendingPhases(events: ListenerEvent[]) {
+        return events.flatMap((event) => (event.type === 'pending' ? [event.phase] : []))
+      }
+
+      function mutationIds(events: ListenerEvent[]) {
+        return events.flatMap((event) => (event.type === 'mutation' ? [event.documentId] : []))
+      }
+
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      test.fails('a resumed connection keeps the buffered events and completes the transaction', async () => {
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((event) => events.push(event))
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+
+        listener$.next(firstHalf)
+        listener$.next({type: 'reconnect'})
+        listener$.next({type: 'welcomeback', listenerName: 'test'})
+        listener$.next(secondHalf)
+
+        expect(mutationIds(events)).toEqual([DRAFT_ID, PUBLISHED_ID])
+        expect(pendingPhases(events).at(-1)).toBe('end')
+
+        sub.unsubscribe()
+      })
+
+      test.fails('a transaction left open across a reconnect with no welcomeback hits the deadline and refetches', async () => {
+        vi.useFakeTimers()
+        const firstConnection$ = new Subject<ListenerEvent>()
+        const secondConnection$ = new Subject<ListenerEvent>()
+        const getDocuments = vi.fn(() => of([publishedDoc, draftDoc]))
+        const restartingClient = {
+          observable: {
+            listen: vi
+              .fn()
+              .mockReturnValueOnce(firstConnection$)
+              .mockReturnValueOnce(secondConnection$),
+            getDocuments,
+          },
+          withConfig: vi.fn(function (this: unknown) {
+            return this
+          }),
+        } as unknown as SanityClient
+        const onSyncErrorRecovery = vi.fn()
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(restartingClient, idPair, {onSyncErrorRecovery}).subscribe(
+          (event) => events.push(event),
+        )
+
+        firstConnection$.next({type: 'welcome', listenerName: 'test'})
+        await vi.advanceTimersByTimeAsync(0)
+        firstConnection$.next(firstHalf)
+        firstConnection$.next({type: 'reconnect'})
+        await vi.advanceTimersByTimeAsync(DEFAULT_DEADLINE_MS)
+        secondConnection$.next({type: 'welcome', listenerName: 'test'})
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(onSyncErrorRecovery).toHaveBeenCalledTimes(1)
+        expect(onSyncErrorRecovery.mock.calls[0][0]).toBeInstanceOf(DeadlineExceededError)
+        expect(onSyncErrorRecovery.mock.calls[0][0]).toMatchObject({
+          name: 'TransactionDeadlineExceededError',
+        })
+        expect(getDocuments).toHaveBeenCalledTimes(2)
+        expect(events.at(-1)).toMatchObject({type: 'snapshot', documentId: PUBLISHED_ID})
+
+        sub.unsubscribe()
+      })
     })
 
     test('non-mutation events pass through without buffering', async () => {
