@@ -199,61 +199,61 @@ export function useHandlerBehaviors(props: {
       ...Object.keys(editorHotkeys.custom ?? {}),
     ])
     return [
-      ...Array.from(keys, (hotkey) =>
-        defineBehavior({
-          on: 'keyboard.keydown',
-          guard: ({event}) =>
+      defineBehavior({
+        on: 'keyboard.keydown',
+        guard: ({event}) =>
+          Array.from(keys).some((hotkey) =>
             matchesHotkey(hotkey, event.originEvent, toKeyCode(event.originEvent)),
-          actions: [
-            ({event}) => {
-              const keyCode = toKeyCode(event.originEvent)
-              // A newly constructed event: Behaviors never carry the browser's own.
-              const originEvent = new KeyboardEvent('keydown', {
-                key: event.originEvent.key,
-                code: event.originEvent.code,
-                altKey: event.originEvent.altKey,
-                ctrlKey: event.originEvent.ctrlKey,
-                metaKey: event.originEvent.metaKey,
-                shiftKey: event.originEvent.shiftKey,
-                cancelable: true,
-              })
-              const eventLike = Object.assign(createEventLike('keydown', originEvent), {
-                key: originEvent.key,
-                code: originEvent.code,
-                altKey: originEvent.altKey,
-                ctrlKey: originEvent.ctrlKey,
-                metaKey: originEvent.metaKey,
-                shiftKey: originEvent.shiftKey,
-                keyCode,
-                which: keyCode,
-                getModifierState: (key: string) => originEvent.getModifierState(key),
-              })
-              // Multiple spellings can match the same key. Like the legacy prop,
-              // run every matching mark and custom callback before consuming it.
-              const decorators = Object.entries(editorHotkeys.marks ?? {})
-                .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
-                .map(([, decorator]) => decorator)
-              const handlers = Object.entries(editorHotkeys.custom ?? {})
-                .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
-                .map(([, handler]) => handler)
-              const runHandlers = () => {
-                for (const handler of handlers) {
-                  handler(eventLike, portableTextEditor)
-                }
+          ),
+        actions: [
+          ({event}) => {
+            const keyCode = toKeyCode(event.originEvent)
+            // A newly constructed event: Behaviors never carry the browser's own.
+            const originEvent = new KeyboardEvent('keydown', {
+              key: event.originEvent.key,
+              code: event.originEvent.code,
+              altKey: event.originEvent.altKey,
+              ctrlKey: event.originEvent.ctrlKey,
+              metaKey: event.originEvent.metaKey,
+              shiftKey: event.originEvent.shiftKey,
+              cancelable: true,
+            })
+            const eventLike = Object.assign(createEventLike('keydown', originEvent), {
+              key: originEvent.key,
+              code: originEvent.code,
+              altKey: originEvent.altKey,
+              ctrlKey: originEvent.ctrlKey,
+              metaKey: originEvent.metaKey,
+              shiftKey: originEvent.shiftKey,
+              keyCode,
+              which: keyCode,
+              getModifierState: (key: string) => originEvent.getModifierState(key),
+            })
+            // Multiple spellings can match the same key. Like the legacy prop,
+            // run every matching mark and custom callback before consuming it.
+            const decorators = Object.entries(editorHotkeys.marks ?? {})
+              .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
+              .map(([, decorator]) => decorator)
+            const handlers = Object.entries(editorHotkeys.custom ?? {})
+              .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
+              .map(([, handler]) => handler)
+            const runHandlers = () => {
+              for (const handler of handlers) {
+                handler(eventLike, portableTextEditor)
               }
-              if (decorators.length > 0) {
-                eventLike.preventDefault()
-                return [
-                  ...decorators.map((decorator) => raise({type: 'decorator.toggle', decorator})),
-                  ...(handlers.length > 0 ? [effect(runHandlers)] : []),
-                ]
-              }
-              runHandlers()
-              return eventLike.isDefaultPrevented() ? [] : [forward(event)]
-            },
-          ],
-        }),
-      ),
+            }
+            if (decorators.length > 0) {
+              eventLike.preventDefault()
+              return [
+                ...decorators.map((decorator) => raise({type: 'decorator.toggle', decorator})),
+                ...(handlers.length > 0 ? [effect(runHandlers)] : []),
+              ]
+            }
+            runHandlers()
+            return eventLike.isDefaultPrevented() ? [] : [forward(event)]
+          },
+        ],
+      }),
       defineBehavior({
         on: 'clipboard.paste',
         guard: ({snapshot, event}) => {

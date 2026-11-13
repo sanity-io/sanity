@@ -4,14 +4,14 @@ import {type HotkeyOptions} from '../../../types/inputProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 /**
- * The hotkeys the input hands to the editor's `hotkeys` prop: the default decorator hotkeys, the
- * fullscreen toggle and the deprecated `hotkeys` input prop.
+ * Builds the default decorator hotkeys merged with the deprecated `hotkeys` input prop
+ * for the input's handler Behaviors.
  */
 export type PortableTextInputHotkeys = HotkeyOptions
 
 export const EMPTY_HOTKEYS: PortableTextInputHotkeys = {}
 
-// This hook will create final hotkeys for the editor based on those from props.
+// Merge the default decorator hotkeys with the initial hotkeys from props.
 export function useHotkeys(hotkeys: PortableTextInputHotkeys): PortableTextInputHotkeys {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const [initialHotkeys] = useState(() => hotkeys)

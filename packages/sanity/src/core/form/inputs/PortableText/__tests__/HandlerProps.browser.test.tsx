@@ -255,6 +255,19 @@ describe.each(DEPTHS)('Portable Text Input handler props at %s', (depth) => {
     expect(keydownPrevented('Enter')).toBe(true)
   })
 
+  it('matching custom hotkey spellings run once each and let the editor insert a line break', async () => {
+    const first = vi.fn()
+    const second = vi.fn()
+    await open(depth, {hotkeys: {custom: {'shift+enter': first, 'Shift+Enter': second}}}, 'caret')
+
+    await userEvent.keyboard('{Shift>}{Enter}{/Shift}')
+
+    const state = await waitForDocumentState((value) => documentIncludes(value, `${text}\\n`))
+    expect(documentIncludes(state, `${text}\\n\\n`)).toBe(false)
+    expect.soft(first).toHaveBeenCalledTimes(1)
+    expect.soft(second).toHaveBeenCalledTimes(1)
+  })
+
   it('a custom hotkey runs when the keydown is sent from code', async () => {
     const handler = vi.fn()
     const {pluginEditorRef} = await open(depth, {hotkeys: headingHotkey(handler)}, 'caret')
@@ -346,6 +359,23 @@ describe.each(DEPTHS)('Portable Text Input handler props at %s', (depth) => {
 
       await waitForDocumentState((state) => documentIncludes(state, `${text}Inserted`))
       expect(received).toEqual(['pasted', 'pasted'])
+    })
+
+    it('onPaste returning a promise of undefined falls through to the editor paste exactly once', async () => {
+      // A repeated call falls through synchronously so a regression cannot loop forever.
+      const onPaste = vi
+        .fn<NonNullable<HandlerProps['onPaste']>>()
+        .mockReturnValue(undefined)
+        .mockResolvedValueOnce(undefined)
+      const {editable} = await open(depth, {onPaste}, 'caret')
+
+      editable.dispatchEvent(clipboardEvent('paste', 'async fallback'))
+
+      const state = await waitForDocumentState((value) =>
+        documentIncludes(value, `${text}async fallback`),
+      )
+      expect(JSON.stringify(state).match(/async fallback/g)).toHaveLength(1)
+      expect(onPaste).toHaveBeenCalledTimes(1)
     })
 
     it('onPaste returning undefined falls through to the editor paste', async () => {

@@ -552,6 +552,8 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
    * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
    * compete, and the first one registered wins.
    *
+   * Install `@portabletext/keyboard-shortcuts` to use the shortcut helper in this example.
+   *
    * @example Toggle bold with Ctrl+Shift+B
    * ```tsx
    * import {defineBehavior, raise} from '@portabletext/editor/behaviors'
@@ -744,7 +746,6 @@ export type InputProps =
 /**
  * Hotkeys for the deprecated `hotkeys` prop of the Portable Text input in Sanity Studio.
  *
- * @beta
  * @remarks
  * This is Studio's own version of the editor's `HotkeyOptions` type, with the same shape.
  */
@@ -757,7 +758,6 @@ export type HotkeyOptions = {
 /**
  * Custom copy handler for the deprecated `onCopy` prop of the Portable Text input in Sanity Studio.
  *
- * @beta
  * @remarks
  * This is Studio's own version of the editor's `OnCopyFn` type, with the same shape.
  */
@@ -768,7 +768,6 @@ export type OnCopyFn = (
 /**
  * What an `onPaste` handler can return.
  *
- * @beta
  * @remarks
  * This is Studio's own version of the editor's `OnPasteResult` type, with the same shape.
  */
