@@ -55,6 +55,10 @@ export type GroqStoreStatus = {
   /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
   storeError?: string
   guardOff: boolean
+  /** Local snapshots for warm starts (`?groqPersist=on`). */
+  persistence: boolean
+  /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
+  persistedStorage?: boolean
   lastStopped?: LastRun
   mutations: {applied: number; stale: number}
   fences: {count: number; lifted: number; ms: number; how: Record<string, number>}
@@ -77,6 +81,8 @@ type LastRun = {
 const SERVICE_WORKER_PATH = '/groq-sw.js'
 const ENABLED_KEY = 'groq-store-wasm:enabled'
 const GUARD_KEY = 'groq-store-wasm:guard'
+const PERSIST_KEY = 'groq-store-wasm:persist'
+const PERSIST_MAX_KEY = 'groq-store-wasm:persist-max-mb'
 const LAST_RUN_KEY = 'groq-store-wasm:last-run'
 const RELOADED_KEY = 'groq-store-wasm:reloaded'
 const LATENCY_SAMPLES = 500
@@ -143,6 +149,36 @@ function initialGuardOff(): boolean {
   return readStorage('localStorage', GUARD_KEY) === 'off'
 }
 
+/**
+ * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, off by default.
+ * `?groqPersistMaxMB=<n>|off` overrides the host's 512 MiB snapshot cap (empty resets it).
+ * Turning snapshots off makes the host delete the ones a previous opt-in left behind.
+ */
+function initialPersistence(): {enabled: boolean; maxMb: string} {
+  const override = searchParam('groqPersist')
+  if (override === 'on') writeStorage('localStorage', PERSIST_KEY, 'on')
+  if (override === 'off') writeStorage('localStorage', PERSIST_KEY, null)
+  const maxOverride = searchParam('groqPersistMaxMB')
+  if (maxOverride !== null) {
+    writeStorage('localStorage', PERSIST_MAX_KEY, maxOverride === '' ? null : maxOverride)
+  }
+  return {
+    enabled: readStorage('localStorage', PERSIST_KEY) === 'on',
+    maxMb: readStorage('localStorage', PERSIST_MAX_KEY) ?? '',
+  }
+}
+
+const persistence = initialPersistence()
+
+/** The store host's URL. Its parameters configure the host worker. */
+function hostUrl(guardOff: boolean): string {
+  const params = new URLSearchParams({wasm: '/groq_wasm_bg.wasm'})
+  if (guardOff) params.set('guard', 'off')
+  params.set('persist', persistence.enabled ? '1' : '0')
+  if (persistence.enabled && persistence.maxMb !== '') params.set('persistMaxMB', persistence.maxMb)
+  return `/groq-host.js?${params}`
+}
+
 function isLastRun(value: unknown): value is LastRun {
   return (
     typeof value === 'object' &&
@@ -179,6 +215,7 @@ let status: GroqStoreStatus = {
   routed: {},
   exportBytes: {},
   guardOff: initialGuardOff(),
+  persistence: persistence.enabled,
   lastStopped:
     previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
       ? previousRun
@@ -331,6 +368,9 @@ function onMetric(metric: Metric): void {
       })
       break
     }
+    case 'storage-persist':
+      update({persistedStorage: metric.granted})
+      break
     default:
       break
   }
@@ -443,8 +483,10 @@ export function startGroqStore(): void {
     }
     const boot = bootGroqStore({
       serviceWorkerUrl: SERVICE_WORKER_PATH,
-      hostUrl: `/groq-host.js?wasm=/groq_wasm_bg.wasm${status.guardOff ? '&guard=off' : ''}`,
+      hostUrl: hostUrl(status.guardOff),
       hostName: status.guardOff ? 'groq-store-wasm-guard-off' : undefined,
+      // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
+      requestPersistentStorage: persistence.enabled,
       onMetric,
     })
     update({boot})

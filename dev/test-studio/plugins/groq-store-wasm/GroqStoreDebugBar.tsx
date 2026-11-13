@@ -123,9 +123,46 @@ function storesSummary(rows: StoreRow[]): string {
   return `${rows.length} stores · ${count('live')} live${failed ? ` · ${failed} failed` : ''}`
 }
 
+/** With snapshots on: how the store started, its latest snapshot and its latest catch-up. */
+function persistenceFacts(row: StoreRow): string | undefined {
+  const facts: string[] = []
+  if (row.start !== undefined) facts.push(`${row.start} start`)
+  const snapshot = row.snapshot
+  if (snapshot !== undefined) {
+    const size = `${mib(snapshot.bytes)} MiB`
+    if (snapshot.state === 'saved') {
+      facts.push(`snapshot ${size} saved, queries frozen ${duration(snapshot.ms)}`)
+    } else if (snapshot.state === 'restored') {
+      facts.push(`snapshot ${size} restored in ${duration(snapshot.ms)}`)
+    } else if (snapshot.state === 'skipped') {
+      const limit =
+        snapshot.limit !== undefined
+          ? ` > ${mib(snapshot.limit)} MiB`
+          : snapshot.freeBytes !== undefined
+            ? `, ${mib(snapshot.freeBytes)} MiB free`
+            : ''
+      facts.push(`snapshot skipped: ${snapshot.reason ?? 'unknown'} (${size}${limit})`)
+    } else {
+      facts.push(`snapshot failed: ${snapshot.reason ?? 'unknown'}`)
+    }
+  }
+  const reconcile = row.reconcile
+  if (reconcile !== undefined) {
+    const how = reconcile.how ?? 'reconcile'
+    facts.push(
+      reconcile.error === undefined
+        ? `${how} ${duration(reconcile.ms)}, ${reconcile.fetched ?? 0} fetched`
+        : `${how} failed: ${reconcile.error}`,
+    )
+  }
+  return facts.length === 0 ? undefined : facts.join(' · ')
+}
+
 function StoreLine({row, latest}: {row: StoreRow; latest: boolean}) {
+  const persistence = persistenceFacts(row)
   const facts = [
     row.documents === undefined ? undefined : `${compact.format(row.documents)} docs`,
+    row.memoryBytes === undefined ? undefined : `${mib(row.memoryBytes)} MiB wasm`,
     row.readyMs === undefined ? undefined : `live in ${duration(row.readyMs)}`,
     row.phase === 'building' && row.exportBytes !== undefined
       ? `export ${mib(row.exportBytes)} MiB`
@@ -150,6 +187,12 @@ function StoreLine({row, latest}: {row: StoreRow; latest: boolean}) {
         {'    '}
         {facts.join(' · ')}
       </div>
+      {persistence === undefined ? null : (
+        <div>
+          {'    '}
+          {persistence}
+        </div>
+      )}
       <div>
         {'    '}host {row.host}
       </div>
@@ -184,9 +227,20 @@ function Details({status}: {status: GroqStoreStatus}) {
         <>
           <div>
             stores ({storesSummary(rows)}
-            {status.memoryBytes === undefined ? '' : `, ${mib(status.memoryBytes)} MiB wasm shared`}
+            {/* With snapshots on each store has its own instance; rows show their memory. */}
+            {status.memoryBytes === undefined || status.persistence
+              ? ''
+              : `, ${mib(status.memoryBytes)} MiB wasm shared`}
             ):
           </div>
+          {status.persistence ? (
+            <div>
+              snapshots on
+              {status.persistedStorage === undefined
+                ? ''
+                : ` · storage ${status.persistedStorage ? 'persisted' : 'best-effort'}`}
+            </div>
+          ) : null}
           {rows.map((row) => (
             <StoreLine
               key={`${row.host} ${row.key}`}
@@ -456,6 +510,7 @@ function GroqStoreDebugBar() {
         {status.enabled && status.guardOff ? (
           <span style={{color: '#f59e0b'}}> · guard off</span>
         ) : null}
+        {status.enabled && status.persistence ? <span> · snapshots on</span> : null}
         {blocked === undefined ? null : <span style={{color: '#f87171'}}> · {blocked}</span>}
       </button>
       {open ? <Details status={status} /> : null}
