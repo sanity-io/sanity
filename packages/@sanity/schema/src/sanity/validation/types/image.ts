@@ -1,7 +1,45 @@
+import {isValidImageAspectRatio, isValidImageCropDimensions} from '../../imageCropOptions'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {validateField, validateFields} from './object'
 
 const autoMeta = ['dimensions', 'hasAlpha', 'isOpaque']
+
+function isSetButInvalid(value: unknown, isValid: (candidate: unknown) => boolean): boolean {
+  if (value === undefined || isValid(value)) {
+    return false
+  }
+  return true
+}
+
+function validateCropOptions(options: Record<string, unknown> | undefined) {
+  const {aspectRatio, minDimensions, recommendedDimensions} = options ?? {}
+  const invalidAspectRatio = isSetButInvalid(aspectRatio, isValidImageAspectRatio)
+    ? [
+        error(
+          'Invalid image `options.aspectRatio` - must be a positive number (`16 / 9`), a `{min, max}` range of positive numbers with `min` no greater than `max`, or a non-empty array of positive numbers',
+        ),
+      ]
+    : []
+  const invalidDimensions = Object.entries({minDimensions, recommendedDimensions})
+    .filter(([, dimensions]) => isSetButInvalid(dimensions, isValidImageCropDimensions))
+    .map(([name]) =>
+      error(
+        `Invalid image \`options.${name}\` - must be an object with a positive \`width\` and \`height\` in pixels`,
+      ),
+    )
+  const recommendedBelowMinimum =
+    isValidImageCropDimensions(minDimensions) &&
+    isValidImageCropDimensions(recommendedDimensions) &&
+    (recommendedDimensions.width < minDimensions.width ||
+      recommendedDimensions.height < minDimensions.height)
+      ? [
+          warning(
+            'Image `options.recommendedDimensions` should be at least as large as `options.minDimensions` on both axes',
+          ),
+        ]
+      : []
+  return [...invalidAspectRatio, ...invalidDimensions, ...recommendedBelowMinimum]
+}
 
 export default (typeDef: any, visitorContext: any) => {
   const problems = []
@@ -48,6 +86,8 @@ export default (typeDef: any, visitorContext: any) => {
       ),
     )
   }
+
+  problems.push(...validateCropOptions(options))
 
   return {
     ...typeDef,

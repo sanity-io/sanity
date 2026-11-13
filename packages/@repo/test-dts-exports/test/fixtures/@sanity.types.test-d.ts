@@ -131,8 +131,11 @@ import type {
   I18nTextRecord,
   I18nTitledListValue,
   Image,
+  ImageAspectRatio,
+  ImageAspectRatioRange,
   ImageAsset,
   ImageCrop,
+  ImageCropDimensions,
   ImageDefinition,
   ImageDimensions,
   ImageHotspot,
@@ -754,11 +757,20 @@ describe('@sanity/types', () => {
   test('Image', () => {
     expectTypeOf<Image>().toBeObject()
   })
+  test('ImageAspectRatio', () => {
+    expectTypeOf<ImageAspectRatio>().not.toBeNever()
+  })
+  test('ImageAspectRatioRange', () => {
+    expectTypeOf<ImageAspectRatioRange>().toBeObject()
+  })
   test('ImageAsset', () => {
     expectTypeOf<ImageAsset>().toBeObject()
   })
   test('ImageCrop', () => {
     expectTypeOf<ImageCrop>().toBeObject()
+  })
+  test('ImageCropDimensions', () => {
+    expectTypeOf<ImageCropDimensions>().toBeObject()
   })
   test('ImageDefinition', () => {
     expectTypeOf<ImageDefinition>().toBeObject()

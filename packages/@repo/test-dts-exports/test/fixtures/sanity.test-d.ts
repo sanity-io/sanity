@@ -795,9 +795,12 @@ import type {
   idMatchesPerspective,
   IdPair,
   Image,
+  ImageAspectRatio,
+  ImageAspectRatioRange,
   ImageAsset,
   ImageComponents,
   ImageCrop,
+  ImageCropDimensions,
   ImageDefinition,
   ImageDimensions,
   ImageHotspot,
@@ -4276,6 +4279,12 @@ describe('sanity', () => {
   test('Image', () => {
     expectTypeOf<Image>().toBeObject()
   })
+  test('ImageAspectRatio', () => {
+    expectTypeOf<ImageAspectRatio>().not.toBeNever()
+  })
+  test('ImageAspectRatioRange', () => {
+    expectTypeOf<ImageAspectRatioRange>().toBeObject()
+  })
   test('ImageAsset', () => {
     expectTypeOf<ImageAsset>().toBeObject()
   })
@@ -4284,6 +4293,9 @@ describe('sanity', () => {
   })
   test('ImageCrop', () => {
     expectTypeOf<ImageCrop>().toBeObject()
+  })
+  test('ImageCropDimensions', () => {
+    expectTypeOf<ImageCropDimensions>().toBeObject()
   })
   test('ImageDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
