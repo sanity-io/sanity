@@ -39,7 +39,13 @@ export type CreateAction = {
   ifExists?: 'fail' | 'ignore'
 }
 
-export type ContentLakeAction = EditAction | CreateAction
+export type DeleteAction = {
+  actionType: 'sanity.action.document.delete'
+  publishedId: string
+  includeDrafts?: string[]
+}
+
+export type ContentLakeAction = EditAction | CreateAction | DeleteAction
 
 /**
  * A `mutation` listener event. `previousRev` is absent on `appear`: the studio chains revisions

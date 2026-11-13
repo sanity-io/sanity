@@ -2,6 +2,7 @@ import {ContentLakeError, documentNotFound} from './contentLakeError'
 import {
   type ContentLakeAction,
   type CreateAction,
+  type DeleteAction,
   type DocumentIndex,
   type EditAction,
   type MutationPayload,
@@ -37,6 +38,8 @@ function assertDecodable(action: ContentLakeAction, position: number): void {
         description: `action index ${position}: "attributes._id" must be prefixed with either "drafts." or "versions.{bundleId}"`,
         type: 'httpBadRequest',
       })
+    case 'sanity.action.document.delete':
+      return
     default:
       throw new ContentLakeError(400, {
         description: `Unsupported action type: ${(action as {actionType: string}).actionType}`,
@@ -83,6 +86,27 @@ function createMutations(action: CreateAction, exists: Exists): MutationPayload[
   })
 }
 
+function deleteMutations(action: DeleteAction, exists: Exists): MutationPayload[] {
+  return [action.publishedId, ...(action.includeDrafts ?? [])]
+    .filter(exists)
+    .map((id) => ({delete: {id}}))
+}
+
+function mutationsFor(
+  index: DocumentIndex,
+  action: ContentLakeAction,
+  exists: Exists,
+): MutationPayload[] {
+  switch (action.actionType) {
+    case 'sanity.action.document.edit':
+      return editMutations(index, action, exists)
+    case 'sanity.action.document.create':
+      return createMutations(action, exists)
+    case 'sanity.action.document.delete':
+      return deleteMutations(action, exists)
+  }
+}
+
 function createdIdOf(mutation: MutationPayload): string[] {
   const id = mutation.create?._id ?? mutation.createOrReplace?._id
   return id === undefined ? [] : [id]
@@ -100,10 +124,7 @@ export function actionsToMutations(
   return actions.reduce<Translation>(
     ({written, mutations}, action) => {
       const exists: Exists = (id) => id in index || written.has(id)
-      const next =
-        action.actionType === 'sanity.action.document.edit'
-          ? editMutations(index, action, exists)
-          : createMutations(action, exists)
+      const next = mutationsFor(index, action, exists)
       return {
         written: new Set([...written, ...next.flatMap(createdIdOf)]),
         mutations: [...mutations, ...next],

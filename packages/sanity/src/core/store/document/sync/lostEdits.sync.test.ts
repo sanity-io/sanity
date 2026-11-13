@@ -143,7 +143,8 @@ describe('lost edits', () => {
       id: 'EDIT-SUPERSEDED-LOCALLY',
       title: 'A saves "one", then types "two" and back to "one" before saving again',
       seam: 'pair',
-      evidence: 'L3',
+      // L2 for the mechanism only: the pair seam skips Studio's draft guard, so in Studio only live-edit documents reach this
+      evidence: 'L2',
       knownBug: 'B3',
       initial: [initial],
       idPair,
