@@ -84,9 +84,10 @@ interface DocumentGroupInventoryBaseProps {
   documentType: string
   /**
    * The id of the document version to mark as currently viewed. Defaults to
-   * {@link DocumentGroupInventoryBaseProps.documentId}.
+   * {@link DocumentGroupInventoryBaseProps.documentId}. `null` marks no version, for when the
+   * viewed version is not known yet.
    */
-  selectedId?: string
+  selectedId?: string | null
   /**
    * Called when a version's primary action fires. What "picking" a version
    * means is the consumer's decision: switching the studio's perspective,
@@ -469,7 +470,7 @@ export function DocumentGroupInventory(
 const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
-  selectedId: string
+  selectedId: string | null
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   readOnly: boolean

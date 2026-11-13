@@ -13,6 +13,9 @@ import {
   type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
   type SanityDocument,
+  type TargetDocumentState,
+  usePerspective,
+  type VersionInfoDocumentStub,
 } from 'sanity'
 import {PaneLayoutContext, PaneRouterContext} from 'sanity/_singletons'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
@@ -30,6 +33,7 @@ import {DocumentGroupInspector} from '../DocumentGroupInspector'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   DocumentGroupInventory: vi.fn(() => <div data-testid="document-group-inventory" />),
+  usePerspective: vi.fn(),
 }))
 
 vi.mock('../../../useDocumentPane', () => ({
@@ -45,6 +49,7 @@ vi.mock('../../../../../components/confirmDeleteDialog/useReferringDocuments', (
 }))
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+const mockUsePerspective = usePerspective as MockedFunction<typeof usePerspective>
 const mockUseDocumentPerspectiveList = useDocumentPerspectiveList as MockedFunction<
   typeof useDocumentPerspectiveList
 >
@@ -71,15 +76,26 @@ function FakeDocumentGroupInventory(
   return <div data-testid="document-group-inventory" />
 }
 
+const BASE_TARGET_DOCUMENT_STATE: TargetDocumentState = {
+  status: 'ready',
+  targetDocument: undefined,
+  scopeId: undefined,
+  variant: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
+}
+
 function buildDocumentPaneValue({
   displayed = {_id: 'drafts.doc-123', _type: 'author'},
   version,
+  targetDocumentState = BASE_TARGET_DOCUMENT_STATE,
 }: {
   displayed?: DocumentPaneContextValue['displayed']
   version?: SanityDocument
+  targetDocumentState?: TargetDocumentState
 } = {}): DocumentPaneContextValue {
   return {
     displayed,
+    targetDocumentState,
     editState: {
       id: 'doc-123',
       type: 'author',
@@ -101,6 +117,12 @@ function lastInventoryProps(): DocumentGroupInventoryProps {
   }
 
   return props
+}
+
+// The version the inventory marks as open: `selectedId` defaults to `documentId` there.
+function markedVersionId(): string | null {
+  const {selectedId, documentId} = lastInventoryProps()
+  return selectedId === undefined ? documentId : selectedId
 }
 
 const PANE_LAYOUT: PaneLayoutContextValue = {
@@ -129,65 +151,72 @@ const test = baseTest
   )
   .extend('documentPaneValue', () => buildDocumentPaneValue())
   .extend('layoutCollapsed', () => false)
-  .extend('renderInspector', ({TestProvider, documentPaneValue, layoutCollapsed}) => {
-    const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
+  .extend('selectedVariantNames', (): string[] => [])
+  .extend(
+    'renderInspector',
+    ({TestProvider, documentPaneValue, layoutCollapsed, selectedVariantNames}) => {
+      const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
 
-    mockUseDocumentPane.mockReturnValue(documentPaneValue)
-    mockUseDocumentPerspectiveList.mockReturnValue({} as never)
-    mockDocumentGroupInventory.mockImplementation(function MockDocumentGroupInventory(
-      props: InventoryProps,
-    ) {
-      return <FakeDocumentGroupInventory {...props} onHandle={onInventoryHandle} />
-    })
+      mockUseDocumentPane.mockReturnValue(documentPaneValue)
+      mockUsePerspective.mockReturnValue({selectedVariantNames} as unknown as ReturnType<
+        typeof usePerspective
+      >)
+      mockUseDocumentPerspectiveList.mockReturnValue({} as never)
+      mockDocumentGroupInventory.mockImplementation(function MockDocumentGroupInventory(
+        props: InventoryProps,
+      ) {
+        return <FakeDocumentGroupInventory {...props} onHandle={onInventoryHandle} />
+      })
 
-    function lastInventoryHandle(): DocumentGroupInventoryHandle {
-      const handle = onInventoryHandle.mock.lastCall?.[0]
+      function lastInventoryHandle(): DocumentGroupInventoryHandle {
+        const handle = onInventoryHandle.mock.lastCall?.[0]
 
-      if (typeof handle === 'undefined') {
-        throw new Error('Expected `DocumentGroupInventory` to have exposed its handle')
+        if (typeof handle === 'undefined') {
+          throw new Error('Expected `DocumentGroupInventory` to have exposed its handle')
+        }
+
+        return handle
       }
 
-      return handle
-    }
+      const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
 
-    const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
+      const closeCurrentAndAfter = vi.fn()
 
-    const closeCurrentAndAfter = vi.fn()
+      // The default pane router, with the one method the inspector calls observed.
+      function PaneRouter({children}: {children: ReactNode}) {
+        const paneRouter = use(PaneRouterContext)
+        return (
+          <PaneRouterContext value={{...paneRouter, closeCurrentAndAfter}}>
+            {children}
+          </PaneRouterContext>
+        )
+      }
 
-    // The default pane router, with the one method the inspector calls observed.
-    function PaneRouter({children}: {children: ReactNode}) {
-      const paneRouter = use(PaneRouterContext)
-      return (
-        <PaneRouterContext value={{...paneRouter, closeCurrentAndAfter}}>
-          {children}
-        </PaneRouterContext>
-      )
-    }
+      const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
+        return (
+          <TestProvider>
+            <PaneRouter>
+              <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
+            </PaneRouter>
+          </TestProvider>
+        )
+      }
 
-    const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
-      return (
-        <TestProvider>
-          <PaneRouter>
-            <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
-          </PaneRouter>
-        </TestProvider>
-      )
-    }
+      // The test provider renders a spinner until the locale resources have loaded.
+      return async () => {
+        const onClose = vi.fn()
 
-    // The test provider renders a spinner until the locale resources have loaded.
-    return async () => {
-      const onClose = vi.fn()
+        render(
+          <DocumentGroupInspector documentId="doc-123" documentType="author" onClose={onClose} />,
+          {wrapper: Wrapper},
+        )
 
-      render(
-        <DocumentGroupInspector documentId="doc-123" documentType="author" onClose={onClose} />,
-        {wrapper: Wrapper},
-      )
+        await screen.findByRole('heading', {name: 'Document inventory'})
 
-      await screen.findByRole('heading', {name: 'Document inventory'})
-
-      return {onClose, lastInventoryHandle, closeCurrentAndAfter}
-    }
-  })
+        return {onClose, lastInventoryHandle, closeCurrentAndAfter}
+      }
+    },
+  )
 
 describe('DocumentGroupInspector', () => {
   test('closes the document pane once a delete leaves no versions', async ({renderInspector}) => {
@@ -217,7 +246,7 @@ describe('DocumentGroupInspector', () => {
   }) => {
     await renderInspector()
 
-    const heading = screen.getByRole('heading', {name: 'Manage versions'})
+    const heading = screen.getByRole('heading', {name: 'Document inventory'})
     const icon = heading.parentElement?.querySelector('[data-sanity-icon="documents"]')
 
     expect(icon).not.toBeNull()
@@ -338,6 +367,52 @@ describe('DocumentGroupInspector', () => {
 
     expect(inventory.getSnapshot().matches('creatingVariant')).toBe(true)
     expect(feedbackButton).toBeDisabled()
+  })
+
+  test('marks the displayed document as open when no variant is selected', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    expect(markedVersionId()).toBe('drafts.doc-123')
+  })
+
+  describe('when a variant is selected', () => {
+    test.override('selectedVariantNames', () => ['returning-visitors'])
+
+    describe('and its target document is still resolving', () => {
+      // The pane displays the base draft while the variant target resolves.
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({targetDocumentState: {status: 'resolving'}}),
+      )
+
+      test('marks no version as open rather than the base draft', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(markedVersionId()).toBeNull()
+      })
+    })
+
+    describe('and its target document has resolved', () => {
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({
+          // The displayed document can still lag behind on the base draft.
+          targetDocumentState: {
+            ...BASE_TARGET_DOCUMENT_STATE,
+            targetDocument: {
+              _id: 'versions.scope-a.doc-123',
+            } as VersionInfoDocumentStub,
+            scopeId: 'scope-a',
+          },
+        }),
+      )
+
+      test('marks the variant target as open', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(markedVersionId()).toBe('versions.scope-a.doc-123')
+      })
+    })
   })
 
   describe('when the displayed document is not known yet', () => {
