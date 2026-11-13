@@ -696,9 +696,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vision.panel.expand': 'Expand panel',
+  /** Tooltip of a control that sizes its bottom panel to the open tab */
+  'vision.panel.fit-content': 'Double-click to fit the panel to its content',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vision.panel.explain': 'Explain',
-  /** Label of the Functions tab in the response panel */
+  /** Label of the Functions tab in the request panel */
   'vision.panel.functions': 'Functions',
   /** Label of the Network tab in the response panel */
   'vision.panel.network': 'Network',
@@ -708,7 +710,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.mutate': 'Mutate',
   /** Label of the "History" tab in the response panel */
   'vision.panel.history': 'History',
-  /** Label of the "Lint" tab in the response panel, listing the query's lint findings */
+  /** Label of the "Lint" tab in the request panel, listing the query's lint findings */
   'vision.panel.lint': 'Lint',
   /** Label of the "Options" panel in the request column */
   'vision.panel.options': 'Options',
@@ -783,9 +785,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.unused': 'Not used by the query',
   /** Before the expressions that use a param, in the params form */
   'vision.params-form.used-in': 'Used in',
-  /** Value announced for the params resize handle while the panel sizes itself to its content */
+  /**
+   * Value announced for the params resize handle while the panel sizes itself to its content
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.fit-height': 'Sized to the content, {{height}} pixels',
-  /** Accessible label and tooltip of the handle for resizing the params panel */
+  /**
+   * Accessible label and tooltip of the handle for resizing the params panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
   /** Tab showing the params as a form inferred from the query */

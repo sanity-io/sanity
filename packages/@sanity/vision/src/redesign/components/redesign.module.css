@@ -164,7 +164,7 @@
   white-space: nowrap;
 }
 
-/* The query editor takes whatever height the panels below leave over, and never less than this */
+/* The query editor fills the main area of the request column, and never less than this */
 .querySection {
   position: relative;
   display: flex;
@@ -174,89 +174,13 @@
 }
 
 /*
- * A collapsible panel below the query editor: a header row and, while expanded, a body that
- * scrolls once the panel hits its cap. The panel is as tall as its content wants, so the
- * stacking distributes the column's height by need.
+ * The open tab's body. It stays as tall as that tab's content (fit-to-content reads it) instead
+ * of stretching to the panel, and it contains its children's margins so they count too.
  */
-.collapsibleSection {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 0 1 auto;
-  min-height: 0;
-  border-top: 1px solid var(--card-border-color);
-}
-
-/* Params grow with their JSON until they would claim too much of the column */
-.paramsSection {
-  max-height: 40%;
-}
-
-/* A dragged params height replaces the automatic one; the cap is enforced while dragging */
-.paramsSectionResized {
-  max-height: none;
-}
-
-/* The options are finite and rarely reach this; when they do, they scroll */
-.optionsSection {
-  max-height: 45%;
-}
-
-.sectionBody {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
-}
-
-/*
- * Drag handle straddling the params panel's top border, laid out like the split pane resizers:
- * an 11px hit area whose visible part is the border itself.
- */
-.sectionResizer {
-  position: absolute;
-  top: -6px;
-  left: 0;
-  right: 0;
-  height: 11px;
-  cursor: row-resize;
-  /* Above the editor label (10) so the whole width can be grabbed, below the sidebar (20) */
-  z-index: 11;
-  touch-action: none;
-}
-
-.sectionResizer[data-dragging='true'] {
-  background: var(--card-shadow-ambient-color);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .sectionResizer:hover {
-    background: var(--card-shadow-ambient-color);
-    transition: background-color 100ms ease;
-  }
-}
-
-/* Turns a quarter towards the body it opens; the glyph moves on screen, so ease in and out */
-.sectionChevron {
-  transition: transform 200ms cubic-bezier(0.77, 0, 0.175, 1);
-}
-
-.sectionChevron[data-expanded='true'] {
-  transform: rotate(90deg);
-}
-
-/* A body opened by the toggle settles in from just under the header; closing is immediate */
-.sectionBody[data-revealing='true'] {
-  transition:
-    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-@starting-style {
-  .sectionBody[data-revealing='true'] {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
+.panelContent {
+  align-self: flex-start;
+  display: flow-root;
+  width: 100%;
 }
 
 /*
@@ -281,7 +205,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sectionChevron,
   .pressable,
   .pressableIcon,
   .tabTitleButton,
@@ -295,21 +218,6 @@
   .tabCloseButton:active {
     transform: none;
   }
-}
-
-/* Reduced motion: the body still fades, it just no longer moves */
-@media (prefers-reduced-motion: reduce) {
-  @starting-style {
-    .sectionBody[data-revealing='true'] {
-      transform: none;
-    }
-  }
-}
-
-.sectionResizer:focus-visible {
-  background: var(--card-shadow-ambient-color);
-  outline: 2px solid var(--card-focus-ring-color);
-  outline-offset: -2px;
 }
 
 /* Option fields flow into as many columns as fit the request column */
@@ -366,21 +274,6 @@
 /* A sidebar item, which a count can sit on */
 .sidebarItem {
   position: relative;
-}
-
-/* A count on a sidebar item: on the icon's corner in the collapsed rail */
-.sidebarItemBadge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  pointer-events: none;
-}
-
-/* At the end of the item's row in the expanded rail */
-.sidebarItemBadgeExpanded {
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
 }
 
 /* Keeps the collapsed rail's room reserved while the expanded rail floats over the content */
@@ -541,6 +434,128 @@
   min-width: 0;
   min-height: 0;
   overflow: auto;
+  /* Turning critical for a failed fetch, and back, is a color change */
+  transition: background-color 200ms ease;
+}
+
+/*
+ * A result view (tree, JSON or graph) fades in when it is switched to and when the first result
+ * arrives. A newer result replaces the shown one in place, without motion: fetches come from a
+ * shortcut and from every live update, and a result being read should not move.
+ */
+.resultView,
+.resultEnter {
+  transition-property: opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultView,
+  .resultEnter {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/*
+ * While a newer fetch is in flight the shown result stays; once the fetch has taken long enough
+ * to notice it dims, so a quick fetch never flickers. It brightens quickly when the response
+ * arrives. The paired durations and delays below line up with `transition-property` above
+ * (opacity, then transform), so a view switched to mid-fetch still lifts in on mount instead of
+ * losing that transition entirely to this rule's higher specificity. Its own `@starting-style`
+ * starts that view already dimmed rather than hidden, so it is never invisible for the 400ms
+ * meant to hold an already-visible result steady before dimming it.
+ */
+.resultContainer[data-refreshing='true'] .resultView {
+  opacity: 0.5;
+  transition-duration: 200ms, 180ms;
+  transition-delay: 400ms, 0s;
+  transition-timing-function: ease, cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultContainer[data-refreshing='true'] .resultView {
+    opacity: 0.5;
+  }
+}
+
+/* The delayed spinner fades in rather than popping up */
+.resultSpinner [data-ui='Spinner'] {
+  transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  .resultSpinner [data-ui='Spinner'] {
+    opacity: 0;
+  }
+}
+
+/* The copy icon and the checkmark that confirms a copy, stacked and crossfaded */
+.copyGlyphs {
+  display: inline-grid;
+}
+
+.copyGlyphs > svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.copyGlyphs[data-copied='true'] > [data-glyph='copy'],
+.copyGlyphs[data-copied='false'] > [data-glyph='check'] {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(2px);
+}
+
+/* The bottom bar's buttons respond to the press like `.pressable` above */
+.actionRail [data-ui='Button'] {
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.actionRail [data-ui='Button']:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/*
+ * An unavailable action is a disabled button wrapped in a focusable stand-in, which shows the
+ * focus ring the disabled button cannot
+ */
+.actionRail [aria-disabled='true'][tabindex] {
+  border-radius: 3px;
+  outline: none;
+}
+
+.actionRail [aria-disabled='true'][tabindex]:focus-visible {
+  box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+}
+
+/* Less motion: views and confirmations still fade, nothing moves or scales */
+@media (prefers-reduced-motion: reduce) {
+  .resultView,
+  .resultEnter,
+  .copyGlyphs > svg {
+    transition-property: opacity;
+  }
+
+  .resultView,
+  .resultEnter {
+    transform: none;
+  }
+
+  @starting-style {
+    .resultView,
+    .resultEnter {
+      transform: none;
+    }
+  }
+
+  .actionRail [data-ui='Button']:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 .codeBlock {
