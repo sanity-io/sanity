@@ -289,7 +289,7 @@ export function VariantsMenu({
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1} padding={1}>
+                <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={2} paddingY={1}>
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
@@ -322,7 +322,8 @@ export function VariantsMenu({
               flexShrink={0}
               gap={1}
               borderTop
-              padding={1}
+              paddingX={2}
+              paddingY={1}
               hidden={filterQuery.trim().length > 0}
             >
               <MenuItem

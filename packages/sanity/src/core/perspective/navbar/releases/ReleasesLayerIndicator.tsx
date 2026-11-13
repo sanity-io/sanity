@@ -107,7 +107,7 @@ export const ReleasesMenuItemIndicator = styled.div<{
 export const ReleasesMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
   ({$withinRange}) => css`
     position: relative;
-    // Starts the label where the release titles start, 37px from the menu's edge (ReleasesMenuItem)
+    // Starts the label where the release titles start, 41px from the menu's edge (ReleasesMenuItem)
     padding-left: 33px;
 
     ${
