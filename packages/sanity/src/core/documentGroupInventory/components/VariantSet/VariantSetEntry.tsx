@@ -3,7 +3,7 @@ import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
 import {SELECTION} from './selectionTokens'
-import {LEADING_COLUMN_WIDTH} from './VariantSet'
+import {MARK_COLUMN_WIDTH} from './VariantSet'
 
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
@@ -25,7 +25,17 @@ export const VariantSetEntry = styled.div(({theme}) => {
     padding-block: ${space[3]}px;
     align-items: center;
 
-    * + & {
+    /*
+     * One line of cells. The mark comes before the text in the tree but sits in the trailing
+     * column, so auto-placement would push the text to a second line.
+     */
+    & > * {
+      grid-row: 1;
+    }
+
+    /* Between rows, and between a group's header and its first row */
+    * + &,
+    header + * > &:first-child {
       border-block-start: 1px solid ${color.border};
     }
 
@@ -35,7 +45,7 @@ export const VariantSetEntry = styled.div(({theme}) => {
      */
     --version-text-min: 140px;
     --version-lines-min: calc(
-      var(--version-text-min) - ${LEADING_COLUMN_WIDTH}px - var(--inventory-leading-gap)
+      var(--version-text-min) - ${MARK_COLUMN_WIDTH}px - var(--inventory-column-gap)
     );
 
     /* The selection checkbox, at the far left of every row and every group header. */
@@ -58,6 +68,27 @@ export const VariantSetEntry = styled.div(({theme}) => {
     .selection-checkbox {
       display: flex;
       --selection-checkbox-border: ${mixToContrast(color.fg, color.bg, CHECKBOX_REST_CONTRAST)};
+    }
+
+    /*
+     * Hidden at rest, in a gutter that is always reserved, so nothing moves when it shows. It shows
+     * on the row's hover and on keyboard focus inside the row, always on a device without hover,
+     * and everywhere once anything is checked (select mode, in Body). Visibility keeps its
+     * box: a hidden checkbox is out of the accessibility tree and the tab order until it shows.
+     */
+    .selection-checkbox {
+      visibility: hidden;
+    }
+
+    &:hover .selection-checkbox,
+    &:focus-within .selection-checkbox {
+      visibility: visible;
+    }
+
+    @media (hover: none) {
+      .selection-checkbox {
+        visibility: visible;
+      }
     }
 
     &:hover .selection-checkbox,
@@ -97,9 +128,8 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * The shared leading column, holding the variant diamond. A Default row has no mark: the column
-     * stays empty, so every name and every second line start at the same x as the group's name. The
-     * diamond is centred on the whole row.
+     * The trailing mark column, holding the variant diamond. A Default row has no mark: the column
+     * stays empty. The diamond is centred on the whole row.
      */
     .variant-mark {
       display: flex;
@@ -181,7 +211,7 @@ export const VariantSetEntry = styled.div(({theme}) => {
     /*
      * The row's tab stop is its invisible primary action, so its focus ring is drawn on the row.
      */
-    &:has(.primary-action:focus-visible) {
+    &:has(.primary-action:focus-visible, .group-toggle:focus-visible) {
       outline: 2px solid ${color.focusRing};
       outline-offset: -2px;
     }

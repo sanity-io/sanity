@@ -7,7 +7,7 @@ import {VariantSetEntry} from './VariantSetEntry'
 
 /**
  * A set's header row. Its checkbox sits in the same column as the rows' checkboxes, and its icon in
- * the shared leading column with the rows' marks, so the icon is never covered or swapped out.
+ * the trailing column with the rows' marks. The header is also the group's collapse toggle.
  */
 export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
   const {color} = getThemeV2(theme)
@@ -17,6 +17,42 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
     inset-block-start: 0;
     z-index: 2;
     background-color: var(--card-muted-bg-color);
+
+    /*
+     * The whole header is the group's collapse toggle: an invisible button over it, under the
+     * checkbox and any header actions. It reads as pressable on hover. A collapsed group that holds
+     * the open version keeps a pale blue band (UI 5's low-emphasis selection), so the open version
+     * can still be found.
+     */
+    .group-toggle {
+      appearance: none;
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Focus shows as the header's focus ring, not as a row's focus tint */
+    &:focus-within {
+      background-color: var(--card-muted-bg-color);
+    }
+
+    &[data-open-inside] {
+      background-color: ${SELECTION.checkedBackground};
+    }
+
+    &:hover {
+      background-color: ${SELECTION.headerHoverBackground};
+    }
 
     /*
      * A checked header stays a band of its own, one step stronger on the blue ladder than its

@@ -16,13 +16,23 @@ export const SELECTION = {
   openSubtitle: 'light-dark(var(--blue-100), var(--blue-900))',
   /** A checked row: `--active-background-normal` (blue-50 / blue-950). */
   checkedBackground: 'var(--active-background-normal)',
-  /** A checked group header: one step stronger than its checked rows (blue-100 / blue-900). */
-  checkedHeaderBackground: 'light-dark(var(--blue-100), var(--blue-900))',
+  /**
+   * A checked group header: two steps stronger than its checked rows (blue-200 / blue-800), so it
+   * stays visibly a header when the whole group is checked. One step (blue-100 / blue-900) measured
+   * only 1.10:1 against the rows.
+   */
+  checkedHeaderBackground: 'light-dark(var(--blue-200), var(--blue-800))',
   /**
    * A hovered row: `--background-low` (gray-50) in light. In dark that token is gray-950, the
    * panel's own background, so hover would not show: dark takes the next step, gray-900.
    */
   hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
+  /**
+   * A hovered group header, which is already a low band (gray-50 in light): `--background-high`
+   * (gray-100) in light. In dark that token is gray-900, about the header band itself, so dark takes
+   * the next step, gray-800.
+   */
+  headerHoverBackground: 'light-dark(var(--gray-100), var(--gray-800))',
   /** A checked box: UI 5's checkbox fill and tick (`--active-background-emphasized` / `-foreground-`). */
   checkboxFill: 'var(--active-background-emphasized)',
   checkboxTick: 'var(--active-foreground-emphasized)',

@@ -130,8 +130,8 @@ function measure(variant: Variant) {
   return {
     row,
     lines,
-    /** The text column: the mark column, then the title and the meta. */
-    textColumnWidth: lines.right - mark.left,
+    /** The text column: the title and the meta, then the trailing mark column. */
+    textColumnWidth: mark.right - lines.left,
     group: group.getBoundingClientRect(),
     badges,
     badgeTops: new Set(badges.map((badge) => Math.round(badge.getBoundingClientRect().top))),
@@ -204,10 +204,10 @@ describe('DocumentGroupEntry in a narrow panel', () => {
   })
 
   /*
-   * One 12px padding, the 17px checkbox, an 8px gap, the 21px icon and mark column and an 8px gap:
-   * the text starts 66px in, in the group header and in every row alike.
+   * One 12px padding, the 17px checkbox gutter and an 8px gap: the text starts 37px in, right after
+   * the gutter, in the group header and in every row alike. The mark column trails on the right.
    */
-  it('starts header and row text 66px in at a 300px panel', async () => {
+  it('starts header and row text 37px in at a 300px panel, right after the checkbox gutter', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<NarrowPanel width={300} />)
 
@@ -218,22 +218,24 @@ describe('DocumentGroupEntry in a narrow panel', () => {
     const panelLeft = set.getBoundingClientRect().left
     const headerText = set.querySelector<HTMLElement>('header .variant-set-text')!
 
-    expect(Math.abs(headerText.getBoundingClientRect().left - panelLeft - 66)).toBeLessThanOrEqual(
+    expect(Math.abs(headerText.getBoundingClientRect().left - panelLeft - 37)).toBeLessThanOrEqual(
       1,
     )
     for (const {variant} of ROWS) {
       const lines = getPart(getRow(variant), 'version-lines').getBoundingClientRect()
-      expect(Math.abs(lines.left - panelLeft - 66)).toBeLessThanOrEqual(1)
+      expect(Math.abs(lines.left - panelLeft - 37)).toBeLessThanOrEqual(1)
     }
 
-    // 300 - 66 - 12 = 222px for the text
-    const row = getRow(DEFAULT_ROW).getBoundingClientRect()
+    // 300 - 37 - 8 (gap) - 21 (mark) - 12 = 222px for the text
+    const mark = getRow(DEFAULT_ROW).querySelector<HTMLElement>('.variant-mark')!
     const textWidth =
-      row.right - 12 - getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect().left
+      mark.getBoundingClientRect().left -
+      8 -
+      getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect().left
     expect(Math.abs(textWidth - 222)).toBeLessThanOrEqual(1)
   })
 
-  it('trims the padding to 8px below 240px, so the text starts 62px in', async () => {
+  it('trims the padding to 8px below 240px, so the text starts 33px in', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<NarrowPanel width={220} />)
 
@@ -242,6 +244,6 @@ describe('DocumentGroupEntry in a narrow panel', () => {
 
     const set = document.querySelector<HTMLElement>('[data-variant-set="Unreleased"]')!
     const lines = getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect()
-    expect(Math.abs(lines.left - set.getBoundingClientRect().left - 62)).toBeLessThanOrEqual(1)
+    expect(Math.abs(lines.left - set.getBoundingClientRect().left - 33)).toBeLessThanOrEqual(1)
   })
 })

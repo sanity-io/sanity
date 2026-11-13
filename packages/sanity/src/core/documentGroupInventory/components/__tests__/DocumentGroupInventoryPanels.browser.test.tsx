@@ -1420,6 +1420,7 @@ function SelectionSets({
         key={set.key}
         name={set.name}
         bundle={set.bundle}
+        containsOpen={set.variants.some(({id}) => id === openId)}
         selectionState={selection.state}
         blockedReason={
           selection.groupBlockedReason
@@ -1489,6 +1490,23 @@ function rowCheckbox(setName: string, rowName: string): HTMLInputElement {
 
 function groupCheckbox(setName: string): HTMLInputElement {
   return selectionSet(setName).querySelector<HTMLInputElement>('header input[type="checkbox"]')!
+}
+
+/**
+ * Points at a checkbox's row or group header, as a user does before clicking it: checkboxes are
+ * hidden at rest and show on hover.
+ */
+async function pointAt(element: Element) {
+  await userEvent.hover(page.elementLocator(element.closest('[data-variant-name], header')!))
+}
+
+async function clickCheckbox(checkbox: HTMLInputElement) {
+  await pointAt(checkbox)
+  await userEvent.click(page.elementLocator(checkbox))
+}
+
+function groupToggle(setName: string): HTMLButtonElement {
+  return selectionSet(setName).querySelector<HTMLButtonElement>('header .group-toggle')!
 }
 
 function centreX(element: Element): number {
@@ -1571,7 +1589,7 @@ const UI5 = {
     openSubtitle: [229, 237, 255], // blue-100
     openVariantMark: [241, 235, 255], // suggest --foreground-low-emphasized: purple-100
     checked: [245, 248, 255], // --active-background-normal: blue-50
-    checkedHeader: [229, 237, 255], // blue-100
+    checkedHeader: [219, 229, 255], // blue-200
     hover: [246, 246, 248], // --background-low: gray-50
     checkboxFill: [64, 67, 231], // blue-600
     checkboxTick: [255, 255, 255], // white
@@ -1582,7 +1600,7 @@ const UI5 = {
     openSubtitle: [22, 26, 65], // blue-900
     openVariantMark: [35, 23, 63], // suggest --foreground-low-emphasized: purple-900
     checked: [16, 18, 40], // --active-background-normal: blue-950
-    checkedHeader: [22, 26, 65], // blue-900
+    checkedHeader: [25, 36, 87], // blue-800
     hover: [27, 29, 39], // gray-900: --background-low is gray-950, the panel's own background
     checkboxFill: [117, 149, 255], // blue-400
     checkboxTick: [19, 20, 27], // black
@@ -1590,7 +1608,7 @@ const UI5 = {
 } as const
 
 describe('Inventory selection', () => {
-  it('lines the group icons and the row marks up in one column', async () => {
+  it('lines the group marks and the row marks up in the trailing column', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<SelectionPanel refs={startSelectionHarness()} />)
 
@@ -1604,9 +1622,9 @@ describe('Inventory selection', () => {
       const icon = selectionSet(setName).querySelector('header .variant-set-icon svg')!
       expect(Math.abs(centreX(icon) - centreX(mark))).toBeLessThanOrEqual(1)
     }
-    // 12px padding, the 17px checkbox, an 8px gap, then the middle of the 21px column
+    // The trailing column: the middle of the 21px column, inside the 12px padding on the right
     expect(
-      Math.abs(centreX(mark) - selectionSet('Draft').getBoundingClientRect().left - 47.5),
+      Math.abs(selectionSet('Draft').getBoundingClientRect().right - 12 - 10.5 - centreX(mark)),
     ).toBeLessThanOrEqual(1)
   })
 
@@ -1732,7 +1750,9 @@ describe('Inventory selection', () => {
       expect(background(row)).toEqual(ui5.checked)
       // The header keeps a band of its own, one step stronger than its checked rows
       expect(background(header('Draft'))).toEqual(ui5.checkedHeader)
-      expect(contrastRatio(background(header('Draft')), background(row))).toBeGreaterThan(1.05)
+      expect(contrastRatio(background(header('Draft')), background(row))).toBeGreaterThanOrEqual(
+        1.15,
+      )
       expect(contrastRatio(background(header('Draft')), panel)).toBeGreaterThan(
         contrastRatio(background(row), panel),
       )
@@ -1845,6 +1865,9 @@ describe('Inventory selection', () => {
     const group = groupCheckbox('Published')
     const restShadow = getComputedStyle(group.nextElementSibling!).boxShadow
     ;($create.element() as HTMLButtonElement).focus()
+    // The header's collapse toggle, then its checkbox, which shows as focus enters the header
+    await userEvent.tab()
+    expect(document.activeElement).toBe(groupToggle('Published'))
     await userEvent.tab()
 
     expect(document.activeElement).toBe(group)
@@ -1861,9 +1884,12 @@ describe('Inventory selection', () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
 
-    const $group = page.getByRole('checkbox', {name: 'Select all in Draft'})
-    await expect.element($group).toBeVisible()
-    ;($group.element() as HTMLInputElement).focus()
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    groupToggle('Draft').focus()
+    await userEvent.tab()
+    expect(document.activeElement).toBe(groupCheckbox('Draft'))
     await userEvent.tab()
 
     const row = selectionRow('Draft', 'Default')
@@ -1884,7 +1910,7 @@ describe('Inventory selection', () => {
     await expect.element($status).toHaveAttribute('aria-live', 'polite')
     await expect.element($status).toHaveTextContent('')
 
-    await userEvent.click(page.getByRole('checkbox', {name: 'Select VIP users'}))
+    await clickCheckbox(rowCheckbox('Draft', 'VIP users'))
     await expect.element($status).toHaveTextContent('1 selected')
   })
 
@@ -1913,6 +1939,10 @@ describe('Inventory selection', () => {
     void render(<SelectionPanel refs={refs} />)
 
     const $group = page.getByRole('checkbox', {name: 'Select all in Draft'})
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await pointAt(groupCheckbox('Draft'))
     await expect.element($group).toBeVisible()
 
     await userEvent.click($group)
@@ -1942,7 +1972,7 @@ describe('Inventory selection', () => {
     await expect.element($create).toBeVisible()
     await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
 
-    await userEvent.click(page.getByRole('checkbox', {name: 'Select VIP users'}))
+    await clickCheckbox(rowCheckbox('Draft', 'VIP users'))
 
     await expect.element(page.getByText('1 selected', {exact: true})).toBeVisible()
     await expect.element(page.getByRole('button', {name: 'Delete', exact: true})).toBeVisible()
@@ -1997,7 +2027,8 @@ describe('Inventory selection', () => {
       .element(page.getByRole('button', {name: 'Summer sale', exact: true}))
       .toBeInTheDocument()
 
-    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'Default')))
+    await clickCheckbox(rowCheckbox('Draft', 'Default'))
+    // Select mode: every checkbox shows once one is checked
     await userEvent.keyboard('{Shift>}')
     await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'Summer sale')))
     await userEvent.keyboard('{/Shift}')
@@ -2031,7 +2062,8 @@ describe('Inventory selection', () => {
     await expect.element(page.getByText(setName, {exact: true})).toBeVisible()
 
     const checkbox = rowCheckbox(setName, 'Default')
-    expect(isShown(checkbox)).toBe(true)
+    await pointAt(checkbox)
+    await expect.poll(() => isShown(checkbox)).toBe(true)
     expect(checkbox.getAttribute('aria-disabled')).toBe('true')
     // Not natively disabled, so it still takes focus and shows its tooltip
     expect(checkbox.disabled).toBe(false)
@@ -2060,6 +2092,7 @@ describe('Inventory selection', () => {
 
     // Nothing in the group can be selected, so the group checkbox is blocked for the same reason
     expect(groupCheckbox(setName).getAttribute('aria-disabled')).toBe('true')
+    await pointAt(groupCheckbox(setName))
     await userEvent.click(page.elementLocator(groupCheckbox(setName)), {force: true})
     expect(selected(refs)).toEqual([])
 
@@ -2074,6 +2107,9 @@ describe('Inventory selection', () => {
     await expect.element($create).toBeVisible()
     ;($create.element() as HTMLButtonElement).focus()
 
+    // The header's collapse toggle comes first, then its checkbox, shown as focus enters the header
+    await userEvent.tab()
+    expect(document.activeElement).toBe(groupToggle('Published'))
     await userEvent.tab()
     await expect
       .element(page.getByRole('checkbox', {name: 'Select all in Published'}))
@@ -2081,5 +2117,241 @@ describe('Inventory selection', () => {
 
     await userEvent.keyboard(' ')
     expect(selected(refs)).toEqual([PUBLISHED.id])
+  })
+})
+
+function checkboxVisibility(): string[] {
+  return [...document.querySelectorAll('[data-variant-set] .selection-checkbox')].map(
+    (box) => getComputedStyle(box).visibility,
+  )
+}
+
+/** Row heights and title positions, which must not change as the checkboxes show and hide. */
+function layoutSnapshot(): string {
+  return [
+    ...document.querySelectorAll<HTMLElement>('[data-variant-name], [data-variant-set] header'),
+  ]
+    .map((element) => {
+      const text = element.querySelector('[data-testid="version-lines"], .variant-set-text')!
+      return `${Math.round(element.getBoundingClientRect().height)}:${Math.round(text.getBoundingClientRect().left)}`
+    })
+    .join(' ')
+}
+
+describe('Inventory layout C: checkboxes on demand', () => {
+  it("hides the checkboxes at rest and shows a row's on hover and on keyboard focus", async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    const rest = layoutSnapshot()
+    expect(new Set(checkboxVisibility())).toEqual(new Set(['hidden']))
+
+    // Hover shows that row's checkbox, and the header's on the header
+    await userEvent.hover(page.elementLocator(selectionRow('Draft', 'VIP users')))
+    await expect.poll(() => isShown(rowCheckbox('Draft', 'VIP users'))).toBe(true)
+    expect(isShown(rowCheckbox('Draft', 'Summer sale'))).toBe(false)
+    await userEvent.hover(page.elementLocator(header('Draft')))
+    await expect.poll(() => isShown(groupCheckbox('Draft'))).toBe(true)
+    expect(isShown(rowCheckbox('Draft', 'VIP users'))).toBe(false)
+
+    // Keyboard focus on the row shows it too: tab from the group's checkbox to the first row
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    groupToggle('Draft').focus()
+    await userEvent.tab()
+    await userEvent.tab()
+    await expect
+      .element(
+        page.elementLocator(selectionRow('Draft', 'Default').querySelector('.primary-action')!),
+      )
+      .toHaveFocus()
+    await expect.poll(() => isShown(rowCheckbox('Draft', 'Default'))).toBe(true)
+    expect(isShown(rowCheckbox('Draft', 'Summer sale'))).toBe(false)
+
+    // Nothing moved
+    expect(layoutSnapshot()).toBe(rest)
+  })
+
+  it('shows every checkbox once one is checked, and hides them after the last uncheck or Clear', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    const rest = layoutSnapshot()
+
+    // Select mode
+    await clickCheckbox(rowCheckbox('Draft', 'VIP users'))
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    await expect.poll(() => new Set(checkboxVisibility())).toEqual(new Set(['visible']))
+    expect(layoutSnapshot()).toBe(rest)
+
+    // The last uncheck leaves it. The box just clicked keeps focus, and shows while it has it, so
+    // move on as a user would
+    await userEvent.click(page.elementLocator(rowCheckbox('Draft', 'VIP users')))
+    ;(document.activeElement as HTMLElement).blur()
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    await expect.poll(() => new Set(checkboxVisibility())).toEqual(new Set(['hidden']))
+
+    // So does Clear
+    await clickCheckbox(rowCheckbox('Published', 'Default'))
+    await expect.poll(() => new Set(checkboxVisibility())).toEqual(new Set(['visible']))
+    await userEvent.click(page.getByRole('button', {name: 'Clear', exact: true}))
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    await expect.poll(() => new Set(checkboxVisibility())).toEqual(new Set(['hidden']))
+    expect(layoutSnapshot()).toBe(rest)
+  })
+
+  it('keeps every checkbox visible on a device without hover', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    // The rule the stylesheet carries for a device without hover: it applies to every checkbox
+    const rules = [...document.styleSheets]
+      .flatMap((sheet) => {
+        try {
+          return [...sheet.cssRules]
+        } catch {
+          return []
+        }
+      })
+      .flatMap((rule) => (rule instanceof CSSMediaRule ? [rule] : []))
+      .filter((rule) => /hover:\s*none/.test(rule.conditionText))
+      .flatMap((rule) => [...rule.cssRules] as CSSStyleRule[])
+      .filter((rule) => rule.style.visibility === 'visible')
+    const checkbox = rowCheckbox('Draft', 'VIP users').closest('.selection-checkbox')!
+    expect(rules.some((rule) => checkbox.matches(rule.selectorText))).toBe(true)
+  })
+
+  it('lines every group mark and row mark up in one trailing column', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    const centres = [
+      ...document.querySelectorAll('[data-variant-set] header .variant-set-icon svg'),
+      ...document.querySelectorAll('[data-variant-name] .variant-mark svg'),
+    ].map((mark) => Math.round(centreX(mark)))
+    expect(centres.length).toBeGreaterThan(3)
+    expect(new Set(centres).size).toBe(1)
+  })
+})
+
+describe('Inventory group collapse', () => {
+  it('collapses and expands a group from its header, by click and by keyboard', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    const toggle = groupToggle('Draft')
+    const rows = document.getElementById(toggle.getAttribute('aria-controls')!)!
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    expect(rows.contains(selectionRow('Draft', 'VIP users'))).toBe(true)
+    // A pointer cursor over the whole header
+    expect(getComputedStyle(toggle).cursor).toBe('pointer')
+
+    await userEvent.click(page.elementLocator(header('Draft')))
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(isShown(selectionRow('Draft', 'VIP users'))).toBe(false)
+    // The header keeps its count, here its name; other groups stay open
+    expect(isShown(header('Draft'))).toBe(true)
+    expect(groupToggle('Published')).toHaveAttribute('aria-expanded', 'true')
+
+    await userEvent.click(page.elementLocator(header('Draft')))
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    expect(isShown(selectionRow('Draft', 'VIP users'))).toBe(true)
+
+    // Enter and Space, on the header's own button
+    toggle.focus()
+    await userEvent.keyboard('{Enter}')
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.keyboard(' ')
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    await expect.element(page.getByRole('button', {name: 'Draft', exact: true})).toHaveFocus()
+  })
+
+  it('never collapses the group when its checkbox is clicked', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await clickCheckbox(groupCheckbox('Draft'))
+    expect(selected(refs)).toEqual([DRAFT.id, DRAFT_SUMMER.id, DRAFT_VIP.id].toSorted())
+    expect(groupToggle('Draft')).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('keeps checked rows in a collapsed group in the header checkbox, the count and the deletion', async () => {
+    const refs = startSelectionHarness()
+    void render(<SelectionPanel refs={refs} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await clickCheckbox(rowCheckbox('Draft', 'VIP users'))
+    await userEvent.click(page.elementLocator(header('Draft')))
+    expect(groupToggle('Draft')).toHaveAttribute('aria-expanded', 'false')
+
+    // The collapsed header still shows the partial selection, and select mode still holds
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    expect(groupCheckbox('Draft').indeterminate).toBe(true)
+    await expect.poll(() => isShown(groupCheckbox('Draft'))).toBe(true)
+    await expect.element(page.getByText('1 selected', {exact: true})).toBeVisible()
+
+    await userEvent.click(page.getByRole('button', {name: 'Delete', exact: true}))
+    expect(refs.deletionRef.getSnapshot().matches('active')).toBe(true)
+    expect(refs.deletionRef.getSnapshot().context.ids).toEqual([DRAFT_VIP.id])
+  })
+
+  it.each(['light', 'dark'] as const)(
+    'marks a collapsed group that holds the open version in the low-emphasis selected tone, in %s mode',
+    async (scheme) => {
+      void render(
+        <SelectionPanel refs={startSelectionHarness()} scheme={scheme} openId={DRAFT_VIP.id} />,
+      )
+
+      await expect
+        .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+        .toBeInTheDocument()
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+      const band = background(header('Draft'))
+
+      // Expanded, the open row itself shows where it is
+      expect(header('Draft')).not.toHaveAttribute('data-open-inside')
+
+      await userEvent.click(page.elementLocator(header('Draft')))
+      await userEvent.click(page.elementLocator(header('Published')))
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+      expect(header('Draft')).toHaveAttribute('data-open-inside')
+      expect(background(header('Draft'))).toEqual(UI5[scheme].checked)
+      expect(background(header('Draft'))).not.toEqual(band)
+      // A collapsed group without the open version keeps its band
+      expect(header('Published')).not.toHaveAttribute('data-open-inside')
+      expect(background(header('Published'))).toEqual(band)
+    },
+  )
+
+  it('shows a hover state on the header, and keeps layout C on the header checkbox', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+    const band = background(header('Draft'))
+    expect(isShown(groupCheckbox('Draft'))).toBe(false)
+
+    await userEvent.hover(page.elementLocator(header('Draft')))
+    await expect.poll(() => background(header('Draft'))).not.toEqual(band)
+    expect(isShown(groupCheckbox('Draft'))).toBe(true)
   })
 })

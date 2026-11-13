@@ -239,55 +239,67 @@ function getRowCheckbox(entry: Variant): HTMLInputElement {
 }
 
 describe('DocumentGroupSet', () => {
-  it('shows the set icon and every checkbox at rest, side by side', async () => {
+  it('hides every checkbox at rest in a reserved gutter, with the set mark in the trailing column', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await settleChromaticEndState()
 
+    // Hidden, but still taking up its gutter, so nothing moves when it shows
+    for (const checkbox of [getSetCheckbox()!, ...VARIANTS.map(getRowCheckbox)]) {
+      expect(getComputedStyle(checkbox.closest('.selection-checkbox')!).visibility).toBe('hidden')
+      expect(checkbox.getBoundingClientRect().width).toBeGreaterThan(0)
+    }
     expect(isShown(getSetIcon())).toBe(true)
-    expect(isShown(getSetCheckbox()!)).toBe(true)
-    expect(VARIANTS.every((entry) => isShown(getRowCheckbox(entry)))).toBe(true)
-    // The icon has its own column; nothing overlays the checkbox's spot.
-    expect(getComputedStyle(getSetIcon()).position).toBe('static')
-    expect(getSetIcon().getBoundingClientRect().left).toBeGreaterThanOrEqual(
-      getSetCheckbox()!.getBoundingClientRect().right,
+    // The mark trails: its column ends at the set's 12px padding
+    expect(
+      Math.round(
+        getSet().getBoundingClientRect().right - getSetIcon().getBoundingClientRect().right,
+      ),
+    ).toBe(12)
+    expect(getSetIcon().getBoundingClientRect().left).toBeGreaterThan(
+      getSet().querySelector('header .variant-set-text')!.getBoundingClientRect().left,
     )
   })
 
-  it('never swaps the set icon for its checkbox while the set heading is hovered', async () => {
+  it('shows the set checkbox while the set heading is hovered, without moving the set mark', async () => {
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
-    await userEvent.hover(page.getByText(SET_NAME))
+    const before = getSetIcon().getBoundingClientRect()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
 
-    expect(isShown(getSetCheckbox()!)).toBe(true)
-    expect(isShown(getSetIcon())).toBe(true)
-    expect(getComputedStyle(getSetIcon()).visibility).toBe('visible')
+    await expect.poll(() => isShown(getSetCheckbox()!)).toBe(true)
+    expect(getSetIcon().getBoundingClientRect()).toEqual(before)
   })
 
-  it('keeps every row checkbox visible whether or not its row is hovered', async () => {
+  it("shows a row's checkbox while that row is hovered, and only that row's", async () => {
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
 
-    expect(isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
-    expect(isShown(getRowCheckbox(WINTER_SALE))).toBe(true)
+    await expect.poll(() => isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
+    expect(isShown(getRowCheckbox(WINTER_SALE))).toBe(false)
   })
 
-  it('makes the set checkbox and each row tab stops, but not the row checkboxes', async () => {
+  it('makes the set toggle, the set checkbox and each row tab stops, but not the row checkboxes', async () => {
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
 
-    // The set checkbox comes first, even before anything is selected. Then each row: the row is
-    // the tab stop, and Space on it toggles its checkbox.
+    // The header's collapse toggle, then its checkbox, which shows as focus enters the header. Then
+    // each row: the row is the tab stop, and Space on it toggles its checkbox.
+    await userEvent.tab()
+    expect(document.activeElement).toBe(getSet().querySelector('header .group-toggle'))
     await userEvent.tab()
     expect(document.activeElement).toBe(getSetCheckbox())
+    expect(isShown(getSetCheckbox()!)).toBe(true)
     await userEvent.tab()
     await expect.element(page.getByRole('button', {name: SUMMER_SALE.name})).toHaveFocus()
+    // The focused row shows its checkbox
+    expect(isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
     await userEvent.tab()
     await expect.element(page.getByRole('button', {name: WINTER_SALE.name})).toHaveFocus()
     expect(getRowCheckbox(SUMMER_SALE).tabIndex).toBe(-1)
@@ -296,9 +308,11 @@ describe('DocumentGroupSet', () => {
   it('names each checkbox after what it selects', async () => {
     void render(<SetHarness />)
 
-    await expect
-      .element(page.getByRole('checkbox', {name: `Select all in ${SET_NAME}`}))
-      .toBeInTheDocument()
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    expect(getSetCheckbox()).toHaveAttribute('aria-label', `Select all in ${SET_NAME}`)
+    expect(getRowCheckbox(SUMMER_SALE)).toHaveAttribute('aria-label', `Select ${SUMMER_SALE.name}`)
+    // Announced once shown
+    await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
     await expect
       .element(page.getByRole('checkbox', {name: `Select ${SUMMER_SALE.name}`}))
       .toBeInTheDocument()
@@ -311,6 +325,7 @@ describe('DocumentGroupSet', () => {
     void render(<SetHarness onPrimaryAction={onPrimaryAction} onToggle={onToggle} />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
 
     // The row's primary action is an invisible overlay spanning the whole row,
     // and it follows the checkbox in the tree. The checkbox must still be the
@@ -359,6 +374,7 @@ describe('DocumentGroupSet', () => {
     )
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
     await userEvent.click(page.elementLocator(getSetCheckbox()!))
     expect(onCheckedChange).toHaveBeenLastCalledWith(true)
 
@@ -371,6 +387,7 @@ describe('DocumentGroupSet', () => {
     )
 
     await expect.poll(() => getSetCheckbox()?.checked).toBe(true)
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
     await userEvent.click(page.elementLocator(getSetCheckbox()!))
     expect(onCheckedChange).toHaveBeenLastCalledWith(false)
   })
@@ -382,9 +399,10 @@ describe('DocumentGroupSet', () => {
     )
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
+    await expect.poll(() => isShown(getSetCheckbox()!)).toBe(true)
     await settleChromaticEndState()
 
-    expect(isShown(getSetCheckbox()!)).toBe(true)
     expect(getSetCheckbox()).toBeDisabled()
   })
 
@@ -452,14 +470,21 @@ describe('DocumentGroupSet', () => {
     void render(<SetHarness readOnly />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
-    await userEvent.hover(page.getByText(SET_NAME))
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
 
     expect(getSetCheckbox()).toBeNull()
     expect(isShown(getSetIcon())).toBe(true)
-    expect(getComputedStyle(getSetIcon()).position).toBe('static')
-    // With no checkbox column, the icon column starts at the set's padding.
+    // With no checkbox gutter, the text starts at the set's padding, and the mark still trails
     expect(
-      Math.round(getSetIcon().getBoundingClientRect().left - getSet().getBoundingClientRect().left),
+      Math.round(
+        getSet().querySelector('header .variant-set-text')!.getBoundingClientRect().left -
+          getSet().getBoundingClientRect().left,
+      ),
+    ).toBe(12)
+    expect(
+      Math.round(
+        getSet().getBoundingClientRect().right - getSetIcon().getBoundingClientRect().right,
+      ),
     ).toBe(12)
 
     await settleChromaticEndState()

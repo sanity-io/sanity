@@ -41,6 +41,14 @@ export const Body = styled.div(() => {
     animation: fade-mask;
     animation-timeline: scroll(self y);
 
+    /*
+     * Select mode: once any version is checked, every selection checkbox shows, so the selection
+     * can grow without hunting for hidden boxes. Unchecking the last one, or Clear, hides them.
+     */
+    &:has(.selection-checkbox input:is(:checked, :indeterminate)) .selection-checkbox {
+      visibility: visible;
+    }
+
     [data-document-group-inventory-scroll='ancestor'] & {
       overflow-y: visible;
       overscroll-behavior: auto;
