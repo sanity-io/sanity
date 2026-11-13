@@ -67,6 +67,7 @@ import type {
   ColorSchemeLocalStorageProvider,
   ColorSchemeProvider,
   ColorSchemeProviderProps,
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
   CommandList,
   CommandListElementType,
   CommandListGetItemDisabledCallback,
@@ -1098,6 +1099,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ColorSchemeProviderProps', () => {
     expectTypeOf<ColorSchemeProviderProps>().toBeObject()
+  })
+  test('COMMAND_LIST_ACTIVATE_ITEM_EVENT', () => {
+    expectTypeOf<typeof COMMAND_LIST_ACTIVATE_ITEM_EVENT>().not.toBeNever()
   })
   test('CommandList', () => {
     expectTypeOf<typeof CommandList>().not.toBeNever()
