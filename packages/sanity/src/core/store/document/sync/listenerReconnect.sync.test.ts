@@ -68,9 +68,8 @@ afterEach(() => {
 })
 
 describe('listener reconnect in the middle of a two-event transaction', () => {
-  // B's lock stays on after the resumed reconnect, so the world never settles healthy.
-  test.fails('LSN-RECONNECT-MID-TX: A, whose listener stayed up, sees the publish', async () => {
-    world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
+  test('LSN-RECONNECT-MID-TX: A, whose listener stayed up, sees the publish', async () => {
+    world = await runSyncTest(reconnectMidTransaction(true))
     expect(world.clients.A.localDocument(DRAFT_ID)).toBeNull()
     expect(world.clients.A.localDocument(PUBLISHED_ID)?.title).toBe('Draft title')
     expect(world.clients.A.transactionLocked()).toBe(false)
@@ -78,20 +77,18 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     expect(world.clients.B.syncErrorRecoveries()).toEqual([])
   })
 
-  // The listener drops the first half of a publish when the connection resumes mid transaction, so B keeps the deleted draft.
-  test.fails('LSN-RECONNECT-MID-TX-RESUME: B converges after a resumed reconnect', async () => {
-    world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
+  test('LSN-RECONNECT-MID-TX-RESUME: B converges after a resumed reconnect', async () => {
+    world = await runSyncTest(reconnectMidTransaction(true))
     expect(world.clients.B.localDocument(DRAFT_ID)).toBeNull()
     expect(world.clients.B.transactionLocked()).toBe(false)
     expect(world.clients.B.syncErrorRecoveries()).toEqual([])
   })
 
-  test.fails("LSN-RECONNECT-MID-TX-RESUME-LOCK: B's form unlocks after a resumed reconnect", async () => {
+  test("LSN-RECONNECT-MID-TX-RESUME-LOCK: B's form unlocks after a resumed reconnect", async () => {
     world = await runSyncTest(
       {
         ...reconnectMidTransaction(true),
         id: 'LSN-RECONNECT-MID-TX-RESUME-LOCK',
-        knownBug: 'C2',
         seam: 'operations',
       },
       {schema, typeName: 'article'},
@@ -100,11 +97,10 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     expect(world.clients.B.syncErrorRecoveries()).toEqual([])
   })
 
-  test.fails("LSN-RECONNECT-MID-TX-DEADLINE-LOCK: B's form unlocks once a transaction left open passes its deadline", async () => {
+  test("LSN-RECONNECT-MID-TX-DEADLINE-LOCK: B's form unlocks once a transaction left open passes its deadline", async () => {
     world = await runSyncTest(
       {
         id: 'LSN-RECONNECT-MID-TX-DEADLINE-LOCK',
-        knownBug: 'C2',
         title: 'B receives event 1 of 2, the connection resumes, and event 2 never arrives',
         seam: 'operations',
         evidence: 'L3',

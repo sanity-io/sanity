@@ -3892,7 +3892,7 @@ describe('checkoutPair -- transaction lock', () => {
     sub.unsubscribe()
   })
 
-  test.fails('a transaction whose second half never arrives releases the lock once its deadline passes', async () => {
+  test('a transaction whose second half never arrives releases the lock once its deadline passes', async () => {
     const listenerSubject = new Subject()
     const testClient = {
       ...client,

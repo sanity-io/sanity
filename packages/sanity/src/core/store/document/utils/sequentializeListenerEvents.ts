@@ -145,26 +145,21 @@ export function sequentializeListenerEvents(options?: {
       switchMap((state) => {
         if (state.buffer.length > 0) {
           // note: buffer is sorted by messageReceivedAt – oldest first
-          const brokenChainStartsAt = new Date(state.buffer[0].messageReceivedAt)
-          const nextDeadline = resolveChainDeadline - (Date.now() - brokenChainStartsAt.getTime())
+          const nextDeadline = remainingMs(state.buffer[0], resolveChainDeadline)
           debug(
             "There are %d listener event(s) that can't be applied in sequence. This could be due to events arriving out of order. Will throw an error if chain can't be resolved within %dms",
             state.buffer.length,
             nextDeadline,
           )
           debug('Buffered events: %O', state.buffer)
-          return concat(
-            of(state),
-            timer(nextDeadline).pipe(
-              mergeMap(() =>
-                throwError(() => {
-                  return new DeadlineExceededError(
-                    `Did not resolve chain within a deadline of ${resolveChainDeadline}ms`,
-                    state,
-                  )
-                }),
+          return withDeadline(
+            state,
+            nextDeadline,
+            () =>
+              new DeadlineExceededError(
+                `Did not resolve chain within a deadline of ${resolveChainDeadline}ms`,
+                state,
               ),
-            ),
           )
         }
         return of(state)
@@ -176,6 +171,24 @@ export function sequentializeListenerEvents(options?: {
       }),
     )
   }
+}
+
+/** @internal */
+export function remainingMs(oldestEvent: MutationEvent, deadlineMs: number): number {
+  return deadlineMs - (Date.now() - new Date(oldestEvent.messageReceivedAt).getTime())
+}
+
+/**
+ * Emits `value`, then errors with `createError` once `timeoutMs` has passed
+ *
+ * @internal
+ */
+export function withDeadline<T>(
+  value: T,
+  timeoutMs: number,
+  createError: () => OutOfSyncError,
+): Observable<T> {
+  return concat(of(value), timer(timeoutMs).pipe(mergeMap(() => throwError(createError))))
 }
 
 export class OutOfSyncError extends Error {
@@ -196,6 +209,17 @@ export class DeadlineExceededError extends OutOfSyncError {
     this.name = 'DeadlineExceededError'
   }
 }
+
+/**
+ * Thrown when a multi-event transaction stays incomplete past its deadline. Its `state.buffer` holds the transaction's buffered events.
+ */
+export class TransactionDeadlineExceededError extends DeadlineExceededError {
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message, state)
+    this.name = 'TransactionDeadlineExceededError'
+  }
+}
+
 export class MaxBufferExceededError extends OutOfSyncError {
   constructor(message: string, state: ListenerSequenceState) {
     super(message, state)
