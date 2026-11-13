@@ -96,7 +96,16 @@ const toggle: CSSProperties = {
 const dot = (color: string): CSSProperties => ({color, marginRight: 4})
 const mib = (bytes?: number): string => ((bytes ?? 0) / 1024 / 1024).toFixed(1)
 
-const seconds = (ms?: number): string => `${((ms ?? 0) / 1000).toFixed(1)} s`
+/** Same shape as Vision's formatDuration: `888ms` under a second, then `1.17s`, `10.5s`, `1.50m` */
+function duration(ms = 0): string {
+  const rounded = Math.round(ms)
+  if (rounded < 1000) return ms > 0 && rounded === 0 ? '<1ms' : `${rounded}ms`
+  const [value, unit] = rounded < 59_950 ? [rounded / 1000, 's'] : [rounded / 60_000, 'm']
+  return `${value.toFixed(value < 10 ? 2 : value < 100 ? 1 : 0)}${unit}`
+}
+
+/** `51K`, not `51226`: a count to read at a glance */
+const compact = new Intl.NumberFormat(undefined, {notation: 'compact'})
 
 /** Why the store can't accelerate this tab at all, if it can't. */
 function blocker(status: GroqStoreStatus): string | undefined {
@@ -116,8 +125,8 @@ function storesSummary(rows: StoreRow[]): string {
 
 function StoreLine({row, latest}: {row: StoreRow; latest: boolean}) {
   const facts = [
-    row.documents === undefined ? undefined : `${row.documents} docs`,
-    row.readyMs === undefined ? undefined : `live in ${seconds(row.readyMs)}`,
+    row.documents === undefined ? undefined : `${compact.format(row.documents)} docs`,
+    row.readyMs === undefined ? undefined : `live in ${duration(row.readyMs)}`,
     row.phase === 'building' && row.exportBytes !== undefined
       ? `export ${mib(row.exportBytes)} MiB`
       : undefined,
@@ -152,7 +161,7 @@ function Latency({status}: {status: GroqStoreStatus}) {
   if (status.latency.count === 0) return null
   return (
     <span>
-      {' · '}query p50 {Math.round(status.latency.p50)} ms / p95 {Math.round(status.latency.p95)} ms
+      {' · '}query p50 {duration(status.latency.p50)} / p95 {duration(status.latency.p95)}
     </span>
   )
 }
@@ -169,7 +178,7 @@ function Details({status}: {status: GroqStoreStatus}) {
     <div style={{marginTop: 4, whiteSpace: 'pre-wrap'}}>
       <div>
         query latency (all /data/query, resource timing): {status.latency.count} requests, p50{' '}
-        {status.latency.p50.toFixed(1)} ms, p95 {status.latency.p95.toFixed(1)} ms
+        {duration(status.latency.p50)}, p95 {duration(status.latency.p95)}
       </div>
       {status.enabled ? (
         <>
@@ -197,9 +206,9 @@ function Details({status}: {status: GroqStoreStatus}) {
           <div>
             listener: {status.mutations.applied} applied, {status.mutations.stale} stale
           </div>
-          <div>wasm avg: {average.toFixed(1)} ms (incl. worker round trip)</div>
+          <div>wasm avg: {duration(average)} (incl. worker round trip)</div>
           <div>
-            fences: {status.fences.count}, avg lift {fenceAverage.toFixed(1)} ms
+            fences: {status.fences.count}, avg lift {duration(fenceAverage)}
             {fenceMix === '' ? '' : ` (${fenceMix})`}
           </div>
           <div>service worker: {status.controlled ? 'controlling' : 'not controlling'}</div>

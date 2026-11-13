@@ -27,6 +27,7 @@ vi.mock('../../util/timeZoneLocation', () => ({
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  useNumberFormat: (options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en', options),
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
@@ -203,7 +204,7 @@ describe('NetworkTab', () => {
       memoryBytes: 302841856,
       timings: [
         {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
-        {name: 'route', dur: 3.1, desc: 'Service worker to store and back'},
+        {name: 'route', dur: 0.4, desc: 'Service worker to store and back'},
       ],
     },
   }
@@ -221,8 +222,8 @@ describe('NetworkTab', () => {
     )
     expect(screen.getByTestId('vision-network-local-copy').textContent).toBe(
       `vision.network.region.local-copy:${JSON.stringify({
-        documents: new Intl.NumberFormat().format(51226),
-        memory: '289 MiB',
+        documents: '51K',
+        memory: '303 MB',
       })}`,
     )
     expect(screen.getByTestId('vision-network-cache').textContent).toBe(
@@ -233,9 +234,11 @@ describe('NetworkTab', () => {
       'vision.network.timing.local:{"e2e":"90ms"}',
     )
     expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
-      'vision.network.timing.entry:{"label":"Query in WebAssembly","ms":1.84}',
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"2ms"}',
     )
-    expect(screen.getByTestId('vision-network-timing-route')).toBeTruthy()
+    expect(screen.getByTestId('vision-network-timing-route').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"<1ms"}',
+    )
     expect(screen.queryByTestId('vision-network-hint')).toBeNull()
     expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
     expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')

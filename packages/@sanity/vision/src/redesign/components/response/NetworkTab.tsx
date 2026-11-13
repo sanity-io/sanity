@@ -1,6 +1,6 @@
 import {Badge, Stack} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useNumberFormat, useTranslation} from 'sanity'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
@@ -10,6 +10,7 @@ import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRe
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
+import {formatBytes} from '../../util/payloadSize'
 import {type LocalAnswer, LOCAL_TIMING_PARTS} from '../../util/queryNetwork'
 import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
@@ -34,19 +35,18 @@ function isCdnUrl(url: string): boolean {
   }
 }
 
-/** `302841856` bytes as `289 MiB` */
-function formatMebibytes(bytes: number): string {
-  const mebibytes = bytes / 1024 / 1024
-  return `${mebibytes >= 10 ? Math.round(mebibytes) : Math.round(mebibytes * 10) / 10} MiB`
+/** Like formatDuration, but wasm often answers in a fraction of a millisecond, which would read 0ms */
+function formatTimingEntry(milliseconds: number): string {
+  return milliseconds < 1 ? '<1ms' : formatDuration(milliseconds)
 }
 
 /** The local copy's size: how many documents, in how much WebAssembly memory, as far as known */
 function localCopyKey(
   local: LocalAnswer,
+  numberFormat: Intl.NumberFormat,
 ): {key: string; options: Record<string, unknown>} | undefined {
-  const documents =
-    local.documents === undefined ? undefined : new Intl.NumberFormat().format(local.documents)
-  const memory = local.memoryBytes === undefined ? undefined : formatMebibytes(local.memoryBytes)
+  const documents = local.documents === undefined ? undefined : numberFormat.format(local.documents)
+  const memory = local.memoryBytes === undefined ? undefined : formatBytes(local.memoryBytes)
   if (documents && memory) {
     return {key: 'vision.network.region.local-copy', options: {documents, memory}}
   }
@@ -68,6 +68,8 @@ export interface NetworkTabProps {
  */
 export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  // "51K documents" reads at a glance; "51,226" has to be read digit by digit
+  const compactNumber = useNumberFormat({notation: 'compact'})
   const you = useMemo(() => browserLocation(), [])
   // The crab needs somewhere to stand even when the time zone names no place (UTC)
   const localYou = useMemo(() => you ?? offsetLocation(), [you])
@@ -97,7 +99,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
     !local && !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
       ? t('vision.network.use-cdn-hint')
       : undefined
-  const localCopy = local ? localCopyKey(local) : undefined
+  const localCopy = local ? localCopyKey(local, compactNumber) : undefined
 
   return (
     <Box data-testid="vision-network" padding={3}>
@@ -225,7 +227,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                         >
                           {t('vision.network.timing.entry', {
                             label: timing.desc || timing.name,
-                            ms: timing.dur,
+                            duration: formatTimingEntry(timing.dur ?? 0),
                           })}
                         </Text>
                       </Box>
