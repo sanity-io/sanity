@@ -1,18 +1,57 @@
 name: Release @next-major
 
 on:
-  push:
-    branches:
-      - next-major
+  schedule:
+    # Same cadence as release-next.yml: 08:00 and 15:00 CET (UTC-only cron; an hour later in summer).
+    # Scheduled workflows always run the copy of this file on the default branch, so the release
+    # job checks out next-major explicitly.
+    - cron: "0 7,14 * * *"
+  # Manual trigger for an on-demand next-major release between scheduled runs. Publishing is
+  # still skipped if the current HEAD of next-major has already been published.
+  workflow_dispatch:
 
 permissions:
   contents: read # for checkout
 
-jobs:
-  release-next-major:
-    concurrency:
-      group: release_next_major
+concurrency:
+  group: release_next_major
+  cancel-in-progress: false
 
+jobs:
+  check:
+    # workflow_dispatch can be pointed at any ref; the workflow always releases next-major
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+      sha: ${{ steps.decide.outputs.sha }}
+    steps:
+      - name: Check for unpublished changes
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/commits/next-major" --jq .sha)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+          # The packages are versioned in lockstep, so the `next-major` dist-tag of `sanity`
+          # answers for all of them. The release job writes the commit it publishes from into
+          # the manifest as `gitHead`; a missing gitHead means we publish. Fetch only the manifest
+          # the dist-tag points to (the full packument is ~50 MB). `-f` makes a registry error
+          # fail the job rather than read as "not published".
+          published=$(curl -fsS --retry 3 "https://registry.npmjs.org/sanity/next-major" | jq -r '.gitHead // empty')
+          if [ "$published" = "$sha" ]; then
+            echo "Skipping: next-major@$sha is already published"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Will publish next-major@$sha (last published: ${published:-unknown})"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  release-next-major:
+    needs: [check]
+    if: needs.check.outputs.publish == 'true'
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
@@ -21,15 +60,25 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      # Publish packages to npm under the `next-major` tag on new commits to the next-major branch.
+      # Publish packages to npm under the `next-major` tag from the next-major branch.
+      # Pin the checkout to the commit the check job validated, in case next-major has moved.
       - uses: actions/checkout@v7
         with:
+          ref: ${{ needs.check.outputs.sha }}
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
 
       - name: Bump next-major versions
         run: pnpm --silent release-notes bump --preid=next-major
+
+      # pnpm does not record the commit a version was published from, so write it into the
+      # `sanity` manifest ourselves; the check job reads it back from the registry to tell
+      # whether next-major HEAD is already published.
+      - name: Record the published commit
+        env:
+          SHA: ${{ needs.check.outputs.sha }}
+        run: npm pkg set gitHead="$SHA" --prefix packages/sanity
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -75,7 +124,7 @@ jobs:
         run: pnpm bundle-manager publish --tag=next-major
 
   notify-on-failure:
-    needs: [release-next-major]
+    needs: [check, release-next-major]
     if: failure()
     runs-on: ubuntu-latest
     steps:
