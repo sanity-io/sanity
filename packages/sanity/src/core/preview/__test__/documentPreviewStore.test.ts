@@ -144,4 +144,23 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     await vi.advanceTimersByTimeAsync(10_000 + BATCH_DEBOUNCE_MS)
     expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
   })
+
+  it('keeps what it loaded when the error handler of its project takes over a listener that fails for good', async ({
+    projectId,
+    listenerErrorHandler,
+  }) => {
+    const {store, listener, connections, fetchesTagged} = setup(projectId)
+    const documents = collect(store.unstable_observeDocument('book'))
+    listener.next(welcome)
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+
+    const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    listener.error(error)
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+    expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
+    expect(fetchesTagged('preview.observe-document')).toHaveLength(1)
+    expect(connections).toHaveLength(1)
+  })
 })

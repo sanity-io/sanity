@@ -1,6 +1,8 @@
 import {type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
 import isNativeNetworkError from 'is-network-error'
 
+import {isListenerConnectionError} from '../../util/listenerErrors'
+
 // These live in `util` so that non-studio code (e.g. the document store) can
 // depend on them without importing from `studio`; re-exported here to keep
 // the public API surface and existing import sites unchanged.
@@ -75,6 +77,7 @@ export type RequestErrorClassification =
   | {type: 'networkError'; error: Error}
   | {type: 'serverError'; error: HttpError}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number}
+  | {type: 'listenerError'; error: Error}
 
 /**
  * Classify an error as an infrastructure-level request failure, or return
@@ -99,6 +102,9 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
     return null
   }
   if (isNetworkError(err)) return {type: 'networkError', error: err}
+  // A listener that failed in a way it cannot recover from. Errors in its query stay with the
+  // caller, see `isListenerConnectionError`.
+  if (isListenerConnectionError(err)) return {type: 'listenerError', error: err}
   return null
 }
 
@@ -187,5 +193,5 @@ export function classifyConfigError(err: unknown): ConfigErrorClassification | n
  * @internal
  */
 export function isClientRequestError(err: unknown): boolean {
-  return isHttpError(err) || isNetworkError(err)
+  return isHttpError(err) || isNetworkError(err) || isListenerConnectionError(err)
 }

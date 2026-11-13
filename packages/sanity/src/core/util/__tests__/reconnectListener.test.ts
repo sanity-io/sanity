@@ -2,6 +2,7 @@ import {ChannelError, ConnectionFailedError, DisconnectError} from '@sanity/clie
 import {defer, EMPTY, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {registerListenerErrorHandler} from '../listenerErrorHandlers'
 import {createListenerOutages} from '../listenerOutages'
 import {
   reconnectDelay,
@@ -388,6 +389,139 @@ describe('reconnectListener', () => {
       const late = subscribe()
       await vi.advanceTimersByTimeAsync(0)
       expect(late.events).toEqual([{type: 'reconnect'}])
+    })
+  })
+
+  describe('with an error handler', () => {
+    // Takes every error over, as the studio's error handler does for the errors it shows a dialog for.
+    function claimingHandler() {
+      return {handle: vi.fn((): Promise<never> => new Promise(() => {}))}
+    }
+
+    function denied() {
+      return new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    }
+
+    it('hands a listener that fails for good to the handler, and stays down without reconnecting', async () => {
+      const errorHandler = claimingHandler()
+      const {connections, current, events, errors} = subscribe({...noJitter, errorHandler})
+      current().next({type: 'welcome'})
+      const error = new DisconnectError('Server disconnected client: forced by provider')
+      current().error(error)
+
+      expect(errorHandler.handle).toHaveBeenCalledWith(error)
+      expect(events).toEqual([{type: 'welcome'}, {type: 'reconnect'}])
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(connections).toHaveLength(1)
+      expect(errors).toEqual([])
+    })
+
+    it('starts the outage of a listener that fails for good before it welcomes', () => {
+      const errorHandler = claimingHandler()
+      const {current, events, errors} = subscribe({...noJitter, errorHandler})
+      current().error(denied())
+
+      expect(events).toEqual([{type: 'reconnect'}])
+      expect(errors).toEqual([])
+    })
+
+    it('passes on an error the handler does not take over', async () => {
+      const error = denied()
+      const errorHandler = {
+        handle: vi.fn(async (err: unknown): Promise<never> => {
+          throw err
+        }),
+      }
+      const {current, errors} = subscribe({...noJitter, errorHandler})
+      current().error(error)
+
+      await vi.advanceTimersByTimeAsync(0)
+      expect(errors).toEqual([error])
+    })
+
+    it.each([
+      ['an error in the query', new ChannelError('Bad query', {error: {type: 'queryParseError'}})],
+      ['a rejected session', new ConnectionFailedError('Rejected', {status: 401})],
+    ])('passes on %s without handing it to the handler', (_, error) => {
+      const errorHandler = claimingHandler()
+      const {current, events, errors} = subscribe({...noJitter, errorHandler})
+      current().error(error)
+
+      expect(errorHandler.handle).not.toHaveBeenCalled()
+      expect(events).toEqual([])
+      expect(errors).toEqual([error])
+    })
+
+    it('keeps reconnecting after a transient error without involving the handler', async () => {
+      const errorHandler = claimingHandler()
+      const {connections, current} = subscribe({...noJitter, errorHandler})
+      current().error(internalError())
+      await vi.advanceTimersByTimeAsync(1_000)
+
+      expect(connections).toHaveLength(2)
+      expect(errorHandler.handle).not.toHaveBeenCalled()
+    })
+
+    it('does not count as an outage of the other listeners of the project', async () => {
+      const errorHandler = claimingHandler()
+      const down = subscribe({...noJitter, errorHandler})
+      // The client failed to reconnect once before the listener failed for good.
+      down.current().next({type: 'reconnect'})
+      down.current().error(denied())
+
+      const late = subscribe()
+      await vi.advanceTimersByTimeAsync(9_999)
+      expect(late.events).toEqual([])
+    })
+  })
+
+  describe('with an error handler registered for its project', () => {
+    let projectCounter = 0
+    const uniqueProject = () => `handler-project-${(projectCounter += 1)}`
+    const denied = () => new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    const claimingHandler = () => ({
+      handle: vi.fn((_err: unknown): Promise<never> => new Promise(() => {})),
+    })
+
+    it('hands a listener that fails for good to the handler registered when it fails', () => {
+      const projectId = uniqueProject()
+      const {current, events, errors} = subscribe({random: () => 1, projectId})
+      current().next({type: 'welcome'})
+
+      // Registered after the listener was set up, as the studio registers its handler in an
+      // effect that runs after the effects of the components below it.
+      const errorHandler = claimingHandler()
+      const unregister = registerListenerErrorHandler(projectId, errorHandler)
+      const error = denied()
+      current().error(error)
+      unregister()
+
+      expect(errorHandler.handle).toHaveBeenCalledWith(error)
+      expect(events).toEqual([{type: 'welcome'}, {type: 'reconnect'}])
+      expect(errors).toEqual([])
+    })
+
+    it('passes the error on without a handler for its project', () => {
+      const unregister = registerListenerErrorHandler(uniqueProject(), claimingHandler())
+      const {current, errors} = subscribe({random: () => 1, projectId: uniqueProject()})
+      const error = denied()
+      current().error(error)
+      unregister()
+
+      expect(errors).toEqual([error])
+    })
+
+    it('prefers the error handler it was given', () => {
+      const projectId = uniqueProject()
+      const registered = claimingHandler()
+      const unregister = registerListenerErrorHandler(projectId, registered)
+      const given = claimingHandler()
+      const {current} = subscribe({random: () => 1, projectId, errorHandler: given})
+      current().error(denied())
+      unregister()
+
+      expect(given.handle).toHaveBeenCalled()
+      expect(registered.handle).not.toHaveBeenCalled()
     })
   })
 

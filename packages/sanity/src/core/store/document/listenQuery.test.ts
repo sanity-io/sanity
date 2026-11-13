@@ -419,6 +419,32 @@ describe('listenQuery', () => {
       second.unsubscribe()
     })
 
+    test('keeps its result when the error handler of its project takes over a listener that fails for good', async ({
+      listenerErrorHandler,
+    }) => {
+      const {connections, current} = openConnections(listen)
+      const values: unknown[] = []
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({
+        next: (value) => values.push(value),
+        error: (error) => errors.push(error),
+      })
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+      current().error(error)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+      expect(errors).toEqual([])
+      // The outage's `reconnect` refetches, as every `reconnect` does.
+      expect(values).toEqual([{ok: true}, {ok: true}])
+      expect(connections).toHaveLength(1)
+
+      sub.unsubscribe()
+    })
+
     test('still errors on an error in the query', async () => {
       const {current} = openConnections(listen)
       const errors: unknown[] = []

@@ -91,8 +91,34 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
   return secondsLeft
 }
 
+type GenericClaim = Exclude<RequestErrorClaim, {type: 'unauthorized' | 'rateLimited'}>
+
+const HEADINGS: Record<GenericClaim['type'], string> = {
+  networkError: 'Network error',
+  serverError: 'Server error',
+  listenerError: 'Connection error',
+}
+
+function errorMessage(claim: GenericClaim): string {
+  switch (claim.type) {
+    case 'serverError':
+      return claim.retryable
+        ? "The server ran into an issue and couldn't complete the request. You can try again, or reload the Studio."
+        : "The server ran into an issue and couldn't complete the request. Your last change may not have been saved. Reload the Studio to see the current state."
+    case 'listenerError':
+      return claim.retryable
+        ? 'The Studio lost its live connection to Sanity. You can try again, or reload the Studio.'
+        : "The Studio lost its live connection to Sanity and couldn't restore it. Content won't update live, and documents are read-only, until you reload the Studio."
+    case 'networkError':
+    default:
+      return claim.retryable
+        ? "Couldn't reach the Sanity servers. Check your network connection and try again."
+        : "Couldn't reach the Sanity servers. Your last change may not have been sent. Check your network connection and reload the Studio to see the current state."
+  }
+}
+
 /**
- * Studio dialog for claimed request errors (network / 5xx / 429).
+ * Studio dialog for claimed request errors (network / 5xx / 429 / a listener that failed for good).
  *
  * Button policy is driven by the caller's `retryable` assertion — the
  * call site knows whether re-running its request is safe; the studio
@@ -116,16 +142,8 @@ export function RequestErrorDialog(props: {
     return <RateLimitedDialog claim={claim} onRetry={onRetry} />
   }
 
-  const heading = claim.type === 'serverError' ? 'Server error' : 'Network error'
-
-  const message =
-    claim.type === 'serverError'
-      ? claim.retryable
-        ? "The server ran into an issue and couldn't complete the request. You can try again, or reload the Studio."
-        : "The server ran into an issue and couldn't complete the request. Your last change may not have been saved. Reload the Studio to see the current state."
-      : claim.retryable
-        ? "Couldn't reach the Sanity servers. Check your network connection and try again."
-        : "Couldn't reach the Sanity servers. Your last change may not have been sent. Check your network connection and reload the Studio to see the current state."
+  const heading = HEADINGS[claim.type]
+  const message = errorMessage(claim)
 
   return (
     <Dialog
@@ -160,7 +178,7 @@ export function RequestErrorDialog(props: {
           {message}
         </Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
-        {claim.type === 'serverError' ? (
+        {claim.type === 'serverError' || claim.type === 'listenerError' ? (
           <Text size={1} as="div" trim={true}>
             <Link
               href="https://status.sanity.io"
