@@ -68,7 +68,7 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 function isCommentInQuery(
   document: AddonDatasetDocument,
   options: {publishedId: string; releaseId?: ReleaseId},
-): document is CommentDocument {
+): boolean {
   if (document._type !== 'comment' || document.target?.document?._ref !== options.publishedId) {
     return false
   }
@@ -149,7 +149,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
         }
 
         const document = event.result
-        if (!document) return
+        if (!document || document._type !== 'comment') return
 
         // The shared listener reports every comment and task in the addon dataset. One that is
         // not in this store's query, or no longer is after an edit, is dropped if the store had it.
