@@ -168,9 +168,16 @@ async function open(depth: Depth, handlers: HandlerProps, selection: 'word' | 'c
   )
   if (nested) {
     await userEvent.click(editable)
-    await userEvent.keyboard(
-      selection === 'word' ? `{${getModifierKey()}>}a{/${getModifierKey()}}` : '{End}',
-    )
+    // The dialog's editor can miss a key press while it takes focus, so press until the selection lands
+    await vi.waitFor(async () => {
+      await userEvent.keyboard(
+        selection === 'word' ? `{${getModifierKey()}>}a{/${getModifierKey()}}` : '{End}',
+      )
+      const dom = window.getSelection()!
+      expect(selection === 'word' ? dom.toString() : [dom.isCollapsed, dom.anchorOffset]).toEqual(
+        selection === 'word' ? TEXT[depth] : [true, 5],
+      )
+    })
   } else {
     await vi.waitFor(() => expect(editorRef.current).toBeTruthy())
     const path = [{_key: 'a'}, 'children', {_key: 'b'}]
