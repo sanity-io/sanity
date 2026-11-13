@@ -1,5 +1,15 @@
 import {css} from '#styled-system/css'
 
+export const rootLayer = css({
+  'minHeight': 'auto',
+  'position': 'relative',
+  // (0,2,0) already beats Layer's own `position: relative`
+  "&[data-search-open='true']": {
+    top: 0,
+    position: 'sticky',
+  },
+})
+
 /**
  * The navbar root is a size query container, so the grid below adapts to the navbar's own inline
  * size rather than the viewport's. The two differ whenever the studio does not fill the window:
@@ -18,6 +28,7 @@ const navbarContainer = 'sanity-studio-navbar'
 export const navbar = css({
   containerName: navbarContainer,
   containerType: 'inline-size',
+  lineHeight: 0,
 })
 
 /**
