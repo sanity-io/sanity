@@ -1,9 +1,18 @@
 import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {type DocumentSystem} from '@sanity/types'
-import {catchError, firstValueFrom, Observable, of, Subject, take, throwError, toArray} from 'rxjs'
+import {
+  catchError,
+  firstValueFrom,
+  Observable,
+  of,
+  ReplaySubject,
+  Subject,
+  take,
+  throwError,
+  toArray,
+} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi} from 'vitest'
 
-import {clearDocumentRevisionCache} from '../../../store/events/getDocumentAtRevision'
 import {
   createReleaseMetadataAggregator,
   type MetadataWrapper,
@@ -31,6 +40,9 @@ const answerMetadataQuery = (query: string) =>
       ]),
     ),
   )
+
+const getEmittedReleaseDocumentIds = (value: MetadataWrapper | undefined) =>
+  Object.keys(value?.data ?? {})
 
 const mutationEvent = (
   documentId: string,
@@ -94,6 +106,17 @@ describe('createReleaseMetadataAggregator', () => {
   }
 
   const getFetchedQuery = (call: number) => mockClient.observable.fetch.mock.calls[call][0]
+
+  // Keeps every metadata fetch in flight until the returned function answers it
+  const holdFetches = () => {
+    const responses: ReplaySubject<Record<string, unknown>>[] = []
+    mockClient.observable.fetch.mockImplementation(() => {
+      const response = new ReplaySubject<Record<string, unknown>>()
+      responses.push(response)
+      return response
+    })
+    return (call: number) => answerMetadataQuery(getFetchedQuery(call)).subscribe(responses[call])
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -219,7 +242,6 @@ describe('createReleaseMetadataAggregator', () => {
 
     beforeEach(() => {
       vi.useFakeTimers()
-      clearDocumentRevisionCache()
       listener$ = new Subject()
       mockClient.observable.listen.mockReturnValue(listener$)
       mockClient.observable.fetch.mockImplementation(answerMetadataQuery)
@@ -343,23 +365,26 @@ describe('createReleaseMetadataAggregator', () => {
       expect(error).not.toHaveBeenCalled()
     })
 
-    it('refetches every watched release when the history lookup fails', () => {
+    it('refetches every watched release when history cannot be read, and stops asking for it', () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       onTestFinished(() => consoleError.mockRestore())
       const {error} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
       mockClient.observable.request.mockReturnValue(
-        throwError(() => new Error('History unavailable')),
+        throwError(() => Object.assign(new Error('Forbidden'), {statusCode: 403})),
       )
 
-      listener$.next(mutationEvent(VARIANT_ID, {transition: 'disappear', previousRev: 'rev-1'}))
-      vi.advanceTimersByTime(1_000)
+      for (const [index, documentId] of [VARIANT_ID, OTHER_VARIANT_ID, VARIANT_ID].entries()) {
+        listener$.next(
+          mutationEvent(documentId, {transition: 'disappear', previousRev: `rev-${index}`}),
+        )
+        vi.advanceTimersByTime(1_000)
 
+        expect(getPartOfReleaseIds(getFetchedQuery(index + 1))).toEqual(['rABC', 'rDEF'])
+      }
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(4)
       expect(mockClient.observable.request).toHaveBeenCalledTimes(1)
-      expect(consoleError).toHaveBeenCalledWith(
-        'Error fetching document at revision',
-        expect.any(Error),
-      )
-      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC', 'rDEF'])
+      expect(consoleError).not.toHaveBeenCalled()
       expect(error).not.toHaveBeenCalled()
     })
 
@@ -372,6 +397,13 @@ describe('createReleaseMetadataAggregator', () => {
 
       expect(mockClient.observable.request).toHaveBeenCalledTimes(1)
       expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC', 'rDEF'])
+
+      listener$.next(
+        mutationEvent(OTHER_VARIANT_ID, {transition: 'disappear', previousRev: 'rev-2'}),
+      )
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.request).toHaveBeenCalledTimes(2)
     })
 
     it('refetches every watched release when a deleted variant document has no previous revision', () => {
@@ -432,6 +464,127 @@ describe('createReleaseMetadataAggregator', () => {
       expect(getPartOfReleaseIds(getFetchedQuery(2))).toEqual(['rDEF'])
       expect(error).not.toHaveBeenCalled()
       expect(listener$.observed).toBe(true)
+    })
+
+    it('waits for the initial fetch before refetching a release that changed during it', () => {
+      const answerFetch = holdFetches()
+      const {values} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+
+      listener$.next(mutationEvent('versions.rABC.doc'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(1)
+
+      answerFetch(0)
+
+      expect(getEmittedReleaseDocumentIds(values.at(-1))).toEqual([
+        '_.releases.rABC',
+        '_.releases.rDEF',
+      ])
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC'])
+    })
+
+    it('finishes a refetch when another release changes, then fetches that release', () => {
+      const answerFetch = holdFetches()
+      const {values, error} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+      answerFetch(0)
+
+      listener$.next(mutationEvent('versions.rABC.doc'))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(mutationEvent('versions.rDEF.doc'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rABC'])
+
+      answerFetch(1)
+
+      expect(getEmittedReleaseDocumentIds(values.at(-1))).toEqual(['_.releases.rABC'])
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
+      expect(getPartOfReleaseIds(getFetchedQuery(2))).toEqual(['rDEF'])
+
+      answerFetch(2)
+
+      expect(getEmittedReleaseDocumentIds(values.at(-1))).toEqual(['_.releases.rDEF'])
+      expect(error).not.toHaveBeenCalled()
+    })
+
+    it('fetches the releases of every batch that arrives during a refetch together, once', () => {
+      const answerFetch = holdFetches()
+      subscribe(['_.releases.rABC', '_.releases.rDEF', '_.releases.rGHI'])
+      answerFetch(0)
+
+      listener$.next(mutationEvent('versions.rABC.doc'))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(mutationEvent('versions.rDEF.doc'))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(
+        mutationEvent(VARIANT_ID, {
+          result: variantDocument(VARIANT_ID, {release: {_ref: '_.releases.rABC', _weak: true}}),
+        }),
+      )
+      listener$.next(mutationEvent('versions.rGHI.doc'))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(mutationEvent('versions.rDEF.other-doc'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+
+      answerFetch(1)
+      answerFetch(2)
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
+      expect(getProjectedReleaseDocumentIds(getFetchedQuery(2))).toEqual([
+        '_.releases.rDEF',
+        '_.releases.rABC',
+        '_.releases.rGHI',
+      ])
+    })
+
+    it('emits an update for a release after each of its refetches while it keeps changing', () => {
+      const answerFetch = holdFetches()
+      const {values} = subscribe(['_.releases.rABC', '_.releases.rDEF'])
+      answerFetch(0)
+      const emittedBeforeEdits = values.length
+
+      for (let refetch = 1; refetch <= 3; refetch++) {
+        listener$.next(mutationEvent('versions.rABC.doc'))
+        vi.advanceTimersByTime(1_000)
+        listener$.next(mutationEvent('versions.rABC.doc'))
+        vi.advanceTimersByTime(1_000)
+
+        expect(mockClient.observable.fetch).toHaveBeenCalledTimes(refetch + 1)
+
+        answerFetch(refetch)
+
+        expect(values).toHaveLength(emittedBeforeEdits + refetch)
+        expect(getEmittedReleaseDocumentIds(values.at(-1))).toEqual(['_.releases.rABC'])
+      }
+    })
+
+    it('does not cancel a history lookup when a later batch arrives', () => {
+      subscribe(['_.releases.rABC', '_.releases.rDEF', '_.releases.rGHI'])
+      const history$ = new ReplaySubject<{documents: unknown[]}>()
+      mockClient.observable.request.mockReturnValue(history$)
+
+      listener$.next(mutationEvent(VARIANT_ID, {transition: 'disappear', previousRev: 'rev-1'}))
+      vi.advanceTimersByTime(1_000)
+      listener$.next(mutationEvent('versions.rGHI.doc'))
+      vi.advanceTimersByTime(1_000)
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(getPartOfReleaseIds(getFetchedQuery(1))).toEqual(['rGHI'])
+      expect(history$.observed).toBe(true)
+
+      history$.next({
+        documents: [variantDocument(VARIANT_ID, {release: {_ref: '_.releases.rDEF', _weak: true}})],
+      })
+      history$.complete()
+
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
+      expect(getProjectedReleaseDocumentIds(getFetchedQuery(2))).toEqual(['_.releases.rDEF'])
     })
   })
 })

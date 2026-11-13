@@ -1,23 +1,24 @@
 import {type MutationEvent, type SanityClient} from '@sanity/client'
-import {type DocumentSystem} from '@sanity/types'
+import {type DocumentSystem, type SanityDocument} from '@sanity/types'
 import {
   bufferTime,
   catchError,
+  concatMap,
   defer,
   EMPTY,
   filter,
-  first,
   forkJoin,
   iif,
   map,
   merge,
+  mergeMap,
   type Observable,
   of,
   startWith,
   switchMap,
+  tap,
 } from 'rxjs'
 
-import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {getVersionFromId} from '../../util/draftUtils'
 import {getReleaseDocumentIdFromReleaseId} from '../util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -59,6 +60,10 @@ const getFetchQuery = (releaseIds: string[]) => {
  * @returns an Observable that accepts a list of release slugs and returns a stream of metadata
  */
 export const createReleaseMetadataAggregator = (client: SanityClient | null) => {
+  // Turned off by the first failed history lookup, so a user who can't read history makes that
+  // request once per session instead of once per deleted variant document
+  let canReadHistory = true
+
   const aggregatorFetch$ = (
     releaseIds: string[],
     isInitialLoad: boolean = false,
@@ -109,8 +114,8 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
     )
   }
 
-  const aggregatorListener$ = (releaseDocumentIds: string[]) => {
-    if (!releaseDocumentIds?.length || !client) return EMPTY
+  const mutatedReleaseDocumentIds$ = (releaseDocumentIds: string[]): Observable<string[]> => {
+    if (!client) return EMPTY
 
     const releaseIds = releaseDocumentIds.map(getReleaseIdFromReleaseDocumentId)
 
@@ -139,13 +144,21 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         return of(getWatchedReleaseDocumentIds(event.result?._system))
       }
       const {documentId, previousRev} = event
-      if (!previousRev) return of(releaseDocumentIds)
+      if (!previousRev || !canReadHistory) return of(releaseDocumentIds)
 
-      return defer(() => getDocumentAtRevision({client, documentId, revisionId: previousRev})).pipe(
-        first((revision) => !revision?.loading, null),
-        map((revision) => getWatchedReleaseDocumentIds(revision?.document?._system)),
-        catchError(() => of(releaseDocumentIds)),
-      )
+      const searchParams = new URLSearchParams({revision: previousRev})
+      return client.observable
+        .request<{documents: SanityDocument[]}>({
+          url: `/data/history/${client.config().dataset}/documents/${documentId}?${searchParams}`,
+          tag: 'get-document-revision',
+        })
+        .pipe(
+          map(({documents}) => getWatchedReleaseDocumentIds(documents[0]?._system)),
+          catchError(() => {
+            canReadHistory = false
+            return of(releaseDocumentIds)
+          }),
+        )
     }
 
     return client.observable
@@ -171,28 +184,40 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         }),
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
-        switchMap((entriesArray) =>
+        // Not `switchMap`: a later batch must not cancel the history lookups of an earlier one
+        mergeMap((entriesArray) =>
           forkJoin(
             entriesArray.flatMap((event) =>
               'type' in event && event.type === 'mutation'
                 ? [getMutatedReleaseDocumentIds(event)]
                 : [],
             ),
-          ).pipe(
-            switchMap((releaseDocumentIdsPerEvent) => {
-              const mutatedReleaseDocumentIds = new Set(releaseDocumentIdsPerEvent.flat())
-
-              if (mutatedReleaseDocumentIds.size) {
-                return aggregatorFetch$([...mutatedReleaseDocumentIds])
-              }
-
-              return EMPTY
-            }),
-          ),
+          ).pipe(map((releaseDocumentIdsPerEvent) => releaseDocumentIdsPerEvent.flat())),
         ),
       )
   }
 
-  return (releaseIds: string[]) =>
-    merge(aggregatorFetch$(releaseIds, true), aggregatorListener$(releaseIds))
+  return (releaseDocumentIds: string[]) => {
+    if (!releaseDocumentIds?.length || !client) return aggregatorFetch$(releaseDocumentIds)
+
+    // One fetch at a time, so an older response can't overwrite a newer one. The releases that
+    // change while a fetch is in flight are collected here and fetched together once it completes
+    const pendingReleaseDocumentIds = new Set<string>()
+
+    return merge(of(releaseDocumentIds), mutatedReleaseDocumentIds$(releaseDocumentIds)).pipe(
+      tap((mutatedReleaseDocumentIds) => {
+        for (const releaseDocumentId of mutatedReleaseDocumentIds) {
+          pendingReleaseDocumentIds.add(releaseDocumentId)
+        }
+      }),
+      concatMap((_, fetchIndex) =>
+        defer(() => {
+          if (!pendingReleaseDocumentIds.size) return EMPTY
+          const fetchedReleaseDocumentIds = [...pendingReleaseDocumentIds]
+          pendingReleaseDocumentIds.clear()
+          return aggregatorFetch$(fetchedReleaseDocumentIds, fetchIndex === 0)
+        }),
+      ),
+    )
+  }
 }
