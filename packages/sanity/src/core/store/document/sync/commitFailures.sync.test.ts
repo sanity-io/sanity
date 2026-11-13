@@ -1,11 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {
-  expectConverged,
-  expectHealthy,
-  expectRevisionsAgree,
-} from '../../../../../test/sync/oracles'
+import {expectRevisionsAgree} from '../../../../../test/sync/oracles'
 import {
   runSyncTest,
   type Step,
@@ -75,8 +71,6 @@ describe('commit failures', () => {
   test('CMT-REJECT-403: a terminal rejection resets the client to the server copy', async () => {
     world = await runSyncTest(rejectedCommit(PERMISSION_REVOKED, false))
 
-    expectHealthy(world)
-    expectConverged(world)
     expectRevisionsAgree(world)
     expect(world.lake.transactions).toHaveLength(0)
     expect(world.lake.rejectedCommits).toEqual([
@@ -88,15 +82,11 @@ describe('commit failures', () => {
   // The edit typed while the rejected save was in flight stays on screen, is never sent, and the document never becomes consistent again.
   test.fails('CMT-REJECT-403-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
     world = await runSyncTest({...rejectedCommit(PERMISSION_REVOKED, true), knownBug: 'B1'})
-    expectHealthy(world)
-    expectConverged(world)
   })
 
   test('CMT-RETRY-500-TYPING: a transient failure is retried and every edit lands', async () => {
     world = await runSyncTest(rejectedCommit(TRANSIENT_FAILURE, true))
 
-    expectHealthy(world)
-    expectConverged(world)
     expectRevisionsAgree(world)
     expect(world.lake.get(DRAFT_ID)?.title).toBe('two')
     expect(world.lake.rejectedCommits.map((rejected) => rejected.statusCode)).toEqual([500])
@@ -141,8 +131,6 @@ describe('commit failures', () => {
     }
     world = await runSyncTest(syncTest)
 
-    expectHealthy(world)
-    expectConverged(world)
     expectRevisionsAgree(world)
     const server = world.lake.get(DRAFT_ID)
     expect(server?.title).toBe('from A')

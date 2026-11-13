@@ -1,6 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {expect} from 'vitest'
 
+import {describeLostEdit, lostEdits} from './lostEdits'
 import {type World} from './syncTest'
 
 // The server stamps these; the client never predicts _system, and _createdAt on a draft created from published is unverified.
@@ -32,7 +33,7 @@ export function expectRevisionsAgree(world: World): void {
   })
 }
 
-export function expectHealthy(world: World): void {
+function expectHealthy(world: World): void {
   Object.values(world.clients).forEach((client) => {
     expect(client.errors(), `${client.id} stream errors`).toEqual([])
     expect(client.consistent(), `${client.id} consistent`).toBe(true)
@@ -65,4 +66,17 @@ export function fieldOf<T>(
 ): T | undefined {
   const items = (document?.[field] ?? []) as Array<Record<string, unknown> & {_key: string}>
   return items.find((item) => item._key === key)?.[name] as T | undefined
+}
+
+function expectNoLostEdits(world: World): void {
+  const lost = lostEdits(world)
+  const fates = [...new Set(lost.map(({fate}) => fate.replaceAll(':', '')))]
+  const edits = lost.map(describeLostEdit)
+  expect(edits, `lost edits (${fates.join('; ')}): ${edits.join('; ')}`).toEqual([])
+}
+
+export function expectQuiescent(world: World): void {
+  expectHealthy(world)
+  expectConverged(world)
+  expectNoLostEdits(world)
 }
