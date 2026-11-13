@@ -11,8 +11,8 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ExprNode, parse} from 'groq-js'
-import {collate} from 'sanity'
 
+import {collate} from '../../../core/util/draftUtils'
 import {type DocumentListPaneItem, type SortOrder, type StaticSortOrder} from './types'
 
 /**

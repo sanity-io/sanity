@@ -8,18 +8,12 @@ import {
   type EditStateFor,
   type PerspectiveContextValue,
   type SystemVariant,
-  type TargetDocumentState,
-  useActiveReleases,
-  useArchivedReleases,
   useCanvasCompanionDoc,
-  useCanvasNavigate,
   useDocumentStore,
   useDocumentVersions,
   useOnlyHasVersions,
   useSchema,
-  type VersionInfoDocumentStub,
   useWorkspace,
-  type WorkspaceSummary,
 } from 'sanity'
 import {
   ActiveWorkspaceMatcherContext,
@@ -35,6 +29,15 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import type * as UseCanvasNavigateModule from '../../../../../../core/canvas/useCanvasNavigate'
+import {useCanvasNavigate} from '../../../../../../core/canvas/useCanvasNavigate'
+import {type WorkspaceSummary} from '../../../../../../core/config/types'
+import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
+import type * as UseActiveReleasesModule from '../../../../../../core/releases/store/useActiveReleases'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import type * as UseArchivedReleasesModule from '../../../../../../core/releases/store/useArchivedReleases'
+import {useArchivedReleases} from '../../../../../../core/releases/store/useArchivedReleases'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
@@ -60,14 +63,26 @@ vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<typeof SanityExports>()
   return {
     ...actual,
-    useActiveReleases: vi.fn(actual.useActiveReleases),
-    useArchivedReleases: vi.fn(actual.useArchivedReleases),
     useCanvasCompanionDoc: vi.fn(actual.useCanvasCompanionDoc),
-    useCanvasNavigate: vi.fn(actual.useCanvasNavigate),
     useDocumentStore: vi.fn(actual.useDocumentStore),
     useDocumentVersions: vi.fn(actual.useDocumentVersions),
     useOnlyHasVersions: vi.fn(actual.useOnlyHasVersions),
   }
+})
+
+// The banners import these @internal hooks from their declaring modules, so that is where the
+// mocks go; a mock of the `sanity` barrel would not reach them.
+vi.mock('../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => {
+  const actual = await importOriginal<typeof UseActiveReleasesModule>()
+  return {...actual, useActiveReleases: vi.fn(actual.useActiveReleases)}
+})
+vi.mock('../../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => {
+  const actual = await importOriginal<typeof UseArchivedReleasesModule>()
+  return {...actual, useArchivedReleases: vi.fn(actual.useArchivedReleases)}
+})
+vi.mock('../../../../../../core/canvas/useCanvasNavigate', async (importOriginal) => {
+  const actual = await importOriginal<typeof UseCanvasNavigateModule>()
+  return {...actual, useCanvasNavigate: vi.fn(actual.useCanvasNavigate)}
 })
 
 const {settleChromaticEndState} = testHelpers()

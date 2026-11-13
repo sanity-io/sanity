@@ -8,11 +8,14 @@ import {ResultGraph} from './ResultGraph'
 
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
   }),
+}))
+// The @internal names vision imports from the internals entry rather than from `sanity`.
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
 }))
 
 // The viewport is 800×600 wherever the tests run

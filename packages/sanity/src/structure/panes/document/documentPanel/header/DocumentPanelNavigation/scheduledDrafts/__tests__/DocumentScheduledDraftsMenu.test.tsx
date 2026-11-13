@@ -1,16 +1,13 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  useActiveReleases,
-  useDocumentVersions,
-  usePerspective,
-  useScheduledDraftsEnabled,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
+import {useScheduledDraftsEnabled} from '../../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {usePaneRouter} from '../../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
@@ -27,11 +24,26 @@ import {DocumentScheduledDraftsMenu} from '../DocumentScheduledDraftsMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useScheduledDraftsEnabled: vi.fn(),
 }))
+
+// The menu imports the @internal hooks from their declaring modules, so that is where the
+// mocks go; a mock of the `sanity` barrel would not reach them.
+vi.mock(
+  '../../../../../../../../core/releases/store/useActiveReleases',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useActiveReleases: vi.fn(),
+  }),
+)
+vi.mock(
+  '../../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useScheduledDraftsEnabled: vi.fn(),
+  }),
+)
 
 vi.mock('../../../../../useDocumentPane')
 vi.mock('../../../../../../../hooks/usePerspectiveNavigator')

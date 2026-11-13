@@ -1,5 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
-import {Chip, ReleaseAvatarIcon, type TargetPerspective} from 'sanity'
+import {ReleaseAvatarIcon, type TargetPerspective} from 'sanity'
+
+import {Chip} from '../../../../../../../core/releases/components/Chip'
 
 /** @internal */
 export interface NavigationBadgeProps {

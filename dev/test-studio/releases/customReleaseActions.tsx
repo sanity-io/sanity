@@ -1,10 +1,6 @@
 import {BookIcon} from '@sanity/icons/Book'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type ReleaseActionComponent,
-  type ReleaseActionDescription,
-  useClient,
-} from 'sanity'
+import {type ReleaseActionComponent, type ReleaseActionDescription, useClient} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `ReleaseActionComponent`

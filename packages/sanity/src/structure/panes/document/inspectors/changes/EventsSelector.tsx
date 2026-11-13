@@ -8,13 +8,13 @@ import {
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-  LoadingBlock,
-  ScrollContainer,
-  useEvents,
   useTranslation,
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'

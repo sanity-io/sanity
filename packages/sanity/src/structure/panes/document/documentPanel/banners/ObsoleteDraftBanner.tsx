@@ -2,17 +2,12 @@ import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, useCallback, useState} from 'react'
-import {
-  getDefaultVariant,
-  getTargetSiblings,
-  type ObjectSchemaType,
-  Translate,
-  useDocumentOperation,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type ObjectSchemaType, Translate, usePerspective, useTranslation} from 'sanity'
 import {Text, Flex} from 'ui5'
 
+import {useDocumentOperation} from '../../../../../core/hooks/useDocumentOperation'
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {

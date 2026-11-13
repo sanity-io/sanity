@@ -1,20 +1,15 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  getVersionFromId,
-  type ObjectSchemaType,
-  useActiveReleases,
-  useAgentVersionDisplay,
-  useAllVariants,
-  useDocumentVersions,
-  usePerspective,
-  useReleasesToolAvailable,
-  useScheduledDraftsEnabled,
-  useSingleDocRelease,
-} from 'sanity'
+import {getVersionFromId, type ObjectSchemaType, useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {useReleasesToolAvailable} from '../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
+import {useSingleDocRelease} from '../../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
@@ -24,15 +19,45 @@ import {createPerspective, createRelease, createVariant, createVersion, GROUP_ID
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
-  useAgentVersionDisplay: vi.fn(),
-  useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useReleasesToolAvailable: vi.fn(),
-  useScheduledDraftsEnabled: vi.fn(),
-  useSingleDocRelease: vi.fn(),
 }))
+
+// The navigation imports the @internal hooks from their declaring modules, so that is where the
+// mocks go; a mock of the `sanity` barrel would not reach them.
+vi.mock('../../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(),
+}))
+vi.mock('../../../../../../../core/store/agent/useAgentVersionDisplay', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useAgentVersionDisplay: vi.fn(),
+}))
+vi.mock('../../../../../../../core/variants/store/useAllVariants', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useAllVariants: vi.fn(),
+}))
+vi.mock(
+  '../../../../../../../core/schedules/hooks/useReleasesToolAvailable',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useReleasesToolAvailable: vi.fn(),
+  }),
+)
+vi.mock(
+  '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useScheduledDraftsEnabled: vi.fn(),
+  }),
+)
+vi.mock(
+  '../../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useSingleDocRelease: vi.fn(),
+  }),
+)
 
 vi.mock('../../../../useDocumentPane')
 vi.mock('../../../../../../hooks/usePerspectiveNavigator')

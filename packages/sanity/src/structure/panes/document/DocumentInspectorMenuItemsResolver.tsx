@@ -1,5 +1,7 @@
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type DocumentInspector, type DocumentInspectorMenuItem, useUnique} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem} from 'sanity'
+
+import {useUnique} from '../../../core/util/useUnique'
 
 interface DocumentInspectorMenuItemsResolverProps {
   documentId: string

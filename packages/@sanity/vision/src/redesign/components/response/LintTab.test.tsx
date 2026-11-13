@@ -9,12 +9,15 @@ import {LintTab} from './LintTab'
 
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
   }),
+}))
+// The @internal names vision imports from the internals entry rather than from `sanity`.
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
 }))
 
 // @sanity/ui's ThemeProvider reads the color scheme preference
