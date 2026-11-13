@@ -1,17 +1,16 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {useKeyValueStore} from '../../../../../store/datastores'
+import {useStudioPreference} from '../../../../../store/preferences/useStudioPreference'
 import {Calendar} from '../Calendar'
 import {type CalendarLabels} from '../types'
 
-vi.mock('../../../../../store/datastores', () => ({
-  useKeyValueStore: vi.fn(),
+vi.mock('../../../../../store/preferences/useStudioPreference', () => ({
+  useStudioPreference: vi.fn(),
 }))
-const useKeyValueStoreMock = useKeyValueStore as Mock
+const useStudioPreferenceMock = useStudioPreference as Mock
 
 const mockLabels: CalendarLabels = {
   ariaLabel: 'Select date',
@@ -53,9 +52,7 @@ const defaultProps = {
 describe('Calendar with no stored timezone', () => {
   beforeEach(() => {
     // Setup default mock for keyValueStore - returns null (no stored timezone)
-    const getKeyMock = vi.fn().mockReturnValue(of(null))
-    const setKeyMock = vi.fn().mockResolvedValue(null)
-    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+    useStudioPreferenceMock.mockReturnValue({value: undefined, status: 'success', set: vi.fn()})
   })
 
   afterEach(() => {
@@ -101,9 +98,7 @@ describe('Calendar with no stored timezone', () => {
 describe('Calendar with stored timezone tokyo', () => {
   beforeEach(() => {
     // Setup default mock for keyValueStore - returns null (no stored timezone)
-    const getKeyMock = vi.fn().mockReturnValue(of('Asia/Tokyo'))
-    const setKeyMock = vi.fn().mockResolvedValue(null)
-    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+    useStudioPreferenceMock.mockReturnValue({value: 'Asia/Tokyo', status: 'success', set: vi.fn()})
   })
   afterEach(() => {
     vi.restoreAllMocks()
@@ -197,9 +192,7 @@ describe('Calendar with stored timezone tokyo', () => {
 
 describe('Calendar updates displayed month when user sets current time', () => {
   beforeEach(() => {
-    const getKeyMock = vi.fn().mockReturnValue(of(null))
-    const setKeyMock = vi.fn().mockResolvedValue(null)
-    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+    useStudioPreferenceMock.mockReturnValue({value: undefined, status: 'success', set: vi.fn()})
   })
 
   afterEach(() => {

@@ -1,31 +1,54 @@
 import {type SanityClient} from '@sanity/client'
-import {act, cleanup, render, renderHook, waitFor} from '@testing-library/react'
-import {Activity, useEffect} from 'react'
-import {concat, NEVER, of, Subject} from 'rxjs'
+import {act, cleanup, renderHook, waitFor} from '@testing-library/react'
+import {NEVER} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {type StoredQueries, useSavedQueries} from './useSavedQueries'
+import {type QueryConfig, useSavedQueries} from './useSavedQueries'
 
 const mocks = vi.hoisted(() => ({
-  store: {
-    value: null as StoredQueries | null,
-    failWrite: undefined as ((next: StoredQueries) => boolean) | undefined,
-  },
-  setKey: vi.fn(),
+  // The user's saved query items, by item ID
+  items: new Map<string, QueryConfig>(),
+  failRemove: false,
+  listeners: new Set<() => void>(),
   sharedDocs: [] as {_id: string; authorId: string; savedAt: string; url: string; title?: string}[],
   create: vi.fn(),
   deleteDoc: vi.fn(),
 }))
 
-// What the store emits after its synchronous first value: a server read resolving late, a
-// write's own event, a write made elsewhere
-let storeEvents = new Subject<StoredQueries | null>()
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// The hook keys its subscriptions on these objects, so they must be stable across renders
-const keyValueStore = {
-  getKey: () => concat(of(mocks.store.value), storeEvents),
-  setKey: mocks.setKey,
+// Like the preferences API: one request per item, slow enough for calls to overlap
+let snapshot: {itemId: string; value: QueryConfig}[] = []
+async function setItem(itemId: string, value: QueryConfig | undefined) {
+  await wait(10)
+  if (value === undefined) {
+    if (mocks.failRemove) throw new Error('store is read-only')
+    mocks.items.delete(itemId)
+  } else {
+    mocks.items.set(itemId, value)
+  }
+  publish()
 }
+function publish() {
+  snapshot = [...mocks.items].map(([itemId, value]) => ({itemId, value}))
+  for (const listener of mocks.listeners) listener()
+}
+function subscribe(listener: () => void) {
+  mocks.listeners.add(listener)
+  return () => mocks.listeners.delete(listener)
+}
+
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', async () => {
+  const {useSyncExternalStore} = await import('react')
+  return {
+    useStudioPreferenceList: () => ({
+      items: useSyncExternalStore(subscribe, () => snapshot),
+      error: undefined,
+      set: setItem,
+    }),
+  }
+})
+
 const client = {
   fetch: () => Promise.resolve(mocks.sharedDocs),
   observable: {listen: () => NEVER},
@@ -36,67 +59,25 @@ const currentUser = {id: 'user-1'}
 
 vi.mock('sanity', () => ({
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
-  useKeyValueStore: () => keyValueStore,
   useClient: () => client,
   useCurrentUser: () => currentUser,
 }))
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-/** Read through a call so a `mocks.store.value = null` earlier in a test does not narrow it away */
-const storedUrls = () => mocks.store.value?.queries.map((query) => query.url)
-/** A mutable slot for what a component reports from its effects */
-function slot<T>(): {current: T | null} {
-  return {current: null}
-}
-
-/** Renders the hook inside an Activity boundary, reporting its latest result from an effect */
-function renderInActivity() {
-  const latest = slot<ReturnType<typeof useSavedQueries>>()
-  function Probe({onRender}: {onRender: (result: ReturnType<typeof useSavedQueries>) => void}) {
-    const result = useSavedQueries()
-    useEffect(() => {
-      onRender(result)
-    })
-    return null
-  }
-  const harness = (mode: 'visible' | 'hidden') => (
-    <Activity mode={mode}>
-      <Probe
-        onRender={(result) => {
-          latest.current = result
-        }}
-      />
-    </Activity>
-  )
-  const {rerender} = render(harness('visible'))
-  return {
-    latest,
-    hide: () => rerender(harness('hidden')),
-    show: () => rerender(harness('visible')),
-  }
-}
+const storedUrls = () => [...mocks.items.values()].map((query) => query.url)
 
 describe('useSavedQueries', () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
-    mocks.store.value = null
-    mocks.store.failWrite = undefined
+    mocks.items.clear()
+    mocks.failRemove = false
     mocks.sharedDocs = []
-    storeEvents = new Subject()
+    snapshot = []
   })
 
   function setup() {
+    publish()
     let created = 0
-    mocks.setKey.mockImplementation(async (_key: string, next: StoredQueries) => {
-      // Slow enough for calls to overlap
-      await wait(10)
-      if (mocks.store.failWrite?.(next)) {
-        throw new Error('store is read-only')
-      }
-      mocks.store.value = next
-      return next
-    })
     mocks.create.mockImplementation(async (doc: Record<string, unknown>) => {
       await wait(5)
       created += 1
@@ -122,7 +103,7 @@ describe('useSavedQueries', () => {
       await saves
     })
 
-    expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+    expect(storedUrls().toSorted()).toEqual(['https://a', 'https://b'])
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
 
@@ -173,10 +154,7 @@ describe('useSavedQueries', () => {
       await moves
     })
 
-    expect(mocks.store.value?.queries.map((query) => query.url).toSorted()).toEqual([
-      'https://a',
-      'https://b',
-    ])
+    expect(storedUrls().toSorted()).toEqual(['https://a', 'https://b'])
     expect(mocks.deleteDoc.mock.calls.map(([id]) => String(id)).toSorted()).toEqual([
       'shared-a',
       'shared-b',
@@ -211,9 +189,12 @@ describe('useSavedQueries', () => {
   })
 
   it('shares a query once when it is shared again while the first move is pending', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z', title: 'A'}],
-    }
+    mocks.items.set('p1', {
+      _key: 'p1',
+      url: 'https://a',
+      savedAt: '2026-01-01T00:00:00Z',
+      title: 'A',
+    })
     const {result} = setup()
     await waitFor(() => expect(result.current.queries).toHaveLength(1))
 
@@ -279,13 +260,16 @@ describe('useSavedQueries', () => {
   })
 
   it('takes a shared copy back when the personal one cannot be removed', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z', title: 'A'}],
-    }
+    mocks.items.set('p1', {
+      _key: 'p1',
+      url: 'https://a',
+      savedAt: '2026-01-01T00:00:00Z',
+      title: 'A',
+    })
     const {result} = setup()
     await waitFor(() => expect(result.current.queries).toHaveLength(1))
     // Only the removal fails; adding queries keeps working
-    mocks.store.failWrite = (next) => next.queries.length === 0
+    mocks.failRemove = true
 
     let move: Promise<void>
     act(() => {
@@ -300,219 +284,6 @@ describe('useSavedQueries', () => {
     expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
       ['p1', undefined],
     ])
-    expect(mocks.store.value?.queries).toHaveLength(1)
-  })
-
-  it('treats a store write that resolves null as failed, since that is how the store reports one', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
-    }
-    const {result} = setup()
-    await waitFor(() => expect(result.current.queries).toHaveLength(1))
-
-    // The key-value store logs a failed server write and resolves null instead of rejecting
-    mocks.setKey.mockResolvedValueOnce(null)
-    let save: Promise<string>
-    act(() => {
-      save = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-    await act(async () => {
-      await expect(save).rejects.toThrow('could not be stored')
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    mocks.setKey.mockResolvedValueOnce(null)
-    let clear: Promise<void>
-    act(() => {
-      clear = result.current.clearQueries()
-    })
-    await act(async () => {
-      await expect(clear).rejects.toThrow('could not be stored')
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-  })
-
-  it('keeps a saved query when the server read from before the save resolves after it', async () => {
-    const {result} = setup()
-
-    await act(async () => {
-      await result.current.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
-    })
-    // The store only forwards its events once the initial read is done, so the save above was
-    // never echoed and the read now delivers the list from before it
-    act(() => {
-      storeEvents.next({queries: []})
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    await act(async () => {
-      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-    expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-  })
-
-  it('takes another instance’s writes as its base once the store’s events reach it', async () => {
-    const {result} = setup()
-    await act(async () => {
-      await result.current.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
-    })
-    const [saved] = result.current.queries
-
-    // Another Vision instance in this tab (kept mounted under Activity) saves a query of its own
-    // on top of this one; that write reflects the save above, so it is no stale read
-    const peer = {_key: 'peer', url: 'https://peer', savedAt: '2026-01-02T00:00:00Z'}
-    act(() => {
-      storeEvents.next({queries: [peer, saved]})
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer', 'https://a'])
-
-    // The next write starts from that list, so the other instance’s query survives it
-    await act(async () => {
-      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-03T00:00:00Z'})
-    })
-    expect(storedUrls()).toEqual(['https://b', 'https://peer', 'https://a'])
-
-    // With the events known to be live, even a write removing this hook’s own query counts
-    act(() => {
-      storeEvents.next({queries: [peer]})
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer'])
-  })
-
-  it('keeps a failed save out when the store echoes the attempted list afterwards', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
-    }
-    const {result} = setup()
-    await waitFor(() => expect(result.current.queries).toHaveLength(1))
-    mocks.store.failWrite = (next) => next.queries.length === 2
-
-    let save: Promise<string>
-    act(() => {
-      save = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-    await act(async () => {
-      await expect(save).rejects.toThrow('store is read-only')
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    // The list the save tried to write comes back from the store (its localStorage copy is
-    // written before the server answers); it is not the store's list
-    const [, attempted] = mocks.setKey.mock.calls[0] as [string, StoredQueries]
-    expect(attempted.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-    act(() => {
-      storeEvents.next(attempted)
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    // The list the store kept, and a write from elsewhere built on it, are
-    act(() => {
-      storeEvents.next({
-        queries: [
-          {_key: 'peer', url: 'https://peer', savedAt: '2026-01-03T00:00:00Z'},
-          ...(mocks.store.value?.queries ?? []),
-        ],
-      })
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer', 'https://a'])
-  })
-
-  it('keeps the queries when clearing them fails, whatever the store emits meanwhile', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
-    }
-    const {result} = setup()
-    await waitFor(() => expect(result.current.queries).toHaveLength(1))
-    mocks.store.failWrite = () => true
-
-    let clear: Promise<void>
-    act(() => {
-      clear = result.current.clearQueries()
-      // The store announces the list a write holds before knowing whether it went through
-      storeEvents.next({queries: []})
-    })
-    await act(async () => {
-      await expect(clear).rejects.toThrow('store is read-only')
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-    // Nor is the empty list taken for the store's when it turns up afterwards (its localStorage
-    // copy is written before the server answers, and is what a new subscription starts from)
-    act(() => {
-      storeEvents.next({queries: []})
-    })
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    // The next write starts from the list the store still holds, not from the empty one
-    mocks.store.failWrite = undefined
-    await act(async () => {
-      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-    expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-  })
-
-  it('keeps its list when a hidden Activity shows the tool again without a localStorage copy', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
-    }
-    mocks.setKey.mockImplementation(async (_key: string, next: StoredQueries) => {
-      mocks.store.value = next
-      return next
-    })
-    const {latest, hide, show} = renderInActivity()
-    await waitFor(() => expect(latest.current?.queries).toHaveLength(1))
-
-    // Hiding tears the subscription down; showing subscribes again, and this time the store has
-    // no localStorage copy to start from, so it emits nothing useful until the server answers
-    mocks.store.value = null
-    hide()
-    show()
-    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://a'])
-
-    // A write in that window starts from the list, not from empty
-    await act(async () => {
-      await latest.current?.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-    expect(storedUrls()).toEqual(['https://b', 'https://a'])
-    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-  })
-
-  it('keeps a saved query when the tool is shown again while the read from before the save is on its way', async () => {
-    mocks.store.value = {
-      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
-    }
-    const {latest, hide, show} = renderInActivity()
-    await waitFor(() => expect(latest.current?.queries).toHaveLength(1))
-    await act(async () => {
-      await latest.current?.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
-    })
-
-    // Shown again, the tool subscribes anew: the localStorage copy already holds the save, but
-    // the store's read is the request the save raced, and it answers with the list from before
-    hide()
-    show()
-    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-    act(() => {
-      storeEvents.next({queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}]})
-    })
-    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-
-    // The next write starts from the saved list, and a write from elsewhere built on it counts
-    await act(async () => {
-      await latest.current?.saveQuery({url: 'https://c', savedAt: '2026-01-03T00:00:00Z'})
-    })
-    expect(storedUrls()).toEqual(['https://c', 'https://b', 'https://a'])
-    const written = mocks.store.value?.queries ?? []
-    act(() => {
-      storeEvents.next({
-        queries: [{_key: 'peer', url: 'https://peer', savedAt: '2026-01-04T00:00:00Z'}, ...written],
-      })
-    })
-    expect(latest.current?.queries.map((query) => query.url)).toEqual([
-      'https://peer',
-      'https://c',
-      'https://b',
-      'https://a',
-    ])
+    expect(storedUrls()).toEqual(['https://a'])
   })
 })

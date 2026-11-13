@@ -49,9 +49,9 @@ const schemaTypes = [
   }),
 ]
 
-// Recent searches are read from the key-value store, which round-trips through
-// the mock client and would replace a local seed with null. Hand the list in
-// directly so the snapshot does not depend on that request.
+// Recent searches are read from the preferences API through the App SDK, which
+// these tests don't mount. Hand the list in directly so the snapshot does not
+// depend on that request.
 const {storedSearch} = vi.hoisted(() => ({
   storedSearch: {
     recentSearches: [
