@@ -594,11 +594,11 @@ describe('DocumentNotInVariantBanner', () => {
       } as unknown as ReturnType<typeof useDocumentPane>)
     })
 
-    it('keeps its sentence, drops Create variant and points to the document inventory', async () => {
+    it('states what is missing, drops Create variant and points to the form in the document inventory', async () => {
       await renderBanner(CREATE_IN_RELEASE, CREATING)
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing. Finish creating it in the document inventory.',
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Finish creating it in the document inventory.',
       )
       expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
       expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()

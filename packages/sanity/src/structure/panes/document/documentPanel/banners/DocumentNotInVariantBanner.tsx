@@ -230,9 +230,9 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
     if (!selectedVariant) return
     setParams({...params, [CREATE_VARIANT_PARAM]: selectedVariant._id})
   }
-  // With the link, the sentence stops before its own instruction ("Create one to start editing"),
-  // and the link says where to do it instead.
-  const sentenceKey = yields && !formOpen ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
+  // While it yields, the sentence stops before its own instruction ("Create one to start editing"),
+  // and the link or the pointer says where to do it instead.
+  const sentenceKey = yields ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
 
   return (
     <Banner
