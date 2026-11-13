@@ -15,6 +15,7 @@ import {CreateVariantPicker, type CreateVariantPickerOption} from './CreateVaria
 interface Props {
   /** The document group's versions, in the sets the inventory lists them in. */
   sets: VariantSet[]
+  variantsEnabled: boolean
   releases: ReadonlyMap<string, ReleaseDocument>
   /** The picked version, or `undefined` for the nearest version. */
   value: VersionInfoDocumentStub | undefined
@@ -27,6 +28,7 @@ const NEAREST_VERSION_KEY = '#nearest-version'
 
 export const SelectBaseVersion: ComponentType<Props> = ({
   sets,
+  variantsEnabled,
   releases,
   value,
   onChange,
@@ -40,10 +42,12 @@ export const SelectBaseVersion: ComponentType<Props> = ({
       .filter(({document}) => !isAgentBundleName(getVersionFromId(document._id)))
       .map<CreateVariantPickerOption>((version) => ({
         key: version.id,
-        text: t('document-group.create-variant.base-option', {
-          variantName: version.name,
-          bundleName: set.name,
-        }),
+        text: variantsEnabled
+          ? t('document-group.create-variant.base-option', {
+              variantName: version.name,
+              bundleName: set.name,
+            })
+          : version.name,
         icon: <VersionIcon document={version.document} releases={releases} />,
       })),
   )

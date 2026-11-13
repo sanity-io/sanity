@@ -28,6 +28,9 @@ interface Props {
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
   /** The document group's versions, in the sets the inventory lists them in. */
   sets: VariantSet[]
+  variantsEnabled: boolean
+  /** Whether the document type is live-edit, so the document group has no drafts. */
+  liveEdit: boolean
   /** The title of the document the variant is created for, shown in the header. */
   documentTitle: ReactNode
 }
@@ -40,7 +43,13 @@ const DocumentTitle: ComponentType<{children?: ReactNode; documentTitle?: ReactN
   return documentTitle
 }
 
-export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, documentTitle}) => {
+export const CreateVariant: ComponentType<Props> = ({
+  variantCreationRef,
+  sets,
+  variantsEnabled,
+  liveEdit,
+  documentTitle,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
 
   const variantDefinitions = useSelector(
@@ -67,11 +76,15 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
 
   const variantDefinitionOptions = [...(variantDefinitions?.values() ?? [])]
 
-  const variantDefinition =
-    variantDefinitions?.get(selectedVariantId ?? '') ?? variantDefinitionOptions[0]
+  const variantDefinition = variantsEnabled
+    ? (variantDefinitions?.get(selectedVariantId ?? '') ?? variantDefinitionOptions[0])
+    : undefined
+
+  const isMissingVariant = variantsEnabled && typeof variantDefinition === 'undefined'
 
   const bundleOptions = getAvailableBundles({
     variantId: variantDefinition?._id,
+    liveEdit,
     releases: releases ?? NO_RELEASES,
     existingVariants,
   })
@@ -99,14 +112,16 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
   }
 
   const handleCreate = () => {
-    if (typeof variantDefinition === 'undefined' || typeof bundle === 'undefined') {
+    if (isMissingVariant || typeof bundle === 'undefined') {
       return
     }
 
-    variantCreationRef.send({
-      type: 'createVariant.selectVariant',
-      variantId: variantDefinition._id,
-    })
+    if (typeof variantDefinition !== 'undefined') {
+      variantCreationRef.send({
+        type: 'createVariant.selectVariant',
+        variantId: variantDefinition._id,
+      })
+    }
 
     variantCreationRef.send({
       type: 'createVariant.selectBundle',
@@ -139,16 +154,18 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
         </VStack>
       </Header>
       <div data-testid="create-variant-form" className={createVariantForm}>
-        <div className={createVariantFormRow}>
-          <SelectVariantDefinition
-            variantDefinitions={variantDefinitionOptions}
-            value={variantDefinition}
-            onChange={(variantId) =>
-              variantCreationRef.send({type: 'createVariant.selectVariant', variantId})
-            }
-            disabled={isVariantCreationPending}
-          />
-        </div>
+        {variantsEnabled && (
+          <div className={createVariantFormRow}>
+            <SelectVariantDefinition
+              variantDefinitions={variantDefinitionOptions}
+              value={variantDefinition}
+              onChange={(variantId) =>
+                variantCreationRef.send({type: 'createVariant.selectVariant', variantId})
+              }
+              disabled={isVariantCreationPending}
+            />
+          </div>
+        )}
         <div className={createVariantFormRow}>
           <SelectBundle
             bundles={bundleOptions}
@@ -160,6 +177,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
         <div className={createVariantFormRow}>
           <SelectBaseVersion
             sets={sets}
+            variantsEnabled={variantsEnabled}
             releases={releases ?? NO_RELEASES}
             value={baseVersion}
             onChange={(baseId) =>
@@ -177,11 +195,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
           <Button
             text={t('document-group.create-variant')}
             loading={isVariantCreationPending}
-            disabled={
-              typeof variantDefinition === 'undefined' ||
-              typeof bundle === 'undefined' ||
-              isVariantCreationPending
-            }
+            disabled={isMissingVariant || typeof bundle === 'undefined' || isVariantCreationPending}
             onClick={handleCreate}
           />
         </div>

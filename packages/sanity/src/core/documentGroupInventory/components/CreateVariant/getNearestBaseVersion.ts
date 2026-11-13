@@ -12,10 +12,18 @@ export function getNearestBaseVersion({
   bundle,
   versions,
 }: {
-  variantId: VariantId
+  variantId: VariantId | undefined
   bundle: VariantCreationBundle
   versions: VersionInfoDocumentStub[]
 }): VersionInfoDocumentStub | undefined {
+  const defaultDraftOrPublished = () =>
+    getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions: versions}) ??
+    getTargetDocument({bundle: 'published', variant: undefined, documentVersions: versions})
+
+  if (typeof variantId === 'undefined') {
+    return defaultDraftOrPublished()
+  }
+
   const publishedVariant = getVariantPublishedSibling({
     variant: variantId,
     documentVersions: versions,
@@ -26,10 +34,7 @@ export function getNearestBaseVersion({
   }
 
   if (bundle.type === 'drafts') {
-    return (
-      getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions: versions}) ??
-      getTargetDocument({bundle: 'published', variant: undefined, documentVersions: versions})
-    )
+    return defaultDraftOrPublished()
   }
 
   return getTargetDocument({
