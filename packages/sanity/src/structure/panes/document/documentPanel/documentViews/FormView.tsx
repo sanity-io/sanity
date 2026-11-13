@@ -13,7 +13,6 @@ import {
   createPatchChannel,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
-  FormBuilder,
   type FormDocumentValue,
   fromMutationPatches,
   type PatchMsg,
@@ -28,6 +27,7 @@ import {Text, Flex, Box} from 'ui5'
 import {Delay} from '../../../../../core/components/Delay'
 import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
 import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {FormBuilder} from '../../../../../core/form/studio/FormBuilder'
 import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
 import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../../../../i18n'
