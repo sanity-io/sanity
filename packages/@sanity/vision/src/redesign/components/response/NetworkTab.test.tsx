@@ -15,14 +15,19 @@ const cobe = vi.hoisted(() => {
   return {update, destroy, createGlobe: vi.fn(() => ({update, destroy}))}
 })
 vi.mock('cobe', () => ({default: cobe.createGlobe}))
-// Wherever the tests run, the browser is in Oslo
+// Wherever the tests run, the browser is in Oslo, unless a test says its time zone names no place
+const zone = vi.hoisted(() => ({
+  browser: {latitude: 59.91, longitude: 10.75} as {latitude: number; longitude: number} | undefined,
+}))
 vi.mock('../../util/timeZoneLocation', () => ({
-  browserLocation: () => ({latitude: 59.91, longitude: 10.75}),
+  browserLocation: () => zone.browser,
+  offsetLocation: () => ({latitude: 30, longitude: 0}),
 }))
 
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  useNumberFormat: (options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en', options),
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
@@ -197,6 +202,99 @@ describe('NetworkTab', () => {
         limit: QUERY_URL_SIZE_LIMIT,
       })}`,
     )
+  })
+
+  const wasmHit: QueryNetwork = {
+    method: 'GET',
+    viaCdn: true,
+    cacheHit: false,
+    shard: undefined,
+    traceId: undefined,
+    cacheControl: 'private, max-age=60',
+    local: {
+      documents: 51226,
+      memoryBytes: 302841856,
+      timings: [
+        {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
+        {name: 'route', dur: 0.4, desc: 'Service worker to store and back'},
+      ],
+    },
+  }
+
+  it('shows an answer groq-store-wasm gave on this device, with a crab for you and no way anywhere', async () => {
+    await renderTab({
+      meta: meta(wasmHit),
+      resolved: {useCdn: false, isCdnBlockedByPerspective: true},
+    })
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.getByTestId('vision-network-region').textContent).toBe(
+      'vision.network.region.local',
+    )
+    expect(screen.getByTestId('vision-network-local-copy').textContent).toBe(
+      `vision.network.region.local-copy:${JSON.stringify({
+        documents: '51K',
+        memory: '303 MB',
+      })}`,
+    )
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe(
+      'vision.network.cache.local',
+    )
+    expect(screen.queryByText('Cache-Control: private, max-age=60')).toBeNull()
+    expect(screen.getByTestId('vision-network-timing').textContent).toBe(
+      'vision.network.timing.local:{"e2e":"90ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"2ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-route').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"<1ms"}',
+    )
+    expect(screen.queryByTestId('vision-network-hint')).toBeNull()
+    expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+    expect(screen.queryByText('vision.network.you')).toBeNull()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {arcs: unknown[]; markers: unknown[]},
+    ]
+    expect(options.arcs).toHaveLength(0)
+    expect(options.markers).toHaveLength(0)
+  })
+
+  it('shows a local answer from before groq-store-wasm reported its size and timings', async () => {
+    await renderTab({meta: meta({...wasmHit, local: {timings: []}})})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.queryByTestId('vision-network-local-copy')).toBeNull()
+    expect(screen.queryByTestId('vision-network-timing-wasm')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab')).toBeTruthy()
+  })
+
+  it('still shows the crab when the time zone names no place, as on a machine set to UTC', async () => {
+    zone.browser = undefined
+    cobe.createGlobe.mockClear()
+    try {
+      await renderTab({meta: meta(wasmHit)})
+      expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+      expect(cobe.createGlobe).toHaveBeenCalled()
+    } finally {
+      zone.browser = {latitude: 59.91, longitude: 10.75}
+    }
+  })
+
+  it('keeps the blue dot for answers from the API', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.queryByTestId('vision-network-crab')).toBeNull()
+    expect(screen.getByText('vision.network.you')).toBeTruthy()
+    expect(screen.getByText('europe-west1')).toBeTruthy()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {markers: unknown[]},
+    ]
+    expect(options.markers).toHaveLength(2)
   })
 
   it('writes a short server time in milliseconds and a longer round trip in seconds', async () => {

@@ -1,6 +1,6 @@
 import {Badge, Stack} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useNumberFormat, useTranslation} from 'sanity'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
@@ -10,7 +10,9 @@ import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRe
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
-import {browserLocation} from '../../util/timeZoneLocation'
+import {formatBytes} from '../../util/payloadSize'
+import {type LocalAnswer, LOCAL_TIMING_PARTS} from '../../util/queryNetwork'
+import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {NetworkGlobe} from './NetworkGlobe'
 
@@ -33,6 +35,26 @@ function isCdnUrl(url: string): boolean {
   }
 }
 
+/** Like formatDuration, but wasm often answers in a fraction of a millisecond, which would read 0ms */
+function formatTimingEntry(milliseconds: number): string {
+  return milliseconds < 1 ? '<1ms' : formatDuration(milliseconds)
+}
+
+/** The local copy's size: how many documents, in how much WebAssembly memory, as far as known */
+function localCopyKey(
+  local: LocalAnswer,
+  numberFormat: Intl.NumberFormat,
+): {key: string; options: Record<string, unknown>} | undefined {
+  const documents = local.documents === undefined ? undefined : numberFormat.format(local.documents)
+  const memory = local.memoryBytes === undefined ? undefined : formatBytes(local.memoryBytes)
+  if (documents && memory) {
+    return {key: 'vision.network.region.local-copy', options: {documents, memory}}
+  }
+  if (documents) return {key: 'vision.network.region.local-copy-documents', options: {documents}}
+  if (memory) return {key: 'vision.network.region.local-copy-memory', options: {memory}}
+  return undefined
+}
+
 export interface NetworkTabProps {
   meta: VisionResponseMeta | undefined
   resolved: Pick<ResolvedRequest, 'useCdn' | 'isCdnBlockedByPerspective'>
@@ -46,7 +68,11 @@ export interface NetworkTabProps {
  */
 export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  // "51K documents" reads at a glance; "51,226" has to be read digit by digit
+  const compactNumber = useNumberFormat({notation: 'compact'})
   const you = useMemo(() => browserLocation(), [])
+  // The crab needs somewhere to stand even when the time zone names no place (UTC)
+  const localYou = useMemo(() => you ?? offsetLocation(), [you])
   const network = meta?.network
   const region = useMemo(() => regionOfShard(network?.shard), [network?.shard])
 
@@ -61,29 +87,43 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   }
 
   const viaCdn = network ? network.viaCdn : isCdnUrl(meta.url)
+  // groq-store-wasm's service worker answered from the copy of the dataset on this device
+  const local = network?.local
   const cacheHit = Boolean(network?.cacheHit)
   let cache = t('vision.network.cache.none')
   if (viaCdn) cache = cacheHit ? t('vision.network.cache.hit') : t('vision.network.cache.miss')
+  if (local) cache = t('vision.network.cache.local')
+  let endpoint = viaCdn ? t('vision.network.endpoint.cdn') : t('vision.network.endpoint.api')
+  if (local) endpoint = t('vision.network.endpoint.service-worker')
   const hint =
-    !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
+    !local && !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
       ? t('vision.network.use-cdn-hint')
       : undefined
+  const localCopy = local ? localCopyKey(local, compactNumber) : undefined
 
   return (
     <Box data-testid="vision-network" padding={3}>
       <Flex alignItems="flex-start" flexWrap="wrap" gap={4}>
         <Stack gap={2}>
-          <NetworkGlobe api={region} reachedApi={!cacheHit} you={you} />
-          <Flex alignItems="center" gap={2} justifyContent="center">
-            <Badge fontSize={0} tone="primary">
-              {t('vision.network.you')}
-            </Badge>
-            {region && (
-              <Badge fontSize={0} tone="caution">
-                {region.id}
+          <NetworkGlobe
+            api={region}
+            local={Boolean(local)}
+            reachedApi={!cacheHit}
+            you={local ? localYou : you}
+          />
+          {/* For local answers the crab on the globe is you; it needs no label */}
+          {!local && (
+            <Flex alignItems="center" gap={2} justifyContent="center">
+              <Badge fontSize={0} tone="primary">
+                {t('vision.network.you')}
               </Badge>
-            )}
-          </Flex>
+              {region && (
+                <Badge fontSize={0} tone="caution">
+                  {region.id}
+                </Badge>
+              )}
+            </Flex>
+          )}
         </Stack>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
           <Stack gap={4}>
@@ -96,7 +136,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                   as="div"
                   trim={true}
                 >
-                  {viaCdn ? t('vision.network.endpoint.cdn') : t('vision.network.endpoint.api')}
+                  {endpoint}
                 </Text>
               </Row>
               <Row label={t('vision.network.method')}>
@@ -127,7 +167,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                   <Text data-testid="vision-network-cache" size={1} as="div" trim={true}>
                     {cache}
                   </Text>
-                  {network?.cacheControl && (
+                  {!local && network?.cacheControl && (
                     <Text muted size={0} as="div" trim={true}>
                       {`Cache-Control: ${network.cacheControl}`}
                     </Text>
@@ -135,28 +175,74 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 </Stack>
               </Row>
               <Row label={t('vision.network.region')}>
-                <Stack gap={2}>
-                  <Text data-testid="vision-network-region" size={1} as="div" trim={true}>
-                    {region
-                      ? `${region.id} (${region.location})`
-                      : (network?.shard ?? t('vision.network.region.unknown'))}
-                  </Text>
-                  {region && network?.shard && (
-                    <Text muted size={0} as="div" trim={true}>
-                      {network.shard}
+                {local ? (
+                  <Stack gap={2}>
+                    <Text data-testid="vision-network-region" size={1} as="div" trim={true}>
+                      {t('vision.network.region.local')}
                     </Text>
-                  )}
-                </Stack>
+                    {localCopy && (
+                      <Text
+                        data-testid="vision-network-local-copy"
+                        muted
+                        size={0}
+                        as="div"
+                        trim={true}
+                      >
+                        {t(localCopy.key, localCopy.options)}
+                      </Text>
+                    )}
+                  </Stack>
+                ) : (
+                  <Stack gap={2}>
+                    <Text data-testid="vision-network-region" size={1} as="div" trim={true}>
+                      {region
+                        ? `${region.id} (${region.location})`
+                        : (network?.shard ?? t('vision.network.region.unknown'))}
+                    </Text>
+                    {region && network?.shard && (
+                      <Text muted size={0} as="div" trim={true}>
+                        {network.shard}
+                      </Text>
+                    )}
+                  </Stack>
+                )}
               </Row>
               <Row label={t('vision.network.timing')}>
-                <Text size={1} as="div" trim={true}>
-                  {t('vision.network.timing.value', {
-                    e2e: formatDuration(meta.e2eMs),
-                    server: formatDuration(meta.ms),
-                  })}
-                </Text>
+                {local ? (
+                  <Stack gap={2}>
+                    <Text data-testid="vision-network-timing" size={1} as="div" trim={true}>
+                      {t('vision.network.timing.local', {e2e: formatDuration(meta.e2eMs)})}
+                    </Text>
+                    {local.timings.map((timing) => (
+                      <Box
+                        key={timing.name}
+                        paddingLeft={LOCAL_TIMING_PARTS.has(timing.name) ? 3 : 0}
+                      >
+                        <Text
+                          data-testid={`vision-network-timing-${timing.name}`}
+                          muted
+                          size={0}
+                          as="div"
+                          trim={true}
+                        >
+                          {t('vision.network.timing.entry', {
+                            label: timing.desc || timing.name,
+                            duration: formatTimingEntry(timing.dur ?? 0),
+                          })}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Text size={1} as="div" trim={true}>
+                    {t('vision.network.timing.value', {
+                      e2e: formatDuration(meta.e2eMs),
+                      server: formatDuration(meta.ms),
+                    })}
+                  </Text>
+                )}
               </Row>
-              {network?.traceId && (
+              {!local && network?.traceId && (
                 <Row label={t('vision.network.trace')}>
                   <Text size={1} truncate={1} as="div" trim={true}>
                     <code>{network.traceId}</code>
@@ -164,7 +250,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 </Row>
               )}
             </Grid>
-            {cacheHit && (
+            {!local && cacheHit && (
               <Text muted size={1} as="div" trim={true}>
                 {t('vision.network.cache.hit-explained')}
               </Text>
@@ -174,7 +260,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 {hint}
               </Text>
             )}
-            {resolved.isCdnBlockedByPerspective && (
+            {!local && resolved.isCdnBlockedByPerspective && (
               <CdnBlockedNotice
                 perspectiveName={perspectiveName}
                 testId="vision-network-cdn-blocked"

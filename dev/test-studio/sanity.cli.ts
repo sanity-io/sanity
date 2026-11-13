@@ -3,6 +3,8 @@ import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
+import {groqStoreWorkers} from './plugins/groq-store-wasm/vite'
+
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
 // During `sanity build` it records a Rolldown build session, which can then be inspected from
@@ -53,7 +55,9 @@ export default defineCliConfig({
       // below), so the Panda CSS `.css.ts` modules of `sanity` are built here, and the CSS modules
       // of `@sanity/vision` with the `css` options below; `sanity build` uses the built packages
       // and their `bundle.css`
-      plugins: command === 'serve' ? studioPandaCss() : [],
+      // `groqStoreWorkers` serves (dev) or copies (build) @sanity/groq-store-wasm's service worker,
+      // SharedWorker and wasm at the site root, see plugins/groq-store-wasm
+      plugins: [groqStoreWorkers(), ...(command === 'serve' ? studioPandaCss() : [])],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
       // One upfront stylesheet, the way a studio that installs `sanity` from npm loads its

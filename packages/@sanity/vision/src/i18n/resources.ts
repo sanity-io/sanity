@@ -597,6 +597,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Under the details of a CDN cache hit */
   'vision.network.cache.hit-explained':
     'The CDN answered with a response it had cached, from a location near you; the query did not reach the API.',
+  /** groq-store-wasm answered from the copy of the dataset it keeps on this device */
+  'vision.network.cache.local': 'A local copy of the dataset, kept current by a live listener',
   /** The API CDN answered with a response this session had not seen */
   'vision.network.cache.miss': 'Miss, as far as this session can tell',
   /** The API answered, which caches nothing */
@@ -610,6 +612,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.endpoint.api': 'API',
   /** The API CDN answered */
   'vision.network.endpoint.cdn': 'API CDN',
+  /** groq-store-wasm's service worker answered, without asking the API */
+  'vision.network.endpoint.service-worker': 'Service Worker',
   /** In the Network panel: the HTTP method the query was sent with */
   'vision.network.method': 'Method',
   /** The query and its params went in the URL */
@@ -621,10 +625,23 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body, since the API limits the length of a URL. The options stay in the URL.',
   /** In the Network panel: the region the query ran in */
   'vision.network.region': 'Query ran in',
+  /** groq-store-wasm ran the query in this browser's memory: "Query ran in: memory" */
+  'vision.network.region.local': 'memory',
+  /** Under "memory": the size of the copy of the dataset the query ran against */
+  'vision.network.region.local-copy':
+    '{{documents}} documents in {{memory}} of WebAssembly, on this device',
+  /** Under "memory", when only the document count is known */
+  'vision.network.region.local-copy-documents': '{{documents}} documents, on this device',
+  /** Under "memory", when only the memory is known */
+  'vision.network.region.local-copy-memory': '{{memory}} of WebAssembly, on this device',
   /** The response did not say where the query ran */
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
+  /** One of groq-store-wasm's Server-Timing entries: its description and duration, already formatted (`2ms`, `<1ms`) */
+  'vision.network.timing.entry': '{{label}}: {{duration}}',
+  /** The round trip of a query groq-store-wasm answered on this device, already formatted (`90ms`) */
+  'vision.network.timing.local': '{{e2e}} round trip',
   /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
   'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Network panel: the trace of the request, for Sanity support */

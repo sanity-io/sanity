@@ -1,0 +1,66 @@
+# Evaluation only, for the draft PR that boots @sanity/groq-store-wasm in the test studio.
+# The package is private on npm, so installing needs NPM_TOKEN, which lives in the
+# `groq-store-wasm-eval` environment (deployment branch rule: feat/test-studio-groq-store-wasm).
+# Every other workflow keeps failing on install, on purpose. Delete this file before any merge.
+name: groq-store-wasm eval
+permissions: {}
+
+on:
+  push:
+    branches: [feat/test-studio-groq-store-wasm]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: github.ref == 'refs/heads/feat/test-studio-groq-store-wasm'
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    environment: groq-store-wasm-eval
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # Read by ~/.npmrc below, so the token itself is never written to disk
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Authenticate npm for @sanity/groq-store-wasm
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error::NPM_TOKEN is missing from the groq-store-wasm-eval environment"
+            exit 1
+          fi
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> ~/.npmrc
+
+      - uses: ./.github/actions/setup
+
+      - name: Build packages
+        run: pnpm build --output-logs=errors-only
+
+      # `sanity:build` only: the test studio's `build` also deploys its schema, which needs a token
+      - name: Build test studio
+        run: pnpm --filter sanity-test-studio sanity:build
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Smoke check, the wasm store answers a query
+        run: |
+          pnpm --filter sanity-test-studio exec sanity preview --port 3333 > preview.log 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -sf -o /dev/null http://localhost:3333/groq-sw.js && break
+            sleep 2
+          done
+          node dev/test-studio/plugins/groq-store-wasm/smoke.mjs http://localhost:3333
+
+      - name: Preview server log
+        if: failure()
+        run: cat preview.log || true
