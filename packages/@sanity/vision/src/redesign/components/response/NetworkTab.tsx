@@ -11,7 +11,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {type LocalAnswer, LOCAL_TIMING_PARTS} from '../../util/queryNetwork'
-import {browserLocation} from '../../util/timeZoneLocation'
+import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {NetworkGlobe} from './NetworkGlobe'
 
@@ -69,6 +69,8 @@ export interface NetworkTabProps {
 export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const you = useMemo(() => browserLocation(), [])
+  // The crab needs somewhere to stand even when the time zone names no place (UTC)
+  const localYou = useMemo(() => you ?? offsetLocation(), [you])
   const network = meta?.network
   const region = useMemo(() => regionOfShard(network?.shard), [network?.shard])
 
@@ -101,7 +103,12 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
     <Box data-testid="vision-network" padding={3}>
       <Flex alignItems="flex-start" flexWrap="wrap" gap={4}>
         <Stack gap={2}>
-          <NetworkGlobe api={region} local={Boolean(local)} reachedApi={!cacheHit} you={you} />
+          <NetworkGlobe
+            api={region}
+            local={Boolean(local)}
+            reachedApi={!cacheHit}
+            you={local ? localYou : you}
+          />
           {/* For local answers the crab on the globe is you; it needs no label */}
           {!local && (
             <Flex alignItems="center" gap={2} justifyContent="center">

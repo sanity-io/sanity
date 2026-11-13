@@ -15,9 +15,13 @@ const cobe = vi.hoisted(() => {
   return {update, destroy, createGlobe: vi.fn(() => ({update, destroy}))}
 })
 vi.mock('cobe', () => ({default: cobe.createGlobe}))
-// Wherever the tests run, the browser is in Oslo
+// Wherever the tests run, the browser is in Oslo, unless a test says its time zone names no place
+const zone = vi.hoisted(() => ({
+  browser: {latitude: 59.91, longitude: 10.75} as {latitude: number; longitude: number} | undefined,
+}))
 vi.mock('../../util/timeZoneLocation', () => ({
-  browserLocation: () => ({latitude: 59.91, longitude: 10.75}),
+  browserLocation: () => zone.browser,
+  offsetLocation: () => ({latitude: 30, longitude: 0}),
 }))
 
 vi.mock('sanity', () => ({
@@ -252,6 +256,18 @@ describe('NetworkTab', () => {
     expect(screen.queryByTestId('vision-network-local-copy')).toBeNull()
     expect(screen.queryByTestId('vision-network-timing-wasm')).toBeNull()
     expect(screen.getByTestId('vision-network-crab')).toBeTruthy()
+  })
+
+  it('still shows the crab when the time zone names no place, as on a machine set to UTC', async () => {
+    zone.browser = undefined
+    cobe.createGlobe.mockClear()
+    try {
+      await renderTab({meta: meta(wasmHit)})
+      expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+      expect(cobe.createGlobe).toHaveBeenCalled()
+    } finally {
+      zone.browser = {latitude: 59.91, longitude: 10.75}
+    }
   })
 
   it('keeps the blue dot for answers from the API', async () => {
