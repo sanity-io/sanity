@@ -2168,9 +2168,6 @@ importers:
       ui5:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
-      use-effect-event:
-        specifier: ^2.0.4
-        version: 2.0.4(react@19.3.1)
       xstate:
         specifier: ^5.33.4
         version: 5.33.4
@@ -2558,9 +2555,6 @@ importers:
       use-device-pixel-ratio:
         specifier: ^1.1.2
         version: 1.1.2(react@19.3.1)
-      use-effect-event:
-        specifier: ^2.0.4
-        version: 2.0.4(react@19.3.1)
       use-hot-module-reload:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.1)
