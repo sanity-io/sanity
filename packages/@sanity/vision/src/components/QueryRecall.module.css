@@ -12,4 +12,35 @@
 
 .queryList {
   min-height: 0;
+  min-width: 0;
+  /*
+   * Scroll the list vertically only. A saved query is one long `pre` line, and `overflow: auto`
+   * on both axes gives Firefox a horizontal scrollbar (Chromium's overlay bar stays hidden).
+   */
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/*
+ * Single-line, ellipsized query preview. @sanity/ui's Code trims its line box with
+ * pseudo-elements, so the ellipsis is applied to a wrapper with the code rendered inline.
+ */
+.queryPreview {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queryPreview pre,
+.queryPreview code {
+  display: inline;
+  white-space: inherit;
+}
+
+.queryPreview pre::before,
+.queryPreview pre::after {
+  content: none;
 }

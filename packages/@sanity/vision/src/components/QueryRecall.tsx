@@ -38,7 +38,7 @@ function ScrollContainer(props: ComponentProps<typeof Flex>) {
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={styles.queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} className={styles.queryList} />
 }
 
 export function QueryRecall({
@@ -579,7 +579,9 @@ export function QueryRecall({
                       placement="top"
                       portal
                     >
-                      <Code size={1}>{shortQueryPreview}</Code>
+                      <Box className={styles.queryPreview}>
+                        <Code size={1}>{shortQueryPreview}</Code>
+                      </Box>
                     </Tooltip>
                   ) : (
                     <Code />
