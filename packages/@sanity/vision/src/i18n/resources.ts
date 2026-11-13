@@ -707,6 +707,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.add-item': 'Add item',
   /** Placeholder of a params form field that takes any JSON value */
   'vision.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
+  /** Accessible label of the info icon showing a params form field's type and usages */
+  'vision.params-form.details': 'About ${{name}}',
   /** Shown in the params form when the query uses no params */
   'vision.params-form.empty': 'The query uses no params. Each $name in it gets a field here.',
   /** Shown in the params form while the params JSON cannot be parsed */
@@ -730,7 +732,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.item-label': '${{name}}, item {{index}}',
   /** Placeholder of an item input of a list param in the params form */
   'vision.params-form.item-placeholder': 'Item',
-  /** Under a params form field whose param has no value */
+  /**
+   * Under a params form field whose param has no value
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params-form.missing': 'Not set: the query fails until it has a value',
   /** Shown in the params form when the workspace schema could not be read */
   'vision.params-form.no-schema':
@@ -741,8 +747,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
   'vision.params-form.remove': 'Remove',
+  /** Button removing every param the query does not use from the params */
+  'vision.params-form.remove-all': 'Remove all',
   /** Accessible label of the button removing an item from a list param */
   'vision.params-form.remove-item': 'Remove item',
+  /** Tooltip of the alert icon of a params form field whose param has no value */
+  'vision.params-form.required': 'The query fails until this param has a value',
   /** Shown in the params form when the query does not parse */
   'vision.params-form.syntax-error':
     'The query does not parse, so its params are listed without types.',
@@ -766,6 +776,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.type.options': '{{type}}, one of {{count}} values',
   /** Type hint of a params form field: text */
   'vision.params-form.type.string': 'text',
+  /** In the details tooltip of a params form field: the type of value the query expects */
+  'vision.params-form.type-detail': 'type: {{type}}',
+  /** Accessible label of the info icon by the unused params heading, about where types come from */
+  'vision.params-form.types-details': 'About the param types',
   /** Heading of the params the query does not use, listed in the params form */
   'vision.params-form.unused': 'Not used by the query',
   /** Before the expressions that use a param, in the params form */

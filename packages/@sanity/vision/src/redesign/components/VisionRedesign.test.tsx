@@ -620,7 +620,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
     expect(formInput('limit').value).toBe('3')
     expect(text(screen.getByTestId('vision-params-form-limit-type'))).toBe(
-      'vision.params-form.type.integer',
+      'vision.params-form.type-detail',
     )
 
     fireEvent.change(formInput('type'), {target: {value: 'author'}})
