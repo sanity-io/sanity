@@ -123,6 +123,10 @@ vi.mock('sanity', async () => {
     useActiveReleases: vi.fn(() => ({data: [], loading: false})),
     useScheduledDraftsEnabled: vi.fn(() => false),
     useWorkspace: () => sanityMocks.workspace,
+    useWorkspaces: () => [
+      {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
+      {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
+    ],
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
     useTranslation: () => ({
@@ -459,6 +463,12 @@ function describedBy(element: HTMLElement): string | null {
 
 function selectValue(testId: string): string {
   return (screen.getByTestId(testId) as HTMLSelectElement).value
+}
+
+/** Picks a dataset in the Options panel's dataset menu */
+function pickDataset(dataset: string) {
+  fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
+  fireEvent.click(screen.getByTestId(`vision-option-dataset-item-${dataset}`))
 }
 
 /** The request column shows one tab at a time; Params is the one open at first */
@@ -2084,10 +2094,7 @@ describe('VisionRedesign', () => {
 
     // The dataset changes while refetching is off, so the runner still holds the old request
     openRequestTab('options')
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
-    fireEvent.change(screen.getByTestId('vision-option-dataset-select'), {
-      target: {value: 'staging'},
-    })
+    pickDataset('staging')
     fireEvent.click(screen.getByTestId('vision-auto-refetch'))
 
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
@@ -2509,13 +2516,10 @@ describe('VisionRedesign', () => {
     typeQuery('*')
     openRequestTab('options')
     const datasetSelect = () =>
-      screen.getByTestId('vision-option-dataset-select') as HTMLSelectElement
+      screen.getByTestId('vision-option-dataset-select') as HTMLButtonElement
     expect(datasetSelect().value).toBe('test')
-    expect(datasetSelect().disabled).toBe(true)
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
-    expect(datasetSelect().disabled).toBe(false)
-    fireEvent.change(datasetSelect(), {target: {value: 'staging'}})
+    pickDataset('staging')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config.dataset).toBe('staging')
@@ -2526,12 +2530,26 @@ describe('VisionRedesign', () => {
       }),
     )
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
+    // Picking the current workspace's dataset follows the workspace again
+    pickDataset('test')
     expect(datasetSelect().value).toBe('test')
-    expect(datasetSelect().disabled).toBe(true)
+    expect(screen.getByTestId('vision-option-dataset-pin')).toBeTruthy()
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('test')
+
+    // The pin button pins the workspace's dataset, and follows the workspace again
+    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({
+        datasetMode: 'pinned',
+        dataset: 'test',
+      }),
+    )
+    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+    )
   })
 
   it('switches a tab on its own perspective back to the global one when the navbar changes', async () => {
