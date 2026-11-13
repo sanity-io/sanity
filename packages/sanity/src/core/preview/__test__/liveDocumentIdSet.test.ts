@@ -6,8 +6,9 @@ import {
   ServerError,
 } from '@sanity/client'
 import {defer, delay, type Observable, of, Subject, throwError} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
+import {it} from '../../../../test/testUtils/listenerErrorHandlerTest'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from '../liveDocumentIdSet'
 
 type Event = ListenEvent<Record<string, unknown>>
@@ -159,6 +160,22 @@ describe('createDocumentIdSetObserver while its listener is down', () => {
     current().error(error)
 
     expect(errors).toEqual([error])
+  })
+
+  it('keeps the set when the registered error handler takes over a listener that fails irrecoverably', async ({
+    listenerErrorHandler,
+  }) => {
+    const {connections, current, states, errors} = setup([['book-1']])
+    current().next(welcome)
+
+    const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    current().error(error)
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+    expect(errors).toEqual([])
+    expect(states.at(-1)).toEqual({status: 'reconnecting', documentIds: ['book-1']})
+    expect(connections).toHaveLength(1)
   })
 })
 
