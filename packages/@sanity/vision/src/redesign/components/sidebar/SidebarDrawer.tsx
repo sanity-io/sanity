@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Button} from '@sanity/ui'
-import {type KeyboardEvent, type ReactNode, useCallback} from 'react'
+import {type KeyboardEvent, type ReactNode, useCallback, ViewTransition} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {type TFunction, useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
@@ -9,6 +9,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionDrawer} from '../../store/types'
 import {useTabDrawerSlot, useVisionActor} from '../../store/VisionActorContext'
 import {cx} from '../../util/cx'
+import {DRAWER_ENTER, DRAWER_EXIT, DRAWER_PANE} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import {QueryListPanel} from './QueryListPanel'
 import {SettingsPanel} from './SettingsPanel'
@@ -98,44 +99,47 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
   // studio chrome above is not inert), and focus returns to the opener on close (VisionSidebar)
   return (
     <TrapFocus autoFocus disabled={!overlay} lockProps={TRAP_FOCUS_PROPS}>
-      <Flex
-        aria-label={overlay ? title : undefined}
-        aria-modal={overlay || undefined}
-        borderRight
-        className={cx(
-          styles.sidebarDrawer,
-          drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
-          overlay && styles.sidebarDrawerOverlay,
-        )}
-        data-testid={`vision-drawer-${drawer}`}
-        flexDirection="column"
-        height="100%"
-        onKeyDown={handleKeyDown}
-        role={overlay ? 'dialog' : undefined}
-      >
+      {/* Swapping one drawer for another resizes it, like the tabs area next to it */}
+      <ViewTransition default={DRAWER_PANE} enter={DRAWER_ENTER} exit={DRAWER_EXIT}>
         <Flex
-          alignItems="center"
-          borderBottom
-          flexShrink={0}
-          gap={2}
-          justifyContent="space-between"
-          paddingLeft={3}
-          paddingRight={2}
-          paddingY={2}
+          aria-label={overlay ? title : undefined}
+          aria-modal={overlay || undefined}
+          borderRight
+          className={cx(
+            styles.sidebarDrawer,
+            drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
+            overlay && styles.sidebarDrawerOverlay,
+          )}
+          data-testid={`vision-drawer-${drawer}`}
+          flexDirection="column"
+          height="100%"
+          onKeyDown={handleKeyDown}
+          role={overlay ? 'dialog' : undefined}
         >
-          <Text size={1} weight="medium" as="div" trim={true}>
-            {title}
-          </Text>
-          <Button
-            aria-label={t('vision.drawer.close')}
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={close}
-            padding={2}
-          />
+          <Flex
+            alignItems="center"
+            borderBottom
+            flexShrink={0}
+            gap={2}
+            justifyContent="space-between"
+            paddingLeft={3}
+            paddingRight={2}
+            paddingY={2}
+          >
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {title}
+            </Text>
+            <Button
+              aria-label={t('vision.drawer.close')}
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={close}
+              padding={2}
+            />
+          </Flex>
+          <DrawerContent drawer={drawer} />
         </Flex>
-        <DrawerContent drawer={drawer} />
-      </Flex>
+      </ViewTransition>
     </TrapFocus>
   )
 }

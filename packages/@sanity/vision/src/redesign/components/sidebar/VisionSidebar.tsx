@@ -9,7 +9,7 @@ import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef} from 'react'
+import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -23,6 +23,7 @@ import {
 } from '../../store/VisionActorContext'
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {DRAWER_TRANSITION, startLayoutTransition} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
 
@@ -102,7 +103,13 @@ export function VisionSidebar() {
     },
     [actorRef, drawer],
   )
-  useOnValueChange(drawer, (next, previous) => {
+  // The machine's state is read through an external store, which React always renders at once;
+  // the drawer it shows follows in a transition, which the drawer and the tabs area animate
+  const [shownDrawer, setShownDrawer] = useState(drawer)
+  useOnValueChange(drawer, (next) => {
+    startLayoutTransition(DRAWER_TRANSITION, () => setShownDrawer(next))
+  })
+  useOnValueChange(shownDrawer, (next, previous) => {
     if (previous === null || next !== null) return
     openerRef.current?.focus()
     openerRef.current = null
@@ -204,7 +211,7 @@ export function VisionSidebar() {
   return (
     <Flex flexShrink={0} height="100%" minHeight="0">
       {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
-      {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
+      {shownDrawer && <SidebarDrawer drawer={shownDrawer} overlay={isMobile} />}
     </Flex>
   )
 }
