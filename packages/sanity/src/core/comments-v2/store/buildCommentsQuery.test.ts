@@ -1,5 +1,6 @@
 import {describe, expect, test} from 'vitest'
 
+import {type CommentDocument} from '../types'
 import {comment} from './__fixtures__/comment.fixture'
 import {buildCommentsQuery, matchesCommentsQuery} from './buildCommentsQuery'
 
@@ -89,6 +90,22 @@ describe('matchesCommentsQuery', () => {
       false,
     )
     expect(matchesCommentsQuery(pathless, {gdr: docGdr, versionId: 'doc-1', type: 'task'})).toBe(
+      true,
+    )
+  })
+
+  test('treats a null field path as missing, as `defined()` does', () => {
+    const base = comment('c1', 'doc-1')
+    // As the API payload decodes: the type has no room for a null field
+    const nullField: CommentDocument = {
+      ...base,
+      target: {...base.target, path: JSON.parse('{"field": null}')},
+    }
+
+    expect(matchesCommentsQuery(nullField, {gdr: docGdr, versionId: 'doc-1', type: 'field'})).toBe(
+      false,
+    )
+    expect(matchesCommentsQuery(nullField, {gdr: docGdr, versionId: 'doc-1', type: 'task'})).toBe(
       true,
     )
   })

@@ -288,6 +288,38 @@ describe('useCommentsStore (comments v2), when its query scope changes', () => {
     expect(result.current.docOne.loading).toBe(false)
   })
 
+  it('keeps its comments without reloading when switching between draft and published', async () => {
+    const testClient = setup([comment('c1', 'doc-1'), comment('c2', 'drafts.doc-1')])
+    const commits: {ids: string[]; loading: boolean}[] = []
+    const {result, rerender} = renderHook(
+      (props: {docOneVersionId: string}) => {
+        const stores = testClient.useStores(props)
+        useEffect(() => {
+          commits.push({ids: ids(stores.docOne.data), loading: stores.docOne.loading})
+        })
+        return stores
+      },
+      {initialProps: {docOneVersionId: 'drafts.doc-1'}},
+    )
+    await act(async () => {
+      testClient.server.next(WELCOME)
+    })
+    await waitFor(() => expect(result.current.docOne.loading).toBe(false))
+    const data = result.current.docOne.data
+    const fetchCalls = testClient.fetch.mock.calls.length
+    const commitsBeforeSwitch = commits.length
+
+    rerender({docOneVersionId: 'doc-1'})
+    rerender({docOneVersionId: 'drafts.doc-1'})
+
+    expect(commits.slice(commitsBeforeSwitch)).not.toContainEqual(
+      expect.objectContaining({loading: true}),
+    )
+    expect(result.current.docOne.data).toBe(data)
+    expect(ids(result.current.docOne.data)).toEqual(['c1', 'c2'])
+    expect(testClient.fetch).toHaveBeenCalledTimes(fetchCalls)
+  })
+
   it('stays idle while its scope is not ready, and loads once it is', async () => {
     const testClient = setup([comment('c1', 'doc-1')])
     const commits: {ids: string[]; loading: boolean}[] = []

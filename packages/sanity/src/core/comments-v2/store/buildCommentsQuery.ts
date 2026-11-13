@@ -84,7 +84,8 @@ export function matchesCommentsQuery(
   const {target} = comment
 
   if (comment._type !== 'sanity.comment' || target?.document?._ref !== gdr) return false
-  if (type === 'field' && target.path?.field === undefined) return false
+  // GROQ's `defined()` is false for `null` too
+  if (type === 'field' && (target.path?.field ?? null) === null) return false
 
   if (isDraftId(versionId) || isPublishedId(versionId)) {
     const publishedDocumentId = getPublishedId(versionId)
