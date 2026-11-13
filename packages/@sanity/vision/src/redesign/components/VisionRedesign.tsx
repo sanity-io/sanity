@@ -1,3 +1,4 @@
+import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useMemo, useState} from 'react'
 import {Flex} from 'ui5'
@@ -38,6 +39,12 @@ function getVisionLayout(width: number): VisionLayout {
   if (width < STACKED_BREAKPOINT) return 'stacked'
   return 'columns'
 }
+
+/**
+ * The first tooltip waits a moment so passing the pointer over a control does not flash one; once
+ * one is open, its neighbours open without waiting, as in the studio's own toolbars
+ */
+const TOOLTIP_DELAY = {open: 400}
 
 export interface VisionRedesignProps {
   config: VisionConfig
@@ -90,33 +97,35 @@ export function VisionRedesign(props: VisionRedesignProps) {
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
             <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-              <Flex
-                className={styles.root}
-                data-testid="vision-root"
-                data-vision-layout={layout}
-                height="100%"
-                overflow="hidden"
-                ref={setRootElement}
-              >
-                <VisionSidebar />
+              <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                 <Flex
-                  flexBasis="0%"
-                  flexDirection="column"
-                  flexGrow={1}
-                  // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                  inert={layout === 'mobile' && openDrawer !== null}
-                  minWidth="0"
+                  className={styles.root}
+                  data-testid="vision-root"
+                  data-vision-layout={layout}
+                  height="100%"
                   overflow="hidden"
+                  ref={setRootElement}
                 >
-                  <QueryTabBar />
-                  <RequestBottomPanelProvider>
-                    <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                  </RequestBottomPanelProvider>
+                  <VisionSidebar />
+                  <Flex
+                    flexBasis="0%"
+                    flexDirection="column"
+                    flexGrow={1}
+                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                    inert={layout === 'mobile' && openDrawer !== null}
+                    minWidth="0"
+                    overflow="hidden"
+                  >
+                    <QueryTabBar />
+                    <RequestBottomPanelProvider>
+                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    </RequestBottomPanelProvider>
+                  </Flex>
                 </Flex>
-              </Flex>
-              <VisionDialogs />
-              <VisionUrlState tab={activeTab} />
-              <VisionWebMcp tab={activeTab} />
+                <VisionDialogs />
+                <VisionUrlState tab={activeTab} />
+                <VisionWebMcp tab={activeTab} />
+              </TooltipDelayGroupProvider>
             </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
