@@ -3,7 +3,7 @@ import {type ContentLakeDocument} from '@repo/content-lake-model'
 import {type SubmissionRequest} from './contracts'
 
 /** The Studio commits actions and mutations on this version (`checkoutPair.ts`, `studioClient.ts`). */
-export const STUDIO_API_VERSION = 'v2025-02-19'
+const STUDIO_API_VERSION = 'v2025-02-19'
 
 const INFRASTRUCTURE_RETRY_STATUSES = new Set([429, 502, 503, 504])
 const DATASET_READINESS_RETRY_STATUSES = new Set([404, ...INFRASTRUCTURE_RETRY_STATUSES])
@@ -55,7 +55,7 @@ function parseBody(text: string): unknown {
   }
 }
 
-export function retryDelayMs(answer: HttpAnswer, attempt: number): number {
+function retryDelayMs(answer: HttpAnswer, attempt: number): number {
   const retryAfter = Number(answer.retryAfter)
   if (Number.isFinite(retryAfter) && retryAfter > 0) {
     return Math.min(retryAfter * 1000, MAX_DELAY_MS)

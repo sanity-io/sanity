@@ -51,7 +51,7 @@ function canonical(value: unknown): unknown {
   return value
 }
 
-export function sameValue(left: unknown, right: unknown): boolean {
+function sameValue(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right))
 }
 

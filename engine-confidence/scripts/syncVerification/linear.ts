@@ -1,4 +1,4 @@
-export const LINEAR_GRAPHQL_URL = 'https://api.linear.app/graphql'
+const LINEAR_GRAPHQL_URL = 'https://api.linear.app/graphql'
 
 export const LINEAR_TARGET = {
   teamId: 'acd907c0-3e5c-4739-890a-f3396802ed25',
@@ -48,7 +48,7 @@ const CREATE_MUTATION = `mutation SyncVerificationCreateIssue($input: IssueCreat
   }
 }`
 
-export function hasWholeLine(description: string | null, line: string): boolean {
+function hasWholeLine(description: string | null, line: string): boolean {
   return (description ?? '').split('\n').some((candidate) => candidate.trim() === line)
 }
 

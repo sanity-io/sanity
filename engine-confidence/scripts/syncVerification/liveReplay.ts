@@ -49,7 +49,7 @@ interface ReplayProgress {
   log: (message: string) => void
 }
 
-export function documentPrefix(runId: string, sequenceLabel: string): string {
+function documentPrefix(runId: string, sequenceLabel: string): string {
   return `fv-probe-${runId}-${sequenceLabel}-`
 }
 
@@ -162,7 +162,7 @@ async function replayStep(
   }
 }
 
-export async function replaySequenceLive(
+async function replaySequenceLive(
   sequence: ReplayableSequence,
   prefix: string,
   http: ContentLakeHttp,
@@ -208,7 +208,7 @@ type Log = (message: string) => void
 
 function noLog(): void {}
 
-export async function verifyFailure(
+async function verifyFailure(
   failure: GeneratorFailure,
   prefix: string,
   http: ContentLakeHttp,
@@ -222,7 +222,7 @@ export async function verifyFailure(
   }
 }
 
-export async function verifySample(
+async function verifySample(
   sample: GeneratorSample,
   prefix: string,
   http: ContentLakeHttp,
@@ -250,7 +250,7 @@ export function verifyFailures(
   }, Promise.resolve([]))
 }
 
-export function verifySamples(
+function verifySamples(
   samples: GeneratorSample[],
   http: ContentLakeHttp,
   runId: string,

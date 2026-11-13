@@ -27,7 +27,7 @@ export interface ModelStep {
 }
 
 const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
-export const SEED_REVISION = 'seed'
+const SEED_REVISION = 'seed'
 export const ACCEPTED: SubmissionOutcome = {statusCode: 200}
 
 function applyOrder(submissions: SubmissionReport[]): number[] {
@@ -69,7 +69,7 @@ export function seedRevisionOf(document: ContentLakeDocument): string {
   return document._rev ?? SEED_REVISION
 }
 
-export function seedIndex(initial: ContentLakeDocument[]): DocumentIndex {
+function seedIndex(initial: ContentLakeDocument[]): DocumentIndex {
   return Object.fromEntries(
     initial.map((document) => [
       document._id,
