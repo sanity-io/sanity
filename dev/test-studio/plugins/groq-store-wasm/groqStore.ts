@@ -59,6 +59,8 @@ export type GroqStoreStatus = {
   persistence: boolean
   /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
   persistedStorage?: boolean
+  /** Where the host keeps snapshots, once it has picked (only with snapshots on). */
+  persistenceBackend?: 'opfs' | 'idb'
   lastStopped?: LastRun
   mutations: {applied: number; stale: number}
   fences: {count: number; lifted: number; ms: number; how: Record<string, number>}
@@ -83,6 +85,7 @@ const ENABLED_KEY = 'groq-store-wasm:enabled'
 const GUARD_KEY = 'groq-store-wasm:guard'
 const PERSIST_KEY = 'groq-store-wasm:persist'
 const PERSIST_MAX_KEY = 'groq-store-wasm:persist-max-mb'
+const PERSIST_BACKEND_KEY = 'groq-store-wasm:persist-backend'
 const LAST_RUN_KEY = 'groq-store-wasm:last-run'
 const RELOADED_KEY = 'groq-store-wasm:reloaded'
 const LATENCY_SAMPLES = 500
@@ -152,9 +155,11 @@ function initialGuardOff(): boolean {
 /**
  * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, off by default.
  * `?groqPersistMaxMB=<n>|off` overrides the host's 512 MiB snapshot cap (empty resets it).
+ * `?groqPersistBackend=opfs|idb` pins the snapshot storage; `auto` (the default) prefers OPFS
+ * and falls back to IndexedDB.
  * Turning snapshots off makes the host delete the ones a previous opt-in left behind.
  */
-function initialPersistence(): {enabled: boolean; maxMb: string} {
+function initialPersistence(): {enabled: boolean; maxMb: string; backend: string} {
   const override = searchParam('groqPersist')
   if (override === 'on') writeStorage('localStorage', PERSIST_KEY, 'on')
   if (override === 'off') writeStorage('localStorage', PERSIST_KEY, null)
@@ -162,9 +167,17 @@ function initialPersistence(): {enabled: boolean; maxMb: string} {
   if (maxOverride !== null) {
     writeStorage('localStorage', PERSIST_MAX_KEY, maxOverride === '' ? null : maxOverride)
   }
+  const backendOverride = searchParam('groqPersistBackend')
+  if (backendOverride === 'opfs' || backendOverride === 'idb') {
+    writeStorage('localStorage', PERSIST_BACKEND_KEY, backendOverride)
+  }
+  if (backendOverride === 'auto' || backendOverride === '') {
+    writeStorage('localStorage', PERSIST_BACKEND_KEY, null)
+  }
   return {
     enabled: readStorage('localStorage', PERSIST_KEY) === 'on',
     maxMb: readStorage('localStorage', PERSIST_MAX_KEY) ?? '',
+    backend: readStorage('localStorage', PERSIST_BACKEND_KEY) ?? 'auto',
   }
 }
 
@@ -176,6 +189,9 @@ function hostUrl(guardOff: boolean): string {
   if (guardOff) params.set('guard', 'off')
   params.set('persist', persistence.enabled ? '1' : '0')
   if (persistence.enabled && persistence.maxMb !== '') params.set('persistMaxMB', persistence.maxMb)
+  if (persistence.enabled && persistence.backend !== 'auto') {
+    params.set('persistBackend', persistence.backend)
+  }
   return `/groq-host.js?${params}`
 }
 
@@ -370,6 +386,9 @@ function onMetric(metric: Metric): void {
     }
     case 'storage-persist':
       update({persistedStorage: metric.granted})
+      break
+    case 'storage-backend':
+      update({persistenceBackend: metric.backend})
       break
     default:
       break

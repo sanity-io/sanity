@@ -26,7 +26,7 @@
     "@sanity/debug-preview-url-secret-plugin": "^2.0.23",
     "@sanity/document-internationalization": "^6.3.0",
     "@sanity/google-maps-input": "^6.1.18",
-    "@sanity/groq-store-wasm": "^0.4.1",
+    "@sanity/groq-store-wasm": "^0.5.0",
     "@sanity/icons": "^5.3.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/logos": "^2.2.6",

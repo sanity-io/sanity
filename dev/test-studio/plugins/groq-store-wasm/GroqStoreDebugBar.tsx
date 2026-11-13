@@ -129,6 +129,7 @@ function persistenceFacts(row: StoreRow): string | undefined {
   if (row.start !== undefined) facts.push(`${row.start} start`)
   const snapshot = row.snapshot
   if (snapshot !== undefined) {
+    if (snapshot.backend !== undefined) facts.push(snapshot.backend)
     const size = `${mib(snapshot.bytes)} MiB`
     if (snapshot.state === 'saved') {
       facts.push(`snapshot ${size} saved, queries frozen ${duration(snapshot.ms)}`)
@@ -236,6 +237,7 @@ function Details({status}: {status: GroqStoreStatus}) {
           {status.persistence ? (
             <div>
               snapshots on
+              {status.persistenceBackend === undefined ? '' : ` (${status.persistenceBackend})`}
               {status.persistedStorage === undefined
                 ? ''
                 : ` · storage ${status.persistedStorage ? 'persisted' : 'best-effort'}`}
