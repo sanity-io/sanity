@@ -3,6 +3,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 
 import {expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
 import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
+import {captureUnhandledRejections} from '../../../../../test/sync/unhandledRejections'
 import {createSchema} from '../../../schema/createSchema'
 
 const schema = createSchema({
@@ -105,5 +106,85 @@ describe('editOperations and editState, two clients', () => {
     expect(world.lake.get(PUBLISHED_ID)?.title).toBe('Published')
     expect(world.lake.get(DRAFT_ID)?._system).toEqual({base: {id: PUBLISHED_ID, rev: 'seed'}})
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
+  })
+
+  test('OPS-HELD-EDIT-AFTER-PEER-CREATES-DRAFT: a held first edit lands as an edit of the draft a peer created meanwhile', async () => {
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-HELD-EDIT-AFTER-PEER-CREATES-DRAFT',
+      title: 'Only a published document exists; A holds its first edit while B creates the draft',
+      seam: 'operations',
+      evidence: 'L2',
+      initial: [document(PUBLISHED_ID, 'Published')],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a slow save request'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'Edited by A'}}]},
+        {client: 'A', do: 'commit'},
+        {
+          client: 'B',
+          do: 'patch',
+          id: DRAFT_ID,
+          patches: [
+            {insert: {after: 'items[-1]', items: [{_key: 'b', _type: 'item', title: 'B'}]}},
+          ],
+        },
+        {client: 'B', do: 'commit'},
+        {do: 'advance', ms: 10},
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'acceptCommit'},
+        {do: 'settle'},
+      ],
+    }
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'})
+
+    const outcomes = world.lake.submissions.map((submission) => submission.outcome)
+    expect(new Set(outcomes)).toEqual(new Set(['accepted']))
+    const server = world.lake.get(DRAFT_ID)
+    expect(server?.title).toBe('Edited by A')
+    expect(keysOf(server, 'items')).toEqual(['a', 'b'])
+  })
+
+  // The rejected save leaves its queued commit promise rejected with no handler.
+  test.fails('OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE: an edit queued behind the draft-creating save is discarded with it when that save gets a 403', async () => {
+    const insert = (key: string) => [
+      {setIfMissing: {items: []}},
+      {insert: {after: 'items[-1]', items: [{_key: key, _type: 'item', title: key}]}},
+    ]
+    const syncTest: SyncTestDefinition = {
+      id: 'OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE',
+      title:
+        'Only a published document exists; A edits it while holding saves, and its draft-creating save gets a 403',
+      seam: 'operations',
+      evidence: 'L2',
+      knownBug: 'B1',
+      initial: [document(PUBLISHED_ID, 'Published')],
+      idPair,
+      clients: ['A', 'B'],
+      steps: [
+        {client: 'B', do: 'patch', id: DRAFT_ID, patches: insert('b')},
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
+        {client: 'A', do: 'patch', id: DRAFT_ID, patches: insert('k')},
+        {
+          client: 'A',
+          do: 'rejectCommit',
+          statusCode: 403,
+          represents: 'permission revoked mid-session',
+        },
+        {client: 'A', do: 'commits', mode: 'auto'},
+        {client: 'A', do: 'commit'},
+        {client: 'B', do: 'commit'},
+        {do: 'settle'},
+      ],
+    }
+    const unhandled = captureUnhandledRejections()
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'}).finally(unhandled.stop)
+
+    expect(unhandled.reasons).toEqual([])
+    const fromA = world.lake.submissions.filter((submission) => submission.clientId === 'A')
+    expect(fromA.map(({outcome, injected}) => ({outcome, injected}))).toEqual([
+      {outcome: 'rejected', injected: true},
+    ])
+    expect(keysOf(world.lake.get(DRAFT_ID), 'items')).toEqual(['a', 'b'])
   })
 })

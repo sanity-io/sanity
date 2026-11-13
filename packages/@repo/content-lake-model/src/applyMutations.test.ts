@@ -73,6 +73,13 @@ describe('applyMutations', () => {
       expect(failureOf('count')).toMatchObject({statusCode: 400})
     })
 
+    it('answers 400 for a nested field whose parent object is missing, as Content Lake does', () => {
+      expect(failureOf('meta.title')).toMatchObject({
+        statusCode: 400,
+        body: {type: 'mutationError', items: [{error: {type: 'validationError'}, index: 0}]},
+      })
+    })
+
     it('extends the path for nested and keyed targets', () => {
       expect(failureOf('nested.title')).toMatchObject({
         body: {description: expect.stringContaining("\"$['nested']['title']\"")},
@@ -81,5 +88,47 @@ describe('applyMutations', () => {
         body: {description: expect.stringContaining("\"$['items'][?(@._key=='k')]['missing']\"")},
       })
     })
+  })
+})
+
+describe('a patch on a keyed array item that does not exist', () => {
+  const missingTitle = 'items[_key=="gone"].title'
+  const patch = '@@ -1,3 +1,3 @@\n-old\n+new\n'
+  const document = {
+    _id: 'a',
+    _type: 'doc',
+    title: 'top',
+    items: [{_key: 'other', _type: 'item', title: 'x'}],
+  }
+
+  function apply(...patches: Array<Record<string, unknown>>) {
+    const mutations = patches.map((operation) => ({patch: {id: 'a', ...operation}}))
+    return applyMutations({a: document}, mutations).a
+  }
+
+  it('changes nothing for a diffMatchPatch, as Content Lake answered 200 and left the item absent', () => {
+    expect(apply({diffMatchPatch: {[missingTitle]: patch}})).toEqual(document)
+  })
+
+  it('changes nothing for a set, as Content Lake answered 200 without creating the item', () => {
+    expect(apply({set: {[missingTitle]: 'new'}})).toEqual(document)
+  })
+
+  it('changes nothing for a setIfMissing, as Content Lake answered 200 without creating the item', () => {
+    expect(apply({setIfMissing: {[missingTitle]: 'old'}})).toEqual(document)
+  })
+
+  it('changes nothing for an unset of the item, as Content Lake answered 200', () => {
+    expect(apply({unset: ['items[_key=="gone"]']})).toEqual(document)
+  })
+
+  it('changes nothing for an unset of a field on the item, as Content Lake answered 200', () => {
+    expect(apply({unset: [missingTitle]})).toEqual(document)
+  })
+
+  it('changes nothing for a setIfMissing then a diffMatchPatch, as Content Lake answered 200 to the pair', () => {
+    expect(
+      apply({setIfMissing: {[missingTitle]: 'old'}}, {diffMatchPatch: {[missingTitle]: patch}}),
+    ).toEqual(document)
   })
 })

@@ -3,6 +3,7 @@ import {isDeepStrictEqual} from 'node:util'
 import {type SanityDocument} from '@sanity/types'
 
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
+import {type CommitRecord} from './bufferObserver'
 import {type SubmissionRecord} from './fakeContentLake'
 import {type EditRecord} from './syncTest'
 
@@ -11,6 +12,7 @@ type Path = string[]
 export interface EditHistory {
   edits: EditRecord[]
   lake: {submissions: SubmissionRecord[]}
+  commits?: CommitRecord[]
 }
 
 const PATH_SEGMENT = /[^.[\]]+|\[[^\]]*\]/g
@@ -104,6 +106,7 @@ interface EditContext {
   path: Path
   ownEdits: EditRecord[]
   ownSubmissions: SubmissionRecord[]
+  ownCommits: CommitRecord[]
 }
 
 function sameCommitWindow(context: EditContext, from: number, to: number): boolean {
@@ -128,6 +131,12 @@ function wasInFlightDuring(submission: SubmissionRecord, at: number): boolean {
   return at > submission.submittedAt && at <= (submission.settledAt ?? -1)
 }
 
+// The first commit after an edit is the one that took it out of the buffer, if any did.
+function queuedBehind(context: EditContext, submission: SubmissionRecord): boolean {
+  const commit = context.ownCommits.find((candidate) => candidate.at > context.edit.at)
+  return commit !== undefined && wasInFlightDuring(submission, commit.at)
+}
+
 // A terminal rejection discards the rejected save and the commits queued behind it, never the unsent buffer.
 function discardedOnPurpose(context: EditContext): boolean {
   const sent = carriers(context)
@@ -135,7 +144,7 @@ function discardedOnPurpose(context: EditContext): boolean {
     (submission) =>
       submission.injected === true &&
       isTerminal(submission) &&
-      (sent.includes(submission) || wasInFlightDuring(submission, context.edit.at)),
+      (sent.includes(submission) || queuedBehind(context, submission)),
   )
   return discarded && sent.filter(isOrganicRejection).length === 0
 }
@@ -168,30 +177,55 @@ function isLost(context: EditContext): boolean {
   return explanations.filter((explanation) => explanation(context)).length === 0
 }
 
+export type LostEditFateKind = 'rejected' | 'never-sent' | 'never-answered'
+
 export interface LostEdit {
   edit: EditRecord
   fate: string
+  fateKind: LostEditFateKind
+  rejection?: SubmissionRecord
 }
 
-function fateOf(context: EditContext): string {
+function fateOf(context: EditContext): Omit<LostEdit, 'edit'> {
   const sent = carriers(context)
-  const rejected = sent.find(isOrganicRejection)
-  if (rejected) return `rejected with ${rejected.statusCode} ${rejected.reason}`
-  if (sent.some((submission) => submission.outcome === 'pending')) return 'never answered'
-  return 'never sent'
+  const rejection = sent.find(isOrganicRejection)
+  if (rejection) {
+    const fate = `rejected with ${rejection.statusCode} ${rejection.reason}`
+    return {fate, fateKind: 'rejected', rejection}
+  }
+  if (sent.some((submission) => submission.outcome === 'pending')) {
+    return {fate: 'never answered', fateKind: 'never-answered'}
+  }
+  return {fate: 'never sent', fateKind: 'never-sent'}
 }
 
-function lostEditsOf(edit: EditRecord, world: EditHistory): LostEdit[] {
+function contextsOf(edit: EditRecord, world: EditHistory): EditContext[] {
   const ownEdits = world.edits.filter(
     (other) => other.client === edit.client && other.documentId === edit.documentId,
   )
   const ownSubmissions = world.lake.submissions.filter(
     (submission) => submission.clientId === edit.client,
   )
-  const [unaccounted] = pathsOf(edit.mutations, edit.documentId)
-    .map((path) => ({edit, path, ownEdits, ownSubmissions}))
-    .filter(isLost)
-  return unaccounted ? [{edit, fate: fateOf(unaccounted)}] : []
+  const ownCommits = (world.commits ?? []).filter(
+    (commit) => commit.client === edit.client && commit.documentId === edit.documentId,
+  )
+  return pathsOf(edit.mutations, edit.documentId).map((path) => ({
+    edit,
+    path,
+    ownEdits,
+    ownSubmissions,
+    ownCommits,
+  }))
+}
+
+function lostEditsOf(edit: EditRecord, world: EditHistory): LostEdit[] {
+  const [unaccounted] = contextsOf(edit, world).filter(isLost)
+  return unaccounted ? [{edit, ...fateOf(unaccounted)}] : []
+}
+
+/** Whether an injected 4xx discarded the edit with the save that carried it or the saves queued behind that one. */
+export function wasDiscardedOnPurpose(edit: EditRecord, world: EditHistory): boolean {
+  return contextsOf(edit, world).some(discardedOnPurpose)
 }
 
 // An edit is accounted for when it reached the server, was overwritten locally before the next save, changed nothing, or was discarded by an injected 4xx.
