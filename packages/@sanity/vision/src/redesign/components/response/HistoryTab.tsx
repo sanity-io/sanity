@@ -1,4 +1,3 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Button, Card, Stack} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
@@ -18,6 +17,7 @@ import {
 } from '../../util/requestChanges'
 import {sortSyncTags} from '../../util/syncTags'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
+import * as motion from './responseTabs.module.css'
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
@@ -223,9 +223,14 @@ function HistoryEntry(props: {
           <Button
             aria-controls={changesId}
             aria-expanded={expanded}
+            className={motion.pressable}
             data-testid="vision-history-changes-toggle"
             fontSize={1}
-            icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+            icon={
+              <span className={motion.chevron}>
+                <ChevronRightIcon />
+              </span>
+            }
             mode="bleed"
             onClick={() => setExpanded((value) => !value)}
             padding={1}
@@ -267,7 +272,13 @@ function HistoryEntry(props: {
         </Box>
       )}
       {comparable && expanded && previous && (
-        <Stack data-testid="vision-history-changes" gap={3} id={changesId} paddingTop={2}>
+        <Stack
+          className={motion.reveal}
+          data-testid="vision-history-changes"
+          gap={3}
+          id={changesId}
+          paddingTop={2}
+        >
           <Text
             muted
             size={1}
