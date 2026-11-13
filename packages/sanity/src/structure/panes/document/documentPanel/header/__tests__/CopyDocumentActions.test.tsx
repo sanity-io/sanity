@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective, useTargetDocumentState} from 'sanity'
+import {useDocumentVersions, usePerspective, useTargetDocumentState} from 'sanity'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -24,6 +24,8 @@ const DEFAULT_PERSPECTIVE = {
   excludedPerspectives: [],
   selectedVariantNames: [] as string[],
 }
+
+const ALPHA_VARIANT = {_id: '_.variants.alpha-audience'}
 
 const DRAFT_SIBLING = {_id: 'drafts.doc-123'}
 const PUBLISHED_SIBLING = {_id: 'doc-123'}
@@ -56,6 +58,7 @@ function readyTarget(
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
   useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
   useStudioUrl: vi.fn(() => ({
@@ -92,6 +95,7 @@ const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
 const mockUseTargetDocumentState = useTargetDocumentState as Mock
+const mockUseDocumentVersions = useDocumentVersions as Mock
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
@@ -115,6 +119,7 @@ describe('CopyDocumentActions', () => {
 
     mockUsePerspective.mockReturnValue(DEFAULT_PERSPECTIVE)
     mockUsePaneRouter.mockReturnValue({params: {}, setParams: vi.fn()})
+    mockUseDocumentVersions.mockReturnValue({data: [], versions: [], loading: false})
     mockUseDocumentPaneInfo.mockReturnValue({
       documentType: 'article',
       documentId: 'doc-123',
@@ -159,6 +164,7 @@ describe('CopyDocumentActions', () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
         selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -175,6 +181,7 @@ describe('CopyDocumentActions', () => {
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
         selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
@@ -219,6 +226,7 @@ describe('CopyDocumentActions', () => {
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
         selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })
@@ -236,6 +244,30 @@ describe('CopyDocumentActions', () => {
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
         [['variant', 'variant:alpha-audience']],
       )
+    })
+
+    it('leaves out a scheduledDraft param that belongs to another variant', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
+      })
+      mockUsePaneRouter.mockReturnValue({
+        params: {scheduledDraft: 'rScheduled'},
+        setParams: vi.fn(),
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        data: [SCHEDULED_SIBLING._id],
+        versions: [{...SCHEDULED_SIBLING, _system: {bundleId: 'rScheduled'}}],
+        loading: false,
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
+        ['variant', 'variant:alpha-audience'],
+      ])
     })
 
     it('writes the constructed URL to clipboard', async () => {

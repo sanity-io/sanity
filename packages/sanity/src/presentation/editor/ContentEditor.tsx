@@ -3,6 +3,7 @@ import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
+  getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
   Translate,
@@ -20,6 +21,7 @@ import {
   type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from '../types'
+import {DocumentBreadcrumb} from './DocumentBreadcrumb'
 import {DocumentListPane} from './DocumentListPane'
 import {DocumentPanel} from './DocumentPanel'
 import usePreviewState from './usePreviewState'
@@ -89,17 +91,51 @@ export function ContentEditor(props: {
     )
   }, [mainDocumentState, schemaType, t, previewState])
 
+  const mainDocumentLink = (
+    <PreviewCard
+      __unstable_focusRing
+      as={StateLink}
+      state={mainDocumentLinkState}
+      data-as="a"
+      data-testid="presentation-main-document-link"
+      radius={2}
+      sizing="border"
+      tone="inherit"
+    >
+      {preview}
+    </PreviewCard>
+  )
+
   if (documentId && documentType) {
+    const mainDocument = mainDocumentState?.document
+    const isOtherThanMainDocument =
+      mainDocument !== undefined && getPublishedId(documentId) !== getPublishedId(mainDocument._id)
+
     return (
-      <DocumentPanel
-        documentId={documentId}
-        documentType={documentType}
-        onEditReference={onEditReference}
-        onFocusPath={onFocusPath}
-        onStructureParams={onStructureParams}
-        searchParams={searchParams}
-        structureParams={structureParams}
-      />
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+        <Card padding={3} borderBottom>
+          <DocumentBreadcrumb
+            documentId={documentId}
+            documentType={documentType}
+            mainDocument={
+              mainDocument && isOtherThanMainDocument
+                ? {id: mainDocument._id, type: mainDocument._type, linkState: mainDocumentLinkState}
+                : undefined
+            }
+          />
+        </Card>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} minHeight="0">
+          <DocumentPanel
+            documentId={documentId}
+            documentType={documentType}
+            onEditReference={onEditReference}
+            onFocusPath={onFocusPath}
+            onStructureParams={onStructureParams}
+            searchParams={searchParams}
+            structureParams={structureParams}
+          />
+        </Flex>
+      </Flex>
     )
   }
 
@@ -108,17 +144,7 @@ export function ContentEditor(props: {
       {mainDocumentState && (
         <Card padding={3} tone={mainDocumentState.document ? 'inherit' : 'caution'}>
           {mainDocumentState.document ? (
-            <PreviewCard
-              __unstable_focusRing
-              as={StateLink}
-              state={mainDocumentLinkState}
-              data-as="a"
-              radius={2}
-              sizing="border"
-              tone="inherit"
-            >
-              {preview}
-            </PreviewCard>
+            mainDocumentLink
           ) : (
             <Card padding={2} radius={2} tone="inherit">
               <Flex gap={3}>
