@@ -9,11 +9,7 @@ import {
   defineSpan,
   defineTextBlock,
   type EditorSelection,
-  type HotkeyOptions,
   type InlineObjectRenderProps,
-  type OnCopyFn,
-  type OnPasteFn as EditorOnPasteFn,
-  type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
   type SpanRenderProps,
@@ -43,7 +39,11 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
-import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type OnPasteFn,
+  type PortableTextInputProps,
+} from '../../types/inputProps'
 import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {BlockObjectFallback, TextBlockFallback} from './BlockFallback'
@@ -52,7 +52,7 @@ import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMem
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
-import {useHotkeys} from './hooks/useHotKeys'
+import {type PortableTextInputHotkeys, useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
@@ -70,11 +70,11 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
   hasFocusWithin: boolean
   hideToolbar?: boolean
-  hotkeys?: HotkeyOptions
+  hotkeys?: PortableTextInputHotkeys
   isActive: boolean
   isFullscreen: boolean
   onActivate: () => void
-  onCopy?: OnCopyFn
+  onCopy?: PortableTextInputProps['onCopy']
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
@@ -152,21 +152,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     annotationOpeningRef.current = false
     onItemClose()
   }, [onItemClose])
-
-  // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
-  // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
-  // EditorSchema. This shields Studio consumers from the PTE v6 type change.
-  const wrappedOnPaste: EditorOnPasteFn | undefined = useMemo(() => {
-    if (!onPaste) {
-      return undefined
-    }
-    return (data: EditorPasteData) => {
-      return onPaste({
-        ...data,
-        schemaTypes,
-      })
-    }
-  }, [onPaste, schemaTypes])
 
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -669,7 +654,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isOneLine={isOneLineEditor}
             onItemOpen={handleItemOpen}
             onCopy={onCopy}
-            onPaste={wrappedOnPaste}
+            onPaste={onPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
@@ -699,7 +684,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isOneLineEditor,
       handleItemOpen,
       onCopy,
-      wrappedOnPaste,
+      onPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,

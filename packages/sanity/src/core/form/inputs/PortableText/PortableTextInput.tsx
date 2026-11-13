@@ -121,17 +121,20 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
+    // oxlint-disable-next-line no-deprecated -- forwarded so the deprecated prop keeps working
     hotkeys,
     initialActive,
     initialFullscreen,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers = EMPTY_ARRAY,
     onChange,
+    // oxlint-disable-next-line no-deprecated -- forwarded so the deprecated prop keeps working
     onCopy,
     onEditorChange,
     onFullScreenChange,
     onInsert,
     onItemRemove,
+    // oxlint-disable-next-line no-deprecated -- forwarded so the deprecated prop keeps working
     onPaste,
     onPathFocus,
     path,
