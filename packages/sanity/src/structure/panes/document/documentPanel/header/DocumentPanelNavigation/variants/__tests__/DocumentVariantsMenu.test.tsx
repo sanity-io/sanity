@@ -151,7 +151,7 @@ describe('DocumentVariantsMenu', () => {
     expect(setVariant).toHaveBeenCalledWith({type: 'variant', variantId: undefined})
   })
 
-  it('shows an empty "Has 0 variants" section when the document is in no variant', async () => {
+  it('shows an empty "Has no variants" section when the document is in no variant', async () => {
     mockVersions([createVersion({bundle: 'published'}), createVersion({bundle: 'drafts'})])
     render(<DocumentVariantsMenu />, {wrapper})
 
@@ -162,11 +162,13 @@ describe('DocumentVariantsMenu', () => {
     expect(within(defaultItem).getByTestId('variant-version-count')).toHaveTextContent('2')
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
-    expect(documentSection).toHaveTextContent('Has 0 variants')
+    expect(documentSection).toHaveTextContent('Has no variants')
     expect(within(documentSection).queryAllByRole('menuitemradio', {hidden: true})).toHaveLength(0)
     expect(
       within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any variant yet. Pick one below to create it.")
+    ).toHaveAccessibleName(
+      "This document doesn't have any variants yet. Pick one below to create a variant",
+    )
 
     const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
     expect(otherSection).toHaveTextContent('Other variants')
@@ -262,7 +264,9 @@ describe('DocumentVariantsMenu', () => {
     const defaultItem = within(menu).getByTestId('document-variant-default')
     expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
     expect(defaultItem).toHaveAttribute('aria-checked', 'false')
-    expect(within(menu).getByLabelText('Find')).toBe(within(menu).getByPlaceholderText('Find'))
+    expect(within(menu).getByLabelText('Search variant definitions…')).toBe(
+      within(menu).getByPlaceholderText('Search variant definitions…'),
+    )
   })
 
   it('selects a variant of the default type', async () => {
@@ -278,13 +282,13 @@ describe('DocumentVariantsMenu', () => {
     render(<DocumentVariantsMenu />, {wrapper})
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search variant definitions…')
 
     await userEvent.type(input, 'lapsed')
     expect(within(menu).getByTestId(`document-variant-${lapsed._id}`)).toBeInTheDocument()
     expect(within(menu).queryByTestId(`document-variant-${firstTime._id}`)).toBeNull()
     expect(within(menu).queryByTestId('document-variant-default')).toBeNull()
-    // A filter hides the sections it leaves empty, the "Has 0 variants" one included.
+    // A filter hides the sections it leaves empty, the "Has no variants" one included.
     expect(within(menu).queryByTestId('document-variants-menu-section-document')).toBeNull()
 
     await userEvent.clear(input)

@@ -507,6 +507,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Placeholder of the filter input in the variants and releases menus of the document header */
   'document-panel-navigation.filter-placeholder': 'Find',
+  /** Placeholder of the search field in the releases menu of the document header */
+  'document-panel-navigation.releases.filter-placeholder': 'Search releases…',
   /** Label of the releases menu trigger in the document header when no release is selected */
   'document-panel-navigation.releases.button.text': 'Releases',
   /** A scheduled release in the releases menu of the document header: its title and publish date */
@@ -520,19 +522,25 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     "This document isn't in any release yet. Pick one below to add it.",
   /** Section header listing the releases the document has no version in */
   'document-panel-navigation.releases.section.other': 'Other releases',
+  /** Placeholder of the search field in the scheduled drafts menu of the document header */
+  'document-panel-navigation.scheduled-drafts.filter-placeholder': 'Search scheduled drafts…',
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
-  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for',
+  /** Placeholder of the search field in the variants menu of the document header */
+  'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */
   'document-panel-navigation.variants.section.has-variants_one': 'Has {{count}} variant',
   /** Section header listing the variants the document has versions in */
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
-  /** Tooltip on the "Has 0 variants" section header of the variants menu in the document header */
+  /** Section header when the document has no variants; "Has 0 variants" reads like the letter O */
+  'document-panel-navigation.variants.section.has-variants_zero': 'Has no variants',
+  /** Tooltip on the "Has no variants" section header of the variants menu in the document header */
   'document-panel-navigation.variants.section.no-variants-tooltip':
-    "This document isn't in any variant yet. Pick one below to create it.",
+    "This document doesn't have any variants yet. Pick one below to create a variant",
   /** Section header listing the variants the document has no version in */
   'document-panel-navigation.variants.section.other': 'Other variants',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */

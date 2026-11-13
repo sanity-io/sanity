@@ -208,7 +208,7 @@ describe('DocumentReleasesMenu', () => {
     await renderMenu()
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search releases…')
 
     await userEvent.type(input, 'hallo')
     expect(within(menu).getByTestId('document-release-rHalloween')).toBeInTheDocument()

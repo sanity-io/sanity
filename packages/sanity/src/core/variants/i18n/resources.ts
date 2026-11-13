@@ -52,7 +52,7 @@ const variantsLocaleStrings = {
   /** The button that opens the add-filter menu. */
   'overview.filter.add': 'Add filter',
   /** Placeholder for the searchable dimension list in the add-filter menu. */
-  'overview.filter.find-dimension': 'Find a dimension…',
+  'overview.filter.find-dimension': 'Search dimensions…',
   /** Shown in the add-filter menu when a search matches no dimension. */
   'overview.filter.no-dimensions': 'No dimensions',
   /** Hint in the add-filter menu's value pane before a dimension is chosen. */

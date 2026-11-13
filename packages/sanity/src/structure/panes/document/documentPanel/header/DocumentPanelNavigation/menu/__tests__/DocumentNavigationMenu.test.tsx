@@ -1,7 +1,7 @@
-import {render, screen, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode, useState} from 'react'
-import {beforeAll, describe, expect, it} from 'vitest'
+import {afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
 import {MenuItem} from '../../../../../../../../ui-components/menuItem/MenuItem'
@@ -55,7 +55,64 @@ beforeAll(async () => {
   wrapper = await createTestProvider()
 })
 
+// The test environment mocks `matchMedia` as matching nothing, which reads as a touch device
+function stubPointer({finePointerWithHover}: {finePointerWithHover: boolean}) {
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    matches: finePointerWithHover,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }))
+}
+
 describe('DocumentNavigationMenu', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('keeps the width the menu had when it opened while the filter narrows the list', async () => {
+    // jsdom has no layout: the menu "measures" 320px when it opens
+    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
+    try {
+      render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
+
+      const menu = await openMenu()
+      await waitFor(() => expect(menu).toHaveStyle({width: '320px', minWidth: '320px'}))
+
+      // The rows that are left are narrower, so the menu would shrink without the lock
+      offsetWidth.mockReturnValue(200)
+      await userEvent.type(screen.getByPlaceholderText('Find'), 'alp')
+
+      expect(within(menu).queryByTestId('item-Beta')).not.toBeInTheDocument()
+      expect(menu).toHaveStyle({width: '320px', minWidth: '320px', maxWidth: '320px'})
+    } finally {
+      offsetWidth.mockRestore()
+    }
+  })
+
+  it('focuses the filter when the menu opens, and the arrow keys still move into the list', async () => {
+    stubPointer({finePointerWithHover: true})
+    render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
+
+    await openMenu()
+    await waitFor(() => expect(screen.getByPlaceholderText('Find')).toHaveFocus())
+
+    await userEvent.keyboard('{ArrowDown}')
+
+    await waitFor(() => expect(screen.getByPlaceholderText('Find')).not.toHaveFocus())
+    expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem')
+  })
+
+  it('leaves the filter alone on a touch device, where focus opens the on-screen keyboard', async () => {
+    stubPointer({finePointerWithHover: false})
+    render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
+
+    await openMenu()
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+
+    expect(screen.getByPlaceholderText('Find')).not.toHaveFocus()
+  })
+
   it('shows an always-shown section while it is empty, with its tooltip', async () => {
     render(<FilteredMenu documentItems={[]} />, {wrapper})
 

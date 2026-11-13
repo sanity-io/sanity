@@ -1,9 +1,9 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, type CardTone} from '@sanity/ui'
+import {type ButtonTone, Card} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type MouseEvent, useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {truncateString, useTranslation} from 'sanity'
 
 import {Button, type ButtonProps} from '../../../../../../ui-components/button/Button'
 import {
@@ -12,6 +12,12 @@ import {
   dropdownButtonDivider,
   dropdownButtonTrigger,
 } from './DropdownButton.css'
+
+/**
+ * The longest label a pill shows, in characters, the same limit as the navbar perspective chips. A
+ * longer one is cut with an ellipsis and shown in full in a tooltip.
+ */
+const LABEL_CHARACTER_LIMIT = 32
 
 /** @internal */
 export type DropdownButtonProps = Omit<
@@ -22,8 +28,12 @@ export type DropdownButtonProps = Omit<
   text: string
   /** Icon rendered before the label. */
   icon: ButtonProps['icon']
-  /** Tone of the pill while something other than the default option is selected. */
-  tone?: CardTone
+  /**
+   * Tone of the pill while something other than the default option is selected. Both halves then
+   * take the tone's selected colours, the same fill, text and icon colours as a selected version
+   * chip (Published, Draft), so every selected pill in the header follows one rule.
+   */
+  tone?: ButtonTone
   /**
    * Clears the selection. When set, the pill is in its selected state and the remove control
    * shows beside the trigger.
@@ -43,6 +53,8 @@ export function DropdownButton(props: DropdownButtonProps) {
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const hasSelection = onClear !== undefined
+  const label = truncateString(text, LABEL_CHARACTER_LIMIT)
+  const isCut = label !== text
 
   const handleClearMouseDown = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -59,21 +71,28 @@ export function DropdownButton(props: DropdownButtonProps) {
   return (
     <Card
       className={dropdownButtonCard}
-      data-selected={hasSelection ? '' : undefined}
+      data-has-selection={hasSelection ? '' : undefined}
       data-ui="DropdownButton"
       display="flex"
       flex="none"
       radius="full"
-      tone={hasSelection ? tone : 'default'}
     >
       <Button
         {...triggerProps}
         className={clsx(dropdownButtonTrigger, className)}
+        // The v4 button does not expose its tone; this keeps it readable in tests and devtools
+        data-tone={hasSelection ? tone : 'default'}
         icon={icon}
         iconRight={ChevronDownIcon}
         mode="ghost"
+        aria-label={isCut ? text : triggerProps['aria-label']}
         ref={ref}
-        text={text}
+        selected={hasSelection}
+        text={label}
+        // Always wrapped, so a title that becomes cut (or stops being cut) does not remount the
+        // trigger and drop its focus; the tooltip is only switched off
+        tooltipProps={{content: text, disabled: !isCut, placement: 'bottom', portal: true}}
+        tone={hasSelection ? tone : 'default'}
       />
       {hasSelection ? (
         <>
@@ -85,6 +104,8 @@ export function DropdownButton(props: DropdownButtonProps) {
             mode="ghost"
             onClick={handleClear}
             onMouseDown={handleClearMouseDown}
+            selected
+            tone={tone}
             tooltipProps={{content: clearLabel}}
           />
         </>
