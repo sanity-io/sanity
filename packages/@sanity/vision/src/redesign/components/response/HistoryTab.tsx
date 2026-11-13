@@ -8,6 +8,7 @@ import {Text, Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {formatDuration} from '../../../util/formatDuration'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {
@@ -247,7 +248,7 @@ function HistoryEntry(props: {
           </Badge>
         ) : (
           <Text muted size={1} as="div" trim={true}>
-            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : `${entry.ms}ms`} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : `${entry.e2eMs}ms`}`}
+            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : formatDuration(entry.ms)} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : formatDuration(entry.e2eMs)}`}
           </Text>
         )}
       </Flex>

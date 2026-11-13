@@ -3,6 +3,7 @@ import {Translate, useTranslation} from 'sanity'
 import {Text, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
+import {formatDuration} from '../util/formatDuration'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
 import {DelayedSpinner} from './DelayedSpinner'
 import {QueryErrorDialog} from './QueryErrorDialog'
@@ -108,14 +109,16 @@ export function VisionGuiResult({
               <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.execution-time-label')}:{' '}
                 {typeof queryTime === 'number'
-                  ? `${queryTime}ms`
+                  ? formatDuration(queryTime)
                   : t('result.timing-not-applicable')}
               </Text>
             </Box>
             <Box marginLeft={compactFooter ? 3 : 4}>
               <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.end-to-end-time-label')}:{' '}
-                {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('result.timing-not-applicable')}
+                {typeof e2eTime === 'number'
+                  ? formatDuration(e2eTime)
+                  : t('result.timing-not-applicable')}
               </Text>
             </Box>
           </TimingsTextContainer>

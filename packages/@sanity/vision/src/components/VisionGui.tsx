@@ -97,7 +97,7 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
-  /** Opens the redesigned Vision; only passed while `beta.redesign.enabled` offers it */
+  /** Opens the redesigned Vision */
   onSwitchToRedesign?: () => void
 }
 

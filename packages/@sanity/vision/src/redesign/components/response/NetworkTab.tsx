@@ -4,6 +4,7 @@ import {useTranslation} from 'sanity'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {formatDuration} from '../../../util/formatDuration'
 import {isApiCdnHost} from '../../../util/parseQueryUrl'
 import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -201,7 +202,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 {local ? (
                   <Stack gap={2}>
                     <Text data-testid="vision-network-timing" size={1} as="div" trim={true}>
-                      {t('vision.network.timing.local', {e2e: meta.e2eMs})}
+                      {t('vision.network.timing.local', {e2e: formatDuration(meta.e2eMs)})}
                     </Text>
                     {local.timings.map((timing) => (
                       <Box
@@ -225,7 +226,10 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                   </Stack>
                 ) : (
                   <Text size={1} as="div" trim={true}>
-                    {t('vision.network.timing.value', {e2e: meta.e2eMs, server: meta.ms})}
+                    {t('vision.network.timing.value', {
+                      e2e: formatDuration(meta.e2eMs),
+                      server: formatDuration(meta.ms),
+                    })}
                   </Text>
                 )}
               </Row>

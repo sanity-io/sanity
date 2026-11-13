@@ -364,7 +364,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Button of a function the query declares differently from the library's version */
   'vision.functions.update': 'Update library',
   /** Button over the query editor that opens the bar writing a query from a description */
-  'vision.generate.button': 'Generate query',
+  'vision.generate.button': 'Generate',
   /** Closes the generate query bar */
   'vision.generate.close': 'Close',
   /** Explanation under the generate query field */
@@ -638,12 +638,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /** One of groq-store-wasm's Server-Timing entries: its description and milliseconds */
+  /** One of groq-store-wasm's Server-Timing entries: its description and milliseconds, as sent (`1.84`) */
   'vision.network.timing.entry': '{{label}}: {{ms}}ms',
-  /** The round trip of a query groq-store-wasm answered on this device, in milliseconds */
-  'vision.network.timing.local': '{{e2e}}ms round trip',
-  /** The round trip and the server's time for the query, in milliseconds */
-  'vision.network.timing.value': '{{e2e}}ms round trip, {{server}}ms on the server',
+  /** The round trip of a query groq-store-wasm answered on this device, already formatted (`90ms`) */
+  'vision.network.timing.local': '{{e2e}} round trip',
+  /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
+  'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Network panel: the trace of the request, for Sanity support */
   'vision.network.trace': 'Trace ID',
   /** Hint in the Network panel while queries go to the API */

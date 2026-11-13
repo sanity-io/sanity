@@ -226,7 +226,7 @@ describe('NetworkTab', () => {
     )
     expect(screen.queryByText('Cache-Control: private, max-age=60')).toBeNull()
     expect(screen.getByTestId('vision-network-timing').textContent).toBe(
-      'vision.network.timing.local:{"e2e":90}',
+      'vision.network.timing.local:{"e2e":"90ms"}',
     )
     expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
       'vision.network.timing.entry:{"label":"Query in WebAssembly","ms":1.84}',
@@ -264,5 +264,12 @@ describe('NetworkTab', () => {
       {markers: unknown[]},
     ]
     expect(options.markers).toHaveLength(2)
+  })
+
+  it('writes a short server time in milliseconds and a longer round trip in seconds', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 888, e2eMs: 1_170}})
+    expect(
+      screen.getByText('vision.network.timing.value:{"e2e":"1.17s","server":"888ms"}'),
+    ).toBeTruthy()
   })
 })
