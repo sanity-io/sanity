@@ -3,6 +3,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 
 import {expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
 import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
+import {captureUnhandledRejections} from '../../../../../test/sync/unhandledRejections'
 import {createSchema} from '../../../schema/createSchema'
 
 const schema = createSchema({
@@ -144,7 +145,8 @@ describe('editOperations and editState, two clients', () => {
     expect(keysOf(server, 'items')).toEqual(['a', 'b'])
   })
 
-  test('OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE: an edit queued behind the draft-creating save is discarded with it when that save gets a 403', async () => {
+  // The rejected save leaves its queued commit promise rejected with no handler.
+  test.fails('OPS-FIRST-EDIT-QUEUED-BEHIND-REJECTED-CREATE: an edit queued behind the draft-creating save is discarded with it when that save gets a 403', async () => {
     const insert = (key: string) => [
       {setIfMissing: {items: []}},
       {insert: {after: 'items[-1]', items: [{_key: key, _type: 'item', title: key}]}},
@@ -155,6 +157,7 @@ describe('editOperations and editState, two clients', () => {
         'Only a published document exists; A edits it while holding saves, and its draft-creating save gets a 403',
       seam: 'operations',
       evidence: 'L2',
+      knownBug: 'B1',
       initial: [document(PUBLISHED_ID, 'Published')],
       idPair,
       clients: ['A', 'B'],
@@ -174,8 +177,10 @@ describe('editOperations and editState, two clients', () => {
         {do: 'settle'},
       ],
     }
-    world = await runSyncTest(syncTest, {schema, typeName: 'article'})
+    const unhandled = captureUnhandledRejections()
+    world = await runSyncTest(syncTest, {schema, typeName: 'article'}).finally(unhandled.stop)
 
+    expect(unhandled.reasons).toEqual([])
     const fromA = world.lake.submissions.filter((submission) => submission.clientId === 'A')
     expect(fromA.map(({outcome, injected}) => ({outcome, injected}))).toEqual([
       {outcome: 'rejected', injected: true},

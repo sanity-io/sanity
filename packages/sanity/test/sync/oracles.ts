@@ -33,7 +33,7 @@ export function expectRevisionsAgree(world: World): void {
   })
 }
 
-function expectHealthy(world: World): void {
+export function expectHealthy(world: World): void {
   Object.values(world.clients).forEach((client) => {
     expect(client.errors(), `${client.id} stream errors`).toEqual([])
     expect(client.consistent(), `${client.id} consistent`).toBe(true)
@@ -68,7 +68,7 @@ export function fieldOf<T>(
   return items.find((item) => item._key === key)?.[name] as T | undefined
 }
 
-function expectNoLostEdits(world: World): void {
+export function expectNoLostEdits(world: World): void {
   const lost = lostEdits(world)
   const fates = [...new Set(lost.map(({fate}) => fate.replaceAll(':', '')))]
   const edits = lost.map(describeLostEdit)

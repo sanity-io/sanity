@@ -34,7 +34,12 @@ const CLIENTS = ['A', 'B'] as const
 const INITIAL_KEYS = ['a', 'b']
 const TITLES = ['one', 'two', 'three']
 const MAX_PENDING_ACCEPTS = 20
+const REJECTIONS = {
+  403: 'permission revoked mid-session',
+  500: 'a transient server error',
+} as const
 
+/** @public Pasted repros of operations-seam failures import it. */
 export const articleSchema = createSchema({
   name: 'generated',
   types: [
@@ -70,7 +75,7 @@ export type Intent =
   | {kind: 'outside'; edit: Edit}
   | {kind: 'commit'; client: ClientId}
   | {kind: 'commits'; client: ClientId; mode: 'auto' | 'hold'}
-  | {kind: 'settleCommit'; client: ClientId; outcome: 'accept' | 409 | 500}
+  | {kind: 'settleCommit'; client: ClientId; outcome: 'accept' | 403 | 500}
   | {kind: 'listener'; client: ClientId; mode: 'auto' | 'hold'}
   | {kind: 'releaseEvents'; client: ClientId; count?: number; order: 'fifo' | 'reverse'}
   | {kind: 'dropEvent'; client: ClientId}
@@ -154,7 +159,7 @@ const intentArbitrary: fc.Arbitrary<Intent> = fc.oneof(
     arbitrary: fc.record({
       kind: fc.constant('settleCommit' as const),
       client: clientArbitrary,
-      outcome: fc.constantFrom('accept' as const, 409 as const, 500 as const),
+      outcome: fc.constantFrom('accept' as const, 403 as const, 500 as const),
     }),
   },
   {
@@ -209,7 +214,7 @@ export interface GeneratedCase {
   intents: Intent[]
 }
 
-export function intentsArbitrary(maxLength: number): fc.Arbitrary<Intent[]> {
+function intentsArbitrary(maxLength: number): fc.Arbitrary<Intent[]> {
   return fc.array(intentArbitrary, {minLength: 1, maxLength})
 }
 
@@ -370,6 +375,12 @@ function recordTouch(builder: Builder, actor: Actor, edit: Edit, key: string): v
   builder.touches.push(record ? {key, type, edit: record} : {key, type})
 }
 
+// A reconnect that does not resume starts the stream from now, so the fake drops what it held.
+function heldEventsAfterReconnect(state: ClientState, resume: boolean): ClientState['heldEvents'] {
+  if (resume) return state.heldEvents
+  return state.listener === 'hold' ? 'maybe' : 'none'
+}
+
 async function applyIntent(builder: Builder, intent: Intent): Promise<void> {
   if (intent.kind === 'advance') return apply(builder, {do: 'advance', ms: intent.ms})
   if (intent.kind === 'outside') return applyEdit(builder, 'outside', intent.edit)
@@ -383,21 +394,36 @@ async function applyIntent(builder: Builder, intent: Intent): Promise<void> {
     case 'commits':
       if (state.commits === intent.mode) return undefined
       state.commits = intent.mode
-      return apply(builder, {client, do: 'commits', mode: intent.mode})
+      return apply(
+        builder,
+        intent.mode === 'hold'
+          ? {client, do: 'commits', mode: 'hold', represents: 'a save request still in flight'}
+          : {client, do: 'commits', mode: 'auto'},
+      )
     case 'settleCommit':
       if (state.commits === 'auto') return undefined
       await tryApply(
         builder,
         intent.outcome === 'accept'
           ? {client, do: 'acceptCommit'}
-          : {client, do: 'rejectCommit', statusCode: intent.outcome},
+          : {
+              client,
+              do: 'rejectCommit',
+              statusCode: intent.outcome,
+              represents: REJECTIONS[intent.outcome],
+            },
       )
       return undefined
     case 'listener':
       if (state.listener === intent.mode) return undefined
       state.listener = intent.mode
       if (intent.mode === 'hold') state.heldEvents = 'maybe'
-      return apply(builder, {client, do: 'listener', mode: intent.mode})
+      return apply(
+        builder,
+        intent.mode === 'hold'
+          ? {client, do: 'listener', mode: 'hold', represents: 'listener latency'}
+          : {client, do: 'listener', mode: 'auto'},
+      )
     case 'releaseEvents':
       if (state.connection === 'up' && state.heldEvents === 'maybe') {
         const all = intent.count === undefined
@@ -413,18 +439,24 @@ async function applyIntent(builder: Builder, intent: Intent): Promise<void> {
     case 'dropEvent':
       if (state.connection === 'up' && state.heldEvents === 'maybe') {
         builder.droppedEvent = true
-        return apply(builder, {client, do: 'dropEvent'})
+        return apply(builder, {
+          client,
+          do: 'dropEvent',
+          represents:
+            'an event lost on a live connection, which no documented protocol path produces',
+        })
       }
       return undefined
     case 'disconnect':
       if (state.connection === 'up' && state.listener === 'auto' && state.heldEvents === 'none') {
         state.connection = 'down'
-        return apply(builder, {client, do: 'disconnect'})
+        return apply(builder, {client, do: 'disconnect', represents: 'a network drop'})
       }
       return undefined
     case 'reconnect':
       if (state.connection === 'up') return undefined
       state.connection = 'up'
+      state.heldEvents = heldEventsAfterReconnect(state, intent.resume)
       return apply(builder, {client, do: 'reconnect', resume: intent.resume})
     default:
       throw new Error(`Unknown intent ${JSON.stringify(intent)}`)
@@ -498,6 +530,7 @@ export interface SubmissionReport {
 
 export interface RunFailure {
   signature: string
+  knownBug?: string
   signatureFields: SignatureFields
   message: string
   definition: SyncTestDefinition
@@ -546,7 +579,18 @@ const PATCH_FIELDS_THAT_ARE_NOT_OPERATIONS = new Set([
   'unsetIsEmpty',
 ])
 
-export function signatureOf(fields: SignatureFields): string {
+// Open bugs whose generated failures are tagged instead of reported as new; each entry goes when its fix lands.
+const KNOWN_BUGS = new Map([
+  ['lost-edits | rejected | 400 | mutationError | diffMatchPatch', 'B1'],
+  ['settle | consistent | nothing-sent', 'B3'],
+  ['settle | stream-errors | Error | DiffMatchPatch.apply', 'K2'],
+])
+
+function knownBugOf(signature: string): string | undefined {
+  return KNOWN_BUGS.get(signature)
+}
+
+function signatureOf(fields: SignatureFields): string {
   return SIGNATURE_ORDER.flatMap((name) => {
     const value = fields[name]
     return value === undefined ? [] : [String(value)]
@@ -785,13 +829,16 @@ function describeFailure(
 ): RunFailure {
   const {world} = builder
   const signatureFields = withoutUndefined(signatureFieldsOf(error, builder, unhandled))
-  return {
-    signature: signatureOf(signatureFields),
+  const signature = signatureOf(signatureFields)
+  const knownBug = knownBugOf(signature)
+  return withoutUndefined({
+    signature,
+    knownBug,
     signatureFields,
     message: humanMessage(error, world, unhandled),
-    definition: structuredClone(definition),
+    definition: structuredClone(withoutUndefined({...definition, knownBug})),
     submissions: structuredClone(submissionReports(world)),
-  }
+  })
 }
 
 function checkRule(rule: Rule, check: () => void): void {
@@ -810,8 +857,8 @@ function checkRules(builder: Builder, unhandled: UnhandledRejections): void {
   checkRule('healthy', () => expectHealthy(world))
   checkRule('converged', () => expectConverged(world))
   checkRule('revisions', () => expectRevisionsAgree(world))
-  checkRule('keys', () => expectGeneratedKeys(builder))
   checkRule('lost-edits', () => expectNoLostEdits(world))
+  checkRule('keys', () => expectGeneratedKeys(builder))
 }
 
 function createDefinition(seam: SyncTestDefinition['seam'], start: Start): SyncTestDefinition {
@@ -819,6 +866,7 @@ function createDefinition(seam: SyncTestDefinition['seam'], start: Start): SyncT
     id: 'GEN',
     title: 'Generated sequence',
     seam,
+    evidence: 'L3',
     initial: initialDocuments(start),
     idPair: {publishedId: PUBLISHED_ID, draftId: DRAFT_ID},
     clients: [...CLIENTS],

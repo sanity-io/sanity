@@ -210,6 +210,14 @@ function overBudget(search: Search): boolean {
   return seam === 'operations' && search.operationsWorlds + runs > OPERATIONS_WORLD_BUDGET
 }
 
+function isNew(failure: RunFailure): boolean {
+  return failure.knownBug === undefined
+}
+
+function newFailures(search: Search): ReportedFailure[] {
+  return search.failures.filter(isNew)
+}
+
 function report(failure: RunFailure, seed: number, index: number): ReportedFailure {
   const definition = {
     ...failure.definition,
@@ -242,7 +250,7 @@ async function recordCounterexample(
   }
   search.ignored.add(failure.signature)
   search.failures.push(report(failure, seed, round + 1))
-  if (collect) await searchSeed(seed, search, round + 1)
+  if (collect || failure.knownBug) await searchSeed(seed, search, round + 1)
 }
 
 function advanceSampling(search: Search): void {
@@ -290,7 +298,7 @@ async function searchSeeds(remaining: number[], search: Search): Promise<void> {
   }
   search.seedsRun.push(seed)
   await searchSeed(seed, search, 0)
-  if (collect || search.failures.length === 0) await searchSeeds(rest, search)
+  if (collect || newFailures(search).length === 0) await searchSeeds(rest, search)
 }
 
 function commitSha(): string {
@@ -333,7 +341,7 @@ function summary(search: Search): string {
       : [
           `Seeds ${search.skippedSeeds.join(',')} were not run: the operations seam budget of ${OPERATIONS_WORLD_BUDGET} sequences per process is spent. Run them in another process.`,
         ]
-  return [...search.failures.map(describeFailure), ...search.problems, ...skipped].join(
+  return [...newFailures(search).map(describeFailure), ...search.problems, ...skipped].join(
     '\n\n---\n\n',
   )
 }
@@ -355,7 +363,7 @@ describe(`generated step sequences against the ${seam} seam`, () => {
       }
       await searchSeeds(seeds, search)
       if (isSet(reportPath)) writeReport(reportPath, search)
-      const clean = [search.failures, search.problems, search.skippedSeeds].every(
+      const clean = [newFailures(search), search.problems, search.skippedSeeds].every(
         (list) => list.length === 0,
       )
       if (clean) return
@@ -384,17 +392,23 @@ describe('the generated array-key check', () => {
   function rejectedSaveAfter(steps: SyncTestDefinition['steps']): SyncTestDefinition {
     return {
       id: 'GEN-KEYS',
-      title: 'A saves, then holds a save and the server answers 409',
+      title: 'A saves, then holds a save and the server answers 403',
       seam: 'pair',
+      evidence: 'L2',
       initial: [draft],
       idPair: {publishedId: 'article-gen', draftId},
       clients: ['A'],
       steps: [
         ...steps,
-        {client: 'A', do: 'commits', mode: 'hold'},
+        {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
         {client: 'A', do: 'patch', id: draftId, patches: [{set: {title: 'one'}}]},
         {client: 'A', do: 'commit'},
-        {client: 'A', do: 'rejectCommit', statusCode: 409},
+        {
+          client: 'A',
+          do: 'rejectCommit',
+          statusCode: 403,
+          represents: 'permission revoked mid-session',
+        },
         {do: 'settle'},
       ],
     }
@@ -406,7 +420,7 @@ describe('the generated array-key check', () => {
     world = undefined
   })
 
-  test('GEN-KEYS-ACCEPTED-BEFORE-REJECTION: a key accepted before an injected 409 on the same client stays checked', async () => {
+  test('GEN-KEYS-ACCEPTED-BEFORE-REJECTION: a key accepted before an injected 403 on the same client stays checked', async () => {
     world = await runSyncTest(
       rejectedSaveAfter([
         {client: 'A', do: 'patch', id: draftId, patches: insert('k1')},
@@ -426,7 +440,7 @@ describe('the generated array-key check', () => {
     expect(() => expectGeneratedKeys(history)).toThrow()
   })
 
-  test('GEN-KEYS-DISCARDED-BY-REJECTION: a key whose insert an injected 409 discarded may be missing', async () => {
+  test('GEN-KEYS-DISCARDED-BY-REJECTION: a key whose insert an injected 403 discarded may be missing', async () => {
     world = await runSyncTest(
       rejectedSaveAfter([{client: 'A', do: 'patch', id: draftId, patches: insert('k1')}]),
     )
