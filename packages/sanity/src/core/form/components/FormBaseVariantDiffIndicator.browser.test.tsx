@@ -7,6 +7,11 @@ import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
 
 const LABEL = 'Differs from'
 
+/** Shrinks the glyph below the target, as a smaller mark would, so the button's own minimum is what is measured. */
+function SmallGlyph() {
+  return <style>{'[data-testid="base-variant-diff-mark"] > * { width: 8px; height: 8px; }'}</style>
+}
+
 function Fixture({changedFromBaseVariant}: {changedFromBaseVariant: boolean}) {
   return (
     <TestWrapper schemaTypes={[]}>
@@ -56,11 +61,18 @@ describe('FormBaseVariantDiffIndicator', () => {
     expect(document.activeElement).toBe(button)
   })
 
-  it('has a hit area of at least 24x24 pixels', async () => {
-    void render(<Fixture changedFromBaseVariant />)
+  it('has a hit area of at least 24x24 pixels, even with an 8px glyph', async () => {
+    void render(
+      <>
+        <SmallGlyph />
+        <Fixture changedFromBaseVariant />
+      </>,
+    )
 
     const mark = page.getByRole('button', {name: 'Differs from Default Draft'})
     await expect.element(mark).toBeVisible()
+    const glyph = mark.element().firstElementChild?.getBoundingClientRect()
+    expect(glyph?.width).toBeLessThanOrEqual(8)
     const {width, height} = mark.element().getBoundingClientRect()
     expect(width).toBeGreaterThanOrEqual(24)
     expect(height).toBeGreaterThanOrEqual(24)
