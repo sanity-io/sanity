@@ -274,17 +274,83 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
   'banners.variant.action.add-to-variant': 'Create variant',
-  /** The text for the banner that appears when the selected variant matches no variant definition */
+  /** The action on the variant-not-found banner: clears the selected variant, back to the Default content */
+  'banners.variant.action.back-to-default': 'Back to Default',
+  /**
+   * The variant banner's action while the document inventory is open: a link at the end of the
+   * banner's sentence that opens the inventory's Create variant form, filled in for the variant
+   */
+  'banners.variant.action.create-in-document-inventory': 'Create it in the document inventory.',
+  /** The action on the banner of a scheduled (locked) release: opens the release in the Releases tool */
+  'banners.variant.action.open-release': 'Open release',
+  /** The action on the Published banner when the selected variant has a draft: switches to Drafts, keeping the variant */
+  'banners.variant.action.switch-to-drafts': 'Switch to Drafts',
+  /**
+   * The text for the banner that appears when the selected variant matches no variant definition (it was deleted).
+   * `VariantName` renders the word "variant" and the variant's chip.
+   */
   'banners.variant.definition-not-found':
-    'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
+    'The <VariantName>{{name}}</VariantName> no longer exists.',
+  /** The variant-not-found banner when the variant's title is not known (it was deleted before this session saw it) */
+  'banners.variant.definition-not-found-unknown': 'The selected variant no longer exists.',
   /** Toast description in case an error occurs when adding a document to a variant */
   'banners.variant.error.description':
     'An error occurred when adding document to the variant: {{message}}',
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
-  /** The text for the banner that appears when a document is not in the selected variant */
+  /**
+   * Added after the variant banner's sentence while the Create variant form in the document
+   * inventory is open for the variant: the banner drops its own Create action and points to the
+   * form instead
+   */
+  'banners.variant.finish-in-document-inventory': 'Finish creating it in the document inventory.',
+  /** The word before a variant's chip in the variant banners ("the variant [Alpha]"), kept on one line with the chip */
+  'banners.variant.lead.variant': 'variant',
+  /**
+   * The text for the banner that appears in Drafts when the document has no draft for the selected variant.
+   * `VariantBadge` renders the word "variant" and the variant's chip.
+   */
   'banners.variant.not-in-variant':
-    'No <PerspectiveTitle>{{perspectiveTitle}}</PerspectiveTitle> variant document exists for <VariantBadge>{{variantTitle}}</VariantBadge>.',
+    'This document has no draft for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one to start editing.',
+  /** The variant banner in a scheduled release, which is locked. `ReleaseBadge` renders the word "release" and the release's chip */
+  'banners.variant.not-in-variant-locked-release':
+    'The scheduled <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> is locked. Unschedule it to add a version for the <VariantBadge>{{variantTitle}}</VariantBadge>.',
+  /** The variant banner in Published, for a document without Drafts (live edit, or drafts off): the variant is created in place */
+  'banners.variant.not-in-variant-published':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one to start editing.',
+  /** The variant banner in Published when the variant has no draft either: the action creates the draft and switches to Drafts */
+  'banners.variant.not-in-variant-published-create-in-drafts':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Create one in <DraftsBadge>{{draftsTitle}}</DraftsBadge> to start editing.',
+  /** The variant banner in Published when the variant has a draft: the action switches to Drafts */
+  'banners.variant.not-in-variant-published-switch-to-drafts':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet. Its draft is in <DraftsBadge>{{draftsTitle}}</DraftsBadge>.',
+  /** The variant banner in an open release (at a time, not yet scheduled) when the document has no version for the variant in it */
+  'banners.variant.not-in-variant-release':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /** The variant banner in an ASAP release */
+  'banners.variant.not-in-variant-release-asap':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the ASAP <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /** The variant banner in an undecided release */
+  'banners.variant.not-in-variant-release-undecided':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the undecided <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /**
+   * The variant banner's sentence in Drafts without its instruction, followed by the link into the
+   * document inventory while the inventory is open
+   */
+  'banners.variant.statement.no-draft':
+    'This document has no draft for the <VariantBadge>{{variantTitle}}</VariantBadge> yet.',
+  /** The variant banner's sentence in Published without its instruction, followed by the link into the document inventory */
+  'banners.variant.statement.no-published-version':
+    'This document has no published version for the <VariantBadge>{{variantTitle}}</VariantBadge> yet.',
+  /** The variant banner's sentence in an open release without its instruction, followed by the link into the document inventory */
+  'banners.variant.statement.no-release-version':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet.',
+  /** The variant banner's sentence in an ASAP release without its instruction, followed by the link into the document inventory */
+  'banners.variant.statement.no-release-version-asap':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the ASAP <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet.',
+  /** The variant banner's sentence in an undecided release without its instruction, followed by the link into the document inventory */
+  'banners.variant.statement.no-release-version-undecided':
+    'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the undecided <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',

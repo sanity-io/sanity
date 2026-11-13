@@ -6,11 +6,13 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
+  isDraftPerspective,
   isDraftVersion,
   isGoingToUnpublish,
   isNewDocument,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
+  isPublishedPerspective,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSystemBundle,
@@ -46,11 +48,13 @@ import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
 import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
+import {getVariantBannerCase} from './banners/getVariantBannerCase'
 import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
 import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
+import {useRememberVariantTitles} from './banners/rememberedVariantTitles'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -104,6 +108,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
+  // The variant-not-found banner names a deleted variant by the title it had earlier this session.
+  useRememberVariantTitles()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -315,16 +321,28 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     // A creatable missing draft variant renders no banner: the form is simply editable — typing
     // creates the document at the server-advertised id — matching the base draft/published
     // experience where editing the published fallback creates the draft.
-    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
-      return <DocumentNotInVariantBanner />
-    }
+    const variantBannerCase = getVariantBannerCase({
+      targetDocumentState,
+      perspective: isPublishedPerspective(selectedPerspective)
+        ? 'published'
+        : isDraftPerspective(selectedPerspective)
+          ? 'drafts'
+          : isScheduledRelease
+            ? 'locked-release'
+            : 'release',
+      hasDrafts: workspace.document.drafts.enabled && !schemaType?.liveEdit,
+    })
 
-    if (targetDocumentState.status === 'variant-definition-document-not-found') {
+    if (variantBannerCase.kind === 'definition-not-found') {
       return (
         <VariantDefinitionNotFoundBanner
-          requestedVariantName={targetDocumentState.requestedVariantName}
+          requestedVariantName={variantBannerCase.requestedVariantName}
         />
       )
+    }
+
+    if (variantBannerCase.kind !== 'none') {
+      return <DocumentNotInVariantBanner bannerCase={variantBannerCase} />
     }
 
     const isCurrentVersionGoingToUnpublish =
