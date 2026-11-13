@@ -1,7 +1,12 @@
-import {type OnPasteFn, type PortableTextBlock} from '@portabletext/editor'
+import {type PortableTextBlock} from '@portabletext/editor'
 import {htmlToPortableText} from '@portabletext/html'
 import {useCallback, useMemo} from 'react'
-import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
+import {
+  type OnPasteFn,
+  PortableTextInput,
+  type PortableTextInputProps,
+  type PortableTextMarker,
+} from 'sanity'
 
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'
@@ -20,6 +25,7 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
     }
     if (html && hasCodeType) {
       const blocks = htmlToPortableText(html, {
+        // @ts-expect-error -- pre-existing, fix later: Studio's schema types are not the editor's Schema
         schema: schemaTypes,
         rules: [
           {
@@ -87,7 +93,7 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
   return (
     <PortableTextInput
       {...inputProps}
-      // @ts-expect-error -- pre-existing, fix later
+      // oxlint-disable-next-line no-deprecated -- exercises the deprecated onPaste prop, which keeps working
       onPaste={handlePaste}
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       markers={markers}

@@ -14,6 +14,7 @@ import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} f
 import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useInitialSelection} from '../../../../form/inputs/PortableText/hooks/useInitialSelection'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions/MentionsMenu'
@@ -220,6 +221,22 @@ export function Editable(props: EditableProps) {
     }
   }, [value, selection])
 
+  useInitialSelection(initialSelectionAtEndOfContent)
+
+  // Listen in the capture phase so the handler runs before the editor handles the input
+  useEffect(() => {
+    if (!rootElement || !inputElement) {
+      return undefined
+    }
+    const handleBeforeInput = (event: InputEvent) => {
+      if (event.target instanceof Node && inputElement.contains(event.target)) {
+        onBeforeInput(event)
+      }
+    }
+    rootElement.addEventListener('beforeinput', handleBeforeInput, {capture: true})
+    return () => rootElement.removeEventListener('beforeinput', handleBeforeInput, {capture: true})
+  }, [inputElement, onBeforeInput, rootElement])
+
   // Update the mentions search term in the mentions menu
   useEffect(() => {
     mentionsMenuRef.current?.setSearchTerm(mentionsSearchTerm)
@@ -259,13 +276,11 @@ export function Editable(props: EditableProps) {
       <PortableTextEditable
         data-testid="comment-input-editable"
         data-ui="EditableElement"
-        onBeforeInput={onBeforeInput}
         onBlur={onBlur}
         onFocus={onFocus}
         onKeyDown={handleKeyDown}
         ref={setInputElement}
         renderPlaceholder={renderPlaceholder}
-        selection={initialSelectionAtEndOfContent}
         style={INLINE_STYLE}
         tabIndex={focusLock ? 0 : undefined}
       />
