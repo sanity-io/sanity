@@ -9,7 +9,7 @@ import {
   type AddonDatasetListenerStore,
   type AddonDatasetQueryEvent,
   type AddonDatasetQueryStatusEvent,
-  listenAddonDatasetQuery,
+  followAddonDatasetQuery,
 } from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
@@ -236,7 +236,8 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     }
 
     const fetchComments = client.observable.fetch<CommentDocument[]>(query, params)
-    const remoteActions$ = listenAddonDatasetQuery(listenerStore, fetchComments).pipe(
+    const remoteActions$ = listenerStore.events.pipe(
+      followAddonDatasetQuery(fetchComments),
       map((event) => queryEventToOutcome(event, scope, transactionsIdMap)),
       filter((outcome) => outcome !== null),
       tap(({latestTransactionReceivedFor}) => {

@@ -7,7 +7,7 @@ import {
   type AddonDatasetDocument,
   type AddonDatasetQueryEvent,
   type AddonDatasetQueryStatusEvent,
-  listenAddonDatasetQuery,
+  followAddonDatasetQuery,
 } from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {useAddonDatasetListenerStore} from '../../studio/addonDataset/useAddonDatasetListenerStore'
@@ -119,8 +119,9 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
     if (!client || !listenerStore) return of(IDLE_STATE)
 
     const fetchTasks = client.observable.fetch<TaskDocument[]>(QUERY, {documentId: publishedId})
-    const remoteActions$ = listenAddonDatasetQuery(listenerStore, fetchTasks).pipe(
-      map(queryEventToAction),
+    const remoteActions$ = listenerStore.events.pipe(
+      followAddonDatasetQuery(fetchTasks),
+      map((event) => queryEventToAction(event)),
       filter((action) => action !== null),
     )
 

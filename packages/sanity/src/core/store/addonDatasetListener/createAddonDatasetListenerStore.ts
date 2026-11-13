@@ -13,8 +13,11 @@ import {
   merge,
   type Observable,
   of,
+  type OperatorFunction,
+  retry,
   startWith,
   switchMap,
+  timer,
 } from 'rxjs'
 
 import {type CommentDocument} from '../../comments/types'
@@ -83,7 +86,7 @@ export function createAddonDatasetListenerStore({
 }
 
 /**
- * The state of a query on the addon dataset, as {@link listenAddonDatasetQuery} reports it
+ * The state of a query on the addon dataset, as {@link followAddonDatasetQuery} reports it
  *
  * @internal
  */
@@ -111,42 +114,50 @@ function isMutationEvent(
   return event.type === 'mutation'
 }
 
+/** How many times a failed fetch is retried before it is reported as an `error` */
+const MAX_FETCH_RETRIES = 3
+
 /**
- * Follows a query on the addon dataset through the shared listener. On every connection it emits
- * `loading`, then `loaded` with the documents `fetch` returns, and a reconnect cancels a fetch
- * still in flight. Every mutation is passed on as it arrives, for every comment and task, and a
- * failed fetch or listener emits `error`.
+ * Follows a query on the addon dataset through the events of the shared listener. On every
+ * connection it emits `loading`, then `loaded` with the documents `fetch` returns, and a reconnect
+ * cancels a fetch still in flight. A failed fetch is retried, and emits `error` once it has run
+ * out of retries. Every mutation is passed on as it arrives, for every comment and task, and a
+ * failed listener emits `error`.
  *
  * @internal
  */
-export function listenAddonDatasetQuery<TDocument>(
-  listenerStore: AddonDatasetListenerStore,
+export function followAddonDatasetQuery<TDocument>(
   fetch: Observable<TDocument[]>,
-): Observable<AddonDatasetQueryEvent<TDocument>> {
+): OperatorFunction<AddonDatasetListenerEvent, AddonDatasetQueryEvent<TDocument>> {
   const loading: AddonDatasetQueryEvent<TDocument> = {type: 'loading'}
   const toError = (error: Error) => of<AddonDatasetQueryEvent<TDocument>>({type: 'error', error})
 
-  return listenerStore.events.pipe(
-    connect((events$) =>
-      merge(
-        events$.pipe(
-          filter(isConnectionEvent),
-          switchMap((event) =>
-            event.type === 'reconnect'
-              ? of(loading)
-              : fetch.pipe(
-                  map((documents): AddonDatasetQueryEvent<TDocument> => ({
-                    type: 'loaded',
-                    documents,
-                  })),
-                  catchError(toError),
-                  startWith(loading),
-                ),
+  return (events) =>
+    events.pipe(
+      connect((events$) =>
+        merge(
+          events$.pipe(
+            filter(isConnectionEvent),
+            switchMap((event) =>
+              event.type === 'reconnect'
+                ? of(loading)
+                : fetch.pipe(
+                    retry({
+                      count: MAX_FETCH_RETRIES,
+                      delay: (_error: unknown, attempt) => timer(attempt * 1000),
+                    }),
+                    map((documents): AddonDatasetQueryEvent<TDocument> => ({
+                      type: 'loaded',
+                      documents,
+                    })),
+                    catchError(toError),
+                    startWith(loading),
+                  ),
+            ),
           ),
+          events$.pipe(filter(isMutationEvent)),
         ),
-        events$.pipe(filter(isMutationEvent)),
       ),
-    ),
-    catchError(toError),
-  )
+      catchError(toError),
+    )
 }

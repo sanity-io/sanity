@@ -4,7 +4,7 @@ import {
   type ReconnectEvent,
   type WelcomeEvent,
 } from '@sanity/client'
-import {Observable, Subject, throwError} from 'rxjs'
+import {defer, Observable, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {LISTENER_RESET_DELAY} from '../../preview/constants'
@@ -12,9 +12,10 @@ import {mutation, task} from './__fixtures__/addonDataset.fixture'
 import {
   type AddonDatasetDocument,
   type AddonDatasetListenerEvent,
+  type AddonDatasetListenerStore,
   type AddonDatasetQueryEvent,
   createAddonDatasetListenerStore,
-  listenAddonDatasetQuery,
+  followAddonDatasetQuery,
 } from './createAddonDatasetListenerStore'
 
 const WELCOME: WelcomeEvent = {type: 'welcome', listenerName: 'test'}
@@ -144,8 +145,36 @@ describe('createAddonDatasetListenerStore', () => {
   })
 })
 
-describe('listenAddonDatasetQuery', () => {
+describe('followAddonDatasetQuery', () => {
   const LOADING = {type: 'loading'}
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  /** A fetch that fails its first `failures` attempts, then returns `documents` */
+  function flakyFetch(failures: number, documents: string[]) {
+    const attempts = {count: 0}
+    const fetch = defer(() => {
+      attempts.count += 1
+      return attempts.count <= failures
+        ? throwError(() => new Error(`attempt ${attempts.count} failed`))
+        : of(documents)
+    })
+    return {fetch, attempts}
+  }
+
+  function follow(store: AddonDatasetListenerStore, fetch: Observable<string[]>) {
+    const events: AddonDatasetQueryEvent<string>[] = []
+    const subscription = store.events
+      .pipe(followAddonDatasetQuery(fetch))
+      .subscribe((event) => events.push(event))
+    return {events, subscription}
+  }
 
   it('fetches on every connection, and cancels a fetch still in flight when the listener reconnects', () => {
     const {store, server} = setup()
@@ -160,10 +189,7 @@ describe('listenAddonDatasetQuery', () => {
         subscription.unsubscribe()
       }
     })
-    const events: AddonDatasetQueryEvent<string>[] = []
-    const subscription = listenAddonDatasetQuery(store, fetch).subscribe((event) =>
-      events.push(event),
-    )
+    const {events, subscription} = follow(store, fetch)
 
     server.next(WELCOME)
     expect(events).toEqual([LOADING])
@@ -180,20 +206,37 @@ describe('listenAddonDatasetQuery', () => {
     subscription.unsubscribe()
   })
 
-  it('reports a failed fetch, and keeps passing on mutations', () => {
+  it('retries a failed fetch, waiting longer before each attempt', () => {
     const {store, server} = setup()
-    const error = new Error('fetch failed')
-    const events: AddonDatasetQueryEvent<string>[] = []
-    const subscription = listenAddonDatasetQuery<string>(
-      store,
-      throwError(() => error),
-    ).subscribe((event) => events.push(event))
+    const {fetch, attempts} = flakyFetch(2, ['a'])
+    const {events, subscription} = follow(store, fetch)
 
+    server.next(WELCOME)
+    expect(attempts.count).toBe(1)
+    vi.advanceTimersByTime(1000)
+    expect(attempts.count).toBe(2)
+    vi.advanceTimersByTime(1999)
+    expect(attempts.count).toBe(2)
+    vi.advanceTimersByTime(1)
+
+    expect(attempts.count).toBe(3)
+    expect(events).toEqual([LOADING, {type: 'loaded', documents: ['a']}])
+
+    subscription.unsubscribe()
+  })
+
+  it('reports a fetch that keeps failing once it runs out of retries, and passes on mutations meanwhile', () => {
+    const {store, server} = setup()
+    const {fetch, attempts} = flakyFetch(Infinity, [])
+    const {events, subscription} = follow(store, fetch)
     const appear = mutation('appear', 't-1', task('t-1'))
+
     server.next(WELCOME)
     server.next(appear)
+    vi.advanceTimersByTime(1000 + 2000 + 3000)
 
-    expect(events).toEqual([LOADING, {type: 'error', error}, appear])
+    expect(attempts.count).toBe(4)
+    expect(events).toEqual([LOADING, appear, {type: 'error', error: new Error('attempt 4 failed')}])
 
     subscription.unsubscribe()
   })
