@@ -288,6 +288,15 @@ export function PaneItemVersionsFlyout(props: {
     [close, row],
   )
 
+  // Like the row: a touch pointer leaves as the finger lifts, and that is not a reason to close
+  const handleFlyoutPointerLeave = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.pointerType === 'touch') return
+      closeSoon()
+    },
+    [closeSoon],
+  )
+
   // The flyout is portalled but still inside the row's React tree: a click on it must not also
   // open the row's document.
   const stopRowClick = useCallback(
@@ -318,7 +327,7 @@ export function PaneItemVersionsFlyout(props: {
               onClick={stopRowClick}
               onKeyDown={handleKeyDown}
               onPointerEnter={keepOpen}
-              onPointerLeave={closeSoon}
+              onPointerLeave={handleFlyoutPointerLeave}
               ref={flyoutRef}
             >
               <RenderList

@@ -150,4 +150,26 @@ describe('PaneItemVersionsFlyout', () => {
     await page.getByTestId('row').hover()
     await expect.element(page.getByRole('menu', {name: 'Versions'})).toBeVisible()
   })
+
+  it('stays open when a tap lands on the flyout and the finger lifts off it', async () => {
+    renderRow()
+    await expect.element(page.getByTestId('dots')).toBeVisible()
+    tap(page.getByTestId('dots').element())
+    const menu = page.getByRole('menu', {name: 'Versions'})
+    await expect.element(menu).toBeVisible()
+
+    // The flyout's own wrapper is the menu's parent
+    const flyout = menu.element().parentElement as HTMLElement
+    // React derives `onPointerLeave` from `pointerout` with a related target outside the element
+    flyout.dispatchEvent(
+      new PointerEvent('pointerout', {
+        bubbles: true,
+        pointerType: 'touch',
+        relatedTarget: document.body,
+      }),
+    )
+    await new Promise((resolve) => setTimeout(resolve, CLOSE_DELAY + 500))
+
+    expect(page.getByRole('menu', {name: 'Versions'}).elements()).toHaveLength(1)
+  })
 })
