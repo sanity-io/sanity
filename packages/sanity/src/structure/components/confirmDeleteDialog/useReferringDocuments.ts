@@ -17,6 +17,7 @@ import {
   type DocumentStore,
   getDraftId,
   getPublishedId,
+  isVersionId,
   useClient,
   useDocumentStore,
 } from 'sanity'
@@ -61,7 +62,26 @@ export type ReferringDocuments = {
   hasUnknownDatasetNames: boolean
   internalReferences?: {
     totalCount: number
-    references: Array<{_id: string; _type: string}>
+    references: Array<{
+      _id: string
+      _type: string
+      /**
+       * Whether this document holds a strong (required) reference to the subject document.
+       * Content Lake refuses to delete a document while strong references point at it; weak
+       * references are left pointing at nothing. `undefined` while unknown.
+       *
+       * A strong reference stored only in a release copy is not `required`: the Content Lake
+       * allows the delete, and the release fails later, when it is published. Such a reference is
+       * marked `failsLater` instead.
+       */
+      required?: boolean
+      /**
+       * Whether this referring document is a release copy that holds a strong reference to the
+       * subject document. It does not block the delete, but the release fails when it is published.
+       * `undefined` while unknown.
+       */
+      failsLater?: boolean
+    }>
   }
   crossDatasetReferences?: {
     totalCount: number
@@ -185,7 +205,13 @@ export function referringDocuments({
 }: ReferringDocumentsOptions): Observable<ReferringDocuments> {
   const publishedId = getPublishedId(documentId)
 
-  const internalReferences$ = withLoadingState(fetchInternalReferences(publishedId, documentStore))
+  const internalReferences$ = withLoadingState(
+    withReferenceStrength(
+      fetchInternalReferences(publishedId, documentStore),
+      publishedId,
+      versionedClient,
+    ),
+  )
 
   const crossDatasetReferences$ = withLoadingState(
     getVisiblePoll$().pipe(
@@ -311,5 +337,107 @@ function withLoadingState<Type>(source: Observable<Type>): Observable<[Type | un
   return concat(
     of<[Type | undefined, boolean]>([undefined, true]),
     source.pipe(map((value): [Type | undefined, boolean] => [value, false])),
+  )
+}
+
+/**
+ * Whether `value` holds a strong reference to `targetId` anywhere in its content. A reference is
+ * strong unless it is marked `_weak`. The document's `_system` subtree is skipped: its identity
+ * references (the group, the variant, the release) are not content and never block a delete.
+ *
+ * @internal
+ */
+export function hasStrongReferenceTo(value: unknown, targetId: string): boolean {
+  if (Array.isArray(value)) {
+    return value.some((item) => hasStrongReferenceTo(item, targetId))
+  }
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const record = value as Record<string, unknown>
+  if (record._ref === targetId && record._weak !== true) {
+    return true
+  }
+  return Object.entries(record).some(
+    ([key, child]) => key !== '_system' && hasStrongReferenceTo(child, targetId),
+  )
+}
+
+/**
+ * Whether `document` is a copy that belongs to a release. `_system.release` says so on documents
+ * that carry `_system`; older documents without it can only be release copies when their id is a
+ * version id, since variant copies always carry `_system`.
+ */
+function isReleaseCopy(document: Record<string, unknown>): boolean {
+  const system = document._system as {release?: {_ref?: unknown}} | null | undefined
+  if (system && typeof system === 'object') {
+    return Boolean(system.release?._ref)
+  }
+  return typeof document._id === 'string' && isVersionId(document._id)
+}
+
+/**
+ * How a referring document links to `targetId`, as the Content Lake sees it when the target is
+ * deleted:
+ *
+ * - `required`: a strong reference in a published document, a draft or a variant copy. The Lake
+ *   refuses the delete.
+ * - `failsLater`: a strong reference stored only in a release copy. The Lake allows the delete,
+ *   and the release fails when it is published.
+ * - neither: only weak references. The delete goes through and the link points at nothing.
+ *
+ * @internal
+ */
+export function classifyReferrer(
+  document: Record<string, unknown>,
+  targetId: string,
+): {required: boolean; failsLater: boolean} {
+  const strong = hasStrongReferenceTo(document, targetId)
+  if (!strong) return {required: false, failsLater: false}
+  return isReleaseCopy(document)
+    ? {required: false, failsLater: true}
+    : {required: true, failsLater: false}
+}
+
+/**
+ * Marks each internal reference as `required` (strong, blocks the delete), `failsLater` (strong,
+ * in a release copy) or neither, by reading the referring documents once per change of the
+ * reference list. If that read fails, the references are passed on unmarked, so callers fall back
+ * to treating every reference as unknown.
+ */
+function withReferenceStrength(
+  internalReferences$: Observable<ReferringDocuments['internalReferences']>,
+  publishedId: string,
+  versionedClient: SanityClient,
+): Observable<ReferringDocuments['internalReferences']> {
+  return internalReferences$.pipe(
+    switchMap((internalReferences) => {
+      const ids = internalReferences?.references.map((reference) => reference._id) ?? []
+      if (!internalReferences || ids.length === 0) {
+        return of(internalReferences)
+      }
+      return versionedClient.observable
+        .fetch<Array<Record<string, unknown> & {_id: string}>>(
+          '*[_id in $ids]',
+          {ids},
+          {perspective: 'raw', tag: 'use-referring-documents.strength'},
+        )
+        .pipe(
+          map((documents) => {
+            const byId = new Map(
+              documents.map((document) => [document._id, classifyReferrer(document, publishedId)]),
+            )
+            return {
+              ...internalReferences,
+              references: internalReferences.references.map((reference) => ({
+                ...reference,
+                required: byId.get(reference._id)?.required ?? false,
+                failsLater: byId.get(reference._id)?.failsLater ?? false,
+              })),
+            }
+          }),
+          catchError(() => of(internalReferences)),
+        )
+    }),
   )
 }
