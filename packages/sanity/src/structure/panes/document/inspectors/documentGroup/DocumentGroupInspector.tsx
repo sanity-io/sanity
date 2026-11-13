@@ -6,12 +6,15 @@ import {
   DocumentGroupInventoryFeedbackAction,
   type DocumentGroupInventoryHandle,
   type DocumentInspectorProps,
+  getDefaultVariant,
   getDocumentVersionVariantId,
   getReleaseIdFromReleaseDocumentId,
   isGoingToUnpublish,
   readVersionType,
+  type TargetDocumentState,
   useClient,
   useDocumentStore,
+  usePerspective,
   useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
@@ -42,7 +45,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const {documentId, documentType, onClose} = props
   const {t} = useTranslation()
   const {t: structureT} = useTranslation(structureLocaleNamespace)
-  const {displayed, editState} = useDocumentPane()
+  const {displayed, editState, targetDocumentState} = useDocumentPane()
+  const {selectedVariantNames} = usePerspective()
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const perspectiveList = useDocumentPerspectiveList()
@@ -88,6 +92,12 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       ? editState.version._id
       : displayed?._id
 
+  const selectedId = getSelectedVersionId({
+    targetDocumentState,
+    variantSelected: Boolean(getDefaultVariant(selectedVariantNames)),
+    targetDocumentId,
+  })
+
   return (
     <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
@@ -113,6 +123,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             ref={setInventory}
             mode="manage"
             documentId={targetDocumentId}
+            selectedId={selectedId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}
@@ -124,4 +135,27 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       </div>
     </Flex>
   )
+}
+
+/**
+ * The version the inventory marks as open. With a variant selected, the displayed document falls
+ * back to the base pair while the variant target resolves, so it would briefly mark the Default
+ * row. The resolved variant target is the source instead, and nothing is marked until it is known.
+ */
+function getSelectedVersionId({
+  targetDocumentState,
+  variantSelected,
+  targetDocumentId,
+}: {
+  targetDocumentState: TargetDocumentState
+  variantSelected: boolean
+  targetDocumentId: string | undefined
+}): string | null | undefined {
+  if (!variantSelected) {
+    return targetDocumentId
+  }
+  if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
+    return targetDocumentState.targetDocument._id
+  }
+  return null
 }
