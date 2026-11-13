@@ -35,6 +35,7 @@ import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
 import {PortalBoundaryProvider} from '../../../core/components/portalBoundary/PortalBoundaryProvider'
 import {useMiddlewareComponents} from '../../../core/config/components/useMiddlewareComponents'
 import {VirtualizerScrollInstanceProvider} from '../../../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {preloadStringInputPortableText} from '../../../core/form/inputs/StringInput/StringInput'
 import {createPatchChannel} from '../../../core/form/patch/PatchChannel'
 import {useDocumentForm} from '../../../core/form/useDocumentForm'
 import {useEditState} from '../../../core/hooks/useEditState'
@@ -213,6 +214,11 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     },
     [onPathOpenFromForm, pathSyncChannel, role],
   )
+
+  // The diff view always renders inline changes, and its string input is code-split.
+  useEffect(() => {
+    void preloadStringInputPortableText()
+  }, [])
 
   useEffect(() => {
     const subscription = pathSyncChannel.path.subscribe((path) => {

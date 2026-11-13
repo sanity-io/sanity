@@ -2,7 +2,7 @@ import {type ComponentType} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
 import {type NavbarProps} from '../../config/studio/types'
-import {StudioNavbar} from '../components/navbar/StudioNavbar'
+import {StudioNavbar} from '../lazy'
 import {pickNavbarComponent} from './picks'
 
 /**

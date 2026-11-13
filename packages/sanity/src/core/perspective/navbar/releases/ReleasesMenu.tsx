@@ -3,13 +3,12 @@ import {SearchIcon} from '@sanity/icons/Search'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ChangeEvent, useCallback, useState} from 'react'
+import {type ChangeEvent, lazy, Suspense, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../../styles'
@@ -23,6 +22,14 @@ import {ReleasesList} from './ReleasesList'
 import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
 import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
+
+// Opened from the menu, so the dialog (form, date handling) is fetched on first use rather
+// than with the navbar.
+const CreateReleaseDialog = lazy(() =>
+  import('../../../releases/components/dialog/CreateReleaseDialog').then((module) => ({
+    default: module.CreateReleaseDialog,
+  })),
+)
 
 const OversizedButton = styled(Button)`
   ${oversizedButtonStyle}
@@ -191,7 +198,9 @@ export function ReleasesMenu({
         }}
       />
       {createBundleDialogOpen && (
-        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <Suspense fallback={null}>
+          <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        </Suspense>
       )}
     </>
   )

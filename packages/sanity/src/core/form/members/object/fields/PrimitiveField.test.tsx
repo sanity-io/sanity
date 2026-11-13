@@ -14,8 +14,21 @@ import {
   FormCallbacksProvider,
   type FormCallbacksValue,
 } from '../../../studio/contexts/FormCallbacks'
-import {defaultRenderField, defaultRenderInput} from '../../../studio/defaults'
+import {defaultResolveFieldComponent} from '../../../studio/inputResolver/fieldResolver'
+import {defaultResolveInputComponent} from '../../../studio/inputResolver/inputResolver'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {PrimitiveField} from './PrimitiveField'
+
+// Eager counterparts of the exported `defaultRenderInput`/`defaultRenderField` (which load the
+// resolvers on demand), so the inputs are in the DOM right after `render`
+const defaultRenderInput: RenderInputCallback = (props) => {
+  const Input = defaultResolveInputComponent(props.schemaType)
+  return <Input {...props} />
+}
+const defaultRenderField: RenderFieldCallback = (props) => {
+  const Field = defaultResolveFieldComponent(props.schemaType)
+  return <Field {...props} />
+}
 
 const EMPTY_ARRAY: never[] = []
 

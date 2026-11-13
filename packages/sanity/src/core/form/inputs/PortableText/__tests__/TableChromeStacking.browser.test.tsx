@@ -5,7 +5,7 @@ import {page, userEvent} from 'vitest/browser'
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
-import {studioLocaleStrings} from '../../../../i18n/bundles/studio'
+import {studioLocaleStrings} from '../../../../i18n/bundles/studio/resources'
 
 const COLUMN_HANDLE_LABEL = studioLocaleStrings['inputs.portable-text.table.column-handle']
 const DELETE_COLUMN_LABEL = studioLocaleStrings['inputs.portable-text.table.delete-column']

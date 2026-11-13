@@ -40,7 +40,12 @@ describe('useUnitFormatter', () => {
     </ThemeProvider>
   )
 
-  beforeAll(() => i18next.init())
+  beforeAll(async () => {
+    await i18next.init()
+    // The studio bundle loads on demand; `init()` resolves before it has arrived (prepareI18n
+    // already started one), so wait for the namespace explicitly
+    await i18next.loadNamespaces(i18next.options.ns as string[])
+  })
   beforeEach(() => i18next.changeLanguage('en-US'))
 
   it('formats with long units as default', () => {
