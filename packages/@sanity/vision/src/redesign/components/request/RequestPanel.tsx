@@ -258,7 +258,7 @@ export function RequestPanel(props: RequestPanelProps) {
         ),
         content: (
           <Flex flexDirection="column">
-            <Flex justifyContent="flex-end" paddingTop={2} paddingX={2}>
+            <Flex justifyContent="flex-start" paddingTop={2} paddingX={2}>
               <TabList aria-label={t('vision.params.view.label')} gap={1}>
                 <Tab
                   aria-controls="vision-request-params-content"
