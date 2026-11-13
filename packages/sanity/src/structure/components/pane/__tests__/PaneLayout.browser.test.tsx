@@ -143,4 +143,28 @@ describe('PaneLayout', () => {
     await expect.poll(paneWidths).toEqual(approximately([350, 320, 1248]))
     await settleChromaticEndState()
   })
+
+  // An embedding page (sanity-astro) can clip the studio with `overflow: hidden`, so the
+  // collapsed layout must scroll by itself instead of relying on an ancestor
+  it('scrolls its content when collapsed inside a clipped container', async () => {
+    await page.viewport(390, 664)
+    await render(
+      <ThemeProvider theme={theme}>
+        <div style={{display: 'flex', height: 400, overflow: 'hidden'}}>
+          <PaneLayout data-testid="pane-layout" flex={1} height="fill" minWidth={600}>
+            <Pane id="document" minWidth={320}>
+              <div style={{flexShrink: 0, height: 2000}} />
+            </Pane>
+          </PaneLayout>
+        </div>
+      </ThemeProvider>,
+    )
+
+    const layout = window.document.querySelector<HTMLElement>('[data-testid="pane-layout"]')!
+    await expect.poll(() => layout.hasAttribute('data-collapsed')).toBe(true)
+    expect(layout.clientHeight).toBe(400)
+
+    layout.scrollTop = 1000
+    expect(layout.scrollTop).toBe(1000)
+  })
 })
