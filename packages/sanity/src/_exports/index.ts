@@ -1445,10 +1445,6 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
-export {
-  useStudioPreference,
-  useStudioPreferenceList,
-} from '../core/store/preferences/useStudioPreference'
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

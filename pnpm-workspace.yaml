@@ -119,8 +119,8 @@ minimumReleaseAgeExclude:
   - 'lightningcss'
   - 'lightningcss-*'
   # The App SDK's preferences are only on its `next` tag until they're released
-  - '@sanity/sdk'
-  - '@sanity/sdk-react'
+  - '@sanity/sdk@3.13.0-next.20261113163341'
+  - '@sanity/sdk-react@3.13.0-next.20261113163341'
   # motion, framer-motion and motion-dom release in lockstep, often several times a week, so new
   # versions are routinely younger than minimumReleaseAge
   - 'framer-motion'
@@ -174,7 +174,8 @@ minimumReleaseAgeExclude:
   - 'zod@4.6.7'
 
 overrides:
-  # One copy of the App SDK: the CLI's `^3.12.0` doesn't match a `next` prerelease
+  # One copy of the App SDK while the catalog pins a `next` prerelease, which the CLI's `^3.12.0`
+  # doesn't match
   '@sanity/sdk': 'catalog:'
   '@sanity/sdk-react': 'catalog:'
   vitest: 'catalog:'

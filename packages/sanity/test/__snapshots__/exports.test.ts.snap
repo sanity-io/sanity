@@ -732,8 +732,6 @@ exports[`exports snapshot 1`] = `
     "useSource": "function",
     "useStudioErrorHandler": "function",
     "useStudioFeedbackTags": "function",
-    "useStudioPreference": "function",
-    "useStudioPreferenceList": "function",
     "useStudioUrl": "function",
     "useSyncState": "function",
     "useTargetDocumentState": "function",

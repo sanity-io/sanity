@@ -51,7 +51,6 @@ const defaultProps = {
 
 describe('Calendar with no stored timezone', () => {
   beforeEach(() => {
-    // Setup default mock for keyValueStore - returns null (no stored timezone)
     useStudioPreferenceMock.mockReturnValue({value: undefined, status: 'success', set: vi.fn()})
   })
 
@@ -97,7 +96,6 @@ describe('Calendar with no stored timezone', () => {
 })
 describe('Calendar with stored timezone tokyo', () => {
   beforeEach(() => {
-    // Setup default mock for keyValueStore - returns null (no stored timezone)
     useStudioPreferenceMock.mockReturnValue({value: 'Asia/Tokyo', status: 'success', set: vi.fn()})
   })
   afterEach(() => {
