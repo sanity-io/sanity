@@ -30,6 +30,9 @@ target_config() {
       TARGET_DATASET='test'
       TARGET_API_HOST=api.sanity.io
       TARGET_OTHER_API_HOST=api.sanity.work
+      # The e2e token is only accepted by its own project, so a swapped-token probe
+      # has to name that project, not this one.
+      TARGET_OTHER_PROJECT_ID="${SANITY_E2E_PROJECT_ID:-ittbm412}"
       TARGET_TOKEN_VAR="${VERIFY_STUDIO_TOKEN_VAR:-STUDIO_AUTH_TOKEN}"
       TARGET_COMMAND="pnpm dev:test-studio"
       ;;
@@ -42,6 +45,8 @@ target_config() {
       TARGET_DATASET= # set per run by start-studio.sh
       TARGET_API_HOST=api.sanity.work
       TARGET_OTHER_API_HOST=api.sanity.io
+      # The test-studio token is only accepted by ppsg7ml5 on api.sanity.io.
+      TARGET_OTHER_PROJECT_ID=ppsg7ml5
       TARGET_TOKEN_VAR="${VERIFY_STUDIO_TOKEN_VAR:-STUDIO_E2E_AUTH_TOKEN}"
       TARGET_COMMAND="pnpm --filter studio-e2e-testing dev"
       ;;
@@ -126,10 +131,14 @@ state_get() {
   )
 }
 
-# GET /users/me on a host with the target's token. Prints the HTTP status.
+# GET /users/me with the target's token. Prints the HTTP status. The second
+# argument is the project id (defaults to this target's). The other-host probe
+# must pass the other target's project: ppsg7ml5.api.sanity.io accepts the test
+# token and rejects the e2e token, and ittbm412.api.sanity.work does the reverse,
+# so the same project on the other host never returns 200.
 users_me_status() {
-  local host="$1"
+  local host="$1" project="${2:-$TARGET_PROJECT_ID}"
   printf 'Authorization: Bearer %s\n' "$(target_token)" |
     curl -sS -o /dev/null -w '%{http_code}' -H @- --max-time 20 \
-      "https://$TARGET_PROJECT_ID.$host/v2021-06-07/users/me" || true
+      "https://$project.$host/v2021-06-07/users/me" || true
 }

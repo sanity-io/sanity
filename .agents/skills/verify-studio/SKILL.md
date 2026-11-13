@@ -26,9 +26,10 @@ against the local preview iframe (`http://localhost:3334`; the e2e studio previe
 `https://test-studio-preview-iframe.sanity.dev`). `VERIFY_STUDIO_TOKEN_VAR` names a different
 token variable, `VERIFY_STUDIO_DATASET` reuses an existing e2e dataset (cleanup then leaves it).
 
-A token only works against its own API host. Sent to the other one it gets 401 "Session not
-found", which the studio shows as a login screen. `check-auth.sh` (run by `start-studio.sh`)
-asks `/users/me` on both hosts and says which mismatch it is.
+A token only works against its own project and API host. Sent to the other one it gets 401
+"Session not found", which the studio shows as a login screen. `check-auth.sh` (run by
+`start-studio.sh`) asks `/users/me` on this target and, on 401, on the other target's project
+and host, and says which mismatch it is.
 
 ## Prerequisites
 
