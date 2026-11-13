@@ -2,11 +2,12 @@ import {type Schema} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
-import {useEffect} from 'react'
+import {Suspense, useEffect} from 'react'
 import {Text, Container, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
+import {FallbackLocaleProvider} from '../../../i18n/components/LocaleProvider'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
@@ -30,7 +31,24 @@ function ContextRow(props: {label: string; value: string}) {
   )
 }
 
-export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
+/**
+ * Schema compilation runs after ActiveWorkspaceLocaleProvider starts workspace i18n
+ * (initAsync + initReactI18next). StudioErrorBoundary / StudioRootErrorHandler then
+ * render this screen outside those providers, so we bring our own sync fallback
+ * instance and Suspense — otherwise useTranslation can suspend on the global
+ * not-yet-initialized workspace instance with no boundary.
+ */
+export function SchemaErrorsScreen(props: SchemaErrorsScreenProps) {
+  return (
+    <FallbackLocaleProvider>
+      <Suspense fallback={null}>
+        <SchemaErrorsScreenInner {...props} />
+      </Suspense>
+    </FallbackLocaleProvider>
+  )
+}
+
+function SchemaErrorsScreenInner({schema, context}: SchemaErrorsScreenProps) {
   const groupsWithErrors =
     schema._validation?.filter((group) =>
       group.problems.some((problem) => problem.severity === 'error'),
@@ -39,8 +57,8 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
   useEffect(() => reportWarnings(schema), [schema])
 
   const toast = useToast()
-  // Every call carries an inline default: prepareConfig throws above LocaleProvider,
-  // so on that path there is no translator and a bare key would reach the screen.
+  // Inline defaults remain for keys that fall through; FallbackLocaleProvider
+  // supplies the sync core strings when the outer error boundary has no i18n tree.
   const {t} = useTranslation('studio')
   const {t: tCopyPaste} = useTranslation('copy-paste')
   const [, copy] = useCopyToClipboard()

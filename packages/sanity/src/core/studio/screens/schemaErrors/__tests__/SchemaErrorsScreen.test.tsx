@@ -53,8 +53,8 @@ describe('SchemaErrorsScreen', () => {
     Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
   })
 
-  // prepareConfig throws above LocaleProvider, so on that path every label falls
-  // back to its inline default rather than rendering a bare key.
+  // Outer error boundaries render this screen without a parent LocaleProvider;
+  // the screen supplies FallbackLocaleProvider so labels stay readable.
   it('renders readable copy without a locale provider', async () => {
     await renderScreen(CONTEXT)
 
@@ -93,7 +93,7 @@ describe('SchemaErrorsScreen', () => {
   it('carries the location into the clipboard payload', async () => {
     await renderScreen(CONTEXT)
 
-    await userEvent.click(screen.getByRole('button', {name: 'Copy to clipboard'}))
+    await userEvent.click(screen.getByRole('button', {name: 'Copy to Clipboard'}))
 
     expect(writeText).toHaveBeenCalledTimes(1)
     const [copied] = writeText.mock.calls[0] as unknown as [string]
