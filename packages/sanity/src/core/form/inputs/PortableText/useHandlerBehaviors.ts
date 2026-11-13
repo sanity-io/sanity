@@ -145,7 +145,10 @@ function createClipboardEventLike(
   type: 'copy' | 'paste',
   clipboardData: DataTransfer,
 ): ReactClipboardEvent<HTMLDivElement | HTMLSpanElement> {
-  return Object.assign(createEventLike(type, new ClipboardEvent(type, {clipboardData})), {
+  const nativeEvent = new ClipboardEvent(type, {clipboardData})
+  // Firefox ignores the `clipboardData` init member and gives the event an empty DataTransfer
+  Object.defineProperty(nativeEvent, 'clipboardData', {value: clipboardData})
+  return Object.assign(createEventLike(type, nativeEvent), {
     clipboardData,
   }) as ReactClipboardEvent<HTMLDivElement | HTMLSpanElement>
 }
