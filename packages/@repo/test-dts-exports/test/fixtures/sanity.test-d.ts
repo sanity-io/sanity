@@ -296,7 +296,6 @@ import type {
   createHistoryStore,
   createHookFromObservableFactory,
   CreateIfNotExistsMutation,
-  createKeyValueStore,
   CreateLiveDocumentEvent,
   createMockAuthStore,
   CreateMutation,
@@ -985,8 +984,6 @@ import type {
   joinPath,
   KeyedObject,
   KeyedSegment,
-  KeyValueStore,
-  KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
   LayoutProps,
@@ -1704,7 +1701,6 @@ import type {
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
   useIsReleaseActive,
-  useKeyValueStore,
   useListFormat,
   UseListFormatOptions,
   useLoadable,
@@ -1777,6 +1773,8 @@ import type {
   useSource,
   useStudioErrorHandler,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -2769,9 +2767,6 @@ describe('sanity', () => {
   })
   test('CreateIfNotExistsMutation', () => {
     expectTypeOf<CreateIfNotExistsMutation>().toBeObject()
-  })
-  test('createKeyValueStore', () => {
-    expectTypeOf<typeof createKeyValueStore>().toBeFunction()
   })
   test('CreateLiveDocumentEvent', () => {
     expectTypeOf<CreateLiveDocumentEvent>().toBeObject()
@@ -4846,12 +4841,6 @@ describe('sanity', () => {
   })
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
-  })
-  test('KeyValueStore', () => {
-    expectTypeOf<KeyValueStore>().toBeObject()
-  })
-  test('KeyValueStoreValue', () => {
-    expectTypeOf<KeyValueStoreValue>().not.toBeNever()
   })
   test('LatencyReportEvent', () => {
     expectTypeOf<LatencyReportEvent>().toBeObject()
@@ -7014,9 +7003,6 @@ describe('sanity', () => {
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
   })
-  test('useKeyValueStore', () => {
-    expectTypeOf<typeof useKeyValueStore>().toBeFunction()
-  })
   test('useListFormat', () => {
     expectTypeOf<typeof useListFormat>().toBeFunction()
   })
@@ -7234,6 +7220,12 @@ describe('sanity', () => {
   })
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
+  })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
   })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
