@@ -966,8 +966,8 @@ importers:
         specifier: ^6.1.18
         version: 6.1.18(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       '@sanity/groq-store-wasm':
-        specifier: ^0.2.2
-        version: 0.2.2(vitest@5.1.0)
+        specifier: ^0.3.0
+        version: 0.3.0(vitest@5.1.0)
       '@sanity/icons':
         specifier: ^5.3.0
         version: 5.3.0(react@19.3.1)
@@ -8820,8 +8820,8 @@ packages:
     resolution: {integrity: sha512-HbP+UytB9gbScX5JuCM5mJNIZ093p3eeuDojqbf5KIunBaAqi0AuamsU5bjfNa/roE92xAJ9HDLbS5Vc93aPWA==}
     engines: {node: '>=20'}
 
-  '@sanity/groq-store-wasm@0.2.2':
-    resolution: {integrity: sha512-HTZYKoltaKxDeQvT6YKIv+4tKhkXHZjzKh3ngJZj3P6AaPVjSK7J506/M8TcqrAPDy0vp4VvrDuWdbq4TbjabQ==}
+  '@sanity/groq-store-wasm@0.3.0':
+    resolution: {integrity: sha512-90AWOaKalE5Gp2nJAQA64h7BtlauDHqknXGMD97fUncLoGcBvJ8vJn0tDeT+zNeL4J6RXGlxW2NdbF+gnaNUtA==}
     engines: {node: '>=22.12'}
 
   '@sanity/icons@5.3.0':
@@ -22819,7 +22819,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/groq-store-wasm@0.2.2(vitest@5.1.0)':
+  '@sanity/groq-store-wasm@0.3.0(vitest@5.1.0)':
     dependencies:
       '@sanity/client': 8.16.0(vitest@5.1.0)
     transitivePeerDependencies:
