@@ -2,7 +2,7 @@ import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
-import {selectionColors} from './selectionColors'
+import {SELECTION} from './selectionTokens'
 import {VariantSetEntry} from './VariantSetEntry'
 
 /**
@@ -19,11 +19,11 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
     background-color: var(--card-muted-bg-color);
 
     /*
-     * A checked header keeps its band and layers the selection tint on it, a step stronger than its
-     * rows' tint, so it still reads as the group's header when the whole group is checked.
+     * A checked header stays a band of its own, one step stronger on the blue ladder than its
+     * checked rows, so it still reads as the group's header when the whole group is checked.
      */
     &:has(.atom :checked) {
-      background-color: ${selectionColors(color).header};
+      background-color: ${SELECTION.checkedHeaderBackground};
     }
 
     /* The resting checkbox border reaches 3:1 against the header's own, muted, background. */

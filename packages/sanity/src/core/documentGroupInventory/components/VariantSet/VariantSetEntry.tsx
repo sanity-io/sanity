@@ -1,27 +1,23 @@
-import {Card} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
-import {selectionColors} from './selectionColors'
+import {SELECTION} from './selectionTokens'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
 
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
 
 /**
- * A row of a set (and, through VariantSetHeader, its header). It is a Card so the row of the version
- * open in the form takes Studio's selected state the way the document list's selected item does:
- * `selected` with `data-as="button"` switches it to the theme's selected palette, which sets the
- * background, the text colours and the badge icon colours the status marks paint with.
+ * A row of a set (and, through VariantSetHeader, its header). Selection follows the UI 5 blue
+ * ladder (see `selectionTokens`): pale blue for a checked row, strong blue with inverted text for
+ * the row of the version open in the form.
  */
-export const VariantSetEntry = styled(Card)(({theme}) => {
+export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
-  const selected = selectionColors(color)
 
   return css`
-    /* Over the Card's own display, as on the set */
-    display: grid !important;
+    display: grid;
     position: relative;
     grid-column: row-start / row-end;
     grid-template-columns: subgrid;
@@ -55,8 +51,9 @@ export const VariantSetEntry = styled(Card)(({theme}) => {
     /*
      * Quiet at rest: an empty checkbox's border is the quietest colour that still reaches the 3:1
      * WCAG asks of a control's boundary, so the column reads as a rail. It goes to full contrast
-     * while its row is hovered or holds focus. A checked or partly checked box keeps Sanity UI's
-     * filled style, a blocked one its read-only style, and a focused one Sanity UI's focus ring.
+     * while its row is hovered or holds focus. A checked or partly checked box takes UI 5's
+     * checkbox colours, a blocked one keeps its read-only style, and a focused one Sanity UI's
+     * focus ring.
      */
     .selection-checkbox {
       display: flex;
@@ -76,6 +73,18 @@ export const VariantSetEntry = styled(Card)(({theme}) => {
 
     .selection-checkbox[data-blocked] input {
       cursor: not-allowed;
+    }
+
+    /* UI 5's checkbox: the strong blue fill with an inverted tick */
+    .selection-checkbox input:is(:checked, :indeterminate):not(:disabled, [readonly]) + span {
+      background: ${SELECTION.checkboxFill};
+      color: ${SELECTION.checkboxTick};
+    }
+
+    .selection-checkbox
+      input:is(:checked, :indeterminate):not(:disabled, [readonly], :focus-visible)
+      + span {
+      box-shadow: inset 0 0 0 1px ${SELECTION.checkboxFill};
     }
 
     /* The checkbox's hit area reaches into the row's padding, but not over the mark. */
@@ -166,7 +175,7 @@ export const VariantSetEntry = styled(Card)(({theme}) => {
 
     &:hover,
     &:focus-within {
-      background-color: var(--card-muted-bg-color);
+      background-color: ${SELECTION.hoverBackground};
     }
 
     /*
@@ -178,46 +187,49 @@ export const VariantSetEntry = styled(Card)(({theme}) => {
     }
 
     /*
-     * A checked row takes a light tint of the selection colour, so its text keeps its own colours
-     * and contrast. The tint is mixed from theme colours, so it holds in light and dark. A group
-     * header tints its own band instead, in VariantSetHeader.
+     * A checked row: UI 5's low-emphasis selection, pale blue, under the row's own text colours.
+     * A group header takes a step stronger, in VariantSetHeader.
      */
     &:has(.atom :checked) {
-      background-color: ${selected.row};
+      background-color: ${SELECTION.checkedBackground};
     }
 
     /*
-     * The row of the version open in the form: Studio's selected state, as in the document list.
-     * Its background wins over the hover and checked tints, and its text takes the selected
-     * palette's colours, which a ui5 Text does not follow by itself. The checkbox border follows
-     * the selected text colour, so an empty box stays visible on the selected background.
+     * The row of the version open in the form: UI 5's high-emphasis selection, strong blue with
+     * inverted text. It wins over the hover and checked backgrounds. Its marks take their tones'
+     * emphasized foreground (the selected StatusMark).
      */
-    &&&[data-selected] {
-      background-color: var(--card-bg-color);
+    &&&[data-current] {
+      background-color: ${SELECTION.openBackground};
     }
 
-    &[data-selected] [data-testid='version-title'] {
-      color: var(--card-fg-color);
+    &[data-current] [data-testid='version-title'] {
+      color: ${SELECTION.openTitle};
     }
 
-    &[data-selected] [data-testid='version-secondary-line'] {
-      color: var(--card-muted-fg-color);
+    &[data-current] [data-testid='version-secondary-line'] {
+      color: ${SELECTION.openSubtitle};
     }
 
-    &[data-selected] .selection-checkbox {
-      --selection-checkbox-border: var(--card-fg-color);
+    /* An empty box's border takes the inverted text colour, so it shows on the blue */
+    &[data-current] .selection-checkbox {
+      --selection-checkbox-border: ${SELECTION.openTitle};
     }
 
-    /*
-     * A checked or partly checked box keeps its fill, ringed in the selected text colour: in dark
-     * the light fill alone sits too close to the selected background. Keyboard focus keeps Sanity
-     * UI's focus ring.
-     */
-    &[data-selected]
+    /* A checked box inverts on the blue: the light fill with a blue tick, as on UI 5's own */
+    &[data-current]
       .selection-checkbox
-      input:is(:checked, :indeterminate):not(:focus-visible)
+      input:is(:checked, :indeterminate):not(:disabled, [readonly])
       + span {
-      box-shadow: 0 0 0 1px var(--card-fg-color);
+      background: ${SELECTION.checkboxTick};
+      color: ${SELECTION.checkboxFill};
+    }
+
+    &[data-current]
+      .selection-checkbox
+      input:is(:checked, :indeterminate):not(:disabled, [readonly], :focus-visible)
+      + span {
+      box-shadow: inset 0 0 0 1px ${SELECTION.checkboxTick};
     }
   `
 })

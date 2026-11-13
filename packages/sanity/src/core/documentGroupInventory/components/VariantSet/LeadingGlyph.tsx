@@ -14,16 +14,19 @@ export function LeadingGlyph({
   className,
   mark,
   tone,
+  selected,
   'data-testid': testId,
 }: {
   'className': string
   'mark'?: StatusMarkName
   'tone'?: BadgeTone
+  /** Whether the cell is on the open version's strong selected background. */
+  'selected'?: boolean
   'data-testid'?: string
 }) {
   return (
     <span className={className} data-testid={testId}>
-      {mark && <StatusMark mark={mark} size="row" tone={tone} />}
+      {mark && <StatusMark mark={mark} size="row" tone={tone} selected={selected} />}
     </span>
   )
 }
