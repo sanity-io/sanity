@@ -6,8 +6,8 @@ export interface ListenerPeakMeasuredData {
   peakListenerCount: number
   /** The most Studio tabs open at once on this origin, this one included. */
   peakStudioTabCount: number | null
-  /** The `nextHopProtocol` of a request to the API, such as `h2`, `h3` or `http/1.1`. */
-  protocol: string
+  /** The `nextHopProtocol` the protocol check found, such as `h2`, or `null` if it had not settled. */
+  protocol: string | null
   sessionDurationMs: number
 }
 

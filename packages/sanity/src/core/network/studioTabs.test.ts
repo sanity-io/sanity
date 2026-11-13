@@ -216,6 +216,69 @@ describe('studio tab lock', () => {
     expect(studioTabs.getPeakStudioTabCount()).toBe(2)
   })
 
+  it('releases its lock and closes its channel when stopped', async () => {
+    const closeSpy = vi.spyOn(BroadcastChannel.prototype, 'close')
+    const stop = studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    stop()
+    listenerCount.openListener()
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.held).toEqual([])
+    expect(fakeLocks.requested).toHaveLength(1)
+    expect(closeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('releases the lock a swap in flight takes when stopped mid-swap', async () => {
+    const stop = studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    listenerCount.openListener()
+    vi.advanceTimersByTime(250)
+    stop()
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.requested).toHaveLength(2)
+    expect(fakeLocks.held).toEqual([])
+  })
+
+  it('holds one lock after a StrictMode start, stop and start', async () => {
+    studioTabs.startTrackingStudioTabs(SCOPE)()
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.held).toEqual([
+      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:0`,
+    ])
+  })
+
+  it('keeps tracking until every caller has stopped', async () => {
+    const stopFirst = studioTabs.startTrackingStudioTabs(SCOPE)
+    const stopSecond = studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    stopFirst()
+    stopFirst()
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.held).toHaveLength(1)
+
+    stopSecond()
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.held).toEqual([])
+  })
+
+  it('leaves the peak unknown, without an unhandled rejection, when the lock query is rejected', async () => {
+    vi.spyOn(fakeLocks.locks, 'query').mockRejectedValue(
+      new DOMException('The operation is insecure', 'SecurityError'),
+    )
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+
+    expect(fakeLocks.locks.query).toHaveBeenCalled()
+    expect(studioTabs.getPeakStudioTabCount()).toBeUndefined()
+  })
+
   it('does nothing without Web Locks', async () => {
     vi.resetModules()
     vi.stubGlobal('navigator', {...navigator, locks: undefined})

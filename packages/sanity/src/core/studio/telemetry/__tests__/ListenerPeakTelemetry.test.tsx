@@ -26,7 +26,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-it('sends the peak listener count in the closing beacon', async () => {
+it('sends the peak listener count in the closing beacon without starting the protocol probe', async () => {
   vi.resetModules()
   const {ListenerPeakTelemetry} = await import('../ListenerPeakTelemetry')
   const {resolveListenerCountingFetch} = await import('../../../network/listenerCount')
@@ -51,6 +51,7 @@ it('sends the peak listener count in the closing beacon', async () => {
   await resolveListenerCountingFetch()('https://abc123.api.sanity.io/v1/data/listen', {
     headers: {Accept: 'text/event-stream'},
   })
+  expect(fetch).toHaveBeenCalledTimes(1)
   dispatchEvent(new PageTransitionEvent('pagehide'))
 
   const listenerPeaks = beacons
@@ -62,7 +63,7 @@ it('sends the peak listener count in the closing beacon', async () => {
     {
       peakListenerCount: 1,
       peakStudioTabCount: null,
-      protocol: expect.any(String),
+      protocol: null,
       sessionDurationMs: expect.any(Number),
     },
   ])

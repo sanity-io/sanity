@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getApiNetworkDiagnostic, isUsingLegacyHttp} from './isUsingLegacyHttp'
+import {getApiNetworkDiagnostic, getCachedApiProtocol, isUsingLegacyHttp} from './isUsingLegacyHttp'
 
 describe('isUsingLegacyHttp', () => {
   let originalPerformanceObserver: typeof PerformanceObserver
@@ -77,6 +77,8 @@ describe('isUsingLegacyHttp', () => {
       } as unknown as SanityClient
       const firstCaller = isUsingLegacyHttp(client)
       const secondCaller = isUsingLegacyHttp(client)
+      expect(getCachedApiProtocol(client)).toBeUndefined()
+      expect(fetch).not.toHaveBeenCalled()
 
       await expect(
         Promise.all([
@@ -86,6 +88,7 @@ describe('isUsingLegacyHttp', () => {
         ]),
       ).resolves.toEqual([false, false, false])
       expect(fetch).toHaveBeenCalledTimes(1)
+      expect(getCachedApiProtocol(client)).toBe('h2')
     })
 
     it('consumes the response body without showing a cancelled request', async () => {
