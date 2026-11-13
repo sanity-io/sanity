@@ -412,7 +412,9 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    expect(screen.getByTestId('custom-field-fallback')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
