@@ -1,10 +1,15 @@
+import {type BadgeTone} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 import {Flex, Text} from 'ui5'
 
+import {type StatusMarkName} from '../../../ui-components/statusMark/statusMarkGeometry'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../releases/store/types'
+import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
 import {type GroupSelectionState} from '../utils/selection'
 import {LeadingGlyph} from './VariantSet/LeadingGlyph'
@@ -64,21 +69,11 @@ export const DocumentGroupSet: ComponentType<{
             />
           </div>
         )}
-        <LeadingGlyph className="variant-set-icon" data-testid="variant-set-icon">
-          {bundle?.type === 'agent' && (
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            <ReleaseAvatarIcon tone="suggest" />
-          )}
-          {bundle?.type === 'perspective' && (
-            // A release takes the small icon set, as in the navbar's releases menu: filled glyphs
-            // drawn for this size, where the default set's thin strokes would blur once scaled
-            // down. Published and Draft keep their dots.
-            <ReleaseAvatarIcon
-              release={bundle.perspective}
-              size={isReleaseDocument(bundle.perspective) ? 'small' : 'default'}
-            />
-          )}
-        </LeadingGlyph>
+        <LeadingGlyph
+          className="variant-set-icon"
+          data-testid="variant-set-icon"
+          {...(bundle ? bundleMark(bundle) : {})}
+        />
         <div className="variant-set-text">
           <Flex gap={2} alignItems="center">
             <Text size={1} weight="medium" as="div" trim={true} data-testid="variant-set-name">
@@ -96,4 +91,26 @@ export const DocumentGroupSet: ComponentType<{
       {children}
     </VariantSet>
   )
+}
+
+/**
+ * A set's status mark: Published is a disc, Draft a ring, a release its type's pictogram (a
+ * paused release the clock), an agent bundle the sparkle. A release keeps the tone it has
+ * elsewhere, so an archived or paused one does not take its type's tone.
+ */
+function bundleMark(bundle: VariantSetBundle): {mark: StatusMarkName; tone?: BadgeTone} {
+  if (bundle.type === 'agent') return {mark: 'agent'}
+  const {perspective} = bundle
+  if (isReleaseDocument(perspective)) {
+    return {
+      mark: isPausedCardinalityOneRelease(perspective)
+        ? 'scheduled'
+        : perspective.metadata.releaseType,
+      tone: getReleaseTone(perspective),
+    }
+  }
+  if (isPublishedPerspective(perspective)) return {mark: 'published'}
+  if (isDraftPerspective(perspective)) return {mark: 'draft'}
+  if (isAgentBundleName(perspective)) return {mark: 'agent'}
+  return {mark: 'undecided', tone: getReleaseTone(perspective)}
 }

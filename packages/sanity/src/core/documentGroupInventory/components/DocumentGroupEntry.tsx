@@ -1,10 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type KeyboardEvent, type MouseEventHandler, type ReactNode, type Ref, useId} from 'react'
-import {Icon, Text} from 'ui5'
+import {Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {getDocumentVersionStatusTimestampKey} from '../../components/documentStatus/getDocumentVersionStatusTimestampKey'
-import {RhombusIconLarge} from '../../components/temporary-icons/Rhombus'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -91,11 +90,8 @@ export function DocumentGroupEntry({
       <LeadingGlyph
         className="variant-mark"
         data-testid={isVariantRow ? 'variant-mark' : undefined}
-      >
-        {isVariantRow && (
-          <Icon icon={RhombusIconLarge} size={1} aria-hidden style={{margin: '-0.375rem'}} />
-        )}
-      </LeadingGlyph>
+        mark={isVariantRow ? 'variant' : undefined}
+      />
       <div className="row-content">
         <button
           type="button"

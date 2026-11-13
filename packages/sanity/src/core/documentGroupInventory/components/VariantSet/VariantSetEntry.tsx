@@ -5,9 +5,6 @@ import {mixToContrast} from '../../utils/contrast'
 import {selectionColors} from './selectionColors'
 import {LEADING_COLUMN_WIDTH} from './VariantSet'
 
-/** The width of the bar that marks the row of the version open in the form. */
-const CURRENT_BAR_WIDTH = 2
-
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
 
@@ -93,13 +90,6 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
       align-self: stretch;
       justify-content: center;
-
-      /* The variant colour, like the menus' and the navbar chip's diamond. */
-      svg {
-        --card-icon-color: var(--card-badge-suggest-icon-color);
-        --icon-color: var(--card-badge-suggest-icon-color);
-        color: var(--card-badge-suggest-icon-color);
-      }
     }
 
     /*
@@ -186,20 +176,6 @@ export const VariantSetEntry = styled.div(({theme}) => {
      */
     &:has(.atom :checked) {
       background-color: ${selected.row};
-    }
-
-    /*
-     * The row of the version open in the form: a 2px bar in the text colour on the row's left edge
-     * and a semibold title. Not a tint, which means "checked", so it reads on a checked row too,
-     * and the bar keeps 3:1 or more on the plain, hovered and checked backgrounds.
-     */
-    &[data-current]::before {
-      position: absolute;
-      inset-block: 0;
-      inset-inline-start: 0;
-      inline-size: ${CURRENT_BAR_WIDTH}px;
-      background-color: ${color.fg};
-      content: '';
     }
   `
 })

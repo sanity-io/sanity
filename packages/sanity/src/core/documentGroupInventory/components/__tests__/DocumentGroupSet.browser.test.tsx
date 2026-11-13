@@ -534,7 +534,7 @@ describe('DocumentGroupSet', () => {
     )!
     const defaultMark = getRow(DRAFT, 'Unreleased').querySelector<HTMLElement>('.variant-mark')!
 
-    expect(variantMark.querySelector('[data-sanity-icon="rhombus"]')).not.toBeNull()
+    expect(variantMark.querySelector('[data-ui="StatusMark"][data-mark="variant"]')).not.toBeNull()
     expect(defaultMark.querySelector('svg')).toBeNull()
     // Reserved, so the names line up
     expect(defaultMark.getBoundingClientRect().width).toBe(
