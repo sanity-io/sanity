@@ -7,10 +7,12 @@ import {type ReleaseId} from '../../perspective/types'
 import {
   type AddonDatasetDocument,
   type AddonDatasetListenerStore,
-  type AddonDatasetQueryEvent,
-  type AddonDatasetQueryStatusEvent,
-  followAddonDatasetQuery,
 } from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
+import {
+  followListenerQuery,
+  type ListenerQueryEvent,
+  type ListenerQueryStatusEvent,
+} from '../../store/sharedListener/followListenerQuery'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
@@ -39,7 +41,7 @@ interface CommentsStoreState extends CommentsReducerState {
   error: Error | null
 }
 
-type CommentsStoreAction = CommentsReducerAction | AddonDatasetQueryStatusEvent
+type CommentsStoreAction = CommentsReducerAction | ListenerQueryStatusEvent
 
 const LOADING_STATE: CommentsStoreState = {comments: {}, loading: true, error: null}
 const IDLE_STATE: CommentsStoreState = {comments: {}, loading: false, error: null}
@@ -157,7 +159,7 @@ function mutationToOutcome(
  * store.
  */
 function queryEventToOutcome(
-  event: AddonDatasetQueryEvent<CommentDocument>,
+  event: ListenerQueryEvent<CommentDocument, AddonDatasetDocument>,
   scope: CommentsQueryScope,
   transactionsIdMap: Map<DocumentId, TransactionId>,
 ): QueryEventOutcome | null {
@@ -237,7 +239,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
     const fetchComments = client.observable.fetch<CommentDocument[]>(query, params)
     const remoteActions$ = listenerStore.events.pipe(
-      followAddonDatasetQuery(fetchComments),
+      followListenerQuery(fetchComments),
       map((event) => queryEventToOutcome(event, scope, transactionsIdMap)),
       filter((outcome) => outcome !== null),
       tap(({latestTransactionReceivedFor}) => {

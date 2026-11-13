@@ -4,18 +4,14 @@ import {
   type ReconnectEvent,
   type WelcomeEvent,
 } from '@sanity/client'
-import {defer, Observable, of, Subject, throwError} from 'rxjs'
+import {Observable, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {LISTENER_RESET_DELAY} from '../../preview/constants'
-import {mutation, task} from './__fixtures__/addonDataset.fixture'
 import {
   type AddonDatasetDocument,
   type AddonDatasetListenerEvent,
-  type AddonDatasetListenerStore,
-  type AddonDatasetQueryEvent,
   createAddonDatasetListenerStore,
-  followAddonDatasetQuery,
 } from './createAddonDatasetListenerStore'
 
 const WELCOME: WelcomeEvent = {type: 'welcome', listenerName: 'test'}
@@ -142,102 +138,5 @@ describe('createAddonDatasetListenerStore', () => {
 
     vi.advanceTimersByTime(LISTENER_RESET_DELAY)
     expect(connections.open).toBe(0)
-  })
-})
-
-describe('followAddonDatasetQuery', () => {
-  const LOADING = {type: 'loading'}
-
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  /** A fetch that fails its first `failures` attempts, then returns `documents` */
-  function flakyFetch(failures: number, documents: string[]) {
-    const attempts = {count: 0}
-    const fetch = defer(() => {
-      attempts.count += 1
-      return attempts.count <= failures
-        ? throwError(() => new Error(`attempt ${attempts.count} failed`))
-        : of(documents)
-    })
-    return {fetch, attempts}
-  }
-
-  function follow(store: AddonDatasetListenerStore, fetch: Observable<string[]>) {
-    const events: AddonDatasetQueryEvent<string>[] = []
-    const subscription = store.events
-      .pipe(followAddonDatasetQuery(fetch))
-      .subscribe((event) => events.push(event))
-    return {events, subscription}
-  }
-
-  it('fetches on every connection, and cancels a fetch still in flight when the listener reconnects', () => {
-    const {store, server} = setup()
-    const response = new Subject<string[]>()
-    const fetches = {started: 0, open: 0}
-    const fetch = new Observable<string[]>((subscriber) => {
-      fetches.started += 1
-      fetches.open += 1
-      const subscription = response.subscribe(subscriber)
-      return () => {
-        fetches.open -= 1
-        subscription.unsubscribe()
-      }
-    })
-    const {events, subscription} = follow(store, fetch)
-
-    server.next(WELCOME)
-    expect(events).toEqual([LOADING])
-    expect(fetches.open).toBe(1)
-
-    server.next(RECONNECT)
-    expect(fetches.open).toBe(0)
-
-    server.next(WELCOME)
-    response.next(['a'])
-    expect(fetches.started).toBe(2)
-    expect(events).toEqual([LOADING, LOADING, LOADING, {type: 'loaded', documents: ['a']}])
-
-    subscription.unsubscribe()
-  })
-
-  it('retries a failed fetch, waiting longer before each attempt', () => {
-    const {store, server} = setup()
-    const {fetch, attempts} = flakyFetch(2, ['a'])
-    const {events, subscription} = follow(store, fetch)
-
-    server.next(WELCOME)
-    expect(attempts.count).toBe(1)
-    vi.advanceTimersByTime(1000)
-    expect(attempts.count).toBe(2)
-    vi.advanceTimersByTime(1999)
-    expect(attempts.count).toBe(2)
-    vi.advanceTimersByTime(1)
-
-    expect(attempts.count).toBe(3)
-    expect(events).toEqual([LOADING, {type: 'loaded', documents: ['a']}])
-
-    subscription.unsubscribe()
-  })
-
-  it('reports a fetch that keeps failing once it runs out of retries, and passes on mutations meanwhile', () => {
-    const {store, server} = setup()
-    const {fetch, attempts} = flakyFetch(Infinity, [])
-    const {events, subscription} = follow(store, fetch)
-    const appear = mutation('appear', 't-1', task('t-1'))
-
-    server.next(WELCOME)
-    server.next(appear)
-    vi.advanceTimersByTime(1000 + 2000 + 3000)
-
-    expect(attempts.count).toBe(4)
-    expect(events).toEqual([LOADING, appear, {type: 'error', error: new Error('attempt 4 failed')}])
-
-    subscription.unsubscribe()
   })
 })
