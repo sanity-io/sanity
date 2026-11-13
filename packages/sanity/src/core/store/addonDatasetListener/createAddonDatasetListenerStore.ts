@@ -5,7 +5,20 @@ import {
   type SanityClient,
   type WelcomeEvent,
 } from '@sanity/client'
-import {filter, type Observable} from 'rxjs'
+import {
+  catchError,
+  connect,
+  filter,
+  map,
+  merge,
+  type Observable,
+  of,
+  type OperatorFunction,
+  retry,
+  startWith,
+  switchMap,
+  timer,
+} from 'rxjs'
 
 import {type CommentDocument} from '../../comments/types'
 import {type TaskDocument} from '../../tasks/types'
@@ -70,4 +83,99 @@ export function createAddonDatasetListenerStore({
     )
 
   return {events}
+}
+
+/**
+ * The state of a query on the addon dataset, as {@link followAddonDatasetQuery} reports it
+ *
+ * @internal
+ */
+export type AddonDatasetQueryEvent<
+  TDocument,
+  TResult extends Record<string, any> = AddonDatasetDocument,
+> =
+  | {type: 'loading'}
+  | {type: 'loaded'; documents: TDocument[]}
+  | {type: 'error'; error: Error}
+  | MutationEvent<TResult>
+
+/**
+ * The events {@link followAddonDatasetQuery} follows: those of the shared addon dataset listener
+ * by default, or of another shared listener whose mutations carry `TResult`
+ *
+ * @internal
+ */
+export type QueryListenerEvent<TResult extends Record<string, any> = AddonDatasetDocument> =
+  | WelcomeEvent
+  | ReconnectEvent
+  | MutationEvent<TResult>
+
+/** @internal */
+export type AddonDatasetQueryStatusEvent = Extract<
+  AddonDatasetQueryEvent<never>,
+  {type: 'loading' | 'error'}
+>
+
+function isConnectionEvent<TResult extends Record<string, any>>(
+  event: QueryListenerEvent<TResult>,
+): event is WelcomeEvent | ReconnectEvent {
+  return event.type === 'welcome' || event.type === 'reconnect'
+}
+
+function isMutationEvent<TResult extends Record<string, any>>(
+  event: QueryListenerEvent<TResult>,
+): event is MutationEvent<TResult> {
+  return event.type === 'mutation'
+}
+
+/** How many times a failed fetch is retried before it is reported as an `error` */
+const MAX_FETCH_RETRIES = 3
+
+/**
+ * Follows a query on the addon dataset through the events of the shared listener. On every
+ * connection it emits `loading`, then `loaded` with the documents `fetch` returns, and a reconnect
+ * cancels a fetch still in flight. A failed fetch is retried, and emits `error` once it has run
+ * out of retries. Every mutation is passed on as it arrives, for every comment and task, and a
+ * failed listener emits `error`.
+ *
+ * @internal
+ */
+export function followAddonDatasetQuery<
+  TDocument,
+  TResult extends Record<string, any> = AddonDatasetDocument,
+>(
+  fetch: Observable<TDocument[]>,
+): OperatorFunction<QueryListenerEvent<TResult>, AddonDatasetQueryEvent<TDocument, TResult>> {
+  type QueryEvent = AddonDatasetQueryEvent<TDocument, TResult>
+  const loading: QueryEvent = {type: 'loading'}
+  const toError = (error: Error) => of<QueryEvent>({type: 'error', error})
+
+  return (events) =>
+    events.pipe(
+      connect((events$) =>
+        merge(
+          events$.pipe(
+            filter(isConnectionEvent),
+            switchMap((event) =>
+              event.type === 'reconnect'
+                ? of(loading)
+                : fetch.pipe(
+                    retry({
+                      count: MAX_FETCH_RETRIES,
+                      delay: (_error: unknown, attempt) => timer(attempt * 1000),
+                    }),
+                    map((documents): QueryEvent => ({
+                      type: 'loaded',
+                      documents,
+                    })),
+                    catchError(toError),
+                    startWith(loading),
+                  ),
+            ),
+          ),
+          events$.pipe(filter(isMutationEvent)),
+        ),
+      ),
+      catchError(toError),
+    )
 }
