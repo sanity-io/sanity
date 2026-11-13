@@ -9,6 +9,7 @@ import {vi} from 'vitest'
 
 import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
 import {type SingleWorkspace, type WorkspaceSummary} from '../../src/core/config/types'
+import {getWorkspaceSource} from '../../src/core/config/workspaceSource'
 import type * as UpsellDataModule from '../../src/core/hooks/useUpsellData'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
@@ -124,7 +125,7 @@ export async function createTestProvider({
             <ToastProvider>
               <LayerProvider>
                 <WorkspaceProvider workspace={workspace}>
-                  <SourceProvider source={workspace.unstable_sources[0]}>
+                  <SourceProvider source={getWorkspaceSource(workspace)}>
                     <ActiveWorkspaceMatcherProvider
                       activeWorkspace={activeWorkspace}
                       setActiveWorkspace={noop}

@@ -12,11 +12,12 @@ import {
   type Source,
   type Workspace,
 } from './types'
+import {createWorkspace, getWorkspaceSource} from './workspaceSource'
 
 /**
- * Fully resolves a configuration including subscribing to all sources and
- * workspaces from a config. Returns an `Observable` that waits till all sources
- * emit once before emitting an array of fully resolved sources and workspaces.
+ * Fully resolves a configuration including subscribing to the source of every
+ * workspace in a config. Returns an `Observable` that waits till every source
+ * emits once before emitting an array of fully resolved workspaces.
  *
  * @internal
  */
@@ -24,18 +25,10 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
   const {workspaces} = prepareConfig(config)
 
   return combineLatest(
-    workspaces.flatMap((workspaceSummary) =>
+    workspaces.map((workspaceSummary) =>
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
-        map((sources): Workspace => {
-          const {releases: _releases, ...workspaceMetadata} = workspaceSummary
-          return {
-            ...workspaceMetadata,
-            ...sources[0],
-            unstable_sources: sources,
-            type: 'workspace',
-          }
-        }),
+      workspaceSummary.__internal.source.pipe(
+        map((source) => createWorkspace(workspaceSummary, source)),
       ),
     ),
   )
@@ -92,5 +85,5 @@ export async function createSourceFromConfig(
   options: CreateWorkspaceFromConfigOptions,
 ): Promise<Source> {
   const workspace = await createWorkspaceFromConfig(options)
-  return workspace.unstable_sources[0]
+  return getWorkspaceSource(workspace)
 }

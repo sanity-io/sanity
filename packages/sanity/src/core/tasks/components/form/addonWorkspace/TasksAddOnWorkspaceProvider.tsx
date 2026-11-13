@@ -3,6 +3,7 @@ import {useEffect, useMemo} from 'react'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {prepareConfig} from '../../../../config/prepareConfig'
 import {type Config} from '../../../../config/types'
+import {getWorkspaceSource} from '../../../../config/workspaceSource'
 import {useClient} from '../../../../hooks/useClient'
 import {ResourceCacheProvider} from '../../../../store/ResourceCacheProvider'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
@@ -57,7 +58,7 @@ function TasksAddonWorkspaceProviderInner({
   if (!addonWorkspace) return null
   return (
     <WorkspaceProvider workspace={addonWorkspace}>
-      <SourceProvider source={addonWorkspace.unstable_sources[0]}>
+      <SourceProvider source={getWorkspaceSource(addonWorkspace)}>
         <ResourceCacheProvider>{children}</ResourceCacheProvider>
       </SourceProvider>
     </WorkspaceProvider>
