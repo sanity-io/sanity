@@ -107,9 +107,26 @@ const flags = run(
       }),
       3051,
     ),
-    forceHttp1: repeatableFlag('--force-http1', {
-      description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
-    }),
+    // or() makes the parser itself reject passing both flags: a stream cap needs h2
+    tlsProtocol: optional(
+      or(
+        mapValue(
+          multiple(
+            option('--force-http1', {
+              description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling. Mutually exclusive with --max-streams`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'http1' as const}),
+        ),
+        mapValue(
+          option('--max-streams', integer({min: 1, metavar: 'N'}), {
+            description: message`cap concurrent HTTP/2 streams per session (no cap by default). Mutually exclusive with --force-http1`,
+          }),
+          (maxStreams) => ({kind: 'h2' as const, maxStreams}),
+        ),
+      ),
+    ),
     http1: repeatableFlag('--http1', {
       description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
     }),
@@ -235,11 +252,12 @@ const flags = run(
 )
 
 const TLS_PORT = flags.port
-const FORCE_HTTP1 = flags.forceHttp1
+const FORCE_HTTP1 = flags.tlsProtocol?.kind === 'http1'
 const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = flags.http1Port
 const API_HOST = flags.apiHost
 const LISTENER_TTL_MS = flags.listenerTtl * 1000
+const MAX_STREAMS = flags.tlsProtocol?.kind === 'h2' ? flags.tlsProtocol.maxStreams : undefined
 const FLAP = flags.flap
 const LATENCY = flags.latency
 const ERROR_PROBABILITY = flags.errorProbability
@@ -582,6 +600,7 @@ const tlsProxy = createDebugProxy({
   port: TLS_PORT,
   tls: await loadTlsConfig(),
   forceHttp1: FORCE_HTTP1,
+  http2Options: MAX_STREAMS ? {settings: {maxConcurrentStreams: MAX_STREAMS}} : undefined,
 })
 
 await tlsProxy.listen()
@@ -618,6 +637,10 @@ if (ERROR_PROBABILITY > 0) {
   console.info(
     `Simulated incident: ${Math.round(ERROR_PROBABILITY * 100)}% of requests fail with a random 5xx (500/502/503/504)`,
   )
+}
+
+if (MAX_STREAMS) {
+  console.info(`Max concurrent HTTP/2 streams: ${MAX_STREAMS} (the ${TLS_PORT} listener only)`)
 }
 
 if (LISTENER_ERROR_PROBABILITY > 0) {

@@ -3,7 +3,7 @@ import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 
 export function getReferenceClient(
   client: SanityClient,
-  schemaType: GlobalDocumentReferenceSchemaType,
+  schemaType: Pick<GlobalDocumentReferenceSchemaType, 'resourceType' | 'resourceId'>,
 ): SanityClient {
   if (schemaType.resourceType === 'dataset') {
     const [projectId, datasetName] = schemaType.resourceId.split('.', 2)
