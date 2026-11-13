@@ -675,6 +675,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.variant.none': 'None',
   /** Label of the variant field */
   'vision.options.variant-label': 'Variant',
+  /** Chip in the request column's action bar while the tab queries another dataset than the workspace */
+  'vision.overrides.dataset.button': 'Dataset {{dataset}}',
+  /** Tooltip of the dataset override chip */
+  'vision.overrides.dataset.tooltip':
+    'Dataset {{dataset}} differs from the workspace dataset {{workspaceDataset}}. Select to change it in Options.',
+  /** Chip in the request column's action bar while the tab's perspective differs from the navbar's */
+  'vision.overrides.perspective.button': 'Perspective {{perspective}}',
+  /** Tooltip of the perspective override chip; both names as the perspective select shows them */
+  'vision.overrides.perspective.tooltip':
+    'Perspective {{perspective}} differs from the global perspective {{globalPerspective}}. Select to change it in Options.',
+  /** Chip in the request column's action bar while the tab sends no variant but the navbar has one */
+  'vision.overrides.variant.button': 'No variant',
+  /** Tooltip of the variant override chip */
+  'vision.overrides.variant.tooltip':
+    'Queries send no variant, which differs from the global variant {{variant}}. Select to change it in Options.',
   /** Accessible label for collapsing a bottom panel */
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */

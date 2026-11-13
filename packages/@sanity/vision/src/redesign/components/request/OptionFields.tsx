@@ -218,7 +218,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
 }
 
 /** What the navbar's perspective is called right now: a release title, published, or drafts */
-function useGlobalPerspectiveName(): string {
+export function useGlobalPerspectiveName(): string {
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const isDraftModelEnabled = useWorkspace().document.drafts.enabled
   const releaseTitle =
