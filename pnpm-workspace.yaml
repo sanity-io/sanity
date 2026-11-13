@@ -62,9 +62,9 @@ catalog:
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.23
-  tsdown: ^0.23.2
+  tsdown: ^0.23.7
   # Pins its `tsdown` peer to the exact release it ships with, so bump it together with `tsdown`
-  '@tsdown/css': ^0.23.2
+  '@tsdown/css': ^0.23.7
   typescript: ^7.0.2
   vite: ^8.3.8
   vitest: ^5.1.0
@@ -169,10 +169,6 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
-  # tsdown 0.23.2 depends on rolldown-plugin-dts ^0.29.0-beta.2. That beta's tsgo
-  # generator requires typescript@7.1.0-beta's declaration emit API. 0.28.8 still
-  # drives the TypeScript 7.0 tsgo CLI (dts.generator: 'tsgo').
-  rolldown-plugin-dts: 0.30.1
 
 preferWorkspacePackages: true
 
