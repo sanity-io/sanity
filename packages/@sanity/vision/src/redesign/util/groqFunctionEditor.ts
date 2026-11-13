@@ -36,6 +36,7 @@ import {
   readQueryFunctions,
 } from './groqFunctions'
 import {renderMessage} from './groqLint'
+import {paramCompletions} from './groqParamCompletions'
 
 /** Completions open on their own once this much of a name is typed; Ctrl-Space opens them anytime */
 const MIN_TYPED_LENGTH = 2
@@ -345,7 +346,11 @@ export function createGroqFunctionExtensions(labels: GroqEditorLabels): Extensio
   return [
     groqEditorLabels.of(labels),
     hoverTooltip((view, pos, side) => functionHoverAt(view.state, pos, side)),
-    autocompletion({override: [functionCompletions], selectOnOpen: false, icons: false}),
+    autocompletion({
+      override: [paramCompletions, functionCompletions],
+      selectOnOpen: false,
+      icons: false,
+    }),
     extractTooltip,
     keymap.of([{key: EXTRACT_FUNCTION_KEY, run: extractSelectionToFunction}]),
     functionEditorTheme,

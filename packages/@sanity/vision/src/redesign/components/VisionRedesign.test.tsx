@@ -655,10 +655,14 @@ describe('VisionRedesign', () => {
       ) as HTMLTextAreaElement
 
     // An existing value for one of the two params the query below references is kept untouched;
-    // the other, never seen before, is added as an empty placeholder
+    // the other, never seen before, is added as an empty placeholder. Nothing is written while
+    // the query is still being edited: leaving the query field is what writes it
     fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
     typeQuery('*[_type == $type][0...$limit]')
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3})
 
+    fireEvent.focusOut(getQueryEditor())
     await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: ''}), {
       timeout: 2000,
     })
@@ -683,6 +687,31 @@ describe('VisionRedesign', () => {
 
     unmount()
   })
+
+  it(
+    'writes a referenced param once the query has been idle, and not an empty key for a bare $',
+    {timeout: 15_000},
+    async () => {
+      const {unmount} = renderRedesign()
+      const paramsEditor = () =>
+        within(screen.getByTestId('vision-params-editor')).getByTestId(
+          'codemirror-mock',
+        ) as HTMLTextAreaElement
+
+      typeQuery('*[_type == $]')
+      fireEvent.focusOut(getQueryEditor())
+      await new Promise((resolve) => setTimeout(resolve, 400))
+      expect(JSON5.parse(paramsEditor().value)).toEqual({})
+
+      typeQuery('*[_type == $type]')
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      expect(JSON5.parse(paramsEditor().value)).toEqual({})
+      await new Promise((resolve) => setTimeout(resolve, 2_700))
+      await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({type: ''}))
+
+      unmount()
+    },
+  )
 
   it('leaves the JSON params editor alone while the query does not parse', async () => {
     const {unmount} = renderRedesign()
