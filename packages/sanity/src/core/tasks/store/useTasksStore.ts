@@ -3,12 +3,12 @@ import {useMemo} from 'react'
 import {useObservable, useObservableSubject} from 'react-rx'
 import {distinctUntilChanged, filter, map, merge, type Observable, of, scan} from 'rxjs'
 
+import {type AddonDatasetDocument} from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {
-  type AddonDatasetDocument,
-  type AddonDatasetQueryEvent,
-  type AddonDatasetQueryStatusEvent,
-  followAddonDatasetQuery,
-} from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
+  followListenerQuery,
+  type ListenerQueryEvent,
+  type ListenerQueryStatusEvent,
+} from '../../store/sharedListener/followListenerQuery'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {useAddonDatasetListenerStore} from '../../studio/addonDataset/useAddonDatasetListenerStore'
 import {getPublishedId} from '../../util/draftUtils'
@@ -28,7 +28,7 @@ interface TasksStoreState extends TasksReducerState {
   error: Error | null
 }
 
-type TasksStoreAction = TasksReducerAction | AddonDatasetQueryStatusEvent
+type TasksStoreAction = TasksReducerAction | ListenerQueryStatusEvent
 
 const LOADING_STATE: TasksStoreState = {tasks: {}, isLoading: true, error: null}
 const IDLE_STATE: TasksStoreState = {tasks: {}, isLoading: false, error: null}
@@ -66,7 +66,9 @@ function mutationToAction(event: MutationEvent<AddonDatasetDocument>): TasksRedu
 }
 
 /** The store action for an event of the tasks query, or `null` when it does not concern the store */
-function queryEventToAction(event: AddonDatasetQueryEvent<TaskDocument>): TasksStoreAction | null {
+function queryEventToAction(
+  event: ListenerQueryEvent<TaskDocument, AddonDatasetDocument>,
+): TasksStoreAction | null {
   switch (event.type) {
     case 'loading':
     case 'error':
@@ -120,7 +122,7 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
 
     const fetchTasks = client.observable.fetch<TaskDocument[]>(QUERY, {documentId: publishedId})
     const remoteActions$ = listenerStore.events.pipe(
-      followAddonDatasetQuery(fetchTasks),
+      followListenerQuery(fetchTasks),
       map((event) => queryEventToAction(event)),
       filter((action) => action !== null),
     )
