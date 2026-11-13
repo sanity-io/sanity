@@ -8,6 +8,7 @@ import {
   createContext,
   createRef,
   type RefObject,
+  useCallback,
   useContext,
 } from 'react'
 import {type InputProps, type PortableTextInputProps, type PortableTextPluginsProps} from 'sanity'
@@ -27,25 +28,36 @@ interface HarnessContext {
   outer: HandlerProps
   nested: HandlerProps
   editorRef: RefObject<PortableTextEditor | null>
-  setPluginEditor: (editor: Editor | null) => void
+  setPluginEditor: (depth: Depth, editor: Editor | null) => void
 }
 const Context = createContext<HarnessContext | null>(null)
+const DepthContext = createContext<Depth>('top level')
 
 function HandlerPropsInput(inputProps: InputProps) {
   const context = useContext(Context)!
-  const handlers = inputProps.path.length > 1 ? context.nested : context.outer
-  return inputProps.renderDefault({
-    ...inputProps,
-    ...handlers,
-    editorRef: context.editorRef,
-  } as PortableTextInputProps)
+  const nested = inputProps.path.length > 1
+  const handlers = nested ? context.nested : context.outer
+  return (
+    <DepthContext.Provider value={nested ? 'nested dialog' : 'top level'}>
+      {inputProps.renderDefault({
+        ...inputProps,
+        ...handlers,
+        editorRef: context.editorRef,
+      } as PortableTextInputProps)}
+    </DepthContext.Provider>
+  )
 }
 
 function HandlerPropsPlugins(props: PortableTextPluginsProps) {
   const {setPluginEditor} = useContext(Context)!
+  const depth = useContext(DepthContext)
+  const setEditor = useCallback(
+    (editor: Editor | null) => setPluginEditor(depth, editor),
+    [depth, setPluginEditor],
+  )
   return (
     <>
-      <EditorRefPlugin ref={setPluginEditor} />
+      <EditorRefPlugin ref={setEditor} />
       {props.renderDefault(props)}
     </>
   )
@@ -142,8 +154,10 @@ async function open(depth: Depth, handlers: HandlerProps, selection: 'word' | 'c
         outer: nested ? {} : handlers,
         nested: handlers,
         editorRef,
-        setPluginEditor: (editor) => {
-          pluginEditorRef.current = editor
+        setPluginEditor: (editorDepth, editor) => {
+          if (editorDepth === depth) {
+            pluginEditorRef.current = editor
+          }
         },
       }}
     >
@@ -193,6 +207,18 @@ async function open(depth: Depth, handlers: HandlerProps, selection: 'word' | 'c
       selection === 'word' ? TEXT[depth] : [true, 5],
     )
   })
+  await vi.waitFor(
+    () => {
+      const path = nested
+        ? [{_key: 'in'}, 'children', {_key: 'inspan'}]
+        : [{_key: 'a'}, 'children', {_key: 'b'}]
+      expect(pluginEditorRef.current?.getSnapshot().context.selection).toMatchObject({
+        anchor: {path, offset: selection === 'word' ? 0 : 5},
+        focus: {path, offset: 5},
+      })
+    },
+    {timeout: 10_000},
+  )
   return {editable, pluginEditorRef, modifier: getModifierKey()}
 }
 
