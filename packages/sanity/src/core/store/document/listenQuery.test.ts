@@ -1,7 +1,8 @@
 import {ChannelError, type SanityClient} from '@sanity/client'
 import {defer, NEVER, of, Subject, throwError} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, describe, expect, vi} from 'vitest'
 
+import {test} from '../../../../test/testUtils/listenerOutagesTest'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {listenQuery} from './listenQuery'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
@@ -26,13 +27,14 @@ function createMutationEvent(overrides: Partial<MutationEvent> = {}): MutationEv
   }
 }
 
-function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
+function createMockClient(listenerEvents$: Subject<ListenerEvent>, projectId: string) {
   const fetch = vi.fn(() => of({ok: true}))
   const client = {
     listen: vi.fn(() => listenerEvents$),
     withConfig: vi.fn(function withConfig(this: unknown) {
       return this
     }),
+    config: () => ({projectId}),
     observable: {fetch},
   }
   return {
@@ -69,10 +71,10 @@ describe('listenQuery', () => {
   let listen: ReturnType<typeof vi.fn>
   let withConfig: ReturnType<typeof vi.fn>
 
-  beforeEach(() => {
+  test.beforeEach(({projectId}) => {
     vi.useFakeTimers()
     listener$ = new Subject<ListenerEvent>()
-    ;({client, fetch, listen, withConfig} = createMockClient(listener$))
+    ;({client, fetch, listen, withConfig} = createMockClient(listener$, projectId))
   })
 
   afterEach(() => {
@@ -396,6 +398,25 @@ describe('listenQuery', () => {
       expect(values).toEqual([{ok: true}])
 
       sub.unsubscribe()
+    })
+
+    test('fetches right away for a listener that starts while another one is down', async () => {
+      listen.mockImplementation(() => NEVER)
+      const values: unknown[] = []
+      const first = listenQuery(client, '*').subscribe()
+      await vi.advanceTimersByTimeAsync(10_000 + 10)
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Only one listener has to sit through the welcome timeout.
+      const second = listenQuery(client, '*[_type == "book"]').subscribe((value) =>
+        values.push(value),
+      )
+      await flushScheduled()
+      await flushScheduled()
+      expect(values).toEqual([{ok: true}])
+
+      first.unsubscribe()
+      second.unsubscribe()
     })
 
     test('still errors on an error in the query', async () => {

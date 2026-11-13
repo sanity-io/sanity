@@ -158,7 +158,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       tag: 'listen-search-query',
     })
   }).pipe(
-    reconnectListener(),
+    reconnectListener({projectId: client.config().projectId}),
     mergeMap((ev, i) => {
       // When a connection is successfully established, the first event will be 'welcome'
       if (i > 0 || ev.type === 'welcome') {

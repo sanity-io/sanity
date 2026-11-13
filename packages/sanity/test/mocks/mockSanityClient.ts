@@ -41,6 +41,7 @@ export function createMockSanityClient(
   } = {},
   options: {
     apiVersion?: string
+    projectId?: string
   } = {},
 ) {
   const requests: Record<string, any> = {

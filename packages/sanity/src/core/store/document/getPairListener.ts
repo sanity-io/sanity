@@ -205,7 +205,7 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
-      reconnectListener(),
+      reconnectListener({projectId: client.config().projectId}),
       tap((event) => {
         if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
       }),

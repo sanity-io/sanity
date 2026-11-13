@@ -26,7 +26,7 @@ export function createGlobalListener(client: SanityClient) {
       },
     )
     .pipe(
-      reconnectListener(),
+      reconnectListener({projectId: client.config().projectId}),
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
         resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),

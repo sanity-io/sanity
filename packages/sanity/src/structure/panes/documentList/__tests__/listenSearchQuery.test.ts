@@ -2,8 +2,9 @@ import {ChannelError, type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {concat, defer, firstValueFrom, NEVER, type Observable, of, Subject} from 'rxjs'
 import {createSearch, type SearchSort} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
+import {it} from '../../../../../test/testUtils/listenerOutagesTest'
 import {listenSearchQuery, resolveSearchOrdering, type SearchQueryState} from '../listenSearchQuery'
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -81,9 +82,10 @@ describe('resolveSearchOrdering', () => {
 })
 
 describe('listenSearchQuery', () => {
-  function runListenSearchQuery(variant?: string) {
+  function runListenSearchQuery(projectId: string, variant?: string) {
     const client = {
       listen: vi.fn(() => of({type: 'welcome'})),
+      config: () => ({projectId}),
       observable: {fetch: vi.fn(() => of(['author']))},
     } as unknown as SanityClient
 
@@ -103,12 +105,12 @@ describe('listenSearchQuery', () => {
     )
   }
 
-  it('searches within the selected variant', async () => {
+  it('searches within the selected variant', async ({projectId}) => {
     mockCreateSearch.mockClear()
     const search = vi.fn(() => of({hits: []}))
     mockCreateSearch.mockReturnValue(search as never)
 
-    await runListenSearchQuery('alpha-audience')
+    await runListenSearchQuery(projectId, 'alpha-audience')
 
     expect(mockCreateSearch).toHaveBeenCalledWith(
       expect.anything(),
@@ -121,12 +123,12 @@ describe('listenSearchQuery', () => {
     )
   })
 
-  it('omits the variant when none is selected', async () => {
+  it('omits the variant when none is selected', async ({projectId}) => {
     mockCreateSearch.mockClear()
     const search = vi.fn(() => of({hits: []}))
     mockCreateSearch.mockReturnValue(search as never)
 
-    await runListenSearchQuery()
+    await runListenSearchQuery(projectId)
 
     expect(search).toHaveBeenCalledWith(
       expect.anything(),
@@ -138,11 +140,12 @@ describe('listenSearchQuery', () => {
     const book = {_id: 'book-1', _type: 'book'}
 
     // Each test lists its own type: the list caches its last result per query across calls.
-    function listBooks(listen: () => Observable<unknown>, typeName: string) {
+    function listBooks(projectId: string, listen: () => Observable<unknown>, typeName: string) {
       const search = vi.fn(() => of({hits: [{hit: book}]}))
       mockCreateSearch.mockReturnValue(search as never)
       const client = {
         listen: vi.fn(listen),
+        config: () => ({projectId}),
         observable: {fetch: vi.fn(() => of([typeName]))},
       } as unknown as SanityClient
       const states$ = listenSearchQuery({
@@ -160,8 +163,12 @@ describe('listenSearchQuery', () => {
 
     // The client emits `reconnect` before `welcome` when the listen request fails, and keeps
     // retrying it on its own.
-    it('lists the documents the search finds', async () => {
-      const {states$} = listBooks(() => concat(of({type: 'reconnect'}), NEVER), 'bookUnreachable')
+    it('lists the documents the search finds', async ({projectId}) => {
+      const {states$} = listBooks(
+        projectId,
+        () => concat(of({type: 'reconnect'}), NEVER),
+        'bookUnreachable',
+      )
 
       expect(await firstValueFrom(states$)).toEqual({
         connected: false,
@@ -170,9 +177,9 @@ describe('listenSearchQuery', () => {
       })
     })
 
-    it('searches again and goes live once the listener connects', async () => {
+    it('searches again and goes live once the listener connects', async ({projectId}) => {
       const listener = new Subject<{type: string}>()
-      const {search, states$} = listBooks(() => listener, 'bookConnectsLate')
+      const {search, states$} = listBooks(projectId, () => listener, 'bookConnectsLate')
       const states = subscribeToStates(states$)
 
       listener.next({type: 'reconnect'})
@@ -184,9 +191,11 @@ describe('listenSearchQuery', () => {
       expect(states.map(({connected}) => connected)).toEqual([false, true])
     })
 
-    it('keeps the listed documents without searching again when a live listener goes down', async () => {
+    it('keeps the listed documents without searching again when a live listener goes down', async ({
+      projectId,
+    }) => {
       const listener = new Subject<{type: string}>()
-      const {search, states$} = listBooks(() => listener, 'bookGoesDown')
+      const {search, states$} = listBooks(projectId, () => listener, 'bookGoesDown')
       const states = subscribeToStates(states$)
 
       listener.next({type: 'welcome'})
@@ -223,9 +232,9 @@ describe('listenSearchQuery', () => {
         return {connections, listen, current: () => connections[connections.length - 1]}
       }
 
-      it('lists the documents and reconnects after a channel error', async () => {
+      it('lists the documents and reconnects after a channel error', async ({projectId}) => {
         const {connections, listen, current} = createConnections()
-        const {search, states$} = listBooks(listen, 'bookChannelError')
+        const {search, states$} = listBooks(projectId, listen, 'bookChannelError')
         const states = subscribeToStates(states$)
 
         current().error(
@@ -243,9 +252,9 @@ describe('listenSearchQuery', () => {
         expect(states.at(-1)).toEqual({connected: true, fromCache: false, documents: [book]})
       })
 
-      it('lists the documents when the listener does not welcome in time', async () => {
+      it('lists the documents when the listener does not welcome in time', async ({projectId}) => {
         const {listen} = createConnections()
-        const {states$} = listBooks(listen, 'bookNoWelcome')
+        const {states$} = listBooks(projectId, listen, 'bookNoWelcome')
         const states = subscribeToStates(states$)
 
         await vi.advanceTimersByTimeAsync(9_000)
@@ -255,9 +264,9 @@ describe('listenSearchQuery', () => {
         expect(states).toEqual([{connected: false, fromCache: false, documents: [book]}])
       })
 
-      it('still fails on an error in the query', async () => {
+      it('still fails on an error in the query', async ({projectId}) => {
         const {listen, current} = createConnections()
-        const {states$} = listBooks(listen, 'bookBadQuery')
+        const {states$} = listBooks(projectId, listen, 'bookBadQuery')
         const errors: unknown[] = []
         const subscription = states$.subscribe({error: (error) => errors.push(error)})
         onTestFinished(() => subscription.unsubscribe())

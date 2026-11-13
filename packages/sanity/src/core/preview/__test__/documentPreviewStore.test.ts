@@ -1,15 +1,16 @@
 import {ChannelError, createClient, type ListenEvent} from '@sanity/client'
 import {defer, type Observable, of, Subject} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
+import {it} from '../../../../test/testUtils/listenerOutagesTest'
 import {createDocumentPreviewStore} from '../documentPreviewStore'
 
 // Batched fetches are collected for 100ms before they are sent.
 const BATCH_DEBOUNCE_MS = 100
 
-function setup() {
+function setup(projectId: string) {
   const client = createClient({
-    projectId: 'abc',
+    projectId,
     dataset: 'production',
     apiVersion: '2025-02-19',
     useCdn: false,
@@ -69,8 +70,8 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     vi.useRealTimers()
   })
 
-  it('loads documents, and loads them again once the listener connects', async () => {
-    const {store, listener, fetchesTagged} = setup()
+  it('loads documents, and loads them again once the listener connects', async ({projectId}) => {
+    const {store, listener, fetchesTagged} = setup(projectId)
     const documents = collect(store.unstable_observeDocument('book'))
 
     listener.next(reconnect)
@@ -82,8 +83,8 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     expect(fetchesTagged('preview.observe-document')).toHaveLength(2)
   })
 
-  it('loads version ids', async () => {
-    const {store, listener} = setup()
+  it('loads version ids', async ({projectId}) => {
+    const {store, listener} = setup(projectId)
     const versionIds = collect(store.unstable_observeVersionDocumentIds('book'))
 
     listener.next(reconnect)
@@ -91,8 +92,10 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     expect(versionIds).toEqual([['book', 'drafts.book']])
   })
 
-  it('keeps what it loaded without loading again when a live listener goes down', async () => {
-    const {store, listener, fetchesTagged} = setup()
+  it('keeps what it loaded without loading again when a live listener goes down', async ({
+    projectId,
+  }) => {
+    const {store, listener, fetchesTagged} = setup(projectId)
     const documents = collect(store.unstable_observeDocument('book'))
 
     listener.next(welcome)
@@ -104,8 +107,8 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
   })
 
-  it('loads documents for a subscriber that arrives during the outage', async () => {
-    const {store, listener, fetchesTagged} = setup()
+  it('loads documents for a subscriber that arrives during the outage', async ({projectId}) => {
+    const {store, listener, fetchesTagged} = setup(projectId)
     collect(store.unstable_observeDocument('book'))
     listener.next(welcome)
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -119,8 +122,8 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     expect(documents).toEqual([{_id: 'author', _type: 'book', _rev: 'rev'}])
   })
 
-  it('loads documents and reconnects after a channel error', async () => {
-    const {store, listener, connections, fetchesTagged} = setup()
+  it('loads documents and reconnects after a channel error', async ({projectId}) => {
+    const {store, listener, connections, fetchesTagged} = setup(projectId)
     const documents = collect(store.unstable_observeDocument('book'))
 
     listener.error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
@@ -134,8 +137,8 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
     expect(fetchesTagged('preview.observe-document')).toHaveLength(2)
   })
 
-  it('loads documents when the listener does not welcome in time', async () => {
-    const {store} = setup()
+  it('loads documents when the listener does not welcome in time', async ({projectId}) => {
+    const {store} = setup(projectId)
     const documents = collect(store.unstable_observeDocument('book'))
 
     await vi.advanceTimersByTimeAsync(10_000 + BATCH_DEBOUNCE_MS)

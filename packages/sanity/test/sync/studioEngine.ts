@@ -30,12 +30,13 @@ export interface StudioEngineOptions {
   lake: FakeContentLake
   clientId: string
   idPair: IdPair
+  projectId: string
   dataset: string
 }
 
 export function createStudioPairClient(options: StudioEngineOptions): EngineClient {
-  const {lake, clientId, idPair, dataset} = options
-  const client = createFakeSanityClient({lake, clientId, dataset})
+  const {lake, clientId, idPair, projectId, dataset} = options
+  const client = createFakeSanityClient({lake, clientId, projectId, dataset})
   const pair = checkoutPair(client, idPair, undefined, {})
   const members = {[idPair.draftId]: pair.draft, [idPair.publishedId]: pair.published}
   const snapshots = new Map<string, SanityDocument | null>()
@@ -99,8 +100,8 @@ export interface StudioOperationsEngineOptions extends StudioEngineOptions {
 }
 
 export function createStudioOperationsClient(options: StudioOperationsEngineOptions): EngineClient {
-  const {lake, clientId, idPair, dataset, schema, typeName} = options
-  const client = createFakeSanityClient({lake, clientId, dataset})
+  const {lake, clientId, idPair, projectId, dataset, schema, typeName} = options
+  const client = createFakeSanityClient({lake, clientId, projectId, dataset})
   const context = {client, historyStore: {} as HistoryStore, schema}
   const errors: unknown[] = []
   let operations: OperationsAPI | undefined
