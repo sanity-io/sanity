@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, userEvent} from 'vitest/browser'
+import {page, server, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
@@ -195,11 +195,16 @@ describe('DocumentVersionsFlyoutList', () => {
         .element(page.getByRole('menuitem', {name: /German/}))
         .toHaveStyle({backgroundColor: hoverGrey})
       await userEvent.unhover(page.getByRole('menuitem', {name: /German/}))
-      ;(rows[2] as HTMLElement).focus()
-      await expect
-        .element(page.getByRole('menuitem', {name: /Swedish/}))
-        .toHaveStyle({backgroundColor: hoverGrey})
-      expect(getComputedStyle(rows[2]).outlineStyle).toBe('solid')
+      // React focus state is chromium-only in practice: headless Firefox shares window focus
+      // across the test pages, so a row can lose `onFocus` while `document.activeElement` holds
+      if (server.browser !== 'firefox') {
+        ;(rows[2] as HTMLElement).focus()
+        await expect
+          .element(page.getByRole('menuitem', {name: /Swedish/}))
+          .toHaveStyle({backgroundColor: hoverGrey})
+        expect(getComputedStyle(rows[2]).outlineStyle).toBe('solid')
+        ;(rows[2] as HTMLElement).blur()
+      }
 
       // The footer row moves through in the same grey
       const footer = page.getByTestId('document-versions-flyout-inventory')
@@ -249,12 +254,14 @@ describe('DocumentVersionsFlyoutList', () => {
       expect(getComputedStyle(row).backgroundColor).toBe(blue)
       await userEvent.unhover(germanRow)
 
-      // And over focus, which shows as the focus outline instead
-      row.focus()
-      await expect.element(germanRow).toHaveAttribute('data-focused')
-      expect(getComputedStyle(row).backgroundColor).toBe(blue)
-      expect(getComputedStyle(row).outlineStyle).toBe('solid')
-      expect(getComputedStyle(row).outlineColor).toBe(resolvedColor(row, 'var(--blue-500)'))
+      // And over focus, which shows as the focus outline instead (React focus state: chromium only)
+      if (server.browser !== 'firefox') {
+        row.focus()
+        await expect.element(germanRow).toHaveAttribute('data-focused')
+        expect(getComputedStyle(row).backgroundColor).toBe(blue)
+        expect(getComputedStyle(row).outlineStyle).toBe('solid')
+        expect(getComputedStyle(row).outlineColor).toBe(resolvedColor(row, 'var(--blue-500)'))
+      }
 
       await settleChromaticEndState()
     })
