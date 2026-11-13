@@ -1,6 +1,7 @@
 import {readFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {loadReactDomInternals, STUDIO_PACKAGE_JSON} from './reactDomInternals'
 
@@ -125,8 +126,24 @@ function toSource(regExp: RegExp): RegExpSource {
 
 let cachedVocabulary: DomPropVocabulary | undefined
 
+/**
+ * The vocabulary as written ahead of the run by `scripts/writeDomPropVocabulary.ts`. Endform runs
+ * each test on a machine that has the e2e package but not the studio's `node_modules`, so the
+ * runner reads this file (shipped through `endform.config.ts`) instead of the studio's `react-dom`.
+ */
+export const PREBUILT_VOCABULARY_PATH = fileURLToPath(
+  new URL('./vocabulary.generated.json', import.meta.url),
+)
+
 export function loadDomPropVocabulary(): DomPropVocabulary {
   if (cachedVocabulary) return cachedVocabulary
+
+  if (process.env.ENDFORM === 'true') {
+    cachedVocabulary = JSON.parse(
+      readFileSync(PREBUILT_VOCABULARY_PATH, 'utf8'),
+    ) as DomPropVocabulary
+    return cachedVocabulary
+  }
 
   const react = loadReactDomInternals()
   const isPropValid = loadIsPropValid()
