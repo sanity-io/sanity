@@ -49,7 +49,6 @@ import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMen
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
-import {DocumentGroupInventoryButton} from './DocumentGroupInventoryButton'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentPanelNavigation} from './DocumentPanelNavigation/DocumentPanelNavigation'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
@@ -279,7 +278,6 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
-                {hasDocumentGroupInventory && <DocumentGroupInventoryButton />}
                 <CopyDocumentActions />
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />

@@ -1,3 +1,4 @@
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -97,6 +98,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         as="header"
         closeButtonLabel={structureT('document-inspector.error.close-button.aria-label')}
         flex="none"
+        // The icon of the Manage versions button in the bottom bar
+        icon={DocumentsIcon}
         onClose={onClose}
         title={t('document-group-inventory.action.manage-versions')}
       />
