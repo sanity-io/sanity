@@ -1,6 +1,6 @@
 import {type ReactNode, useLayoutEffect, useRef} from 'react'
 
-import {fitGlyph} from '../../utils/fitGlyph'
+import {fitGlyph, glyphKey} from '../../utils/fitGlyph'
 
 /**
  * How big every glyph in the shared leading column paints, in px: the group icons (the Published
@@ -26,11 +26,19 @@ export function LeadingGlyph({
   'data-testid'?: string
 }) {
   const ref = useRef<HTMLSpanElement>(null)
+  const fitted = useRef<{svg: SVGSVGElement; key: string | undefined} | null>(null)
 
-  // Runs after every render, before paint: the icon can change with the set's release.
+  // Runs after every render, before paint, since the icon can change with the set's release. A
+  // render that keeps the same svg node and glyph does nothing beyond reading two attributes: no
+  // layout read, no style write. A new node or glyph gets the cached scale written, and only the
+  // first of each glyph is measured (see fitGlyph).
   useLayoutEffect(() => {
     const svg = ref.current?.querySelector('svg')
-    if (svg) fitGlyph(svg, LEADING_GLYPH_SIZE)
+    if (!svg) return
+    const key = glyphKey(svg, LEADING_GLYPH_SIZE)
+    if (fitted.current?.svg === svg && fitted.current.key === key && key !== undefined) return
+    // A hidden glyph is not recorded, so the next render tries again
+    fitted.current = fitGlyph(svg, LEADING_GLYPH_SIZE) ? {svg, key} : null
   })
 
   return (

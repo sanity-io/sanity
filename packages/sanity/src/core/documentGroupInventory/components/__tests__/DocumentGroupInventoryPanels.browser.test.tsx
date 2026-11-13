@@ -40,6 +40,7 @@ import {selectionMachine, type Variant} from '../../machines/selectionMachine'
 import {variantCreationMachine} from '../../machines/variantCreationMachine'
 import {type DocumentGroupInventoryComponents} from '../../types'
 import {contrastRatio, parseColor} from '../../utils/contrast'
+import {clearGlyphScaleCache} from '../../utils/fitGlyph'
 import {
   getRowToggle,
   getSetSelection,
@@ -1595,6 +1596,58 @@ describe('Inventory selection', () => {
         Math.abs(paintedGlyphSize(headerGlyph(setName)) - paintedGlyphSize(mark)),
       ).toBeLessThan(0.5)
     }
+  })
+
+  it('measures each glyph once, not each row, and not again on a re-render', async () => {
+    clearGlyphScaleCache()
+    const getBBox = vi.spyOn(SVGGraphicsElement.prototype, 'getBBox')
+    const rows = Array.from({length: 50}, (_, index) => ({
+      ...DRAFT_VIP,
+      id: `${DRAFT_VIP.id}-${index}`,
+      name: `Variant ${index}`,
+    }))
+    const Harness = ({selectionState}: {selectionState: 'checked' | 'unchecked'}) => (
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name="Draft"
+          bundle={{type: 'perspective', perspective: 'drafts'}}
+          selectionState={selectionState}
+          onCheckedChange={() => undefined}
+        >
+          {rows.map((row) => (
+            <DocumentGroupEntry
+              key={row.id}
+              variant={row}
+              releases={SELECTION_RELEASES}
+              isSelected={selectionState === 'checked' && row === rows[0]}
+              onPrimaryAction={() => undefined}
+            />
+          ))}
+        </DocumentGroupSet>
+      </TestWrapper>
+    )
+
+    const {rerender} = await render(<Harness selectionState="unchecked" />)
+    await expect
+      .element(page.getByRole('button', {name: 'Variant 49', exact: true}))
+      .toBeInTheDocument()
+
+    // Two glyphs, one shape each: the Draft dot and the diamond. Not 51 icons
+    expect(getBBox).toHaveBeenCalledTimes(2)
+    const marks = [...document.querySelectorAll<SVGSVGElement>('.variant-mark svg')]
+    expect(marks).toHaveLength(50)
+    for (const mark of marks) {
+      expect(Math.abs(paintedGlyphSize(mark) - LEADING_GLYPH_SIZE)).toBeLessThan(0.5)
+    }
+
+    // Every row re-renders; none measures again
+    getBBox.mockClear()
+    await rerender(<Harness selectionState="checked" />)
+    await expect
+      .element(page.getByRole('button', {name: 'Variant 0', exact: true}))
+      .toHaveAttribute('aria-current', 'true')
+    expect(getBBox).not.toHaveBeenCalled()
+    getBBox.mockRestore()
   })
 
   it("paints an ASAP, an undecided and an agent group icon at the row marks' size", async () => {
