@@ -1,81 +1,161 @@
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {inventoryContainerName} from '../CreateVariant/CreateVariant.css'
+import {mixToContrast} from '../../utils/contrast'
+import {SELECTION} from './selectionTokens'
+import {MARK_COLUMN_WIDTH} from './VariantSet'
 
+/** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
+const CHECKBOX_REST_CONTRAST = 3
+
+/**
+ * A row of a set (and, through VariantSetHeader, its header). Selection follows the UI 5 blue
+ * ladder (see `selectionTokens`): pale blue for a checked row, strong blue with inverted text for
+ * the row of the version open in the form.
+ */
 export const VariantSetEntry = styled.div(({theme}) => {
   const {color, space} = getThemeV2(theme)
 
   return css`
     display: grid;
     position: relative;
-    grid-column: 1 / -1;
+    grid-column: row-start / row-end;
     grid-template-columns: subgrid;
-    padding: ${space[3]}px;
+    /* The inline padding is the set grid's edge tracks, so a subgrid's own would shrink them. */
+    padding-block: ${space[3]}px;
     align-items: center;
 
-    * + & {
+    /*
+     * One line of cells. The mark comes before the text in the tree but sits in the trailing
+     * column, so auto-placement would push the text to a second line.
+     */
+    & > * {
+      grid-row: 1;
+    }
+
+    /* Between rows, and between a group's header and its first row */
+    * + &,
+    header + * > &:first-child {
       border-block-start: 1px solid ${color.border};
     }
 
+    /*
+     * The text column keeps at least 140px with the mark column and its gap, the same minimum as
+     * before the mark moved into the shared leading column.
+     */
+    --version-text-min: 140px;
+    --version-lines-min: calc(
+      var(--version-text-min) - ${MARK_COLUMN_WIDTH}px - var(--inventory-column-gap)
+    );
+
+    /* The selection checkbox, at the far left of every row and every group header. */
     .atom {
       display: flex;
+      position: relative;
+      z-index: 1;
+      grid-column: check;
       align-items: center;
+      justify-content: center;
     }
 
     /*
-     * The second grid column. It must be allowed to shrink below its content, or a long name would
-     * widen the row instead of ending in an ellipsis.
+     * Quiet at rest: an empty checkbox's border is the quietest colour that still reaches the 3:1
+     * WCAG asks of a control's boundary, so the column reads as a rail. It goes to full contrast
+     * while its row is hovered or holds focus. A checked or partly checked box takes UI 5's
+     * checkbox colours, a blocked one keeps its read-only style, and a focused one Sanity UI's
+     * focus ring.
+     */
+    .selection-checkbox {
+      display: flex;
+      --selection-checkbox-border: ${mixToContrast(color.fg, color.bg, CHECKBOX_REST_CONTRAST)};
+    }
+
+    /*
+     * Hidden at rest, in a gutter that is always reserved, so nothing moves when it shows. It shows
+     * on the row's hover and on keyboard focus inside the row, always on a device without hover,
+     * and everywhere once anything is checked (select mode, in Body). Visibility keeps its
+     * box: a hidden checkbox is out of the accessibility tree and the tab order until it shows.
+     */
+    .selection-checkbox {
+      visibility: hidden;
+    }
+
+    &:hover .selection-checkbox,
+    &:focus-within .selection-checkbox {
+      visibility: visible;
+    }
+
+    @media (hover: none) {
+      .selection-checkbox {
+        visibility: visible;
+      }
+    }
+
+    &:hover .selection-checkbox,
+    &:focus-within .selection-checkbox {
+      --selection-checkbox-border: ${color.fg};
+    }
+
+    .selection-checkbox
+      input:not(:checked, :indeterminate, :disabled, [data-read-only], :focus-visible)
+      + span {
+      box-shadow: inset 0 0 0 1px var(--selection-checkbox-border);
+    }
+
+    .selection-checkbox[data-blocked] input {
+      cursor: not-allowed;
+    }
+
+    /* UI 5's checkbox: the strong blue fill with an inverted tick */
+    .selection-checkbox input:is(:checked, :indeterminate):not(:disabled, [readonly]) + span {
+      background: ${SELECTION.checkboxFill};
+      color: ${SELECTION.checkboxTick};
+    }
+
+    .selection-checkbox
+      input:is(:checked, :indeterminate):not(:disabled, [readonly], :focus-visible)
+      + span {
+      box-shadow: inset 0 0 0 1px ${SELECTION.checkboxFill};
+    }
+
+    /* The checkbox's hit area reaches into the row's padding, but not over the mark. */
+    .selection-checkbox input::before {
+      display: block;
+      position: absolute;
+      content: '';
+      inset-block: -${space[3]}px;
+      inset-inline: -${space[3]}px -${space[1]}px;
+    }
+
+    /*
+     * The trailing mark column, holding the variant diamond. A Default row has no mark: the column
+     * stays empty. The diamond is centred on the whole row.
+     */
+    .variant-mark {
+      display: flex;
+      grid-column: mark;
+      align-items: center;
+      align-self: stretch;
+      justify-content: center;
+    }
+
+    /*
+     * The text column. It must be allowed to shrink below its content, or a long name would widen
+     * the row instead of ending in an ellipsis.
      */
     .row-content {
+      grid-column: text;
       min-inline-size: 0;
     }
 
     /*
-     * A 25px column for the variant diamond, the width of the leading slot of the document list's
-     * versions flyout, then the body. The diamond is centred on the whole block. A Default row
-     * keeps the empty column, so every name and every second line start at the same place.
-     */
-    .version-text {
-      --variant-mark-column: 25px;
-      --variant-mark-gap: ${space[2]}px;
-      /* The text column, the diamond included, is never narrower than 140px. */
-      --version-text-min: 140px;
-      --version-lines-min: calc(
-        var(--version-text-min) - var(--variant-mark-column) - var(--variant-mark-gap)
-      );
-
-      display: grid;
-      grid-template-columns: var(--variant-mark-column) minmax(0, 1fr);
-      column-gap: var(--variant-mark-gap);
-      align-items: center;
-    }
-
-    .variant-mark {
-      display: flex;
-      grid-column: 1;
-      align-items: center;
-      align-self: stretch;
-      justify-content: center;
-      width: var(--variant-mark-column);
-
-      /* The variant colour, like the menus' and the navbar chip's diamond. */
-      svg {
-        --card-icon-color: var(--card-badge-suggest-icon-color);
-        --icon-color: var(--card-badge-suggest-icon-color);
-        color: var(--card-badge-suggest-icon-color);
-      }
-    }
-
-    /*
      * The text and the badge group wrap as two items. The text column keeps at least 140px with the
-     * diamond's slot; when that and the group do not fit on one line, the group moves whole to the next line, where it starts at
+     * mark column; when that and the group do not fit on one line, the group moves whole to the next line, where it starts at
      * the body's left edge, which is the text's left edge. The wrap point follows the inventory
      * panel's own width and the badges' real width, not the viewport.
      */
     .version-body {
       display: flex;
-      grid-column: 2;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
@@ -112,14 +192,6 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
     }
 
-    /*
-     * Below this the row's own padding would leave the text column less than its 140px, so the row
-     * gives up some of its padding before the text gives up any width.
-     */
-    @container ${inventoryContainerName} (width < 240px) {
-      padding-inline: ${space[2]}px;
-    }
-
     .primary-action {
       appearance: none;
       position: absolute;
@@ -133,43 +205,61 @@ export const VariantSetEntry = styled.div(({theme}) => {
 
     &:hover,
     &:focus-within {
-      background-color: var(--card-muted-bg-color);
+      background-color: ${SELECTION.hoverBackground};
     }
 
     /*
-     * A checked row (or set header) is filled with the focus ring colour. Everything on it takes
-     * the inverse of the card colour, the way a selected menu item does: the text, the muted
-     * secondary line, and the variant diamond. A badge keeps its shape but loses its tone: a tinted
-     * fill would vanish into the blue, so it is outlined in the same colour instead.
+     * The row's tab stop is its invisible primary action, so its focus ring is drawn on the row.
      */
-    &:has(:checked) {
-      background-color: ${color.focusRing};
-      color: ${color.bg};
-      --card-fg-color: ${color.bg};
-      --card-muted-fg-color: color-mix(in srgb, ${color.bg} 72%, transparent);
+    &:has(.primary-action:focus-visible, .group-toggle:focus-visible) {
+      outline: 2px solid ${color.focusRing};
+      outline-offset: -2px;
+    }
 
-      /* A ui5 Text reads its own --text-color, and the muted variant has its own rule. */
-      [data-ui='Text'] {
-        --text-color: ${color.bg};
-        color: ${color.bg};
-      }
+    /*
+     * A checked row: UI 5's low-emphasis selection, pale blue, under the row's own text colours.
+     * A group header takes a step stronger, in VariantSetHeader.
+     */
+    &:has(.atom :checked) {
+      background-color: ${SELECTION.checkedBackground};
+    }
 
-      [data-ui='Text'][data-testid='version-secondary-line'] {
-        color: color-mix(in srgb, ${color.bg} 72%, transparent);
-      }
+    /*
+     * The row of the version open in the form: UI 5's high-emphasis selection, strong blue with
+     * inverted text. It wins over the hover and checked backgrounds. Its marks take their tones'
+     * emphasized foreground (the selected StatusMark).
+     */
+    &&&[data-current] {
+      background-color: ${SELECTION.openBackground};
+    }
 
-      .variant-mark svg {
-        --card-icon-color: ${color.bg};
-        --icon-color: ${color.bg};
-        color: ${color.bg};
-      }
+    &[data-current] [data-testid='version-title'] {
+      color: ${SELECTION.openTitle};
+    }
 
-      [data-ui='Badge'] {
-        background-color: transparent;
-        box-shadow: inset 0 0 0 1px ${color.bg};
-        color: ${color.bg};
-        --card-fg-color: ${color.bg};
-      }
+    &[data-current] [data-testid='version-secondary-line'] {
+      color: ${SELECTION.openSubtitle};
+    }
+
+    /* An empty box's border takes the inverted text colour, so it shows on the blue */
+    &[data-current] .selection-checkbox {
+      --selection-checkbox-border: ${SELECTION.openTitle};
+    }
+
+    /* A checked box inverts on the blue: the light fill with a blue tick, as on UI 5's own */
+    &[data-current]
+      .selection-checkbox
+      input:is(:checked, :indeterminate):not(:disabled, [readonly])
+      + span {
+      background: ${SELECTION.checkboxTick};
+      color: ${SELECTION.checkboxFill};
+    }
+
+    &[data-current]
+      .selection-checkbox
+      input:is(:checked, :indeterminate):not(:disabled, [readonly], :focus-visible)
+      + span {
+      box-shadow: inset 0 0 0 1px ${SELECTION.checkboxTick};
     }
   `
 })

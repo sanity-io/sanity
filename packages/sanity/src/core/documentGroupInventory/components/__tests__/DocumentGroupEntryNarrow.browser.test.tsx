@@ -17,7 +17,6 @@ import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
 const PUBLISHED_ID = 'narrow-document'
 const DOCUMENT_TYPE = 'author'
 const RELEASES = new Map<string, ReleaseDocument>()
-const NOTHING_SELECTED: ReadonlySet<string> = new Set()
 const NOOP = () => undefined
 
 const SCHEMA_TYPES = [
@@ -69,12 +68,7 @@ function NarrowPanel({width}: {width: number}) {
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <div style={{display: 'flex', flexDirection: 'column', width, height: 400}}>
         <Container>
-          <DocumentGroupSet
-            name="Unreleased"
-            selectedIds={NOTHING_SELECTED}
-            checked={false}
-            onCheckedChange={NOOP}
-          >
+          <DocumentGroupSet name="Unreleased" selectionState="unchecked" onCheckedChange={NOOP}>
             {ROWS.map(({variant, isSelected, servedStatus}) => (
               <DocumentGroupEntry
                 key={variant.id}
@@ -83,8 +77,15 @@ function NarrowPanel({width}: {width: number}) {
                 documentVersions={ROWS.map((row) => row.variant.document)}
                 isSelected={isSelected}
                 servedStatus={servedStatus}
+                showStatusBadges
                 onPrimaryAction={NOOP}
-                leading={<VariantCheckbox data-visible={false} checked={false} onChange={NOOP} />}
+                leading={
+                  <VariantCheckbox
+                    label={`Select ${variant.name}`}
+                    checked={false}
+                    onChange={NOOP}
+                  />
+                }
               />
             ))}
           </DocumentGroupSet>
@@ -129,8 +130,8 @@ function measure(variant: Variant) {
   return {
     row,
     lines,
-    /** The text column: the diamond's slot, then the title and the meta. */
-    textColumnWidth: lines.right - mark.left,
+    /** The text column: the title and the meta, then the trailing mark column. */
+    textColumnWidth: mark.right - lines.left,
     group: group.getBoundingClientRect(),
     badges,
     badgeTops: new Set(badges.map((badge) => Math.round(badge.getBoundingClientRect().top))),
@@ -200,5 +201,49 @@ describe('DocumentGroupEntry in a narrow panel', () => {
       'Editing',
       'Served',
     ])
+  })
+
+  /*
+   * One 12px padding, the 17px checkbox gutter and an 8px gap: the text starts 37px in, right after
+   * the gutter, in the group header and in every row alike. The mark column trails on the right.
+   */
+  it('starts header and row text 37px in at a 300px panel, right after the checkbox gutter', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<NarrowPanel width={300} />)
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    const set = document.querySelector<HTMLElement>('[data-variant-set="Unreleased"]')!
+    const panelLeft = set.getBoundingClientRect().left
+    const headerText = set.querySelector<HTMLElement>('header .variant-set-text')!
+
+    expect(Math.abs(headerText.getBoundingClientRect().left - panelLeft - 37)).toBeLessThanOrEqual(
+      1,
+    )
+    for (const {variant} of ROWS) {
+      const lines = getPart(getRow(variant), 'version-lines').getBoundingClientRect()
+      expect(Math.abs(lines.left - panelLeft - 37)).toBeLessThanOrEqual(1)
+    }
+
+    // 300 - 37 - 8 (gap) - 21 (mark) - 12 = 222px for the text
+    const mark = getRow(DEFAULT_ROW).querySelector<HTMLElement>('.variant-mark')!
+    const textWidth =
+      mark.getBoundingClientRect().left -
+      8 -
+      getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect().left
+    expect(Math.abs(textWidth - 222)).toBeLessThanOrEqual(1)
+  })
+
+  it('trims the padding to 8px below 240px, so the text starts 33px in', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<NarrowPanel width={220} />)
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    const set = document.querySelector<HTMLElement>('[data-variant-set="Unreleased"]')!
+    const lines = getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect()
+    expect(Math.abs(lines.left - set.getBoundingClientRect().left - 33)).toBeLessThanOrEqual(1)
   })
 })

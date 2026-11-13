@@ -575,6 +575,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label for the button that opens the document group inventory */
   'document-group-inventory.action.manage-versions': 'Manage versions',
+  /** The title of the document group inventory panel, in its header */
+  'document-group-inventory.panel-title': 'Document inventory',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
@@ -593,6 +595,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
+  /** The button in the inventory's action bar that clears the selection */
+  'document-group.clear-selection': 'Clear',
   /** The text of the actions that open the variant creation form and confirm the creation */
   'document-group.create-variant': 'Create version',
   /** Describes the variant creation form's picker for the version the new variant starts from */
@@ -677,6 +681,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */
+  /** Accessible name of a group checkbox in the document group inventory, which selects every version in the group */
+  'document-group.select-group': 'Select all in {{name}}',
+  /** Accessible name of a version's checkbox in the document group inventory */
+  'document-group.select-version': 'Select {{name}}',
+  /** Why a version in a scheduled release cannot be selected for deletion in the document group inventory */
+  'document-group.select.blocked.scheduled-release':
+    'This version is in a scheduled release. Unschedule the release to delete it.',
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
   'document-group.status.more_one': 'and {{count}} more version',

@@ -84,8 +84,7 @@ const meta = {
   args: {
     name: 'Default',
     children: null,
-    selectedIds: new Set(),
-    checked: false,
+    selectionState: 'unchecked',
     onCheckedChange: NOOP,
   },
 } satisfies Meta<typeof DocumentGroupSet>
@@ -117,7 +116,7 @@ const SELECTABLE_VARIANTS = [PUBLISHED, DRAFT, IN_ASAP_RELEASE]
 
 /**
  * The rows the inventory renders for {@link SELECTABLE_VARIANTS}, mirroring
- * `ManagedVariantRow`: every checkbox is revealed once anything is selected.
+ * `ManagedVariantRow`: every row has a checkbox, muted until checked.
  */
 function selectableRows(selectedIds: ReadonlySet<string>) {
   return SELECTABLE_VARIANTS.map((entry) => (
@@ -128,7 +127,7 @@ function selectableRows(selectedIds: ReadonlySet<string>) {
       isSelected={entry === DRAFT}
       leading={
         <VariantCheckbox
-          data-visible={selectedIds.size !== 0}
+          label={`Select ${entry.name}`}
           checked={selectedIds.has(entry.id)}
           onChange={NOOP}
         />
@@ -141,22 +140,22 @@ function selectableRows(selectedIds: ReadonlySet<string>) {
 const NOTHING_SELECTED = new Set<string>()
 const PUBLISHED_SELECTED = new Set([PUBLISHED.id])
 
-/** Nothing selected: the checkboxes stay hidden and the set shows its release avatar. */
+/** Nothing selected: every checkbox is a muted outline, beside the set's release avatar. */
 export const Selectable: Story = {
   args: {
     name: activeASAPRelease.metadata.title,
     bundle: {type: 'perspective', perspective: activeASAPRelease},
-    selectedIds: NOTHING_SELECTED,
+    selectionState: 'unchecked',
     children: selectableRows(NOTHING_SELECTED),
   },
 }
 
-/** Part of the set selected: every checkbox, the set's included, is revealed. */
+/** Part of the set selected: the set's checkbox shows a dash. */
 export const PartiallySelected: Story = {
   args: {
     name: activeASAPRelease.metadata.title,
     bundle: {type: 'perspective', perspective: activeASAPRelease},
-    selectedIds: PUBLISHED_SELECTED,
+    selectionState: 'indeterminate',
     children: selectableRows(PUBLISHED_SELECTED),
   },
 }

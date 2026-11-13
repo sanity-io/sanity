@@ -71,7 +71,15 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           placement="top"
           content={t('document-group.delete.other-reference-count.tooltip')}
         >
-          <Icon icon={InfoOutlineIcon} size={1} muted style={{margin: '-0.375rem'}} />
+          {/* Focusable, so the tooltip opens for keyboard users too, and named with its text */}
+          <span
+            tabIndex={0}
+            role="img"
+            aria-label={t('document-group.delete.other-reference-count.tooltip')}
+            data-testid="other-reference-count-info"
+          >
+            <Icon icon={InfoOutlineIcon} size={1} muted aria-hidden style={{margin: '-0.375rem'}} />
+          </span>
         </Tooltip>
       </Inline>
     </Box>
