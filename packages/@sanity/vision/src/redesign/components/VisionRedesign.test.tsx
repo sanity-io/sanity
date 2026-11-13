@@ -7,7 +7,7 @@ import JSON5 from 'json5'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
@@ -123,6 +123,10 @@ vi.mock('sanity', async () => {
     useActiveReleases: vi.fn(() => ({data: [], loading: false})),
     useScheduledDraftsEnabled: vi.fn(() => false),
     useWorkspace: () => sanityMocks.workspace,
+    useWorkspaces: () => [
+      {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
+      {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
+    ],
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
     useTranslation: () => ({
@@ -461,6 +465,12 @@ function selectValue(testId: string): string {
   return (screen.getByTestId(testId) as HTMLSelectElement).value
 }
 
+/** Picks a dataset in the Options panel's dataset menu */
+function pickDataset(dataset: string) {
+  fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
+  fireEvent.click(screen.getByTestId(`vision-option-dataset-item-${dataset}`))
+}
+
 /** The request column shows one tab at a time; Params is the one open at first */
 function openRequestTab(id: 'params' | 'options' | 'lint' | 'functions') {
   fireEvent.click(document.getElementById(`vision-request-${id}-tab`) as HTMLElement)
@@ -620,7 +630,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
     expect(formInput('limit').value).toBe('3')
     expect(text(screen.getByTestId('vision-params-form-limit-type'))).toBe(
-      'vision.params-form.type.integer',
+      'vision.params-form.type-detail',
     )
 
     fireEvent.change(formInput('type'), {target: {value: 'author'}})
@@ -2084,10 +2094,7 @@ describe('VisionRedesign', () => {
 
     // The dataset changes while refetching is off, so the runner still holds the old request
     openRequestTab('options')
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
-    fireEvent.change(screen.getByTestId('vision-option-dataset-select'), {
-      target: {value: 'staging'},
-    })
+    pickDataset('staging')
     fireEvent.click(screen.getByTestId('vision-auto-refetch'))
 
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
@@ -2509,13 +2516,10 @@ describe('VisionRedesign', () => {
     typeQuery('*')
     openRequestTab('options')
     const datasetSelect = () =>
-      screen.getByTestId('vision-option-dataset-select') as HTMLSelectElement
+      screen.getByTestId('vision-option-dataset-select') as HTMLButtonElement
     expect(datasetSelect().value).toBe('test')
-    expect(datasetSelect().disabled).toBe(true)
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
-    expect(datasetSelect().disabled).toBe(false)
-    fireEvent.change(datasetSelect(), {target: {value: 'staging'}})
+    pickDataset('staging')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config.dataset).toBe('staging')
@@ -2526,12 +2530,26 @@ describe('VisionRedesign', () => {
       }),
     )
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
+    // Picking the current workspace's dataset follows the workspace again
+    pickDataset('test')
     expect(datasetSelect().value).toBe('test')
-    expect(datasetSelect().disabled).toBe(true)
+    expect(screen.getByTestId('vision-option-dataset-pin')).toBeTruthy()
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('test')
+
+    // The pin button pins the workspace's dataset, and follows the workspace again
+    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({
+        datasetMode: 'pinned',
+        dataset: 'test',
+      }),
+    )
+    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+    )
   })
 
   it('switches a tab on its own perspective back to the global one when the navbar changes', async () => {
@@ -2891,6 +2909,27 @@ describe('VisionRedesign', () => {
     expect(isDisabled(remove)).toBe(true)
   })
 
+  it('waits before the first rail tooltip opens and then opens its neighbours at once', async () => {
+    renderRedesign()
+    // A closed tooltip can stay mounted under a hidden `<Activity>`, so only a shown one counts
+    const tooltip = (label: string) =>
+      Array.from(document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')).find(
+        (element) => text(element) === label && !element.closest('[style*="display: none"]'),
+      )
+
+    const shared = screen.getByTestId('vision-sidebar-shared')
+    fireEvent.mouseEnter(shared)
+    // A pointer passing over the rail on its way elsewhere opens nothing
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+    expect(tooltip('vision.sidebar.shared-queries')).toBeUndefined()
+    await waitFor(() => expect(tooltip('vision.sidebar.shared-queries')).toBeDefined())
+
+    fireEvent.mouseLeave(shared)
+    fireEvent.mouseEnter(screen.getByTestId('vision-sidebar-saved'))
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+    expect(tooltip('vision.sidebar.saved-queries')).toBeDefined()
+  })
+
   it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {
     const {onSwitchToClassic} = renderRedesign()
 
@@ -3022,4 +3061,41 @@ describe('VisionRedesign', () => {
     fireEvent.keyDown(handle, {key: 'Enter'})
     expect(requestPane.style.flex).toBe('0 0 600px')
   })
+
+  it.each(['params', 'options', 'lint', 'functions'] as const)(
+    'fits the request panel to the %s tab on double-click, not on a single click',
+    async (id) => {
+      const offsetHeight = vi
+        .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          if (this.hasAttribute('data-vision-panel-content')) return 300
+          const panel = this.parentElement
+          return panel?.dataset.testid === 'vision-request-panel' &&
+            panel.firstElementChild === this
+            ? 35
+            : 0
+        })
+      const clientHeight = vi
+        .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          return this.dataset.testid === 'vision-request-column-split' ? 800 : 0
+        })
+      onTestFinished(() => {
+        offsetHeight.mockRestore()
+        clientHeight.mockRestore()
+      })
+      renderRedesign()
+      const split = await screen.findByTestId('vision-request-column-split')
+      const bottomPane = split.lastElementChild as HTMLElement
+      const initialFlex = bottomPane.style.flex
+      const tab = document.getElementById(`vision-request-${id}-tab`) as HTMLElement
+
+      fireEvent.click(tab)
+      expect(tab.getAttribute('aria-selected')).toBe('true')
+      expect(bottomPane.style.flex).toBe(initialFlex)
+
+      fireEvent.doubleClick(tab)
+      await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))
+    },
+  )
 })
