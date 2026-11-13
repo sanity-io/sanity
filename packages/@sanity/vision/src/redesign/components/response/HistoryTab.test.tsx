@@ -391,4 +391,11 @@ describe('HistoryTab', () => {
       diffModule.throwInEffect = false
     }
   })
+
+  it('writes a short duration in milliseconds and a longer one in seconds', () => {
+    const [row] = renderTab([entry('slow', 1, {ms: 888, e2eMs: 1_170})])
+    expect(row.textContent).toContain('result.execution-time-label 888ms')
+    expect(row.textContent).toContain('result.end-to-end-time-label 1.17s')
+    expect(row.textContent).not.toContain('1170ms')
+  })
 })
