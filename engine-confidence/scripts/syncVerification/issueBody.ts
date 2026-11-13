@@ -15,6 +15,7 @@ export const SECTION = {
   likelyCause: 'Likely cause',
   differences: 'Differences',
   repro: 'Repro',
+  evidence: 'Evidence',
   realContentLake: 'Real Content Lake',
   signature: 'Failure signature',
 } as const
@@ -24,6 +25,7 @@ export const ENGINE_SECTION_ORDER = [
   SECTION.userImpact,
   SECTION.likelyCause,
   SECTION.repro,
+  SECTION.evidence,
   SECTION.realContentLake,
   SECTION.signature,
 ]
@@ -77,7 +79,7 @@ export function printDefinition(source: ReproSource): string {
   return `const syncTest: SyncTestDefinition = ${printLiteral(definition)}`
 }
 
-export function reproImports(seam: SyncTestDefinition['seam']): string {
+function reproImports(seam: SyncTestDefinition['seam']): string {
   const schemaImport =
     seam === 'operations' ? [`import {articleSchema} from '${HARNESS_IMPORT_PATH}/generator'`] : []
   return [
@@ -147,6 +149,33 @@ const VERDICT_LEADS: Record<Verdict, string> = {
   'assumed': 'Not verified against the real server.',
   'fake-mismatch': 'The real server disagrees with the fake.',
   'error': 'The verify step failed.',
+}
+
+const EVIDENCE_LEADS: Record<Verdict, string> = {
+  'confirmed':
+    'L1 for the server replies only. The real Content Lake answered every replayed submission as the fake did, which says nothing about whether the injected faults or their timing happen in production.',
+  'assumed':
+    'L3. Only the fake shows this failure. Constrain the generator or fix the fake, or lift it to L2 with a production repro, before changing client code.',
+  'fake-mismatch':
+    'None for the engine. The real server disagrees with the fake, so fix the fake first.',
+  'error': 'None. The verify step failed.',
+}
+
+function injectedFaults(definition: SyncTestDefinition): string[] {
+  return definition.steps.flatMap((step) =>
+    typeof step.represents === 'string'
+      ? [`* \`${step.do}\` on client ${step.client ?? 'none'}: ${step.represents}.`]
+      : [],
+  )
+}
+
+export function evidenceSection(verdict: Verdict, definition: SyncTestDefinition): string {
+  const faults = injectedFaults(definition)
+  const trigger =
+    faults.length === 0
+      ? 'The repro injects no faults: its steps are edits, saves, outside edits and time passing.'
+      : `Check each injected fault is reachable in production:\n\n${faults.join('\n')}`
+  return `${EVIDENCE_LEADS[verdict]}\n\n${trigger}`
 }
 
 export function realContentLakeSection(verdict: ReplayResult): string {

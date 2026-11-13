@@ -13,6 +13,7 @@ export interface ExplainInput {
   message: string
   definitionLiteral: string
   seam: string
+  evidence: string
   realContentLake: string
 }
 
@@ -24,7 +25,7 @@ export interface Explanation {
 
 export type Explainer = (input: ExplainInput) => Promise<Explanation>
 
-export const ENGINE_SOURCE_PATHS = [
+const ENGINE_SOURCE_PATHS = [
   'packages/@sanity/mutator/src/document/BufferedDocument.ts',
   'packages/@sanity/mutator/src/document/SquashingBuffer.ts',
   'packages/@sanity/mutator/src/document/Document.ts',
@@ -82,6 +83,7 @@ function failurePrompt(input: ExplainInput): string {
     `Seam: ${input.seam}`,
     `Failure output:\n${input.message}`,
     `Shrunk repro:\n${input.definitionLiteral}`,
+    `Evidence: ${input.evidence}`,
     `Real Content Lake check: ${input.realContentLake}`,
     'Write the three sections as JSON.',
   ].join('\n\n')

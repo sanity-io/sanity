@@ -64,6 +64,7 @@ export interface SignatureFields {
 
 export interface GeneratorFailure extends ReplayableSequence {
   signature: string
+  knownBug?: string
   signatureFields: SignatureFields
   message: string
   seed: number
@@ -210,6 +211,10 @@ function failureProblems(failure: unknown, index: number): string[] {
           ],
           [typeof failure.message === 'string', 'message must be a string'],
           [typeof failure.seed === 'number', 'seed must be a number'],
+          [
+            failure.knownBug === undefined || isNonEmptyString(failure.knownBug),
+            'knownBug must be a non-empty string when set',
+          ],
         ],
         where,
       ),
@@ -310,7 +315,7 @@ function sampleVerdictProblems(verdict: unknown, index: number): string[] {
   return [`${where} must be an object`]
 }
 
-export function verdictsFileProblems(verdicts: unknown): string[] {
+function verdictsFileProblems(verdicts: unknown): string[] {
   if (isRecord(verdicts)) {
     return [
       ...headerProblems(verdicts),

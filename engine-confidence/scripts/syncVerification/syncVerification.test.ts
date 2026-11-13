@@ -347,6 +347,7 @@ describe('fileFailures', () => {
       'User impact',
       'Likely cause',
       'Repro',
+      'Evidence',
       'Real Content Lake',
       'Failure signature',
     ])
@@ -355,6 +356,56 @@ describe('fileFailures', () => {
     expect(description.split('\n').filter((line) => line.startsWith('sync-gen-'))).toEqual([
       `sync-gen-signature: ${DMP_SIGNATURE}`,
     ])
+  })
+
+  test('states the evidence level and the faults a confirmed failure depends on', async () => {
+    const linear = fakeLinear()
+    const rejected = failure(DMP_SIGNATURE)
+    rejected.definition.steps = [
+      {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
+      ...rejected.definition.steps,
+    ]
+
+    await fileFailures([pair([rejected], [verdict(DMP_SIGNATURE)])], {
+      dryRun: false,
+      linear,
+      explain: explainWith(),
+    })
+
+    const [{description}] = linear.create.mock.calls[0]
+    const evidence = parseSections(description).find((section) => section.heading === 'Evidence')
+    expect(evidence?.body).toMatch(/^L1 for the server replies only\./)
+    expect(evidence?.body).toContain('* `commits` on client A: a save request still in flight.')
+  })
+
+  test('files an assumed failure as L3, for the generator rather than the client', async () => {
+    const linear = fakeLinear()
+
+    await fileFailures(
+      [pair([failure(DMP_SIGNATURE)], [verdict(DMP_SIGNATURE, {verdict: 'assumed'})])],
+      {dryRun: false, linear, explain: explainWith()},
+    )
+
+    const [{title, description}] = linear.create.mock.calls[0]
+    expect(title).toMatch(/^constrain the generator or find a repro: /)
+    const evidence = parseSections(description).find((section) => section.heading === 'Evidence')
+    expect(evidence?.body).toMatch(/^L3\./)
+    expect(evidence?.body).toContain('The repro injects no faults')
+  })
+
+  test('does not file a failure the generator tagged with an open known bug', async () => {
+    const linear = fakeLinear()
+    const explain = explainWith()
+
+    const summary = await fileFailures(
+      [pair([{...failure(DMP_SIGNATURE), knownBug: 'B1'}], [verdict(DMP_SIGNATURE)])],
+      {dryRun: false, linear, explain},
+    )
+
+    expect(summary.outcomes).toMatchObject([{action: 'known-bug', reason: 'known bug B1'}])
+    expect(linear.create).not.toHaveBeenCalled()
+    expect(explain).not.toHaveBeenCalled()
+    expect(summaryMarkdown(summary)).toContain('### Known bugs (not filed)')
   })
 
   test('prints the repro as a hand-filed style literal with the harness imports', async () => {
@@ -828,6 +879,7 @@ describe('createClaudeExplainer', () => {
       message: 'm',
       definitionLiteral: 'd',
       seam: 'pair',
+      evidence: 'e',
       realContentLake: 'r',
     })
 
@@ -862,6 +914,7 @@ describe('createClaudeExplainer', () => {
           message: 'm',
           definitionLiteral: 'd',
           seam: 'pair',
+          evidence: 'e',
           realContentLake: 'r',
         }),
       ).rejects.toThrow(reason === 'refusal' ? /declined to explain/ : /stopped with max_tokens/)

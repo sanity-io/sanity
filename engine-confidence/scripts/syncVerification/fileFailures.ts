@@ -14,6 +14,7 @@ import {
   ENGINE_SECTION_ORDER,
   ENGINE_SIGNATURE_PREFIX,
   engineIssueTitle,
+  evidenceSection,
   FAKE_SIGNATURE_PREFIX,
   fakeIssueTitle,
   hasBalancedFences,
@@ -38,7 +39,7 @@ export interface ReportPair {
 }
 
 export type IssueKind = 'engine' | 'fake-model'
-export type OutcomeAction = 'filed' | 'would-file' | 'duplicate' | 'error'
+export type OutcomeAction = 'filed' | 'would-file' | 'duplicate' | 'known-bug' | 'error'
 export type OutcomeSource = 'failure' | 'sample'
 
 export interface FailureOutcome {
@@ -291,6 +292,7 @@ function signatureLine(item: WorkItem, kind: IssueKind): SignatureLine | undefin
 function scriptOwnedSections(item: WorkItem, line: SignatureLine): Section[] {
   return [
     {heading: SECTION.repro, body: reproSection(item.repro, item.commit)},
+    {heading: SECTION.evidence, body: evidenceSection(item.result.verdict, item.repro.definition)},
     {heading: SECTION.realContentLake, body: realContentLakeSection(item.result)},
     {heading: SECTION.signature, body: signatureSection(line)},
   ]
@@ -350,19 +352,25 @@ function scriptSectionProblems(
   ].filter((problem): problem is string => problem !== undefined)
 }
 
+function engineTitle(failure: GeneratorFailure, verdict: Verdict): string {
+  const title = engineIssueTitle(failure.signatureFields)
+  return verdict === 'assumed' ? `constrain the generator or find a repro: ${title}` : title
+}
+
 async function buildEngineIssue(
   item: WorkItem,
   failure: GeneratorFailure,
   line: SignatureLine,
   explain: Explainer,
 ): Promise<NewLinearIssue> {
-  const title = engineIssueTitle(failure.signatureFields)
+  const title = engineTitle(failure, item.result.verdict)
   const explanation = await explain({
     title,
     signature: failure.signature,
     message: failure.message,
     definitionLiteral: printDefinition(failure),
     seam: item.seam,
+    evidence: evidenceSection(item.result.verdict, item.repro.definition),
     realContentLake: realContentLakeSection(item.result),
   })
   const description = engineIssueBody(item, line, explanation)
@@ -407,6 +415,10 @@ async function handle(
     return {outcome: {...base, action: 'error', reason: `verify failed: ${item.result.summary}`}}
   }
   const kind = issueKind(verdict)
+  const knownBug = item.failure?.knownBug
+  if (kind === 'engine' && knownBug) {
+    return {outcome: {...base, kind, action: 'known-bug', reason: `known bug ${knownBug}`}}
+  }
   const line = signatureLine(item, kind)
   if (line === undefined) {
     return {
@@ -497,7 +509,7 @@ function plural(count: number, noun: string, pluralNoun = `${noun}s`): string {
   return `${count} ${count === 1 ? noun : pluralNoun}`
 }
 
-export function fidelityLine(fidelity: FakeFidelity): string {
+function fidelityLine(fidelity: FakeFidelity): string {
   if (fidelity.samples === 0) return 'Fake fidelity: no passing samples were replayed.'
   return `Fake fidelity: ${fidelity.matched} of ${plural(fidelity.replayed, 'replayed sample')} matched the real Content Lake (${plural(fidelity.mismatched, 'mismatch', 'mismatches')}, ${plural(fidelity.errors, 'error')}, ${fidelity.nothingToReplay} with nothing to replay, ${plural(fidelity.submissions, 'submission')} replayed).`
 }
@@ -522,6 +534,7 @@ export function summaryMarkdown(summary: FileSummary): string {
     ...group(`${filedHeading}: engine bugs`, byAction(filedAction, 'engine')),
     ...group(`${filedHeading}: fake model differences`, byAction(filedAction, 'fake-model')),
     ...group('Already filed', byAction('duplicate')),
+    ...group('Known bugs (not filed)', byAction('known-bug')),
     ...group('Errors (nothing filed)', byAction('error')),
   ]
   const bodies = summary.dryRun
