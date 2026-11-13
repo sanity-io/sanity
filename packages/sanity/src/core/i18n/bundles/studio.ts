@@ -402,6 +402,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The base-variant mark's tooltip, before the chips naming the base variant and the compared version: "Differs from [Default] [Draft]" */
+  'changes.from-base-variant.differs-from': 'Differs from',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */

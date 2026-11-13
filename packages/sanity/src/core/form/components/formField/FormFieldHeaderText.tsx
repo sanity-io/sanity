@@ -29,6 +29,10 @@ export interface FormFieldHeaderTextProps {
    */
   suffix?: ReactNode
   tone?: TextProps['tone']
+  /**
+   * The CSS anchor name of the title row, so the start gutter can line a mark up with it.
+   */
+  labelAnchorName?: string
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -37,13 +41,22 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix, tone} = props
+  const {
+    description,
+    inputId,
+    title,
+    deprecated,
+    validation = EMPTY_ARRAY,
+    suffix,
+    tone,
+    labelAnchorName,
+  } = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
 
   return (
     <VStack gap={3}>
-      <Flex alignItems="center" paddingY={1}>
+      <Flex alignItems="center" paddingY={1} style={{anchorName: labelAnchorName}}>
         <Flex alignItems="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1} trim={true} tone={tone}>
             {title || (

@@ -26,6 +26,7 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
+import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
@@ -234,7 +235,11 @@ export function FormFieldSet(
   return (
     <FormRow
       gutterStartCell={
-        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+        <FormFieldGutter
+          path={path}
+          changedFromBaseVariant={changedFromBaseVariant}
+          labelAnchored={Boolean(title)}
+        />
       }
     >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
@@ -255,7 +260,12 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <VStack gap={3}>
-                <HeaderRow alignItems="center">
+                <HeaderRow
+                  alignItems="center"
+                  style={{
+                    anchorName: Array.isArray(path) ? pathToAnchorIdent('label', path) : undefined,
+                  }}
+                >
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
