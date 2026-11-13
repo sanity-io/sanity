@@ -27,7 +27,7 @@ export const VariantsEmptyState = ({createVariantButton}: VariantsEmptyStateProp
       paddingBottom={5}
     >
       <VariantIllustration />
-      <Text as="h1" size={1} weight="semibold" data-testid="no-variants-info-text" trim={true}>
+      <Text as="h2" size={1} weight="semibold" data-testid="no-variants-info-text" trim={true}>
         {t('overview.title')}
       </Text>
       <Text size={1} muted align="center" as="div" trim={true}>
@@ -36,6 +36,7 @@ export const VariantsEmptyState = ({createVariantButton}: VariantsEmptyStateProp
       <Flex gap={2}>
         {createVariantButton}
         <Button
+          aria-label={t('overview.action.documentation.aria-label')}
           as="a"
           href={VARIANTS_DOCUMENTATION_URL}
           target="_blank"

@@ -1,11 +1,17 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {act} from 'react'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
+import {useUpsellData} from '../../../../hooks/useUpsellData'
 import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../../variants/__fixtures__/variants.fixture'
+import {variantsUpsellData$} from '../../../../variants/__fixtures__/variantsUpsellData'
+import {type VariantsMode} from '../../../../variants/contexts/mode/types'
+import {VariantsUpsellProvider} from '../../../../variants/contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../../variants/i18n'
 import {VARIANTS_INTENT} from '../../../../variants/plugin'
 import {getVariantId} from '../../../../variants/tool/util'
@@ -40,9 +46,48 @@ vi.mock('../../../../variants/store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+// `createTestProvider` mocks `useUpsellData` with no content. The upsell-mode test renders the
+// dialog, so it answers with the journey document the endpoint publishes.
+const useUpsellDataMock = vi.mocked(useUpsellData)
+
+const telemetryLogs = {
+  dialogViewed: vi.fn(),
+  dialogDismissed: vi.fn(),
+  dialogPrimaryClicked: vi.fn(),
+  dialogSecondaryClicked: vi.fn(),
+  panelViewed: vi.fn(),
+  panelDismissed: vi.fn(),
+  panelPrimaryClicked: vi.fn(),
+  panelSecondaryClicked: vi.fn(),
+}
+
+async function renderMenuInMode(mode: VariantsMode) {
+  const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
+  const settledMode = Object.assign(Promise.resolve(mode), {
+    status: 'fulfilled' as const,
+    value: mode,
+  })
+  // The new audience item reads the mode with `use()`; a sync `render` act drops the commit's
+  // passive effects once a render has called `use()` on a thenable, so mount inside an awaited act
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
+  await act(async () => {
+    render(
+      <VariantsModePromiseContext value={settledMode}>
+        <VariantsUpsellProvider>
+          <VariantsMenu trigger={<button type="button">Open variants</button>} />
+        </VariantsUpsellProvider>
+      </VariantsModePromiseContext>,
+      {wrapper},
+    )
+  })
+  await userEvent.setup().click(await screen.findByRole('button', {name: 'Open variants'}))
+  await screen.findByTestId('variants-nav-menu')
+}
+
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useUpsellDataMock.mockReturnValue({upsellData$: variantsUpsellData$, telemetryLogs})
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
@@ -74,10 +119,22 @@ describe('VariantsMenu', () => {
 
     await renderMenu()
 
-    expect(screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)).toHaveAttribute(
-      'data-selected',
+    const selectedItem = screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)
+    expect(selectedItem).toHaveAttribute('data-selected')
+    expect(selectedItem).toHaveAttribute('role', 'menuitemradio')
+    expect(selectedItem).toHaveAttribute('aria-checked', 'true')
+    const defaultItem = screen.getByTestId('variant-default')
+    expect(defaultItem).not.toHaveAttribute('data-selected')
+    expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
+    expect(defaultItem).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('labels the filter input', async () => {
+    await renderMenu()
+
+    expect(screen.getByLabelText('Find audience')).toBe(
+      screen.getByPlaceholderText('Find audience'),
     )
-    expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
   it('links view all to the variants tool overview', async () => {
@@ -203,6 +260,43 @@ describe('VariantsMenu', () => {
     expect(
       screen.queryByRole('dialog', {name: 'Create variant definition'}),
     ).not.toBeInTheDocument()
+  })
+
+  describe('gated on the content variants feature', () => {
+    it('opens the upsell dialog instead of the create form when the plan lacks variants', async () => {
+      const user = userEvent.setup()
+
+      await renderMenuInMode('upsell')
+      await user.click(screen.getByTestId('new-audience'))
+
+      expect(
+        await screen.findByRole('heading', {
+          level: 2,
+          name: 'Upgrade to create variant definitions',
+        }),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {name: 'Create variant definition'}),
+      ).not.toBeInTheDocument()
+    })
+
+    it('opens the create form when the plan has variants', async () => {
+      const user = userEvent.setup()
+
+      await renderMenuInMode('default')
+      await user.click(screen.getByTestId('new-audience'))
+
+      expect(
+        await screen.findByRole('dialog', {name: 'Create variant definition'}),
+      ).toBeInTheDocument()
+    })
+
+    it('leaves out the new audience item when the feature check failed', async () => {
+      await renderMenuInMode(null)
+
+      expect(screen.getByTestId('view-all')).toBeInTheDocument()
+      expect(screen.queryByTestId('new-audience')).not.toBeInTheDocument()
+    })
   })
 
   it('leaves out the new audience item when creating is not allowed', async () => {

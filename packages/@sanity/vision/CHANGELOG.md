@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
+
+### Features
+
+* **vision:** send oversized queries as a post body, load pasted curl commands, and drop the vista codename ([#15499](https://github.com/sanity-io/sanity/issues/15499)) ([ac255a8](https://github.com/sanity-io/sanity/commit/ac255a8d93a8f8b8b5a3e4c57d4c0a2aa652be0e))
+
+### Bug Fixes
+
+* **vision:** restore the redesign without groq-wasm top-level await ([#15803](https://github.com/sanity-io/sanity/issues/15803)) ([f625557](https://github.com/sanity-io/sanity/commit/f625557de3f875b97dcd0a4d4a56f66834677a43))
 ## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
 
 ### Bug Fixes

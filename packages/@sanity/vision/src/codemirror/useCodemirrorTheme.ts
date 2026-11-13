@@ -42,6 +42,18 @@ function createTheme(theme: Theme) {
         lineHeight: 'inherit',
       },
 
+      // The gutter shares the editor's background, set apart only by a subtle border; its line
+      // numbers are muted, and the focused editor's active line number takes the text color
+      // instead of a background highlight
+      '.cm-gutters': {
+        backgroundColor: card.bg,
+        color: card.muted.fg,
+        border: 'none',
+        borderRight: `1px solid ${card.border}`,
+      },
+      '.cm-activeLineGutter': {backgroundColor: 'transparent'},
+      '&.cm-focused .cm-activeLineGutter': {color: card.fg},
+
       '.cm-cursor, .cm-dropCursor': {borderLeftColor: cursor},
       '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
         backgroundColor: selection,
@@ -65,17 +77,17 @@ function createTheme(theme: Theme) {
       '.cm-panel.cm-panel-lint ul [aria-selected] .cm-diagnostic': {color: card.fg},
 
       // Function documentation on hover and next to completions, and the extract button
-      '.cm-vista-function-doc, .cm-vista-extract-button': {
+      '.cm-vision-function-doc, .cm-vision-extract-button': {
         fontFamily: fonts.text.family,
         fontSize: rem(fonts.text.sizes[1].fontSize),
       },
-      '.cm-vista-function-code, .cm-vista-function-doc code': {
+      '.cm-vision-function-code, .cm-vision-function-doc code': {
         fontFamily: fonts.code.family,
         fontSize: rem(fonts.code.sizes[1].fontSize),
       },
-      '.cm-vista-function-note': {color: card.muted.fg},
-      '.cm-vista-function-link': {color: card.link.fg},
-      '.cm-vista-extract-button:hover, .cm-vista-extract-button:focus-visible': {
+      '.cm-vision-function-note': {color: card.muted.fg},
+      '.cm-vision-function-link': {color: card.link.fg},
+      '.cm-vision-extract-button:hover, .cm-vision-extract-button:focus-visible': {
         backgroundColor: selection,
       },
       '.cm-tooltip.cm-tooltip-autocomplete > ul': {fontFamily: fonts.code.family},

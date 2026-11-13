@@ -2,18 +2,30 @@ import {partition, shuffle} from 'es-toolkit'
 import {
   bufferTime,
   concatMap,
+  connect,
   delay,
   filter,
+  merge,
   mergeMap,
   type MonoTypeOperatorFunction,
   of,
+  type OperatorFunction,
   pipe,
+  share,
   Subscription,
+  take,
+  takeUntil,
 } from 'rxjs'
 
 import {type ProxyHandler} from './createDebugProxy'
 import {type SSEEvent, writeResponseHead} from './proxy'
-import {isAuthFetchEndpoint, isLogoutEndpoint, isPublicEndpoint} from './routes'
+import {
+  isAuthFetchEndpoint,
+  isLogoutEndpoint,
+  isOAuthEndpoint,
+  isOAuthTokenEndpoint,
+  isPublicEndpoint,
+} from './routes'
 
 /**
  * Delay each event by a random duration in [min, max] ms. Uses `mergeMap` so
@@ -84,13 +96,76 @@ export function shuffleEventDelivery<T extends SSEEvent>(
 }
 
 /**
+ * The events a listener can open its connection with, all of which a client takes as its welcome: a
+ * new listener gets `welcome`, and one resuming from a `Last-Event-ID` (`enableResume`) gets
+ * `welcomeback`, or `reset` when it can no longer be resumed.
+ */
+const WELCOME_EVENTS = new Set(['welcome', 'welcomeback', 'reset'])
+
+const isWelcome = (event: SSEEvent) =>
+  event.type === 'message' && WELCOME_EVENTS.has(event.message.event ?? '')
+
+/**
+ * The events the API sends when it fails to set a listener up or to keep it running (an
+ * unclassified error): a `channelError` with `Internal error`, then a `disconnect`, after which it
+ * closes the stream.
+ */
+const CHANNEL_ERROR_EVENTS: SSEEvent[] = [
+  {
+    type: 'message',
+    message: {event: 'channelError', data: '{"error":{"description":"Internal error"}}'},
+  },
+  {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+]
+
+/**
+ * Ends the listener the way the API ends one it fails to keep running: `afterMs` after its welcome
+ * (`welcome`, `welcomeback` or `reset`, whichever the listener opens with), it sends a
+ * `channelError` and a `disconnect` and closes the stream. With `afterMs` 0 they replace the
+ * welcome, which is how the API fails a listener it cannot set up.
+ */
+export function channelErrorAfterWelcome<T extends SSEEvent>(
+  afterMs: number,
+): OperatorFunction<T, T | SSEEvent> {
+  // connect() sets up every inner subscription before subscribing to the source once, so this
+  // also holds for a source that emits synchronously.
+  return connect((events$) => {
+    // Fires once, `afterMs` after the welcome.
+    const failure$ = events$.pipe(filter(isWelcome), take(1), delay(afterMs), share())
+    const passed$ = afterMs > 0 ? events$ : events$.pipe(filter((event) => !isWelcome(event)))
+    return merge(
+      passed$.pipe(takeUntil(failure$)),
+      failure$.pipe(concatMap(() => CHANNEL_ERROR_EVENTS)),
+    )
+  })
+}
+
+/**
+ * Withholds the events a listener opens its connection with (`welcome`, `welcomeback`, `reset`),
+ * keeping the stream open: the listener is connected but never set up, as when the API hangs while
+ * setting it up. Mutations never reach a listener in that state, so they are withheld too.
+ */
+export function withholdWelcome<T extends SSEEvent>(): MonoTypeOperatorFunction<T> {
+  return filter((event: T) => event.type !== 'message')
+}
+
+/**
  * The bodies the API returns for its two invalid-session 401 variants,
  * byte-for-byte (verified against the live API):
  *  - `SIO-401-AEX` — the session has expired
  *  - `SIO-401-ANF` — the session was not found (revoked on another device,
  *    purged after expiry, or a stale/bogus stored token)
+ *
+ * The third variant is a hypothesis, not a recording: the RFC 6750 bearer token
+ * error a resource server answers an expired OAuth access token with, without
+ * any Sanity error code. The studio's OAuth store only renews on the two codes
+ * above, so this variant shows what happens when the API does not send them.
  */
 const INVALID_SESSION_BODIES = {
+  'invalid_token': JSON.stringify({
+    error: 'invalid_token',
+    error_description: 'The access token expired',
+  }),
   'SIO-401-AEX': JSON.stringify({
     error: 'Unauthorized',
     statusCode: 401,
@@ -148,6 +223,8 @@ export function invalidSession(
   const isLogout = isLogoutEndpoint()
   const isPublic = isPublicEndpoint()
   const isAuthFetch = isAuthFetchEndpoint()
+  const isOAuth = isOAuthEndpoint()
+  const isOAuthToken = isOAuthTokenEndpoint()
   return (req, res, target) => {
     const corsHeaders = {
       'access-control-allow-origin': req.headers.origin ?? '*',
@@ -170,14 +247,64 @@ export function invalidSession(
       onReauthenticated?.()
       return handler(req, res, target)
     }
+    // An OAuth studio never sends its session to the OAuth endpoints: the code
+    // exchange and every refresh go to the token endpoint with a code or a
+    // refresh token, and revocation carries the token being revoked. All of
+    // them are forwarded, and a token endpoint request re-arms the deadline
+    // like `/auth/fetch` does — the studio holds a new access token afterwards.
+    if (req.method !== 'OPTIONS' && isOAuth(req)) {
+      if (isOAuthToken(req)) onReauthenticated?.()
+      return handler(req, res, target)
+    }
     if (req.method === 'OPTIONS' || isPublic(req) || !isInvalid()) {
       return handler(req, res, target)
     }
     writeResponseHead(res, 401, 'Unauthorized', {
       'content-type': 'application/json',
       ...corsHeaders,
+      // RFC 6750 section 3: a bearer challenge names the error in the header.
+      ...(errorCode === 'invalid_token'
+        ? {'www-authenticate': 'Bearer error="invalid_token"'}
+        : {}),
     })
     res.end(INVALID_SESSION_BODIES[errorCode])
+    return new Subscription()
+  }
+}
+
+/**
+ * Wrap a handler so that, once `isRefused()` returns true, every `POST` to the
+ * OAuth token endpoint is answered with the RFC 6749 `invalid_grant` error
+ * instead of being forwarded — what the authorization server answers when the
+ * refresh token expired, was already redeemed, or its session was revoked in
+ * Manage. Everything else, including the API requests the current access token
+ * still authenticates, passes through. This is the one failure the studio's
+ * OAuth store treats as the end of the session, so it exercises the forced
+ * sign-out path; a code exchange after a fresh sign-in is refused too while
+ * `isRefused()` holds, so pair it with a deadline, or restart the proxy to sign
+ * in again. CORS preflights always pass through so the browser can read the 400.
+ */
+export function refusedRefreshToken(
+  handler: ProxyHandler,
+  isRefused: () => boolean = () => true,
+): ProxyHandler {
+  const isOAuthToken = isOAuthTokenEndpoint()
+  return (req, res, target) => {
+    if (req.method !== 'POST' || !isOAuthToken(req) || !isRefused()) {
+      return handler(req, res, target)
+    }
+    writeResponseHead(res, 400, 'Bad Request', {
+      'content-type': 'application/json',
+      'cache-control': 'no-store',
+      'access-control-allow-origin': req.headers.origin ?? '*',
+      'access-control-allow-credentials': 'true',
+    })
+    res.end(
+      JSON.stringify({
+        error: 'invalid_grant',
+        error_description: 'The refresh token is invalid, expired or revoked',
+      }),
+    )
     return new Subscription()
   }
 }

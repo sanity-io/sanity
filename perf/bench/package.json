@@ -26,7 +26,7 @@
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "esbuild": "0.28.2",
     "groq-js": "^2.0.1",
     "mendoza": "^3.0.8",
@@ -35,10 +35,10 @@
     "react-dom": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.3.5",
+    "sanity-plugin-internationalized-array": "^5.3.10",
     "styled-components": "catalog:",
     "tsx": "^4.23.15",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
