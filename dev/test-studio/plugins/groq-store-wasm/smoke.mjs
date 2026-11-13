@@ -12,9 +12,6 @@ const queryUrl =
   encodeURIComponent('count(*[_type == "author"])')
 const deadline = Date.now() + 5 * 60_000
 
-const expected = await fetch(queryUrl).then((response) => response.json())
-console.log(`Content Lake: ${JSON.stringify(expected.result)}`)
-
 const browser = await chromium.launch()
 try {
   const page = await browser.newPage()
@@ -41,6 +38,10 @@ try {
     }, queryUrl)
     console.log(`attempt ${attempt}: status ${reply.status}, x-groq-wasm ${reply.hit ?? '-'}`)
     if (reply.hit === 'hit') {
+      // Re-fetch at hit time: the store tracks the live dataset, so a startup
+      // snapshot can diverge while export/listener sync is still catching up.
+      const expected = await fetch(queryUrl).then((response) => response.json())
+      console.log(`Content Lake: ${JSON.stringify(expected.result)}`)
       if (JSON.stringify(reply.body.result) !== JSON.stringify(expected.result)) {
         throw new Error(
           `store answered ${JSON.stringify(reply.body.result)}, Content Lake ${JSON.stringify(expected.result)}`,
