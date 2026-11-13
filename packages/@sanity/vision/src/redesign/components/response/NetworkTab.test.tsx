@@ -186,4 +186,11 @@ describe('NetworkTab', () => {
       })}`,
     )
   })
+
+  it('writes a short server time in milliseconds and a longer round trip in seconds', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 888, e2eMs: 1_170}})
+    expect(
+      screen.getByText('vision.network.timing.value:{"e2e":"1.17s","server":"888ms"}'),
+    ).toBeTruthy()
+  })
 })

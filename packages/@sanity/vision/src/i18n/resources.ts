@@ -625,8 +625,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /** The round trip and the server's time for the query, in milliseconds */
-  'vision.network.timing.value': '{{e2e}}ms round trip, {{server}}ms on the server',
+  /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
+  'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Network panel: the trace of the request, for Sanity support */
   'vision.network.trace': 'Trace ID',
   /** Hint in the Network panel while queries go to the API */

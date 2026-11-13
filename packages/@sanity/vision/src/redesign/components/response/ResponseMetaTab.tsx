@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {formatDuration} from '../../../util/formatDuration'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type VisionResponseMeta} from '../../store/types'
 import {formatBytes} from '../../util/payloadSize'
@@ -48,12 +49,12 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
         <Grid gap={3} gridTemplateColumns="max-content minmax(0, 1fr)">
           <MetaRow label={t('result.execution-time-label')}>
             <Text data-testid="vision-meta-execution" size={1} as="div" trim={true}>
-              {meta ? `${meta.ms}ms` : notApplicable}
+              {meta ? formatDuration(meta.ms) : notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('result.end-to-end-time-label')}>
             <Text data-testid="vision-meta-e2e" size={1} as="div" trim={true}>
-              {meta ? `${meta.e2eMs}ms` : notApplicable}
+              {meta ? formatDuration(meta.e2eMs) : notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('vision.response.payload-size')}>
