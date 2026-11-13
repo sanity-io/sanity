@@ -60,9 +60,10 @@ describe('DocumentVersionsFlyoutList footer', () => {
     })
   })
 
-  it('offers to manage versions for a single version', async () => {
+  it('offers to see all versions for a single version, with the same words', async () => {
     await renderList([version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByText('Manage versions in inventory')).toBeTruthy()
+    expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
+    expect(screen.queryByText('Manage versions in inventory')).toBeNull()
   })
 
   it('offers to see all versions, without a count, for more than one', async () => {

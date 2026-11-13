@@ -676,7 +676,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
-  /** The last row of the versions flyout on a document list row, when the document has a single version */
+  /**
+   * The last row of the versions flyout on a document list row, when the document has a single version
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
   'document-group.flyout.manage-versions': 'Manage versions in inventory',
   /**
    * The last row of the versions flyout on a document list row, opening the document group inventory (plural)
@@ -684,7 +688,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
   'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
-  /** The last row of the versions flyout on a document list row, when the document has more than one version: opens the document group inventory */
+  /** The last row of the versions flyout on a document list row, whatever versions the document has: opens the document group inventory */
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',
   /** Accessible name of the versions flyout on a document list row */
   'document-group.flyout.title': 'Versions',
