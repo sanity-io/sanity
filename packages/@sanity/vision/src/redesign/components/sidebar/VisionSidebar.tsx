@@ -8,8 +8,8 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef} from 'react'
+import {Tooltip, TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
+import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -24,7 +24,14 @@ import {
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
+
+/**
+ * The collapsed rail's tooltips wait before the first one opens, so a pointer crossing the rail
+ * on its way elsewhere opens nothing; once one is open, its neighbours open at once
+ */
+const RAIL_TOOLTIP_DELAY = {open: 400}
 
 interface SidebarItemProps {
   icon: ComponentType
@@ -36,11 +43,22 @@ interface SidebarItemProps {
 }
 
 function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
+  const delayGroup = useTooltipDelayGroup()
+  // Only the tooltip that opens after the wait animates in. Moving along the rail swaps the
+  // content right away instead, which an animation on every one would only slow down. Decided
+  // when the pointer or focus arrives, before the tooltip opens: the group turns instant in the
+  // same update that opens its first tooltip, which must not change its mind halfway through
+  const [animateTooltip, setAnimateTooltip] = useState(true)
+  const decideTooltipAnimation = useCallback(() => {
+    setAnimateTooltip(!delayGroup || delayGroup.openDelay >= RAIL_TOOLTIP_DELAY.open)
+  }, [delayGroup])
+
   if (expanded) {
     return (
-      <div className={styles.sidebarItem}>
+      <div className={cx(styles.sidebarItem, sidebarStyles.railItemExpanded)}>
         <Button
           aria-label={label}
+          className={cx(sidebarStyles.pressable, sidebarStyles.pressableRow)}
           data-testid={testId}
           icon={icon}
           justify="flex-start"
@@ -55,9 +73,13 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
   }
 
   return (
-    <div className={styles.sidebarItem}>
+    <div
+      className={styles.sidebarItem}
+      onFocusCapture={decideTooltipAnimation}
+      onMouseEnter={decideTooltipAnimation}
+    >
       <Tooltip
-        animate
+        animate={animateTooltip}
         content={
           <Text size={1} as="div" trim={true}>
             {label}
@@ -68,6 +90,7 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
       >
         <Button
           aria-label={label}
+          className={sidebarStyles.pressable}
           data-testid={testId}
           icon={icon}
           mode="bleed"
@@ -115,6 +138,7 @@ export function VisionSidebar() {
       borderRight
       className={cx(
         styles.sidebarRail,
+        sidebarStyles.rail,
         expanded ? styles.sidebarRailExpanded : styles.sidebarRailCollapsed,
         isMobile && expanded && styles.sidebarRailOverlay,
       )}
@@ -202,8 +226,10 @@ export function VisionSidebar() {
   )
 
   return (
-    <Flex flexShrink={0} height="100%" minHeight="0">
-      {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
+    <Flex className={sidebarStyles.sidebar} flexShrink={0} height="100%" minHeight="0">
+      <TooltipDelayGroupProvider delay={RAIL_TOOLTIP_DELAY}>
+        {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
+      </TooltipDelayGroupProvider>
       {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
     </Flex>
   )

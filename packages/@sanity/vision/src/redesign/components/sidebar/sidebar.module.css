@@ -1,0 +1,107 @@
+/*
+ * Motion for the icon rail and the drawer it opens. Only transform and opacity animate, apart from
+ * the rail's width, and nothing animates on close: the drawer leaves at once and focus goes back
+ * to the rail.
+ */
+.sidebar {
+  --sidebar-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --sidebar-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Labels are clipped while the rail grows instead of wrapping into the narrower width */
+.rail {
+  overflow-x: clip;
+  transition: width 150ms var(--sidebar-ease-out);
+}
+
+/* The expanded rail's labels fade in as the rail grows */
+.railItemExpanded [data-ui='Text'] {
+  opacity: 1;
+  transition: opacity 150ms ease;
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+/*
+ * Press feedback. Buttons in `@sanity/ui` change their background on hover, and the transition
+ * softens that change; the scale on press says the click registered.
+ */
+.pressable {
+  transition:
+    transform 160ms var(--sidebar-ease-out),
+    background-color 100ms ease;
+}
+
+.pressable:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* A full-width row moves less than an icon button: the same scale reads as a jump on a wide row */
+.pressableRow:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* The drawer comes out from under the rail */
+.drawer {
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 200ms var(--sidebar-ease-out),
+    transform 200ms var(--sidebar-ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+/* On phones the drawer covers the whole tool and slides in from the edge like a sheet */
+.drawerOverlay {
+  transition: transform 300ms var(--sidebar-ease-drawer);
+
+  @starting-style {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+}
+
+/* A row in the saved and shared lists: its tone follows the query it opens in a tab */
+.queryRow {
+  transition: background-color 100ms ease;
+}
+
+.queryRowMenu button {
+  transition:
+    transform 160ms var(--sidebar-ease-out),
+    background-color 100ms ease;
+}
+
+.queryRowMenu button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Fades and colour changes stay, as they help without moving anything; movement goes */
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    transition: none;
+  }
+
+  .pressable:active:not(:disabled),
+  .pressableRow:active:not(:disabled),
+  .queryRowMenu button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .drawer,
+  .drawerOverlay {
+    transform: none;
+    transition: opacity 150ms ease;
+
+    @starting-style {
+      opacity: 0;
+      transform: none;
+    }
+  }
+}
