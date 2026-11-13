@@ -128,12 +128,18 @@ const DEBUG_BAR_KEY = 'groq-store-wasm:debug-bar'
 /**
  * Whether the debug bar shows in this browser (`?groqDebugBar=on|off`, remembered like
  * `?groqStore`). Hiding it only hides the bar: the store, its service worker and the metrics run
- * as before. Shown unless turned off.
+ * as before. Shown unless turned off (or in automated browsers, unless a test opts in).
  */
 export function isGroqDebugBarVisible(): boolean {
   const override = searchParam('groqDebugBar')
   if (override === 'on' || override === 'off') writeStorage('localStorage', DEBUG_BAR_KEY, override)
-  return readStorage('localStorage', DEBUG_BAR_KEY) !== 'off'
+  const stored = readStorage('localStorage', DEBUG_BAR_KEY)
+  if (stored === 'off') return false
+  // Keeps the fixed overlay off e2e viewports unless a test opts in with `?groqDebugBar=on`.
+  if (stored !== 'on' && typeof navigator !== 'undefined' && navigator.webdriver) {
+    return false
+  }
+  return true
 }
 
 function initialGuardOff(): boolean {
