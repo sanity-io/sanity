@@ -8,6 +8,7 @@ import {
   actionGroup,
   content as contentColumn,
   icon as iconCell,
+  reservedAction,
   root,
   row,
   text,
@@ -29,6 +30,12 @@ interface BannerProps {
    */
   actions?: ReactNode
   content: ReactNode
+  /**
+   * Keeps the action's space but hides it (not seen, focused or announced), so a banner that hands
+   * its action elsewhere for a while keeps its height and its text wraps as before, and nothing
+   * below it moves when the action comes back.
+   */
+  reserveAction?: boolean
   icon?: ComponentType
   tone?: CardTone
   paddingY?: number
@@ -54,6 +61,7 @@ export function Banner(props: BannerProps) {
     action,
     actions,
     content,
+    reserveAction = false,
     icon: BannerIcon,
     tone = 'transparent',
     paddingY = 2,
@@ -96,7 +104,12 @@ export function Banner(props: BannerProps) {
               </div>
             )}
             {action && (
-              <div className={actionSlot}>
+              <div
+                aria-hidden={reserveAction || undefined}
+                className={reserveAction ? `${actionSlot} ${reservedAction}` : actionSlot}
+                data-reserved={reserveAction || undefined}
+                inert={reserveAction || undefined}
+              >
                 {action.mode === 'default' ? (
                   /*
                     A filled (primary) action is the default primary (black in light mode, white in

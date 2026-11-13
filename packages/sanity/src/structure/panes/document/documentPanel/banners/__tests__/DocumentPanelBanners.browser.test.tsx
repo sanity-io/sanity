@@ -582,7 +582,14 @@ describe('document panel banners', () => {
     )
 
     await expect
-      .poll(() => page.getByTestId('variant-banner-variant-chip').elements().length)
+      .poll(
+        () =>
+          // The chips of the sentences on screen; a banner with a create action also keeps the
+          // sentences of its other states, hidden
+          [...document.querySelectorAll('[data-testid="variant-banner-variant-chip"]')].filter(
+            (chip) => getComputedStyle(chip).visibility === 'visible',
+          ).length,
+      )
       .toBe(5)
     await expect
       .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
@@ -594,6 +601,73 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  it.each([420, 520, 640, 900])(
+    'follows the document inventory and its form opening and closing while it is on screen, %ipx wide',
+    async (width) => {
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        data: [],
+        versions: [],
+        loading: false,
+        error: null,
+      })
+      type Step = 'closed' | 'open' | 'form'
+      const paramsFor: Record<Step, Record<string, string>> = {
+        closed: {},
+        open: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+        form: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, [CREATE_VARIANT_PARAM]: alphaVariant._id},
+      }
+      function Toggling() {
+        const [step, setStep] = useState<Step>('closed')
+        return (
+          <BannerHarness
+            perspective={withVariant(releasePerspective(springRelease))}
+            router={{params: paramsFor[step]}}
+          >
+            <div data-testid="banner-host">
+              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+            </div>
+            {(['closed', 'open', 'form'] as const).map((next) => (
+              <button key={next} type="button" onClick={() => setStep(next)}>
+                {`Go ${next}`}
+              </button>
+            ))}
+          </BannerHarness>
+        )
+      }
+      await render(
+        <TestWrapper schemaTypes={schemaTypes}>
+          <div style={{width}}>
+            <Toggling />
+          </div>
+        </TestWrapper>,
+      )
+
+      const $host = page.getByTestId('banner-host')
+      const $filled = $host.getByRole('button', {name: 'Create variant'})
+      const $link = $host.getByRole('button', {name: 'Create it in the document inventory.'})
+      const $pointer = $host.getByTestId('document-not-in-variant-banner-hand-off')
+      const heights: number[] = []
+      for (const step of ['closed', 'open', 'closed', 'open', 'form', 'open', 'closed'] as const) {
+        await page.getByRole('button', {name: `Go ${step}`}).click()
+        if (step === 'closed') {
+          await expect.element($filled).toBeVisible()
+          await expect.element($link).not.toBeInTheDocument()
+        } else if (step === 'open') {
+          await expect.element($link).toBeVisible()
+          await expect.element($filled).not.toBeInTheDocument()
+        } else {
+          await expect.element($pointer).toBeVisible()
+          await expect.element($link).not.toBeInTheDocument()
+          await expect.element($filled).not.toBeInTheDocument()
+        }
+        heights.push($host.element().getBoundingClientRect().height)
+      }
+      // The form below does not move when the button becomes the inline link or the pointer
+      expect(new Set(heights).size, JSON.stringify(heights)).toBe(1)
+      await settleChromaticEndState()
+    },
+  )
+
   it('yields its create action to the open document inventory, in light and dark', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
@@ -602,15 +676,11 @@ describe('document panel banners', () => {
       error: null,
     })
     const setParams = vi.fn()
-    const inventoryOpen = {
-      inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
-    } as Partial<DocumentPaneContextValue>
     const releaseBanner = (scheme: 'light' | 'dark', testId: string) => (
       <ThemeColorProvider scheme={scheme}>
         <div data-testid={testId}>
           <BannerHarness
             perspective={withVariant(releasePerspective(springRelease))}
-            pane={inventoryOpen}
             router={{params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}, setParams}}
           >
             <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
@@ -631,7 +701,6 @@ describe('document panel banners', () => {
         {/* Open inventory with its Create variant form open: the pointer only */}
         <BannerHarness
           perspective={withVariant(releasePerspective(springRelease))}
-          pane={inventoryOpen}
           router={{
             params: {
               inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
@@ -649,9 +718,10 @@ describe('document panel banners', () => {
       .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
       .toBe(1)
     await expect.poll(() => page.getByRole('button', {name: linkName}).elements().length).toBe(2)
+    // The pointer on screen; every stacked banner also keeps it, hidden, for its height
     await expect
-      .element(page.getByText('Finish creating it in the document inventory.'))
-      .toBeVisible()
+      .element(page.getByTestId('document-not-in-variant-banner-hand-off'))
+      .toHaveTextContent('Finish creating it in the document inventory.')
 
     // The link reads as text in both schemes: at least 4.5:1 against the banner behind it
     for (const testId of ['light-banner', 'dark-banner']) {

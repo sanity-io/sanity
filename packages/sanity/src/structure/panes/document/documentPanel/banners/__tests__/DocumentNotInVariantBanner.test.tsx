@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
   type SystemVariant,
@@ -244,7 +244,11 @@ describe('DocumentNotInVariantBanner', () => {
       await expectBannerMessage(
         'This document has no draft for the variant Alpha audience yet. Create one to start editing.',
       )
-      expect(screen.getByTestId('variant-banner-variant-chip').textContent).toBe(VARIANT_TITLE)
+      expect(
+        within(screen.getByTestId('document-not-in-variant-banner')).getByTestId(
+          'variant-banner-variant-chip',
+        ).textContent,
+      ).toBe(VARIANT_TITLE)
       expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
     })
 
@@ -587,11 +591,6 @@ describe('DocumentNotInVariantBanner', () => {
 
     beforeEach(() => {
       mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
-      mockUseDocumentPane.mockReturnValue({
-        documentId: DOCUMENT_ID,
-        value: existingDocumentValue,
-        inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
-      } as unknown as ReturnType<typeof useDocumentPane>)
     })
 
     it('states what is missing, drops Create variant and points to the form in the document inventory', async () => {
@@ -657,12 +656,7 @@ describe('DocumentNotInVariantBanner', () => {
     })
 
     it('keeps the filled Create variant while the document inventory is closed, even with the param', async () => {
-      mockUseDocumentPane.mockReturnValue({
-        documentId: DOCUMENT_ID,
-        value: existingDocumentValue,
-        inspector: null,
-      } as unknown as ReturnType<typeof useDocumentPane>)
-      await renderBanner(CREATE_IN_RELEASE, CREATING)
+      await renderBanner(CREATE_IN_RELEASE, {[CREATE_VARIANT_PARAM]: variantAlphaAudience._id})
 
       expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
       expect(
