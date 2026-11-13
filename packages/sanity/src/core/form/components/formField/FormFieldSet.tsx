@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Text, type Theme} from '@sanity/ui'
+import {Badge, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {VStack, Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -294,7 +294,13 @@ export function FormFieldSet(
                 )}
 
                 {description && (
-                  <Text muted size={1} id={createDescriptionId(inputId, description)}>
+                  <Text
+                    muted
+                    size={1}
+                    id={createDescriptionId(inputId, description)}
+                    as="div"
+                    trim={true}
+                  >
                     {description}
                   </Text>
                 )}

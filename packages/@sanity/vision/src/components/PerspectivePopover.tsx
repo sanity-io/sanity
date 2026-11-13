@@ -1,9 +1,9 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
-import {Badge, Button, Card, type CardTone, Inline, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Badge, Button, Card, type CardTone, Inline, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack, Link, type LinkProps} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import * as styles from './PerspectivePopover.module.css'
@@ -12,8 +12,8 @@ function PerspectivePopoverContent(props: ComponentProps<typeof Box>) {
   return <Box {...props} className={styles.perspectivePopoverContent} />
 }
 
-function PerspectivePopoverLink(props: ComponentProps<'a'>) {
-  return <a {...props} className={styles.perspectivePopoverLink} />
+function PerspectivePopoverLink(props: LinkProps) {
+  return <Link {...props} className={styles.perspectivePopoverLink} />
 }
 
 function Dot({tone}: {tone: CardTone}) {
@@ -45,18 +45,22 @@ export function PerspectivePopover() {
         <PerspectivePopoverContent>
           <VStack gap={4}>
             <Inline gap={2}>
-              <Text weight="medium">{t('settings.perspectives.title')}</Text>
+              <Text weight="medium" as="div" trim={true}>
+                {t('settings.perspectives.title')}
+              </Text>
             </Inline>
 
             <Card>
-              <Text muted>{t('settings.perspectives.description')}</Text>
+              <Text muted as="div" trim={true}>
+                {t('settings.perspectives.description')}
+              </Text>
             </Card>
             <Card>
               <VStack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>
-                <Text muted>
+                <Text muted as="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="settings.perspective.preview-drafts-renamed-to-drafts.description"
@@ -68,7 +72,7 @@ export function PerspectivePopover() {
               <Card>
                 <Badge tone="caution">{t('label.new')}</Badge>
                 <Card>
-                  <Text muted>
+                  <Text muted as="div" trim={true}>
                     <Translate t={t} i18nKey="settings.perspectives.new-default.description" />
                   </Text>
                 </Card>
@@ -76,11 +80,11 @@ export function PerspectivePopover() {
             ) : null}
 
             <Card>
-              <Text>
+              <Text as="div" trim={true}>
                 <PerspectivePopoverLink
                   href="https://www.sanity.io/docs/perspectives"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  openInNewTab
+                  underlined={false}
                 >
                   {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>

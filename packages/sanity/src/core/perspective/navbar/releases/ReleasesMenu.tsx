@@ -1,7 +1,10 @@
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
-import {TextInput} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
+import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useState} from 'react'
+import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -9,35 +12,85 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
+import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
 import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
 import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
-export function ReleasesMenu({
+const OversizedButton = styled(Button)`
+  ${oversizedButtonStyle}
+`
+
+/**
+ * Labelled chip used when variants are on. The classic pill keeps its own
+ * label beside a chevron, so this hook work stays off that path.
+ */
+function ReleasesMenuChip({
   fullWidth,
-  selectedPerspectiveName,
-  areReleasesEnabled = true,
-  menuItemProps,
-}: {
-  /** Stretches the trigger to its parent's width. */
-  fullWidth?: boolean
-  selectedPerspectiveName: string | undefined
-  areReleasesEnabled: boolean
-  menuItemProps?: ReleasesNavMenuItemPropsGetter
-}): React.JSX.Element {
-  const {t} = useTranslation()
+  ...rest
+}: {fullWidth?: boolean} & React.HTMLAttributes<HTMLButtonElement>) {
   const setPerspective = useSetPerspective()
   const defaultPerspective = useGetDefaultPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useReleasesLabel()
   // Drafts disabled coerces the default name to `published`, so a truthy name
   // is not enough to tell a selection from the default perspective.
   const canClearPerspective = selectedPerspective !== defaultPerspective
+
+  const handleClearPerspective = useCallback(() => {
+    setPerspective(undefined)
+  }, [setPerspective])
+
+  return (
+    <GlobalPerspectiveButton
+      data-testid="global-perspective-menu-button"
+      fullText={fullTitle}
+      fullWidth={fullWidth}
+      handleClearPerspective={canClearPerspective ? handleClearPerspective : undefined}
+      icon={
+        <ReleaseAvatarIcon
+          release={selectedPerspective}
+          size="small"
+          className={releasesMenuItemIcon}
+        />
+      }
+      text={displayTitle}
+      {...rest}
+    />
+  )
+}
+
+export function ReleasesMenu({
+  fullWidth,
+  selectedPerspectiveName,
+  areReleasesEnabled = true,
+  menuItemProps,
+  showDetailLinks = false,
+  variantsEnabled = false,
+}: {
+  /** Stretches the trigger to its parent's width. */
+  fullWidth?: boolean
+  selectedPerspectiveName: string | undefined
+  areReleasesEnabled: boolean
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * Shows a link to each release's page next to it. Only the navbar's global perspective picker
+   * does: a picker that chooses a perspective for something else must not navigate away.
+   */
+  showDetailLinks?: boolean
+  /**
+   * Which trigger to render. Variants studios get the labelled chip.
+   * Everyone else gets the chevron that sits in the classic releases pill.
+   */
+  variantsEnabled?: boolean
+}): React.JSX.Element {
+  const {t} = useTranslation()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
@@ -58,10 +111,6 @@ export function ReleasesMenu({
     setCreateBundleDialogOpen(false)
   }, [])
 
-  const handleClearPerspective = useCallback(() => {
-    setPerspective(undefined)
-  }, [setPerspective])
-
   const handleFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setFilterQuery(event.currentTarget.value)
   }, [])
@@ -72,28 +121,29 @@ export function ReleasesMenu({
     setFilterQuery('')
   }, [resetMenuWidth, resetRangeVisibility])
 
+  const {triggerRef, handleNavigate: handleNavigateToRelease} = usePerspectiveDetailLinkTrigger()
+
   return (
     <>
       <MenuButton
         button={
-          <GlobalPerspectiveButton
-            data-testid="global-perspective-menu-button"
-            fullText={fullTitle}
-            fullWidth={fullWidth}
-            handleClearPerspective={canClearPerspective ? handleClearPerspective : undefined}
-            icon={
-              <ReleaseAvatarIcon
-                release={selectedPerspective}
-                size="small"
-                className={releasesMenuItemIcon}
-              />
-            }
-            text={displayTitle}
-          />
+          variantsEnabled ? (
+            <ReleasesMenuChip fullWidth={fullWidth} />
+          ) : (
+            <OversizedButton
+              aria-label={t('release.navbar.open-releases')}
+              data-testid="global-perspective-menu-button"
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              padding={2}
+              radius="full"
+            />
+          )
         }
         id="releases-menu"
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
+        ref={triggerRef}
         menu={
           <Menu
             className={globalPerspectiveMenu}
@@ -123,6 +173,7 @@ export function ReleasesMenu({
                 selectedPerspectiveName={selectedPerspectiveName}
                 handleOpenBundleDialog={handleOpenBundleDialog}
                 menuItemProps={menuItemProps}
+                onNavigateToRelease={showDetailLinks ? handleNavigateToRelease : undefined}
               />
             </Flex>
           </Menu>

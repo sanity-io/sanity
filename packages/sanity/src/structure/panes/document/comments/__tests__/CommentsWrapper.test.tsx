@@ -1,5 +1,5 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, usePerspective, useWorkspace} from 'sanity'
+import {getTargetScopeId, useDocumentVersions, usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -7,6 +7,8 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
 
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
+
+const ALPHA_VARIANT = {_id: '_.variants.alpha-audience'}
 
 let capturedCommentsProviderLegacyProps: Record<string, unknown> | undefined
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
@@ -24,6 +26,7 @@ vi.mock('sanity', async (importOriginal) => ({
     return <>{props.children}</>
   },
   getTargetScopeId: vi.fn(() => undefined),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   useCommentsEnabled: vi.fn(() => true),
   useCommentsEnabledLegacy: vi.fn(() => true),
   usePerspective: vi.fn(() => ({
@@ -76,6 +79,7 @@ const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPane = useDocumentPane as Mock
 const mockGetTargetScopeId = getTargetScopeId as Mock
 const mockUseWorkspace = useWorkspace as Mock
+const mockUseDocumentVersions = useDocumentVersions as Mock
 
 function documentPane(overrides: Record<string, unknown> = {}) {
   return {
@@ -127,6 +131,8 @@ describe('CommentsWrapper', () => {
     mockUseDocumentPane.mockReturnValue(documentPane())
 
     mockGetTargetScopeId.mockReturnValue(undefined)
+
+    mockUseDocumentVersions.mockReturnValue({data: [], versions: [], loading: false})
   })
 
   describe('getCommentLink', () => {
@@ -194,6 +200,7 @@ describe('CommentsWrapper', () => {
         selectedPerspectiveName: undefined,
         selectedReleaseId: undefined,
         selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
         selectedPerspective: 'drafts',
         perspectiveStack: ['drafts'],
         excludedPerspectives: [],
@@ -229,6 +236,7 @@ describe('CommentsWrapper', () => {
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
         selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [ALPHA_VARIANT],
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
         excludedPerspectives: [],
@@ -290,6 +298,47 @@ describe('CommentsWrapper', () => {
       })
       // @ts-expect-error -- pre-existing, fix later
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([])
+    })
+
+    it('leaves out a scheduledDraft param that belongs to another variant', () => {
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedVariantNames: ['alpha-audience'],
+          selectedVariants: [ALPHA_VARIANT],
+        }),
+      )
+      mockUsePaneRouter.mockReturnValue({
+        params: {scheduledDraft: 'rScheduledDraft'},
+        setParams: vi.fn(),
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        data: ['versions.rScheduledDraft.doc-scheduled'],
+        versions: [
+          {_id: 'versions.rScheduledDraft.doc-scheduled', _system: {bundleId: 'rScheduledDraft'}},
+        ],
+        loading: false,
+      })
+
+      render(
+        <CommentsWrapper documentId="doc-scheduled" documentType="article">
+          <div>children</div>
+        </CommentsWrapper>,
+      )
+
+      const getCommentLink = capturedCommentsProviderProps!.getCommentLink as (id: string) => string
+      getCommentLink('comment-crossed')
+
+      // @ts-expect-error -- mock.calls is typed as an empty tuple by the hoisted vi.fn
+      expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
+        id: 'doc-scheduled',
+        type: 'article',
+        inspect: 'sanity/comments',
+        comment: 'comment-crossed',
+      })
+      // @ts-expect-error -- mock.calls is typed as an empty tuple by the hoisted vi.fn
+      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
+        ['variant', 'variant:alpha-audience'],
+      ])
     })
 
     it('passes empty search params to resolveIntentLink when no release is selected', () => {
@@ -362,6 +411,7 @@ describe('CommentsWrapper', () => {
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
           selectedVariantNames: ['alpha-audience'],
+          selectedVariants: [ALPHA_VARIANT],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -386,6 +436,7 @@ describe('CommentsWrapper', () => {
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
           selectedVariantNames: ['alpha-audience'],
+          selectedVariants: [ALPHA_VARIANT],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -524,7 +575,10 @@ describe('CommentsWrapper', () => {
       // Variant scopes are opaque and server-assigned; deriving `drafts.doc-1` here would file the
       // comment against the base pair instead of the variant document on screen.
       mockUsePerspective.mockReturnValue(
-        draftsPerspective({selectedVariantNames: ['alpha-audience']}),
+        draftsPerspective({
+          selectedVariantNames: ['alpha-audience'],
+          selectedVariants: [ALPHA_VARIANT],
+        }),
       )
       mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'versions.varscope.doc-1'}}))
 
@@ -537,6 +591,7 @@ describe('CommentsWrapper', () => {
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
           selectedVariantNames: ['alpha-audience'],
+          selectedVariants: [ALPHA_VARIANT],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),

@@ -2,18 +2,18 @@ import {type ReleaseDocument} from '@sanity/client'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
 import {Text} from 'ui5'
 
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {type Variant} from '../machines/selectionMachine'
+import {type ServedStatus} from '../utils/resolveServedVersion'
 import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantSetEntry} from './VariantSet/VariantSetEntry'
 
 /**
- * Shared row chrome for a document group version: primary-action overlay, name,
- * viewing badge, and release avatar. The inventory layers checkbox selection and
- * context-menu actions on top; the picker uses it as-is.
+ * Shared row chrome for a document group version.
  *
  * @internal
  */
@@ -21,6 +21,7 @@ export function DocumentGroupEntry({
   variant,
   releases,
   isSelected,
+  servedStatus,
   leading,
   onPrimaryAction,
   onContextMenu,
@@ -29,6 +30,7 @@ export function DocumentGroupEntry({
   variant: Variant
   releases: Map<string, ReleaseDocument>
   isSelected?: boolean
+  servedStatus?: ServedStatus
   leading?: ReactNode
   onPrimaryAction: () => void
   onContextMenu?: MouseEventHandler<HTMLButtonElement>
@@ -44,7 +46,11 @@ export function DocumentGroupEntry({
   const release = resolveVariantRelease(variant, releases)
 
   return (
-    <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
+    <VariantSetEntry
+      data-variant-name={variant.name}
+      data-selected={isSelected || undefined}
+      data-served={servedStatus}
+    >
       <div className="atom">{leading}</div>
       <div className="atom">
         <div className="atom">
@@ -66,6 +72,15 @@ export function DocumentGroupEntry({
             <StatusBadge radius={2} tone="primary">
               {t('document-group-inventory.viewing-item-label')}
             </StatusBadge>
+          )}
+          {servedStatus && (
+            <Tooltip content={t('document-group.version.served.tooltip')}>
+              <StatusBadge radius={2} tone={servedStatus === 'primary' ? 'positive' : 'suggest'}>
+                {servedStatus === 'primary'
+                  ? t('document-group.version.served')
+                  : t('document-group.version.served-instead')}
+              </StatusBadge>
+            </Tooltip>
           )}
           {agentBundleName ? (
             // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

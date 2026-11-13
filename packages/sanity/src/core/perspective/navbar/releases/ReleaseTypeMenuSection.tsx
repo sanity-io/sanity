@@ -23,6 +23,7 @@ export function ReleaseTypeMenuSection({
   range,
   currentGlobalBundleMenuItemRef,
   menuItemProps,
+  onNavigateToRelease,
   showStackLine = true,
 }: {
   releaseType: ReleaseType
@@ -30,6 +31,7 @@ export function ReleaseTypeMenuSection({
   range: LayerRange
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  onNavigateToRelease?: () => void
   /** The stack line joins the selected perspective to the releases under it. A filter hides it. */
   showStackLine?: boolean
 }): React.JSX.Element | null {
@@ -73,6 +75,7 @@ export function ReleaseTypeMenuSection({
                 showStackLine ? getRangePosition(range, releaseTypeOffset + index) : undefined
               }
               menuItemProps={menuItemProps}
+              onNavigateToRelease={onNavigateToRelease}
             />
           ))}
         </Flex>

@@ -148,6 +148,21 @@ describe('StudioTelemetryProvider', () => {
     })
   })
 
+  it('creates the session id on first render rather than on import, and keeps it across remounts', async () => {
+    vi.resetModules()
+    const {StudioTelemetryProvider: FreshProvider} = await import('../StudioTelemetryProvider')
+    expect(createSessionId).not.toHaveBeenCalled()
+
+    render(<FreshProvider>child</FreshProvider>).unmount()
+    render(<FreshProvider>child</FreshProvider>)
+
+    expect(createSessionId).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(createBatchedStore).mock.calls.map(([sessionId]) => sessionId)).toEqual([
+      'test-session-id',
+      'test-session-id',
+    ])
+  })
+
   it('enriches events with context in sendEvents callback', async () => {
     render(
       <DeferredTelemetryProvider>

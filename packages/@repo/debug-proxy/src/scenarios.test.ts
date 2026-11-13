@@ -1,22 +1,25 @@
-import {firstValueFrom, from, toArray} from 'rxjs'
+import {defer, firstValueFrom, from, Subject, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type Message, type ProxyRequest, type ProxyResponse} from './proxy'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   expiredToken,
   invalidSession,
   randomLatency,
+  refusedRefreshToken,
   sendReset,
+  withholdWelcome,
 } from './scenarios'
 
 function mutation(id: string): Message {
   return {type: 'message', message: {event: 'mutation', id, data: '{}'}}
 }
 
-function welcome(): Message {
-  return {type: 'message', message: {event: 'welcome', data: '{}'}}
+function welcome(event: 'welcome' | 'welcomeback' | 'reset' = 'welcome'): Message {
+  return {type: 'message', message: {event, data: '{}'}}
 }
 
 describe('dropMutations', () => {
@@ -38,6 +41,84 @@ describe('duplicateMutations', () => {
     const input = [welcome(), mutation('a')]
     const out = await firstValueFrom(from(input).pipe(duplicateMutations(1), toArray()))
     expect(out).toEqual([welcome(), mutation('a'), mutation('a')])
+  })
+})
+
+function subscribeWithChannelError(afterMs: number) {
+  const upstream = new Subject<Message>()
+  const out: unknown[] = []
+  let completed = false
+  upstream.pipe(channelErrorAfterWelcome(afterMs)).subscribe({
+    next: (event) => out.push(event),
+    complete: () => {
+      completed = true
+    },
+  })
+  return {upstream, out, completed: () => completed}
+}
+
+describe('channelErrorAfterWelcome', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  const failureEvents = [
+    {
+      type: 'message',
+      message: {event: 'channelError', data: '{"error":{"description":"Internal error"}}'},
+    },
+    {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+  ]
+
+  // A resumed listener (`enableResume`) opens with welcomeback, or reset when it cannot resume
+  const welcomes = ['welcome', 'welcomeback', 'reset'] as const
+
+  test.each(welcomes)(
+    'passes events through until the delay after %s, then fails and closes',
+    async (event) => {
+      const {upstream, out, completed} = subscribeWithChannelError(1_000)
+      upstream.next(welcome(event))
+      upstream.next(mutation('a'))
+      await vi.advanceTimersByTimeAsync(1_000)
+      upstream.next(mutation('b'))
+
+      expect(out).toEqual([welcome(event), mutation('a'), ...failureEvents])
+      expect(completed()).toBe(true)
+    },
+  )
+
+  test.each(welcomes)('fails instead of sending %s with a delay of 0', async (event) => {
+    const {upstream, out, completed} = subscribeWithChannelError(0)
+    upstream.next(welcome(event))
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(out).toEqual(failureEvents)
+    expect(completed()).toBe(true)
+  })
+
+  test('subscribes once to a source that emits synchronously', async () => {
+    let subscriptions = 0
+    const upstream = defer(() => {
+      subscriptions++
+      return from([welcome(), mutation('a')])
+    })
+    const out = firstValueFrom(upstream.pipe(channelErrorAfterWelcome(1_000), toArray()))
+    await vi.advanceTimersByTimeAsync(1_000)
+
+    expect(await out).toEqual([welcome(), mutation('a'), ...failureEvents])
+    expect(subscriptions).toBe(1)
+  })
+})
+
+describe('withholdWelcome', () => {
+  test('withholds every message and keeps comments flowing', async () => {
+    const keepalive = {type: 'comment' as const, comment: ''}
+    const input = [welcome(), keepalive, mutation('a')]
+    const out = await firstValueFrom(from(input).pipe(withholdWelcome(), toArray()))
+    expect(out).toEqual([keepalive])
   })
 })
 
@@ -110,6 +191,106 @@ describe('invalidSession', () => {
 
     expect(captured.head?.status).toBe(401)
     expect(JSON.parse(captured.body ?? '{}')).toMatchObject({errorCode: 'SIO-401-AEX'})
+  })
+
+  test('answers with an RFC 6750 bearer challenge, without a Sanity error code, when so configured', () => {
+    const handler = invalidSession(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+      {errorCode: 'invalid_token'},
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(captured.head?.status).toBe(401)
+    expect(captured.head?.headers['www-authenticate']).toBe('Bearer error="invalid_token"')
+    const body = JSON.parse(captured.body ?? '{}')
+    expect(body).toMatchObject({error: 'invalid_token'})
+    expect(body).not.toHaveProperty('errorCode')
+  })
+
+  test('forwards the OAuth endpoints while invalid, and re-arms on a token endpoint request', () => {
+    // An OAuth studio renews through /auth/oauth/token with its refresh token, never
+    // with the access token the scenario invalidates. Answering the token endpoint with
+    // a 401 would keep it from renewing at all, and its revoke calls on sign-out
+    // would fail too.
+    let forwarded: string[] = []
+    let reauthenticated = 0
+    const handler = invalidSession(
+      (req) => {
+        forwarded.push(req.url ?? '')
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+      {onReauthenticated: () => (reauthenticated += 1)},
+    )
+
+    handler(fakeReq('GET', '/v1/auth/oauth/authorize?client_id=x'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/revoke'), fakeRes().res, target)
+    expect(forwarded).toEqual([
+      '/v1/auth/oauth/authorize?client_id=x',
+      '/v1/auth/oauth/token',
+      '/v1/auth/oauth/revoke',
+    ])
+    expect(reauthenticated).toBe(1)
+
+    forwarded = []
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET', '/v1/users/me'), res, target)
+    expect(forwarded).toEqual([])
+    expect(captured.head?.status).toBe(401)
+  })
+})
+
+describe('refusedRefreshToken', () => {
+  const target = {url: new URL('https://example.localhost/v1/auth/oauth/token')}
+
+  test('answers a POST to the OAuth token endpoint with invalid_grant once refused', () => {
+    let forwarded = false
+    const handler = refusedRefreshToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(400)
+    expect(captured.head?.headers['cache-control']).toBe('no-store')
+    // Same CORS headers as the other synthetic responses, so a credentialed caller can read it.
+    expect(captured.head?.headers['access-control-allow-credentials']).toBe('true')
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({error: 'invalid_grant'})
+  })
+
+  test('forwards everything else: preflights, API requests, and the token endpoint before the deadline', () => {
+    const forwarded: string[] = []
+    let refused = false
+    const handler = refusedRefreshToken(
+      (req) => {
+        forwarded.push(`${req.method} ${req.url}`)
+        return {unsubscribe: () => {}} as never
+      },
+      () => refused,
+    )
+
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), fakeRes().res, target)
+    refused = true
+    handler(fakeReq('OPTIONS', '/v1/auth/oauth/token'), fakeRes().res, target)
+    handler(fakeReq('GET', '/v1/users/me'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/revoke'), fakeRes().res, target)
+
+    expect(forwarded).toEqual([
+      'POST /v1/auth/oauth/token',
+      'OPTIONS /v1/auth/oauth/token',
+      'GET /v1/users/me',
+      'POST /v1/auth/oauth/revoke',
+    ])
   })
 })
 

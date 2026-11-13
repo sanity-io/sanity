@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {LocaleProvider} from '../../i18n/components/LocaleProvider'
@@ -67,25 +68,25 @@ export const Thresholds: Story = {
     <Card padding={3} radius={2} shadow={1} style={{maxWidth: 520}}>
       <Stack gap={3}>
         <Flex gap={4}>
-          <Text muted size={0} style={{minWidth: 140}} weight="medium">
+          <Text muted size={0} style={{minWidth: 140}} weight="medium" as="div" trim={true}>
             distance
           </Text>
-          <Text muted size={0} style={{flex: 1}} weight="medium">
+          <Text muted size={0} style={{flex: 1}} weight="medium" as="div" trim={true}>
             default
           </Text>
-          <Text muted size={0} style={{flex: 1}} weight="medium">
+          <Text muted size={0} style={{flex: 1}} weight="medium" as="div" trim={true}>
             minimal
           </Text>
         </Flex>
         {LADDER.map(({label, time}) => (
           <Flex gap={4} key={label}>
-            <Text muted size={1} style={{minWidth: 140}}>
+            <Text muted size={1} style={{minWidth: 140}} as="div" trim={true}>
               {label}
             </Text>
-            <Text size={1} style={{flex: 1}}>
+            <Text size={1} style={{flex: 1}} as="div" trim={true}>
               <RelativeTime relativeTo={NOW} time={time} />
             </Text>
-            <Text size={1} style={{flex: 1}}>
+            <Text size={1} style={{flex: 1}} as="div" trim={true}>
               <RelativeTime minimal relativeTo={NOW} time={time} />
             </Text>
           </Flex>

@@ -1,4 +1,5 @@
 import {queryHelpers, render, screen} from '@testing-library/react'
+import {type useWorkspace, type WorkspaceOptions} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -31,13 +32,26 @@ vi.mock('../DocumentGroupInventoryButton', () => ({
   DocumentGroupInventoryButton: () => <span data-testid="document-group-inventory-button" />,
 }))
 
-vi.mock('../DocumentTargetBadges', () => ({
-  DocumentTargetBadges: () => null,
+vi.mock('../DocumentPanelNavigation/DocumentPanelNavigation', () => ({
+  DocumentPanelNavigation: () => <span>Published</span>,
 }))
 
-vi.mock('../documentGroupInventoryHint/DocumentGroupInventoryHint', () => ({
-  DocumentGroupInventoryHint: () => null,
-}))
+/**
+ * Variants switch the inventory on when the config resolves, so a test that needs variants
+ * without the inventory overrides the resolved `beta` instead.
+ */
+const workspaceBeta = vi.hoisted(() => ({override: undefined as WorkspaceOptions['beta']}))
+
+vi.mock('sanity', async (importOriginal) => {
+  const actual = await importOriginal<{useWorkspace: typeof useWorkspace}>()
+  return {
+    ...actual,
+    useWorkspace: () => {
+      const workspace = actual.useWorkspace()
+      return workspaceBeta.override ? {...workspace, beta: workspaceBeta.override} : workspace
+    },
+  }
+})
 
 // Typed as a partial so every field below is checked against the real context, without
 // having to build the ~40 fields the header never reads.
@@ -66,10 +80,16 @@ function queryToolbars() {
   return queryHelpers.queryAllByAttribute('data-sanity-document-toolbar', document.body, '')
 }
 
-async function mountHeader() {
-  render(<DocumentPanelHeader menuItems={[]} />, {wrapper})
+async function mountHeader(
+  options: {
+    container?: 'document-perspective-list' | 'document-panel-navigation'
+    wrapper?: React.ComponentType<{children: React.ReactNode}>
+  } = {},
+) {
+  const {container = 'document-perspective-list'} = options
+  render(<DocumentPanelHeader menuItems={[]} />, {wrapper: options.wrapper ?? wrapper})
   // The locale provider suspends on first render, so wait for the toolbar to come through.
-  await screen.findByTestId('document-perspective-list')
+  await screen.findByTestId(container)
 }
 
 beforeAll(async () => {
@@ -89,6 +109,7 @@ describe('DocumentPanelHeader', () => {
   })
 
   afterEach(() => {
+    workspaceBeta.override = undefined
     vi.clearAllMocks()
   })
 
@@ -125,6 +146,35 @@ describe('DocumentPanelHeader', () => {
     const copyActions = screen.getByTestId('copy-document-actions')
 
     expect(button.compareDocumentPosition(copyActions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+  })
+
+  it('renders the perspective list when neither variants nor the inventory are enabled', async () => {
+    await mountHeader()
+
+    expect(screen.queryByTestId('document-panel-navigation')).toBeNull()
+  })
+
+  it('renders the document panel navigation when the document group inventory is enabled', async () => {
+    const inventoryWrapper = await createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config: {beta: {documentGroupInventory: {enabled: true}}},
+    })
+
+    await mountHeader({container: 'document-panel-navigation', wrapper: inventoryWrapper})
+
+    expect(screen.queryByTestId('document-perspective-list')).toBeNull()
+  })
+
+  it('renders the document panel navigation for variants without the inventory', async () => {
+    workspaceBeta.override = {
+      variants: {enabled: true},
+      documentGroupInventory: {enabled: false},
+    }
+
+    await mountHeader({container: 'document-panel-navigation'})
+
+    expect(screen.queryByTestId('document-perspective-list')).toBeNull()
+    expect(screen.queryByTestId('document-group-inventory-button')).toBeNull()
   })
 
   it('leaves the attribute off the collapsed pane header', async () => {

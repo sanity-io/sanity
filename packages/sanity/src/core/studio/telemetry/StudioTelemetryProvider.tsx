@@ -4,6 +4,7 @@ import {
   createBatchedStore,
   type CreateBatchedStoreOptions,
   createSessionId,
+  type SessionId,
 } from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
 import {
@@ -31,7 +32,12 @@ import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
-const sessionId = createSessionId()
+let sessionId: SessionId | undefined
+
+function getSessionId(): SessionId {
+  sessionId ??= createSessionId()
+  return sessionId
+}
 
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
@@ -186,7 +192,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
   // oxlint-disable-next-line react/refs -- pre-existing violation, to be fixed in a follow-up
-  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+  const store = useMemo(() => createBatchedStore(getSessionId(), storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
   const studioLoadedFiredRef = useRef(false)

@@ -11,6 +11,10 @@ import {
 import {dequal as isEqual} from 'dequal/lite'
 
 import {Rule as RuleClass} from '../Rule'
+import {
+  type AcceptedAssetType,
+  createAssetAcceptValidator,
+} from '../validators/assetAcceptValidator'
 import {slugStructureValidator, slugUniquenessValidator} from '../validators/slugValidator'
 import {getTypeChain} from './getTypeChain'
 
@@ -123,11 +127,58 @@ export function normalizeValidationRules(
     return normalizeValidationRules({...typeDef, validation: compiled.definition}, context)
   }
 
+  return [...normalizeAuthoredRules(typeDef, context), ...inferAssetAcceptRules(typeDef)]
+}
+
+function isAcceptedAssetType(name: string): name is AcceptedAssetType {
+  return name === 'image' || name === 'file'
+}
+
+function getAcceptOption(typeDef: SchemaType): string {
+  const options = typeDef.options
+  if (
+    options &&
+    typeof options === 'object' &&
+    'accept' in options &&
+    typeof options.accept === 'string'
+  ) {
+    return options.accept.trim()
+  }
+  return ''
+}
+
+// A separate rule, so the inferred check stays a warning whatever level the authored rules use.
+function inferAssetAcceptRules(typeDef: SchemaType): Rule[] {
+  const accept = getAcceptOption(typeDef)
+  const assetType = getTypeChain(typeDef)
+    .map((type) => type.name)
+    .find(isAcceptedAssetType)
+
+  if (accept && assetType) {
+    return [
+      new RuleClass(typeDef)
+        .custom(markInternalValidator(createAssetAcceptValidator(accept, assetType)), {
+          bypassConcurrencyLimit: true,
+        })
+        .warning(),
+    ]
+  }
+  return []
+}
+
+function normalizeAuthoredRules(typeDef: SchemaType, context?: ValidationContext): Rule[] {
+  const compiled = Array.isArray(typeDef.validation)
+    ? compiledValidations.get(typeDef.validation)
+    : undefined
+  if (compiled) {
+    return normalizeAuthoredRules({...typeDef, validation: compiled.definition}, context)
+  }
+
   const validation = typeDef.validation
 
   if (Array.isArray(validation)) {
     const rules = validation.flatMap((i) =>
-      normalizeValidationRules(
+      normalizeAuthoredRules(
         {
           ...typeDef,
           validation: i,
@@ -167,7 +218,7 @@ export function normalizeValidationRules(
   }
 
   if (typeof validation === 'function') {
-    return normalizeValidationRules(
+    return normalizeAuthoredRules(
       {
         ...typeDef,
         validation: validation(baseRule, context),

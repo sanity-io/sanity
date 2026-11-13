@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "6.21.0",
+  "version": "6.23.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "cms",
@@ -29,6 +29,9 @@
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
+      "accepts": [
+        "./lib/accepts.d.ts"
+      ],
       "fs": [
         "./lib/fs.d.ts"
       ],
@@ -56,6 +59,10 @@
     ".": {
       "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
+    },
+    "./accepts": {
+      "monorepo": "./src/_exports/accepts.ts",
+      "default": "./lib/accepts.js"
     },
     "./client": {
       "monorepo": "./src/_exports/client.ts",
@@ -90,6 +97,7 @@
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
+      "./accepts": "./lib/accepts.js",
       "./client": "./lib/client.js",
       "./concurrency-limiter": "./lib/concurrency-limiter.js",
       "./content": "./lib/content.js",

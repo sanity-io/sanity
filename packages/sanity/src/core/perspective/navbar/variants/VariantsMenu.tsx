@@ -3,7 +3,17 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
+import {
+  type RefAttributes,
+  type SVGProps,
+  Suspense,
+  use,
+  useCallback,
+  useMemo,
+  useState,
+  type JSX,
+} from 'react'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
@@ -14,6 +24,7 @@ import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
+import {useVariantsUpsell} from '../../../variants/contexts/upsell/useVariantsUpsell'
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
 import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -28,8 +39,14 @@ import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/v
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {
+  PerspectiveDetailLink,
+  renderWithDetailLinkSpace,
+  usePerspectiveDetailLink,
+  usePerspectiveDetailLinkTrigger,
+} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantsMenu} from './VariantsMenu.css'
+import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 import {suggestIconColor} from './VariantsNav.css'
 
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
@@ -38,41 +55,88 @@ const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGS
 
 function VariantMenuItem(props: {
   isSelected: boolean
+  onNavigate: () => void
   onSelect: (variant: SystemVariant) => void
   variant: SystemVariant
 }) {
-  const {isSelected, onSelect, variant} = props
+  const {isSelected, onNavigate, onSelect, variant} = props
   const {t} = useTranslation()
   const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
+  const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
+    usePerspectiveDetailLink()
+  const variantId = getVariantId(variant._id)
+  const title = getVariantTitle(variant)
+
+  return (
+    <div className={variantMenuItemRow} data-detail-link-row="">
+      <MenuItem
+        {...detailLinkMenuItemProps}
+        aria-checked={isSelected}
+        data-testid={`variant-${variantId}`}
+        icon={VariantMenuItemIcon}
+        iconRight={
+          mismatches.length > 0 ? (
+            <Box paddingRight={1} data-testid="variant-condition-mismatch">
+              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+            </Box>
+          ) : undefined
+        }
+        onClick={() => onSelect(variant)}
+        pressed={isSelected}
+        renderMenuItem={renderWithDetailLinkSpace}
+        role="menuitemradio"
+        selected={isSelected}
+        text={title}
+        tooltipProps={
+          mismatchMessage
+            ? {
+                content: (
+                  <Text muted size={1} as="div" trim={true}>
+                    {mismatchMessage}
+                  </Text>
+                ),
+              }
+            : undefined
+        }
+      />
+      <PerspectiveDetailLink
+        {...detailLinkProps}
+        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
+        // link, so the link centers on the item instead of mirroring its top padding
+        alignItems="center"
+        aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
+        data-testid={`variant-detail-link-${variantId}`}
+        intent={VARIANTS_INTENT}
+        onNavigate={onNavigate}
+        paddingRight={3}
+        params={{id: variantId}}
+        tooltip={t('navbar.variant.menu.view-variant')}
+      />
+    </div>
+  )
+}
+
+/**
+ * Opens the create variant dialog, or the upsell dialog when the plan lacks content variants.
+ * Hidden when the feature check failed, so nothing creates a variant the plan may not include.
+ */
+function NewVariantMenuItem({onCreate}: {onCreate: () => void}) {
+  const {t} = useTranslation()
+  const {handleOpenDialog} = useVariantsUpsell()
+  const modePromise = use(VariantsModePromiseContext)
+  // The navbar renders outside the variants plugin; without its provider there is no check to read
+  const mode = modePromise ? use(modePromise) : 'default'
+
+  if (mode === null) return null
 
   return (
     <MenuItem
-      data-testid={`variant-${getVariantId(variant._id)}`}
-      icon={VariantMenuItemIcon}
-      iconRight={
-        mismatches.length > 0 ? (
-          <span data-testid="variant-condition-mismatch">
-            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-          </span>
-        ) : undefined
-      }
-      onClick={() => onSelect(variant)}
-      pressed={isSelected}
-      selected={isSelected}
-      text={getVariantTitle(variant)}
-      tooltipProps={
-        mismatchMessage
-          ? {
-              content: (
-                <Text muted size={1} as="div" trim={true}>
-                  {mismatchMessage}
-                </Text>
-              ),
-            }
-          : undefined
-      }
+      data-testid="new-audience"
+      onClick={mode === 'upsell' ? () => handleOpenDialog('navbar') : onCreate}
+      icon={AddIcon}
+      text={t('navbar.variant.menu.new-audience')}
     />
   )
 }
@@ -137,6 +201,8 @@ export function VariantsMenu({
     setFilterQuery('')
   }, [resetMenuWidth])
 
+  const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
+
   const isDefaultSelected = !selectedVariant
 
   const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
@@ -169,6 +235,7 @@ export function VariantsMenu({
         id={`variants-nav-menu-${typeKey}`}
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
+        ref={triggerRef}
         menu={
           <Menu
             className={variantsMenu}
@@ -183,6 +250,7 @@ export function VariantsMenu({
           >
             <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
               <TextInput
+                aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
@@ -210,10 +278,12 @@ export function VariantsMenu({
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
+                        aria-checked={isDefaultSelected}
                         data-testid="variant-default"
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
+                        role="menuitemradio"
                         selected={isDefaultSelected}
                         text={variant.title}
                       />
@@ -221,6 +291,7 @@ export function VariantsMenu({
                       <VariantMenuItem
                         key={variant._id}
                         isSelected={selectedVariant?._id === variant._id}
+                        onNavigate={handleNavigateToVariant}
                         onSelect={handleSelectVariant}
                         variant={variant}
                       />
@@ -248,12 +319,9 @@ export function VariantsMenu({
                 text={t('navbar.variant.menu.view-all')}
               />
               {allowCreate && (
-                <MenuItem
-                  data-testid="new-audience"
-                  onClick={handleNewAudience}
-                  icon={AddIcon}
-                  text={t('navbar.variant.menu.new-audience')}
-                />
+                <Suspense fallback={null}>
+                  <NewVariantMenuItem onCreate={handleNewAudience} />
+                </Suspense>
               )}
             </Flex>
           </Menu>

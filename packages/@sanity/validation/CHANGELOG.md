@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
+
+### Features
+
+* **validation:** support workspace i18n configs in validation ([#15754](https://github.com/sanity-io/sanity/issues/15754)) ([437c370](https://github.com/sanity-io/sanity/commit/437c370fface201bbbf20ca2763ee5fc3b942f09))
+
+### Bug Fixes
+
+* **validation:** validate reference target types ([#15736](https://github.com/sanity-io/sanity/issues/15736)) ([5b45e57](https://github.com/sanity-io/sanity/commit/5b45e570d8aa1f94d1cac13a8cdbccbcf1a4a005))
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
+
+### Features
+
+* **validation:** warn when an asset does not match its field's accept option ([#15673](https://github.com/sanity-io/sanity/issues/15673)) ([20d67d5](https://github.com/sanity-io/sanity/commit/20d67d5eaae15ee6384984bfbecea5af7bfb5f67))
+
+### Bug Fixes
+
+* **validation:** allow release documents to reference documents in the same release ([#15703](https://github.com/sanity-io/sanity/issues/15703)) ([0e387ce](https://github.com/sanity-io/sanity/commit/0e387ce57b385bed90e14970fe6bb4749597c403))
+* **validation:** cancel abandoned reference batches ([#15652](https://github.com/sanity-io/sanity/issues/15652)) ([05ef2d9](https://github.com/sanity-io/sanity/commit/05ef2d9e0a4d2ab9579543afceb071a218c77ea1))
 ## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
 
 ### Features

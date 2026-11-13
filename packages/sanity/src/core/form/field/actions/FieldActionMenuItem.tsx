@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Text} from 'ui5'
 
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {TooltipOfDisabled} from '../../../components/TooltipOfDisabled'
@@ -17,7 +17,9 @@ export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
   }, [action])
 
   const disabledTooltipContent = typeof action.disabled === 'object' && (
-    <Text size={1}>{action.disabled.reason}</Text>
+    <Text size={1} as="div" trim={true}>
+      {action.disabled.reason}
+    </Text>
   )
 
   return (

@@ -7,6 +7,7 @@ export {
   type ValidationMarkerCode,
   validationMarkerCodes,
 } from './codes'
+export {type ValidationLocaleSource} from './i18n/types'
 export {
   type DocumentValidationResult,
   validateDocument,

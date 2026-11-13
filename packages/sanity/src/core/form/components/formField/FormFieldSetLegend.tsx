@@ -1,8 +1,8 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {rem, Text, type Theme} from '@sanity/ui'
+import {rem, type Theme} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {focusRingStyle} from './styles'
 
@@ -79,7 +79,7 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
   const {collapsed, collapsible, onClick, title} = props
 
   const text = (
-    <Text weight="medium" size={1}>
+    <Text weight="medium" size={1} as="div" trim={true}>
       {title}
     </Text>
   )
@@ -92,11 +92,10 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
     <Root>
       <ToggleButton type="button" onClick={onClick}>
         <ToggleIconBox>
+          {/* Body-1 em, same as the label. ui5 icon sizes draw the chevron across it. */}
           <Text muted size={1}>
             <ToggleArrowRightIcon
-              style={{
-                transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`,
-              }}
+              style={{transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`}}
             />
           </Text>
         </ToggleIconBox>
