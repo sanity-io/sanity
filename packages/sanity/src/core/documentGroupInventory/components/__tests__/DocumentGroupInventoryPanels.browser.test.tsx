@@ -1116,7 +1116,7 @@ const UI5 = {
     openSubtitle: [229, 237, 255], // blue-100
     openVariantMark: [241, 235, 255], // suggest --foreground-low-emphasized: purple-100
     checked: [245, 248, 255], // --active-background-normal: blue-50
-    checkedHeader: [229, 237, 255], // blue-100
+    checkedHeader: [219, 229, 255], // blue-200
     hover: [246, 246, 248], // --background-low: gray-50
     checkboxFill: [64, 67, 231], // blue-600
     checkboxTick: [255, 255, 255], // white
@@ -1127,7 +1127,7 @@ const UI5 = {
     openSubtitle: [22, 26, 65], // blue-900
     openVariantMark: [35, 23, 63], // suggest --foreground-low-emphasized: purple-900
     checked: [16, 18, 40], // --active-background-normal: blue-950
-    checkedHeader: [22, 26, 65], // blue-900
+    checkedHeader: [25, 36, 87], // blue-800
     hover: [27, 29, 39], // gray-900: --background-low is gray-950, the panel's own background
     checkboxFill: [117, 149, 255], // blue-400
     checkboxTick: [19, 20, 27], // black
@@ -1277,7 +1277,9 @@ describe('Inventory selection', () => {
       expect(background(row)).toEqual(ui5.checked)
       // The header keeps a band of its own, one step stronger than its checked rows
       expect(background(header('Draft'))).toEqual(ui5.checkedHeader)
-      expect(contrastRatio(background(header('Draft')), background(row))).toBeGreaterThan(1.05)
+      expect(contrastRatio(background(header('Draft')), background(row))).toBeGreaterThanOrEqual(
+        1.15,
+      )
       expect(contrastRatio(background(header('Draft')), panel)).toBeGreaterThan(
         contrastRatio(background(row), panel),
       )
