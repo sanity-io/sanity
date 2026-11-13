@@ -1,6 +1,7 @@
 import {takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
+import {ThemeColorProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import type * as SanityExports from 'sanity'
@@ -31,13 +32,14 @@ import {
 } from 'sanity/_singletons'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
+import {CREATE_VARIANT_PARAM, DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {ArchivedReleaseDocumentBanner} from '../ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from '../CanvasLinkedBanner'
@@ -489,6 +491,86 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  it('yields its create action to the open document inventory, in light and dark', async () => {
+    vi.mocked(useDocumentVersions).mockReturnValue({
+      data: [],
+      versions: [],
+      loading: false,
+      error: null,
+    })
+    const setParams = vi.fn()
+    const inventoryOpen = {
+      inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
+    } as Partial<DocumentPaneContextValue>
+    const releaseBanner = (scheme: 'light' | 'dark', testId: string) => (
+      <ThemeColorProvider scheme={scheme}>
+        <div data-testid={testId}>
+          <BannerHarness
+            perspective={withVariant(releasePerspective(springRelease))}
+            pane={inventoryOpen}
+            router={{params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}, setParams}}
+          >
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+          </BannerHarness>
+        </div>
+      </ThemeColorProvider>
+    )
+
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        {/* Closed inventory: the filled button */}
+        <BannerHarness perspective={withVariant(releasePerspective(springRelease))}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+        </BannerHarness>
+        {/* Open inventory: the link, in both schemes */}
+        {releaseBanner('light', 'light-banner')}
+        {releaseBanner('dark', 'dark-banner')}
+        {/* Open inventory with its Create variant form open: the pointer only */}
+        <BannerHarness
+          perspective={withVariant(releasePerspective(springRelease))}
+          pane={inventoryOpen}
+          router={{
+            params: {
+              inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+              [CREATE_VARIANT_PARAM]: alphaVariant._id,
+            },
+          }}
+        >
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+        </BannerHarness>
+      </TestWrapper>,
+    )
+
+    const linkName = 'Create it in the document inventory.'
+    await expect
+      .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
+      .toBe(1)
+    await expect.poll(() => page.getByRole('button', {name: linkName}).elements().length).toBe(2)
+    await expect
+      .element(page.getByText('Finish creating it in the document inventory.'))
+      .toBeVisible()
+
+    // The link reads as text in both schemes: at least 4.5:1 against the banner behind it
+    for (const testId of ['light-banner', 'dark-banner']) {
+      const link = page.getByTestId(testId).getByRole('button', {name: linkName}).element()
+      const ratio = contrastRatio(getComputedStyle(link).color, backgroundBehind(link))
+      expect(ratio, testId).toBeGreaterThanOrEqual(4.5)
+    }
+
+    // A real button, reached from the keyboard, with a visible focus ring
+    const $lightLink = page.getByTestId('light-banner').getByRole('button', {name: linkName})
+    ;($lightLink.element() as HTMLElement).focus()
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}{Tab}')
+    await expect.element($lightLink).toHaveFocus()
+    expect(getComputedStyle($lightLink.element()).boxShadow).not.toBe('none')
+    await userEvent.keyboard('{Enter}')
+    expect(setParams).toHaveBeenCalledWith({
+      inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
+      [CREATE_VARIANT_PARAM]: alphaVariant._id,
+    })
+    await settleChromaticEndState()
+  })
+
   it('explains missing update and create permissions', async () => {
     await render(
       <TestWrapper schemaTypes={schemaTypes}>
@@ -758,4 +840,31 @@ function ObsoleteDraftsFixture() {
       />
     </>
   )
+}
+
+/** The first non-transparent background colour at or above an element. */
+function backgroundBehind(element: Element): string {
+  for (let node: Element | null = element; node; node = node.parentElement) {
+    const color = getComputedStyle(node).backgroundColor
+    if (color && color !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(color)) return color
+  }
+  return 'rgb(255, 255, 255)'
+}
+
+function luminance(color: string): number {
+  const ctx = document.createElement('canvas').getContext('2d')!
+  ctx.fillStyle = color
+  ctx.fillRect(0, 0, 1, 1)
+  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+  const channel = (value: number) => {
+    const c = value / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+}
+
+/** WCAG contrast ratio of two CSS colours. */
+function contrastRatio(a: string, b: string): number {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (light + 0.05) / (dark + 0.05)
 }
