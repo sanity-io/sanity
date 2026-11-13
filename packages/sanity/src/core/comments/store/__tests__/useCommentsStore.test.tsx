@@ -1,4 +1,7 @@
+import {type SanityClient} from '@sanity/client'
 import {act, renderHook, waitFor} from '@testing-library/react'
+import {useEffect} from 'react'
+import {finalize, NEVER} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {
@@ -148,5 +151,73 @@ describe('useCommentsStore', () => {
     })
     expect(result.current.docA.data?.[0]?.status).toBe('resolved')
     expect(onLatestTransactionIdReceived).toHaveBeenCalledWith('c-a')
+  })
+
+  it('shows optimistic updates, and applies the listener’s changes on top of them', async () => {
+    const {result, server} = await renderConnected({})
+
+    act(() => {
+      result.current.docA.dispatch({type: 'COMMENT_ADDED', payload: comment('c-new', 'doc-a')})
+    })
+    expect(ids(result.current.docA.data)).toEqual(['c-new'])
+
+    await act(async () => {
+      server.next(mutation('update', 'c-new', comment('c-new', 'doc-a', {status: 'resolved'})))
+    })
+    expect(result.current.docA.data?.[0]?.status).toBe('resolved')
+  })
+})
+
+describe('useCommentsStore, when its release changes', () => {
+  it('cancels the previous fetch, and never shows the previous comments', async () => {
+    const testClient = createAddonDatasetTestClient({
+      comments: [
+        comment('c-a', 'doc-a'),
+        comment('c-summer', 'doc-a', {documentVersionId: 'rSummer'}),
+      ],
+    })
+    const commits: {ids: string[]; loading: boolean}[] = []
+    const {result, rerender} = renderHook(
+      ({releaseId}: {releaseId?: 'rSummer'}) => {
+        const {client} = useAddonDataset()
+        const listenerStore = useAddonDatasetListenerStore()
+        const store = useCommentsStore({
+          client,
+          listenerStore,
+          transactionsIdMap,
+          onLatestTransactionIdReceived,
+          documentId: 'doc-a',
+          releaseId,
+        })
+        useEffect(() => {
+          commits.push({ids: ids(store.data), loading: store.loading})
+        })
+        return store
+      },
+      {wrapper: testClient.wrapper, initialProps: {}},
+    )
+    await act(async () => {
+      testClient.server.next(WELCOME)
+    })
+    await waitFor(() => expect(ids(result.current.data)).toEqual(['c-a']))
+
+    // The release's fetch stays in flight until the store switches away from it
+    let releaseFetchCancelled = false
+    testClient.observableFetch.mockImplementationOnce((() =>
+      NEVER.pipe(
+        finalize(() => {
+          releaseFetchCancelled = true
+        }),
+      )) as SanityClient['observable']['fetch'])
+    const commitsBeforeSwitch = commits.length
+    rerender({releaseId: 'rSummer'})
+    const switchCommits = commits.slice(commitsBeforeSwitch)
+    expect(switchCommits[0]).toEqual({ids: [], loading: true})
+    expect(switchCommits).not.toContainEqual(expect.objectContaining({ids: ['c-a']}))
+
+    rerender({})
+    await waitFor(() => expect(releaseFetchCancelled).toBe(true))
+    await waitFor(() => expect(ids(result.current.data)).toEqual(['c-a']))
+    expect(result.current.loading).toBe(false)
   })
 })
