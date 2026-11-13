@@ -4,6 +4,7 @@ import {
   defer,
   filter,
   finalize,
+  from,
   ignoreElements,
   merge,
   observeOn,
@@ -17,7 +18,8 @@ import {
   timer,
 } from 'rxjs'
 
-import {isTransientListenerError} from './listenerErrors'
+import {type ListenerErrorHandler, listenerErrorHandlerForProject} from './listenerErrorHandlers'
+import {isListenerConnectionError, isTransientListenerError} from './listenerErrors'
 import {
   createListenerOutages,
   type ListenerOutages,
@@ -40,12 +42,19 @@ export interface ReconnectListenerOptions {
   /** How long a connection may take to open before an outage starts. */
   welcomeTimeoutMs?: number
   /**
-   * The project the listener belongs to. Listeners of the same project share their outages.
-   * Without it, the listener shares its outages with no other listener.
+   * The project the listener belongs to. Listeners of the same project share their outages, and
+   * the error handler registered for it (`registerListenerErrorHandler`). Without it, the listener
+   * shares its outages with no other listener.
    */
   projectId?: string
   /** Where the listener shares its outages, in place of the ones of `projectId` */
   outages?: ListenerOutages
+  /**
+   * Takes over a listener that failed in a way it cannot recover from (see
+   * `isListenerConnectionError`), in place of the handler registered for `projectId`. Without
+   * either, the error is passed on.
+   */
+  errorHandler?: ListenerErrorHandler
 }
 
 /**
@@ -106,15 +115,23 @@ export function reconnectDelay(
  *   timeout, so the consumers load what they can without it. The first listener of the project
  *   that connects again clears the shared state.
  *
- * Any other error is passed on. Place the operator right after `client.listen()`, before the
- * listener is shared, so that a single recovery serves every subscriber.
+ * - a listener that fails in a way it cannot recover from (`isListenerConnectionError`) is handed to
+ *   `errorHandler`, or else to the handler registered for its project
+ *   (`registerListenerErrorHandler`), which reports it to the user. The outage starts, so the consumers keep what they
+ *   loaded and stop treating it as live, and the listener stays open without reconnecting. Its
+ *   failure says nothing about the other listeners of the project, so it does not count as one of
+ *   their outages.
+ *
+ * Any other error is passed on, as is one the error handler rejects. Place the operator right after
+ * `client.listen()`, before the listener is shared, so that a single recovery serves every
+ * subscriber.
  *
  * @internal
  */
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000, projectId} = options
+  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000, projectId, errorHandler} = options
   const outages =
     options.outages ??
     (projectId === undefined ? createListenerOutages() : listenerOutagesForProject(projectId))
@@ -126,11 +143,15 @@ export function reconnectListener<T extends {type: string}>(
       // Identifies this listener in the shared outages.
       const token = {}
 
-      function startOutage() {
-        outages.start(token)
+      function announceOutage() {
         if (reconnecting) return
         reconnecting = true
         outageStarts.next(RECONNECT)
+      }
+
+      function startOutage() {
+        outages.start(token)
+        announceOutage()
       }
 
       // A single connection: subscribing to it opens it, and the retry below opens a new one.
@@ -190,7 +211,18 @@ export function reconnectListener<T extends {type: string}>(
               !(error instanceof ClientReconnectsExceededError) &&
               !isTransientListenerError(error)
             ) {
-              return throwError(() => error)
+              // Looked up as the listener fails: the handler may have been registered after the
+              // listener was set up.
+              const handler =
+                errorHandler ??
+                (projectId === undefined ? undefined : listenerErrorHandlerForProject(projectId))
+              if (!handler || !isListenerConnectionError(error)) {
+                return throwError(() => error)
+              }
+              outages.end(token)
+              announceOutage()
+              // Never emits: the listener stays down until the handler rejects, if it ever does.
+              return from(handler.handle(error))
             }
             startOutage()
             const delayMs = reconnectDelay(attempt, options)

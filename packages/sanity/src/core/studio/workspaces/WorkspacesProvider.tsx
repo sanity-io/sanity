@@ -25,6 +25,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
+import {registerListenerErrorHandler} from '../../util/listenerErrorHandlers'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -208,6 +209,8 @@ export function WorkspacesProvider({
     null,
   )
 
+  useListenerErrorHandler(workspaces, requestErrorChannel)
+
   // Survives the CORS (and loading) early returns. Those replace
   // `WorkspacesClaimProvider`, and `claim$` keeps the unauthorized claim
   // with no retry path that clears it, so a remount would log out again.
@@ -289,6 +292,40 @@ export function WorkspacesProvider({
       </ConfigErrorContext.Provider>
     </WorkspacesContext.Provider>
   )
+}
+
+/**
+ * Makes the request error channel take over the listeners that fail for good in every project the
+ * workspaces use, so the studio shows the connection error dialog for them instead of crashing the
+ * tool that listens. See `registerListenerErrorHandler`.
+ */
+function useListenerErrorHandler(
+  workspaces: WorkspaceSummary[] | null,
+  requestErrorChannel: RequestErrorChannel,
+) {
+  // Keyed by the ids, so a new workspaces array for the same projects keeps the registrations.
+  const projectIds = useMemo(
+    () =>
+      [
+        ...new Set(
+          (workspaces ?? []).flatMap((workspace) =>
+            // The first entry is the root source, so this also covers `workspace.projectId`.
+            // oxlint-disable-next-line no-deprecated -- the sources are where nested projects are
+            workspace.__internal.sources.map((source) => source.projectId),
+          ),
+        ),
+      ]
+        .toSorted()
+        .join(','),
+    [workspaces],
+  )
+  useEffect(() => {
+    if (!projectIds) return undefined
+    const unregister = projectIds
+      .split(',')
+      .map((projectId) => registerListenerErrorHandler(projectId, requestErrorChannel))
+    return () => unregister.forEach((remove) => remove())
+  }, [projectIds, requestErrorChannel])
 }
 
 function findAuthStoreForProject(

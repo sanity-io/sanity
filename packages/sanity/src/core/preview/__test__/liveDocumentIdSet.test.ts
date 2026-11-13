@@ -139,4 +139,21 @@ describe('createDocumentIdSetObserver while its listener is down', () => {
 
     expect(errors).toEqual([error])
   })
+
+  it('keeps the set when the error handler of its project takes over a listener that fails for good', async ({
+    projectId,
+    listenerErrorHandler,
+  }) => {
+    const {connections, current, states, errors} = setup(projectId, [['book-1']])
+    current().next(welcome)
+
+    const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    current().error(error)
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+    expect(errors).toEqual([])
+    expect(states.at(-1)).toEqual({status: 'reconnecting', documentIds: ['book-1']})
+    expect(connections).toHaveLength(1)
+  })
 })

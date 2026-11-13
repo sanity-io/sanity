@@ -8,7 +8,7 @@ import {
 } from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {isTransientListenerError} from '../listenerErrors'
+import {isListenerConnectionError, isTransientListenerError} from '../listenerErrors'
 
 describe('isTransientListenerError', () => {
   describe('channel errors', () => {
@@ -96,5 +96,53 @@ describe('isTransientListenerError', () => {
     ['a non-error value', 'Internal error'],
   ])('is not transient for %s', (_, error) => {
     expect(isTransientListenerError(error)).toBe(false)
+  })
+})
+
+describe('isListenerConnectionError', () => {
+  function channelError(type: string) {
+    return new ChannelError('Failed', {error: {type, description: 'Failed'}})
+  }
+
+  it.each([
+    ['a channel error the API could not classify', channelError('internalError')],
+    ['a dataset the listener cannot read', channelError('permissionDeniedError')],
+    ['a deleted dataset', channelError('namespaceNotFoundError')],
+    ['a listener limit', channelError('resourceError')],
+    [
+      'an untyped channel error',
+      new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+    ],
+    ['a disconnect', new DisconnectError('Server disconnected client')],
+    ['a listen request rejected with a 403', new ConnectionFailedError('Rejected', {status: 403})],
+    ['a listen request rejected with a 503', new ConnectionFailedError('Rejected', {status: 503})],
+    ['a message error', new MessageError('Unexpected error', {})],
+  ])('is a connection error for %s', (_, error) => {
+    expect(isListenerConnectionError(error)).toBe(true)
+  })
+
+  it.each([
+    ['an error in the query', channelError('queryParseError')],
+    ['an error evaluating the query', channelError('queryError')],
+    ['a rejected session', new ConnectionFailedError('Rejected', {status: 401})],
+    ['a plain error', new Error('Something broke')],
+    [
+      'a client error',
+      new ClientError({
+        statusCode: 500,
+        headers: {},
+        body: {},
+        url: 'https://example.api.sanity.io',
+        method: 'GET',
+      }),
+    ],
+    ['a non-error value', {name: 'ChannelError', message: 'Internal error'}],
+  ])('is not a connection error for %s', (_, error) => {
+    expect(isListenerConnectionError(error)).toBe(false)
+  })
+
+  it('matches a listener error from another client copy by name', () => {
+    const error = Object.assign(new Error('Server disconnected client'), {name: 'DisconnectError'})
+    expect(isListenerConnectionError(error)).toBe(true)
   })
 })

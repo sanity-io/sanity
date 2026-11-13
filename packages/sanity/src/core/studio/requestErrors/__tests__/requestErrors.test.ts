@@ -1,4 +1,4 @@
-import {ClientError, ServerError} from '@sanity/client'
+import {ChannelError, ClientError, DisconnectError, ServerError} from '@sanity/client'
 import {act, renderHook} from '@testing-library/react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -148,6 +148,25 @@ describe('classifyRequestError', () => {
   it('classifies Node ETIMEDOUT errors as networkError', () => {
     const timeout = Object.assign(new Error('connect ETIMEDOUT'), {code: 'ETIMEDOUT'})
     expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
+  })
+
+  it('classifies a listener the API refuses to serve as listenerError', () => {
+    const error = new ChannelError('Denied', {
+      error: {type: 'permissionDeniedError', description: 'Denied'},
+    })
+    expect(classifyRequestError(error)).toEqual({type: 'listenerError', error})
+  })
+
+  it('classifies an evicted listener as listenerError', () => {
+    const error = new DisconnectError('Server disconnected client: forced by provider')
+    expect(classifyRequestError(error)).toEqual({type: 'listenerError', error})
+  })
+
+  it('leaves an error in the query of a listener with the caller', () => {
+    const error = new ChannelError('Unexpected end of input', {
+      error: {type: 'queryParseError', description: 'Unexpected end of input'},
+    })
+    expect(classifyRequestError(error)).toBeNull()
   })
 
   it('leaves arbitrary errors unclassified', () => {
@@ -318,6 +337,14 @@ describe('createRequestErrorChannel', () => {
         new Promise((resolve) => setTimeout(() => resolve('pending'), 10)),
       ])
       expect(outcome).toBe('pending')
+    })
+
+    it('claims a listener that failed for good, with reload as the only way out', async () => {
+      const channel = createRequestErrorChannel()
+      const error = new DisconnectError('Server disconnected client: forced by provider')
+      void Promise.reject(error).catch(channel.handle)
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(await latestClaim(channel)).toEqual({type: 'listenerError', error, retryable: false})
     })
   })
 

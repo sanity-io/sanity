@@ -14,6 +14,21 @@ const TRANSIENT_CHANNEL_ERROR_TYPES = new Set(['internalError', 'timeoutError', 
  */
 const TRANSIENT_CONNECTION_STATUSES = new Set([408, 429])
 
+/** The errors a listener (`client.listen()`) raises, by name. */
+const LISTENER_ERROR_NAMES = new Set([
+  'ChannelError',
+  'DisconnectError',
+  'ConnectionFailedError',
+  'MessageError',
+  'MessageParseError',
+])
+
+/**
+ * Typed listener errors caused by the listener's query. Fixing the query is what helps, and the
+ * consumer is the one that can show which query failed.
+ */
+const QUERY_CHANNEL_ERROR_TYPES = new Set(['queryParseError', 'queryError'])
+
 function hasName(err: unknown, name: string): err is Error {
   return err instanceof Error && err.name === name
 }
@@ -60,9 +75,36 @@ export function isTransientListenerError(err: unknown): boolean {
     return true
   }
   if (hasName(err, 'ConnectionFailedError')) {
-    const status = 'status' in err ? err.status : undefined
-    if (typeof status !== 'number') return true
+    const status = connectionStatus(err)
+    if (status === undefined) return true
     return status >= 500 || status < 400 || TRANSIENT_CONNECTION_STATUSES.has(status)
   }
   return false
+}
+
+function connectionStatus(err: Error): number | undefined {
+  const status = 'status' in err ? err.status : undefined
+  return typeof status === 'number' ? status : undefined
+}
+
+/**
+ * Whether a listener (`client.listen()`) failed in a way the studio reports as a lost connection.
+ * That is any listener error, except:
+ * - an error in the listener's query (`queryParseError`, `queryError`), which the consumer reports
+ * - a listen request rejected as unauthorized (401), which the session handling deals with
+ *
+ * Errors are matched by name to survive duplicate `@sanity/client` copies.
+ *
+ * @internal
+ */
+export function isListenerConnectionError(err: unknown): err is Error {
+  if (!(err instanceof Error) || !LISTENER_ERROR_NAMES.has(err.name)) return false
+  if (err.name === 'ChannelError') {
+    const type = channelErrorType(err)
+    return type === undefined || !QUERY_CHANNEL_ERROR_TYPES.has(type)
+  }
+  if (err.name === 'ConnectionFailedError') {
+    return connectionStatus(err) !== 401
+  }
+  return true
 }
