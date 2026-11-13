@@ -1,15 +1,14 @@
 import {type SanityClient} from '@sanity/client'
-import {BehaviorSubject, from, of} from 'rxjs'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {BehaviorSubject, from, type Observable, of} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentTransactions} from './getDocumentTransactions'
-import {getEditEvents} from './getEditEvents'
+import {isEditTransaction} from './getEditEvents'
 import {
   type DocumentGroupEvent,
-  type EditDocumentVersionEvent,
   type EventsObservableValue,
-  type HistoryClearedEvent,
   INITIAL_EVENTS_VALUE,
   isCreateDocumentVersionEvent,
   isDeleteDocumentGroupEvent,
@@ -22,6 +21,35 @@ export const HISTORY_CLEARED_EVENT_ID = 'history-cleared'
 interface InitialFetchEventsOptions {
   client: SanityClient
   documentId: string
+}
+
+type FetchOrigin = 'loadMore' | 'reload' | 'initial'
+
+/**
+ * The accumulated state of the events fetches: the API events, plus the translog transactions
+ * the edit events are synthesized from (see `createEventsObservable`).
+ */
+export interface FetchedEventsValue extends EventsObservableValue {
+  /**
+   * The transactions fetched to synthesize edit events, one batch per initial fetch or reload,
+   * oldest first. A batch is opened when its fetch starts, and stays empty if the fetch fails.
+   */
+  transactionBatches: TransactionLogEventWithEffects[][]
+  /** Whether a fetch found edits in the translog but no events in the events API. */
+  historyCleared: boolean
+}
+
+/** What a single fetch emits, before {@link accumulateEvents} merges it into the state. */
+export interface FetchEventsResult extends EventsObservableValue {
+  transactions: TransactionLogEventWithEffects[]
+  historyCleared: boolean
+  origin: FetchOrigin
+}
+
+const INITIAL_FETCHED_EVENTS_VALUE: FetchedEventsValue = {
+  ...INITIAL_EVENTS_VALUE,
+  transactionBatches: [],
+  historyCleared: false,
 }
 
 /**
@@ -55,60 +83,42 @@ export function findEditEventsBaseline(
 }
 
 /**
- * When the events API returned no events but the translog produced edit events, the document's
- * history was cleared: prepends a synthetic `historyCleared` event (id
- * {@link HISTORY_CLEARED_EVENT_ID}), timestamped 1ms before the oldest edit event so it sorts
- * after it. Returns `editEvents` untouched otherwise.
+ * Initial fetches and reloads open a transaction batch when they start (the `loading` emission)
+ * and fill it with their transactions when they resolve. Reloads start when the viewed variant is
+ * created, deleted or published, so each batch holds the transactions of one stretch of the
+ * document's lifecycle. `loadMore` fetches don't synthesize edit events and leave the batches alone.
  */
-export function withHistoryClearedEvent(
-  editEvents: (EditDocumentVersionEvent | HistoryClearedEvent)[],
-  {
-    apiEvents,
-    transactions,
-    documentId,
-    documentVariantType,
-  }: {
-    apiEvents: DocumentGroupEvent[]
-    transactions: unknown[]
-    documentId: string
-    documentVariantType: DocumentVariantType
-  },
-): (EditDocumentVersionEvent | HistoryClearedEvent)[] {
-  const needsHistoryClearedEvent =
-    apiEvents.length === 0 && transactions.length > 0 && editEvents.length > 0
-  if (!needsHistoryClearedEvent) return editEvents
-
-  const clearedEventTimestamp = new Date(editEvents[editEvents.length - 1].timestamp).getTime() - 1
-  return [
-    {
-      type: 'historyCleared',
-      documentId,
-      id: HISTORY_CLEARED_EVENT_ID,
-      timestamp: new Date(clearedEventTimestamp).toISOString(),
-      author: '',
-      documentVariantType,
-    },
-    ...editEvents,
-  ]
+function accumulateTransactionBatches(
+  batches: TransactionLogEventWithEffects[][],
+  next: FetchEventsResult,
+): TransactionLogEventWithEffects[][] {
+  if (next.origin === 'loadMore') return batches
+  if (next.loading) return [...batches, []]
+  if (next.error) return batches
+  return [...batches.slice(0, -1), next.transactions]
 }
 
 /**
- * `scan` reducer accumulating fetch responses into the events list:
+ * `scan` reducer accumulating fetch responses into the events state:
  * - New batches merge into the previous list via {@link removeDupes} (existing events are kept).
  * - Reloads keep the previous `nextCursor`; initial/loadMore fetches take the response cursor —
  *   a failed non-reload fetch therefore resets the cursor, disabling further pagination
  *   (known issue).
+ * - Fetched transactions accumulate in `transactionBatches` (see
+ *   {@link accumulateTransactionBatches}), and `historyCleared` stays set once a fetch set it.
  */
 export function accumulateEvents(
-  prev: EventsObservableValue,
-  next: EventsObservableValue & {origin: 'loadMore' | 'reload' | 'initial'},
-): EventsObservableValue {
+  prev: FetchedEventsValue,
+  next: FetchEventsResult,
+): FetchedEventsValue {
   return {
     events: removeDupes(prev.events, next.events),
     // If we are reloading, we should keep the cursor as it was before.
     nextCursor: next.origin === 'reload' ? prev.nextCursor : next.nextCursor,
     loading: next.loading,
     error: next.error,
+    transactionBatches: accumulateTransactionBatches(prev.transactionBatches, next),
+    historyCleared: prev.historyCleared || next.historyCleared,
   }
 }
 
@@ -119,16 +129,19 @@ export function accumulateEvents(
  * Fetching:
  * - Events come from `/data/history/<dataset>/events/documents/<id>` with `limit` 100 for
  *   initial/loadMore fetches and 10 for reloads; each event gets a client-side id via `addEventId`.
- * - For draft/version variants (not published, not loadMore), edit events are synthesized for the
- *   fetched batch: the "baseline" event is the creation event (version) or the newest
- *   revision-bearing non-delete event (draft), and transactions from that revision to the present
- *   are fetched and mapped through `getEditEvents`. Known quirk: when the batch has no baseline
- *   (e.g. reload's 10-event window misses it, or history was cleared), transactions are fetched
- *   with `fromTransaction: ''` — the entire translog (tracked as a known issue).
- * - A synthetic `historyCleared` event (id `history-cleared`, timestamped 1ms before the oldest
- *   edit event) is prepended when the API returns no events but edit transactions exist.
+ * - For draft/version variants (not published, not loadMore), the transactions edit events are
+ *   synthesized from are fetched along with the batch: the "baseline" event is the creation event
+ *   (version) or the newest revision-bearing non-delete event (draft), and transactions from that
+ *   revision to the present are fetched. Known quirk: when the batch has no baseline (e.g.
+ *   reload's 10-event window misses it, or history was cleared), transactions are fetched with
+ *   `fromTransaction: ''` — the entire translog (tracked as a known issue).
+ * - `historyCleared` is set when the API returns no events but the fetched transactions contain
+ *   edits.
  *
- * Accumulation (`scan`):
+ * The edit events themselves are built by `createEventsObservable`, together with the remote
+ * transactions, so fetched and live edits are grouped the same way.
+ *
+ * Accumulation (`scan`, see {@link accumulateEvents}):
  * - New batches merge into the previous list via `removeDupes` (existing events are kept).
  * - Reloads keep the previous `nextCursor`; initial/loadMore fetches take the response cursor.
  * - Errors are logged, emitted on `error`, and keep previously accumulated events (but reset the
@@ -140,7 +153,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
   const documentVariantType = getDocumentVariantType(documentId)
   const refetchEventsTrigger$ = new BehaviorSubject<{
     cursor: string | null
-    origin: 'loadMore' | 'reload' | 'initial'
+    origin: FetchOrigin
   }>({
     cursor: null,
     origin: 'initial',
@@ -174,7 +187,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
       )
   }
 
-  const fetchEditEvents = (events: DocumentGroupEvent[]) => {
+  const fetchEditTransactions = (events: DocumentGroupEvent[]) => {
     const baselineRevisionId = findEditEventsBaseline(events, documentVariantType)
     return from(
       getDocumentTransactions({
@@ -183,15 +196,6 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
         fromTransaction: baselineRevisionId || '',
         toTransaction: undefined, // We need to get up to the present moment
       }),
-    ).pipe(
-      map((transactions) =>
-        withHistoryClearedEvent(getEditEvents(transactions, documentId, false), {
-          apiEvents: events,
-          transactions,
-          documentId,
-          documentVariantType,
-        }),
-      ),
     )
   }
   let nextCursor: string = ''
@@ -203,25 +207,46 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
           nextCursor: cursor,
           limit: origin === 'reload' ? 10 : 100,
         }).pipe(
-          switchMap((response) => {
+          switchMap((response): Observable<FetchEventsResult> => {
             if (documentVariantType === 'published' || origin === 'loadMore') {
               // For the published document we don't need to fetch the edit transactions.
-              return of({...response, origin})
+              return of({...response, transactions: [], historyCleared: false, origin})
             }
-            return fetchEditEvents(response.events).pipe(
-              map((editEvents) => {
-                return {...response, events: [...editEvents, ...response.events], origin}
-              }),
+            return fetchEditTransactions(response.events).pipe(
+              map((transactions) => ({
+                ...response,
+                transactions,
+                historyCleared:
+                  response.events.length === 0 &&
+                  transactions.some((transaction) => isEditTransaction(transaction, documentId)),
+                origin,
+              })),
             )
           }),
           catchError((error: Error) => {
             console.error('Error fetching events', error)
-            return [{events: [], nextCursor: '', loading: false, error: error, origin}]
+            return of<FetchEventsResult>({
+              events: [],
+              transactions: [],
+              historyCleared: false,
+              nextCursor: '',
+              loading: false,
+              error: error,
+              origin,
+            })
           }),
-          startWith({events: [], nextCursor: '', loading: true, error: null, origin}),
+          startWith<FetchEventsResult>({
+            events: [],
+            transactions: [],
+            historyCleared: false,
+            nextCursor: '',
+            loading: true,
+            error: null,
+            origin,
+          }),
         )
       }),
-      scan(accumulateEvents, INITIAL_EVENTS_VALUE),
+      scan(accumulateEvents, INITIAL_FETCHED_EVENTS_VALUE),
       tap((response) => {
         nextCursor = response.nextCursor
       }),

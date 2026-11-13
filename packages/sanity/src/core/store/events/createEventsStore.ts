@@ -35,10 +35,11 @@ function createIdleEventsStore() {
 
 /**
  * Creates the (non-React) events store for a document variant, wiring together:
- * - `getInitialFetchEvents`: fetching/paginating events + synthesizing edit events,
+ * - `getInitialFetchEvents`: fetching/paginating events + the transactions behind edit events,
  * - `getExpandEvents`: on-demand expansion of publish/delete events,
  * - `getRemoteTransactionsSubscription`: real-time remote mutations (append or trigger refetch),
- * - `createEventsObservable`: merge, sort and per-variant post-processing.
+ * - `createEventsObservable`: edit event synthesis from the fetched and remote transactions
+ *   together, then merge, sort and per-variant post-processing.
  *
  * When `documentId` is missing, returns an idle store (`events: []`, `loading: false`) and does
  * not subscribe to the document pair or hit the events/history APIs.
@@ -64,7 +65,7 @@ export function createEventsStore({
 
   const initialEvents = getInitialFetchEvents({client, documentId})
   const {expandedEvents$, handleExpandEvent} = getExpandEvents({client, documentId})
-  const {remoteEdits$, remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({
+  const {remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({
     client,
     documentId,
     documentType,
@@ -73,8 +74,9 @@ export function createEventsStore({
   })
   const eventsObservable$ = createEventsObservable({
     documentId,
+    isLiveEdit,
     events$: initialEvents.events$,
-    remoteEdits$,
+    remoteTransactions$,
     expandedEvents$,
   })
 

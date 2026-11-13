@@ -130,14 +130,16 @@ describe('getRemoteTransactionsSubscription', () => {
     return {...result, subscription}
   }
 
-  it('appends modified mutations and emits synthesized edit events', () => {
-    const {remoteTransactions$, remoteEdits$, subscription} = setup(DRAFT_ID)
-    const {values: edits, subscription: editsSubscription} = collectEmissions(remoteEdits$)
+  it('appends modified mutations as transactions', () => {
+    const {remoteTransactions$, subscription} = setup(DRAFT_ID)
+    const {values, subscription: transactionsSubscription} = collectEmissions(remoteTransactions$)
 
     snapshots$.next(remoteMutationEvent({transactionId: 'tx-remote-1'}))
-    expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-remote-1'])
-    expect(edits.at(-1)).toEqual([
-      expect.objectContaining({type: 'editDocumentVersion', id: 'tx-remote-1'}),
+    expect(values.at(-1)).toEqual([
+      expect.objectContaining({
+        id: 'tx-remote-1',
+        effects: {[DRAFT_ID]: expect.objectContaining({apply: expect.any(Array)})},
+      }),
     ])
     expect(onRefetch).not.toHaveBeenCalled()
 
@@ -150,7 +152,7 @@ describe('getRemoteTransactionsSubscription', () => {
     )
     expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-remote-1', 'tx-remote-2'])
 
-    editsSubscription.unsubscribe()
+    transactionsSubscription.unsubscribe()
     subscription.unsubscribe()
   })
 
