@@ -71,6 +71,28 @@ function renderFlyoutList(
   )
 }
 
+/** The relative luminance of a computed `rgb()` colour (WCAG 2). */
+function luminance(color: string): number {
+  const [r, g, b] = (color.match(/[\d.]+/g) ?? []).slice(0, 3).map((value) => {
+    const channel = Number(value) / 255
+    return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** The WCAG contrast ratio of two computed colours. */
+function contrast(a: string, b: string): number {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (light + 0.05) / (dark + 0.05)
+}
+
+/** The colour a status mark paints: its fill, or its stroke where it has no fill. */
+function markColor(svg: Element): string {
+  const shape = svg.querySelector('path, rect, polygon') ?? svg
+  const {fill, stroke} = getComputedStyle(shape)
+  return fill && fill !== 'none' ? fill : stroke
+}
+
 /** Resolves a CSS color expression to the computed color it has inside `element`. */
 function resolvedColor(element: Element, color: string): string {
   const probe = document.createElement('span')
@@ -164,17 +186,23 @@ describe('DocumentVersionsFlyoutList', () => {
       for (const title of titles) expect(title.left).toBeCloseTo(titles[0].left, 0)
       expect(titles[0].left - audienceRows[0].getBoundingClientRect().left).toBeLessThanOrEqual(13)
 
-      // Keyboard focus takes the same highlight as hover
-      ;(rows[1] as HTMLElement).focus()
+      // Hover and keyboard focus take the grey of moving through the rows, not a blue
+      const hoverGrey = resolvedColor(rows[1], 'light-dark(var(--gray-50), var(--gray-900))')
+      await page.getByRole('menuitem', {name: /German/}).hover()
       await expect
         .element(page.getByRole('menuitem', {name: /German/}))
-        .toHaveAttribute('data-selected')
+        .toHaveStyle({backgroundColor: hoverGrey})
       await userEvent.unhover(page.getByRole('menuitem', {name: /German/}))
+      ;(rows[2] as HTMLElement).focus()
+      await expect
+        .element(page.getByRole('menuitem', {name: /Swedish/}))
+        .toHaveStyle({backgroundColor: hoverGrey})
+      expect(getComputedStyle(rows[2]).outlineStyle).toBe('solid')
 
       await settleChromaticEndState()
     })
 
-    it('marks the version the pane is viewing with the low-emphasis selected tone', async () => {
+    it('marks the version the pane is viewing with the strong selected blue', async () => {
       const {settleChromaticEndState} = testHelpers()
       await renderFlyoutList({selectedVariantName: 'variant:german', viewingDocument: true})
       const germanRow = page.getByRole('menuitem', {name: /German/})
@@ -189,25 +217,36 @@ describe('DocumentVersionsFlyoutList', () => {
         .element(page.getByRole('menuitem', {name: /Swedish/}))
         .not.toHaveAttribute('aria-current')
 
-      const row = germanRow.element()
-      const viewedBackground = resolvedColor(row, 'var(--active-background-normal)')
-      const viewedForeground = resolvedColor(row, 'var(--active-foreground-normal)')
-      await expect.element(germanRow).toHaveStyle({backgroundColor: viewedBackground})
-      await expect
-        .element(germanRow.getByText('German', {exact: true}))
-        .toHaveStyle({color: viewedForeground})
-      await expect.element(germanRow.getByText(/Edited/)).toHaveStyle({color: viewedForeground})
+      const row = germanRow.element() as HTMLElement
+      const blue = resolvedColor(row, 'var(--active-background-emphasized)')
+      const title = germanRow.getByText('German', {exact: true}).element()
+      const subtitle = germanRow.getByText(/Edited/).element()
+      const diamond = row.querySelector('[data-testid="document-versions-flyout-row-marks"] svg')!
+      await expect.element(germanRow).toHaveStyle({backgroundColor: blue})
+      expect(getComputedStyle(title).color).toBe(
+        resolvedColor(row, 'var(--active-foreground-emphasized)'),
+      )
+      expect(getComputedStyle(subtitle).color).toBe(
+        resolvedColor(row, 'light-dark(var(--blue-100), var(--blue-900))'),
+      )
 
-      // Hover and focus take the menu's selected tone instead
+      // Readable on the blue: text at least 4.5:1, the diamond at least 3:1
+      expect(contrast(getComputedStyle(title).color, blue)).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(getComputedStyle(subtitle).color, blue)).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(markColor(diamond), blue)).toBeGreaterThanOrEqual(3)
+
+      // Selected wins over hover: it stays blue
       await germanRow.hover()
-      await expect.element(germanRow).toHaveAttribute('data-selected')
-      expect(getComputedStyle(row).backgroundColor).not.toBe(viewedBackground)
+      await expect.element(germanRow).toHaveAttribute('data-hovered')
+      expect(getComputedStyle(row).backgroundColor).toBe(blue)
       await userEvent.unhover(germanRow)
-      ;(row as HTMLElement).focus()
-      await expect.element(germanRow).toHaveAttribute('data-selected')
-      expect(getComputedStyle(row).backgroundColor).not.toBe(viewedBackground)
-      ;(row as HTMLElement).blur()
-      await expect.element(germanRow).toHaveStyle({backgroundColor: viewedBackground})
+
+      // And over focus, which shows as the focus outline instead
+      row.focus()
+      await expect.element(germanRow).toHaveAttribute('data-focused')
+      expect(getComputedStyle(row).backgroundColor).toBe(blue)
+      expect(getComputedStyle(row).outlineStyle).toBe('solid')
+      expect(getComputedStyle(row).outlineColor).toBe(resolvedColor(row, 'var(--blue-500)'))
 
       await settleChromaticEndState()
     })
