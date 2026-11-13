@@ -16,10 +16,10 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 import {Text} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -323,7 +323,6 @@ export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
     const listener = (event: WheelEvent) => onWheel(event)
     viewport.addEventListener('wheel', listener, {passive: false})
     return () => viewport.removeEventListener('wheel', listener)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [viewport])
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {

@@ -712,6 +712,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.history': 'History',
   /** Label of the "Lint" tab in the request panel, listing the query's lint findings */
   'vision.panel.lint': 'Lint',
+  /** Label of the Lint tab when the query has findings. `count` is how many */
+  'vision.panel.lint-count': 'Lint ({{count}})',
   /** Label of the "Options" panel in the request column */
   'vision.panel.options': 'Options',
   /** Label of the "Response" tab in the response panel */

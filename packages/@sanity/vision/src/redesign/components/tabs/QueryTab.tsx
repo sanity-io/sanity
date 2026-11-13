@@ -2,10 +2,9 @@ import {Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import debounce from 'lodash-es/debounce.js'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState, useEffectEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
@@ -173,7 +172,6 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useEffect(() => {
     const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_DEBOUNCE_MS)
     return () => clearTimeout(timeoutId)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [tab.query])
 
   // The request a fetch of the tab's own query should carry right now: params typed within the
@@ -360,11 +358,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   })
   useEffect(() => {
     resumeAutoRefetch()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- a tab opened with fetch-on-open runs its query once, when it mounts
     if (fetchOnOpen) void fetchOpenedQuery()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [fetchOnOpen])
 
   // While refetching automatically, a request that changed outside the editors is fetched right

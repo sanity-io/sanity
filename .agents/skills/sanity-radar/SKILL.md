@@ -74,7 +74,7 @@ pnpm --filter radar sync-git -- --dry-run   # preview the git-history sync (need
 - **Debug data sources** (dev server only, toolbar picker; `tools/trends/debugData.ts`) render steady/drift/step/host-correlated/sparse/empty datasets, synthetic release tags and the SQRL banner's `sqrl*` scores (dip and recovery, climb, regressed inputs, empty; `tools/trends/sqrlDebugData.ts`) — use them to exercise every encoding layer and the drift feed without live data. UI is verified through these, not unit tests.
 - **One source of truth for "enough to care"**: drift thresholds import from `perf/bench/stats/gate.ts`. Don't invent a second statistic; SPEC.md records the baselines that were tried and rejected (step, weekday-matched) and why.
 - Honesty constraint: any surface showing a ms value must make host calibration visible (`CALIBRATION_EXPLAINER` is the one shared wording).
-- Studio conventions from `AGENTS.md` apply (no `forwardRef`, `use-effect-event`, no inline Translate components).
+- Studio conventions from `AGENTS.md` apply (no `forwardRef`, effect events kept out of dependency arrays, no inline Translate components).
 
 ## Operations
 

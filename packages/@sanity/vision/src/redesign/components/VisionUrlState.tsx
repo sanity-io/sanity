@@ -1,8 +1,7 @@
 import {useToast} from '@sanity/ui/toast'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useEffectEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {parseQueryUrl} from '../../util/parseQueryUrl'
@@ -70,7 +69,6 @@ export function VisionUrlState({tab}: {tab: VisionTab}) {
     if (!linkedUrl || linkedUrl === knownUrlRef.current) return
     knownUrlRef.current = linkedUrl
     openLinkedRequest(linkedUrl)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [linkedUrl])
 
   const writeUrl = useEffectEvent((url: string | null) => {
@@ -85,7 +83,6 @@ export function VisionUrlState({tab}: {tab: VisionTab}) {
   useEffect(() => {
     const timer = setTimeout(() => writeUrl(activeUrl), WRITE_DELAY_MS)
     return () => clearTimeout(timer)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [activeUrl])
 
   return null

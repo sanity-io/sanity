@@ -414,6 +414,7 @@ export function MutateTab(props: MutateTabProps) {
                     <AgentActionsTooltip title={t('vision.mutate.generate.button')}>
                       <Button
                         aria-label={t('vision.mutate.generate.button')}
+                        className={styles.pressable}
                         data-testid="vision-mutate-generate"
                         fontSize={1}
                         icon={SparklesIcon}

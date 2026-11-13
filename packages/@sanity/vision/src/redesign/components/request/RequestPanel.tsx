@@ -243,9 +243,6 @@ export function RequestPanel(props: RequestPanelProps) {
   }, [])
 
   const lintCount = lintFindings.length
-  const lintTone = lintFindings.some((finding) => finding.severity === 'error')
-    ? 'critical'
-    : 'caution'
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
     const fitTitle = t('vision.panel.fit-content')
@@ -258,7 +255,7 @@ export function RequestPanel(props: RequestPanelProps) {
         ),
         content: (
           <Flex flexDirection="column">
-            <Flex justifyContent="flex-end" paddingTop={2} paddingX={2}>
+            <Flex justifyContent="flex-start" paddingTop={2} paddingX={2}>
               <TabList aria-label={t('vision.params.view.label')} gap={1}>
                 <Tab
                   aria-controls="vision-request-params-content"
@@ -312,16 +309,11 @@ export function RequestPanel(props: RequestPanelProps) {
       {
         id: 'lint',
         label:
-          lintCount > 0 ? (
-            <Flex alignItems="center" as="span" gap={2}>
-              {t('vision.panel.lint')}
-              <Badge fontSize={0} tone={lintTone}>
-                {lintCount}
-              </Badge>
-            </Flex>
-          ) : (
-            t('vision.panel.lint')
-          ),
+          lintCount > 0 ? t('vision.panel.lint-count', {count: lintCount}) : t('vision.panel.lint'),
+        // A count of zero stays a plain tab. Any findings use the releases Errors chip: a soft
+        // red pill, with the count in the label, in the same row as the other tabs
+        muted: lintCount > 0,
+        tone: lintCount > 0 ? 'critical' : undefined,
         content: <LintTab findings={lintFindings} onReveal={onRevealRange} />,
       },
       {
@@ -355,7 +347,6 @@ export function RequestPanel(props: RequestPanelProps) {
     library,
     lintCount,
     lintFindings,
-    lintTone,
     onEditQuery,
     onOptionsChange,
     onParamsChange,

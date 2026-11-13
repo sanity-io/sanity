@@ -1,9 +1,8 @@
 import {Button, Stack} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useEffect} from 'react'
+import {useEffect, useEffectEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Flex} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {visionLocaleNamespace} from '../../i18n'
 
@@ -95,7 +94,6 @@ export function RedesignToast({onAccept, onDismiss}: RedesignToastProps) {
       ),
     })
     return remove
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [t, toast])
 
   return null
