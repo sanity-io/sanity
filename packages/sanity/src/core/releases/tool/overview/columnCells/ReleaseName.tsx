@@ -1,7 +1,7 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {Card, Skeleton} from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, type MouseEvent} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Box, Flex} from 'ui5'
 
@@ -18,7 +18,6 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
@@ -59,14 +58,23 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     )
   }
 
-  const cardProps: TableRowProps = release.isDeleted
-    ? {tone: 'transparent'}
-    : {
-        as: 'a',
-        // navigate to release detail
-        onClick: () => router.navigate({releaseId: releaseId}),
-        tone: 'inherit',
-      }
+  // A real address, so command-click and middle-click open the release in a new tab.
+  // A plain click still navigates in the current tab.
+  const releaseHref = release.isDeleted ? undefined : router.resolvePathFromState({releaseId})
+  const handleOpenRelease = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.shiftKey
+    ) {
+      return
+    }
+    event.preventDefault()
+    router.navigate({releaseId})
+  }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
@@ -103,7 +111,19 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             }
             aria-live="assertive"
           />
-          <Card {...cardProps} padding={2} radius={2} flex={1}>
+          <Card
+            padding={2}
+            radius={2}
+            flex={1}
+            {...(release.isDeleted
+              ? {tone: 'transparent' as const}
+              : {
+                  as: 'a' as const,
+                  href: releaseHref,
+                  onClick: handleOpenRelease,
+                  tone: 'inherit' as const,
+                })}
+          >
             <Flex alignItems="center" gap={2}>
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <ReleaseAvatar release={release} size="small" fontSize={2} />

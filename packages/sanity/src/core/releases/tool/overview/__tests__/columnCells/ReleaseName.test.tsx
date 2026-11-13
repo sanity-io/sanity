@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -89,11 +89,53 @@ describe('ReleaseNameCell', () => {
     expect(mockedSetPerspective).toHaveBeenCalledWith('drafts')
   })
 
-  it('navigates to the release detail page on click', async () => {
+  it('links the release title to its detail page', async () => {
+    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
     await renderTest(activeASAPRelease)
 
-    await userEvent.click(screen.getByText('active asap Release'))
+    const link = screen.getByRole('link', {name: 'active asap Release'})
+    expect(link).toHaveAttribute('href', '/releases/rASAP')
+  })
+
+  it('navigates to the release detail page on click', async () => {
+    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
+    await renderTest(activeASAPRelease)
+
+    await userEvent.click(screen.getByRole('link', {name: 'active asap Release'}))
 
     expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({releaseId: 'rASAP'})
+  })
+
+  it.each([
+    ['command-click', {metaKey: true}],
+    ['ctrl-click', {ctrlKey: true}],
+    ['shift-click', {shiftKey: true}],
+    ['middle-click', {button: 1}],
+  ])('leaves a %s to the browser so the release can open in a new tab', async (_, init) => {
+    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
+    await renderTest(activeASAPRelease)
+
+    const link = screen.getByRole('link', {name: 'active asap Release'})
+    let followedLink: boolean | undefined
+    // Runs after React's handler. jsdom can't navigate, so stop the link here.
+    const stopNavigation = (event: Event) => {
+      followedLink = !event.defaultPrevented
+      event.preventDefault()
+    }
+    document.addEventListener('click', stopNavigation)
+    // oxlint-disable-next-line testing-library/prefer-user-event -- sets the modifier and button on a single click without userEvent's pointer sequence
+    fireEvent.click(link, init)
+    document.removeEventListener('click', stopNavigation)
+
+    expect(followedLink).toBe(true)
+    expect(mockUseRouterReturn.navigate).not.toHaveBeenCalled()
+    expect(link).toHaveAttribute('href', '/releases/rASAP')
+  })
+
+  it('does not link a deleted release', async () => {
+    await renderTest({...activeASAPRelease, isDeleted: true})
+
+    expect(screen.getAllByText('active asap Release').length).toBeGreaterThan(0)
+    expect(screen.queryByRole('link', {name: 'active asap Release'})).not.toBeInTheDocument()
   })
 })

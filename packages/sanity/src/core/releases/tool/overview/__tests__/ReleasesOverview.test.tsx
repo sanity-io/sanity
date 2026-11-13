@@ -104,17 +104,22 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
-  const mockNavigate = vi.fn()
-  const mockResolveIntentLink = vi.fn(() => '/test')
-  // Stable reference so the `[router]` effect dependency doesn't fire on every render
-  const mockRouterReturn = {
-    state: {},
-    navigate: mockNavigate,
-    resolveIntentLink: mockResolveIntentLink,
-  }
-  return {mockNavigate, mockResolveIntentLink, mockRouterReturn}
-})
+const {mockNavigate, mockResolveIntentLink, mockResolvePathFromState, mockRouterReturn} =
+  vi.hoisted(() => {
+    const mockNavigate = vi.fn()
+    const mockResolveIntentLink = vi.fn(() => '/test')
+    const mockResolvePathFromState = vi.fn((nextState: {releaseId?: string} | null) =>
+      nextState?.releaseId ? `/releases/${nextState.releaseId}` : '/releases',
+    )
+    // Stable reference so the `[router]` effect dependency doesn't fire on every render
+    const mockRouterReturn = {
+      state: {},
+      navigate: mockNavigate,
+      resolveIntentLink: mockResolveIntentLink,
+      resolvePathFromState: mockResolvePathFromState,
+    }
+    return {mockNavigate, mockResolveIntentLink, mockResolvePathFromState, mockRouterReturn}
+  })
 
 // Mock the router at module level
 vi.mock('sanity/router', async (importOriginal) => {
@@ -789,23 +794,17 @@ describe('ReleasesOverview', () => {
 
       expect(asapReleaseRow).toBeDefined()
 
-      // Click on the card within the row
-      const card = within(asapReleaseRow!).getByText('active asap Release')
-      expect(card).toBeInTheDocument()
+      const link = within(asapReleaseRow!).getByRole('link', {name: 'active asap Release'})
+      expect(link).toHaveAttribute('href', '/releases/rASAP')
 
-      await userEvent.click(card)
+      await userEvent.click(link)
 
-      // Wait for navigate to be called
       await waitFor(
         () => {
-          expect(mockNavigate).toHaveBeenCalled()
+          expect(mockNavigate).toHaveBeenCalledWith({releaseId: 'rASAP'})
         },
         {timeout: 3000},
       )
-
-      // The mock was called, which means the card click triggered navigation
-      // This verifies the navigation functionality works
-      expect(mockNavigate).toHaveBeenCalled()
     })
   })
 
@@ -1413,6 +1412,7 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
+        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const wrapper = await createTestProvider({
@@ -1443,6 +1443,7 @@ describe('ReleasesOverview', () => {
         state: {_searchParams: [['view', 'drafts']]},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
+        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
@@ -1464,6 +1465,7 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
+        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       await mountAndFlush(<TestComponent />, {wrapper})
@@ -1485,6 +1487,7 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
+        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const wrapper = await createTestProvider({
