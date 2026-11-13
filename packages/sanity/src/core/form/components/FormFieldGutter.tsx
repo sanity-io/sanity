@@ -4,7 +4,7 @@ import {type BaseFieldProps} from '../types/fieldProps'
 import {pathToAnchorIdent} from '../utils/pathToAnchorIdent'
 import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
 import {FormDivergenceIndicator} from './FormDivergenceIndicator'
-import {formFieldAnchor, formFieldAnchorPath} from './FormFieldAnchor.css'
+import {formFieldAnchor, formFieldAnchorPath, formFieldLabelAnchorPath} from './FormFieldAnchor.css'
 import {formFieldGutter} from './FormFieldGutter.css'
 
 /**
@@ -41,11 +41,14 @@ export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
       style={
         hasPath
           ? ({
+              [formFieldAnchorPath]: pathToAnchorIdent('input', path),
               // A base variant mark lines up with the field's title row whatever the kind of field
-              // (the input of a Portable Text field or an object has no single place to follow),
-              // at the same gutter offset
-              [formFieldAnchorPath]: pathToAnchorIdent(
-                changedFromBaseVariant && labelAnchored ? 'label' : 'input',
+              // (the input of a Portable Text field or an object has no single place to follow).
+              // Which of the two the gutter follows is decided in CSS by the child it shows
+              // (`formFieldAnchor`), never by `changedFromBaseVariant`: the mark keeps its place
+              // while it fades out, and a divergence indicator shown first stays on the input.
+              [formFieldLabelAnchorPath]: pathToAnchorIdent(
+                labelAnchored ? 'label' : 'input',
                 path,
               ),
             } as CSSProperties)

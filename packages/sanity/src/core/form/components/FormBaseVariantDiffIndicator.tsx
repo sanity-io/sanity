@@ -24,6 +24,9 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
     <AnimatePresence>
       {changedFromBaseVariant && (
         <motion.div
+          // Lines the gutter up with the title row while this mark is the child it shows
+          // (`formFieldAnchor`), fade-out included.
+          data-gutter-label-anchored=""
           data-testid="base-variant-diff-indicator"
           initial={{opacity: 0}}
           exit={{opacity: 0}}
