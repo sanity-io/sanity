@@ -27,7 +27,7 @@ import {PreviewCardContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {PaneItemVersionsFlyout} from './PaneItemVersionsFlyout'
+import {PaneItemVersionsFlyout, type PaneItemVersionsFlyoutActions} from './PaneItemVersionsFlyout'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -66,7 +66,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
   const rowSelected = useContext(PreviewCardContext)?.selected
-  const renderFlyoutList = (actions: {onOpenInventory: () => void; onPick: () => void}) => (
+  const renderFlyoutList = (actions: PaneItemVersionsFlyoutActions) => (
     <DocumentVersionsFlyoutList
       documentGroupId={publishedId}
       viewingDocument={Boolean(rowSelected)}
