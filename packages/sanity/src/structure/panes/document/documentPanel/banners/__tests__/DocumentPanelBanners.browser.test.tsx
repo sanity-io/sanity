@@ -58,6 +58,7 @@ import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from '../VariantDefinitionNotFoundBanner'
+import {backgroundBehind, contrastRatio} from './contrast'
 
 vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<typeof SanityExports>()
@@ -446,6 +447,58 @@ describe('document panel banners', () => {
     await expect
       .poll(() => page.getByRole('button', {name: 'Add to release'}).elements().length)
       .toBe(1)
+    await settleChromaticEndState()
+  })
+
+  it('steps Add to release down to a secondary button while the document inventory is open', async () => {
+    const inventoryOpen = {
+      inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
+    } as Partial<DocumentPaneContextValue>
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <div data-testid="closed">
+          <BannerHarness>
+            <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+          </BannerHarness>
+        </div>
+        {(['light', 'dark'] as const).map((scheme) => (
+          <ThemeColorProvider key={scheme} scheme={scheme}>
+            <div data-testid={`open-${scheme}`}>
+              <BannerHarness pane={inventoryOpen}>
+                <DocumentNotInReleaseBanner
+                  documentId={DOCUMENT_ID}
+                  currentRelease={springRelease}
+                />
+              </BannerHarness>
+            </div>
+          </ThemeColorProvider>
+        ))}
+      </TestWrapper>,
+    )
+
+    const button = (testId: string) =>
+      page.getByTestId(testId).getByRole('button', {name: 'Add to release'})
+    await expect.element(button('closed')).toBeEnabled()
+    // How far a button's fill stands out from the banner behind it
+    const fillContrast = (element: Element) =>
+      contrastRatio(
+        getComputedStyle(element).backgroundColor,
+        backgroundBehind(element.parentElement ?? element),
+      )
+    // Closed: the filled default primary, a solid block against the banner
+    expect(fillContrast(button('closed').element())).toBeGreaterThanOrEqual(3)
+
+    for (const scheme of ['light', 'dark'] as const) {
+      const element = button(`open-${scheme}`).element()
+      await expect.element(button(`open-${scheme}`)).toBeEnabled()
+      // Open: a ghost (outlined) button: its fill barely departs from the banner, it has an
+      // outline, and its text keeps at least 3:1 (it reaches 4.5:1)
+      expect(fillContrast(element), `${scheme} fill`).toBeLessThan(1.5)
+      expect(getComputedStyle(element).boxShadow, `${scheme} outline`).not.toBe('none')
+      const label = element.querySelector('[data-ui="Text"]') ?? element
+      const ratio = contrastRatio(getComputedStyle(label).color, backgroundBehind(element))
+      expect(ratio, `${scheme} text`).toBeGreaterThanOrEqual(4.5)
+    }
     await settleChromaticEndState()
   })
 
@@ -840,31 +893,4 @@ function ObsoleteDraftsFixture() {
       />
     </>
   )
-}
-
-/** The first non-transparent background colour at or above an element. */
-function backgroundBehind(element: Element): string {
-  for (let node: Element | null = element; node; node = node.parentElement) {
-    const color = getComputedStyle(node).backgroundColor
-    if (color && color !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(color)) return color
-  }
-  return 'rgb(255, 255, 255)'
-}
-
-function luminance(color: string): number {
-  const ctx = document.createElement('canvas').getContext('2d')!
-  ctx.fillStyle = color
-  ctx.fillRect(0, 0, 1, 1)
-  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
-  const channel = (value: number) => {
-    const c = value / 255
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
-  }
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
-}
-
-/** WCAG contrast ratio of two CSS colours. */
-function contrastRatio(a: string, b: string): number {
-  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x)
-  return (light + 0.05) / (dark + 0.05)
 }
