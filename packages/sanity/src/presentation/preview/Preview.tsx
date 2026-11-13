@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Label, Spinner, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -29,7 +29,7 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -161,7 +161,6 @@ export const Preview = memo(function PreviewComponent(
       /**
        * Only set the stable perspective if it hasn't been set yet.
        */
-      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStablePerspective((prev) => (prev === null ? perspective : prev))
     }
   }, [handlesPerspectiveChange, perspective])
@@ -173,7 +172,6 @@ export const Preview = memo(function PreviewComponent(
      * variant changes in `src` so they no longer cause a full page reload.
      */
     if (handlesVariantChange) {
-      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStableVariant((prev) => (prev === null ? variant : prev))
     }
   }, [handlesVariantChange, variant])
@@ -361,7 +359,6 @@ export const Preview = memo(function PreviewComponent(
       stop()
       controller.destroy()
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkOrigin])
   useEffect(() => {
     if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
@@ -407,7 +404,6 @@ export const Preview = memo(function PreviewComponent(
       }
     }
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [overlaysConnection])
 
   return (
@@ -477,7 +473,13 @@ export const Preview = memo(function PreviewComponent(
                         gap={4}
                       >
                         <Spinner muted />
-                        <Text muted size={1}>
+                        <Text
+                          muted
+                          size={1}
+                          as="div"
+                          trim={true}
+                          tone={overlaysConnectionTimedOut ? 'caution' : undefined}
+                        >
                           {overlaysConnectionTimedOut
                             ? t('preview-frame.status', {context: 'timeout'})
                             : t('preview-frame.status', {context: 'connecting'})}
@@ -516,7 +518,7 @@ export const Preview = memo(function PreviewComponent(
                     gap={4}
                   >
                     <Spinner muted />
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {t('preview-frame.status', {context: 'loading'})}
                     </Text>
                   </Flex>

@@ -1,14 +1,16 @@
 import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import noop from 'lodash-es/noop.js'
+import {type ObservablePromise} from 'react-rx'
 import {WorkspacesContext} from 'sanity/_singletons'
 import {SemVer} from 'semver'
-import {describe, expect, test} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {setSnapshot} from '../../../../colorSchemeStore'
 import {createWorkspaceSummaries} from '../../__tests__/workspaceSummaryFixtures'
 import {type ResourcesResponse} from '../helper-functions/types'
 import {ResourcesMenuItems} from '../ResourcesMenuItems'
@@ -56,6 +58,14 @@ const RESOURCES: ResourcesResponse = {
   },
 }
 
+const RESOURCES_PROMISE: ObservablePromise<ResourcesResponse | undefined> = Object.assign(
+  Promise.resolve(RESOURCES),
+  {
+    status: 'fulfilled' as const,
+    value: RESOURCES,
+  },
+)
+
 const WORKSPACES = createWorkspaceSummaries([
   {name: 'default', title: 'Test Studio', projectId: 'test', dataset: 'test'},
 ])
@@ -68,11 +78,9 @@ function ResourcesMenuItemsHarness(props: {latestTaggedVersion?: SemVer}) {
           <Menu>
             <ResourcesMenuItems
               currentVersion={new SemVer('5.0.0')}
-              error={null}
-              isLoading={false}
               latestTaggedVersion={props.latestTaggedVersion}
               onOpenStudioVersionDialog={noop}
-              value={RESOURCES}
+              resourcesPromise={RESOURCES_PROMISE}
             />
           </Menu>
         </Card>
@@ -113,5 +121,53 @@ describe('ResourcesMenuItems', () => {
     await expect.element(page.getByRole('menuitem', {name: 'Documentation'})).toBeVisible()
 
     await settleChromaticEndState()
+  })
+})
+
+/** Resolves a CSS color expression to the computed color it has inside `element`. */
+function resolvedColor(element: Element, color: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = color
+  element.append(probe)
+  const resolved = getComputedStyle(probe).color
+  probe.remove()
+  return resolved
+}
+
+describe.each(['light', 'dark'] as const)('the up-to-date version row in %s mode', (scheme) => {
+  beforeEach(() => setSnapshot(scheme))
+  afterEach(() => setSnapshot('system'))
+
+  test('at rest', async () => {
+    const {settleChromaticEndState} = testHelpers()
+
+    await render(<ResourcesMenuItemsHarness />)
+
+    await expect.element(page.getByText('Up to date')).toBeVisible()
+
+    await settleChromaticEndState()
+  })
+
+  test('selected from the keyboard, with the title and subtitle on the selected tone', async () => {
+    const {settleChromaticEndState} = testHelpers()
+
+    await render(<ResourcesMenuItemsHarness />)
+
+    const row = page.getByTestId('menu-item-studio-version')
+    await expect.element(row).toBeVisible()
+    // Not hover: the pointer park in settleChromaticEndState would leave the item and unselect it.
+    ;(page.getByRole('menu').element() as HTMLElement).focus()
+    await userEvent.keyboard('{ArrowDown}')
+    await expect.element(row).toHaveAttribute('data-selected')
+
+    await settleChromaticEndState()
+
+    const item = row.element()
+    await expect
+      .element(row.getByText('Sanity Studio'))
+      .toHaveStyle({color: resolvedColor(item, 'var(--card-fg-color)')})
+    await expect
+      .element(row.getByText('Up to date'))
+      .toHaveStyle({color: resolvedColor(item, 'var(--card-muted-fg-color)')})
   })
 })

@@ -96,6 +96,33 @@ describe('failOnReactDomPropWarnings', () => {
     ])
   })
 
+  it('captures an array that reaches an attribute when the element updates', () => {
+    const {rerender} = render(
+      <div
+        // @ts-expect-error -- a prop that no DOM element has
+        leakedtags="a"
+      />,
+    )
+    expect(takeDomPropWarnings()).toEqual([])
+
+    rerender(
+      <div
+        // @ts-expect-error -- a prop that no DOM element has
+        leakedtags={['a', 'b']}
+      />,
+    )
+
+    expect(takeDomPropWarnings()).toEqual([
+      'Attribute `leakedtags` on <div> was set to "a,b" (Array): an object-valued prop reached the DOM element.',
+    ])
+  })
+
+  it('does not report a string attribute that only reads like an object', () => {
+    render(<div data-leaked="a,b" title={String(new Date(0))} />)
+
+    expect(takeDomPropWarnings()).toEqual([])
+  })
+
   it('captures a date that reaches an attribute', () => {
     render(
       <div

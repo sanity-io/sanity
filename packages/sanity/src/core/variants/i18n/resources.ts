@@ -152,6 +152,8 @@ const variantsLocaleStrings = {
   'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
   'dialog.create.remove-condition': 'Remove condition',
+  /** Accessible name for a condition row's remove button; `position` is the 1-based row number. */
+  'dialog.create.remove-condition.aria-label': 'Remove condition {{position}}',
   /** Label for the variant title field in the create variant dialog. */
   'dialog.create.variant-title.label': 'Title',
   /** Placeholder for the variant title field in the create variant dialog. */
@@ -171,7 +173,7 @@ const variantsLocaleStrings = {
   'dialog.create.type.placeholder': 'Choose type',
   /** Label for the priority field in the variant dialog. */
   'dialog.create.priority.label': 'Priority',
-  /** Tooltip explaining how priority affects variant matching. */
+  /** Help text under the priority field explaining how priority affects variant matching. */
   'dialog.create.priority.tooltip':
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
   /** Validation message when priority is not a valid number. */
@@ -219,6 +221,8 @@ const variantsLocaleStrings = {
     'This will permanently delete "{{title}}". This action cannot be undone.',
   /** Confirm action for the delete variant confirmation dialog. */
   'dialog.delete.action.confirm': 'Yes, delete variant definition',
+  /** Shown in place of the Variants tool content when the content variants feature check failed. */
+  'unavailable.text': 'Variants are unavailable right now. Try again later.',
 }
 
 /**

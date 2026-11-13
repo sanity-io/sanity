@@ -11,6 +11,7 @@ import {
   type FieldChangeNode,
   type FieldOperationsAPI,
   type GroupChangeNode,
+  type ItemDiff,
   type ObjectDiff,
 } from '../../types'
 import {undoChange} from './undoChange'
@@ -23,7 +24,11 @@ function diffDocument(previous: DocumentValue, current: DocumentValue): ObjectDi
   return diffInput(wrap(previous, null), wrap(current, null)) as ObjectDiff
 }
 
-function fieldChange(path: Path, diff: Diff): FieldChangeNode {
+function fieldChange(
+  path: Path,
+  diff: Diff,
+  extras: Partial<FieldChangeNode> = {},
+): FieldChangeNode {
   return {
     type: 'field',
     key: pathToString(path),
@@ -33,11 +38,24 @@ function fieldChange(path: Path, diff: Diff): FieldChangeNode {
     showHeader: true,
     showIndex: true,
     diff,
+    ...extras,
   }
 }
 
 function groupChange(changes: ChangeNode[]): GroupChangeNode {
   return {type: 'group', key: 'group', path: [], titlePath: [], changes}
+}
+
+function operations(): FieldOperationsAPI & {executed: PatchOperations[][]} {
+  const executed: PatchOperations[][] = []
+  return {
+    executed,
+    patch: {
+      execute: (patches) => {
+        executed.push(patches)
+      },
+    },
+  }
 }
 
 /**
@@ -56,7 +74,7 @@ function revert(
 ): PatchOperations[][] {
   const rootDiff = diffDocument(previous, current)
   const executed: PatchOperations[][] = []
-  const operations: FieldOperationsAPI = {
+  const documentOperations: FieldOperationsAPI = {
     patch: {
       execute: (patches) => {
         executed.push(patches)
@@ -64,7 +82,7 @@ function revert(
     },
   }
 
-  undoChange(change(rootDiff), rootDiff, operations)
+  undoChange(change(rootDiff), rootDiff, documentOperations)
 
   const mutation = new Mutation({
     mutations: executed.flat().map((patch) => ({patch: {id: 'doc', ...patch}})),
@@ -78,6 +96,33 @@ function revert(
   return executed
 }
 
+function execute(
+  previous: DocumentValue,
+  current: DocumentValue,
+  change: (rootDiff: ObjectDiff) => ChangeNode,
+): PatchOperations[][] {
+  const rootDiff = diffDocument(previous, current)
+  const documentOperations = operations()
+  undoChange(change(rootDiff), rootDiff, documentOperations)
+  return documentOperations.executed
+}
+
+function movedItemChange(
+  arrayDiff: ArrayDiff,
+  path: Path,
+  fromIndex: number,
+  toIndex: number,
+): FieldChangeNode {
+  const itemDiff: ItemDiff = {
+    hasMoved: true,
+    fromIndex,
+    toIndex,
+    annotation: null,
+    diff: arrayDiff,
+  }
+  return fieldChange(path, arrayDiff, {itemDiff, parentDiff: arrayDiff})
+}
+
 /** The change node Review changes builds for an unkeyed array item: the item diff at its position. */
 function arrayItemChange(arrayDiff: ArrayDiff, fromIndex: number): FieldChangeNode {
   const item = arrayDiff.items.find((candidate) => candidate.fromIndex === fromIndex)!
@@ -85,12 +130,46 @@ function arrayItemChange(arrayDiff: ArrayDiff, fromIndex: number): FieldChangeNo
 }
 
 describe('undoChange', () => {
+  it('does nothing when the root diff is missing', () => {
+    const documentOperations = operations()
+    undoChange(
+      fieldChange(['title'], {
+        type: 'string',
+        action: 'changed',
+        isChanged: true,
+        fromValue: 'old',
+        toValue: 'new',
+        annotation: null,
+        segments: [],
+      }),
+      null,
+      documentOperations,
+    )
+    expect(documentOperations.executed).toEqual([])
+  })
+
   it('sets a changed string back to its previous value instead of patching it', () => {
     const executed = revert({title: 'before'}, {title: 'after'}, (root) =>
       fieldChange(['title'], root.fields.title),
     )
 
     expect(executed).toEqual([[{set: {title: 'before'}}]])
+  })
+
+  it('unsets an added top-level field', () => {
+    const executed = revert({keep: 'yes'}, {keep: 'yes', title: 'hello'}, (root) =>
+      fieldChange(['title'], root.fields.title),
+    )
+
+    expect(executed).toEqual([[{unset: ['title']}]])
+  })
+
+  it('restores a removed top-level field', () => {
+    const executed = revert({title: 'hello'}, {}, (root) =>
+      fieldChange(['title'], root.fields.title),
+    )
+
+    expect(executed).toEqual([[{set: {title: 'hello'}}]])
   })
 
   it('sets changed strings inside an object back to their previous values', () => {
@@ -316,19 +395,167 @@ describe('undoChange', () => {
 
   it('throws instead of setting undefined when a previous string cannot be resolved', () => {
     const rootDiff = diffDocument({title: 'before'}, {title: 'after'})
-    const executed: PatchOperations[][] = []
-    const operations: FieldOperationsAPI = {
-      patch: {
-        execute: (patches) => {
-          executed.push(patches)
-        },
-      },
-    }
+    const documentOperations = operations()
 
     // A change node whose path does not exist in the document the diff was computed for.
     expect(() =>
-      undoChange(fieldChange(['renamed'], rootDiff.fields.title), rootDiff, operations),
+      undoChange(fieldChange(['renamed'], rootDiff.fields.title), rootDiff, documentOperations),
     ).toThrow('Cannot revert "renamed": the previous value could not be resolved')
-    expect(executed).toEqual([])
+    expect(documentOperations.executed).toEqual([])
+  })
+
+  it('unsets an added nested field without collapsing typed stub ancestors', () => {
+    const executed = execute(
+      {keep: 'yes'},
+      {
+        keep: 'yes',
+        meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}},
+      },
+      (root) => {
+        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['meta.seo.title']}]])
+  })
+
+  // SAPP-4563: onlyContainsStubs is dead because of a De Morgan guard, so typed wrappers never collapse
+  it.fails('unsets the furthest stub ancestor when reverting a nested add inside typed wrappers', () => {
+    const executed = execute(
+      {keep: 'yes'},
+      {
+        keep: 'yes',
+        meta: {_type: 'meta', seo: {_type: 'seo', title: 'hello'}},
+      },
+      (root) => {
+        const seoDiff = (root.fields.meta as ObjectDiff).fields.seo as ObjectDiff
+        return fieldChange(['meta', 'seo', 'title'], seoDiff.fields.title)
+      },
+    )
+
+    expect(executed).toEqual([[{unset: ['meta']}]])
+  })
+
+  it('collapses an empty-array ancestor when unsetting an added index', () => {
+    const executed = execute({keep: 'yes', items: []}, {keep: 'yes', items: []}, (root) =>
+      fieldChange(['items', 0], {
+        type: 'string',
+        action: 'added',
+        isChanged: true,
+        fromValue: undefined,
+        toValue: 'x',
+        annotation: null,
+        segments: [],
+      }),
+    )
+
+    expect(executed).toEqual([[{unset: ['items']}]])
+  })
+
+  it('moves an array item back to the start with prepend', () => {
+    const previousItems = [
+      {_key: 'a', title: 'A'},
+      {_key: 'b', title: 'B'},
+    ]
+    const executed = revert(
+      {items: previousItems},
+      {
+        items: [
+          {_key: 'b', title: 'B'},
+          {_key: 'a', title: 'A'},
+        ],
+      },
+      (root) => movedItemChange(root.fields.items as ArrayDiff, ['items', {_key: 'a'}], 0, 1),
+    )
+
+    expect(executed).toEqual([
+      [
+        {unset: ['items[_key=="a"]']},
+        {insert: {before: 'items[0]', items: [{_key: 'a', title: 'A'}]}},
+      ],
+    ])
+  })
+
+  it('moves an array item back after the previous keyed sibling', () => {
+    const previousItems = [
+      {_key: 'a', title: 'A'},
+      {_key: 'b', title: 'B'},
+      {_key: 'c', title: 'C'},
+    ]
+    const executed = revert(
+      {items: previousItems},
+      {
+        items: [
+          {_key: 'a', title: 'A'},
+          {_key: 'c', title: 'C'},
+          {_key: 'b', title: 'B'},
+        ],
+      },
+      (root) => movedItemChange(root.fields.items as ArrayDiff, ['items', {_key: 'b'}], 1, 2),
+    )
+
+    expect(executed).toEqual([
+      [
+        {unset: ['items[_key=="b"]']},
+        {insert: {after: 'items[_key=="a"]', items: [{_key: 'b', title: 'B'}]}},
+      ],
+    ])
+  })
+
+  it('moves an array item back after the previous index when siblings have no keys', () => {
+    const executed = revert({items: ['a', 'b', 'c']}, {items: ['a', 'c', 'b']}, (root) =>
+      movedItemChange(root.fields.items as ArrayDiff, ['items', 2], 1, 2),
+    )
+
+    expect(executed).toEqual([[{unset: ['items[2]']}, {insert: {after: 'items[0]', items: ['b']}}]])
+  })
+
+  it('throws when a moved item cannot be found in the previous array', () => {
+    const rootDiff = diffDocument({items: ['a']}, {items: ['a']})
+    const itemsDiff = {
+      ...(rootDiff.fields.items as ArrayDiff),
+      fromValue: undefined,
+    } as ArrayDiff
+    const documentOperations = operations()
+
+    expect(() =>
+      undoChange(movedItemChange(itemsDiff, ['items', 0], 0, 1), rootDiff, documentOperations),
+    ).toThrow('Failed to find item at index 0')
+    expect(documentOperations.executed).toEqual([])
+  })
+
+  it('reverts a group by undoing non-adds first, then unsetting added fields', () => {
+    const executed = revert({title: 'old'}, {title: 'new', extra: 'added'}, (root) =>
+      groupChange([
+        fieldChange(['title'], root.fields.title),
+        fieldChange(['extra'], root.fields.extra),
+      ]),
+    )
+
+    expect(executed).toEqual([[{set: {title: 'old'}}], [{unset: ['extra']}]])
+  })
+
+  it('unsets each added sibling path when they share a parent that still has values', () => {
+    const executed = execute({keep: 'yes'}, {keep: 'yes', wrap: {a: '1', b: '2'}}, (root) => {
+      const wrapDiff = root.fields.wrap as ObjectDiff
+      return groupChange([
+        fieldChange(['wrap', 'a'], wrapDiff.fields.a),
+        fieldChange(['wrap', 'b'], wrapDiff.fields.b),
+      ])
+    })
+
+    expect(executed).toEqual([[{unset: ['wrap.b', 'wrap.a']}]])
+  })
+
+  it('unsets added group children in reverse order when they do not share an ancestor', () => {
+    const executed = revert({keep: 'yes'}, {keep: 'yes', first: '1', second: '2'}, (root) =>
+      groupChange([
+        fieldChange(['first'], root.fields.first),
+        fieldChange(['second'], root.fields.second),
+      ]),
+    )
+
+    expect(executed).toEqual([[{unset: ['second', 'first']}]])
   })
 })

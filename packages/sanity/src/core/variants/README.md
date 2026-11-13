@@ -8,6 +8,8 @@ For how variant _document editing_ works through the document pair (target resol
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
 
+Whether the plan includes variants is a second gate. The plugin's `VariantsStudioProvider` checks the `contentVariants` feature (`FEATURES.contentVariants`) and publishes the mode as a promise through `VariantsModePromiseContext`: `'default'`, `'upsell'` without the feature, `null` when the check failed. Read it with `use(useVariantsMode())`. As in releases, losing the feature only blocks creating: definitions that already exist stay listed, and their detail pages, edit and delete keep working. `VariantsOverview` suspends on the mode. When the dataset has no definitions, its table's empty state becomes `VariantsUpsellPanel` in upsell mode, or an unavailable notice when the mode is `null`.
+
 Variant definitions are stored as system documents:
 
 - Document type: `system.variant`

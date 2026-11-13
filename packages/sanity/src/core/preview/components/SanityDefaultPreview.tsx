@@ -21,25 +21,66 @@ import {
 import {isValidElementType} from 'react-is'
 import {Flex} from 'ui5'
 
-import {resolveBlockImageDimensions} from '../../components/previews/helpers'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
+import {
+  isVideoAssetSource,
+  type VideoAssetSource,
+} from '../../../media-library/plugin/preview/isVideoAssetSource'
+import {VideoThumbnail} from '../../../media-library/plugin/preview/VideoThumbnail'
+import {renderPreviewNode, resolveBlockImageDimensions} from '../../components/previews/helpers'
+import {
+  type PreviewLayoutKey,
+  type PreviewMediaDimensions,
+  type PreviewProps,
+} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
-import {PreviewTooltip} from './PreviewTooltip'
+import {PreviewTooltip, PreviewTooltipAnchor, type PreviewTooltipPlacement} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
+}
+
+// Stable per asset-ref media component. Preview prepare() recreates media objects on
+// every title keystroke; a new function identity remounts VideoThumbnail and refetches.
+type VideoMediaPreviewComponent = ComponentType<{
+  dimensions: PreviewMediaDimensions
+  layout: PreviewLayoutKey
+}>
+const videoMediaPreviewByAssetRef = new Map<string, VideoMediaPreviewComponent>()
+const videoValueByAssetRef = new Map<string, VideoAssetSource>()
+
+function getVideoMediaPreview(value: VideoAssetSource): VideoMediaPreviewComponent {
+  const assetRef = value.asset._ref
+  videoValueByAssetRef.set(assetRef, value)
+
+  const existing = videoMediaPreviewByAssetRef.get(assetRef)
+  if (existing) return existing
+
+  function VideoMediaPreview({
+    dimensions,
+  }: {
+    dimensions: PreviewMediaDimensions
+    layout: PreviewLayoutKey
+  }) {
+    const current = videoValueByAssetRef.get(assetRef)
+    return current ? <VideoThumbnail value={current} dimensions={dimensions} /> : null
+  }
+
+  videoMediaPreviewByAssetRef.set(assetRef, VideoMediaPreview)
+  return VideoMediaPreview
 }
 
 /** @internal */
 export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDefault'> {
   error?: Error | null
   icon?: ElementType | false
+  /** Opens on hover over the whole row, placed against the row's status */
   tooltip?: ReactNode
+  tooltipPlacement?: PreviewTooltipPlacement
 }
 
 type SanityDefaultMediaProps = {
@@ -113,7 +154,18 @@ function SanityDefaultMedia({
 export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   props: SanityDefaultPreviewProps,
 ): React.JSX.Element {
-  const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
+  const {
+    icon: Icon,
+    layout,
+    media: mediaProp,
+    imageUrl,
+    status,
+    title,
+    tooltip,
+    tooltipPlacement,
+    ...restProps
+  } = props
+  const hasTooltip = Boolean(tooltip)
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
@@ -166,6 +218,10 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return renderMedia
     }
 
+    if (isVideoAssetSource(mediaProp)) {
+      return getVideoMediaPreview(mediaProp)
+    }
+
     if (isValidElementType(mediaProp)) {
       return mediaProp
     }
@@ -210,9 +266,17 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       ...restProps,
       media,
       mediaDimensions: resolvedMediaDimensions,
+      status:
+        hasTooltip && status ? (
+          <PreviewTooltipAnchor>
+            {renderPreviewNode(status, layout || 'default')}
+          </PreviewTooltipAnchor>
+        ) : (
+          status
+        ),
       title,
     }),
-    [media, resolvedMediaDimensions, restProps, title],
+    [hasTooltip, layout, media, resolvedMediaDimensions, restProps, status, title],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
@@ -222,7 +286,11 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
-    return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
+    return (
+      <PreviewTooltip content={tooltip} placement={tooltipPlacement}>
+        {children}
+      </PreviewTooltip>
+    )
   }
 
   return children

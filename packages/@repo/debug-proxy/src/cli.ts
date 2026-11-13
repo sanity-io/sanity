@@ -23,12 +23,16 @@ import {createRequestProxy, createSSEProxy} from './proxy'
 import {intermittentServiceErrors} from './requestScenarios'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   invalidSession,
+  type InvalidSessionCode,
   randomLatency,
+  refusedRefreshToken,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
@@ -161,6 +165,34 @@ const flags = run(
     org401: repeatableFlag('--org-401', {
       description: message`make the get-org-id endpoint return 401`,
     }),
+    listenerErrorProbability: withDefault(
+      option('--listener-error-probability', probability(), {
+        description: message`like --error-probability, but only for listen requests: each one fails with a random 5xx at this probability while every other request still works`,
+      }),
+      0,
+    ),
+    // or() makes the parser itself reject passing both flags: withholding the welcome would also
+    // withhold the channelError and disconnect, leaving a silently closed stream
+    listenerFault: optional(
+      or(
+        mapValue(
+          option('--listener-channel-error', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`end every listener SECONDS after its welcome (welcome, welcomeback or reset) with the channelError (Internal error) and disconnect the API sends when a listener fails, and close it. Use 0 to fail every listener instead of welcoming it, as when the API cannot set one up`,
+          }),
+          (seconds) => ({kind: 'channelError' as const, afterMs: seconds * 1000}),
+        ),
+        // Like repeatableFlag(), but {min: 1} so that or() only picks it when it is passed
+        mapValue(
+          multiple(
+            option('--withhold-welcome', {
+              description: message`keep listen requests open without ever welcoming them, as when the API hangs while setting a listener up. Mutually exclusive with --listener-channel-error`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'withholdWelcome' as const}),
+        ),
+      ),
+    ),
     // or() makes the parser itself reject passing both flags
     tokenFault: optional(
       or(
@@ -176,7 +208,18 @@ const flags = run(
           }),
           (seconds) => ({kind: 'revoke' as const, afterMs: seconds * 1000}),
         ),
+        mapValue(
+          option('--bearer-401', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`like --expire-token, but answer with a plain RFC 6750 bearer token 401 (error "invalid_token", no Sanity error code) — a hypothesis for what an expired OAuth access token gets. For studios using auth.experimental_oauth: shows whether the studio renews on a 401 that carries no SIO code. Mutually exclusive with the other two`,
+          }),
+          (seconds) => ({kind: 'bearer' as const, afterMs: seconds * 1000}),
+        ),
       ),
+    ),
+    refuseRefresh: optional(
+      option('--refuse-refresh', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`after SECONDS, answer every POST to the OAuth token endpoint (/auth/oauth/token) with the RFC 6749 invalid_grant error — the refresh token expired, was redeemed already, or its session was revoked in Manage. For studios using auth.experimental_oauth: the one failure that ends the session, so it exercises forced sign-out. Combine with --expire-token to force a renewal first. Use 0 to refuse immediately`,
+      }),
     ),
   }),
   {
@@ -204,10 +247,23 @@ const ENABLE_SSE_FAULTS = flags.sseFaults
 const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
 const RESET_PROBABILITY = flags.resetProbability
 const FORCE_ORG_401 = flags.org401
+const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
+const LISTENER_CHANNEL_ERROR_AFTER_MS =
+  flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
+const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+// Any scenario that changes what the listen endpoint answers
+const LISTENER_FAULTS =
+  LISTENER_ERROR_PROBABILITY > 0 ||
+  LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
+  WITHHOLD_WELCOME
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'revoke' ? flags.tokenFault.afterMs : undefined
+const BEARER_401_AFTER_MS =
+  flags.tokenFault?.kind === 'bearer' ? flags.tokenFault.afterMs : undefined
+const REFUSE_REFRESH_AFTER_MS =
+  flags.refuseRefresh === undefined ? undefined : flags.refuseRefresh * 1000
 
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 
@@ -369,9 +425,16 @@ const listenEndpointProxy = createSSEProxy((events$) =>
           dropMutations(DROPPED_MUTATION_PROBABILITY),
         )
       : tap(),
+    LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
+      ? tap()
+      : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
+    WITHHOLD_WELCOME ? withholdWelcome() : tap(),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
+
+// --listener-error-probability fails listen requests only, before they reach the upstream
+const faultListenRequests = intermittentServiceErrors(LISTENER_ERROR_PROBABILITY)
 
 const orgEndpointProxy = createRequestProxy({
   transformHeaders: (headers$) =>
@@ -442,8 +505,21 @@ const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 // "already past", i.e. invalidate now. Re-armed whenever the studio
 // re-authenticates (a `/auth/fetch` token exchange), so you can log back in
 // and watch the simulated session lapse again — see below.
-const INVALIDATE_SESSION_AFTER_MS = EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS
-const INVALID_SESSION_CODE = REVOKE_TOKEN_AFTER_MS === undefined ? 'SIO-401-AEX' : 'SIO-401-ANF'
+const INVALIDATE_SESSION_AFTER_MS =
+  EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS ?? BEARER_401_AFTER_MS
+const INVALID_SESSION_CODE: InvalidSessionCode =
+  REVOKE_TOKEN_AFTER_MS !== undefined
+    ? 'SIO-401-ANF'
+    : BEARER_401_AFTER_MS !== undefined
+      ? 'invalid_token'
+      : 'SIO-401-AEX'
+// --refuse-refresh: OAuth token endpoint requests after this wall-clock time
+// get `invalid_grant`. Not re-armed: once the refresh token is refused the
+// studio signs out, and a fresh sign-in's code exchange is refused too until
+// the proxy restarts.
+const REFUSE_REFRESH_AT =
+  REFUSE_REFRESH_AFTER_MS === undefined ? undefined : Date.now() + REFUSE_REFRESH_AFTER_MS
+const isRefreshRefused = () => REFUSE_REFRESH_AT !== undefined && Date.now() >= REFUSE_REFRESH_AT
 let sessionInvalidAt =
   INVALIDATE_SESSION_AFTER_MS === undefined ? undefined : Date.now() + INVALIDATE_SESSION_AFTER_MS
 const isSessionInvalid = () => sessionInvalidAt !== undefined && Date.now() >= sessionInvalidAt
@@ -468,7 +544,11 @@ const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
           errorCode: INVALID_SESSION_CODE,
           onReauthenticated: rearmSessionInvalidation,
         })
-  const faulted = faultRequests(maybeInvalid)
+  const maybeRefused =
+    REFUSE_REFRESH_AFTER_MS === undefined
+      ? maybeInvalid
+      : refusedRefreshToken(maybeInvalid, isRefreshRefused)
+  const faulted = faultRequests(maybeRefused)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
@@ -480,8 +560,13 @@ const routes = [
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
   // handler (which is still subject to --flap and --latency)
-  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: withNetworkScenarios(listenEndpointProxy)}]
+  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0 || LISTENER_FAULTS
+    ? [
+        {
+          match: isListenEndpoint(),
+          handler: withNetworkScenarios(faultListenRequests(listenEndpointProxy)),
+        },
+      ]
     : []),
 ]
 
@@ -535,11 +620,32 @@ if (ERROR_PROBABILITY > 0) {
   )
 }
 
+if (LISTENER_ERROR_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(LISTENER_ERROR_PROBABILITY * 100)}% of listen requests fail with a random 5xx`,
+  )
+}
+
+if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
+  console.info(
+    LISTENER_CHANNEL_ERROR_AFTER_MS === 0
+      ? 'Failing listeners: every listener gets a channelError (Internal error) instead of its welcome'
+      : `Failing listeners: every listener gets a channelError (Internal error) ${LISTENER_CHANNEL_ERROR_AFTER_MS / 1000}s after its welcome`,
+  )
+}
+
+if (WITHHOLD_WELCOME) {
+  console.info('Failing listeners: listen requests stay open and are never welcomed')
+}
+
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
-  const what =
-    INVALID_SESSION_CODE === 'SIO-401-AEX'
-      ? 'the expired-session 401 (SIO-401-AEX)'
-      : 'the session-not-found 401 (SIO-401-ANF)'
+  const what = (
+    {
+      'SIO-401-AEX': 'the expired-session 401 (SIO-401-AEX)',
+      'SIO-401-ANF': 'the session-not-found 401 (SIO-401-ANF)',
+      'invalid_token': 'a plain bearer-token 401 (invalid_token, no Sanity error code)',
+    } satisfies Record<InvalidSessionCode, string>
+  )[INVALID_SESSION_CODE]
   console.info(
     INVALIDATE_SESSION_AFTER_MS === 0
       ? `Invalid session: every API request returns ${what}`

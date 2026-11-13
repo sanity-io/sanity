@@ -25,11 +25,26 @@ export function withReleaseReferences({
   getDocumentExists,
   isUnpublished,
 }: ReleaseReferenceOptions): DocumentCheck {
+  const resolveReference = createReferenceResolver({document, getDocumentExists, isUnpublished})
+  return async (options) => (await resolveReference(options)) !== undefined
+}
+
+/** Resolve the exact published or release document ID used by reference validation. */
+export function createReferenceResolver({
+  document,
+  getDocumentExists,
+  isUnpublished,
+}: ReleaseReferenceOptions): (options: {
+  id: string
+  signal?: AbortSignal
+}) => Promise<string | undefined> {
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- any document ID can be checked
   const id = document._id as DocumentId
   // oxlint-disable-next-line typescript/no-deprecated -- support unmigrated variant documents
   const variant = document._system?.variants?.[0]?._ref ?? document._system?.variant?._ref
-  if (!isVersionId(id) || variant) return getDocumentExists
+  if (!isVersionId(id) || variant) {
+    return async (options) => ((await getDocumentExists(options)) ? options.id : undefined)
+  }
   const versionName = getVersionNameFromId(id)
 
   return async ({id: referenceId, signal}) => {
@@ -39,7 +54,7 @@ export function withReleaseReferences({
       getDocumentExists({id: versionId, signal}),
       getDocumentExists({id: referenceId, signal}),
     ])
-    if (!versionExists) return publishedExists
-    return !(await isUnpublished({id: versionId, signal}))
+    if (!versionExists) return publishedExists ? referenceId : undefined
+    return (await isUnpublished({id: versionId, signal})) ? undefined : versionId
   }
 }

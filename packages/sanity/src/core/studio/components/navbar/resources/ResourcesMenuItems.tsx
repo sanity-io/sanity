@@ -5,7 +5,8 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Card, type CardTone} from '@sanity/ui'
 import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
-import {Fragment, useCallback} from 'react'
+import {Fragment, Suspense, use, useCallback} from 'react'
+import {type ObservablePromise} from 'react-rx'
 import {type SemVer} from 'semver'
 import {Text, Flex, Icon} from 'ui5'
 
@@ -23,32 +24,53 @@ import {type ResourcesResponse, type Section} from './helper-functions/types'
 import {useCanDeployStudio} from './useCanDeployStudio'
 
 interface ResourcesMenuItemProps {
-  error: Error | null
-  isLoading: boolean
+  /** The `/help` response, settled as `undefined` when the request failed */
+  resourcesPromise: ObservablePromise<ResourcesResponse | undefined>
   currentVersion: SemVer
   newAutoUpdateVersion?: SemVer
   latestTaggedVersion?: SemVer
   /** A deprecated version the user should be warned about (running, or pinned to) */
   deprecatedVersion?: SemVer
-  value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
 }
 
 export function ResourcesMenuItems({
-  error,
-  isLoading,
-  value,
+  resourcesPromise,
   latestTaggedVersion,
   currentVersion,
   onOpenStudioVersionDialog,
   newAutoUpdateVersion,
   deprecatedVersion,
 }: ResourcesMenuItemProps) {
+  return (
+    <>
+      {/* Studio version information */}
+      <StudioVersion
+        currentVersion={currentVersion}
+        newAutoUpdateVersion={newAutoUpdateVersion}
+        latestTaggedVersion={latestTaggedVersion}
+        deprecatedVersion={deprecatedVersion}
+        onOpenStudioVersionDialog={onOpenStudioVersionDialog}
+      />
+
+      <StudioRegistration />
+      <MenuDivider />
+
+      <Suspense fallback={<LoadingBlock showText />}>
+        <HelpSections resourcesPromise={resourcesPromise} />
+      </Suspense>
+    </>
+  )
+}
+
+function HelpSections({
+  resourcesPromise,
+}: {
+  resourcesPromise: ObservablePromise<ResourcesResponse | undefined>
+}) {
+  const value = use(resourcesPromise)
   const sections = value?.resources?.sectionArray
   const {t} = useTranslation()
-  if (isLoading) {
-    return <LoadingBlock showText />
-  }
 
   const fallbackLinks = (
     <>
@@ -75,31 +97,18 @@ export function ResourcesMenuItems({
 
   return (
     <>
-      {/* Studio version information */}
-      <StudioVersion
-        currentVersion={currentVersion}
-        newAutoUpdateVersion={newAutoUpdateVersion}
-        latestTaggedVersion={latestTaggedVersion}
-        deprecatedVersion={deprecatedVersion}
-        onOpenStudioVersionDialog={onOpenStudioVersionDialog}
-      />
-
-      <StudioRegistration />
-      <MenuDivider />
-
-      {!error &&
-        sections?.map((subSection, i) => {
-          if (!subSection) return null
-          return (
-            <Fragment key={subSection._key}>
-              <SubSection subSection={subSection} />
-              {i < sections.length - 1 && <MenuDivider />}
-            </Fragment>
-          )
-        })}
+      {sections?.map((subSection, i) => {
+        if (!subSection) return null
+        return (
+          <Fragment key={subSection._key}>
+            <SubSection subSection={subSection} />
+            {i < sections.length - 1 && <MenuDivider />}
+          </Fragment>
+        )
+      })}
 
       {/* Display fallback values on error / no response */}
-      {(value === undefined || error) && <div>{fallbackLinks}</div>}
+      {value === undefined && <div>{fallbackLinks}</div>}
     </>
   )
 }
@@ -158,6 +167,7 @@ function StudioVersion({
             tone={deprecatedVersion ? 'caution' : undefined}
             as="div"
             trim={true}
+            style={deprecatedVersion ? undefined : {color: 'var(--card-fg-color)'}}
           >
             {t('help-resources.studio')}
           </Text>
@@ -174,7 +184,7 @@ function StudioVersion({
               </TextWithTone>
             </Flex>
           ) : (
-            <Text muted size={1} as="div" trim={true}>
+            <Text muted size={1} as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
               {subtitle}
             </Text>
           )}

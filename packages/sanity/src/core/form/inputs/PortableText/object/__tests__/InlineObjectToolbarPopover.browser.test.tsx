@@ -8,9 +8,10 @@ import {
   type ObjectSchemaType,
   type PortableTextBlock,
 } from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {useMemo, useState} from 'react'
+import {Text} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -68,7 +69,7 @@ function InlineObjectToolbar() {
     <EditorProvider initialConfig={initialConfig}>
       <div ref={setBoundaryElement} style={{paddingTop: 80}}>
         <Card border padding={4} radius={2}>
-          <Text>
+          <Text as="div" trim={true}>
             Text with an{' '}
             <span data-testid="inline-object" ref={setReferenceElement}>
               [inline note]

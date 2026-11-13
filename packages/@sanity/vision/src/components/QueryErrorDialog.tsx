@@ -1,7 +1,6 @@
 import {type ClientPerspective, isHttpError} from '@sanity/client'
-import {Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {getUnsatisfiedApiVersionCapability} from '../util/apiVersionCapabilities'
@@ -29,7 +28,7 @@ export function QueryErrorDialog(props: QueryErrorDialogProps) {
   return (
     <Flex gap={5} marginTop={2} flexDirection="column">
       {unsatisfiedCapability ? (
-        <Text data-testid="query-error-api-version-capability-hint" size={1}>
+        <Text data-testid="query-error-api-version-capability-hint" size={1} as="div" trim={true}>
           {t(unsatisfiedCapability.explanationKey, {
             apiVersion: prefixApiVersion(unsatisfiedCapability.requiredApiVersion),
           })}

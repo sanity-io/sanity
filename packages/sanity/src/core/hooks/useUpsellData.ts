@@ -18,6 +18,8 @@ import {useProjectId} from './useProjectId'
 interface UpsellDataProps {
   dataUri: string
   feature: string
+  enabled?: boolean
+  fallbackData?: UpsellData
 }
 
 /**
@@ -50,13 +52,19 @@ export const NO_UPSELL_DATA: UpsellDataResult = {upsellData: null, hasError: fal
  * promise with `useObservablePromise(upsellData$)` and start the request with
  * `preloadObservablePromise(upsellData$)` in an effect, so only the leaf that renders the content
  * (an open dialog, an upsell panel) waits for it: the provider neither suspends nor re-renders
- * when the response arrives. `useUpsellContext` does this for the simple providers.
+ * when the response arrives. `useUpsellContext` does this for every upsell provider.
+ *
+ * Pass `enabled: false` to skip the request. The observable then settles with `fallbackData`
+ * (or no data when it is omitted) and `hasError: false`, so a leaf can `use()` it the same way
+ * it will once the endpoint is ready.
  *
  * @internal
  */
 export const useUpsellData = ({
   dataUri,
   feature,
+  enabled = true,
+  fallbackData,
 }: UpsellDataProps): {
   upsellData$: Observable<UpsellDataResult>
   telemetryLogs: UpsellTelemetryLogs
@@ -117,28 +125,29 @@ export const useUpsellData = ({
     [telemetry, feature],
   )
 
-  const upsellData$ = useMemo(
-    () =>
-      client.observable.request<UpsellData | null>({url: dataUri}).pipe(
-        map((data): UpsellDataResult => {
-          if (!data) {
-            return {upsellData: null, hasError: true}
-          }
-          try {
-            data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
-            data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
-              baseUrl,
-              projectId,
-            })
-            return {upsellData: data, hasError: false}
-          } catch {
-            return {upsellData: null, hasError: true}
-          }
-        }),
-        catchError(() => of<UpsellDataResult>({upsellData: null, hasError: true})),
-      ),
-    [client, projectId, baseUrl, dataUri],
-  )
+  const upsellData$ = useMemo(() => {
+    if (!enabled) {
+      return of({upsellData: fallbackData ?? null, hasError: false})
+    }
+    return client.observable.request<UpsellData | null>({url: dataUri}).pipe(
+      map((data): UpsellDataResult => {
+        if (!data) {
+          return {upsellData: null, hasError: true}
+        }
+        try {
+          data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
+          data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
+            baseUrl,
+            projectId,
+          })
+          return {upsellData: data, hasError: false}
+        } catch {
+          return {upsellData: null, hasError: true}
+        }
+      }),
+      catchError(() => of<UpsellDataResult>({upsellData: null, hasError: true})),
+    )
+  }, [client, projectId, baseUrl, dataUri, enabled, fallbackData])
 
   return {upsellData$, telemetryLogs}
 }

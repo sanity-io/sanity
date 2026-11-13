@@ -381,7 +381,10 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -553,7 +556,10 @@ function getAuthStore(
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -565,7 +571,8 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  return createLegacyAuthStore({
+  // The store creates its clients, so their request handlers read it lazily.
+  const authStore: AuthStore = createLegacyAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
@@ -573,7 +580,12 @@ function getAuthStore(
       client = clientFactory({
         ...config,
         ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
+          ? {
+              requestHandler: createStudioRequestHandler(
+                () => client,
+                () => authStore,
+              ),
+            }
           : {}),
       })
       return client
@@ -585,6 +597,7 @@ function getAuthStore(
     dataset,
     projectId,
   })
+  return authStore
 }
 
 interface ResolveSourceOptions {
@@ -668,9 +681,10 @@ function resolveSource({
     errors.push(error)
   }
 
-  validateSingletons(singletons, schema, errors)
+  const singletonOnlySchemaTypeNames = getSingletonOnlySchemaTypeNames(singletons)
 
-  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+  validateSingletons(singletons, singletonOnlySchemaTypeNames, schema, errors)
+
   const singletonsByDocumentId = new Map(
     singletons.map((singleton) => [singleton.documentId, singleton]),
   )
@@ -717,7 +731,7 @@ function resolveSource({
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
-        .filter((schemaType) => !singletonSchemaTypeNames.has(schemaType.name))
+        .filter((schemaType) => !singletonOnlySchemaTypeNames.has(schemaType.name))
         .map((schemaType) => {
           const template: Template = {
             id: schemaType.name,
@@ -1272,11 +1286,32 @@ function joinBasePath(rootPath: string, basePath?: string) {
 }
 
 /**
+ * Returns the names of the schema types used exclusively for singletons: those
+ * claimed by at least one singleton definition, none of which sets
+ * `allowNonSingletonDocuments`. These types get no plain per-type template and
+ * are hidden from the default document type lists.
+ */
+function getSingletonOnlySchemaTypeNames(singletons: SingletonDefinition[]): Set<string> {
+  const allowsNonSingletonDocuments = new Set(
+    singletons
+      .filter((singleton) => singleton.allowNonSingletonDocuments)
+      .map((singleton) => singleton.schemaType),
+  )
+
+  return new Set(
+    singletons
+      .map((singleton) => singleton.schemaType)
+      .filter((schemaType) => !allowsNonSingletonDocuments.has(schemaType)),
+  )
+}
+
+/**
  * Validates the resolved singleton definitions, pushing every problem onto the
  * shared `errors` array.
  */
 function validateSingletons(
   singletons: SingletonDefinition[],
+  singletonOnlySchemaTypeNames: ReadonlySet<string>,
   schema: Schema,
   errors: unknown[],
 ): void {
@@ -1323,10 +1358,8 @@ function validateSingletons(
     )
   }
 
-  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
-
   const typeNameCollisions = [...new Set(ids)].filter(
-    (id) => !singletonSchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
+    (id) => !singletonOnlySchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
   )
 
   if (typeNameCollisions.length !== 0) {

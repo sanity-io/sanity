@@ -13,7 +13,7 @@ function handleClearPerspective() {
 
 /**
  * The shared navbar perspective chip in its two states. With no perspective
- * selected the chip is the trigger alone ("All users"). Once one is selected
+ * selected the chip is the trigger alone ("Default"). Once one is selected
  * the clear control sits beside the label. `TestWrapper` supplies studio i18n
  * so that control's label resolves to "Clear selection". The glyph is the
  * variants navbar icon, the only caller so far.
@@ -30,7 +30,7 @@ export function GlobalPerspectiveButtonStory() {
             <div data-testid="global-perspective-button-idle">
               <GlobalPerspectiveButton
                 icon={<RhombusIcon className={suggestIconColor} />}
-                text="All users"
+                text="Default"
               />
             </div>
           </Flex>

@@ -593,16 +593,30 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
-  /** The header label for the variant creation flow before a variant definition has been selected */
+  /** The text of the actions that open the variant creation form and confirm the creation */
   'document-group.create-variant': 'Create version',
-  /** The header label for the variant creation flow once a variant definition has been selected */
-  'document-group.create-variant.for-target': 'Create version for {{variantDefinitionName}}',
-  /** The heading for the option to create a variant as a draft */
-  'document-group.create-variant.target-drafts': 'As a draft',
-  /** The label for the list of releases a variant can be created in */
-  'document-group.create-variant.target-releases': 'Into a release',
-  /** The label for the list of existing variants that can be viewed instead of creating a new one */
-  'document-group.create-variant.view-existing-variants': 'Or view existing versions',
+  /** Describes the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-description': 'What it starts from',
+  /** The label of the variant creation form's picker for the version the new variant starts from */
+  'document-group.create-variant.base-label': 'Document',
+  /** An option of the variant creation form's picker for the version to start from, while Content Variants is switched on: the version's variant and the draft, release or published bundle it is in */
+  'document-group.create-variant.base-option': '{{variantName}} · {{bundleName}}',
+  /** The default option of the variant creation form's picker for the version to start from, listed first: the version nearest to the picked variant and target, resolved when the version is created */
+  'document-group.create-variant.base-option-nearest': 'Nearest version',
+  /** The text of the button that closes the variant creation form without creating anything */
+  'document-group.create-variant.cancel-button.text': 'Cancel',
+  /** Describes the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
+  'document-group.create-variant.description': 'A new version of <DocumentTitle/>',
+  /** Placeholder of the filter input in the variant creation form's pickers */
+  'document-group.create-variant.filter-placeholder': 'Find',
+  /** Describes the variant creation form's picker for the draft or release to create the variant in */
+  'document-group.create-variant.target-description': 'Where it lives',
+  /** The label of the variant creation form's picker for the draft or release to create the variant in */
+  'document-group.create-variant.target-label': 'Target',
+  /** Describes the variant creation form's picker for the variant definition to create */
+  'document-group.create-variant.variant-description': 'Who sees this version',
+  /** The label of the variant creation form's picker for the variant definition to create */
+  'document-group.create-variant.variant-label': 'Variant',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -664,6 +678,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
+  /** Last line of the document versions popover, counting the versions it does not list (singular) */
+  'document-group.status.more_one': 'and {{count}} more version',
+  /** Last line of the document versions popover, counting the versions it does not list (plural) */
+  'document-group.status.more_other': 'and {{count}} more versions',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
@@ -672,6 +690,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** The label text that indicates a version in the document group is served for the selected perspective and variant */
+  'document-group.version.served': 'Served',
+  /** The label text that indicates a base version in the document group is served because the selected variant has no version */
+  'document-group.version.served-instead': 'Served instead',
+  /** The tooltip for the badges that indicate which version in the document group is served for the selected perspective and variant */
+  'document-group.version.served.tooltip':
+    'A visitor matching the selected perspective will see this version.',
 
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
@@ -1547,15 +1572,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Message shown in the releases and variants menus when the filter matches nothing. `{{filter}}` is the query. */
   'navbar.filter.no-matches': 'Nothing matches "{{filter}}"',
   /** Default option label when no variant is selected. */
-  'navbar.variant.default': 'All users',
+  'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.view-all': 'View all',
+  /** Tooltip for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant': 'View audience',
+  /** Accessible label for the link that opens an audience's page from the variants selection menu. */
+  'navbar.variant.menu.view-variant-aria-label': 'View audience {{title}}',
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
   'navbar.variant.filter-placeholder': 'Find audience',
-  /** Section header for non-default variants in the dropdown. */
-  'navbar.variant.other': 'Other variants',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
@@ -1634,6 +1661,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 
+  /** Compact relative time in the past, in days, eg "3 days ago" (singular) */
+  'relative-time.compact.days-ago_one': '{{count}} day ago',
+  /** Compact relative time in the past, in days, eg "3 days ago" (plural) */
+  'relative-time.compact.days-ago_other': '{{count}} days ago',
+  /** Compact relative time in the past, in hours, eg "3 hr ago" */
+  'relative-time.compact.hours-ago': '{{count}} hr ago',
+  /** Compact relative time in the past, in minutes, eg "5 min ago" */
+  'relative-time.compact.minutes-ago': '{{count}} min ago',
+  /** Compact relative time in the past, in months, eg "2 mo ago" */
+  'relative-time.compact.months-ago': '{{count}} mo ago',
+  /** Compact relative time in the past, in weeks, eg "2 wk ago" */
+  'relative-time.compact.weeks-ago': '{{count}} wk ago',
+  /** Compact relative time in the past, in years, eg "1 yr ago" */
+  'relative-time.compact.years-ago': '{{count}} yr ago',
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
 
@@ -1815,10 +1856,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
   'release.navbar.filter-placeholder': 'Find a version or release',
+  /** Accessible name for the chevron that opens the releases menu */
+  'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
+  /** Accessible label for the link that opens a release's page from the global perspective menu */
+  'release.navbar.view-release-aria-label': 'View release {{title}}',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */

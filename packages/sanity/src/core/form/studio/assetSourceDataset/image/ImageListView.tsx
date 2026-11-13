@@ -1,7 +1,7 @@
 import {type Asset} from '@sanity/types'
-import {Spinner, Text} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
-import {Grid, Flex, Box} from 'ui5'
+import {Text, Grid, Flex, Box} from 'ui5'
 
 import {AssetThumb} from './AssetThumb'
 import {thumbGrid} from './ImageListView.css'
@@ -36,7 +36,7 @@ export function ImageListView(props: ImageListViewProps) {
           <Spinner muted />
         </Flex>
       )}
-      {!isLoading && assets.length === 0 && <Text align="center" muted />}
+      {!isLoading && assets.length === 0 && <Text align="center" muted as="div" trim={true} />}
     </Box>
   )
 }

@@ -25,6 +25,13 @@ export const usePluginPostMessage = (
     [origin, iframe],
   )
 
+  // The Media Library asks for a token once and keeps it. A rotated access token (OAuth) revokes
+  // the one it holds, so hand it the current token whenever it changes, without waiting to be
+  // asked. A message sent before the page has loaded is dropped; the page then asks itself.
+  useEffect(() => {
+    if (token) postFn({type: 'tokenResponse', token})
+  }, [postFn, token])
+
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (!iframe) {

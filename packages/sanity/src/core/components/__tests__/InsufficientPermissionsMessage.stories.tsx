@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {
@@ -62,7 +63,7 @@ export const AllContexts: Story = {
         {CONTEXTS.map((context) => (
           <Card key={context} padding={4} radius={2} shadow={1} style={{width: 300}}>
             <Stack gap={3}>
-              <Text muted size={0} weight="medium">
+              <Text muted size={0} weight="medium" as="div" trim={true}>
                 {context}
               </Text>
               <InsufficientPermissionsMessage context={context} currentUser={editor} />

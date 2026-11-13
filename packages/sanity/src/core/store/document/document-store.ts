@@ -183,6 +183,9 @@ export function createDocumentStore({
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    onCommitCancelled,
+    onCommitRetriesEnded,
+    onPairTornDownWithPendingMutations,
   } = extraOptions
   const ctx = {
     client,
@@ -204,6 +207,9 @@ export function createDocumentStore({
         onSlowCommit,
         onReportMutationPerformance,
         onDocumentRebase,
+        onCommitCancelled,
+        onCommitRetriesEnded,
+        onPairTornDownWithPendingMutations,
       })
     },
     initialValue(opts, context) {

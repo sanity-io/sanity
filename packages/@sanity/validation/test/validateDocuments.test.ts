@@ -72,6 +72,7 @@ async function validateReference(
   const [{markers}] = await validateDocuments({
     client,
     schema: createSchema(referenceFields),
+    validateReferenceTypes: false,
     documents: [document(documentId, {_system, author: {_type: 'reference', _ref: 'author'}})],
   })
   return markers.map(({code}) => code)
@@ -84,6 +85,7 @@ describe('validateDocuments', () => {
       {id: 'restricted', reason: 'permission'},
     ])
     const results = await validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: ['shared', 'missing', 'shared', 'restricted'].map((ref, index) =>
@@ -112,6 +114,7 @@ describe('validateDocuments', () => {
     const {client, request} = createClient()
     request.mockReturnValueOnce(firstValueFrom(firstResponse))
     const validation = validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: refs.map((ref, index) =>
@@ -217,6 +220,7 @@ describe('validateDocuments', () => {
     const {client, request} = createClient()
     const getDocumentExists = vi.fn(async () => true)
     await validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: [document('article', {author: {_type: 'reference', _ref: 'author'}})],

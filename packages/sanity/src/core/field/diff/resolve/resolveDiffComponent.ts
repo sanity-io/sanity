@@ -3,7 +3,7 @@ import {type ComponentType} from 'react'
 
 import {diffResolvers} from '../../TODO'
 import {type Diff, type DiffComponent, type DiffComponentOptions} from '../../types'
-import {defaultComponents} from './defaultComponents'
+import {getDefaultDiffComponent} from './defaultComponents'
 
 /** @internal */
 export function resolveDiffComponent<D extends Diff = any>(
@@ -16,7 +16,7 @@ export function resolveDiffComponent<D extends Diff = any>(
     const resolved =
       itType?.components?.diff ||
       tryResolve(itType, parentSchemaType) ||
-      defaultComponents[itType.name]
+      getDefaultDiffComponent(itType.name)
 
     if (resolved) {
       return resolved as DiffComponent<any>
@@ -32,7 +32,7 @@ export function resolveDiffComponent<D extends Diff = any>(
   // type instead of the jsonType for these types.
   const defaultComponentKey = isDateType ? type.name : type.jsonType
 
-  return defaultComponents[defaultComponentKey]
+  return getDefaultDiffComponent(defaultComponentKey)
 }
 
 function tryResolve(
