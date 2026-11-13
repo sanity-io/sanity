@@ -3,10 +3,11 @@ import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
 import {RESERVED_RELEASE_METADATA_NAMES} from '../../config/releases/metadataFields'
 
 /**
- * Release metadata as Studio holds it while a form is editing configured fields.
- * `@sanity/client` types `metadata` as a closed object. The Content Lake stores
- * extra keys, so this view adds an index signature. The assertion back to the
- * client type lives in {@link asReleaseMetadata}.
+ * Metadata of a release, including the values of any configured metadata fields.
+ * `@sanity/client` types `metadata` as a closed object, so this adds an index
+ * signature for the configured field values.
+ *
+ * @beta
  */
 export type ReleaseMetadataRecord = {
   [key: string]: unknown
