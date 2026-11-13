@@ -3,7 +3,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type ComponentType, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type ReactNode, useMemo, useRef, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import {Text} from 'ui5'
 import {afterEach, describe, expect, it, vi} from 'vitest'
@@ -26,6 +26,7 @@ import {
   type StatusMarkName,
   statusMarkGeometry,
 } from '../../../../ui-components/statusMark/statusMarkGeometry'
+import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
@@ -881,12 +882,15 @@ function SelectionPanel({
   onOpen = () => undefined,
   scheme = 'light',
   openId,
+  children,
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
   scheme?: 'light' | 'dark'
   /** The version open in the form. */
   openId?: string
+  /** Rendered after the sets, in the same card. */
+  children?: ReactNode
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
@@ -900,6 +904,7 @@ function SelectionPanel({
           <Body>
             <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} openId={openId} />
           </Body>
+          {children}
         </Container>
       </Card>
     </TestWrapper>
@@ -1278,45 +1283,87 @@ describe('Inventory selection', () => {
   )
 
   it.each(['light', 'dark'] as const)(
-    'marks the row of the open version, and keeps it marked when it is checked, in %s mode',
+    "gives the open version the document list's selected state, checked or not, in %s mode",
     async (scheme) => {
       const refs = startSelectionHarness()
-      void render(<SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id} />)
+      void render(
+        <SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id}>
+          {/* The document list's selected item, as PaneItem draws it */}
+          <PreviewCard data-as="a" selected tone="inherit" data-testid="list-selected" padding={2}>
+            <Text size={1}>Selected document</Text>
+          </PreviewCard>
+        </SelectionPanel>,
+      )
 
       await expect
         .element(page.getByRole('button', {name: 'VIP users', exact: true}))
         .toHaveAttribute('aria-current', 'true')
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
       const open = selectionRow('Draft', 'VIP users')
       const other = selectionRow('Draft', 'Summer sale')
+      const list = page.getByTestId('list-selected').element() as HTMLElement
+      const listVar = (name: string) => rgb(getComputedStyle(list).getPropertyValue(name).trim())
+      const title = (row: HTMLElement) =>
+        row.querySelector<HTMLElement>('[data-testid="version-title"]')!
+      const meta = (row: HTMLElement) =>
+        row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
+      const mark = () => open.querySelector<SVGSVGElement>('.variant-mark svg')!
 
-      // Only the open row is marked
+      // Only the open row is the current item; no weight change, as in the document list
       const marked = [...document.querySelectorAll('[data-variant-name] .primary-action')].filter(
         (action) => action.hasAttribute('aria-current'),
       )
       expect(marked).toHaveLength(1)
-      expect(other.querySelector('.primary-action')).not.toHaveAttribute('aria-current')
+      expect(getComputedStyle(title(open)).fontWeight).toBe(
+        getComputedStyle(title(other)).fontWeight,
+      )
 
-      // A semibold title, against the other rows' medium one
-      const weight = (row: HTMLElement) =>
-        Number(getComputedStyle(row.querySelector('[data-testid="version-title"]')!).fontWeight)
-      expect(weight(open)).toBe(600)
-      expect(weight(other)).toBe(500)
+      const expectSelected = () => {
+        // The document list's selected background, text colours and mark tone, not a picked blue
+        expect(background(open)).toEqual(background(list))
+        expect(rgb(getComputedStyle(title(open)).color)).toEqual(listVar('--card-fg-color'))
+        expect(rgb(getComputedStyle(meta(open)).color)).toEqual(listVar('--card-muted-fg-color'))
+        expect(rgb(getComputedStyle(mark()).color)).toEqual(
+          listVar('--card-badge-suggest-icon-color'),
+        )
+        // The selected palette's own contrast, the same as on the document list's selected item
+        expect(textContrast(title(open), open)).toBeCloseTo(
+          contrastRatio(listVar('--card-fg-color'), background(list)),
+          2,
+        )
+      }
 
-      // No tint and, for now, no edge bar: the open row reads by its title
-      const plain = background(other)
-      expect(background(open)).toEqual(plain)
-      expect(getComputedStyle(open, '::before').content).toBe('none')
+      // Open, not checked
+      expect(background(open)).not.toEqual(background(other))
+      expectSelected()
+      expect(railContrast(rowCheckbox('Draft', 'VIP users'), open)).toBeGreaterThanOrEqual(3)
 
-      // Checked: the row takes the tint, and keeps its title and its current state
-      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
+      // Open and checked: the selected state wins over the checked tint, and the box stays visible
+      refs.selectionRef.send({
+        type: 'selection.addMany',
+        variantIds: [DRAFT_VIP.id, DRAFT_SUMMER.id],
+      })
       await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
       await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
-      expect(background(open)).not.toEqual(plain)
-      expect(weight(open)).toBe(600)
-      expect(page.getByRole('button', {name: 'VIP users', exact: true}).element()).toHaveAttribute(
-        'aria-current',
-        'true',
+      expectSelected()
+      // The checked box's edge, its ring where its fill alone is too close to the selected blue,
+      // keeps 3:1 on the selected background
+      const box = rowCheckbox('Draft', 'VIP users').nextElementSibling!
+      const fill = rgb(getComputedStyle(box).backgroundColor)
+      const ring = /(rgba?\([^)]*\)|color\([^)]*\))/.exec(getComputedStyle(box).boxShadow)
+      const edge = Math.max(
+        contrastRatio(fill, background(open)),
+        ring ? contrastRatio(rgb(ring[1]), background(open)) : 0,
       )
+      expect(edge).toBeGreaterThanOrEqual(3)
+
+      // A checked row that is not open keeps its soft tint
+      expect(background(other)).not.toEqual(background(open))
+      expect(contrastRatio(background(other), background(list))).toBeGreaterThan(1.2)
+
+      // Hovered, the open row keeps the selected state
+      await userEvent.hover(page.elementLocator(open))
+      expect(background(open)).toEqual(background(list))
     },
   )
 
