@@ -2,7 +2,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {act} from 'react'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
@@ -113,6 +113,15 @@ describe('VariantsMenu', () => {
     return view
   }
 
+  /**
+   * The menu moves the focus to its selected row one animation frame after it opens. Typing before
+   * that frame loses the first characters to the row, so wait for it, then type in the field.
+   */
+  async function typeInFilter(text: string) {
+    await waitFor(() => expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem'))
+    await userEvent.type(screen.getByPlaceholderText('Search variant definitions…'), text)
+  }
+
   it('marks the variant selected by the perspective provider', async () => {
     perspectiveContextValueMock.selectedVariants = [variantAlphaAudience]
     perspectiveContextValueMock.selectedVariantNames = [getVariantId(variantAlphaAudience._id)]
@@ -132,8 +141,8 @@ describe('VariantsMenu', () => {
   it('labels the filter input', async () => {
     await renderMenu()
 
-    expect(screen.getByLabelText('Find audience')).toBe(
-      screen.getByPlaceholderText('Find audience'),
+    expect(screen.getByLabelText('Search variant definitions…')).toBe(
+      screen.getByPlaceholderText('Search variant definitions…'),
     )
   })
 
@@ -149,12 +158,59 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).toHaveTextContent('Default')
   })
 
-  it('filters the default option with the rest of the list', async () => {
-    const user = userEvent.setup()
+  describe('search field focus', () => {
+    const searchPlaceholder = 'Search variant definitions…'
 
+    // The test environment mocks `matchMedia` as matching nothing, which reads as a touch device
+    function stubPointer({finePointerWithHover}: {finePointerWithHover: boolean}) {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: finePointerWithHover,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }))
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('focuses the search field when the menu opens', async () => {
+      stubPointer({finePointerWithHover: true})
+
+      await renderMenu()
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+    })
+
+    it('moves to the list with the arrow keys from the search field', async () => {
+      stubPointer({finePointerWithHover: true})
+      const user = userEvent.setup()
+
+      await renderMenu()
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveFocus())
+
+      await user.keyboard('{ArrowDown}')
+
+      await waitFor(() => expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus())
+      expect(document.activeElement).toHaveAttribute('data-ui', 'MenuItem')
+    })
+
+    it('leaves the field alone on a touch device, where focus opens the on-screen keyboard', async () => {
+      stubPointer({finePointerWithHover: false})
+
+      await renderMenu()
+      // Two animation frames are the longest the field would wait to take the focus
+      await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+
+      expect(screen.getByPlaceholderText(searchPlaceholder)).not.toHaveFocus()
+    })
+  })
+
+  it('filters the default option with the rest of the list', async () => {
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'alpha')
+    await typeInFilter('alpha')
 
     expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
     expect(
@@ -163,11 +219,9 @@ describe('VariantsMenu', () => {
   })
 
   it('keeps the default option when the query matches its label', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'default')
+    await typeInFilter('default')
 
     expect(screen.getByTestId('variant-default')).toBeInTheDocument()
     expect(
@@ -177,11 +231,9 @@ describe('VariantsMenu', () => {
   })
 
   it('shows a message when the filter matches nothing', async () => {
-    const user = userEvent.setup()
-
     await renderMenu()
 
-    await user.type(screen.getByPlaceholderText('Find audience'), 'zzz')
+    await typeInFilter('zzz')
 
     expect(screen.getByTestId('perspective-filter-no-matches')).toHaveTextContent(
       'Nothing matches "zzz"',

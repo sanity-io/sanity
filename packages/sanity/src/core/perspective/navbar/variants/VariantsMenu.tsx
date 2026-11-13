@@ -18,6 +18,7 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
@@ -159,6 +160,7 @@ export function VariantsMenu({
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const focusSearchField = useFocusSearchOnOpen()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -256,6 +258,7 @@ export function VariantsMenu({
                 onChange={handleFilterChange}
                 placeholder={t('navbar.variant.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
             </Box>

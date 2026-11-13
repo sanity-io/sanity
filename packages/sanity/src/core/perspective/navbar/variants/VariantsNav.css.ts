@@ -12,15 +12,3 @@ export const suggestIconColor = css({
     '--icon-color': 'var(--card-badge-suggest-icon-color)',
   },
 })
-
-/**
- * The cropped viewBox draws the glyph larger than the chip's icon slot, so it
- * sits 2px closer to the label. The button's icon rule is a class plus
- * `[data-sanity-icon]` (0,2,0) and is injected later, so two classes only tie
- * it. Three classes win.
- */
-export const rhombusIconLarge = css({
-  '&&&': {
-    marginRight: '-2px',
-  },
-})
