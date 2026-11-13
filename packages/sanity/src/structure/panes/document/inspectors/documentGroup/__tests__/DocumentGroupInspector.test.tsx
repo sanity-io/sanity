@@ -163,7 +163,7 @@ const test = baseTest
         {wrapper: Wrapper},
       )
 
-      await screen.findByRole('heading', {name: 'Manage versions'})
+      await screen.findByRole('heading', {name: 'Document inventory'})
 
       return {onClose, lastInventoryHandle}
     }

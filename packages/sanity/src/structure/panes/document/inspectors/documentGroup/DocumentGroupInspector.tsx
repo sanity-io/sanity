@@ -101,7 +101,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         // The icon of the Manage versions button in the bottom bar
         icon={DocumentsIcon}
         onClose={onClose}
-        title={t('document-group-inventory.action.manage-versions')}
+        title={t('document-group-inventory.panel-title')}
       />
       <div
         className={documentGroupInventoryContainer}
