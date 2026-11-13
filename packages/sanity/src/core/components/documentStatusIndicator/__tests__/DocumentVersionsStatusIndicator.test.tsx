@@ -74,9 +74,9 @@ function mockPerspective(...overrides: Partial<PerspectiveContextValue>[]) {
   mockUsePerspective.mockReturnValue(Object.assign({...usePerspectiveMockReturn}, ...overrides))
 }
 
-// Temporary icons expose stable `data-sanity-icon` names; release avatars use test ids.
+// Temporary icons expose stable `data-sanity-icon` names, the variant mark `data-ui`; release avatars use test ids.
 const INDICATOR_SELECTOR =
-  '[data-sanity-icon="rhombus"], [data-sanity-icon="ring"], [data-sanity-icon="circle-small"], [data-testid^="release-avatar-"]'
+  '[data-ui="VariantMark"], [data-sanity-icon="ring"], [data-sanity-icon="circle-small"], [data-testid^="release-avatar-"]'
 
 function wrapper({children}: {children: ReactNode}) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -94,13 +94,16 @@ function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] 
 
   return Array.from(container.querySelectorAll(INDICATOR_SELECTOR)).map(
     (element) =>
-      element.getAttribute('data-testid') ?? element.getAttribute('data-sanity-icon') ?? '',
+      element.getAttribute('data-testid') ??
+      element.getAttribute('data-sanity-icon') ??
+      element.getAttribute('data-ui') ??
+      '',
   )
 }
 
 const GREEN_DISC = 'circle-small'
 const YELLOW_RING = 'ring'
-const RHOMBUS = 'rhombus'
+const RHOMBUS = 'VariantMark'
 // `activeASAPRelease` is an asap release, and asap maps to the caution tone.
 const RELEASE_ICON = 'release-avatar-caution'
 // Agent bundles have no release document, so they fall back to the suggest-toned dot.

@@ -3,16 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {
-  type RefAttributes,
-  type SVGProps,
-  Suspense,
-  use,
-  useCallback,
-  useMemo,
-  useState,
-  type JSX,
-} from 'react'
+import {Suspense, use, useCallback, useMemo, useState, type JSX} from 'react'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
@@ -20,7 +11,7 @@ import {Text, Flex, Box} from 'ui5'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
-import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
@@ -47,11 +38,6 @@ import {
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
-import {suggestIconColor} from './VariantsNav.css'
-
-const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge className={suggestIconColor} {...props} />
-}
 
 function VariantMenuItem(props: {
   isSelected: boolean
@@ -75,7 +61,7 @@ function VariantMenuItem(props: {
         {...detailLinkMenuItemProps}
         aria-checked={isSelected}
         data-testid={`variant-${variantId}`}
-        icon={VariantMenuItemIcon}
+        icon={<VariantMark size="row" />}
         iconRight={
           mismatches.length > 0 ? (
             <Box paddingRight={1} data-testid="variant-condition-mismatch">
@@ -314,7 +300,7 @@ export function VariantsMenu({
                 as="a"
                 data-testid="view-all"
                 href={viewAllHref}
-                icon={RhombusIconLarge}
+                icon={<VariantMark size="row" />}
                 onClick={handleViewAll}
                 text={t('navbar.variant.menu.view-all')}
               />
