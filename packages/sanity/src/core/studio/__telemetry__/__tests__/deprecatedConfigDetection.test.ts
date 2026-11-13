@@ -1,6 +1,10 @@
+import {defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
+import {getMockWorkspace} from '../../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {type WorkspaceOptions} from '../../../config/types'
+import {createSchema} from '../../../schema/createSchema'
+import {buildLegacyTheme} from '../../../theme/_legacy/theme'
 import {
   createEmptyDeprecatedConfigFlags,
   detectDeprecatedLegacyThemeOptions,
@@ -9,6 +13,49 @@ import {
   detectDeprecatedSchemaOptions,
   detectDeprecatedThemeOptions,
 } from '../deprecatedConfigDetection'
+import {collectDeprecatedConfigFlags} from '../featureAvailability.telemetry'
+
+const buildCrossDatasetReference = (toEntry: Record<string, unknown>, name = 'reference') =>
+  defineField({
+    name,
+    type: 'crossDatasetReference',
+    dataset: 'other',
+    // oxlint-disable-next-line no-deprecated -- cross-project config is still accepted at compile time
+    projectId: 'other-project',
+    to: [{type: 'author', preview: {select: {title: 'name'}}, ...toEntry}],
+  })
+
+const buildCrossDatasetReferenceSchema = (field: ReturnType<typeof defineField>) =>
+  createSchema({
+    name: 'test',
+    types: [defineType({name: 'testDoc', type: 'document', fields: [field]})],
+  })
+
+const buildArrayMemberSchema = (options?: Record<string, unknown>) =>
+  createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'testDoc',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'items',
+            type: 'array',
+            of: [
+              {
+                type: 'object',
+                name: 'item',
+                fields: [
+                  defineField({name: 'tags', type: 'array', of: [{type: 'string'}], options}),
+                ],
+              },
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
 
 describe('deprecatedConfigDetection', () => {
   describe('createEmptyDeprecatedConfigFlags', () => {
@@ -429,29 +476,35 @@ describe('deprecatedConfigDetection', () => {
       expect(flags.deprecatedArrayOptionsTreeEditing).toBe(true)
     })
 
-    it('detects deprecated cross-dataset reference __experimental_search', () => {
-      const mockSchema = {
-        getTypeNames: () => ['testDoc'],
-        get: (name: string) => {
-          if (name === 'testDoc') {
-            return {
-              type: {name: 'document'},
-              fields: [
-                {
-                  type: {
-                    name: 'crossDatasetReference',
-                    to: [{__experimental_search: []}],
-                  },
-                },
-              ],
-            }
-          }
-          return undefined
-        },
-      } as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0]
+    describe('cross-dataset reference __experimental_search', () => {
+      it('does not flag a cross-dataset reference without the option', () => {
+        const schema = buildCrossDatasetReferenceSchema(buildCrossDatasetReference({}))
+        expect(
+          detectDeprecatedSchemaOptions(schema).deprecatedCrossDatasetReferenceExperimentalSearch,
+        ).toBeUndefined()
+      })
 
-      const flags = detectDeprecatedSchemaOptions(mockSchema)
-      expect(flags.deprecatedCrossDatasetReferenceExperimentalSearch).toBe(true)
+      it('flags a cross-dataset reference with the option', () => {
+        const schema = buildCrossDatasetReferenceSchema(
+          buildCrossDatasetReference({__experimental_search: []}),
+        )
+        expect(
+          detectDeprecatedSchemaOptions(schema).deprecatedCrossDatasetReferenceExperimentalSearch,
+        ).toBe(true)
+      })
+
+      it('flags a cross-dataset reference with the option nested in an array member', () => {
+        const schema = buildCrossDatasetReferenceSchema(
+          defineField({
+            name: 'items',
+            type: 'array',
+            of: [buildCrossDatasetReference({__experimental_search: []}, 'authorReference')],
+          }),
+        )
+        expect(
+          detectDeprecatedSchemaOptions(schema).deprecatedCrossDatasetReferenceExperimentalSearch,
+        ).toBe(true)
+      })
     })
 
     it('returns empty flags for schema without deprecated options', () => {
@@ -568,44 +621,62 @@ describe('deprecatedConfigDetection', () => {
       expect(flags.deprecatedArrayOptionsTreeEditing).toBe(true)
     })
 
-    it('detects deprecated array direction in object types within arrays', () => {
-      const mockSchema = {
-        getTypeNames: () => ['testDoc'],
-        get: (name: string) => {
-          if (name === 'testDoc') {
-            return {
-              type: {name: 'document'},
-              fields: [
-                {
-                  type: {
-                    name: 'array',
-                    of: [
-                      {
-                        type: {
-                          name: 'object',
-                          fields: [
-                            {
-                              type: {
-                                name: 'array',
-                                options: {direction: 'vertical'},
-                                of: [],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            }
-          }
-          return undefined
-        },
-      } as unknown as Parameters<typeof detectDeprecatedSchemaOptions>[0]
+    describe('array members', () => {
+      it('detects deprecated array direction in object members', () => {
+        const flags = detectDeprecatedSchemaOptions(buildArrayMemberSchema({direction: 'vertical'}))
+        expect(flags.deprecatedArrayOptionsDirection).toBe(true)
+      })
 
-      const flags = detectDeprecatedSchemaOptions(mockSchema)
-      expect(flags.deprecatedArrayOptionsDirection).toBe(true)
+      it('detects deprecated array treeEditing in object members', () => {
+        const flags = detectDeprecatedSchemaOptions(buildArrayMemberSchema({treeEditing: true}))
+        expect(flags.deprecatedArrayOptionsTreeEditing).toBe(true)
+      })
+
+      it('returns no flags for object members without deprecated options', () => {
+        expect(Object.keys(detectDeprecatedSchemaOptions(buildArrayMemberSchema()))).toEqual([])
+      })
+    })
+  })
+
+  describe('collectDeprecatedConfigFlags', () => {
+    const themeFlagNames = [
+      'deprecatedThemeAvatar',
+      'deprecatedThemeButton',
+      'deprecatedThemeContainer',
+      'deprecatedThemeFocusRing',
+      'deprecatedThemeInput',
+      'deprecatedThemeLayer',
+      'deprecatedThemeMedia',
+      'deprecatedThemeRadius',
+      'deprecatedThemeShadows',
+      'deprecatedThemeSpace',
+      'deprecatedThemeStyles',
+    ] as const
+
+    it('reports no deprecated theme tokens when the config sets no theme', async () => {
+      const workspace = await getMockWorkspace()
+      const flags = collectDeprecatedConfigFlags(workspace)
+      expect(themeFlagNames.map((flagName) => flags[flagName])).toEqual(
+        themeFlagNames.map(() => false),
+      )
+    })
+
+    it('reports a deprecated theme token set in the config', async () => {
+      const workspace = await getMockWorkspace({
+        // oxlint-disable-next-line no-deprecated -- exercising deprecated theme key
+        config: {theme: {space: [0, 4, 8]}},
+      })
+      expect(collectDeprecatedConfigFlags(workspace).deprecatedThemeSpace).toBe(true)
+    })
+
+    it('reports deprecated legacy theme keys', async () => {
+      const workspace = await getMockWorkspace({
+        // oxlint-disable-next-line no-deprecated -- exercising deprecated legacy theme
+        config: {theme: buildLegacyTheme({'--screen-medium-break': '800px'})},
+      })
+      expect(collectDeprecatedConfigFlags(workspace).deprecatedLegacyThemeScreenMediumBreak).toBe(
+        true,
+      )
     })
   })
 })

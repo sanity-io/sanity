@@ -208,12 +208,16 @@ export function detectDeprecatedSchemaOptions(
     }
   }
 
+  if (hasCrossDatasetReferenceExperimentalSearch(schema._original?.types)) {
+    flags.deprecatedCrossDatasetReferenceExperimentalSearch = true
+  }
+
   return flags
 }
 
 function checkFieldForDeprecatedOptions(
   field: {
-    type?: {name?: string; options?: unknown; of?: unknown[]; to?: unknown[]; fields?: unknown[]}
+    type?: {name?: string; options?: unknown; of?: unknown[]; fields?: unknown[]}
   },
   flags: Partial<DeprecatedConfigFlags>,
 ): void {
@@ -224,15 +228,10 @@ function checkFieldForDeprecatedOptions(
     checkArrayTypeForDeprecatedOptions(fieldType, flags)
   }
 
-  // Check cross-dataset reference fields for __experimental_search
-  if (fieldType?.name === 'crossDatasetReference' && fieldType.to) {
-    checkCrossDatasetReferenceForDeprecatedOptions(fieldType.to, flags)
-  }
-
   // Recursively check nested object fields
   if (fieldType?.name === 'object' && fieldType.fields) {
     const nestedFields = fieldType.fields as Array<{
-      type?: {name?: string; options?: unknown; of?: unknown[]; to?: unknown[]; fields?: unknown[]}
+      type?: {name?: string; options?: unknown; of?: unknown[]; fields?: unknown[]}
     }>
     for (const nestedField of nestedFields) {
       checkFieldForDeprecatedOptions(nestedField, flags)
@@ -253,28 +252,17 @@ function checkArrayTypeForDeprecatedOptions(
     flags.deprecatedArrayOptionsTreeEditing = true
   }
 
-  // Also check nested types within the array
+  // Inline members are the compiled type itself, so their payload is on the member, not on `type`
   const ofTypes = arrayType.of as
-    | Array<{type?: {name?: string; options?: unknown; to?: unknown[]; fields?: unknown[]}}>
+    | Array<{
+        type?: {name?: string}
+        fields?: Array<Parameters<typeof checkFieldForDeprecatedOptions>[0]>
+      }>
     | undefined
   if (ofTypes) {
     for (const ofType of ofTypes) {
-      // Check cross-dataset references
-      if (ofType.type?.name === 'crossDatasetReference' && ofType.type.to) {
-        checkCrossDatasetReferenceForDeprecatedOptions(ofType.type.to, flags)
-      }
-      // Recursively check nested object types within arrays
-      if (ofType.type?.name === 'object' && ofType.type.fields) {
-        const nestedFields = ofType.type.fields as Array<{
-          type?: {
-            name?: string
-            options?: unknown
-            of?: unknown[]
-            to?: unknown[]
-            fields?: unknown[]
-          }
-        }>
-        for (const nestedField of nestedFields) {
+      if (ofType.type?.name === 'object' && ofType.fields) {
+        for (const nestedField of ofType.fields) {
           checkFieldForDeprecatedOptions(nestedField, flags)
         }
       }
@@ -282,21 +270,43 @@ function checkArrayTypeForDeprecatedOptions(
   }
 }
 
-function checkCrossDatasetReferenceForDeprecatedOptions(
-  toTypes: unknown[],
-  flags: Partial<DeprecatedConfigFlags>,
-): void {
-  for (const toType of toTypes) {
-    if (
-      typeof toType === 'object' &&
-      toType !== null &&
-      '__experimental_search' in toType &&
-      (toType as {__experimental_search?: unknown}).__experimental_search !== undefined
-    ) {
-      flags.deprecatedCrossDatasetReferenceExperimentalSearch = true
-      return
-    }
+// Compilation injects `__experimental_search` into every compiled cross-dataset reference, so only the raw definitions show customer usage
+function hasCrossDatasetReferenceExperimentalSearch(
+  definition: unknown,
+  visited: WeakSet<object> = new WeakSet(),
+): boolean {
+  if (typeof definition !== 'object' || definition === null || visited.has(definition)) {
+    return false
   }
+  visited.add(definition)
+
+  if (Array.isArray(definition)) {
+    return definition.some((child) => hasCrossDatasetReferenceExperimentalSearch(child, visited))
+  }
+
+  const {type, to, fields, of} = definition as {
+    type?: unknown
+    to?: unknown
+    fields?: unknown
+    of?: unknown
+  }
+
+  const usesExperimentalSearch =
+    type === 'crossDatasetReference' &&
+    Array.isArray(to) &&
+    to.some(
+      (entry) =>
+        typeof entry === 'object' &&
+        entry !== null &&
+        (entry as {__experimental_search?: unknown}).__experimental_search !== undefined,
+    )
+
+  return (
+    usesExperimentalSearch ||
+    [fields, of, to].some((children) =>
+      hasCrossDatasetReferenceExperimentalSearch(children, visited),
+    )
+  )
 }
 
 /**

@@ -112,8 +112,7 @@ export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedCo
   Object.assign(flags, detectDeprecatedRawConfigOptions(rawConfig))
 
   // Detect deprecated theme options (avatar, button, container, etc.)
-  // The theme is available on the workspace but comes from raw config
-  const theme = (workspace as unknown as {theme?: unknown}).theme
+  const theme = rawConfig.theme
   if (theme && typeof theme === 'object') {
     Object.assign(flags, detectDeprecatedThemeOptions(theme))
     // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
