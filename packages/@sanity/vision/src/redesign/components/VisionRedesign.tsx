@@ -7,10 +7,8 @@ import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
 import {
   createPendingEdits,
-  createSidebarBadges,
   PendingEditsContext,
   SavedQueriesContext,
-  SidebarBadgesContext,
   type TabDrawerSlot,
   TabDrawerSlotContext,
   usePersistVisionState,
@@ -22,6 +20,7 @@ import {
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import * as styles from './redesign.module.css'
+import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
@@ -79,7 +78,6 @@ export function VisionRedesign(props: VisionRedesignProps) {
   )
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
-  const [sidebarBadges] = useState(createSidebarBadges)
   const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
   const tabDrawerSlot = useMemo(
     (): TabDrawerSlot => ({element: tabDrawerElement, setElement: setTabDrawerElement}),
@@ -91,35 +89,35 @@ export function VisionRedesign(props: VisionRedesignProps) {
       <VisionExperienceContext.Provider value={experience}>
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
-            <SidebarBadgesContext.Provider value={sidebarBadges}>
-              <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
+            <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
+              <Flex
+                className={styles.root}
+                data-testid="vision-root"
+                data-vision-layout={layout}
+                height="100%"
+                overflow="hidden"
+                ref={setRootElement}
+              >
+                <VisionSidebar />
                 <Flex
-                  className={styles.root}
-                  data-testid="vision-root"
-                  data-vision-layout={layout}
-                  height="100%"
+                  flexBasis="0%"
+                  flexDirection="column"
+                  flexGrow={1}
+                  // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                  inert={layout === 'mobile' && openDrawer !== null}
+                  minWidth="0"
                   overflow="hidden"
-                  ref={setRootElement}
                 >
-                  <VisionSidebar />
-                  <Flex
-                    flexBasis="0%"
-                    flexDirection="column"
-                    flexGrow={1}
-                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                    inert={layout === 'mobile' && openDrawer !== null}
-                    minWidth="0"
-                    overflow="hidden"
-                  >
-                    <QueryTabBar />
+                  <QueryTabBar />
+                  <RequestBottomPanelProvider>
                     <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                  </Flex>
+                  </RequestBottomPanelProvider>
                 </Flex>
-                <VisionDialogs />
-                <VisionUrlState tab={activeTab} />
-                <VisionWebMcp tab={activeTab} />
-              </TabDrawerSlotContext.Provider>
-            </SidebarBadgesContext.Provider>
+              </Flex>
+              <VisionDialogs />
+              <VisionUrlState tab={activeTab} />
+              <VisionWebMcp tab={activeTab} />
+            </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
       </VisionExperienceContext.Provider>

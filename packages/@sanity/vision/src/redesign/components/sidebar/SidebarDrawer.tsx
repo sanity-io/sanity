@@ -22,10 +22,6 @@ function drawerTitle(drawer: VisionDrawer, t: TFunction<'vision'>): string {
       return t('vision.sidebar.saved-queries')
     case 'shared':
       return t('vision.sidebar.shared-queries')
-    case 'lint':
-      return t('vision.panel.lint')
-    case 'functions':
-      return t('vision.panel.functions')
     case 'delta':
       return t('vision.panel.delta')
     case 'mutate':
@@ -65,8 +61,6 @@ function DrawerContent({drawer}: {drawer: VisionDrawer}): ReactNode {
           <SettingsPanel />
         </Box>
       )
-    case 'lint':
-    case 'functions':
     case 'delta':
     case 'mutate':
       return <TabDrawerSlotElement drawer={drawer} />

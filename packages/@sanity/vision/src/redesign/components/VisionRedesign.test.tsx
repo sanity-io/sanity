@@ -461,6 +461,11 @@ function selectValue(testId: string): string {
   return (screen.getByTestId(testId) as HTMLSelectElement).value
 }
 
+/** The request column shows one tab at a time; Params is the one open at first */
+function openRequestTab(id: 'params' | 'options' | 'lint' | 'functions') {
+  fireEvent.click(document.getElementById(`vision-request-${id}-tab`) as HTMLElement)
+}
+
 /** The response Agent Actions give once the organization has used all its AI credits */
 function limitError(): ClientError {
   return new ClientError({
@@ -563,59 +568,39 @@ describe('VisionRedesign', () => {
     expect(describedBy(wrapper)).toBe('vision.query.auto-refetch.unsupported')
   })
 
-  it('shows the query, params and options panels at once, and remembers collapsed ones', async () => {
-    const {unmount} = renderRedesign()
-
-    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
-    expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
-    expect(screen.getByTestId('vision-options')).toBeTruthy()
-    const optionsToggle = () => screen.getByTestId('vision-request-options-toggle')
-    expect(optionsToggle().getAttribute('aria-expanded')).toBe('true')
-
-    fireEvent.click(optionsToggle())
-    expect(screen.queryByTestId('vision-options')).toBeNull()
-    expect(optionsToggle().getAttribute('aria-expanded')).toBe('false')
-    // Collapsing one panel leaves the other alone, and the query editor stays put
-    expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
-    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
-    await waitFor(() =>
-      expect(getStoredState().panels).toEqual({
-        params: true,
-        options: false,
-        paramsView: 'json',
-        resultView: 'tree',
-      }),
-    )
-
-    unmount()
+  it('shows the query editor over the request tabs, with Params open and the fetch actions under them', async () => {
     renderRedesign()
-    expect(screen.queryByTestId('vision-options')).toBeNull()
+
+    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
+    expect(screen.queryByTestId('vision-options')).toBeNull()
+    expect(screen.queryByTestId('vision-sidebar-lint')).toBeNull()
+    expect(screen.queryByTestId('vision-sidebar-functions')).toBeNull()
+    // The fetch actions stay under the tabbed panel
+    const actions = screen.getByTestId('vision-query-actions')
+    expect(within(actions).getByTestId('vision-api-version-button')).toBeTruthy()
+    expect(within(actions).getByTestId('vision-fetch-button')).toBeTruthy()
 
-    fireEvent.click(screen.getByTestId('vision-request-options-toggle'))
+    openRequestTab('options')
     expect(screen.getByTestId('vision-options')).toBeTruthy()
-    fireEvent.click(screen.getByTestId('vision-request-params-toggle'))
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
-    await waitFor(() =>
-      expect(getStoredState().panels).toEqual({
-        params: false,
-        options: true,
-        paramsView: 'json',
-        resultView: 'tree',
-      }),
-    )
+    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
 
-    // Params typed right before collapsing are still in the debounce; collapsing commits them,
-    // so the editor that comes back with the panel shows them
-    fireEvent.click(screen.getByTestId('vision-request-params-toggle'))
+    openRequestTab('lint')
+    expect(screen.getByText('vision.lint.empty')).toBeTruthy()
+
+    // Closing the panel unmounts the params editor. An edit still in the debounce is committed,
+    // so the editor that comes back shows it
+    openRequestTab('params')
     const paramsEditor = () =>
       within(screen.getByTestId('vision-params-editor')).getByTestId(
         'codemirror-mock',
       ) as HTMLTextAreaElement
     fireEvent.change(paramsEditor(), {target: {value: '{"id": "pending"}'}})
-    fireEvent.click(screen.getByTestId('vision-request-params-toggle'))
+    fireEvent.click(screen.getByTestId('vision-request-panel-toggle'))
+    expect(screen.queryByTestId('vision-params-editor')).toBeNull()
     await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id": "pending"}'))
-    fireEvent.click(screen.getByTestId('vision-request-params-toggle'))
+    fireEvent.click(screen.getByTestId('vision-request-panel-toggle'))
     expect(paramsEditor().value).toBe('{"id": "pending"}')
   })
 
@@ -1136,6 +1121,7 @@ describe('VisionRedesign', () => {
   it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "post"]')
+    openRequestTab('options')
     const perspectiveSelect = () =>
       screen.getByTestId('vision-option-perspective-select') as HTMLSelectElement
     const apiVersionButton = () => screen.getByTestId('vision-api-version-button')
@@ -1184,12 +1170,14 @@ describe('VisionRedesign', () => {
     const declaration = 'fn ex::author($ref) = $ref->{name}'
     typeQuery(`${declaration};\n\n*[_type == "post"]{"author": ex::author(author)}`)
 
-    // The sidebar counts the declared functions and opens them in its drawer
-    expect(text(screen.getByTestId('vision-sidebar-functions-badge'))).toBe('1')
-    fireEvent.click(screen.getByTestId('vision-sidebar-functions'))
-    const [declared] = within(screen.getByTestId('vision-drawer-functions')).getAllByTestId(
-      'vision-declared-function',
-    )
+    // The Functions tab counts the declared functions
+    const functionsTab = () =>
+      document.getElementById('vision-request-functions-tab') as HTMLElement
+    expect(text(functionsTab())).toContain('1')
+    fireEvent.click(functionsTab())
+    const functionsPanel = () =>
+      document.getElementById('vision-request-functions-panel') as HTMLElement
+    const [declared] = within(functionsPanel()).getAllByTestId('vision-declared-function')
     expect(text(declared)).toContain('ex::author($ref)')
     fireEvent.click(within(declared).getByTestId('vision-function-save'))
     expect(within(declared).getByTestId('vision-function-saved')).toBeTruthy()
@@ -1197,10 +1185,11 @@ describe('VisionRedesign', () => {
       expect(getStoredState()?.functions).toEqual([{id: 'ex::author', declaration}]),
     )
 
-    // Another tab declares it from the library: the drawer stays open and shows that tab's
+    // Another tab declares it from the library: the Functions tab stays open and shows that tab's
     fireEvent.click(screen.getByTestId('vision-new-tab'))
     typeQuery('*[_type == "book"]{"author": ex::author(author)}')
-    expect(screen.queryByTestId('vision-sidebar-functions-badge')).toBeNull()
+    expect(text(functionsTab())).not.toContain('1')
+    expect(functionsPanel()).toBeTruthy()
     const [saved] = screen.getAllByTestId('vision-library-function')
     fireEvent.click(within(saved).getByTestId('vision-function-add'))
     expect(getQueryEditor().value).toBe(
@@ -1255,8 +1244,7 @@ describe('VisionRedesign', () => {
     const button = screen.getByTestId('vision-api-version-button')
     expect(text(button)).toBe('vision.api-version.button:v2025-02-19')
 
-    // With the Options panel collapsed, the button opens it and focuses the field
-    fireEvent.click(screen.getByTestId('vision-request-options-toggle'))
+    // Options is not the open tab, so the button opens it and focuses the field
     expect(screen.queryByTestId('vision-option-api-version-select')).toBeNull()
     fireEvent.click(button)
     await waitFor(() =>
@@ -1759,6 +1747,7 @@ describe('VisionRedesign', () => {
     expect(fetchCalls[0].config.perspective).toEqual(['rSummer', 'drafts'])
 
     // The tab moves to a plain perspective while the request is still in flight
+    openRequestTab('options')
     fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
       target: {value: 'published'},
     })
@@ -1796,24 +1785,6 @@ describe('VisionRedesign', () => {
     fireEvent.pointerDown(screen.getByTestId('vision-new-tab'))
     fireEvent.click(screen.getByTestId('vision-new-tab'))
     expect(entering()).toEqual([null, 'true'])
-  })
-
-  it('eases a panel body in only when it is opened in place', () => {
-    renderRedesign()
-    const toggle = () => screen.getByTestId('vision-request-options-toggle')
-    const content = () => screen.queryByTestId('vision-request-options-content')
-    if (toggle().getAttribute('aria-expanded') === 'true') fireEvent.click(toggle())
-    expect(content()).toBeNull()
-
-    fireEvent.click(toggle())
-    expect(content()?.getAttribute('data-revealing')).toBe('true')
-
-    // Another tab remounts the panels; a body that is already open is simply there
-    fireEvent.click(screen.getByTestId('vision-new-tab'))
-    if (toggle().getAttribute('aria-expanded') !== 'true') fireEvent.click(toggle())
-    fireEvent.click(screen.getAllByTestId('vision-tab-button')[0])
-    expect(toggle().getAttribute('aria-expanded')).toBe('true')
-    expect(content()?.getAttribute('data-revealing')).toBeNull()
   })
 
   it('opens, switches, renames and closes tabs, and persists them', async () => {
@@ -1987,6 +1958,7 @@ describe('VisionRedesign', () => {
 
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('Restored')
     expect(getQueryEditor().value).toBe('*[_type == "book"]')
+    openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('staging')
     expect(selectValue('vision-option-perspective-select')).toBe('drafts')
     expect(text(screen.getByTestId('vision-sidebar-toggle'))).toContain('vision.sidebar.collapse')
@@ -2111,6 +2083,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
     // The dataset changes while refetching is off, so the runner still holds the old request
+    openRequestTab('options')
     fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
     fireEvent.change(screen.getByTestId('vision-option-dataset-select'), {
       target: {value: 'staging'},
@@ -2272,8 +2245,10 @@ describe('VisionRedesign', () => {
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
 
     // And for the fetch an option change starts while refetching automatically: it carries the
-    // params typed just before the change, not the ones the previous fetch went out with
+    // params typed just before the change, not the ones the previous fetch went out with.
+    // Opening Options unmounts the params editor, which commits the edit still in the debounce
     fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
+    openRequestTab('options')
     fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
       target: {value: 'drafts'},
     })
@@ -2327,6 +2302,7 @@ describe('VisionRedesign', () => {
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
 
     const {fetchCalls} = renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    openRequestTab('options')
     expect(selectValue('vision-option-perspective-select')).toBe('global')
     expect(selectValue('vision-option-variant-select')).toBe('global')
 
@@ -2371,6 +2347,7 @@ describe('VisionRedesign', () => {
     })
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'no-variant'})
     const {fetchCalls} = renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    openRequestTab('options')
     expect(selectValue('vision-option-perspective-select')).toBe('raw')
     expect(selectValue('vision-option-variant-select')).toBe('none')
     expect(isDisabled(screen.getByTestId('vision-option-api-version-select'))).toBe(false)
@@ -2414,6 +2391,7 @@ describe('VisionRedesign', () => {
 
     // A variant the URL still carries for the navbar is not one the studio shows
     const {fetchCalls} = renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    openRequestTab('options')
     expect(screen.queryByTestId('vision-option-variant-select')).toBeNull()
     expect(selectValue('vision-option-perspective-select')).toBe('global')
     // Nothing locks the API version to the variants version
@@ -2480,6 +2458,7 @@ describe('VisionRedesign', () => {
   it('follows the workspace dataset until one is pinned, and back', async () => {
     const {fetchCalls} = renderRedesign()
     typeQuery('*')
+    openRequestTab('options')
     const datasetSelect = () =>
       screen.getByTestId('vision-option-dataset-select') as HTMLSelectElement
     expect(datasetSelect().value).toBe('test')
@@ -2511,6 +2490,7 @@ describe('VisionRedesign', () => {
     const tab = createTab(initial.settings, {id: 'own', options: {perspective: 'raw'}})
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'own'})
     const {setPerspective} = renderRedesign()
+    openRequestTab('options')
     expect(selectValue('vision-option-perspective-select')).toBe('raw')
 
     setPerspective({
@@ -2534,6 +2514,7 @@ describe('VisionRedesign', () => {
 
     // The project's tabs are shared by its workspaces; this one has no scheduled drafts
     const {fetchCalls, setPerspective, unmount} = renderRedesign()
+    openRequestTab('options')
     const perspectiveSelect = () =>
       screen.getByTestId('vision-option-perspective-select') as HTMLSelectElement
     expect(perspectiveSelect().value).toBe('global')
@@ -2558,6 +2539,7 @@ describe('VisionRedesign', () => {
     vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
     try {
       const enabled = renderRedesign()
+      openRequestTab('options')
       expect(perspectiveSelect().value).toBe('scheduledDrafts')
       fireEvent.click(screen.getByTestId('vision-fetch-button'))
       await waitFor(() => expect(enabled.fetchCalls).toHaveLength(1))
@@ -2577,6 +2559,7 @@ describe('VisionRedesign', () => {
 
     await waitFor(() => expect(getQueryEditor().value).toBe('*[_id == $id]'))
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('*[_id == $id]')
+    openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('staging')
     expect(selectValue('vision-option-api-version-select')).toBe('v2021-10-21')
     expect(selectValue('vision-option-perspective-select')).toBe('published')
@@ -2624,6 +2607,7 @@ describe('VisionRedesign', () => {
 
     await waitFor(() => expect(getQueryEditor().value).toBe(query))
     await screen.findByText('vision.paste.parsed-curl')
+    openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('staging')
     expect(selectValue('vision-option-api-version-select')).toBe('v2021-10-21')
     expect(selectValue('vision-option-perspective-select')).toBe('published')
@@ -2682,6 +2666,7 @@ describe('VisionRedesign', () => {
 
   it('puts the tab on the API default when the pasted URL has no perspective', async () => {
     const {fetchCalls} = renderRedesign()
+    openRequestTab('options')
     expect(selectValue('vision-option-perspective-select')).toBe('global')
 
     fireEvent.paste(document.body, {
@@ -2752,6 +2737,7 @@ describe('VisionRedesign', () => {
 
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
     await screen.findByText('vision.paste.unknown-dataset')
+    openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('test')
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
@@ -2777,6 +2763,7 @@ describe('VisionRedesign', () => {
       }
       renderRedesign()
       typeQuery('*')
+      openRequestTab('options')
       expect(selectValue('vision-option-perspective-select')).toBe('global')
 
       fireEvent.click(screen.getByTestId('vision-sidebar-saved'))

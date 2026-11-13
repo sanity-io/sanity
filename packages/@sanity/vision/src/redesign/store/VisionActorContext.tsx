@@ -3,7 +3,6 @@ import {createContext, useContext, useLayoutEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
-import {type VisionTabDrawer} from './types'
 import {selectPersistedState, type VisionActorRef, type VisionSnapshot} from './visionMachine'
 import {saveVisionState} from './visionStorage'
 
@@ -116,56 +115,6 @@ export function useTabDrawerSlot(): TabDrawerSlot {
     throw new Error('useTabDrawerSlot must be used within a TabDrawerSlotContext provider')
   }
   return slot
-}
-
-/** A count on a sidebar item: the active tab's lint findings or declared functions */
-export interface SidebarBadge {
-  count: number
-  tone: 'default' | 'caution' | 'critical'
-}
-
-export type SidebarBadgeMap = Partial<Record<VisionTabDrawer, SidebarBadge>>
-
-/**
- * The counts on the sidebar's items, which the active tab sets. A store of its own rather than
- * state, so a new count renders the sidebar again and nothing else
- */
-export interface SidebarBadges {
-  get: () => SidebarBadgeMap
-  set: (drawer: VisionTabDrawer, badge: SidebarBadge | undefined) => void
-  subscribe: (listener: () => void) => () => void
-}
-
-export function createSidebarBadges(): SidebarBadges {
-  let badges: SidebarBadgeMap = {}
-  const listeners = new Set<() => void>()
-  return {
-    get: () => badges,
-    set: (drawer, badge) => {
-      const current = badges[drawer]
-      if (current?.count === badge?.count && current?.tone === badge?.tone) return
-      badges = badge
-        ? {...badges, [drawer]: badge}
-        : Object.fromEntries(Object.entries(badges).filter(([key]) => key !== drawer))
-      for (const listener of listeners) listener()
-    },
-    subscribe: (listener) => {
-      listeners.add(listener)
-      return () => {
-        listeners.delete(listener)
-      }
-    },
-  }
-}
-
-export const SidebarBadgesContext = createContext<SidebarBadges | null>(null)
-
-export function useSidebarBadges(): SidebarBadges {
-  const badges = useContext(SidebarBadgesContext)
-  if (!badges) {
-    throw new Error('useSidebarBadges must be used within a SidebarBadgesContext provider')
-  }
-  return badges
 }
 
 /**
