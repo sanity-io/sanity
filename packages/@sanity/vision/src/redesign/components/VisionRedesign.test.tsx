@@ -613,6 +613,38 @@ function shownTab(): HTMLElement {
   return tab
 }
 
+interface ViewTransitionCall {
+  update?: () => unknown
+  types?: string[]
+}
+
+/**
+ * A browser's view transitions, which jsdom lacks, so React takes the path it takes in a browser:
+ * the update runs on the next microtask and the animations end at once. Returns the
+ * `document.startViewTransition` spy, whose calls carry the transition types
+ */
+function stubViewTransitions() {
+  const root = document.documentElement
+  const startViewTransition = vi.fn((options: ViewTransitionCall) => {
+    const updateCallbackDone = Promise.resolve().then(() => options.update?.())
+    const ready = updateCallbackDone.then(() => undefined)
+    return {updateCallbackDone, ready, finished: ready, skipTransition: () => {}}
+  })
+  const stubs: [object, string, unknown][] = [
+    [document, 'startViewTransition', startViewTransition],
+    [document, 'fonts', {status: 'loaded', ready: Promise.resolve()}],
+    [root, 'getAnimations', () => []],
+    [root, 'animate', () => ({cancel: () => {}, finished: Promise.resolve()})],
+  ]
+  for (const [target, key, value] of stubs) {
+    Object.defineProperty(target, key, {configurable: true, value})
+  }
+  onTestFinished(() => {
+    for (const [target, key] of stubs) Reflect.deleteProperty(target, key)
+  })
+  return startViewTransition
+}
+
 function getQueryEditor(): HTMLTextAreaElement {
   return within(within(shownTab()).getByTestId('vision-query-editor')).getByTestId(
     'codemirror-mock',
@@ -5178,6 +5210,57 @@ describe('VisionRedesign', () => {
         '_system.base.rev',
       ]),
     )
+  })
+
+  it('runs its own layout changes as view transitions, and never a tab being opened, switched or closed', async () => {
+    const startViewTransition = stubViewTransitions()
+    const {hide, show} = renderRedesign()
+    const transitionTypes = () => startViewTransition.mock.calls.map(([call]) => call.types)
+
+    // A view transition snapshots the page and holds pointer events while it runs, so tabs and
+    // leaving the tool change at once
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
+    hide()
+    show()
+    await act(async () => {})
+    expect(startViewTransition).not.toHaveBeenCalled()
+
+    const toggle = within(shownTab()).getByTestId('vision-request-panel-toggle')
+    fireEvent.click(toggle)
+    await waitFor(() => expect(transitionTypes()).toEqual([['vision-panel']]))
+    await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('false'))
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+    await screen.findByTestId('vision-drawer-saved')
+    fireEvent.click(screen.getByTestId('vision-sidebar-toggle'))
+    await waitFor(() =>
+      expect(transitionTypes()).toEqual([['vision-panel'], ['vision-sidebar'], ['vision-sidebar']]),
+    )
+  })
+
+  it('opens and closes the phone drawer at once, inert behind it only while it shows', async () => {
+    const startViewTransition = stubViewTransitions()
+    const {innerWidth} = window
+    Object.defineProperty(window, 'innerWidth', {configurable: true, value: 500})
+    try {
+      renderRedesign()
+      const rail = screen.getByTestId('vision-sidebar')
+
+      // Floating over the tool, the drawer moves nothing, so it shows with the click that opens it
+      fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+      const drawer = screen.getByTestId('vision-drawer-saved')
+      expect(rail.hasAttribute('inert')).toBe(true)
+
+      fireEvent.click(within(drawer).getByRole('button', {name: 'vision.drawer.close'}))
+      expect(screen.queryByTestId('vision-drawer-saved')).toBeNull()
+      expect(rail.hasAttribute('inert')).toBe(false)
+      await act(async () => {})
+      expect(startViewTransition).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(window, 'innerWidth', {configurable: true, value: innerWidth})
+    }
   })
 
   it('opens the phone drawer as a modal dialog: focus moves in, and back to the opener on Escape', async () => {

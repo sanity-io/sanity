@@ -9,6 +9,7 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  ViewTransition,
 } from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
@@ -24,6 +25,7 @@ import {
   PANEL_HEADER_HEIGHT,
 } from './CollapsiblePanel'
 import {type BottomPanelColumn, bottomPanelSizeToFit, defaultBottomPanelSize} from './fitPanelSize'
+import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from './panelTransitions'
 import * as styles from './redesign.module.css'
 import {ResizableSplit, SPLIT_HANDLE_SIZE} from './ResizableSplit'
 
@@ -127,18 +129,26 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     [setPanelState],
   )
   const toggle = useCallback(() => {
-    setPanelState((current) => ({...current, collapsed: !current.collapsed}))
+    startLayoutTransition(PANEL_TRANSITION, () =>
+      setPanelState((current) => ({...current, collapsed: !current.collapsed})),
+    )
   }, [setPanelState])
   const requestFit = useCallback(
     (tabId?: string) => {
-      setPanelState((current) => {
-        const activeTabId = tabId ?? current.activeTabId
-        if (!current.collapsed && current.activeTabId === activeTabId) return current
-        return {...current, activeTabId, collapsed: false}
-      })
-      setFitRequest((count) => count + 1)
+      const update = () => {
+        setPanelState((current) => {
+          const activeTabId = tabId ?? current.activeTabId
+          if (!current.collapsed && current.activeTabId === activeTabId) return current
+          return {...current, activeTabId, collapsed: false}
+        })
+        setFitRequest((count) => count + 1)
+      }
+      // Only expanding moves the panes here; the fit itself animates once its size is measured.
+      // An open panel switches tabs at once, as a click on a tab does
+      if (panelState.collapsed) startLayoutTransition(PANEL_TRANSITION, update)
+      else update()
     },
-    [setPanelState],
+    [panelState.collapsed, setPanelState],
   )
 
   useImperativeHandle(ref, () => ({fitToContent: requestFit}), [requestFit])
@@ -169,14 +179,16 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
         handleSize: SPLIT_HANDLE_SIZE,
       })
       if (size === null) return
-      setPanelState((current) =>
-        current.bottomSizes[layout] === size && !current.collapsed
-          ? current
-          : {
-              ...current,
-              collapsed: false,
-              bottomSizes: {...current.bottomSizes, [layout]: size},
-            },
+      startLayoutTransition(PANEL_TRANSITION, () =>
+        setPanelState((current) =>
+          current.bottomSizes[layout] === size && !current.collapsed
+            ? current
+            : {
+                ...current,
+                collapsed: false,
+                bottomSizes: {...current.bottomSizes, [layout]: size},
+              },
+        ),
       )
     }
     apply()
@@ -212,18 +224,22 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
             split="horizontal"
             testId={`${testId}-split`}
           >
-            <Flex className={styles.paneFill}>{children}</Flex>
-            <Box className={styles.paneFill}>
-              <CollapsiblePanel
-                activeTabId={panelState.activeTabId}
-                collapsed={panelState.collapsed}
-                id={id}
-                onTabChange={selectTab}
-                onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}
-                onToggle={toggle}
-                tabs={tabs}
-              />
-            </Box>
+            <ViewTransition default={PANEL_PANE}>
+              <Flex className={styles.paneFill}>{children}</Flex>
+            </ViewTransition>
+            <ViewTransition default={PANEL_PANE}>
+              <Box className={styles.paneFill}>
+                <CollapsiblePanel
+                  activeTabId={panelState.activeTabId}
+                  collapsed={panelState.collapsed}
+                  id={id}
+                  onTabChange={selectTab}
+                  onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}
+                  onToggle={toggle}
+                  tabs={tabs}
+                />
+              </Box>
+            </ViewTransition>
           </ResizableSplit>
         </Box>
         {footer}
