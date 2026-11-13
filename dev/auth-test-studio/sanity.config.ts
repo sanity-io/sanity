@@ -202,6 +202,33 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
 
 export default defineConfig([
   ...envs.flatMap(createWorkspaces),
+  // OAuth 2.1: signs in with an OAuth application instead of the login providers. Against
+  // production, through the test studio's redirect relay, where the application is registered.
+  {
+    ...shared,
+    ...production.ppsg7ml5,
+    name: envs.length > 1 ? `${production.ppsg7ml5.projectId}-oauth-workspace` : 'oauth-workspace',
+    title: envs.length > 1 ? `OAuth 2.1 (${production.ppsg7ml5.projectId})` : 'OAuth 2.1',
+    basePath:
+      envs.length > 1 ? `/${production.ppsg7ml5.projectId}/oauth-workspace` : '/oauth-workspace',
+    auth: {
+      experimental_oauth: {
+        // An OAuth application on `ppsg7ml5`.
+        clientId: 'oc-88d793a8d1b3',
+        redirectRelayUri: 'https://test-studio-oauth-relay.sanity.dev/',
+      },
+    },
+  } satisfies WorkspaceOptions,
+  // The same against staging, with an OAuth application on the staging project.
+  {
+    ...shared,
+    ...staging,
+    name: envs.length > 1 ? `${staging.projectId}-oauth-workspace` : 'oauth-workspace-staging',
+    title: envs.length > 1 ? `OAuth 2.1 (${staging.projectId}, staging)` : 'OAuth 2.1 (staging)',
+    basePath:
+      envs.length > 1 ? `/${staging.projectId}/oauth-workspace` : '/oauth-workspace-staging',
+    auth: {experimental_oauth: {clientId: 'oc-3f7b8ef7fb70'}},
+  } satisfies WorkspaceOptions,
   {
     ...shared,
     ...production.ppsg7ml5,

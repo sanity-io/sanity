@@ -303,6 +303,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
   })()
 }
 
+/**
+ * The OAuth workspaces sign in through a redirect relay, which the OAuth applications register as
+ * their only redirect URL. It sends each sign-in back to the Studio that started it, so the same
+ * setup works locally (localhost:3333), on test-studio.sanity.dev and on branch deploys, whose
+ * URLs can't be registered ahead of time.
+ */
+const OAUTH_REDIRECT_RELAY = 'https://test-studio-oauth-relay.sanity.dev/'
+
 const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
@@ -419,6 +427,26 @@ const defaultWorkspace = defineConfig({
   },
 })
 
+/** `/test`, with a release metadata field. `/test-oauth` is the same, with OAuth sign-in. */
+const testWorkspace = {
+  ...defaultWorkspace,
+  releases: {
+    ...defaultWorkspace.releases,
+    metadata: {
+      ...defaultWorkspace.releases?.metadata,
+      fields: [
+        ...(defaultWorkspace.releases?.metadata?.fields ?? []),
+        defineField({
+          name: 'reviewNote',
+          title: 'Review note',
+          type: 'string',
+          validation: (rule) => rule.required().min(3),
+        }),
+      ],
+    },
+  },
+}
+
 export default defineConfig([
   {
     ...defaultWorkspace,
@@ -428,24 +456,22 @@ export default defineConfig([
     basePath: '/default-hidden',
     hidden: true,
   },
+  // The first visible workspace, so the Studio opens it by default.
   {
-    ...defaultWorkspace,
-    releases: {
-      ...defaultWorkspace.releases,
-      metadata: {
-        ...defaultWorkspace.releases?.metadata,
-        fields: [
-          ...(defaultWorkspace.releases?.metadata?.fields ?? []),
-          defineField({
-            name: 'reviewNote',
-            title: 'Review note',
-            type: 'string',
-            validation: (rule) => rule.required().min(3),
-          }),
-        ],
+    ...testWorkspace,
+    name: 'test-oauth',
+    title: 'Test Studio (OAuth)',
+    basePath: '/test-oauth',
+    // OAuth 2.1. The other workspaces keep the legacy sign-in.
+    auth: {
+      experimental_oauth: {
+        // An OAuth application on `ppsg7ml5`.
+        clientId: 'oc-88d793a8d1b3',
+        redirectRelayUri: OAUTH_REDIRECT_RELAY,
       },
     },
   },
+  testWorkspace,
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',
@@ -660,6 +686,30 @@ export default defineConfig([
       },
     },
   },
+  {
+    name: 'oauth',
+    title: 'OAuth 2.1 (staging)',
+    subtitle: 'Signs in with an OAuth application',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'exx11uqh'})],
+    basePath: '/oauth',
+    auth: {
+      experimental_oauth: {
+        // An OAuth application on the staging project `exx11uqh`.
+        clientId: 'oc-3f7b8ef7fb70',
+        redirectRelayUri: OAUTH_REDIRECT_RELAY,
+      },
+    },
+    tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+
   {
     name: 'growth',
     title: 'Growth (staging)',

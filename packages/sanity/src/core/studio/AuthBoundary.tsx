@@ -1,16 +1,24 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
+import {type ComponentType, type ReactNode, useContext, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
+import {RouterHistoryContext} from 'sanity/_singletons'
 
 import {CapabilityGate} from '../components/CapabilityGate'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDashboardAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {isOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
 import {type AuthStore} from '../store/auth/types'
 import {useComlinkStore, useRenderingContextStore} from '../store/datastores'
 import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {
   AuthBoundaryResolved,
+  OAuthCodeExchangeCompleted,
+  OAuthOriginCheckFailed,
+  OAuthRequestRetried,
+  OAuthSessionEnded,
+  OAuthSignInStarted,
+  OAuthTokenRenewed,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
@@ -65,6 +73,9 @@ export function AuthBoundary({
     !activeWorkspace.auth.handleCallbackUrl || callbackSettledFor === activeWorkspace.auth
   const telemetry = useTelemetry()
   const [mountTime] = useState(() => performance.now())
+  // Read without the throwing hook: an AuthBoundary rendered outside the Studio's router has no
+  // history to keep in sync.
+  const routerHistory = useContext(RouterHistoryContext)
 
   const authStatus$ = useMemo(
     () =>
@@ -141,18 +152,98 @@ export function AuthBoundary({
     // overwrite the ACTIVE store's settled marker and re-close the gate,
     // stranding a logged-out user on the loading screen.
     let superseded = false
-    auth
-      .handleCallbackUrl?.()
-      .then((result) => {
-        telemetry.log(SessionTokenExchangeCompleted, result)
+    // Only a history that mirrors the address bar can be brought up to date from it. A custom
+    // `unstable_history` (a hash history, an embedding app's router) maps URLs its own way.
+    const urlBefore = readLocation(window.location)
+    const mirrorsAddressBar =
+      routerHistory !== null && isSameLocation(readLocation(routerHistory.location), urlBefore)
+    // A store rewrites the URL with the native History API while it handles the callback (it
+    // removes the response parameters and returns to the page the user signed in from). The
+    // router's history cached the URL before that and never sees the change, so bring it up to
+    // date from the address bar.
+    const syncRouterWithAddressBar = () => {
+      if (!mirrorsAddressBar || !routerHistory) return
+      const urlNow = readLocation(window.location)
+      if (!isSameLocation(urlNow, readLocation(routerHistory.location))) {
+        routerHistory.replace(urlNow)
+      }
+    }
+
+    const callbackHandled = auth.handleCallbackUrl?.()
+    // The response parameters leave the URL before `handleCallbackUrl` returns, and the router
+    // must not hand them to a redirect or a link while the code exchange is out.
+    syncRouterWithAddressBar()
+    callbackHandled
+      ?.then((result) => {
+        if (result.loginMethod === 'oauth') {
+          // Only the event's own fields: a field added to the result later is not sent with it.
+          const {
+            flow,
+            success,
+            durationMs,
+            exchangeDurationMs,
+            failureReason,
+            stateSettleDurationMs,
+            stateSettleTimedOut,
+          } = result
+          telemetry.log(OAuthCodeExchangeCompleted, {
+            flow,
+            success,
+            durationMs,
+            exchangeDurationMs,
+            failureReason,
+            stateSettleDurationMs,
+            stateSettleTimedOut,
+          })
+        } else {
+          telemetry.log(SessionTokenExchangeCompleted, result)
+        }
       })
       .catch(handleError)
       .finally(() => {
-        if (!superseded) setCallbackSettledFor(auth)
+        if (superseded) return
+        // The store may return to the page the user signed in from once the exchange is done.
+        syncRouterWithAddressBar()
+        setCallbackSettledFor(auth)
       })
     return () => {
       superseded = true
     }
+  }, [activeWorkspace.auth, routerHistory, telemetry])
+
+  // The OAuth store reports its renewals and session ends as events already reduced to what is
+  // safe to send (see `store/auth/oauth/telemetry.ts`); log them as they come.
+  useEffect(() => {
+    const auth = activeWorkspace.auth
+    if (!isOAuthAuthStore(auth)) return undefined
+    const subscription = auth.telemetryEvents.subscribe((event) => {
+      switch (event.type) {
+        case 'token-renewed': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthTokenRenewed, data)
+          break
+        }
+        case 'session-ended': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthSessionEnded, data)
+          break
+        }
+        case 'sign-in-started':
+          telemetry.log(OAuthSignInStarted, {})
+          break
+        case 'request-retried': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthRequestRetried, data)
+          break
+        }
+        case 'origin-check-failed': {
+          const {type: _type, ...data} = event
+          telemetry.log(OAuthOriginCheckFailed, data)
+          break
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
   }, [activeWorkspace.auth, telemetry])
 
   if (loggedIn === 'loading') return <LoadingComponent />
@@ -215,4 +306,18 @@ function HostAccessRequest({projectId}: {projectId: string}): null {
   }, [messageBusConnection, node, projectId])
 
   return null
+}
+
+interface UrlLocation {
+  pathname: string
+  search: string
+  hash: string
+}
+
+function readLocation({pathname, search, hash}: UrlLocation): UrlLocation {
+  return {pathname, search, hash}
+}
+
+function isSameLocation(a: UrlLocation, b: UrlLocation): boolean {
+  return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash
 }

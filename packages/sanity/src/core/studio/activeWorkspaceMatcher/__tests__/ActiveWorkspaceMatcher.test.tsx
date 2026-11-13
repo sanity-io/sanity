@@ -1,11 +1,13 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {createMemoryHistory} from 'history'
+import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ReactNode} from 'react'
 import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
+import {takeStashedAuthorizationResponse} from '../../../store/auth/oauth/authorizationResponse'
+import {OAUTH_AUTH_STORE} from '../../../store/auth/oauth/createOAuthAuthStore'
 import {type AuthState} from '../../../store/auth/types'
 import {evaluateWorkspaceHidden} from '../../workspaces/useVisibleWorkspaces'
 import {type VisibleWorkspacesContextValue} from '../../workspaces/VisibleWorkspacesProvider'
@@ -660,3 +662,79 @@ function SwitchToWorkspace({name}: {name: string}) {
     </button>
   )
 }
+
+describe('ActiveWorkspaceMatcher with an OAuth workspace', () => {
+  function renderWithBrowserHistory(
+    workspaces: WorkspaceSummary[],
+    history?: ReturnType<typeof createBrowserHistory>,
+  ) {
+    const contextValue = createContextValue(
+      workspaces,
+      Object.fromEntries(workspaces.map((workspace) => [workspace.name, createAuthState()])),
+    )
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children" />
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+  }
+
+  function createOAuthWorkspace(name: string, basePath: string): WorkspaceSummary {
+    const workspace = createWorkspace({name, basePath})
+    const auth = {...workspace.auth, [OAUTH_AUTH_STORE]: true as const}
+    return {...workspace, auth}
+  }
+
+  it('takes an authorization response out of the URL before the router reads it', async () => {
+    // Someone else's authorization request can send a signed-in user here with a code that
+    // whoever wrote the request can redeem. The router would carry it into every redirect, and
+    // features copy the URL into documents and links, with or without an auth boundary.
+    window.history.replaceState(null, '', '/?perspective=drafts&code=abc&state=xyz')
+    onTestFinished(() => {
+      takeStashedAuthorizationResponse()
+      window.history.replaceState(null, '', '/')
+    })
+
+    renderWithBrowserHistory([createOAuthWorkspace('oauth', '/oauth')])
+
+    // The redirect to the workspace is built from the router's own location.
+    await waitFor(() => expect(window.location.pathname).toBe('/oauth'))
+    expect(window.location.search).toBe('?perspective=drafts')
+    // Kept for the OAuth store, which needs the code when the response is its own.
+    expect(takeStashedAuthorizationResponse()?.get('code')).toBe('abc')
+  })
+
+  it('takes the response out of a history the embedding app created before the Studio', async () => {
+    // A custom `unstable_history` read the URL, response and all, before the Studio rendered. A
+    // redirect built from its location would put the code back into the address bar.
+    window.history.replaceState(null, '', '/?code=abc&state=xyz')
+    const history = createBrowserHistory()
+    onTestFinished(() => {
+      takeStashedAuthorizationResponse()
+      window.history.replaceState(null, '', '/')
+    })
+
+    renderWithBrowserHistory([createOAuthWorkspace('oauth', '/oauth')], history)
+
+    await waitFor(() => expect(window.location.pathname).toBe('/oauth'))
+    expect(window.location.search).toBe('')
+    expect(history.location.search).toBe('')
+  })
+
+  it('leaves the URL alone in a Studio without an OAuth workspace', async () => {
+    window.history.replaceState(null, '', '/?code=abc&state=xyz')
+    onTestFinished(() => window.history.replaceState(null, '', '/'))
+
+    renderWithBrowserHistory([createWorkspace({name: 'default', basePath: '/default'})])
+
+    await waitFor(() => expect(window.location.pathname).toBe('/default'))
+    expect(window.location.search).toBe('?code=abc&state=xyz')
+    expect(takeStashedAuthorizationResponse()).toBeUndefined()
+  })
+})
