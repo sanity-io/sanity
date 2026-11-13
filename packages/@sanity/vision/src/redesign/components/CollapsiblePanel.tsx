@@ -27,6 +27,11 @@ export interface CollapsiblePanelProps {
   collapsed: boolean
   onTabChange: (id: string) => void
   onToggle: () => void
+  /**
+   * Double-clicking a tab sizes the panel to that tab. A single click only selects it (and
+   * expands a collapsed panel).
+   */
+  onTabDoubleClick?: (id: string) => void
 }
 
 /**
@@ -34,7 +39,15 @@ export interface CollapsiblePanelProps {
  * header remains, and picking a tab expands it again.
  */
 export function CollapsiblePanel(props: CollapsiblePanelProps) {
-  const {id: idPrefix, tabs, activeTabId, collapsed, onTabChange, onToggle} = props
+  const {
+    id: idPrefix,
+    tabs,
+    activeTabId,
+    collapsed,
+    onTabChange,
+    onToggle,
+    onTabDoubleClick,
+  } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
   const stripRef = useRef<HTMLDivElement>(null)
@@ -90,7 +103,16 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                   onTabChange(tab.id)
                   if (collapsed) onToggle()
                 }}
+                onDoubleClick={
+                  onTabDoubleClick
+                    ? (event) => {
+                        event.preventDefault()
+                        onTabDoubleClick(tab.id)
+                      }
+                    : undefined
+                }
                 padding={2}
+                title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
               />
@@ -114,7 +136,13 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           id={`${idPrefix}-${activeTab.id}-panel`}
           overflow="auto"
         >
-          {activeTab.content}
+          {/*
+            Not stretched to the panel: its height is the tab's content, which fit-to-content
+            measures. A stretched child would report the panel it sits in.
+          */}
+          <div className={styles.panelContent} data-vision-panel-content="">
+            {activeTab.content}
+          </div>
         </TabPanel>
       )}
     </Flex>

@@ -26,12 +26,7 @@ import {
   useVisionSelector,
   type VisionLayout,
 } from '../../store/VisionActorContext'
-import {
-  isPanelExpanded,
-  selectDatasets,
-  selectOpenDrawer,
-  selectParamsView,
-} from '../../store/visionMachine'
+import {selectDatasets, selectOpenDrawer, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
@@ -108,7 +103,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
-  // The query editor's diagnostics, listed in the response column's Lint panel
+  // The query editor's diagnostics, listed in the request column's Lint tab
   const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
@@ -129,12 +124,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   // debounce before they read the tab, as Run does
   const pendingEdits = usePendingEdits()
   useEffect(() => pendingEdits.register(() => setParams.flush()), [pendingEdits, setParams])
-  // Collapsing the Params panel unmounts its editor, and expanding it seeds a new one from the
-  // tab; an edit still waiting in the debounce is committed first so the new editor shows it
-  const paramsExpanded = useVisionSelector((snapshot) => isPanelExpanded(snapshot, 'params'))
-  useOnValueChange(paramsExpanded, (expanded) => {
-    if (!expanded) setParams.flush()
-  })
+  const flushParams = useCallback(() => setParams.flush(), [setParams])
   // Switching between the editor and the form unmounts one and mounts the other from the tab
   const paramsView = useVisionSelector(selectParamsView)
   useOnValueChange(paramsView, () => setParams.flush())
@@ -274,10 +264,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
-  // A lint finding or a function declaration picked on a phone, from the response pane or from the
-  // sidebar's drawer: the editor is `display: none` behind the one, and inert under the other,
-  // which covers the tool, so it cannot take focus until the request pane shows and the drawer
-  // has closed
+  // A lint finding or a function declaration picked on a phone, where the editor is `display: none`
+  // behind the response pane, or inert under a sidebar drawer, which covers the tool: it cannot
+  // take focus until the request pane shows and the drawer has closed
   const pendingRevealRef = useRef<TextRange | null>(null)
   const drawerOpen = useVisionSelector((snapshot) => selectOpenDrawer(snapshot) !== null)
   const revealRange = useCallback(
@@ -487,10 +476,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}
+      lintFindings={lintFindings}
+      onEditQuery={editQuery}
       onLintFindings={setLintFindings}
       onOptionsChange={setOptions}
       onParamsChange={setParams}
+      onParamsFlush={flushParams}
       onParamsReplace={replaceParams}
+      onRevealRange={revealRange}
       onPrettify={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
@@ -505,10 +498,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   const responsePanel = (
     <ResponsePanel
-      lintFindings={lintFindings}
-      onEditQuery={editQuery}
       onMutationsApplied={refetchAfterMutations}
-      onRevealRange={revealRange}
       request={request}
       resolved={resolved}
       runnerRef={runnerRef}
@@ -583,7 +573,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   // Both panes keep the minimum: the divider stops short of either, and a size dragged in a
   // wider window is clamped by the split for as long as the window is narrower (the request
-  // pane, with its three panels, wins when there is no room for both)
+  // pane wins when there is no room for both)
   return (
     <Box {...panelProps} className={styles.splitPaneContainer} ref={setSplitContainer}>
       <ResizableSplit

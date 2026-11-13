@@ -1,17 +1,15 @@
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
-import {CodeIcon} from '@sanity/icons/Code'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {EditIcon} from '@sanity/icons/Edit'
-import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef, useSyncExternalStore} from 'react'
+import {type ComponentType, type MouseEvent, useCallback, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -19,8 +17,6 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {type VisionDrawer} from '../../store/types'
 import {
-  type SidebarBadge,
-  useSidebarBadges,
   useVisionActor,
   useVisionExperience,
   useVisionSelector,
@@ -35,30 +31,16 @@ interface SidebarItemProps {
   label: string
   expanded: boolean
   selected?: boolean
-  /** A count, such as the active tab's lint findings */
-  badge?: SidebarBadge
   testId: string
   onClick: (event: MouseEvent<HTMLElement>) => void
 }
 
-function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: SidebarItemProps) {
-  const name = badge ? `${label} (${badge.count})` : label
-  const count = badge && (
-    <Badge
-      aria-hidden
-      className={cx(styles.sidebarItemBadge, expanded && styles.sidebarItemBadgeExpanded)}
-      data-testid={`${testId}-badge`}
-      fontSize={0}
-      tone={badge.tone}
-    >
-      {badge.count}
-    </Badge>
-  )
+function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
   if (expanded) {
     return (
       <div className={styles.sidebarItem}>
         <Button
-          aria-label={name}
+          aria-label={label}
           data-testid={testId}
           icon={icon}
           justify="flex-start"
@@ -68,7 +50,6 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
           text={label}
           width="fill"
         />
-        {count}
       </div>
     )
   }
@@ -79,14 +60,14 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
         animate
         content={
           <Text size={1} as="div" trim={true}>
-            {name}
+            {label}
           </Text>
         }
         placement="right"
         portal
       >
         <Button
-          aria-label={name}
+          aria-label={label}
           data-testid={testId}
           icon={icon}
           mode="bleed"
@@ -94,7 +75,6 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
           selected={selected}
         />
       </Tooltip>
-      {count}
     </div>
   )
 }
@@ -105,8 +85,6 @@ export function VisionSidebar() {
   const {layout, switchToClassic} = useVisionExperience()
   const expanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVisionSelector(selectOpenDrawer)
-  const sidebarBadges = useSidebarBadges()
-  const badges = useSyncExternalStore(sidebarBadges.subscribe, sidebarBadges.get)
   const isMobile = layout === 'mobile'
 
   // The rail button that opened the drawer, remembered from its click: the drawer is a modal
@@ -168,24 +146,6 @@ export function VisionSidebar() {
         />
         <Box borderTop marginTop={1} paddingTop={1}>
           <Flex flexDirection="column" gap={1}>
-            <SidebarItem
-              badge={badges.lint}
-              expanded={expanded}
-              icon={ErrorOutlineIcon}
-              label={t('vision.panel.lint')}
-              onClick={(event) => toggleDrawer('lint', event)}
-              selected={drawer === 'lint'}
-              testId="vision-sidebar-lint"
-            />
-            <SidebarItem
-              badge={badges.functions}
-              expanded={expanded}
-              icon={CodeIcon}
-              label={t('vision.panel.functions')}
-              onClick={(event) => toggleDrawer('functions', event)}
-              selected={drawer === 'functions'}
-              testId="vision-sidebar-functions"
-            />
             <SidebarItem
               expanded={expanded}
               icon={TransferIcon}
