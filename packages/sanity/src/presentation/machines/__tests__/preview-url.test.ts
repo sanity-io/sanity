@@ -761,7 +761,33 @@ describe('Preview URL machine', () => {
 
         const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
         expect(snapshot.context.previewMode).toBeNull()
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+        expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3000/')
         expect(notify).toHaveBeenCalled()
+      })
+
+      test('reports missing access up front without trying to create a secret', async () => {
+        const createPreviewSecret = vi.fn(() => Promise.resolve({secret: 'abc123', expiresAt}))
+        const readSharedSecret = vi.fn(() => Promise.resolve<string | null>('dfg456'))
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: {
+              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              'create preview secret': fromPromise(createPreviewSecret),
+              'read shared preview secret': fromPromise(readSharedSecret),
+              'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(() =>
+                of({granted: false, reason: 'No matching grants found'}),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.value).toBe('success')
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+        expect(createPreviewSecret).not.toHaveBeenCalled()
+        expect(readSharedSecret).not.toHaveBeenCalled()
       })
 
       test.each([
@@ -1035,6 +1061,146 @@ describe('Preview URL machine', () => {
           secret: 'dfg456',
           expiresAt: expect.any(Date),
         })
+        expect(context.missingPreviewSecretAccess).toBe(false)
+      })
+
+      test('reports missing access instead of enabling preview mode without a secret when sharing is off', async () => {
+        const notify = vi.fn()
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actions: {'notify preview will likely fail': notify},
+            actors: {
+              ...mockActors({
+                previewUrlOption: {
+                  initial: 'http://localhost:3000/',
+                  previewMode: {enable: '/api/draft-mode/enable'},
+                },
+              }),
+              'read shared preview secret': fromPromise<string | null>(() => Promise.resolve(null)),
+              'check permission': checkPermissionActor,
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.value).toBe('success')
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+        expect(snapshot.context.previewUrlSecret).toBeNull()
+        expect(snapshot.context.previewMode).toBeNull()
+        expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3000/')
+        expect(notify).toHaveBeenCalled()
+      })
+
+      test('reports missing access when reading the shared secret is forbidden', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: {
+              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              'read shared preview secret': fromPromise<string | null>(() =>
+                Promise.reject(Object.assign(new Error('Forbidden'), {statusCode: 403})),
+              ),
+              'check permission': checkPermissionActor,
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.hasTag('error')).toBe(false)
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+      })
+    })
+
+    describe('handles a forbidden preview secret creation', () => {
+      test('reports missing access when the API rejects creating the secret', async () => {
+        const notify = vi.fn()
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actions: {'notify preview will likely fail': notify},
+            actors: {
+              ...mockActors({
+                previewUrlOption: {
+                  initial: 'http://localhost:3000/',
+                  previewMode: {enable: '/api/draft-mode/enable'},
+                },
+              }),
+              'create preview secret': fromPromise<{secret: string; expiresAt: Date}>(() =>
+                Promise.reject(
+                  Object.assign(
+                    new Error('Insufficient permissions; permission "create" required'),
+                    {statusCode: 403},
+                  ),
+                ),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.value).toBe('success')
+        expect(snapshot.hasTag('error')).toBe(false)
+        expect(snapshot.context.error).toBeNull()
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+        expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3000/')
+        expect(notify).toHaveBeenCalled()
+      })
+
+      test('still fails on other errors', async () => {
+        const error = Object.assign(new Error('Internal server error'), {statusCode: 500})
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: {
+              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              'create preview secret': fromPromise<{secret: string; expiresAt: Date}>(() =>
+                Promise.reject(error),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => state.hasTag('error'))
+        expect(snapshot.context.error).toBe(error)
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(false)
+      })
+
+      test('clears missing access when switching to an origin without preview mode', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: {
+              ...mockActors({
+                allowOption: ['http://localhost:*'],
+                previewUrlOption: {
+                  initial: 'http://localhost:3000',
+                  previewMode: ({targetOrigin}) =>
+                    targetOrigin === 'http://localhost:3000'
+                      ? {enable: '/api/draft-mode/enable'}
+                      : false,
+                },
+              }),
+              'create preview secret': fromPromise<{secret: string; expiresAt: Date}>(() =>
+                Promise.reject(Object.assign(new Error('Forbidden'), {statusCode: 403})),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        let snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(true)
+
+        actor.send({
+          type: 'set preview search param',
+          previewSearchParam: 'http://localhost:3333/blog',
+        })
+        snapshot = await waitFor(
+          actor,
+          (state) =>
+            !state.hasTag('busy') && state.context.previewUrl?.origin === 'http://localhost:3333',
+        )
+        expect(snapshot.context.missingPreviewSecretAccess).toBe(false)
       })
     })
 

@@ -28,7 +28,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {flushSync} from 'react-dom'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useCurrentUser, useTranslation} from 'sanity'
 import {Text, Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -50,6 +50,7 @@ import {usePresentationNavigate} from '../usePresentationNavigate'
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
+import {MissingPreviewAccessCard} from './MissingPreviewAccessCard'
 import {PreviewHeader} from './PreviewHeader'
 
 const MotionFlex = motion.create(Flex)
@@ -201,25 +202,51 @@ export const Preview = memo(function PreviewComponent(
    * timeout, the escalating overlays connection status, and "continue anyway" dismissals — so the
    * loading and error UI is derived from its state tags instead of ad-hoc timers.
    */
-  const showLoadingOverlay = useSelector(presentationRef, (state) =>
+  const _showLoadingOverlay = useSelector(presentationRef, (state) =>
     state.hasTag('show loading overlay'),
   )
-  const showOverlaysConnectionStatus = useSelector(presentationRef, (state) =>
+  const _showOverlaysConnectionStatus = useSelector(presentationRef, (state) =>
     state.hasTag('show overlays connection status'),
   )
   const overlaysConnectionTimedOut = useSelector(presentationRef, (state) =>
     state.hasTag('overlays connection timed out'),
   )
   const showErrorCard = useSelector(presentationRef, (state) => state.hasTag('show error card'))
-  const preventIframeInteraction = useSelector(presentationRef, (state) =>
+  const _preventIframeInteraction = useSelector(presentationRef, (state) =>
     state.hasTag('prevent iframe interaction'),
   )
   // Read the machine's classification rather than the raw `overlaysConnection` aggregate: a new
   // connection on a page whose overlays already connected (a recreated channel) reports
   // `connecting` but is modelled as a reconnect, and the preview is interactive meanwhile.
-  const overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
+  const _overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
     state.matches({loaded: {idle: 'connecting'}}),
   )
+  /**
+   * Without a preview secret the page loads without preview mode, where visual editing usually
+   * isn't rendered at all. Waiting for its first connection would end in a misleading
+   * "Unable to connect", so the missing access is reported instead.
+   */
+  const missingPreviewSecretAccess = useSelector(
+    previewUrlRef,
+    (state) => state.context.missingPreviewSecretAccess,
+  )
+  const [missingPreviewSecretAccessDismissed, setMissingPreviewSecretAccessDismissed] =
+    useState(false)
+  const showMissingPreviewSecretAccess =
+    missingPreviewSecretAccess && !missingPreviewSecretAccessDismissed
+  const handleContinueWithoutPreviewSecret = useCallback(() => {
+    setMissingPreviewSecretAccessDismissed(true)
+  }, [])
+  const currentUser = useCurrentUser()
+  const ignoreFirstOverlaysConnection =
+    missingPreviewSecretAccess && _overlaysConnectingForTheFirstTime
+  const overlaysConnectingForTheFirstTime =
+    _overlaysConnectingForTheFirstTime && !ignoreFirstOverlaysConnection
+  const showLoadingOverlay = _showLoadingOverlay && !ignoreFirstOverlaysConnection
+  const showOverlaysConnectionStatus =
+    _showOverlaysConnectionStatus && !ignoreFirstOverlaysConnection
+  const preventIframeInteraction =
+    showMissingPreviewSecretAccess || (_preventIframeInteraction && !ignoreFirstOverlaysConnection)
   const iframeIsBusy = isLoading || isRefreshing || overlaysConnectingForTheFirstTime
 
   const handleContinueAnyway = useCallback(() => {
@@ -422,7 +449,29 @@ export const Preview = memo(function PreviewComponent(
             }}
           >
             <AnimatePresence>
-              {showOverlaysConnectionStatus ? (
+              {showMissingPreviewSecretAccess ? (
+                <MotionFlex
+                  key="missing-preview-secret-access"
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={errorVariants}
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    background: 'var(--card-bg-color)',
+                    inset: '0',
+                    position: 'absolute',
+                    zIndex: 1,
+                  }}
+                >
+                  <MissingPreviewAccessCard
+                    flex={1}
+                    roles={currentUser?.roles}
+                    onContinueAnyway={handleContinueWithoutPreviewSecret}
+                  />
+                </MotionFlex>
+              ) : showOverlaysConnectionStatus ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
