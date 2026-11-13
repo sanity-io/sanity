@@ -6,7 +6,7 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type ReactNode} from 'react'
-import {Observable, Subject} from 'rxjs'
+import {defer, Observable, Subject} from 'rxjs'
 import {AddonDatasetContext} from 'sanity/_singletons'
 import {vi} from 'vitest'
 
@@ -118,7 +118,12 @@ export function createAddonDatasetTestClient(documents: {
       ),
     )
   }
-  const fetch = vi.spyOn(client, 'fetch').mockImplementation(fakeFetch as SanityClient['fetch'])
+  const observableFetch = vi
+    .spyOn(client.observable, 'fetch')
+    .mockImplementation(((
+      query: string,
+      params?: {documentId?: string | null; documentVersionId?: string},
+    ) => defer(() => fakeFetch(query, params))) as SanityClient['observable']['fetch'])
 
   const contextValue: AddonDatasetContextValue = {
     client,
@@ -135,5 +140,5 @@ export function createAddonDatasetTestClient(documents: {
     )
   }
 
-  return {client, server, connections, fetch, wrapper}
+  return {client, server, connections, observableFetch, wrapper}
 }
