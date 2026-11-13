@@ -11,11 +11,14 @@ import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {type RootTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {type Decorator, type Preview} from '@storybook/react-vite'
+import {defaultTheme} from 'sanity'
 
-const studioTheme: RootTheme = buildTheme()
+// The theme a studio gets when its config sets none (`@sanity/ui`'s, with the UI 5 selected colours).
+// oxlint-disable-next-line no-deprecated -- the only export of Studio's default theme outside the package
+const studioTheme: RootTheme = defaultTheme
 
 /**
  * Provides the studio theme to every story. Harness stories that render inside
