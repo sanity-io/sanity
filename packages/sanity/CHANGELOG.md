@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-13)
+
+### Features
+
+* **core:** add allowNonSingletonDocuments option to singleton definitions ([848422a](https://github.com/sanity-io/sanity/commit/848422ae4a643e9751c3d6b6c4ea6a8f4fa824da))
+* **core:** support scheduling publish for draft variants ([#15889](https://github.com/sanity-io/sanity/issues/15889)) ([4dab3a6](https://github.com/sanity-io/sanity/commit/4dab3a6e0663793a9b49ae6fd117e32ee8e24c74))
+* **telemetry:** add deprecated config usage tracking before v7 removal ([#15786](https://github.com/sanity-io/sanity/issues/15786)) ([13ebe9f](https://github.com/sanity-io/sanity/commit/13ebe9f25792af8bfb9db054979f5be4debfe23c))
+* **variants:** load the content variants upsell from the journey endpoint ([#15839](https://github.com/sanity-io/sanity/issues/15839)) ([c06cb5f](https://github.com/sanity-io/sanity/commit/c06cb5f26ddb130f41aa801968a49879fedb09c2))
+
+### Bug Fixes
+
+* **canvas:** look up a document's versions on the global listener ([#15990](https://github.com/sanity-io/sanity/issues/15990)) ([32c1e52](https://github.com/sanity-io/sanity/commit/32c1e5239ce3c3f5ca49e80546f406537d0428a9))
+* **core:** give the navbar perspective menus the page as their boundary ([#15893](https://github.com/sanity-io/sanity/issues/15893)) ([bbda8a1](https://github.com/sanity-io/sanity/commit/bbda8a1d6d9f14c72d5f36b062c46d1ef47dbd87))
+* **core:** keep navbar at 50px height ([cbe3e5a](https://github.com/sanity-io/sanity/commit/cbe3e5a3e314b84d3e95b50e47b4faeb24ce734a))
+* **core:** keep releases nav from growing the navbar ([8e02aa1](https://github.com/sanity-io/sanity/commit/8e02aa172512e3f7ae466cb0b76cdc2144710d53))
+* **core:** keep selectable menu item text on the selected tone ([#15869](https://github.com/sanity-io/sanity/issues/15869)) ([56f09b0](https://github.com/sanity-io/sanity/commit/56f09b0b4edb08a5e3ec3f5d47cb6a5c8d8ade50))
+* **core:** keep sentry client options assignable to browserclient ([#15994](https://github.com/sanity-io/sanity/issues/15994)) ([9fd0793](https://github.com/sanity-io/sanity/commit/9fd0793afc05a229ea0c169315076a4eb24e4e1e))
+* **core:** lazily create presence session id ([#15867](https://github.com/sanity-io/sanity/issues/15867)) ([a435d78](https://github.com/sanity-io/sanity/commit/a435d78c32dbe5daa3ce5cee860fcc24f3de258a))
+* **core:** replace navbar bottom borders with shadows ([5cdaf9c](https://github.com/sanity-io/sanity/commit/5cdaf9ca96ad42401e1cfa56a4b44bb7ddabce99))
+* **core:** resync observeDocument when it falls out of sync with the listener ([#15760](https://github.com/sanity-io/sanity/issues/15760)) ([ec36c2d](https://github.com/sanity-io/sanity/commit/ec36c2db0b459e6a706de21e4de7b75a195c24d4))
+* **core:** reuse the global preview listener for releases and variants ([#15758](https://github.com/sanity-io/sanity/issues/15758)) ([8e152c3](https://github.com/sanity-io/sanity/commit/8e152c329066dcec4df17666bc4da5e689ee8557))
+* **core:** share one listener per resource across global document reference previews ([#15843](https://github.com/sanity-io/sanity/issues/15843)) ([c571164](https://github.com/sanity-io/sanity/commit/c57116466920c6f034aaae93a18b3f99e85e99a7))
+* **deps:** update dependency @sanity/bifur-client to ^3.0.1 ([#15877](https://github.com/sanity-io/sanity/issues/15877)) ([60ee897](https://github.com/sanity-io/sanity/commit/60ee897f6b66dce960eeb2974d973c6d6115ba08))
+* **deps:** update dependency @sanity/cli to ^8.28.2 ([#15937](https://github.com/sanity-io/sanity/issues/15937)) ([c975235](https://github.com/sanity-io/sanity/commit/c9752353fd8c9d706dd81014ce1f21a285252443))
+* **deps:** update dependency @sanity/icons to ^5.3.0 ([#16010](https://github.com/sanity-io/sanity/issues/16010)) ([d55268c](https://github.com/sanity-io/sanity/commit/d55268cfd8cf0a76d1fada5daae1df00e2c674ee))
+* **deps:** update dependency motion to ^14.12.0 ([#15961](https://github.com/sanity-io/sanity/issues/15961)) ([b06551e](https://github.com/sanity-io/sanity/commit/b06551ee1a48c310e9c213f75f511dd4b1f55f39))
+* **deps:** update dependency motion to ^14.13.0 ([#16054](https://github.com/sanity-io/sanity/issues/16054)) ([dd1106a](https://github.com/sanity-io/sanity/commit/dd1106af21de8d21661ed9e6016a21eb81350280))
+* **deps:** update dependency xstate to ^5.33.4 ([#15938](https://github.com/sanity-io/sanity/issues/15938)) ([91510b1](https://github.com/sanity-io/sanity/commit/91510b17258eec4a18e8ba2d1baf8c34b004ca69))
+* **deps:** update portabletext ([#16037](https://github.com/sanity-io/sanity/issues/16037)) ([3ebeea5](https://github.com/sanity-io/sanity/commit/3ebeea563974dfeee5f34d690fefaab38e533d6a))
+* **deps:** update storybook monorepo to ^10.6.7 ([#15940](https://github.com/sanity-io/sanity/issues/15940)) ([164f567](https://github.com/sanity-io/sanity/commit/164f56780047f010a5ce038ce676f008c8e2b1d9))
+* **form:** make portable text strong text visibly bold ([#15865](https://github.com/sanity-io/sanity/issues/15865)) ([1b9d7b1](https://github.com/sanity-io/sanity/commit/1b9d7b13ec6e06268aea22c3c1db1f70690c48c6))
+* **form:** stop the collapse chevron covering the fieldset label ([#15873](https://github.com/sanity-io/sanity/issues/15873)) ([2a38d1e](https://github.com/sanity-io/sanity/commit/2a38d1ed5fcd5494fc1257b83e1cc005fe22b1ad))
+* **form:** stop the field action render loop that crashes the presentation document pane ([#15830](https://github.com/sanity-io/sanity/issues/15830)) ([75c3999](https://github.com/sanity-io/sanity/commit/75c3999dde53d5a837ad09dd1b54f3b1aef4f811))
+* **lint:** resolve oxlint 1.93 and zizmor 1.32 errors on main ([#15982](https://github.com/sanity-io/sanity/issues/15982)) ([877c07c](https://github.com/sanity-io/sanity/commit/877c07c37c48c22779a827165f4c6be8e67709d0))
+* **presentation:** link back to the main document when another document is open ([#15841](https://github.com/sanity-io/sanity/issues/15841)) ([8bed8bf](https://github.com/sanity-io/sanity/commit/8bed8bfe214d7656ff3de3d2d9fbdf56cf54801c))
+* **releases:** keep release metadata in sync with document changes ([#15993](https://github.com/sanity-io/sanity/issues/15993)) ([81fc53c](https://github.com/sanity-io/sanity/commit/81fc53c413c16e1f554537a0e7b5c2c4a28019e9))
+* **releases:** make the release title a real link ([#16011](https://github.com/sanity-io/sanity/issues/16011)) ([33b4d39](https://github.com/sanity-io/sanity/commit/33b4d397fdd136e8d80ef5845168a89639c81941))
+* **structure:** hide the document header chip scrollbar in firefox ([#16016](https://github.com/sanity-io/sanity/issues/16016)) ([7768285](https://github.com/sanity-io/sanity/commit/7768285f9946be38f6ee4f4935edabb77ba55845))
+* **studio:** keep the help menu version subtitle readable when selected ([#15866](https://github.com/sanity-io/sanity/issues/15866)) ([23c508a](https://github.com/sanity-io/sanity/commit/23c508a72735c82986dc384271d68d8366937ace))
+* **validation:** reject uri() hosts that percent-decode to forbidden characters ([#15815](https://github.com/sanity-io/sanity/issues/15815)) ([a83d5ba](https://github.com/sanity-io/sanity/commit/a83d5ba7f67ae01665634978085ce6a71b429b6d))
+* **variants:** expose dialog field names, help text and errors to assistive technology ([#15966](https://github.com/sanity-io/sanity/issues/15966)) ([4888d0b](https://github.com/sanity-io/sanity/commit/4888d0be8c4f4a9406d641c4088c8b26ce9e56ee))
+* **variants:** expose the current choice and filter label of variant pickers ([#15967](https://github.com/sanity-io/sanity/issues/15967)) ([e53da52](https://github.com/sanity-io/sanity/commit/e53da52d78922713fa0ab37a4c149d72f494fa16))
+* **variants:** make the overview filter popover and empty state accessible ([#15968](https://github.com/sanity-io/sanity/issues/15968)) ([5291d57](https://github.com/sanity-io/sanity/commit/5291d57abb6cccbc8934544203fa8c7ed6daacdd))
 ## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
 
 ### Features
