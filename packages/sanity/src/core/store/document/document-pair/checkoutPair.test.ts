@@ -3853,7 +3853,7 @@ describe('checkoutPair -- transaction lock', () => {
     vi.useRealTimers()
   })
 
-  test.fails('a snapshot after a listener restart releases a pending transaction lock', async () => {
+  test('a snapshot after a listener restart releases a pending transaction lock', async () => {
     const listenerSubject = new Subject()
     const testClient = {
       ...client,

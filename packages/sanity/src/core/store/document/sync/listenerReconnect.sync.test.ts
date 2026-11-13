@@ -80,26 +80,22 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
   })
 
-  // B's lock stays on after the reset, so the world never settles healthy.
-  test.fails('LSN-RECONNECT-MID-TX-RESET: B converges after a reset, because the snapshot is refetched', async () => {
-    world = await runSyncTest({...reconnectMidTransaction(false), knownBug: 'C1'})
+  test('LSN-RECONNECT-MID-TX-RESET: B converges after a reset, because the snapshot is refetched', async () => {
+    world = await runSyncTest(reconnectMidTransaction(false))
     expectConverged(world)
   })
 
-  // A reset clears the transaction buffer without ending the pending lock, so the form stays locked.
-  test.fails('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
-    world = await runSyncTest({...reconnectMidTransaction(false), knownBug: 'C1'})
+  test('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
+    world = await runSyncTest(reconnectMidTransaction(false))
     expect(world.clients.B.transactionLocked()).toBe(false)
   })
 
-  // The edit state keeps the lock the form and Publish read, so both stay disabled after the reset.
-  test.fails('LSN-RECONNECT-MID-TX-RESET-FORM: B can edit and publish again after a reset', async () => {
+  test('LSN-RECONNECT-MID-TX-RESET-FORM: B can edit and publish again after a reset', async () => {
     world = await runSyncTest(
       {
         ...reconnectMidTransaction(false),
         id: 'LSN-RECONNECT-MID-TX-RESET-FORM',
         seam: 'operations',
-        knownBug: 'C1',
       },
       {schema, typeName: 'article'},
     )

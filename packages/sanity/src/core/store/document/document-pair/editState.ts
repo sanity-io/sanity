@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable, of, ReplaySubject, timer} from 'rxjs'
-import {map, share, startWith, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, share, startWith, switchMap} from 'rxjs/operators'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getVersionFromId} from '../../../util/draftUtils'
@@ -155,6 +155,7 @@ export const editState = memoize(
           versions.transactionsPendingEvents$.pipe(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
             startWith(NOT_LOCKED),
+            distinctUntilChanged(),
           ),
           typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
