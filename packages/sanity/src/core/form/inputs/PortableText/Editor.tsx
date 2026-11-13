@@ -15,7 +15,6 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {PresenceOverlay} from '../../../presence/overlay/PresenceOverlay'
 import {type OnPasteFn, type PortableTextInputProps} from '../../types/inputProps'
 import {useFormBuilder} from '../../useFormBuilder'
-import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {
   EditableCard,
   EditableContent,
@@ -121,20 +120,12 @@ export function Editor(props: EditorProps): ReactNode {
   const spellCheck = useSpellCheck()
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
-  const schemaTypes = usePortableTextMemberSchemaTypes()
 
   useInitialSelection(initialSelection)
 
   const editable = useMemo(() => {
     const editableProps = {
       'aria-describedby': ariaDescribedBy,
-      // oxlint-disable-next-line no-deprecated -- custom hotkeys receive the React event and a PortableTextEditor, which keyboard.keydown Behaviors do not carry
-      hotkeys,
-      // oxlint-disable-next-line no-deprecated -- the deprecated onCopy input prop receives the React clipboard event, which clipboard.copy Behaviors do not carry
-      onCopy,
-      // Hands the deprecated onPaste input prop Studio's schema types instead of the editor's schema
-      // oxlint-disable-next-line no-deprecated -- that handler receives the React clipboard event, which clipboard.paste Behaviors do not carry
-      'onPaste': onPaste && ((data) => onPaste({...data, schemaTypes})),
       rangeDecorations,
       'ref': elementRef,
       renderPlaceholder,
@@ -147,12 +138,8 @@ export function Editor(props: EditorProps): ReactNode {
   }, [
     ariaDescribedBy,
     elementRef,
-    hotkeys,
-    onCopy,
-    onPaste,
     rangeDecorations,
     renderPlaceholder,
-    schemaTypes,
     scrollSelectionIntoView,
     spellCheck,
   ])
@@ -168,7 +155,11 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   const editableContent = (
-    <EditableContent $isFullscreen={isFullscreen}>
+    <EditableContent
+      $isFullscreen={isFullscreen}
+      onCopy={onCopy ? (event) => event.stopPropagation() : undefined}
+      onPaste={onPaste ? (event) => event.stopPropagation() : undefined}
+    >
       <EditableWrapper
         $isFullscreen={isFullscreen}
         $isOneLine={isOneLine}
