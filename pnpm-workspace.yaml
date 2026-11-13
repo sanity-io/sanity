@@ -36,7 +36,7 @@ catalog:
   '@sanity/pandacss-tsdown-plugin': ^0.3.1
   '@sanity/schema-descriptor-utils': 1.4.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.31.2
+  '@sanity/tsdown-config': ^0.31.4
   '@sanity/ui': ^4.4.12
   '@types/node': ^24.19.2
   '@types/react': ^19.3.0
