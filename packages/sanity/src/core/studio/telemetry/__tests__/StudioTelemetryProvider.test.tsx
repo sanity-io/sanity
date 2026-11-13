@@ -63,6 +63,7 @@ describe('StudioTelemetryProvider', () => {
   let capturedStoreOptions: {
     sendEvents?: (batch: unknown[]) => Promise<void>
     sendBeacon?: (batch: unknown[]) => boolean
+    resolveConsent?: () => Promise<unknown>
   }
 
   const mockLog = vi.fn()
@@ -222,7 +223,7 @@ describe('StudioTelemetryProvider', () => {
     )
   })
 
-  it('enriches events with context in sendBeacon callback', () => {
+  it('enriches events with context in sendBeacon callback', async () => {
     // Mock navigator.sendBeacon
     const mockSendBeacon = vi.fn().mockReturnValue(true)
     vi.stubGlobal('navigator', {
@@ -240,8 +241,10 @@ describe('StudioTelemetryProvider', () => {
     )
 
     // Get the captured sendBeacon callback
-    const {sendBeacon} = capturedStoreOptions
+    const {sendBeacon, resolveConsent} = capturedStoreOptions
     expect(sendBeacon).toBeDefined()
+    mockClient.request.mockResolvedValueOnce({status: 'granted'})
+    await resolveConsent!()
 
     // Create test batch
     const testBatch = [{name: 'Beacon Event', properties: {test: true}}]
@@ -265,6 +268,48 @@ describe('StudioTelemetryProvider', () => {
       pluginCount: 3,
       schemaTypeCount: 3,
     })
+
+    vi.unstubAllGlobals()
+  })
+
+  it.each([['denied'], ['unset'], [undefined]])(
+    'does not send the beacon when consent is %s',
+    async (status) => {
+      const mockSendBeacon = vi.fn().mockReturnValue(true)
+      vi.stubGlobal('navigator', {...navigator, sendBeacon: mockSendBeacon})
+
+      render(
+        <DeferredTelemetryProvider>
+          <StudioTelemetryProvider>
+            <div>Test Child</div>
+          </StudioTelemetryProvider>
+        </DeferredTelemetryProvider>,
+      )
+      const {sendBeacon, resolveConsent} = capturedStoreOptions
+      mockClient.request.mockResolvedValueOnce(status === undefined ? {} : {status})
+      await resolveConsent!()
+
+      expect(sendBeacon!([{name: 'Beacon Event'}])).toBe(false)
+      expect(mockSendBeacon).not.toHaveBeenCalled()
+
+      vi.unstubAllGlobals()
+    },
+  )
+
+  it('does not send the beacon before consent has resolved', () => {
+    const mockSendBeacon = vi.fn().mockReturnValue(true)
+    vi.stubGlobal('navigator', {...navigator, sendBeacon: mockSendBeacon})
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(capturedStoreOptions.sendBeacon!([{name: 'Beacon Event'}])).toBe(false)
+    expect(mockSendBeacon).not.toHaveBeenCalled()
 
     vi.unstubAllGlobals()
   })

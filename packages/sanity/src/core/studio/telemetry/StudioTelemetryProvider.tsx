@@ -1,6 +1,7 @@
 import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
 import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
 import {
+  type ConsentStatus,
   createBatchedStore,
   type CreateBatchedStoreOptions,
   createSessionId,
@@ -107,6 +108,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // Ref to hold current context - allows sendEvents to always access latest values
   // without causing re-memoization of the store
   const contextRef = useRef<TelemetryContext | null>(null)
+  const consentStatusRef = useRef<ConsentStatus | undefined>(undefined)
 
   // Update context ref when dynamic values change
   // Telemetry only runs on client - no SSR fallbacks needed
@@ -160,7 +162,12 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     return {
       flushInterval: 30000,
       resolveConsent: () =>
-        client.request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
+        client
+          .request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'})
+          .then((consent: {status: ConsentStatus}) => {
+            consentStatusRef.current = consent.status
+            return consent
+          }),
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
@@ -176,17 +183,21 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
           body: {projectId, batch: enrichedBatch},
         })
       },
+      // The batched store checks consent before every flush but not before the closing beacon.
       sendBeacon: (batch) => {
-        if (!isClient || !contextRef.current) return false
         const context = contextRef.current
-        const enrichedBatch = batch.map((event) => ({
-          ...event,
-          context,
-        }))
-        return navigator.sendBeacon(
-          client.getUrl('/intake/batch'),
-          JSON.stringify({projectId, batch: enrichedBatch}),
-        )
+        const canSend = isClient && context && consentStatusRef.current === 'granted'
+        if (canSend) {
+          const enrichedBatch = batch.map((event) => ({
+            ...event,
+            context,
+          }))
+          return navigator.sendBeacon(
+            client.getUrl('/intake/batch'),
+            JSON.stringify({projectId, batch: enrichedBatch}),
+          )
+        }
+        return false
       },
     }
   }, [client, projectId])
