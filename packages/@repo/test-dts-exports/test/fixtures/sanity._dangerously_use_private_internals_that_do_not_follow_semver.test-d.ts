@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  _createAuthStore,
   _createNode,
   _isCustomDocumentTypeDefinition,
   _isSanityDocumentTypeDefinition,
@@ -20,7 +19,6 @@ import type {
   ArrayOfObjectsMemberProps,
   asLoadable,
   AsyncConfigPropertyReducer,
-  AuthStoreOptions,
   AutoCollapseMenu,
   AvailabilityReason,
   AvailabilityResponse,
@@ -922,9 +920,6 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => {
-  test('_createAuthStore', () => {
-    expectTypeOf<typeof _createAuthStore>().toBeFunction()
-  })
   test('_createNode', () => {
     expectTypeOf<typeof _createNode>().toBeFunction()
   })
@@ -972,9 +967,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('AsyncConfigPropertyReducer', () => {
     expectTypeOf<AsyncConfigPropertyReducer<any, any>>().not.toBeNever()
-  })
-  test('AuthStoreOptions', () => {
-    expectTypeOf<AuthStoreOptions>().toBeObject()
   })
   test('AutoCollapseMenu', () => {
     expectTypeOf<typeof AutoCollapseMenu>().toBeFunction()
