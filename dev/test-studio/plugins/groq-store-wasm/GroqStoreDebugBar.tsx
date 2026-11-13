@@ -114,7 +114,11 @@ function Details({status}: {status: GroqStoreStatus}) {
 function GroqStoreDebugBar() {
   const status = useSyncExternalStore(subscribeGroqStoreStatus, getGroqStoreStatus)
   const [open, setOpen] = useState(false)
-  const blocked = status.enabled ? blocker(status) : undefined
+  // Keep the fixed overlay off when the store is off (e2e / webdriver, env, or toggle) so it
+  // does not sit over the studio's bottom-left chrome and intercept clicks. Re-enable with
+  // `?groqStore=on`.
+  if (!status.enabled) return null
+  const blocked = blocker(status)
   return (
     <div style={bar} data-testid="groq-store-wasm-debug-bar">
       <button
@@ -123,33 +127,21 @@ function GroqStoreDebugBar() {
         onClick={() => setOpen((value) => !value)}
         title="groq-store-wasm: click for details"
       >
-        {status.enabled ? (
-          <>
-            <span style={dot('#4ade80')}>●</span>wasm {status.answered}
-            {' · '}
-            <span style={dot('#facc15')}>●</span>passthrough {status.passthrough}
-            {' · '}
-            <span style={dot('#f87171')}>●</span>no accel {status.unaccelerated}
-          </>
-        ) : (
-          <>
-            <span style={dot('#9ca3af')}>●</span>groq store off
-          </>
-        )}
+        <span style={dot('#4ade80')}>●</span>wasm {status.answered}
+        {' · '}
+        <span style={dot('#facc15')}>●</span>passthrough {status.passthrough}
+        {' · '}
+        <span style={dot('#f87171')}>●</span>no accel {status.unaccelerated}
         <Latency status={status} />
-        {status.enabled && status.store === 'building' && status.progress ? (
+        {status.store === 'building' && status.progress ? (
           <span>
             {' · '}export {mib(status.progress.exportBytes)} MiB · wasm{' '}
             {mib(status.progress.memoryBytes)} MiB
           </span>
-        ) : status.enabled &&
-          status.store.startsWith('live') &&
-          status.progress?.memoryBytes !== undefined ? (
+        ) : status.store.startsWith('live') && status.progress?.memoryBytes !== undefined ? (
           <span> · wasm {mib(status.progress.memoryBytes)} MiB</span>
         ) : null}
-        {status.enabled && status.guardOff ? (
-          <span style={{color: '#f59e0b'}}> · guard off</span>
-        ) : null}
+        {status.guardOff ? <span style={{color: '#f59e0b'}}> · guard off</span> : null}
         {blocked === undefined ? null : <span style={{color: '#f87171'}}> · {blocked}</span>}
       </button>
       {open ? <Details status={status} /> : null}

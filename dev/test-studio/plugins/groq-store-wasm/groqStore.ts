@@ -186,12 +186,13 @@ function onMetric(metric: Metric): void {
   if (metric.type !== 'store') return
   switch (metric.event) {
     case 'building':
-      update({store: 'building'})
+      update({store: 'building', storeError: undefined})
       persist(metric, 'building')
       break
     case 'progress':
       update({
         store: 'building',
+        storeError: undefined,
         progress: {
           exportBytes: metric.exportBytes,
           memoryBytes: metric.memoryBytes,
@@ -201,12 +202,16 @@ function onMetric(metric: Metric): void {
       persist(metric, 'building')
       break
     case 'export':
-      update({store: `loaded ${metric.documents ?? '?'} docs in ${Math.round(metric.ms ?? 0)} ms`})
+      update({
+        store: `loaded ${metric.documents ?? '?'} docs in ${Math.round(metric.ms ?? 0)} ms`,
+        storeError: undefined,
+      })
       persist(metric, 'building')
       break
     case 'live':
       update({
         store: `live${status.store.startsWith('loaded') ? `, ${status.store}` : ''}`,
+        storeError: undefined,
         progress: {...status.progress, memoryBytes: metric.memoryBytes},
       })
       persist(metric, 'live')
