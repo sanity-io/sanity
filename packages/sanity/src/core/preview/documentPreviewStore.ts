@@ -3,7 +3,6 @@ import {
   type QueryParams,
   type SanityClient,
   type StackablePerspective,
-  type WelcomeEvent,
 } from '@sanity/client'
 import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
@@ -29,6 +28,7 @@ import {
   type DocumentStackAvailability,
   type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
+  type InvalidationChannelEvent,
   type ObservePathsFn,
   type PreparedSnapshot,
   type Previewable,
@@ -192,18 +192,23 @@ export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '2025-02-19'})
-  const globalListener = createGlobalListener(versionedClient).pipe(
+  // A subscriber first sees the latest `welcome` or `reconnect` the global listener replays, or the
+  // first one after it subscribed. Either makes it load from scratch (`connected`): a `reconnect`
+  // there means the listener is down and the subscriber has nothing loaded yet, and it loads again
+  // once the listener welcomes. A later `reconnect` is ignored, the subscriber keeps what it loaded.
+  const invalidationChannel = createGlobalListener(versionedClient).pipe(
     filter(
-      (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now until we've verified that downstream consumers can handle them
-        event.type === 'mutation' || event.type === 'welcome',
+      (event, index) =>
+        event.type === 'mutation' ||
+        event.type === 'welcome' ||
+        (index === 0 && event.type === 'reconnect'),
+    ),
+    map((event): MutationEvent | Extract<InvalidationChannelEvent, {type: 'connected'}> =>
+      event.type === 'mutation' ? event : {type: 'connected'},
     ),
   )
-  const invalidationChannel = globalListener.pipe(
-    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
-  )
 
-  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
+  const observeDocument = createObserveDocument({client, mutationChannel: invalidationChannel})
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 

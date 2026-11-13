@@ -1,9 +1,10 @@
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, merge, type Observable, of, partition, throwError, timer} from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
+import {filter, mergeMap, share, throttleTime} from 'rxjs/operators'
 
 import {versionedClient} from '../../studioClient'
+import {reconnectListener} from '../../util/reconnectListener'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
@@ -55,12 +56,20 @@ const listen = (
       includeAllVersions: true,
       tag: options.tag,
     }),
-  ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
+  ).pipe(reconnectListener()) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
-function isWelcomeEvent(
-  event: MutationEvent | ReconnectEvent | WelcomeEvent,
-): event is WelcomeEvent {
-  return event.type === 'welcome'
+/**
+ * The listener failed before it welcomed: the query is fetched for it as it is for `welcome`, and
+ * fetched again once the listener welcomes.
+ */
+const LISTENER_UNAVAILABLE = {type: 'unavailable'} as const
+
+type ListenQueryEvent = MutationEvent | ReconnectEvent | WelcomeEvent | typeof LISTENER_UNAVAILABLE
+
+function isFetchTrigger(
+  event: ListenQueryEvent,
+): event is WelcomeEvent | typeof LISTENER_UNAVAILABLE {
+  return event.type === 'welcome' || event.type === 'unavailable'
 }
 
 /** @internal */
@@ -74,27 +83,22 @@ export function listenQuery(
   const listenerQuery = typeof query === 'string' ? query : query.listen
 
   const events$ = listen(client, listenerQuery, params, options).pipe(
-    mergeMap((ev, i) => {
-      const isFirst = i === 0
-      if (isFirst && !isWelcomeEvent(ev)) {
-        // if the first event is not welcome, it is most likely a reconnect and
-        // if it's not a reconnect something is very wrong
-        return throwError(
-          () =>
-            new Error(
-              ev.type === 'reconnect'
-                ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`,
-            ),
-        )
+    mergeMap((ev, i): Observable<ListenQueryEvent> => {
+      if (i > 0 || ev.type === 'welcome') {
+        return of(ev)
       }
-      return of(ev)
+      // A reconnect before welcome means the listener could not connect
+      if (ev.type === 'reconnect') {
+        return of(LISTENER_UNAVAILABLE)
+      }
+      // if the first event is neither welcome nor reconnect, something is very wrong
+      return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
     }),
     share(),
   )
 
-  const [welcome$, mutationAndReconnect$] = partition(events$, isWelcomeEvent)
-  const isRelevantEvent = (event: MutationEvent | ReconnectEvent | WelcomeEvent): boolean => {
+  const [fetchTriggers$, mutationAndReconnect$] = partition(events$, isFetchTrigger)
+  const isRelevantEvent = (event: ListenQueryEvent): boolean => {
     if (!options.transitions || event.type !== 'mutation') {
       return true
     }
@@ -105,7 +109,9 @@ export function listenQuery(
   const doFetch = () => fetch(client, fetchQuery, params, options)
 
   return merge(
-    welcome$.pipe(take(1)),
+    // Every `welcome` refetches: a listener that welcomes again after a reconnect has missed the
+    // mutations made while it was disconnected.
+    fetchTriggers$,
     mutationAndReconnect$.pipe(
       filter(isRelevantEvent),
       throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true}),

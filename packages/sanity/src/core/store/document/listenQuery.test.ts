@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {of, Subject, throwError} from 'rxjs'
+import {ChannelError, type SanityClient} from '@sanity/client'
+import {defer, NEVER, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
@@ -41,6 +41,19 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
     listen: client.listen,
     withConfig: client.withConfig,
   }
+}
+
+// Every subscription opens a new connection, as `client.listen()` does.
+function openConnections(listen: ReturnType<typeof vi.fn>) {
+  const connections: Subject<ListenerEvent>[] = []
+  listen.mockImplementation(() =>
+    defer(() => {
+      const connection = new Subject<ListenerEvent>()
+      connections.push(connection)
+      return connection
+    }),
+  )
+  return {connections, current: () => connections[connections.length - 1]}
 }
 
 async function flushScheduled() {
@@ -124,17 +137,23 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
-  test('errors when the first event is a reconnect', async () => {
+  test('fetches when the listener fails before it welcomes, and again once it welcomes', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+    const values: unknown[] = []
     const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+    const sub = listenQuery(client, '*').subscribe({
+      next: (value) => values.push(value),
+      error: (error) => errors.push(error),
+    })
 
     listener$.next({type: 'reconnect'})
     await flushScheduled()
+    expect(values).toEqual([{n: 1}])
 
-    expect(errors).toHaveLength(1)
-    expect(errors[0]).toBeInstanceOf(Error)
-    expect((errors[0] as Error).message).toBe('Could not establish EventSource connection')
-    expect(fetch).not.toHaveBeenCalled()
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+    expect(values).toEqual([{n: 1}, {n: 2}])
+    expect(errors).toEqual([])
 
     sub.unsubscribe()
   })
@@ -178,6 +197,25 @@ describe('listenQuery', () => {
     await flushScheduled()
 
     expect(fetch).toHaveBeenCalledTimes(2)
+
+    sub.unsubscribe()
+  })
+
+  test('refetches when the listener welcomes again after a reconnect', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+    const values: unknown[] = []
+    const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+    listener$.next({type: 'reconnect'})
+    await vi.advanceTimersByTimeAsync(1000)
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+
+    // Welcome, reconnect, welcome again.
+    expect(fetch).toHaveBeenCalledTimes(3)
+    expect(values).toEqual([{n: 1}, {n: 2}, {ok: true}])
 
     sub.unsubscribe()
   })
@@ -326,6 +364,54 @@ describe('listenQuery', () => {
     expect(withConfig).not.toHaveBeenCalled()
 
     sub.unsubscribe()
+  })
+
+  describe('when the listener fails', () => {
+    test('fetches after a channel error, and again once a new connection welcomes', async () => {
+      const {connections, current} = openConnections(listen)
+      fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      current().error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}])
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(connections).toHaveLength(2)
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}, {n: 2}])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches when the listener does not welcome in time', async () => {
+      listen.mockImplementation(() => NEVER)
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      // The fetch is subscribed and delivered on two further async scheduler ticks.
+      await vi.advanceTimersByTimeAsync(10_000 + 10)
+      expect(values).toEqual([{ok: true}])
+
+      sub.unsubscribe()
+    })
+
+    test('still errors on an error in the query', async () => {
+      const {current} = openConnections(listen)
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+
+      const error = new ChannelError('Bad query', {error: {type: 'queryParseError'}})
+      current().error(error)
+      await flushScheduled()
+
+      expect(errors).toEqual([error])
+      expect(fetch).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
   })
 
   test('propagates a fetch error after welcome', async () => {

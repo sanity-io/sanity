@@ -565,6 +565,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  reconnectListener,
+  ReconnectListenerOptions,
   recordStructurePaneKind,
   recordStructureTool,
   Rect,
@@ -2594,6 +2596,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
+  })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
   })
   test('recordStructurePaneKind', () => {
     expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()

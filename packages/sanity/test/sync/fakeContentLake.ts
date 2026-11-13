@@ -1,4 +1,4 @@
-import {type Action, ClientError} from '@sanity/client'
+import {type Action, ChannelError, ClientError} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
 
@@ -47,6 +47,7 @@ interface Connection {
   clientId: string
   ids: Set<string>
   emit: (event: RawListenerEvent) => void
+  fail: (error: unknown) => void
   held: MutationEvent[]
   missedWhileDisconnected: MutationEvent[]
   disconnected: boolean
@@ -63,6 +64,19 @@ export interface ClientControls {
   dropNextHeldEvent: () => void
   disconnect: () => void
   reconnect: (options: {resume: boolean}) => void
+  /**
+   * Takes the client's listener down: open connections drop, and a connection opened while it is
+   * down never welcomes. The client sees what it sees when its listen request keeps failing, a
+   * `reconnect` for each connection.
+   */
+  breakListener: () => void
+  /** Brings the listener back: every connection welcomes as a new connection (no resume). */
+  restoreListener: () => void
+  /**
+   * Ends the client's open connections with the `channelError` the API sends when it fails to set
+   * a listener up (an unclassified error, `Internal error`). A new connection welcomes as usual.
+   */
+  failListener: () => void
 }
 
 const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
@@ -112,6 +126,7 @@ export class FakeContentLake {
   private connections = new Set<Connection>()
   private pendingCommits = new Map<string, PendingCommit[]>()
   private controls = new Map<string, ClientControls>()
+  private brokenListeners = new Set<string>()
   private welcomeCounter = 0
   readonly transactions: TransactionRecord[] = []
   readonly rejectedCommits: Array<{clientId: string; transactionId: string; statusCode: number}> =
@@ -152,6 +167,9 @@ export class FakeContentLake {
         this.connectionsOf(clientId).forEach((connection) => connection.held.shift()),
       disconnect: () => this.disconnect(clientId),
       reconnect: (options) => this.reconnect(clientId, options),
+      breakListener: () => this.breakListener(clientId),
+      restoreListener: () => this.restoreListener(clientId),
+      failListener: () => this.failListener(clientId),
     }
     this.controls.set(clientId, controls)
     return controls
@@ -186,6 +204,7 @@ export class FakeContentLake {
         clientId,
         ids: new Set(ids),
         emit: (event) => subscriber.next(event),
+        fail: (error) => subscriber.error(error),
         held: [],
         missedWhileDisconnected: [],
         disconnected: false,
@@ -195,6 +214,11 @@ export class FakeContentLake {
       this.connections.add(connection)
       this.welcomeCounter += 1
       const welcomeTimer = setTimeout(() => {
+        if (this.brokenListeners.has(clientId)) {
+          connection.disconnected = true
+          subscriber.next({type: 'reconnect'})
+          return
+        }
         subscriber.next({type: 'welcome', listenerName: `fake-listener-${this.welcomeCounter}`})
       }, 0)
       return () => {
@@ -400,6 +424,34 @@ export class FakeContentLake {
     this.connectionsOf(clientId).forEach((connection) => {
       connection.disconnected = true
       connection.emit({type: 'reconnect'})
+    })
+  }
+
+  private breakListener(clientId: string): void {
+    this.brokenListeners.add(clientId)
+    this.connectionsOf(clientId)
+      .filter((connection) => !connection.disconnected)
+      .forEach((connection) => {
+        connection.disconnected = true
+        connection.emit({type: 'reconnect'})
+      })
+  }
+
+  private restoreListener(clientId: string): void {
+    this.brokenListeners.delete(clientId)
+    this.connectionsOf(clientId).forEach((connection) => {
+      connection.disconnected = false
+      // A new connection: the events it missed are never delivered.
+      connection.missedWhileDisconnected.length = 0
+      this.welcomeCounter += 1
+      connection.emit({type: 'welcome', listenerName: `fake-listener-${this.welcomeCounter}`})
+    })
+  }
+
+  private failListener(clientId: string): void {
+    this.connectionsOf(clientId).forEach((connection) => {
+      this.connections.delete(connection)
+      connection.fail(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
     })
   }
 

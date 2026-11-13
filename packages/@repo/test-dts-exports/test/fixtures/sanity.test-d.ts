@@ -1239,6 +1239,8 @@ import type {
   readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
+  reconnectListener,
+  ReconnectListenerOptions,
   Rect,
   Reference,
   ReferenceAutocomplete,
@@ -5611,6 +5613,12 @@ describe('sanity', () => {
   })
   test('ReconnectEvent', () => {
     expectTypeOf<ReconnectEvent>().not.toBeNever()
+  })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
   })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()

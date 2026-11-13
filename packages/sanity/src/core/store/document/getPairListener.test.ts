@@ -1,5 +1,16 @@
-import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {concat, defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
+import {ChannelError, ConnectionFailedError, type SanityClient} from '@sanity/client'
+import {
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  mergeMap,
+  type Observable,
+  of,
+  Subject,
+  throwError,
+  timer,
+} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -404,6 +415,25 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('passes the welcome on before its snapshots', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      expect(events.map((e) => e.type)).toEqual([
+        // once per stream: draft, published and version
+        'welcome',
+        'welcome',
+        'welcome',
+        'snapshot',
+        'snapshot',
+      ])
+
+      sub.unsubscribe()
+    })
+
     test('welcomeback event does NOT trigger snapshot fetch', async () => {
       const getDocuments = (
         client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
@@ -421,6 +451,60 @@ describe('getPairListener', () => {
 
       // welcomeback means resume succeeded — no snapshot fetch needed
       expect(getDocuments.mock.calls.length).toBe(fetchCountAfterWelcome)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener down before it welcomes', () => {
+    function getDocumentsOf(mockClient: SanityClient) {
+      return (mockClient as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}})
+        .observable.getDocuments
+    }
+
+    test('fetches the snapshots after a reconnect that comes before any welcome', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+      // The reconnect goes first, so the snapshots are not mistaken for a live connection.
+      expect(events.map((e) => e.type)).toEqual([
+        'reconnect',
+        'reconnect',
+        'reconnect',
+        'snapshot',
+        'snapshot',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches the snapshots again once the listener welcomes', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+
+    test('does not fetch the snapshots again when a live listener goes down', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
 
       sub.unsubscribe()
     })
@@ -633,14 +717,61 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a non-401 rejected connection also propagates (listen only 401s in practice)', async () => {
-      const {client: mockClient} = createFailingClient(() => rejectedConnection(500))
+    test('a connection rejected with another 4xx also propagates', async () => {
+      const {client: mockClient} = createFailingClient(() => rejectedConnection(403))
       const errors: unknown[] = []
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
       expect(errors).toHaveLength(1)
       expect(errors[0]).toBeInstanceOf(ConnectionFailedError)
       sub.unsubscribe()
+    })
+
+    test('a connection rejected with a 5xx is reopened with backoff, and loads the snapshots meanwhile', async () => {
+      vi.useFakeTimers()
+      try {
+        // The EventSource reports a rejected connection asynchronously.
+        const {client: mockClient, connect} = createFailingClient(() =>
+          timer(0).pipe(mergeMap(() => rejectedConnection(500))),
+        )
+        const events: ListenerEvent[] = []
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({
+          next: (e) => events.push(e),
+          error: (e) => errors.push(e),
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(errors).toEqual([])
+        expect(events.filter((e) => e.type === 'snapshot')).toHaveLength(2)
+        await vi.advanceTimersByTimeAsync(1_000)
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    test('a channel error is reopened with backoff instead of failing the document', async () => {
+      vi.useFakeTimers()
+      try {
+        const {client: mockClient, connect} = createFailingClient(() =>
+          throwError(
+            () => new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+          ),
+        )
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+        await vi.advanceTimersByTimeAsync(1_000)
+
+        expect(errors).toEqual([])
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 

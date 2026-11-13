@@ -8,6 +8,7 @@ import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {isConnectionSessionError, isUnauthorizedError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
+import {reconnectListener} from '../../util/reconnectListener'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
 import {
@@ -204,6 +205,7 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
+      reconnectListener(),
       tap((event) => {
         if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
       }),
@@ -228,22 +230,36 @@ export function getPairListener(
     ),
   )
 
-  const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      const shouldSyncDocument =
-        event.type === 'reset' ||
-        // note: resumability may not be enabled – if so, treat welcome the same way as a reset
-        event.type === 'welcome'
-      return shouldSyncDocument
-        ? fetchInitialDocumentSnapshots().pipe(
+  const pairEvents$ = defer(() => {
+    let hasSnapshots = false
+    return sharedEvents.pipe(
+      concatMap((event) => {
+        const shouldSyncDocument =
+          event.type === 'reset' ||
+          // note: resumability may not be enabled – if so, treat welcome the same way as a reset
+          event.type === 'welcome' ||
+          // The listener is down before it delivered anything: the snapshots are fetched without
+          // it, so the document can be shown while it reconnects, and again once it welcomes.
+          (event.type === 'reconnect' && !hasSnapshots)
+        if (!shouldSyncDocument) {
+          return of(event)
+        }
+        hasSnapshots = true
+        // The connection event goes first: it tells the document's connection state whether the
+        // snapshots that follow are live.
+        return concat(
+          of(event),
+          fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
               createSnapshotEvent(draftId, draft),
               createSnapshotEvent(publishedId, published),
               ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
             ]),
-          )
-        : of(event)
-    }),
+          ),
+        )
+      }),
+    )
+  }).pipe(
     scan(
       (
         acc: {
