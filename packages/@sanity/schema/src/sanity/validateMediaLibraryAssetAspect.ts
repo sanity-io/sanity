@@ -39,8 +39,6 @@ export function validateMediaLibraryAssetAspect(
     transformTypeVisitors: (typeVisitors) => ({
       ...typeVisitors,
       document: unsupportedTypeValidator('document'),
-      image: unsupportedTypeValidator('image'),
-      file: unsupportedTypeValidator('file'),
       video: unsupportedTypeValidator('sanity.video'),
       reference: unsupportedTypeValidator('reference'),
       crossDatasetReference: unsupportedTypeValidator('cross dataset reference'),
