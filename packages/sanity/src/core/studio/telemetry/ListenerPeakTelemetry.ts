@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type TelemetryLogger} from '@sanity/telemetry'
 import {useEffect} from 'react'
 
-import {getApiProtocol} from '../../network/isUsingLegacyHttp'
+import {getCachedApiProtocol} from '../../network/isUsingLegacyHttp'
 import {getListenerCounts} from '../../network/listenerCount'
 import {
   getPeakStudioTabCount,
@@ -25,17 +25,15 @@ export function ListenerPeakTelemetry(props: {
   const {telemetry, protocolCheckClient} = props
 
   useEffect(() => {
-    startTrackingStudioTabs(getStudioTabScope(protocolCheckClient.config().apiHost))
-    let protocol = 'unknown'
-    const protocolSubscription = getApiProtocol(protocolCheckClient).subscribe((detected) => {
-      protocol = detected
-    })
+    const stopTrackingStudioTabs = startTrackingStudioTabs(
+      getStudioTabScope(protocolCheckClient.config().apiHost),
+    )
 
     function reportPeak() {
       telemetry.log(ListenerPeakMeasured, {
         peakListenerCount: getListenerCounts().peak,
         peakStudioTabCount: getPeakStudioTabCount() ?? null,
-        protocol,
+        protocol: getCachedApiProtocol(protocolCheckClient) ?? null,
         sessionDurationMs: Math.round(performance.now()),
       })
     }
@@ -43,7 +41,7 @@ export function ListenerPeakTelemetry(props: {
     window.addEventListener('pagehide', reportPeak, {capture: true})
     return () => {
       window.removeEventListener('pagehide', reportPeak, {capture: true})
-      protocolSubscription.unsubscribe()
+      stopTrackingStudioTabs()
     }
   }, [telemetry, protocolCheckClient])
 

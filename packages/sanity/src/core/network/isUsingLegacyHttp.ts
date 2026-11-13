@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {defer, firstValueFrom, map, type Observable, of} from 'rxjs'
+import {defer, firstValueFrom, map, type Observable, of, tap} from 'rxjs'
 
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
@@ -21,10 +21,15 @@ const DEFAULT_TIMEOUT = 2_500
  */
 export const PROTOCOL_CHECK_API_VERSION = '2025-03-01'
 
-// The background warning and telemetry share a one-shot check per client. Cache its promise so
-// observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
+interface ProtocolCheck {
+  promise: Promise<string>
+  protocol: string | undefined
+}
+
+// The background warning runs a one-shot check per client and telemetry reads its result. Cache it
+// so observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
 // detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
-const protocolChecks = new WeakMap<SanityClient, Promise<string>>()
+const protocolChecks = new WeakMap<SanityClient, ProtocolCheck>()
 
 /** @internal */
 export interface ApiNetworkResourceTiming {
@@ -83,21 +88,33 @@ export function isUsingLegacyHttp(client: SanityClient): Observable<boolean | un
 }
 
 /**
- * The `nextHopProtocol` of a request to the API, or `'unknown'` if it could not be detected.
- * Runs the probe once per client and replays its result to every later caller.
+ * The `nextHopProtocol` the warning's probe found for this client, or `undefined` while the probe
+ * has not run or settled. Never starts a request.
  *
  * @internal
  */
-export function getApiProtocol(client: SanityClient): Observable<string> {
+export function getCachedApiProtocol(client: SanityClient): string | undefined {
+  return protocolChecks.get(client)?.protocol
+}
+
+function getApiProtocol(client: SanityClient): Observable<string> {
   return defer(() => {
     const cachedCheck = protocolChecks.get(client)
-    if (cachedCheck) return cachedCheck
+    if (cachedCheck) return cachedCheck.promise
 
-    const check = firstValueFrom(
-      getApiNetworkDiagnostic(client).pipe(map((diagnostic) => diagnostic.protocol)),
-    )
+    const check: ProtocolCheck = {
+      protocol: undefined,
+      promise: firstValueFrom(
+        getApiNetworkDiagnostic(client).pipe(
+          map((diagnostic) => diagnostic.protocol),
+          tap((protocol) => {
+            check.protocol = protocol
+          }),
+        ),
+      ),
+    }
     protocolChecks.set(client, check)
-    return check
+    return check.promise
   })
 }
 
