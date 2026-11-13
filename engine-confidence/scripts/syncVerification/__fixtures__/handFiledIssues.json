@@ -1,0 +1,22 @@
+[
+  {
+    "identifier": "SAPP-4792",
+    "url": "https://linear.app/sanity/issue/SAPP-4792/string-edit-is-lost-and-the-document-never-syncs-again-when-someone",
+    "description": "## Repro\n\nPut this in a scratch `*.sync.test.ts` in `packages/sanity/src/core/store/document/sync/` and pass it to `runSyncTest(syncTest)`, which rejects with `World did not settle within 40 rounds; inconsistent: A`.\n\n## Failure signature\n\n```\nsync-gen-signature: World did not settle within N rounds; inconsistent [Unable to apply diffMatchPatch to target title]\n```"
+  },
+  {
+    "identifier": "SAPP-4793",
+    "url": "https://linear.app/sanity/issue/SAPP-4793/setting-a-field-to-the-value-it-already-has-leaves-the-document-out-of",
+    "description": "## Repro\n\nPut this in a scratch `*.sync.test.ts` in `packages/sanity/src/core/store/document/sync/` and pass it to `runSyncTest(syncTest)`, which rejects with `World did not settle within 40 rounds; inconsistent: A`. The lake records only the outside transaction.\n\n## Failure signature\n\n```\nsync-gen-signature: World did not settle within N rounds; inconsistent\n```"
+  },
+  {
+    "identifier": "SAPP-4794",
+    "url": "https://linear.app/sanity/issue/SAPP-4794/a-rejected-save-with-another-save-queued-behind-it-throws-an-unhandled",
+    "description": "## Repro\n\nThe listener receives `Rejected with 409`.\n\n## Failure signature\n\n```\nsync-gen-signature: unhandled rejections [Rejected with 409]\n```"
+  },
+  {
+    "identifier": "SAPP-4795",
+    "url": "https://linear.app/sanity/issue/SAPP-4795/a-draft-created-by-editing-a-published-document-is-missing-systembase",
+    "description": "## Repro\n\nThe server's draft gets `_system: {base: {id: 'article-5', rev: 'seed'}}`, and `expectConverged` fails on A's view of the draft.\n\n## Failure signature\n\n```\nsync-gen-signature: A view of drafts.article-N\n```"
+  }
+]

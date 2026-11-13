@@ -21,14 +21,16 @@ The score cannot reach 100%: some mutants are equivalent to the original code. T
 
 Run from the repo root as `pnpm engine-confidence <command>`. Every command writes under `engine-confidence/reports/` (gitignored). Paths passed to a command resolve from the `engine-confidence/` directory, so the report is `reports/engine-confidence-run.json`.
 
-| Command                                                                                                                        | What it does                                                                                                                |
-| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `stryker --target <sanity\|mutator> [--full] [--previous-dir <dir>]`                                                           | Runs Stryker for one target. Reuses the previous incremental result when the pinned config matches, otherwise runs in full. |
-| `catalogue [--suites <ids>] [--only <ids>] [--check-only]`                                                                     | Applies each catalogue patch, runs the suites, reverts. `--check-only` only checks the patches apply.                       |
-| `score [--stryker-dir <dir>] [--catalogue <file>] [--started-at <iso>] [--trigger <schedule\|dispatch\|local>] [--out <file>]` | Builds the run document from the Stryker reports and the catalogue results.                                                 |
-| `store <file> [--dry-run]`                                                                                                     | Writes the document to Radar. `--dry-run` prints the id and the document and needs no token.                                |
-| `pin`                                                                                                                          | Recomputes the config hash and bumps `config.version` when it changed.                                                      |
-| `unit`                                                                                                                         | Runs this package's unit tests.                                                                                             |
+| Command                                                                                                                                                      | What it does                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `stryker --target <sanity\|mutator> [--full] [--previous-dir <dir>]`                                                                                         | Runs Stryker for one target. Reuses the previous incremental result when the pinned config matches, otherwise runs in full. |
+| `catalogue [--suites <ids>] [--only <ids>] [--check-only]`                                                                                                   | Applies each catalogue patch, runs the suites, reverts. `--check-only` only checks the patches apply.                       |
+| `score [--stryker-dir <dir>] [--catalogue <file>] [--started-at <iso>] [--trigger <schedule\|dispatch\|local>] [--out <file>]`                               | Builds the run document from the Stryker reports and the catalogue results.                                                 |
+| `store <file> [--dry-run]`                                                                                                                                   | Writes the document to Radar. `--dry-run` prints the id and the document and needs no token.                                |
+| `pin`                                                                                                                                                        | Recomputes the config hash and bumps `config.version` when it changed.                                                      |
+| `sync-verify <report.json> --out <verdicts.json> [--dry-run] [--dataset-mode <create\|existing>] [--dataset <name>] [--project-id <id>] [--api-host <host>]` | Replays a sync generator report against a real Content Lake and writes one verdict per failure. See below.                  |
+| `sync-file <report> <verdicts> [<report> <verdicts>...] [--dry-run] [--summary-dir <dir>]`                                                                   | Files new sync generator failures in Linear (see Sync verification).                                                        |
+| `unit`                                                                                                                                                       | Runs this package's unit tests.                                                                                             |
 
 Exit codes: `score` returns 8 when the exclusion register has a problem. `stryker` returns 3 for a dirty package, 5 when a guard fails (a surviving mutant that ran no test, or fewer dry run tests than `dryRunFloor`) and 6 for a config hash mismatch. `catalogue` returns 2 for a patch that does not apply, 3 for a dirty tree, 4 for a suite that is red on the clean tree, 6 for a hash mismatch and 7 for a witness that passes with its patch applied.
 
@@ -53,6 +55,59 @@ pnpm engine-confidence store reports/engine-confidence-run.json --dry-run
 ```
 
 For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz suite and records it as `not-run`. The known bugs count of such a run is not comparable with a full one.
+
+## Sync verification
+
+Three more jobs in the weekly workflow look for new sync engine bugs. They are independent of the score: a failure in them never blocks `score` or `store`.
+
+- `sync-generate` runs the sync generator (`packages/sanity/src/core/store/document/sync/generated.sync.test.ts`) in collect mode on new seeds each ISO week (`<year><week>NN`), on both seams. The operations seam runs one seed in each of six processes because its memoize caches grow with every sequence and a process stops at 5,000 sequences, which collect-mode reruns and shrinking count toward. Each shard also keeps a few passing sequences per seed (`SYNC_GEN_SAMPLE`) for the fake fidelity check, and uploads a generator report. It holds no secrets.
+- `sync-verify` replays each failure against a fresh staging dataset with `SANITY_E2E_WRITE_TOKEN` and writes a verdict per failure: `confirmed`, `fake-mismatch`, `assumed` (not verifiable, such as listener faults) or `error`. It replays the passing samples the same way and marks each `confirmed`, `fake-mismatch` or `error`, which catches the fake answering differently from the real server when no rule broke.
+- `sync-file` runs `sync-file` with `LINEAR_API_KEY` and `SYNC_VERIFICATION_CLAUDE_API_KEY`. For each failure it searches the SAPP team for an issue with the exact line `sync-gen-signature: <signature>`, and skips the failure when one exists. Otherwise it files an issue in the Mutation engine coverage project with the "Sync verification bug" label. A `fake-mismatch` from a failure or a sample becomes an issue about the fake Content Lake, with no AI step, deduped on its own `sync-gen-fake-signature: <fakeSignature>` line. A gap found by a failure and by samples in the same run is filed once, with the failure's repro. A `confirmed` sample files nothing, and an `error` verdict files nothing and is listed in the job summary. The summary's "Fake fidelity" line counts how many replayed samples matched the real server, the rate to watch week over week.
+
+The sample budget is 2 per seed on the pair shard (20 samples) and 3 on each of the six one-seed operations shards (18 samples): 38 samples a week. A passing sample sends 1.8 submissions on the pair seam and 2.5 on the operations seam on average (6 at most), so with its initial documents and a read-back per submission that is about 300 requests to the staging project, a few minutes of `sync-verify` run one report at a time, on top of the failures. Raise `sample` in the `sync-generate` matrix to widen the check.
+
+`sync-verify` and `sync-file` run on `main` only, for the schedule or a manual dispatch, and each holds only its own secrets. Scheduled runs file for real. A manual dispatch is a dry run unless `sync_dry_run` is turned off: it still looks up duplicates, and prints every issue it would file in the job summary.
+
+The report and verdicts shapes live in `scripts/syncVerification/contracts.ts`.
+
+### Verifying against the real Content Lake
+
+`sync-verify` checks the fake Content Lake against the real one for every failure in a sync generator report. It seeds the failure's `initial` documents, sends each submission the fake answered on its own, in the order the fake applied them (`settledAt`), to the actions or mutate endpoint on API version `v2025-02-19`, the version the Studio commits on, and reads the documents back after each one. It compares the status code, the error `body.type` and the documents, ignoring `_rev`, `_createdAt` and `_updatedAt`, with the same submissions replayed through `@repo/content-lake-model`. Injected rejections and submissions the fake never answered are skipped.
+
+Document ids are prefixed with `fv-probe-<run>-f<failure>-`, and revision preconditions are rewritten to the real revisions, so failures never touch each other's documents. Each failure's documents are deleted when it finishes.
+
+| Verdict         | Meaning                                                                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`     | The real server agreed on every replayed submission.                                                                                                                      |
+| `fake-mismatch` | The real server disagreed on at least one submission. `differences` lists each one.                                                                                       |
+| `assumed`       | Nothing was replayed, only outside edits were replayed, or the failure also depends on a listener fault or an injected rejection, which the real server cannot reproduce. |
+| `error`         | The step could not finish for that failure, or the model replayed in submission order did not reproduce the generator's recorded outcome.                                 |
+
+Passing samples in `report.samples` are replayed the same way, after the failures, and land in `samples` in the verdicts file as `confirmed`, `fake-mismatch` or `error`. A sample is never `assumed`.
+
+Every `fake-mismatch`, from a failure or a sample, carries a `fakeSignature` built from the first submission the real server answered differently:
+
+```text
+fake-mismatch | <actions|mutations> | <operations> | <fake status>-><real status> | <error type or document:fields>
+```
+
+The operations are the sorted action and patch operations of that request, joined with `+` like the generator's `operation` field (`document.edit:insert+document.edit:set`, `patch:insert`, `delete`). Each one is qualified by the action type or `patch`, which the generator's field leaves out since it names only the patch operations of one mutation. The signature leaves out the `_empty_action_guard_pseudo_field_` unset the form path adds. Outside writes count as `mutations`, since they go to the same endpoint. The last part is the real error type, or the fake's when only the fake rejected, and `document:` plus the differing top-level fields, joined with `+`, when only the documents differ. The signature holds no ids, revisions or values, so the same gap found by a failure and a sample files as one issue.
+
+`--dataset-mode create`, the default, creates `cursor_ci_sync_<random>` on `SANITY_E2E_PROJECT_ID` at `api.sanity.work` and deletes it at the end, on failure and on SIGINT or SIGTERM as well. The e2e cleanup job sweeps any `cursor_ci_` dataset older than 24 hours. `--dataset-mode existing --dataset <name>` reuses a dataset and creates only the prefixed documents. The token comes from `SANITY_E2E_SESSION_TOKEN`, and `SANITY_CLI_API_RATE_LIMIT_BYPASS` is sent when it is set. `--dry-run` needs no token: it validates the report and prints what it would replay.
+
+The command exits 0 whenever it writes the verdicts file, including when a verdict is `error`. It exits 1 for an invalid report or when it cannot delete the dataset it created.
+
+### Filing in Linear
+
+Dedupe matches whole lines only. An issue can carry several signature lines, and a signature that is a prefix of another never matches it. To mark a hand-filed issue as covering a signature, add the line to its `Failure signature` block.
+
+The script owns the title, the repro (the shrunk `SyncTestDefinition`, how to run it and the commit), the evidence, the real Content Lake result and the signature line. The evidence section states the level and lists each injected fault with the real behaviour it `represents`, so a reader can check the trigger is reachable in production. A `confirmed` verdict is `L1` for the server replies only. An `assumed` failure is `L3`: its title starts with "constrain the generator or find a repro", and it never asks for a client fix. A failure the generator tagged with an open `knownBug` is listed under "Known bugs (not filed)" and not filed, unless the real server disagrees with the fake. Claude writes only what happens, the user impact and the likely cause, labelled a hypothesis. The script checks its own sections are byte-identical after the AI step, and files nothing for that failure when they are not. `SYNC_VERIFICATION_CLAUDE_MODEL` overrides the model.
+
+Run it locally with the generator report and the verdicts file of each seam. Without the keys, a dry run skips the dedupe lookup and prints a placeholder for the AI sections:
+
+```bash
+pnpm engine-confidence sync-file reports/sync-verification/report-pair-0.json reports/sync-verification/verdicts-pair-0.json --dry-run
+```
 
 ## The exclusion register
 
