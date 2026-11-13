@@ -69,6 +69,7 @@ function SetHarness({
   locked,
   editingId,
   servedVersion,
+  showStatusBadges,
   count,
   releases = RELEASES,
   variants = VARIANTS,
@@ -78,6 +79,7 @@ function SetHarness({
   count?: number
   editingId?: string
   servedVersion?: ServedVersion
+  showStatusBadges?: boolean
   selectedIds?: ReadonlySet<string>
   selectionState?: GroupSelectionState
   onCheckedChange?: (checked: boolean) => void
@@ -104,6 +106,7 @@ function SetHarness({
             releases={releases}
             isSelected={entry.id === editingId}
             servedStatus={servedVersion?.id === entry.id ? servedVersion.status : undefined}
+            showStatusBadges={showStatusBadges}
             onPrimaryAction={() => onPrimaryAction(entry)}
             leading={
               readOnly ? undefined : (
@@ -385,12 +388,34 @@ describe('DocumentGroupSet', () => {
     expect(getSetCheckbox()).toBeDisabled()
   })
 
+  it('hides the Editing and Served badges by default, for the Open Beta', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <SetHarness
+        editingId={SUMMER_SALE.id}
+        servedVersion={{id: WINTER_SALE.id, status: 'secondary'}}
+      />,
+    )
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await settleChromaticEndState()
+
+    expect(getSet().querySelector('[data-badge]')).toBeNull()
+    expect(getRow(SUMMER_SALE).textContent).not.toContain('Editing')
+    expect(getRow(WINTER_SALE).textContent).not.toContain('Served')
+    // Without the badge, the row carries no description of it either
+    expect(getRow(WINTER_SALE).querySelector('.primary-action')).not.toHaveAttribute(
+      'aria-describedby',
+    )
+  })
+
   it('badges the served version alongside the version being edited', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(
       <SetHarness
         editingId={SUMMER_SALE.id}
         servedVersion={{id: SUMMER_SALE.id, status: 'primary'}}
+        showStatusBadges
       />,
     )
 
@@ -409,6 +434,7 @@ describe('DocumentGroupSet', () => {
       <SetHarness
         editingId={SUMMER_SALE.id}
         servedVersion={{id: WINTER_SALE.id, status: 'secondary'}}
+        showStatusBadges
       />,
     )
 

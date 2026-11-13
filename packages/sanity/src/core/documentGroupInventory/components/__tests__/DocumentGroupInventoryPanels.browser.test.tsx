@@ -54,6 +54,7 @@ import {MIN_MENU_WIDTH} from '../CreateVariant/CreateVariantPicker'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
 import {DocumentGroupSet} from '../DocumentGroupSet'
 import {InventoryHeader} from '../InventoryHeader'
+import {LEADING_GLYPH_SIZE} from '../VariantSet/LeadingGlyph'
 import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
 
 const PUBLISHED_ID = 'panels-document'
@@ -1218,6 +1219,48 @@ describe('InventoryHeader', () => {
     expect(deletionRef.getSnapshot().matches('active')).toBe(true)
   })
 
+  it('puts the count on the left, then Clear and an outlined Delete on the right', async () => {
+    const refs = startHarness()
+    refs.selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
+    void render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $delete = page.getByRole('button', {name: 'Delete', exact: true})
+    const $clear = page.getByRole('button', {name: 'Clear', exact: true})
+    await expect.element($delete).toBeVisible()
+    const status = page.getByTestId('selected-count-status').element().getBoundingClientRect()
+    const clear = ($clear.element() as HTMLElement).getBoundingClientRect()
+    const deleteButton = $delete.element() as HTMLElement
+    const del = deleteButton.getBoundingClientRect()
+
+    // Status, then Clear, then Delete, rightmost
+    expect(status.right).toBeLessThan(clear.left)
+    expect(clear.right).toBeLessThan(del.left)
+    const bar = deleteButton.closest('.atom')!.parentElement!.getBoundingClientRect()
+    expect(bar.right - del.right).toBeLessThan(bar.right - clear.right)
+
+    // At least the 24x24 a target needs
+    for (const rect of [clear, del]) {
+      expect(rect.width).toBeGreaterThanOrEqual(24)
+      expect(rect.height).toBeGreaterThanOrEqual(24)
+    }
+
+    // Outlined, not filled: ui5's secondary level, a border on a background within a hair of the
+    // bar's, with the critical text at 4.5:1 or more
+    const style = getComputedStyle(deleteButton)
+    const behind = background(deleteButton.closest('.atom')!.parentElement as HTMLElement)
+    expect(contrastRatio(background(deleteButton), behind)).toBeLessThan(1.1)
+    expect(Number.parseFloat(style.borderTopWidth) > 0 || /inset/.test(style.boxShadow)).toBe(true)
+    const label = deleteButton.querySelector<HTMLElement>('[data-ui="Text"], span') ?? deleteButton
+    expect(
+      contrastRatio(rgb(getComputedStyle(label).color), background(deleteButton)),
+    ).toBeGreaterThanOrEqual(4.5)
+
+    // Keyboard order follows the visual order
+    ;($clear.element() as HTMLElement).focus()
+    await userEvent.tab()
+    expect(document.activeElement).toBe(deleteButton)
+  })
+
   it('swaps the group actions for clear while versions are selected', async () => {
     // The selected header is archived by the test above, and this one ends
     // back on the empty header.
@@ -1306,10 +1349,13 @@ function SelectionPanel({
   refs,
   onOpen = () => undefined,
   scheme = 'light',
+  openId,
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
   scheme?: 'light' | 'dark'
+  /** The version open in the form. */
+  openId?: string
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
@@ -1321,7 +1367,7 @@ function SelectionPanel({
         <Container>
           <InventoryHeader {...refs} components={COMPONENTS} />
           <Body>
-            <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} />
+            <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} openId={openId} />
           </Body>
         </Container>
       </Card>
@@ -1332,9 +1378,11 @@ function SelectionPanel({
 function SelectionSets({
   selectionRef,
   onOpen,
+  openId,
 }: {
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   onOpen: (entry: Variant) => void
+  openId?: string
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
@@ -1390,6 +1438,7 @@ function SelectionSets({
               key={entry.id}
               variant={entry}
               releases={SELECTION_RELEASES}
+              isSelected={entry.id === openId}
               onPrimaryAction={() => onOpen(entry)}
               onToggleSelection={blocked ? undefined : () => toggle(entry.id, false)}
               selectionBlockedReason={
@@ -1473,6 +1522,34 @@ function textContrast(text: HTMLElement, row: HTMLElement) {
   return contrastRatio(rgb(getComputedStyle(text).color), background(row))
 }
 
+/**
+ * How big an icon's glyph paints, in px: the larger side of the box around its shapes as the
+ * browser lays them out, with their strokes. Measured from the rendered page, not from the CSS.
+ */
+function paintedGlyphSize(svg: SVGSVGElement): number {
+  const pxPerUnit = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width
+  const sides = {left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity}
+  for (const shape of svg.querySelectorAll<SVGGraphicsElement>('path, circle')) {
+    const rect = shape.getBoundingClientRect()
+    const style = getComputedStyle(shape)
+    const halfStroke =
+      style.stroke === 'none' ? 0 : (Number.parseFloat(style.strokeWidth) * pxPerUnit) / 2
+    sides.left = Math.min(sides.left, rect.left - halfStroke)
+    sides.top = Math.min(sides.top, rect.top - halfStroke)
+    sides.right = Math.max(sides.right, rect.right + halfStroke)
+    sides.bottom = Math.max(sides.bottom, rect.bottom + halfStroke)
+  }
+  return Math.max(sides.right - sides.left, sides.bottom - sides.top)
+}
+
+function headerGlyph(setName: string): SVGSVGElement {
+  return selectionSet(setName).querySelector<SVGSVGElement>('header .variant-set-icon svg')!
+}
+
+function header(setName: string): HTMLElement {
+  return selectionSet(setName).querySelector<HTMLElement>('header')!
+}
+
 function selected(refs: ReturnType<typeof startHarness>): string[] {
   return [...refs.selectionRef.getSnapshot().context.selectedIds].toSorted()
 }
@@ -1496,6 +1573,66 @@ describe('Inventory selection', () => {
     expect(
       Math.abs(centreX(mark) - selectionSet('Draft').getBoundingClientRect().left - 47.5),
     ).toBeLessThanOrEqual(1)
+  })
+
+  it('paints the group icons and the row marks at one size', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<SelectionPanel refs={startSelectionHarness()} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+      .toBeInTheDocument()
+    await settleChromaticEndState()
+
+    // The diamond, the Published and Draft dots and a scheduled release's clock: before, 9.2px,
+    // 5.2px, 5.2px and 14.4px in the same 21px column
+    const mark = selectionRow('Draft', 'VIP users').querySelector<SVGSVGElement>(
+      '.variant-mark svg',
+    )!
+    expect(paintedGlyphSize(mark)).toBeCloseTo(LEADING_GLYPH_SIZE, 0)
+    for (const setName of ['Published', 'Draft', scheduledRelease.metadata.title]) {
+      expect(
+        Math.abs(paintedGlyphSize(headerGlyph(setName)) - paintedGlyphSize(mark)),
+      ).toBeLessThan(0.5)
+    }
+  })
+
+  it("paints an ASAP, an undecided and an agent group icon at the row marks' size", async () => {
+    void render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        {(
+          [
+            ['ASAP', {type: 'perspective', perspective: activeASAPRelease}],
+            ['Undecided', {type: 'perspective', perspective: activeUndecidedRelease}],
+            ['Agent', {type: 'agent'}],
+          ] as const
+        ).map(([name, bundle]) => (
+          <DocumentGroupSet
+            key={name}
+            name={name}
+            bundle={bundle as VariantSet['bundle']}
+            selectionState="unchecked"
+            onCheckedChange={() => undefined}
+          >
+            <DocumentGroupEntry
+              variant={DRAFT_VIP}
+              releases={SELECTION_RELEASES}
+              onPrimaryAction={() => undefined}
+            />
+          </DocumentGroupSet>
+        ))}
+      </TestWrapper>,
+    )
+
+    await expect.element(page.getByText('Undecided')).toBeVisible()
+    const mark = selectionRow('ASAP', 'VIP users').querySelector<SVGSVGElement>(
+      '.variant-mark svg',
+    )!
+    for (const setName of ['ASAP', 'Undecided', 'Agent']) {
+      expect(
+        Math.abs(paintedGlyphSize(headerGlyph(setName)) - paintedGlyphSize(mark)),
+      ).toBeLessThan(0.5)
+    }
   })
 
   it('keeps an empty checkbox quiet at rest at 3:1, and at full contrast on hover and focus', async () => {
@@ -1561,6 +1698,128 @@ describe('Inventory selection', () => {
     },
   )
 
+  it.each(['light', 'dark'] as const)(
+    'keeps a checked group header a step stronger than its checked rows, in %s mode',
+    async (scheme) => {
+      const refs = startSelectionHarness()
+      void render(<SelectionPanel refs={refs} scheme={scheme} />)
+
+      await expect
+        .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+        .toBeInTheDocument()
+      const panel = page.getByTestId('selection-panel').element() as HTMLElement
+      const band = background(header('Draft'))
+
+      refs.selectionRef.send({
+        type: 'selection.addMany',
+        variantIds: [DRAFT.id, DRAFT_VIP.id, DRAFT_SUMMER.id],
+      })
+      await expect.poll(() => groupCheckbox('Draft').checked).toBe(true)
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+
+      const checkedHeader = background(header('Draft'))
+      const checkedRow = background(selectionRow('Draft', 'VIP users'))
+      // The header no longer takes its rows' tint: it keeps a band of its own, tinted
+      expect(checkedHeader).not.toEqual(checkedRow)
+      expect(contrastRatio(checkedHeader, checkedRow)).toBeGreaterThan(1.15)
+      expect(contrastRatio(checkedHeader, band)).toBeGreaterThan(1.15)
+      // One step stronger: further from the panel than the rows are
+      expect(contrastRatio(checkedHeader, background(panel))).toBeGreaterThan(
+        contrastRatio(checkedRow, background(panel)),
+      )
+      // The checked tint still reads apart from the resting header band and from the panel
+      expect(contrastRatio(checkedRow, band)).toBeGreaterThan(1.1)
+      expect(contrastRatio(checkedRow, background(panel))).toBeGreaterThan(1.15)
+
+      const name = header('Draft').querySelector<HTMLElement>('[data-testid="variant-set-name"]')!
+      expect(textContrast(name, header('Draft'))).toBeGreaterThanOrEqual(4.5)
+      // The checked box, the control that says "selected", keeps 3:1 or more on both tints
+      for (const [checkbox, element] of [
+        [groupCheckbox('Draft'), header('Draft')],
+        [rowCheckbox('Draft', 'VIP users'), selectionRow('Draft', 'VIP users')],
+      ] as const) {
+        const fill = rgb(getComputedStyle(checkbox.nextElementSibling!).backgroundColor)
+        expect(contrastRatio(fill, background(element))).toBeGreaterThanOrEqual(3)
+      }
+    },
+  )
+
+  it.each(['light', 'dark'] as const)(
+    'marks the row of the open version, and keeps the mark when it is checked, in %s mode',
+    async (scheme) => {
+      const refs = startSelectionHarness()
+      void render(<SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id} />)
+
+      await expect
+        .element(page.getByRole('button', {name: 'VIP users', exact: true}))
+        .toHaveAttribute('aria-current', 'true')
+      const open = selectionRow('Draft', 'VIP users')
+      const other = selectionRow('Draft', 'Summer sale')
+
+      // Only the open row is marked
+      const marked = [...document.querySelectorAll('[data-variant-name] .primary-action')].filter(
+        (action) => action.hasAttribute('aria-current'),
+      )
+      expect(marked).toHaveLength(1)
+      expect(other.querySelector('.primary-action')).not.toHaveAttribute('aria-current')
+      expect(getComputedStyle(other, '::before').content).toBe('none')
+
+      // A semibold title, against the other rows' medium one
+      const weight = (row: HTMLElement) =>
+        Number(getComputedStyle(row.querySelector('[data-testid="version-title"]')!).fontWeight)
+      expect(weight(open)).toBe(600)
+      expect(weight(other)).toBe(500)
+
+      // A 2px bar on the row's left edge, full height, at 3:1 or more on the row; not a tint
+      const plain = background(other)
+      expect(background(open)).toEqual(plain)
+      const bar = () => {
+        const style = getComputedStyle(open, '::before')
+        return {
+          width: Number.parseFloat(style.width),
+          height: Number.parseFloat(style.height),
+          left: Number.parseFloat(style.left),
+          color: rgb(style.backgroundColor),
+        }
+      }
+      expect(bar().width).toBe(2)
+      expect(bar().left).toBe(0)
+      // Full height, under the 1px line between rows
+      expect(Math.abs(bar().height - open.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+      expect(contrastRatio(bar().color, plain)).toBeGreaterThanOrEqual(3)
+
+      // Checked: the row takes the tint, and keeps the bar and the title
+      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
+      await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
+      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
+      expect(background(open)).not.toEqual(plain)
+      expect(bar().width).toBe(2)
+      // A neutral, the text colour, not the blue the tint is mixed from
+      expect(Math.max(...bar().color) - Math.min(...bar().color)).toBeLessThan(30)
+      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
+      expect(weight(open)).toBe(600)
+      expect(page.getByRole('button', {name: 'VIP users', exact: true}).element()).toHaveAttribute(
+        'aria-current',
+        'true',
+      )
+
+      // Hovered, too
+      await userEvent.hover(page.elementLocator(other))
+      await userEvent.hover(page.elementLocator(open))
+      expect(contrastRatio(bar().color, background(open))).toBeGreaterThanOrEqual(3)
+    },
+  )
+
+  it('shows no Editing or Served badges in the panel', async () => {
+    void render(<SelectionPanel refs={startSelectionHarness()} openId={DRAFT.id} />)
+
+    await expect
+      .element(page.getByRole('button', {name: 'Default', exact: true}).first())
+      .toBeInTheDocument()
+    expect(document.querySelector('[data-badge]')).toBeNull()
+    expect(document.querySelector('[data-testid="version-badges"]')).toBeNull()
+  })
+
   it('keeps Sanity UI focus ring on the group checkbox, over the quiet border', async () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
@@ -1621,6 +1880,7 @@ describe('Inventory selection', () => {
             variant={DRAFT_VIP}
             releases={SELECTION_RELEASES}
             servedStatus="primary"
+            showStatusBadges
             onPrimaryAction={() => undefined}
           />
         </DocumentGroupSet>

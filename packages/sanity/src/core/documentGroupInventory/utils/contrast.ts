@@ -66,3 +66,16 @@ export function mixToContrast(fg: string, bg: string, ratio: number): string {
   }
   return fg
 }
+
+/**
+ * `amountOfA` (0–1) of `a` mixed into `b`, as `color-mix(in srgb, a x%, b)` would. Falls back to `b`
+ * when either colour can't be read.
+ *
+ * @internal
+ */
+export function mixColors(a: string, b: string, amountOfA: number): string {
+  const aRgb = parseColor(a)
+  const bRgb = parseColor(b)
+  if (!aRgb || !bRgb) return b
+  return toHex(mix(aRgb, bRgb, amountOfA))
+}
