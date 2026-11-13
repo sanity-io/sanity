@@ -281,7 +281,7 @@ export function DocumentVersionsFlyoutList(props: {
           title={
             <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
               {total > 1
-                ? t('document-group.flyout.see-all', {count: total})
+                ? t('document-group.flyout.see-all-versions')
                 : t('document-group.flyout.manage-versions')}
             </Text>
           }

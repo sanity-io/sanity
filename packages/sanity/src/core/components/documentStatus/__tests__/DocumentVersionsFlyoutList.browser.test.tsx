@@ -137,7 +137,9 @@ describe('DocumentVersionsFlyoutList', () => {
     expect(onPick).toHaveBeenLastCalledWith(german._id)
     await page.getByRole('menuitem', {name: /Default/}).click()
     expect(onPick).toHaveBeenLastCalledWith(null)
-    await page.getByRole('menuitem', {name: /See all 3 versions/}).click()
+    await page
+      .getByRole('menuitem', {name: 'See all versions in the inventory', exact: true})
+      .click()
     expect(onOpenInventory).toHaveBeenCalledTimes(1)
   })
 
@@ -198,6 +200,12 @@ describe('DocumentVersionsFlyoutList', () => {
         .element(page.getByRole('menuitem', {name: /Swedish/}))
         .toHaveStyle({backgroundColor: hoverGrey})
       expect(getComputedStyle(rows[2]).outlineStyle).toBe('solid')
+
+      // The footer row moves through in the same grey
+      const footer = page.getByTestId('document-versions-flyout-inventory')
+      await footer.hover()
+      await expect.element(footer).toHaveStyle({backgroundColor: hoverGrey})
+      await userEvent.unhover(footer)
 
       await settleChromaticEndState()
     })
