@@ -27,6 +27,7 @@ import {type Tool} from '../config/types'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
+import {ActivityKeepAliveProvider} from './mountedTools/ActivityKeepAliveProvider'
 import {useMountedTools} from './mountedTools/useMountedTools'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
@@ -267,23 +268,22 @@ export function StudioLayoutComponent() {
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
                 // tool's. `useMountedTools` keeps the active tool's entry on the live router.
-                <Activity
-                  key={tool.name}
-                  mode={tool.name === activeToolName ? 'visible' : 'hidden'}
-                >
-                  <RouterContext.Provider value={toolRouter}>
-                    <StudioErrorBoundary
-                      heading={`The ${tool.name} tool crashed`}
-                      getErrorScreen={getErrorScreen}
-                    >
-                      <RenderTool
-                        tool={tool}
-                        ActiveToolLayout={ActiveToolLayout}
-                        toolMountT0Ref={toolMountT0Ref}
-                      />
-                    </StudioErrorBoundary>
-                  </RouterContext.Provider>
-                </Activity>
+                <ActivityKeepAliveProvider key={tool.name} hidden={tool.name !== activeToolName}>
+                  <Activity mode={tool.name === activeToolName ? 'visible' : 'hidden'}>
+                    <RouterContext.Provider value={toolRouter}>
+                      <StudioErrorBoundary
+                        heading={`The ${tool.name} tool crashed`}
+                        getErrorScreen={getErrorScreen}
+                      >
+                        <RenderTool
+                          tool={tool}
+                          ActiveToolLayout={ActiveToolLayout}
+                          toolMountT0Ref={toolMountT0Ref}
+                        />
+                      </StudioErrorBoundary>
+                    </RouterContext.Provider>
+                  </Activity>
+                </ActivityKeepAliveProvider>
               ))}
             </Card>
           </StudioErrorBoundary>
