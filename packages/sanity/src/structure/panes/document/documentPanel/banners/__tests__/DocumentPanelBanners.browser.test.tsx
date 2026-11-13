@@ -2,7 +2,7 @@ import {takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {ThemeColorProvider} from '@sanity/ui'
-import {type ReactNode, useMemo} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import type * as SanityExports from 'sanity'
 import {
@@ -441,10 +441,60 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  it('follows the document inventory opening and closing while it is on screen', async () => {
+    function Toggling() {
+      const [open, setOpen] = useState(false)
+      return (
+        <BannerHarness router={{params: open ? {inspect: DOCUMENT_GROUP_INSPECTOR_NAME} : {}}}>
+          <div data-testid="banner-host">
+            <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+          </div>
+          <button type="button" onClick={() => setOpen((current) => !current)}>
+            Toggle inventory
+          </button>
+        </BannerHarness>
+      )
+    }
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <div style={{width: 640}}>
+          <Toggling />
+        </div>
+      </TestWrapper>,
+    )
+
+    const $button = page.getByRole('button', {name: 'Add to release'})
+    const host = () => page.getByTestId('banner-host').element()
+    // A filled button's fill stands out from the banner; a ghost button's barely departs from it
+    const filled = () => {
+      const element = $button.element()
+      return (
+        contrastRatio(
+          getComputedStyle(element).backgroundColor,
+          backgroundBehind(element.parentElement ?? element),
+        ) >= 3
+      )
+    }
+
+    const heights: Record<string, number> = {}
+    for (const [step, open] of [
+      ['closed', false],
+      ['open', true],
+      ['closed again', false],
+      ['open again', true],
+    ] as const) {
+      if (step !== 'closed') await page.getByRole('button', {name: 'Toggle inventory'}).click()
+      await expect.poll(filled, {message: step}).toBe(!open)
+      await expect.element($button).toBeEnabled()
+      heights[step] = host().getBoundingClientRect().height
+    }
+    // The same banner stays mounted, and swapping the button's mode does not move the form below
+    expect(new Set(Object.values(heights)).size, JSON.stringify(heights)).toBe(1)
+    await settleChromaticEndState()
+  })
+
   it('steps Add to release down to a secondary button while the document inventory is open', async () => {
-    const inventoryOpen = {
-      inspector: {name: DOCUMENT_GROUP_INSPECTOR_NAME},
-    } as Partial<DocumentPaneContextValue>
+    const inventoryOpen = {params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}
     await render(
       <TestWrapper schemaTypes={schemaTypes}>
         <div data-testid="closed">
@@ -455,7 +505,7 @@ describe('document panel banners', () => {
         {(['light', 'dark'] as const).map((scheme) => (
           <ThemeColorProvider key={scheme} scheme={scheme}>
             <div data-testid={`open-${scheme}`}>
-              <BannerHarness pane={inventoryOpen}>
+              <BannerHarness router={inventoryOpen}>
                 <DocumentNotInReleaseBanner
                   documentId={DOCUMENT_ID}
                   currentRelease={springRelease}
