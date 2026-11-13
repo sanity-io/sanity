@@ -101,16 +101,19 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
       <Flex alignItems="flex-start" flexWrap="wrap" gap={4}>
         <Stack gap={2}>
           <NetworkGlobe api={region} local={Boolean(local)} reachedApi={!cacheHit} you={you} />
-          <Flex alignItems="center" gap={2} justifyContent="center">
-            <Badge fontSize={0} tone="primary">
-              {t('vision.network.you')}
-            </Badge>
-            {region && !local && (
-              <Badge fontSize={0} tone="caution">
-                {region.id}
+          {/* For local answers the crab on the globe is you; it needs no label */}
+          {!local && (
+            <Flex alignItems="center" gap={2} justifyContent="center">
+              <Badge fontSize={0} tone="primary">
+                {t('vision.network.you')}
               </Badge>
-            )}
-          </Flex>
+              {region && (
+                <Badge fontSize={0} tone="caution">
+                  {region.id}
+                </Badge>
+              )}
+            </Flex>
+          )}
         </Stack>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
           <Stack gap={4}>

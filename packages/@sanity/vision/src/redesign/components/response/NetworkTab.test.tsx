@@ -235,6 +235,7 @@ describe('NetworkTab', () => {
     expect(screen.queryByTestId('vision-network-hint')).toBeNull()
     expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
     expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+    expect(screen.queryByText('vision.network.you')).toBeNull()
     const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
       unknown,
       {arcs: unknown[]; markers: unknown[]},
@@ -256,6 +257,8 @@ describe('NetworkTab', () => {
   it('keeps the blue dot for answers from the API', async () => {
     await renderTab({meta: meta(cdnMiss)})
     expect(screen.queryByTestId('vision-network-crab')).toBeNull()
+    expect(screen.getByText('vision.network.you')).toBeTruthy()
+    expect(screen.getByText('europe-west1')).toBeTruthy()
     const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
       unknown,
       {markers: unknown[]},
