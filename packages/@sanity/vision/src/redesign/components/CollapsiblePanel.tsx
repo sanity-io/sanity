@@ -1,11 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Button, Tab, TabList, TabPanel} from '@sanity/ui'
+import {Button, Tab, TabList, TabPanel, type ButtonTone} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {cx} from '../util/cx'
+import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './redesign.module.css'
 
 /** Height of the tab header, which is all that remains of a collapsed panel */
@@ -16,6 +17,13 @@ export interface CollapsiblePanelTab {
   label: ReactNode
   /** Rendered after the label, for instance a count or a warning icon */
   icon?: ReactNode
+  /**
+   * Draws the tab like a Content Releases filter chip. The Lint tab uses `critical` once the
+   * query has findings, so the count in its label reads as a soft red pill in the tab row.
+   */
+  tone?: ButtonTone
+  /** Softens `tone`, the way the releases Errors chip does */
+  muted?: boolean
   content: ReactNode
 }
 
@@ -27,6 +35,11 @@ export interface CollapsiblePanelProps {
   collapsed: boolean
   onTabChange: (id: string) => void
   onToggle: () => void
+  /**
+   * Double-clicking a tab sizes the panel to that tab. A single click only selects it (and
+   * expands a collapsed panel).
+   */
+  onTabDoubleClick?: (id: string) => void
 }
 
 /**
@@ -34,7 +47,15 @@ export interface CollapsiblePanelProps {
  * header remains, and picking a tab expands it again.
  */
 export function CollapsiblePanel(props: CollapsiblePanelProps) {
-  const {id: idPrefix, tabs, activeTabId, collapsed, onTabChange, onToggle} = props
+  const {
+    id: idPrefix,
+    tabs,
+    activeTabId,
+    collapsed,
+    onTabChange,
+    onToggle,
+    onTabDoubleClick,
+  } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
   const stripRef = useRef<HTMLDivElement>(null)
@@ -81,6 +102,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             {tabs.map((tab) => (
               <Tab
                 aria-controls={`${idPrefix}-${tab.id}-panel`}
+                className={motion.pressable}
                 fontSize={1}
                 icon={tab.icon}
                 id={`${idPrefix}-${tab.id}-tab`}
@@ -90,7 +112,18 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                   onTabChange(tab.id)
                   if (collapsed) onToggle()
                 }}
+                onDoubleClick={
+                  onTabDoubleClick
+                    ? (event) => {
+                        event.preventDefault()
+                        onTabDoubleClick(tab.id)
+                      }
+                    : undefined
+                }
+                muted={tab.muted}
                 padding={2}
+                title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
+                tone={tab.tone}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
               />
@@ -98,10 +131,17 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           </TabList>
         </Box>
         <Button
+          aria-controls={collapsed ? undefined : `${idPrefix}-${activeTab.id}-panel`}
+          aria-expanded={!collapsed}
           aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
+          className={cx(motion.pressable, motion.toggle)}
           data-testid={`${idPrefix}-panel-toggle`}
           fontSize={1}
-          icon={collapsed ? ChevronUpIcon : ChevronDownIcon}
+          icon={
+            <span className={motion.toggleChevron}>
+              <ChevronDownIcon />
+            </span>
+          }
           mode="bleed"
           onClick={onToggle}
           padding={2}
@@ -110,11 +150,18 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       {!collapsed && (
         <TabPanel
           aria-labelledby={`${idPrefix}-${activeTab.id}-tab`}
+          className={motion.body}
           flex={1}
           id={`${idPrefix}-${activeTab.id}-panel`}
           overflow="auto"
         >
-          {activeTab.content}
+          {/*
+            Not stretched to the panel: its height is the tab's content, which fit-to-content
+            measures. A stretched child would report the panel it sits in.
+          */}
+          <div className={styles.panelContent} data-vision-panel-content="">
+            {activeTab.content}
+          </div>
         </TabPanel>
       )}
     </Flex>

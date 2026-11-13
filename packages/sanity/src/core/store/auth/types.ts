@@ -12,7 +12,7 @@ export type AuthProbeResult = {authenticated: false} | {authenticated: true; id:
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
  *
  * NOTE: This interface is primarily for internal use. Refer to
- * `createAuthStore` instead.
+ * the `auth` config key instead.
  *
  * @beta
  * @hidden
@@ -37,7 +37,7 @@ export interface AuthStore {
   token?: Observable<string | null>
   /**
    * Custom auth stores are expected to implement a UI that initiates the user's
-   * authentication. For the typical case in `createAuthStore`, this means
+   * authentication. For the typical case, this means
    * loading the providers and showing them as options to the user.
    */
   LoginComponent?: ComponentType<LoginComponentProps>

@@ -2168,9 +2168,6 @@ importers:
       ui5:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
-      use-effect-event:
-        specifier: ^2.0.4
-        version: 2.0.4(react@19.3.1)
       xstate:
         specifier: ^5.33.4
         version: 5.33.4
@@ -2193,6 +2190,9 @@ importers:
       '@repo/tsdown.config':
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
+      '@storybook/react-vite':
+        specifier: ^10.6.7
+        version: 10.6.7(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)(storybook@10.6.7)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.3.8)
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
@@ -2226,6 +2226,9 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../sanity
+      storybook:
+        specifier: 'catalog:'
+        version: 10.6.7(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
@@ -2552,9 +2555,6 @@ importers:
       use-device-pixel-ratio:
         specifier: ^1.1.2
         version: 1.1.2(react@19.3.1)
-      use-effect-event:
-        specifier: ^2.0.4
-        version: 2.0.4(react@19.3.1)
       use-hot-module-reload:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.1)

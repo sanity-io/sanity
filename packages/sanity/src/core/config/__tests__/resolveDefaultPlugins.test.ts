@@ -1,5 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
+import {commentsInspector} from '../../comments-v2/plugin/inspector'
+import {commentsInspector as commentsLegacyInspector} from '../../comments/plugin/inspector'
 import {definePlugin} from '../definePlugin'
 import {getDefaultPlugins, getDefaultPluginsOptions} from '../resolveDefaultPlugins'
 import {type WorkspaceOptions} from '../types'
@@ -16,7 +18,25 @@ const workspace = (overrides: Partial<WorkspaceOptions> = {}): WorkspaceOptions 
 const pluginNames = (config: WorkspaceOptions) =>
   getDefaultPlugins(getDefaultPluginsOptions(config), config.plugins).map((plugin) => plugin.name)
 
+function commentsPluginInspector(config: WorkspaceOptions) {
+  const plugins = getDefaultPlugins(getDefaultPluginsOptions(config), config.plugins)
+  const inspectors = plugins.find((plugin) => plugin.name === 'sanity/comments')?.document
+    ?.inspectors
+
+  return Array.isArray(inspectors) ? inspectors[0] : undefined
+}
+
 describe('getDefaultPlugins', () => {
+  it('registers the comments plugin by default', () => {
+    expect(commentsPluginInspector(workspace())).toBe(commentsInspector)
+  })
+
+  it('registers the legacy addon comments plugin when comments.legacy is true', () => {
+    expect(commentsPluginInspector(workspace({comments: {legacy: true}}))).toBe(
+      commentsLegacyInspector,
+    )
+  })
+
   it('includes the single-doc release plugin by default', () => {
     expect(pluginNames(workspace())).toContain('sanity/singleDocRelease')
   })

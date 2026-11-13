@@ -1,3 +1,4 @@
+import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useMemo, useState} from 'react'
 import {Flex} from 'ui5'
@@ -7,10 +8,8 @@ import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
 import {
   createPendingEdits,
-  createSidebarBadges,
   PendingEditsContext,
   SavedQueriesContext,
-  SidebarBadgesContext,
   type TabDrawerSlot,
   TabDrawerSlotContext,
   usePersistVisionState,
@@ -22,6 +21,7 @@ import {
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import * as styles from './redesign.module.css'
+import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
@@ -39,6 +39,12 @@ function getVisionLayout(width: number): VisionLayout {
   if (width < STACKED_BREAKPOINT) return 'stacked'
   return 'columns'
 }
+
+/**
+ * The first tooltip waits a moment so passing the pointer over a control does not flash one; once
+ * one is open, its neighbours open without waiting, as in the studio's own toolbars
+ */
+const TOOLTIP_DELAY = {open: 400}
 
 export interface VisionRedesignProps {
   config: VisionConfig
@@ -79,7 +85,6 @@ export function VisionRedesign(props: VisionRedesignProps) {
   )
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
-  const [sidebarBadges] = useState(createSidebarBadges)
   const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
   const tabDrawerSlot = useMemo(
     (): TabDrawerSlot => ({element: tabDrawerElement, setElement: setTabDrawerElement}),
@@ -91,8 +96,8 @@ export function VisionRedesign(props: VisionRedesignProps) {
       <VisionExperienceContext.Provider value={experience}>
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
-            <SidebarBadgesContext.Provider value={sidebarBadges}>
-              <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
+            <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
+              <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                 <Flex
                   className={styles.root}
                   data-testid="vision-root"
@@ -112,14 +117,16 @@ export function VisionRedesign(props: VisionRedesignProps) {
                     overflow="hidden"
                   >
                     <QueryTabBar />
-                    <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    <RequestBottomPanelProvider>
+                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                    </RequestBottomPanelProvider>
                   </Flex>
                 </Flex>
                 <VisionDialogs />
                 <VisionUrlState tab={activeTab} />
                 <VisionWebMcp tab={activeTab} />
-              </TabDrawerSlotContext.Provider>
-            </SidebarBadgesContext.Provider>
+              </TooltipDelayGroupProvider>
+            </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
       </VisionExperienceContext.Provider>

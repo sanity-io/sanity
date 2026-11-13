@@ -113,6 +113,18 @@ describe('NetworkTab', () => {
     expect(options.arcs).toHaveLength(1)
   })
 
+  it('marks the globe ready once cobe has drawn it, so it fades in rather than popping in', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    const canvas = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    expect(canvas).not.toBeNull()
+    expect(canvas?.hasAttribute('data-ready')).toBe(false)
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(cobe.update).toHaveBeenCalled()
+    expect(canvas?.hasAttribute('data-ready')).toBe(true)
+  })
+
   it('shows a CDN cache hit without a way to the API', async () => {
     await renderTab({meta: meta({...cdnMiss, cacheHit: true})})
     expect(screen.getByTestId('vision-network-cache').textContent).toBe('vision.network.cache.hit')
@@ -185,5 +197,12 @@ describe('NetworkTab', () => {
         limit: QUERY_URL_SIZE_LIMIT,
       })}`,
     )
+  })
+
+  it('writes a short server time in milliseconds and a longer round trip in seconds', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 888, e2eMs: 1_170}})
+    expect(
+      screen.getByText('vision.network.timing.value:{"e2e":"1.17s","server":"888ms"}'),
+    ).toBeTruthy()
   })
 })

@@ -138,11 +138,6 @@
             "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
           },
           {
-            "name": "react",
-            "importNames": ["useEffectEvent"],
-            "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-          },
-          {
             "name": "react/jsx-runtime",
             "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
           },
@@ -538,11 +533,6 @@
                 "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
               },
               {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-              },
-              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -879,11 +869,6 @@
                 "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
               },
               {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-              },
-              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -1015,11 +1000,6 @@
                 "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
               },
               {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-              },
-              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -1143,11 +1123,6 @@
                 "name": "react",
                 "importNames": ["forwardRef"],
                 "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
-              },
-              {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",

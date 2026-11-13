@@ -18,7 +18,9 @@ import {
 } from '../../util/generateQuery'
 import {summarizeSchema} from '../../util/schemaSummary'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import * as overlays from '../overlays.module.css'
 import {PromptRow} from '../PromptRow'
+import * as styles from '../redesign.module.css'
 
 type GenerateStatus =
   | {type: 'idle'}
@@ -117,7 +119,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const atLimit = shownCredits?.granted === false
 
   return (
-    <Card borderBottom data-testid="vision-generate-bar" padding={2}>
+    <Card className={overlays.promptBar} borderBottom data-testid="vision-generate-bar" padding={2}>
       <Stack gap={2}>
         <PromptRow
           label={t('vision.generate.label')}
@@ -130,12 +132,19 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           value={request}
         />
         {status.type === 'idle' && !atLimit && (
-          <Text muted size={0} as="div" trim={true}>
+          <Text className={overlays.promptStatus} muted size={0} as="div" trim={true}>
             {t('vision.generate.description')}
           </Text>
         )}
         {status.type === 'generating' && (
-          <Text data-testid="vision-generate-progress" muted size={1} as="div" trim={true}>
+          <Text
+            className={overlays.promptStatus}
+            data-testid="vision-generate-progress"
+            muted
+            size={1}
+            as="div"
+            trim={true}
+          >
             {status.attempt > 1
               ? t('vision.generate.progress-retry', {
                   attempt: status.attempt,
@@ -145,7 +154,13 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           </Text>
         )}
         {status.type === 'failed' && !atLimit && (
-          <Card data-testid="vision-generate-error" padding={3} radius={2} tone="critical">
+          <Card
+            className={overlays.promptStatus}
+            data-testid="vision-generate-error"
+            padding={3}
+            radius={2}
+            tone="critical"
+          >
             <Stack gap={3}>
               <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('vision.generate.failed')}
@@ -158,6 +173,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
                   <Code size={1}>{lastAttempt.query}</Code>
                   <Flex>
                     <Button
+                      className={styles.pressable}
                       data-testid="vision-generate-open-anyway"
                       fontSize={1}
                       mode="ghost"

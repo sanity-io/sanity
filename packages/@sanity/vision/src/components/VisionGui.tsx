@@ -11,7 +11,15 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useEffectEvent,
+} from 'react'
 import {
   getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
@@ -26,7 +34,6 @@ import {
   useWorkspace,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
@@ -97,7 +104,7 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
-  /** Opens the redesigned Vision; only passed while `beta.redesign.enabled` offers it */
+  /** Opens the redesigned Vision */
   onSwitchToRedesign?: () => void
 }
 
@@ -663,8 +670,8 @@ export function VisionGui(props: VisionGuiProps) {
     if (!activeVariant) {
       return
     }
+    // oxlint-disable-next-line react/set-state-in-effect -- follows the studio's active variant, which changes outside Vision
     handleStudioVariantChange()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [activeVariant])
 
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
@@ -674,8 +681,8 @@ export function VisionGui(props: VisionGuiProps) {
   })
   // Handle pinned perspective changes
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- follows the studio's perspective stack, which changes outside Vision
     handleStudioPerspectiveChange(perspectiveStack)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [perspectiveStack])
 
   const generateUrl = useCallback(

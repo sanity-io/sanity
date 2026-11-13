@@ -101,7 +101,6 @@
     "react-rx": "catalog:",
     "rxjs": "^7.8.2",
     "ui5": "catalog:",
-    "use-effect-event": "^2.0.4",
     "xstate": "^5.33.4"
   },
   "devDependencies": {
@@ -111,6 +110,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
+    "@storybook/react-vite": "^10.6.7",
     "@testing-library/react": "^16.3.3",
     "@tsdown/css": "catalog:",
     "@types/lodash-es": "^4.17.12",
@@ -122,6 +122,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
+    "storybook": "catalog:",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
@@ -129,7 +130,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.2.2",
+    "react": "^19.3.1",
     "sanity": "workspace:^"
   },
   "browserslist": [

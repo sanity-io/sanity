@@ -1,7 +1,6 @@
 import {EditorState} from '@codemirror/state'
-import {useEffect} from 'react'
+import {useEffect, useEffectEvent} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {useResolvedRequest} from '../hooks/useResolvedRequest'
@@ -363,7 +362,6 @@ export function VisionWebMcp({tab}: {tab: VisionTab}) {
         .catch(() => undefined)
     }
     return () => controller.abort()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [])
 
   return null

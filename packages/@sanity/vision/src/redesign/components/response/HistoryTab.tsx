@@ -1,4 +1,3 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Button, Card, Stack} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
@@ -8,6 +7,7 @@ import {Text, Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {formatDuration} from '../../../util/formatDuration'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {
@@ -17,6 +17,7 @@ import {
 } from '../../util/requestChanges'
 import {sortSyncTags} from '../../util/syncTags'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
+import * as motion from './responseTabs.module.css'
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
@@ -222,9 +223,14 @@ function HistoryEntry(props: {
           <Button
             aria-controls={changesId}
             aria-expanded={expanded}
+            className={motion.pressable}
             data-testid="vision-history-changes-toggle"
             fontSize={1}
-            icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+            icon={
+              <span className={motion.chevron}>
+                <ChevronRightIcon />
+              </span>
+            }
             mode="bleed"
             onClick={() => setExpanded((value) => !value)}
             padding={1}
@@ -247,7 +253,7 @@ function HistoryEntry(props: {
           </Badge>
         ) : (
           <Text muted size={1} as="div" trim={true}>
-            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : `${entry.ms}ms`} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : `${entry.e2eMs}ms`}`}
+            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : formatDuration(entry.ms)} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : formatDuration(entry.e2eMs)}`}
           </Text>
         )}
       </Flex>
@@ -266,7 +272,13 @@ function HistoryEntry(props: {
         </Box>
       )}
       {comparable && expanded && previous && (
-        <Stack data-testid="vision-history-changes" gap={3} id={changesId} paddingTop={2}>
+        <Stack
+          className={motion.reveal}
+          data-testid="vision-history-changes"
+          gap={3}
+          id={changesId}
+          paddingTop={2}
+        >
           <Text
             muted
             size={1}

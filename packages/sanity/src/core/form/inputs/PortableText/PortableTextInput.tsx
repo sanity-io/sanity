@@ -29,9 +29,9 @@ import {
   useRef,
   useState,
   type RefAttributes,
+  useEffectEvent,
 } from 'react'
 import {Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
@@ -248,7 +248,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
-  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies, react/set-state-in-effect -- keeps the fullscreen state in step with the divergence navigator, which lives outside this input
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()

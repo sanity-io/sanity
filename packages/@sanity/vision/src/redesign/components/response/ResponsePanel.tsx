@@ -1,11 +1,9 @@
-import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Button, Card, Label, Tab, TabList} from '@sanity/ui'
+import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useSelector} from '@xstate/react'
-import {type ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -22,18 +20,11 @@ import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerM
 import {
   type QueryRequest,
   type VisionResultView,
-  type VisionSavedFunction,
   type VisionTab,
   type VisionTabDrawer,
 } from '../../store/types'
-import {useSidebarBadges, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
-import {
-  selectFunctionLibrary,
-  selectOpenTabDrawer,
-  selectResultView,
-} from '../../store/visionMachine'
-import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
-import {type QueryLintFinding} from '../../util/groqLint'
+import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
@@ -41,12 +32,11 @@ import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
+import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
-import {FunctionsTab, type QueryEdit} from './FunctionsTab'
 import {HistoryTab} from './HistoryTab'
-import {LintTab} from './LintTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
 import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
@@ -63,27 +53,12 @@ export interface ResponsePanelProps {
   resolved: ResolvedRequest
   /** What the tab would fetch right now; tells whether the shown result is for the current query */
   request: QueryRequest | null
-  /** The query editor's lint diagnostics, listed in the Lint panel */
-  lintFindings: QueryLintFinding[]
-  /** Shows part of the query (a lint finding, a function declaration) in the query editor */
-  onRevealRange: (range: TextRange) => void
-  /** Changes the query through its editor */
-  onEditQuery: (edit: QueryEdit) => void
   /** Mutations were applied from the Mutate panel, and the result may have changed */
   onMutationsApplied: () => void
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {
-    tab,
-    runnerRef,
-    resolved,
-    request,
-    lintFindings,
-    onRevealRange,
-    onEditQuery,
-    onMutationsApplied,
-  } = props
+  const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
 
@@ -143,30 +118,13 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const mutate = useMutatePanel()
   const actorRef = useVisionActor()
   const resultView = useVisionSelector(selectResultView)
-  const functionLibrary = useVisionSelector(selectFunctionLibrary)
-  const saveFunction = useCallback(
-    (fn: VisionSavedFunction) => actorRef.send({type: 'functions.save', fn}),
-    [actorRef],
-  )
-  const removeFunction = useCallback(
-    (id: string) => actorRef.send({type: 'functions.remove', id}),
-    [actorRef],
-  )
-  // A declaration without a namespace does not parse for the API; lint says so
-  const declaredFunctions = useMemo(
-    () =>
-      readQueryFunctions(parseGroq(tab.query), tab.query).declarations.filter(
-        (declaration) => declaration.namespace !== undefined,
-      ),
-    [tab.query],
-  )
   const setResultView = useCallback(
     (view: VisionResultView) => actorRef.send({type: 'result.view', view}),
     [actorRef],
   )
   const copyToClipboard = useCopyToClipboard()
   const copyResult = useCallback(
-    () => void copyToClipboard(JSON.stringify(result, null, 2), t('vision.result.copied')),
+    () => copyToClipboard(JSON.stringify(result, null, 2), t('vision.result.copied')),
     [copyToClipboard, result, t],
   )
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
@@ -247,20 +205,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const tabDrawer = useVisionSelector(selectOpenTabDrawer)
   const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
     switch (drawer) {
-      case 'lint':
-        return <LintTab findings={lintFindings} onReveal={onRevealRange} />
-      case 'functions':
-        return (
-          <FunctionsTab
-            declarations={declaredFunctions}
-            library={functionLibrary}
-            onEdit={onEditQuery}
-            onRemove={removeFunction}
-            onReveal={onRevealRange}
-            onSave={saveFunction}
-            query={tab.query}
-          />
-        )
       case 'delta':
         return <DeltaTab delta={delta} request={request} />
       case 'mutate':
@@ -282,33 +226,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
     }
   }
 
-  // The sidebar shows how many lint findings and declared functions the tab has
-  const sidebarBadges = useSidebarBadges()
-  const lintCount = lintFindings.length
-  const lintTone = lintFindings.some((finding) => finding.severity === 'error')
-    ? 'critical'
-    : 'caution'
-  const functionCount = declaredFunctions.length
-  useEffect(() => {
-    sidebarBadges.set('lint', lintCount > 0 ? {count: lintCount, tone: lintTone} : undefined)
-    sidebarBadges.set(
-      'functions',
-      functionCount > 0 ? {count: functionCount, tone: 'default'} : undefined,
-    )
-  }, [functionCount, lintCount, lintTone, sidebarBadges])
-  useEffect(
-    () => () => {
-      sidebarBadges.set('lint', undefined)
-      sidebarBadges.set('functions', undefined)
-    },
-    [sidebarBadges],
-  )
-
   return (
     <>
       {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
       <SplitWithBottomPanel
         defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+        fitOnTabDoubleClick
         footer={
           <ActionRail testId="vision-result-actions">
             <DownloadButton
@@ -345,6 +268,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
       >
         <Card
           className={styles.resultContainer}
+          // The shown result stays while a newer fetch is in flight, and dims if that takes long
+          data-refreshing={hasResult && status === 'fetching'}
           data-testid="vision-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
@@ -354,7 +279,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 {t('result.label')}
               </Label>
               {isLive && (
-                <Badge fontSize={0} tone="positive">
+                <Badge className={styles.resultEnter} fontSize={0} tone="positive">
                   {t('vision.live.active')}
                 </Badge>
               )}
@@ -390,57 +315,47 @@ export function ResponsePanel(props: ResponsePanelProps) {
                       selected={resultView === 'graph'}
                     />
                   </TabList>
-                  <Tooltip
-                    animate
-                    content={
-                      <Text size={1} as="div" trim={true}>
-                        {t('vision.result.copy')}
-                      </Text>
-                    }
-                    placement="bottom"
-                    portal
-                  >
-                    <Button
-                      aria-label={t('vision.result.copy')}
-                      data-testid="vision-copy-result"
-                      fontSize={1}
-                      icon={CopyIcon}
-                      mode="bleed"
-                      onClick={copyResult}
-                      padding={2}
-                    />
-                  </Tooltip>
+                  <CopyResultButton label={t('vision.result.copy')} onCopy={copyResult} />
                 </Flex>
               )}
             </Flex>
           </Box>
           {hasResult && resultView === 'json' ? (
-            <ResultJson id="vision-result-content" value={result} />
+            <ResultJson className={styles.resultView} id="vision-result-content" value={result} />
           ) : hasResult && resultView === 'graph' ? (
-            <ResultGraph copy={copyValue} id="vision-result-content" value={result} />
+            <ResultGraph
+              className={styles.resultView}
+              copy={copyValue}
+              id="vision-result-content"
+              value={result}
+            />
           ) : (
             <Box id="vision-result-content" padding={3} paddingTop={5}>
               {status === 'fetching' && (
-                <Box marginTop={3}>
+                <Box className={styles.resultSpinner} marginTop={3}>
                   <DelayedSpinner />
                 </Box>
               )}
               {status === 'failed' && error && (
-                <QueryErrorDialog
-                  apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-                  error={error}
-                  perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-                  variant={
-                    failedConfig
-                      ? typeof failedConfig.variant === 'string'
-                        ? failedConfig.variant
-                        : undefined
-                      : resolved.variant
-                  }
-                />
+                <div className={styles.resultEnter}>
+                  <QueryErrorDialog
+                    apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                    error={error}
+                    perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                    variant={
+                      failedConfig
+                        ? typeof failedConfig.variant === 'string'
+                          ? failedConfig.variant
+                          : undefined
+                        : resolved.variant
+                    }
+                  />
+                </div>
               )}
               {hasResult && resultView === 'tree' && (
-                <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                <div className={styles.resultView}>
+                  <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                </div>
               )}
               {status === 'idle' && (
                 <Text muted size={1} as="div" trim={true}>

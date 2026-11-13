@@ -195,6 +195,15 @@ describe('HistoryTab', () => {
     expect(within(changed).queryByTestId('vision-history-changes')).toBeNull()
   })
 
+  it('turns the same chevron to show the changes, rather than swapping it for another', () => {
+    const [changed] = renderTab()
+    const toggle = within(changed).getByTestId('vision-history-changes-toggle')
+    const chevron = toggle.querySelector('svg')
+    expect(chevron).not.toBeNull()
+    fireEvent.click(toggle)
+    expect(toggle.querySelector('svg')).toBe(chevron)
+  })
+
   it('leaves the hidden fields out of the diff, and shows them on request', async () => {
     const [latest] = renderTab(
       twoFetches(
@@ -390,5 +399,12 @@ describe('HistoryTab', () => {
       consoleError.mockRestore()
       diffModule.throwInEffect = false
     }
+  })
+
+  it('writes a short duration in milliseconds and a longer one in seconds', () => {
+    const [row] = renderTab([entry('slow', 1, {ms: 888, e2eMs: 1_170})])
+    expect(row.textContent).toContain('result.execution-time-label 888ms')
+    expect(row.textContent).toContain('result.end-to-end-time-label 1.17s')
+    expect(row.textContent).not.toContain('1170ms')
   })
 })

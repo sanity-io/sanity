@@ -162,7 +162,9 @@ describe('visionStorage', () => {
     }
     expect(load('mutate')).toBe('mutate')
     expect(load('settings')).toBe('settings')
-    expect(load('lint')).toBe('lint')
+    expect(load('delta')).toBe('delta')
+    expect(load('lint')).toBeNull()
+    expect(load('functions')).toBeNull()
     expect(load('history')).toBeNull()
     expect(load(null)).toBeNull()
   })

@@ -10,8 +10,8 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
-import {useEffectEvent} from 'use-effect-event'
 
 import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'

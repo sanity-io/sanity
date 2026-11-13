@@ -2,7 +2,7 @@ import {defineField, defineType, type SchemaTypeDefinition} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
 import {
-  CommentsContext,
+  CommentsContextV2,
   MentionUserContext,
   TasksContext,
   TasksModePromiseContext,
@@ -10,8 +10,8 @@ import {
 } from 'sanity/_singletons'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {type CommentsContextValue} from '../../../comments/context/comments/types'
-import {commentsUsEnglishLocaleBundle} from '../../../comments/i18n'
+import {type CommentsContextValue} from '../../../comments-v2/context/comments/types'
+import {commentsUsEnglishLocaleBundle} from '../../../comments-v2/i18n'
 import {
   type UserListWithPermissionsHookValue,
   type UserWithPermission,
@@ -69,10 +69,10 @@ const asyncNoop = async () => {
 }
 
 export const COMMENTS_CONTEXT: CommentsContextValue = {
-  documentId: 'task-activity',
+  groupId: 'task-activity',
   documentType: 'tasks.task',
+  versionId: 'task-activity',
   getComment: () => undefined,
-  isCreatingDataset: false,
   comments: {
     data: {open: [], resolved: []},
     error: null,
@@ -82,9 +82,11 @@ export const COMMENTS_CONTEXT: CommentsContextValue = {
     create: asyncNoop,
     remove: asyncNoop,
     update: asyncNoop,
+    updateRange: asyncNoop,
     react: asyncNoop,
   },
   mentionOptions: MENTION_OPTIONS,
+  readOnly: false,
   status: 'open',
   setStatus: noop,
 }
@@ -169,6 +171,8 @@ export function MentionState(props: {children: ReactNode}) {
 
 export function CommentsState(props: {children: ReactNode}) {
   return (
-    <CommentsContext.Provider value={COMMENTS_CONTEXT}>{props.children}</CommentsContext.Provider>
+    <CommentsContextV2.Provider value={COMMENTS_CONTEXT}>
+      {props.children}
+    </CommentsContextV2.Provider>
   )
 }

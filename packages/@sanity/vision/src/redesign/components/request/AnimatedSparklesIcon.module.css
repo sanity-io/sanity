@@ -1,0 +1,72 @@
+/*
+ * One cycle twinkles the three marks in turn, large star, small star, then the
+ * glint, and rests for the remaining two thirds, so every mark ends where the
+ * static icon draws it.
+ */
+.largeStar,
+.smallStar,
+.glint {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 4.2s ease-in-out infinite;
+}
+
+.smallStar {
+  animation-delay: 0.35s;
+}
+
+.glint {
+  animation-name: glint;
+  animation-delay: 0.7s;
+}
+
+@keyframes twinkle {
+  0%,
+  24%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  8% {
+    opacity: 0.55;
+    transform: scale(0.72);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes glint {
+  0%,
+  24%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  8% {
+    opacity: 0.3;
+    transform: scale(0.5) rotate(0deg);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1.25) rotate(45deg);
+  }
+
+  /* A quarter turn of a plus sign looks the same, so the turn lands invisibly */
+  23.9% {
+    transform: scale(1) rotate(90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .largeStar,
+  .smallStar,
+  .glint {
+    animation: none;
+  }
+}
