@@ -2,8 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {type InvalidationChannelEvent} from '../../preview/types'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
-import {listenQuery} from './listenQuery'
+import {listenQuery, listenQueryOnGlobalListener} from './listenQuery'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 type ListenerEvent = WelcomeEvent | ReconnectEvent | MutationEvent
@@ -338,6 +339,91 @@ describe('listenQuery', () => {
     await flushScheduled()
 
     expect(errors).toEqual([fetchError])
+
+    sub.unsubscribe()
+  })
+})
+
+describe('listenQueryOnGlobalListener', () => {
+  let invalidationChannel: Subject<InvalidationChannelEvent>
+  let client: SanityClient
+  let fetch: ReturnType<typeof vi.fn>
+  let listen: ReturnType<typeof vi.fn>
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    invalidationChannel = new Subject<InvalidationChannelEvent>()
+    ;({client, fetch, listen} = createMockClient(new Subject<ListenerEvent>()))
+  })
+
+  afterEach(() => {
+    invalidationChannel.complete()
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  function subscribe(shouldRefetch: (event: {documentId: string}) => boolean) {
+    return listenQueryOnGlobalListener(client, '*[_id in path("_.releases.*")]', {
+      invalidationChannel,
+      shouldRefetch,
+      fetchTag: 'releases.fetch',
+    }).subscribe()
+  }
+
+  test('fetches every time the global listener connects, without opening a listener', async () => {
+    const shouldRefetch = vi.fn(() => true)
+    const sub = subscribe(shouldRefetch)
+    expect(fetch).not.toHaveBeenCalled()
+
+    invalidationChannel.next({type: 'connected'})
+    await flushScheduled()
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledWith(
+      '*[_id in path("_.releases.*")]',
+      {},
+      expect.objectContaining({tag: 'releases.fetch', filterResponse: true}),
+    )
+
+    // Changes may have been missed while the listener was reconnecting
+    invalidationChannel.next({type: 'connected'})
+    await flushScheduled()
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(shouldRefetch).not.toHaveBeenCalled()
+    expect(listen).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('refetches only after the changes that shouldRefetch accepts', async () => {
+    const shouldRefetch = vi.fn(({documentId}: {documentId: string}) =>
+      documentId.startsWith('_.releases.'),
+    )
+    const sub = subscribe(shouldRefetch)
+    invalidationChannel.next({type: 'connected'})
+    await flushScheduled()
+
+    const draftChange = {
+      type: 'mutation',
+      documentId: 'drafts.article',
+      visibility: 'query',
+    } as const
+    invalidationChannel.next(draftChange)
+    invalidationChannel.next({
+      type: 'mutation',
+      documentId: 'versions.rASAP.article',
+      visibility: 'query',
+    })
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(shouldRefetch).toHaveBeenCalledWith(draftChange)
+    expect(fetch).toHaveBeenCalledTimes(1)
+
+    invalidationChannel.next({
+      type: 'mutation',
+      documentId: '_.releases.rASAP',
+      visibility: 'query',
+    })
+    await flushScheduled()
+    expect(fetch).toHaveBeenCalledTimes(2)
 
     sub.unsubscribe()
   })
