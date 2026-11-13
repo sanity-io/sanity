@@ -12,8 +12,9 @@ import {
   POPOVER_MAX_WIDTH,
   POPOVER_RADIUS,
 } from '../constants'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {selectHasSearchableTerms} from '../contexts/search/searchSelectors'
+import {useSearchFiltersVisible, useSearchSelector} from '../contexts/search/useSearchState'
+import {useSearchCloseHandler} from '../hooks/useSearchCloseHandler'
 import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
@@ -99,22 +100,17 @@ export function SearchPopover({
 
   const {isTopLayer, zIndex} = useLayer()
 
-  const {
-    onClose: onSearchClose,
-    state: {filtersVisible, terms},
-  } = useSearchState()
-
-  const hasValidTerms = hasSearchableTerms({terms})
+  const filtersVisible = useSearchFiltersVisible()
+  const hasValidTerms = useSearchSelector(selectHasSearchableTerms)
+  const handleClose = useSearchCloseHandler(onClose)
 
   /**
    * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
    */
-  useClickOutsideEvent(isTopLayer && open && !!onSearchClose && onSearchClose, () => [
-    popoverElement.current,
-  ])
+  useClickOutsideEvent(isTopLayer && open && handleClose, () => [popoverElement.current])
 
   return (
-    <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
+    <SearchWrapper onClose={onClose} onOpen={onOpen} open={open}>
       <AnimatePresence>
         {open && (
           <Portal>

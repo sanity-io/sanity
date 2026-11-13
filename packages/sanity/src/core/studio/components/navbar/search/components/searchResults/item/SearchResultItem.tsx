@@ -57,16 +57,16 @@ export function SearchResultItem({
     intent: 'edit',
     params,
   })
-  const {state} = useSearchState()
+  const {canDisableAction, disabledDocumentIds} = useSearchState()
   const {t} = useTranslation()
   const grantsStore = useGrantsStore()
 
   const createPermission$ = useMemo(
     () =>
-      state.canDisableAction
+      canDisableAction
         ? grantsStore.checkDocumentPermission('create', {_id: documentId, _type: documentType})
         : of(null),
-    [documentId, documentType, grantsStore, state.canDisableAction],
+    [canDisableAction, documentId, documentType, grantsStore],
   )
   // Kept synchronous: this gates `disabledAction` together with the live
   // `documentId` release-membership check, so a deferred snapshot on a
@@ -76,11 +76,9 @@ export function SearchResultItem({
   const hasCreatePermission = createPermission?.granted
 
   // the current search result exists in the release provided by the search provider
-  const existsInRelease = state.disabledDocumentIds?.some((id) =>
-    id.includes(getPublishedId(documentId)),
-  )
+  const existsInRelease = disabledDocumentIds?.some((id) => id.includes(getPublishedId(documentId)))
   // should the search items be disasabled
-  const disabledAction = (!hasCreatePermission && state.canDisableAction) || existsInRelease
+  const disabledAction = (!hasCreatePermission && canDisableAction) || existsInRelease
 
   const documentStub = useMemo(
     () => ({_id: documentId, _type: documentType}),
