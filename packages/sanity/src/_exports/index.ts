@@ -98,7 +98,10 @@ export {
   type CollapseMenuButtonProps,
   type CommonProps,
 } from '../core/components/collapseMenu/CollapseMenuButton'
-export {CommandList} from '../core/components/commandList/CommandList'
+export {
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
+  CommandList,
+} from '../core/components/commandList/CommandList'
 export {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,
@@ -114,6 +117,7 @@ export {Delay} from '../core/components/Delay'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
+export {DocumentVersionsFlyoutList} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'

@@ -39,6 +39,15 @@ const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 
 /**
+ * Dispatch this DOM event (bubbling) from inside an item to make that item the list's active item,
+ * as if the pointer had entered it. Lets something an item owns but renders elsewhere (a flyout the
+ * keyboard moved into) keep the list's active item in step with it.
+ *
+ * @internal
+ */
+export const COMMAND_LIST_ACTIVATE_ITEM_EVENT = 'sanity:command-list-activate-item'
+
+/**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
 const FocusOverlayDiv = styled.div<{$offset: number}>(({theme, $offset}) => {
@@ -490,6 +499,24 @@ function CommandListComponent({
       virtualListElement?.removeEventListener('wheel', handleMouseEvent)
     }
   }, [enableChildContainerPointerEvents, virtualListElement])
+
+  /**
+   * An item asked to become the active item (see `COMMAND_LIST_ACTIVATE_ITEM_EVENT`).
+   */
+  useEffect(() => {
+    function handleActivateItem(event: Event) {
+      const item = event.target instanceof Element ? event.target.closest('[data-index]') : null
+      if (!(item instanceof HTMLElement) || item.parentElement !== childContainerElement) return
+      const index = itemIndices[Number(item.dataset.index)]?.activeIndex
+      if (typeof index === 'number') setActiveIndex({index, scrollIntoView: false})
+    }
+    childContainerElement?.addEventListener(COMMAND_LIST_ACTIVATE_ITEM_EVENT, handleActivateItem)
+    return () =>
+      childContainerElement?.removeEventListener(
+        COMMAND_LIST_ACTIVATE_ITEM_EVENT,
+        handleActivateItem,
+      )
+  }, [childContainerElement, itemIndices, setActiveIndex])
 
   /**
    * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.

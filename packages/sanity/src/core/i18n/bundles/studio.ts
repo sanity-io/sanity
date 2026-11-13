@@ -676,6 +676,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
+  /**
+   * The last row of the versions flyout on a document list row, when the document has a single version
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
+  'document-group.flyout.manage-versions': 'Manage versions in inventory',
+  /**
+   * The last row of the versions flyout on a document list row, opening the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
+  'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
+  /** The last row of the versions flyout on a document list row, whatever versions the document has: opens the document group inventory */
+  'document-group.flyout.see-all-versions': 'See all versions in the inventory',
+  /** Accessible name of the versions flyout on a document list row */
+  'document-group.flyout.title': 'Versions',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
@@ -690,6 +706,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
+  'document-group.version.not-published-yet': '{{status}} · not published yet',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */
