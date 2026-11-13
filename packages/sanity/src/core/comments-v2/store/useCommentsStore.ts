@@ -12,6 +12,7 @@ import {
   type ListenerQueryEvent,
   type ListenerQueryStatusEvent,
 } from '../../store/sharedListener/followListenerQuery'
+import {getPublishedId, isDraftId} from '../../util/draftUtils'
 import {type CommentDocument, type CommentsType, type Loadable} from '../types'
 import {buildCommentsQuery, matchesCommentsQuery} from './buildCommentsQuery'
 import {type CommentsApiListenerStore} from './createCommentsApiListenerStore'
@@ -214,6 +215,8 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     [client, groupId],
   )
   const enabled = Boolean(client && listenerStore && gdr && ready)
+  // Draft and published share one comments query, so switching between them keeps the subscription
+  const scopeVersionId = isDraftId(versionId) ? getPublishedId(versionId) : versionId
 
   // Optimistic updates from the comment operations
   const [localActions$, dispatch] = useObservableSubject<CommentsReducerAction>()
@@ -224,7 +227,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const state$: Observable<CommentsStoreState> = useMemo(() => {
     if (!client || !listenerStore || !gdr || !ready) return of(IDLE_STATE)
 
-    const scope: CommentsQueryScope = {gdr, versionId, type}
+    const scope: CommentsQueryScope = {gdr, versionId: scopeVersionId, type}
     const {query, params} = buildCommentsQuery(scope)
 
     const fetchComments = client.observable.collaboration.comments.fetch<CommentDocument[]>(
@@ -255,9 +258,9 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     localActions$,
     onLatestTransactionIdReceived,
     ready,
+    scopeVersionId,
     transactionsIdMap,
     type,
-    versionId,
   ])
 
   // The first render after the scope changes shows the initial value, until the new subscription
