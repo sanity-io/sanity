@@ -21,6 +21,9 @@ import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
 /** Audiences the flyout lists before its last row. */
 const MAX_AUDIENCES = 5
 
+/** The trailing column of status marks: as wide on every row, so the marks line up at the right edge. */
+const MARK_COLUMN_WIDTH = 25
+
 /** ui5 icons declare their own colour variable, so on the active row it is set on the icon itself. */
 function activeIconStyle(active: boolean): CSSProperties | undefined {
   return active ? ({'--icon-color': 'var(--card-fg-color)'} as CSSProperties) : undefined
@@ -31,8 +34,11 @@ function FlyoutRow(props: {
   title: ReactNode
   subtitle?: string
   renderMedia?: (active: boolean) => ReactNode
-  /** A column the height of the whole row, for the variant diamond; empty on default rows so names align. */
-  renderLeading?: (active: boolean) => ReactNode
+  /**
+   * The row's status marks (the variant diamond), in a column at the right edge that is as wide on
+   * every row, so the marks line up like the document list's and the inventory's. Rows without a
+   * mark keep the empty column.
+   */
   renderTrailing?: (active: boolean) => ReactNode
   onClick: () => void
   /** The version the pane is viewing: the list's selected-but-inactive tint, until the row is hovered or focused. */
@@ -64,25 +70,8 @@ function FlyoutRow(props: {
       type="button"
     >
       {/* The same box as a document list row (`DefaultPreview`): 8px padding, a 33px media slot, a title and a muted subtitle 8px apart, both trimmed. */}
-      <Flex
-        alignItems="center"
-        padding={2}
-        paddingLeft={props.renderMedia || props.renderLeading ? 2 : 3}
-      >
+      <Flex alignItems="center" padding={2} paddingLeft={props.renderMedia ? 2 : 3}>
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
-          {props.renderLeading ? (
-            <Flex
-              alignItems="center"
-              aria-hidden
-              flexBasis="auto"
-              flexGrow={0}
-              flexShrink={0}
-              justifyContent="center"
-              style={{width: 25}}
-            >
-              {props.renderLeading(active)}
-            </Flex>
-          ) : null}
           {props.renderMedia ? (
             <Flex
               alignItems="center"
@@ -110,7 +99,18 @@ function FlyoutRow(props: {
               </Text>
             ) : null}
           </Flex>
-          {props.renderTrailing?.(active)}
+          <Flex
+            alignItems="center"
+            aria-hidden
+            data-testid="document-versions-flyout-row-marks"
+            flexBasis="auto"
+            flexGrow={0}
+            flexShrink={0}
+            justifyContent="center"
+            style={{width: MARK_COLUMN_WIDTH}}
+          >
+            {props.renderTrailing?.(active)}
+          </Flex>
         </Flex>
       </Flex>
     </PreviewCard>
@@ -153,7 +153,7 @@ function AudienceRow({
       subtitle={subtitle}
       viewed={viewed}
       testId="document-versions-flyout-row"
-      renderLeading={(active) => (
+      renderTrailing={(active) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
             <Icon
@@ -182,7 +182,7 @@ function AudienceRow({
 
 /**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
- * event as the subtitle and a diamond before the audiences' names, and a last row that opens the document group
+ * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
  * inventory. Rows are menu items, so the host can move focus between them with the arrow keys.
  *
  * @internal

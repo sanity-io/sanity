@@ -8,20 +8,19 @@ import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {router} from '../../../router'
 import {type RouterPanes} from '../../../types'
-import {CLOSE_DELAY, OPEN_DELAY, PaneItemVersionsFlyout} from '../PaneItemVersionsFlyout'
+import {
+  CLOSE_DELAY,
+  OPEN_DELAY,
+  PaneItemVersionsFlyout,
+  type PaneItemVersionsFlyoutActions,
+} from '../PaneItemVersionsFlyout'
 
-const renderList = ({
-  onOpenInventory,
-  onPick,
-}: {
-  onOpenInventory: () => void
-  onPick: () => void
-}) => (
+const renderList = ({onOpenInventory, onPick}: PaneItemVersionsFlyoutActions) => (
   <div role="menu" aria-label="Versions">
-    <button role="menuitem" type="button" onClick={onPick}>
+    <button role="menuitem" type="button" onClick={() => onPick(null)}>
       Default
     </button>
-    <button role="menuitem" type="button" onClick={onPick}>
+    <button role="menuitem" type="button" onClick={() => onPick('_.variants.german')}>
       German
     </button>
     <button role="menuitem" type="button" onClick={onOpenInventory}>
@@ -119,7 +118,7 @@ describe('PaneItemVersionsFlyout', () => {
     expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
   })
 
-  it('opens the document with the inventory open when an item is clicked, not the row', async () => {
+  it('opens the document in the picked audience with the inventory open, not the row', async () => {
     const {onNavigate, onRowClick, row, user} = await renderRow()
     await user.hover(row)
     await advance(OPEN_DELAY)
@@ -134,7 +133,25 @@ describe('PaneItemVersionsFlyout', () => {
       id: 'winterhold',
       params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
     })
+    // The audience is switched in the same navigation
+    expect(new URL(path, 'http://localhost').searchParams.get('variant')).toBe('variant:german')
     expect(screen.queryByRole('menu', {hidden: true})).toBeNull()
+  })
+
+  it('opens the document with the inventory open from the inventory row, in the same audience', async () => {
+    const {onNavigate, row, user} = await renderRow()
+    await user.hover(row)
+    await advance(OPEN_DELAY)
+    await user.click(screen.getByRole('menuitem', {name: 'See all', hidden: true}))
+
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+    const [{path}] = onNavigate.mock.calls[0]
+    const panes = (router.decode(path) as {panes?: RouterPanes} | null)?.panes
+    expect(panes?.[1]?.[0]).toMatchObject({
+      id: 'winterhold',
+      params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+    })
+    expect(new URL(path, 'http://localhost').searchParams.has('variant')).toBe(false)
   })
 
   it('opens with ArrowRight on the row, moves with the arrows, and returns with ArrowLeft', async () => {
