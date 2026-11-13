@@ -105,10 +105,12 @@ function useSignOutOfAllWorkspaces(): (() => void) | undefined {
 
   const signOut = useCallback(async () => {
     if (!canSignOut(activeStore)) return
-    // The active store goes last: once it signs out the Studio shows the login screen, and a
-    // custom store may navigate away, which would cut the other stores' requests short.
-    const results = await Promise.allSettled(otherStores.map(callLogout))
-    results.push(...(await Promise.allSettled([callLogout(activeStore)])))
+    // The active store starts first. Stores on the same project tell each other when they sign
+    // out, also within a tab, and a store that hears it before its own `logout` has started
+    // treats it as a sign-out elsewhere: with `redirectOnSingle`, its login screen sends the user
+    // straight back to the provider. `logout` marks the sign-out before its first `await`, so
+    // starting the active store first marks it before any other store can tell it.
+    const results = await Promise.allSettled([activeStore, ...otherStores].map(callLogout))
     for (const result of results) {
       if (result.status === 'rejected') console.warn('[sanity] Sign out failed:', result.reason)
     }
