@@ -30,6 +30,7 @@ target_config() {
       TARGET_DATASET='test'
       TARGET_API_HOST=api.sanity.io
       TARGET_OTHER_API_HOST=api.sanity.work
+      TARGET_OTHER_PROJECT_ID="${SANITY_E2E_PROJECT_ID:-ittbm412}"
       TARGET_TOKEN_VAR="${VERIFY_STUDIO_TOKEN_VAR:-STUDIO_AUTH_TOKEN}"
       TARGET_COMMAND="pnpm dev:test-studio"
       ;;
@@ -42,6 +43,7 @@ target_config() {
       TARGET_DATASET= # set per run by start-studio.sh
       TARGET_API_HOST=api.sanity.work
       TARGET_OTHER_API_HOST=api.sanity.io
+      TARGET_OTHER_PROJECT_ID=ppsg7ml5
       TARGET_TOKEN_VAR="${VERIFY_STUDIO_TOKEN_VAR:-STUDIO_E2E_AUTH_TOKEN}"
       TARGET_COMMAND="pnpm --filter studio-e2e-testing dev"
       ;;
@@ -127,9 +129,13 @@ state_get() {
 }
 
 # GET /users/me on a host with the target's token. Prints the HTTP status.
+# Optional second arg is the project id for the hostname (defaults to TARGET_PROJECT_ID).
+# Pass TARGET_OTHER_PROJECT_ID when probing TARGET_OTHER_API_HOST — the two clusters
+# use different projects, so swapping only the host cannot return 200 for a swapped token.
 users_me_status() {
   local host="$1"
+  local project_id="${2:-$TARGET_PROJECT_ID}"
   printf 'Authorization: Bearer %s\n' "$(target_token)" |
     curl -sS -o /dev/null -w '%{http_code}' -H @- --max-time 20 \
-      "https://$TARGET_PROJECT_ID.$host/v2021-06-07/users/me" || true
+      "https://$project_id.$host/v2021-06-07/users/me" || true
 }
