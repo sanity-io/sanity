@@ -1,8 +1,10 @@
-import {describe, expect, it, vi} from 'vitest'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {setSnapshot} from '../../studio/colorSchemeStore'
 import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
 
 const LABEL = 'Differs from'
@@ -95,4 +97,42 @@ describe('FormBaseVariantDiffIndicator', () => {
     // The tooltip opens after its delay, so wait for the sentence to be on screen.
     await vi.waitFor(() => expect(labelIsVisible()).toBe(true), {timeout: 3000})
   })
+})
+
+// 9.3-F1: the Draft and Published chips sat about 2px higher than the plain Default chip. An inline
+// flex chip took its baseline from its first item, which in those two is a glyph with no text.
+describe.each(['light', 'dark'] as const)('the tooltip chips in %s mode', (scheme) => {
+  beforeEach(() => setSnapshot(scheme))
+  afterEach(() => setSnapshot('system'))
+
+  it.each(['drafts', 'published'] as const)(
+    'share one height and one centre line when comparing %s',
+    async (compared) => {
+      void render(
+        <BaseVariantComparisonContext.Provider value={compared}>
+          <Fixture changedFromBaseVariant />
+        </BaseVariantComparisonContext.Provider>,
+      )
+
+      await userEvent.hover(page.getByRole('button', {name: /^Differs from Default/}))
+      const tooltip = page.getByTestId('base-variant-diff-tooltip')
+      await expect.element(tooltip).toBeVisible()
+
+      const chips = [...tooltip.element().querySelectorAll(':scope > * > span')]
+      expect(chips).toHaveLength(2)
+      const [base, slot] = chips.map((chip) => chip.getBoundingClientRect())
+      const centre = (rect: DOMRect) => rect.top + rect.height / 2
+      expect(Math.abs(slot.height - base.height)).toBeLessThanOrEqual(0.5)
+      expect(Math.abs(centre(slot) - centre(base))).toBeLessThanOrEqual(0.5)
+
+      // The slot chip's glyph sits on the chip's centre line, not raised above it.
+      const glyph = chips[1].querySelector('[aria-hidden]')?.getBoundingClientRect()
+      if (!glyph) throw new Error('The slot chip has no glyph')
+      expect(Math.abs(centre(glyph) - centre(slot))).toBeLessThanOrEqual(0.5)
+
+      // Both chips have the same padding.
+      const [basePadding, slotPadding] = chips.map((chip) => getComputedStyle(chip).padding)
+      expect(slotPadding).toBe(basePadding)
+    },
+  )
 })

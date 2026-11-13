@@ -4,10 +4,16 @@ import {css} from '#styled-system/css'
  * The chips of the mark's tooltip. They keep the inline badge's colours and its square 3px corners
  * (a pill would look clickable), but sit on the text line as a flex row, so the glyph and the name
  * share a vertical centre, with a little more room inside than the inline badge has.
+ *
+ * An inline flex box takes its baseline from its first item. In the Draft, Published and release
+ * chips that item is the glyph, which has no text, so the chip lined up by the glyph's bottom edge
+ * and sat about 2px higher than the plain Default chip, on a taller line. Aligning every chip by its
+ * middle instead puts them all on one centre line, whatever comes first inside them.
  */
 export const chip = css({
   display: 'inline-flex',
   alignItems: 'center',
+  verticalAlign: 'middle',
   gap: '4px',
   paddingBlock: '2px',
   paddingInline: '6px',
