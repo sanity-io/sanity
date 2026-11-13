@@ -98,7 +98,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         closeButtonLabel={structureT('document-inspector.error.close-button.aria-label')}
         flex="none"
         onClose={onClose}
-        title={t('document-group-inventory.action.manage-versions')}
+        title={t('document-group-inventory.panel-title')}
       />
       <div
         className={documentGroupInventoryContainer}
