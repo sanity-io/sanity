@@ -79,11 +79,7 @@ export function FilterForm({filter}: FilterFormProps) {
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex
-          flexDirection="column-reverse"
-          onKeyDownCapture={handleFormInteraction}
-          onPointerDownCapture={handleFormInteraction}
-        >
+        <Flex flexDirection="column-reverse">
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
@@ -106,7 +102,11 @@ export function FilterForm({filter}: FilterFormProps) {
           )}
 
           {/* Title, description and operator */}
-          <Card padding={3}>
+          <Card
+            padding={3}
+            onKeyDownCapture={handleFormInteraction}
+            onPointerDownCapture={handleFormInteraction}
+          >
             <VStack gap={3}>
               <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
                 <Box paddingLeft={1} paddingRight={2} paddingY={1}>
