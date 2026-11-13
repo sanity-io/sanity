@@ -551,6 +551,9 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
    * `keyboard.keydown` and raise any editor event.
    * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
    * compete, and the first one registered wins.
+   * Studio handles its built-in mark shortcuts (`mod+b`, `mod+i`, `mod+u` and `mod+'`)
+   * before plugin keyboard Behaviors.
+   * A plugin keyboard Behavior can't replace these shortcuts.
    *
    * Install `@portabletext/keyboard-shortcuts` to use the shortcut helper in this example.
    *
