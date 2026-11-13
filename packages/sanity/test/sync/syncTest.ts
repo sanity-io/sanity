@@ -12,26 +12,44 @@ import {
   type StudioEngineOptions,
 } from './studioEngine'
 
+/** The real behaviour an injected fault stands for, e.g. 'permission revoked mid-session'. */
+interface NamedFault {
+  represents: string
+}
+
+type StreamPolicyStep =
+  | {mode: 'auto'; latencyMs?: number}
+  | ({mode: 'hold'; latencyMs?: number} & NamedFault)
+
 export type Step =
   | {client: string; do: 'patch'; id: string; patches: RawPatch[]}
   | {client: string; do: 'mutate'; id: string; mutations: MutationPayload[]}
   | {client: string; do: 'commit'}
-  | {client: string; do: 'commits'; mode: 'auto' | 'hold'; latencyMs?: number}
+  | ({client: string; do: 'commits'} & StreamPolicyStep)
   | {client: string; do: 'acceptCommit'}
-  | {client: string; do: 'rejectCommit'; statusCode: number}
-  | {client: string; do: 'listener'; mode: 'auto' | 'hold'; latencyMs?: number}
+  | ({client: string; do: 'rejectCommit'; statusCode: number} & NamedFault)
+  | ({client: string; do: 'listener'} & StreamPolicyStep)
   | {client: string; do: 'releaseEvents'; count?: number; order?: 'fifo' | 'reverse'}
-  | {client: string; do: 'dropEvent'}
-  | {client: string; do: 'disconnect'}
+  | ({client: string; do: 'dropEvent'} & NamedFault)
+  | ({client: string; do: 'disconnect'} & NamedFault)
   | {client: string; do: 'reconnect'; resume: boolean}
   | {do: 'outside'; mutations: MutationPayload[]}
   | {do: 'advance'; ms: number}
   | {do: 'settle'}
 
+/**
+ * L1: the server behaviour was captured against real Content Lake.
+ * L2: seen in production, or reasoned from the documented client and server protocol.
+ * L3: seen only in the fake Content Lake.
+ */
+export type EvidenceLevel = 'L1' | 'L2' | 'L3'
+
 export interface SyncTestDefinition {
   id: string
   title: string
   seam: 'pair' | 'operations'
+  evidence: EvidenceLevel
+  knownBug?: string
   initial: SanityDocument[]
   idPair: IdPair
   clients: string[]
@@ -166,7 +184,7 @@ async function runStep(world: World, step: Step): Promise<void> {
       controls.acceptNextCommit()
       break
     case 'rejectCommit':
-      controls.rejectNextCommit(step.statusCode)
+      controls.rejectNextCommit(step.statusCode, step.represents)
       break
     case 'listener':
       controls.listener = {mode: step.mode, latencyMs: step.latencyMs ?? 0}
