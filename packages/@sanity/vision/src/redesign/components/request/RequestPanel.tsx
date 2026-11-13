@@ -12,7 +12,6 @@ import {
   useMemo,
   useRef,
   useState,
-  useEffectEvent,
 } from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -36,6 +35,8 @@ import {functionLibrary, querySchema} from '../../util/groqEditorContext'
 import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
+import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
+import {isQueryParamName} from '../../util/queryParamName'
 import {createQuerySchema} from '../../util/schemaCheck'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
@@ -166,15 +167,22 @@ export function RequestPanel(props: RequestPanelProps) {
   const library = useVisionSelector(selectFunctionLibrary)
   const schema = useSchema() as Schema | undefined
   const workspaceSchema = useMemo(() => (schema ? createQuerySchema(schema) : undefined), [schema])
+  // Names the query editor can complete after `$`. Invalid JSON offers nothing until it parses
+  const paramNames = useMemo(() => {
+    if (!params.valid || !params.parsed) return NO_QUERY_PARAM_NAMES
+    const names = Object.keys(params.parsed).filter(isQueryParamName)
+    return names.length === 0 ? NO_QUERY_PARAM_NAMES : names
+  }, [params.parsed, params.valid])
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
+      queryParamNames.of(paramNames),
       ...(workspaceSchema ? [querySchema.of(workspaceSchema)] : []),
     ],
-    [functionExtensions, library, lintExtensions, workspaceSchema],
+    [functionExtensions, library, lintExtensions, paramNames, workspaceSchema],
   )
   const actorRef = useVisionActor()
   const {state: panelState, setState: setPanelState} = useRequestBottomPanel()
