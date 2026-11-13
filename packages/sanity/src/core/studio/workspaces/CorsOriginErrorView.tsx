@@ -107,11 +107,11 @@ export function CorsOriginErrorView(props: CorsOriginErrorViewProps): React.Reac
       document.addEventListener('visibilitychange', handleVisibility)
     }
 
-    schedule()
+    timeoutId = setTimeout(runCheck, POLL_INTERVAL_FOCUSED_MS)
 
     return () => {
       cancelled = true
-      if (timeoutId) clearTimeout(timeoutId)
+      clearTimeout(timeoutId)
       if (typeof window !== 'undefined') {
         window.removeEventListener('focus', checkNow)
       }

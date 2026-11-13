@@ -17,7 +17,7 @@ const PostMessagePerspective: FC<PostMessagePerspectiveProps> = (props) => {
 
   // Return the perspective and variant when requested
   useEffect(() => {
-    return comlink.on('visual-editing/fetch-perspective', (payload) => {
+    const unsubscribe = comlink.on('visual-editing/fetch-perspective', (payload) => {
       // Report back whether the visual editing handler is set up to own perspective switching or not, if the payload is `undefined` then it means the visual editing instance isn't recent enough and we treat it as false
       startTransition(() => {
         setHandlesPerspectiveChange(payload?.handlesPerspectiveChange === true)
@@ -27,6 +27,9 @@ const PostMessagePerspective: FC<PostMessagePerspectiveProps> = (props) => {
       })
       return {perspective, variant}
     })
+    return () => {
+      unsubscribe()
+    }
   }, [comlink, perspective, variant, setHandlesPerspectiveChange, setHandlesVariantChange])
 
   // Dispatch a perspective message when the perspective or variant changes
