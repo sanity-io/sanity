@@ -11,6 +11,20 @@ import {
   statusMarkGeometry,
 } from './statusMarkGeometry'
 
+/**
+ * A tone's `--foreground-low-emphasized` in `@sanity/ui` 5: its colour on a strong selected
+ * background. UI 5 defines it per tone on `.sui-tone-*`; the palette steps it uses are on `:root`.
+ */
+const SELECTED_COLORS: Record<BadgeTone, string> = {
+  default: 'light-dark(var(--gray-100), var(--gray-900))',
+  neutral: 'light-dark(var(--gray-100), var(--gray-900))',
+  primary: 'light-dark(var(--blue-100), var(--blue-900))',
+  positive: 'light-dark(var(--green-100), var(--green-900))',
+  caution: 'light-dark(var(--yellow-100), var(--yellow-900))',
+  critical: 'light-dark(var(--red-100), var(--red-900))',
+  suggest: 'light-dark(var(--purple-100), var(--purple-900))',
+}
+
 /** Strokes stay 1.2px at any size, so lines never thin out on a small mark. */
 const stroke = {
   stroke: 'currentColor',
@@ -71,6 +85,11 @@ export interface StatusMarkProps
   size?: StatusMarkSize
   /** Overrides the mark's own tone, as for an archived or paused release. */
   tone?: BadgeTone
+  /**
+   * Whether the mark sits on a strong selected background (UI 5's
+   * `--active-background-emphasized`). It then takes its tone's emphasized foreground.
+   */
+  selected?: boolean
 }
 
 /**
@@ -82,9 +101,12 @@ export interface StatusMarkProps
  * @internal
  */
 export function StatusMark(props: StatusMarkProps) {
-  const {className, mark, ref, size = 'row', style, tone, ...rest} = props
+  const {className, mark, ref, selected, size = 'row', style, tone, ...rest} = props
   const {box, viewBox} = statusMarkGeometry(mark, size)
-  const color = `var(--card-badge-${tone ?? STATUS_MARKS[mark].tone}-icon-color)`
+  const resolvedTone = tone ?? STATUS_MARKS[mark].tone
+  const color = selected
+    ? SELECTED_COLORS[resolvedTone]
+    : `var(--card-badge-${resolvedTone}-icon-color)`
   const named = rest['aria-label'] !== undefined || rest['aria-labelledby'] !== undefined
 
   return (
@@ -98,6 +120,7 @@ export function StatusMark(props: StatusMarkProps) {
       data-ui="StatusMark"
       data-mark={mark}
       data-size={size}
+      data-selected={selected || undefined}
       width={box}
       height={box}
       viewBox={viewBox}

@@ -45,8 +45,8 @@ export function DocumentGroupEntry({
    */
   documentVersions?: VersionInfoDocumentStub[]
   /**
-   * Whether this is the version open in the form. Its row takes Studio's selected state and is
-   * the current item.
+   * Whether this is the version open in the form. Its row takes UI 5's strong selected state and
+   * is the current item.
    */
   isSelected?: boolean
   servedStatus?: ServedStatus
@@ -84,10 +84,8 @@ export function DocumentGroupEntry({
   return (
     <VariantSetEntry
       data-variant-name={variant.name}
-      // Studio's selected state, as on the document list's selected item
-      tone="inherit"
-      selected={isSelected}
-      data-as={isSelected ? 'button' : undefined}
+      data-selected={isSelected || undefined}
+      data-current={isSelected || undefined}
       data-served={servedStatus}
     >
       {leading !== undefined && <div className="atom">{leading}</div>}
@@ -96,6 +94,7 @@ export function DocumentGroupEntry({
         className="variant-mark"
         data-testid={isVariantRow ? 'variant-mark' : undefined}
         mark={isVariantRow ? 'variant' : undefined}
+        selected={isSelected}
       />
       <div className="row-content">
         <button

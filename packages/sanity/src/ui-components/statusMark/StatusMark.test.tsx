@@ -33,6 +33,13 @@ describe('StatusMark', () => {
     expect(svg().style.color).toBe('var(--card-badge-default-icon-color)')
   })
 
+  it("takes its tone's UI 5 emphasized foreground on a selected background", () => {
+    const {container} = render(<StatusMark mark="published" selected />)
+    const svg = container.querySelector('svg')!
+    expect(svg.style.color).toBe('light-dark(var(--green-100), var(--green-900))')
+    expect(svg).toHaveAttribute('data-selected', 'true')
+  })
+
   it('is announced when given a name', () => {
     const {container} = render(<StatusMark mark="published" aria-label="Published" />)
     expect(container.querySelector('svg')).not.toHaveAttribute('aria-hidden')

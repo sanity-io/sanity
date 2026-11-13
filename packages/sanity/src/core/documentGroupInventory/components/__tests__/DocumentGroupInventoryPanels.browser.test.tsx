@@ -3,7 +3,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type ComponentType, type ReactNode, useMemo, useRef, useState} from 'react'
+import {type ComponentType, useMemo, useRef, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import {Text} from 'ui5'
 import {afterEach, describe, expect, it, vi} from 'vitest'
@@ -26,7 +26,6 @@ import {
   type StatusMarkName,
   statusMarkGeometry,
 } from '../../../../ui-components/statusMark/statusMarkGeometry'
-import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
@@ -882,15 +881,12 @@ function SelectionPanel({
   onOpen = () => undefined,
   scheme = 'light',
   openId,
-  children,
 }: {
   refs: ReturnType<typeof startHarness>
   onOpen?: (entry: Variant) => void
   scheme?: 'light' | 'dark'
   /** The version open in the form. */
   openId?: string
-  /** Rendered after the sets, in the same card. */
-  children?: ReactNode
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
@@ -904,7 +900,6 @@ function SelectionPanel({
           <Body>
             <SelectionSets selectionRef={refs.selectionRef} onOpen={onOpen} openId={openId} />
           </Body>
-          {children}
         </Container>
       </Card>
     </TestWrapper>
@@ -1093,6 +1088,34 @@ function selected(refs: ReturnType<typeof startHarness>): string[] {
   return [...refs.selectionRef.getSnapshot().context.selectedIds].toSorted()
 }
 
+/**
+ * The UI 5 blue selection ladder, from `@sanity/ui` 5's palette (`ui5/styles.css`), as rgb.
+ */
+const UI5 = {
+  light: {
+    open: [64, 67, 231], // --active-background-emphasized: blue-600
+    openTitle: [255, 255, 255], // --active-foreground-emphasized: white
+    openSubtitle: [229, 237, 255], // blue-100
+    openVariantMark: [241, 235, 255], // suggest --foreground-low-emphasized: purple-100
+    checked: [245, 248, 255], // --active-background-normal: blue-50
+    checkedHeader: [229, 237, 255], // blue-100
+    hover: [246, 246, 248], // --background-low: gray-50
+    checkboxFill: [64, 67, 231], // blue-600
+    checkboxTick: [255, 255, 255], // white
+  },
+  dark: {
+    open: [117, 149, 255], // --active-background-emphasized: blue-400
+    openTitle: [19, 20, 27], // --active-foreground-emphasized: black
+    openSubtitle: [22, 26, 65], // blue-900
+    openVariantMark: [35, 23, 63], // suggest --foreground-low-emphasized: purple-900
+    checked: [16, 18, 40], // --active-background-normal: blue-950
+    checkedHeader: [22, 26, 65], // blue-900
+    hover: [27, 29, 39], // gray-900: --background-low is gray-950, the panel's own background
+    checkboxFill: [117, 149, 255], // blue-400
+    checkboxTick: [19, 20, 27], // black
+  },
+} as const
+
 describe('Inventory selection', () => {
   it('lines the group icons and the row marks up in one column', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -1208,45 +1231,22 @@ describe('Inventory selection', () => {
   })
 
   it.each(['light', 'dark'] as const)(
-    'tints a checked row lightly and keeps its text at 4.5:1 or more, in %s mode',
+    'colours checked rows and a checked header on the UI 5 blue ladder, in %s mode',
     async (scheme) => {
+      const ui5 = UI5[scheme]
       const refs = startSelectionHarness()
       void render(<SelectionPanel refs={refs} scheme={scheme} />)
 
       await expect
         .element(page.getByRole('button', {name: 'VIP users', exact: true}))
         .toBeInTheDocument()
-      const row = selectionRow('Draft', 'VIP users')
-      const panel = page.getByTestId('selection-panel').element() as HTMLElement
-      const plain = background(panel)
+      const panel = background(page.getByTestId('selection-panel').element() as HTMLElement)
 
-      refs.selectionRef.send({type: 'selection.add', variantId: DRAFT_VIP.id})
-      await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
-      await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
-
-      // A light tint: close to the panel's own background, not the saturated selection colour
-      const tint = background(row)
-      expect(tint).not.toEqual(plain)
-      expect(contrastRatio(tint, plain)).toBeLessThan(1.3)
-
-      const title = row.querySelector<HTMLElement>('[data-testid="version-title"]')!
-      const meta = row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
-      expect(textContrast(title, row)).toBeGreaterThanOrEqual(4.5)
-      expect(textContrast(meta, row)).toBeGreaterThanOrEqual(4.5)
-    },
-  )
-
-  it.each(['light', 'dark'] as const)(
-    'keeps a checked group header a step stronger than its checked rows, in %s mode',
-    async (scheme) => {
-      const refs = startSelectionHarness()
-      void render(<SelectionPanel refs={refs} scheme={scheme} />)
-
-      await expect
-        .element(page.getByRole('button', {name: 'VIP users', exact: true}))
-        .toBeInTheDocument()
-      const panel = page.getByTestId('selection-panel').element() as HTMLElement
-      const band = background(header('Draft'))
+      // Hover: UI 5's --background-low, or gray-900 in dark where that equals the panel
+      const published = selectionRow('Published', 'Default')
+      await userEvent.hover(page.elementLocator(published))
+      await expect.poll(() => background(published)).toEqual(ui5.hover)
+      expect(contrastRatio(background(published), panel)).toBeGreaterThan(1.05)
 
       refs.selectionRef.send({
         type: 'selection.addMany',
@@ -1255,45 +1255,45 @@ describe('Inventory selection', () => {
       await expect.poll(() => groupCheckbox('Draft').checked).toBe(true)
       await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
 
-      const checkedHeader = background(header('Draft'))
-      const checkedRow = background(selectionRow('Draft', 'VIP users'))
-      // The header no longer takes its rows' tint: it keeps a band of its own, tinted
-      expect(checkedHeader).not.toEqual(checkedRow)
-      expect(contrastRatio(checkedHeader, checkedRow)).toBeGreaterThan(1.15)
-      expect(contrastRatio(checkedHeader, band)).toBeGreaterThan(1.15)
-      // One step stronger: further from the panel than the rows are
-      expect(contrastRatio(checkedHeader, background(panel))).toBeGreaterThan(
-        contrastRatio(checkedRow, background(panel)),
+      const row = selectionRow('Draft', 'VIP users')
+      expect(background(row)).toEqual(ui5.checked)
+      // The header keeps a band of its own, one step stronger than its checked rows
+      expect(background(header('Draft'))).toEqual(ui5.checkedHeader)
+      expect(contrastRatio(background(header('Draft')), background(row))).toBeGreaterThan(1.05)
+      expect(contrastRatio(background(header('Draft')), panel)).toBeGreaterThan(
+        contrastRatio(background(row), panel),
       )
-      // The checked tint still reads apart from the resting header band and from the panel
-      expect(contrastRatio(checkedRow, band)).toBeGreaterThan(1.1)
-      expect(contrastRatio(checkedRow, background(panel))).toBeGreaterThan(1.15)
 
+      for (const element of [
+        row.querySelector<HTMLElement>('[data-testid="version-title"]')!,
+        row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!,
+      ]) {
+        expect(textContrast(element, row)).toBeGreaterThanOrEqual(4.5)
+      }
       const name = header('Draft').querySelector<HTMLElement>('[data-testid="variant-set-name"]')!
       expect(textContrast(name, header('Draft'))).toBeGreaterThanOrEqual(4.5)
-      // The checked box, the control that says "selected", keeps 3:1 or more on both tints
+
+      // UI 5's checkbox: the strong blue fill with an inverted tick, 3:1 or more on its row
       for (const [checkbox, element] of [
         [groupCheckbox('Draft'), header('Draft')],
-        [rowCheckbox('Draft', 'VIP users'), selectionRow('Draft', 'VIP users')],
+        [rowCheckbox('Draft', 'VIP users'), row],
       ] as const) {
-        const fill = rgb(getComputedStyle(checkbox.nextElementSibling!).backgroundColor)
-        expect(contrastRatio(fill, background(element))).toBeGreaterThanOrEqual(3)
+        const box = getComputedStyle(checkbox.nextElementSibling!)
+        expect(rgb(box.backgroundColor)).toEqual(ui5.checkboxFill)
+        expect(rgb(box.color)).toEqual(ui5.checkboxTick)
+        expect(contrastRatio(rgb(box.backgroundColor), background(element))).toBeGreaterThanOrEqual(
+          3,
+        )
       }
     },
   )
 
   it.each(['light', 'dark'] as const)(
-    "gives the open version the document list's selected state, checked or not, in %s mode",
+    "gives the open version UI 5's strong selected state, checked or not, in %s mode",
     async (scheme) => {
+      const ui5 = UI5[scheme]
       const refs = startSelectionHarness()
-      void render(
-        <SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id}>
-          {/* The document list's selected item, as PaneItem draws it */}
-          <PreviewCard data-as="a" selected tone="inherit" data-testid="list-selected" padding={2}>
-            <Text size={1}>Selected document</Text>
-          </PreviewCard>
-        </SelectionPanel>,
-      )
+      void render(<SelectionPanel refs={refs} scheme={scheme} openId={DRAFT_VIP.id} />)
 
       await expect
         .element(page.getByRole('button', {name: 'VIP users', exact: true}))
@@ -1301,15 +1301,12 @@ describe('Inventory selection', () => {
       await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
       const open = selectionRow('Draft', 'VIP users')
       const other = selectionRow('Draft', 'Summer sale')
-      const list = page.getByTestId('list-selected').element() as HTMLElement
-      const listVar = (name: string) => rgb(getComputedStyle(list).getPropertyValue(name).trim())
       const title = (row: HTMLElement) =>
         row.querySelector<HTMLElement>('[data-testid="version-title"]')!
-      const meta = (row: HTMLElement) =>
-        row.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
+      const meta = open.querySelector<HTMLElement>('[data-testid="version-secondary-line"]')!
       const mark = () => open.querySelector<SVGSVGElement>('.variant-mark svg')!
 
-      // Only the open row is the current item; no weight change, as in the document list
+      // Only the open row is the current item, with no weight change and no edge bar
       const marked = [...document.querySelectorAll('[data-variant-name] .primary-action')].filter(
         (action) => action.hasAttribute('aria-current'),
       )
@@ -1317,53 +1314,42 @@ describe('Inventory selection', () => {
       expect(getComputedStyle(title(open)).fontWeight).toBe(
         getComputedStyle(title(other)).fontWeight,
       )
+      expect(getComputedStyle(open, '::before').content).toBe('none')
 
-      const expectSelected = () => {
-        // The document list's selected background, text colours and mark tone, not a picked blue
-        expect(background(open)).toEqual(background(list))
-        expect(rgb(getComputedStyle(title(open)).color)).toEqual(listVar('--card-fg-color'))
-        expect(rgb(getComputedStyle(meta(open)).color)).toEqual(listVar('--card-muted-fg-color'))
-        expect(rgb(getComputedStyle(mark()).color)).toEqual(
-          listVar('--card-badge-suggest-icon-color'),
-        )
-        // The selected palette's own contrast, the same as on the document list's selected item
-        expect(textContrast(title(open), open)).toBeCloseTo(
-          contrastRatio(listVar('--card-fg-color'), background(list)),
-          2,
-        )
+      const expectOpen = () => {
+        expect(background(open)).toEqual(ui5.open)
+        expect(rgb(getComputedStyle(title(open)).color)).toEqual(ui5.openTitle)
+        expect(rgb(getComputedStyle(meta).color)).toEqual(ui5.openSubtitle)
+        expect(rgb(getComputedStyle(mark()).color)).toEqual(ui5.openVariantMark)
+        expect(textContrast(title(open), open)).toBeGreaterThanOrEqual(4.5)
+        expect(textContrast(meta, open)).toBeGreaterThanOrEqual(4.5)
+        expect(
+          contrastRatio(rgb(getComputedStyle(mark()).color), background(open)),
+        ).toBeGreaterThanOrEqual(3)
       }
 
-      // Open, not checked
-      expect(background(open)).not.toEqual(background(other))
-      expectSelected()
+      // Open, not checked: the empty box's border shows on the blue
+      expectOpen()
       expect(railContrast(rowCheckbox('Draft', 'VIP users'), open)).toBeGreaterThanOrEqual(3)
 
-      // Open and checked: the selected state wins over the checked tint, and the box stays visible
+      // Open and checked: the strong blue wins over the checked background, and the box inverts
       refs.selectionRef.send({
         type: 'selection.addMany',
         variantIds: [DRAFT_VIP.id, DRAFT_SUMMER.id],
       })
       await expect.poll(() => rowCheckbox('Draft', 'VIP users').checked).toBe(true)
       await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
-      expectSelected()
-      // The checked box's edge, its ring where its fill alone is too close to the selected blue,
-      // keeps 3:1 on the selected background
-      const box = rowCheckbox('Draft', 'VIP users').nextElementSibling!
-      const fill = rgb(getComputedStyle(box).backgroundColor)
-      const ring = /(rgba?\([^)]*\)|color\([^)]*\))/.exec(getComputedStyle(box).boxShadow)
-      const edge = Math.max(
-        contrastRatio(fill, background(open)),
-        ring ? contrastRatio(rgb(ring[1]), background(open)) : 0,
-      )
-      expect(edge).toBeGreaterThanOrEqual(3)
+      expectOpen()
+      const box = getComputedStyle(rowCheckbox('Draft', 'VIP users').nextElementSibling!)
+      expect(rgb(box.backgroundColor)).toEqual(ui5.checkboxTick)
+      expect(rgb(box.color)).toEqual(ui5.checkboxFill)
+      expect(contrastRatio(rgb(box.backgroundColor), background(open))).toBeGreaterThanOrEqual(3)
+      // A checked row that is not open keeps the pale blue
+      expect(background(other)).toEqual(ui5.checked)
 
-      // A checked row that is not open keeps its soft tint
-      expect(background(other)).not.toEqual(background(open))
-      expect(contrastRatio(background(other), background(list))).toBeGreaterThan(1.2)
-
-      // Hovered, the open row keeps the selected state
+      // Hovered, the open row keeps its state
       await userEvent.hover(page.elementLocator(open))
-      expect(background(open)).toEqual(background(list))
+      expect(background(open)).toEqual(ui5.open)
     },
   )
 
