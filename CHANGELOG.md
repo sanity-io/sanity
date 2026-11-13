@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
+
+### Features
+
+* **access-ui:** render advisory access-request states in shared card ([#15611](https://github.com/sanity-io/sanity/issues/15611)) ([90fa7fd](https://github.com/sanity-io/sanity/commit/90fa7fd2823867516d08311e6ca17132dfdfc680))
+* **core:** add telemetry for cancelled and retried commits ([8e213a0](https://github.com/sanity-io/sanity/commit/8e213a06227d65917a57294ff2c4cd52414ef3db))
+* **core:** show a compact versions popover on document list rows ([#15749](https://github.com/sanity-io/sanity/issues/15749)) ([057171e](https://github.com/sanity-io/sanity/commit/057171ee7ed7bd7afd0636122d1c1a6e22e3aa04))
+* **form:** expose changed state to PTE previews and annotations ([#12988](https://github.com/sanity-io/sanity/issues/12988)) ([6e7e3a1](https://github.com/sanity-io/sanity/commit/6e7e3a1fe137f2bb357b20b57d8d81bad0a8b99d))
+* **media-library:** show video thumbnails in previews ([#12268](https://github.com/sanity-io/sanity/issues/12268)) ([fd49806](https://github.com/sanity-io/sanity/commit/fd498068c73089caa676ad75cccac1cf243d298f))
+* **sanity:** add served version status to document group inventory ([fc8ccc2](https://github.com/sanity-io/sanity/commit/fc8ccc2ec7ebc82340c2b0a8c35b6853128f23d4))
+* **sanity:** allow base version to be specified when creating version from document group inventory ([c29319c](https://github.com/sanity-io/sanity/commit/c29319c79ff64ea20343c7f58bdcd50b13c16c5e))
+* **sanity:** expand id matching to segments in path-like query strings ([918328d](https://github.com/sanity-io/sanity/commit/918328d5c1e10c86b94576eec3b010545df1fbf6))
+* **sanity:** unify document group inventory version creation steps ([5b3e9bc](https://github.com/sanity-io/sanity/commit/5b3e9bc5ad0a602d0ef1005775fe1df2bb385253))
+* **validation:** support workspace i18n configs in validation ([#15754](https://github.com/sanity-io/sanity/issues/15754)) ([437c370](https://github.com/sanity-io/sanity/commit/437c370fface201bbbf20ca2763ee5fc3b942f09))
+* **variants:** gate variant creation on the content variants feature ([#15709](https://github.com/sanity-io/sanity/issues/15709)) ([4c1b4f1](https://github.com/sanity-io/sanity/commit/4c1b4f1621d33ca49ee9d88e423b3c94d6405414))
+* **vision:** send oversized queries as a post body, load pasted curl commands, and drop the vista codename ([#15499](https://github.com/sanity-io/sanity/issues/15499)) ([ac255a8](https://github.com/sanity-io/sanity/commit/ac255a8d93a8f8b8b5a3e4c57d4c0a2aa652be0e))
+
+### Bug Fixes
+
+* **core:** share the shard ping across document checkouts ([#15774](https://github.com/sanity-io/sanity/issues/15774)) ([003a7a2](https://github.com/sanity-io/sanity/commit/003a7a288529221b9eef4e4fda260169970ae23b))
+* **deps:** update dependency @sanity/cli to ^8.28.0 ([#15794](https://github.com/sanity-io/sanity/issues/15794)) ([b783ddf](https://github.com/sanity-io/sanity/commit/b783ddf8877566b6fa703097ef3311c2717c9ea5))
+* **deps:** update portabletext ([44bc779](https://github.com/sanity-io/sanity/commit/44bc77950547c55edad9c869e87843dfa1c2fd8f))
+* **deps:** update portabletext ([#15757](https://github.com/sanity-io/sanity/issues/15757)) ([0110e57](https://github.com/sanity-io/sanity/commit/0110e5782db35e656a38b8a384ab03b479474370))
+* **e2e:** archive the loaded studio in the navbar chromatic snapshot ([#14882](https://github.com/sanity-io/sanity/issues/14882)) ([d96e804](https://github.com/sanity-io/sanity/commit/d96e8045ee4d436e9bdc8404480c35fe7b83e949))
+* **form:** quote unsupported string patch type once ([#14933](https://github.com/sanity-io/sanity/issues/14933)) ([bedfaaf](https://github.com/sanity-io/sanity/commit/bedfaaf2a9b09a337b2d88af91b332f7ce5a2c5a))
+* log out the auth store whose session was rejected ([#15788](https://github.com/sanity-io/sanity/issues/15788)) ([fccea09](https://github.com/sanity-io/sanity/commit/fccea092a0366bee8369acb371e6c81c79d04716))
+* **presentation:** stop the document pane re-render loop ([#15825](https://github.com/sanity-io/sanity/issues/15825)) ([a10ddd4](https://github.com/sanity-io/sanity/commit/a10ddd4d12fc1b746f2633017349214c38098628))
+* **releases:** render portable text descriptions with toPlainText instead of blanking ([#15787](https://github.com/sanity-io/sanity/issues/15787)) ([c8a890e](https://github.com/sanity-io/sanity/commit/c8a890eb857617d5d475463afd59bdebf2175ac1))
+* **releases:** render releases whose description is not a string ([#15725](https://github.com/sanity-io/sanity/issues/15725)) ([e2ef7b4](https://github.com/sanity-io/sanity/commit/e2ef7b4be7af0c794708c2ee957ccfd47fccc0f3))
+* repair broken lockfile ([#15840](https://github.com/sanity-io/sanity/issues/15840)) ([d02d5fc](https://github.com/sanity-io/sanity/commit/d02d5fcc7a04e971faf2ea30e0d95b6609ba1592))
+* **schema:** stop listing date as a future reserved type ([#15134](https://github.com/sanity-io/sanity/issues/15134)) ([b426283](https://github.com/sanity-io/sanity/commit/b42628370802ba920cca1a258aa87327f781e47c))
+* **studio:** keep the navbar color the same in every perspective ([#15657](https://github.com/sanity-io/sanity/issues/15657)) ([642b41b](https://github.com/sanity-io/sanity/commit/642b41b391147658c71db3aa5d410b511a2cc878))
+* **validation:** validate reference target types ([#15736](https://github.com/sanity-io/sanity/issues/15736)) ([5b45e57](https://github.com/sanity-io/sanity/commit/5b45e570d8aa1f94d1cac13a8cdbccbcf1a4a005))
+* **vision:** restore the redesign without groq-wasm top-level await ([#15803](https://github.com/sanity-io/sanity/issues/15803)) ([f625557](https://github.com/sanity-io/sanity/commit/f625557de3f875b97dcd0a4d4a56f66834677a43))
 ## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
 
 ### Features

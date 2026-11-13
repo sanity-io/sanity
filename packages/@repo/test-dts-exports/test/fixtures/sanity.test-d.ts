@@ -1412,7 +1412,6 @@ import type {
   Serializeable,
   serializeError,
   Session,
-  SESSION_ID,
   set,
   SetActiveGroupOperation,
   setAtPath,
@@ -6133,9 +6132,6 @@ describe('sanity', () => {
   })
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
-  })
-  test('SESSION_ID', () => {
-    expectTypeOf<typeof SESSION_ID>().not.toBeNever()
   })
   test('set', () => {
     expectTypeOf<typeof set>().toBeFunction()

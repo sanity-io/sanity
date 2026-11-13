@@ -2,11 +2,13 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {act, type HTMLProps} from 'react'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {variantsUpsellData$} from '../../__fixtures__/variantsUpsellData'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {VariantsUpsellProvider} from '../../contexts/upsell/VariantsUpsellProvider'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -77,6 +79,21 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
 
 setupVirtualListEnv()
 
+// `createTestProvider` mocks `useUpsellData` with no content. These tests render the panel and
+// dialog, so they answer with the journey document the endpoint publishes.
+const useUpsellDataMock = vi.mocked(useUpsellData)
+
+const telemetryLogs = {
+  dialogViewed: vi.fn(),
+  dialogDismissed: vi.fn(),
+  dialogPrimaryClicked: vi.fn(),
+  dialogSecondaryClicked: vi.fn(),
+  panelViewed: vi.fn(),
+  panelDismissed: vi.fn(),
+  panelPrimaryClicked: vi.fn(),
+  panelSecondaryClicked: vi.fn(),
+}
+
 /** A mode promise that has already settled, which `use()` reads without suspending */
 function settledMode(mode: VariantsMode): Promise<VariantsMode> {
   return Object.assign(Promise.resolve(mode), {status: 'fulfilled' as const, value: mode})
@@ -88,6 +105,10 @@ function setVariants(variants: SystemVariant[]) {
 }
 
 describe('VariantsTool', () => {
+  beforeEach(() => {
+    useUpsellDataMock.mockReturnValue({upsellData$: variantsUpsellData$, telemetryLogs})
+  })
+
   const renderTool = async (mode: VariantsMode = 'default') => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],

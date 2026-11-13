@@ -26,7 +26,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           fallback={t('release.placeholder-untitled-release')}
           textProps={{size: 1, weight: 'medium'}}
         />
-        <Text muted size={1} as="div" trim={true}>
+        <Text size={1} style={{color: 'var(--card-muted-fg-color)'}} as="div" trim={true}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (

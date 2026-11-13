@@ -23,6 +23,7 @@ import {createRequestProxy, createSSEProxy} from './proxy'
 import {intermittentServiceErrors} from './requestScenarios'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   invalidSession,
@@ -31,6 +32,7 @@ import {
   refusedRefreshToken,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
@@ -105,9 +107,26 @@ const flags = run(
       }),
       3051,
     ),
-    forceHttp1: repeatableFlag('--force-http1', {
-      description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
-    }),
+    // or() makes the parser itself reject passing both flags: a stream cap needs h2
+    tlsProtocol: optional(
+      or(
+        mapValue(
+          multiple(
+            option('--force-http1', {
+              description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling. Mutually exclusive with --max-streams`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'http1' as const}),
+        ),
+        mapValue(
+          option('--max-streams', integer({min: 1, metavar: 'N'}), {
+            description: message`cap concurrent HTTP/2 streams per session (no cap by default). Mutually exclusive with --force-http1`,
+          }),
+          (maxStreams) => ({kind: 'h2' as const, maxStreams}),
+        ),
+      ),
+    ),
     http1: repeatableFlag('--http1', {
       description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
     }),
@@ -163,6 +182,34 @@ const flags = run(
     org401: repeatableFlag('--org-401', {
       description: message`make the get-org-id endpoint return 401`,
     }),
+    listenerErrorProbability: withDefault(
+      option('--listener-error-probability', probability(), {
+        description: message`like --error-probability, but only for listen requests: each one fails with a random 5xx at this probability while every other request still works`,
+      }),
+      0,
+    ),
+    // or() makes the parser itself reject passing both flags: withholding the welcome would also
+    // withhold the channelError and disconnect, leaving a silently closed stream
+    listenerFault: optional(
+      or(
+        mapValue(
+          option('--listener-channel-error', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`end every listener SECONDS after its welcome (welcome, welcomeback or reset) with the channelError (Internal error) and disconnect the API sends when a listener fails, and close it. Use 0 to fail every listener instead of welcoming it, as when the API cannot set one up`,
+          }),
+          (seconds) => ({kind: 'channelError' as const, afterMs: seconds * 1000}),
+        ),
+        // Like repeatableFlag(), but {min: 1} so that or() only picks it when it is passed
+        mapValue(
+          multiple(
+            option('--withhold-welcome', {
+              description: message`keep listen requests open without ever welcoming them, as when the API hangs while setting a listener up. Mutually exclusive with --listener-channel-error`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'withholdWelcome' as const}),
+        ),
+      ),
+    ),
     // or() makes the parser itself reject passing both flags
     tokenFault: optional(
       or(
@@ -205,11 +252,12 @@ const flags = run(
 )
 
 const TLS_PORT = flags.port
-const FORCE_HTTP1 = flags.forceHttp1
+const FORCE_HTTP1 = flags.tlsProtocol?.kind === 'http1'
 const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = flags.http1Port
 const API_HOST = flags.apiHost
 const LISTENER_TTL_MS = flags.listenerTtl * 1000
+const MAX_STREAMS = flags.tlsProtocol?.kind === 'h2' ? flags.tlsProtocol.maxStreams : undefined
 const FLAP = flags.flap
 const LATENCY = flags.latency
 const ERROR_PROBABILITY = flags.errorProbability
@@ -217,6 +265,15 @@ const ENABLE_SSE_FAULTS = flags.sseFaults
 const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
 const RESET_PROBABILITY = flags.resetProbability
 const FORCE_ORG_401 = flags.org401
+const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
+const LISTENER_CHANNEL_ERROR_AFTER_MS =
+  flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
+const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+// Any scenario that changes what the listen endpoint answers
+const LISTENER_FAULTS =
+  LISTENER_ERROR_PROBABILITY > 0 ||
+  LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
+  WITHHOLD_WELCOME
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
@@ -386,9 +443,16 @@ const listenEndpointProxy = createSSEProxy((events$) =>
           dropMutations(DROPPED_MUTATION_PROBABILITY),
         )
       : tap(),
+    LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
+      ? tap()
+      : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
+    WITHHOLD_WELCOME ? withholdWelcome() : tap(),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
+
+// --listener-error-probability fails listen requests only, before they reach the upstream
+const faultListenRequests = intermittentServiceErrors(LISTENER_ERROR_PROBABILITY)
 
 const orgEndpointProxy = createRequestProxy({
   transformHeaders: (headers$) =>
@@ -514,8 +578,13 @@ const routes = [
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
   // handler (which is still subject to --flap and --latency)
-  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: withNetworkScenarios(listenEndpointProxy)}]
+  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0 || LISTENER_FAULTS
+    ? [
+        {
+          match: isListenEndpoint(),
+          handler: withNetworkScenarios(faultListenRequests(listenEndpointProxy)),
+        },
+      ]
     : []),
 ]
 
@@ -531,6 +600,7 @@ const tlsProxy = createDebugProxy({
   port: TLS_PORT,
   tls: await loadTlsConfig(),
   forceHttp1: FORCE_HTTP1,
+  http2Options: MAX_STREAMS ? {settings: {maxConcurrentStreams: MAX_STREAMS}} : undefined,
 })
 
 await tlsProxy.listen()
@@ -567,6 +637,28 @@ if (ERROR_PROBABILITY > 0) {
   console.info(
     `Simulated incident: ${Math.round(ERROR_PROBABILITY * 100)}% of requests fail with a random 5xx (500/502/503/504)`,
   )
+}
+
+if (MAX_STREAMS) {
+  console.info(`Max concurrent HTTP/2 streams: ${MAX_STREAMS} (the ${TLS_PORT} listener only)`)
+}
+
+if (LISTENER_ERROR_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(LISTENER_ERROR_PROBABILITY * 100)}% of listen requests fail with a random 5xx`,
+  )
+}
+
+if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
+  console.info(
+    LISTENER_CHANNEL_ERROR_AFTER_MS === 0
+      ? 'Failing listeners: every listener gets a channelError (Internal error) instead of its welcome'
+      : `Failing listeners: every listener gets a channelError (Internal error) ${LISTENER_CHANNEL_ERROR_AFTER_MS / 1000}s after its welcome`,
+  )
+}
+
+if (WITHHOLD_WELCOME) {
+  console.info('Failing listeners: listen requests stay open and are never welcomed')
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {

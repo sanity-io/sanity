@@ -1,3 +1,4 @@
+import {uuid} from '@sanity/uuid'
 import {renderHook} from '@testing-library/react'
 import {useRouterState} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -7,6 +8,10 @@ import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
 import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
 
+vi.mock('@sanity/uuid', async (importOriginal) => {
+  const actual = await importOriginal<{uuid: typeof uuid}>()
+  return {...actual, uuid: vi.fn(actual.uuid)}
+})
 vi.mock('../../hooks/useClient', () => ({useClient: vi.fn()}))
 vi.mock('../../hooks/useProjectSubscriptions', () => ({
   useProjectSubscriptions: vi.fn().mockReturnValue({
@@ -71,6 +76,25 @@ describe('useStudioFeedbackTags', () => {
 
     vi.mocked(useRouterState).mockImplementation(((selector: (state: {tool?: string}) => unknown) =>
       selector({tool: 'desk'})) as never)
+  })
+
+  it('does not generate a session id when the module is imported', async () => {
+    vi.resetModules()
+    await import('../hooks/useStudioFeedbackTags')
+
+    expect(uuid).not.toHaveBeenCalled()
+  })
+
+  it('creates the session id on first use and shares it across hook instances', async () => {
+    vi.resetModules()
+    const {useStudioFeedbackTags: useFreshTags} = await import('../hooks/useStudioFeedbackTags')
+    const {result: first, rerender} = renderHook(() => useFreshTags())
+    const {result: second} = renderHook(() => useFreshTags())
+    rerender()
+
+    expect(first.current.baseTags.sessionId).toBeTruthy()
+    expect(second.current.baseTags.sessionId).toBe(first.current.baseTags.sessionId)
+    expect(uuid).toHaveBeenCalledTimes(1)
   })
 
   it('returns base tags with expected static values', () => {

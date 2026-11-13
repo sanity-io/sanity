@@ -310,7 +310,13 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <Flex gap={1}>
           <ReleaseAvatar padding={2} release={releasePerspective} />
           <Box paddingY={2}>
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text
+              size={1}
+              weight="medium"
+              style={{color: 'var(--card-fg-color)'}}
+              as="div"
+              trim={true}
+            >
               {tStructure(['compare-versions.status', type].join('.'))}
             </Text>
           </Box>
@@ -337,12 +343,12 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
             textProps={{size: 1, weight: 'medium'}}
           />
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
-            <Text muted size={1} as="div" trim={true}>
+            <Text size={1} style={{color: 'var(--card-muted-fg-color)'}} as="div" trim={true}>
               {tCore(`release.type.${release.metadata.releaseType}`)}
             </Text>
           )}
           {release.metadata.releaseType === 'scheduled' && (
-            <Text muted size={1} as="div" trim={true}>
+            <Text size={1} style={{color: 'var(--card-muted-fg-color)'}} as="div" trim={true}>
               {formatPublishDate(release)}
             </Text>
           )}
