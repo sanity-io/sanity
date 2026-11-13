@@ -28,12 +28,36 @@ import {
   duplicateMutations,
   invalidSession,
   type InvalidSessionCode,
+  type ListenerRefusal,
   randomLatency,
   refusedRefreshToken,
+  refuseListener,
   sendReset,
   shuffleEventDelivery,
   withholdWelcome,
 } from './scenarios'
+
+const LISTENER_REFUSALS: readonly ListenerRefusal[] = ['dataset-not-found', 'evicted']
+
+/** Parses the --refuse-listener value (`<refusal>[:<seconds>]`). */
+const listenerRefusal: ValueParser<'sync', {refusal: ListenerRefusal; afterMs: number}> = {
+  mode: 'sync',
+  metavar: 'REFUSAL[:SECONDS]',
+  placeholder: {refusal: 'evicted', afterMs: 0},
+  parse(input) {
+    const [refusal, after = '0', ...rest] = input.split(':')
+    const afterSec = Number(after)
+    const known = LISTENER_REFUSALS.find((candidate) => candidate === refusal)
+    if (rest.length > 0 || !known || !Number.isInteger(afterSec) || afterSec < 0) {
+      return {
+        success: false,
+        error: message`Expected "dataset-not-found" or "evicted", optionally followed by ":<seconds>" (a whole number), got ${input}.`,
+      }
+    }
+    return {success: true, value: {refusal: known, afterMs: afterSec * 1000}}
+  },
+  format: (value) => `${value.refusal}:${value.afterMs / 1000}`,
+}
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
 const flapPhases: ValueParser<'sync', {onlineMs: number; offlineMs: number}> = {
@@ -188,8 +212,9 @@ const flags = run(
       }),
       0,
     ),
-    // or() makes the parser itself reject passing both flags: withholding the welcome would also
-    // withhold the channelError and disconnect, leaving a silently closed stream
+    // or() makes the parser itself reject passing more than one of these flags: withholding the
+    // welcome would also withhold the channelError and disconnect, leaving a silently closed
+    // stream, and a refused listener never welcomes
     listenerFault: optional(
       or(
         mapValue(
@@ -207,6 +232,12 @@ const flags = run(
             {min: 1},
           ),
           () => ({kind: 'withholdWelcome' as const}),
+        ),
+        mapValue(
+          option('--refuse-listener', listenerRefusal, {
+            description: message`refuse every listener the way the API refuses one it will not serve, which reconnecting does not change: dataset-not-found replaces its welcome with a namespaceNotFoundError channelError and a disconnect; evicted welcomes it, then disconnects it (forced by provider). Append :SECONDS to start refusing that long after the proxy starts, so the studio can boot first; listeners open at that point are refused too. Mutually exclusive with --listener-channel-error and --withhold-welcome`,
+          }),
+          (value) => ({kind: 'refuse' as const, ...value}),
         ),
       ),
     ),
@@ -269,11 +300,18 @@ const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
 const LISTENER_CHANNEL_ERROR_AFTER_MS =
   flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
 const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+const LISTENER_REFUSAL =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.refusal : undefined
+const LISTENER_REFUSAL_AFTER_MS =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.afterMs : 0
+// Refusals start this long after the proxy starts, like the --expire-token deadline.
+const LISTENER_REFUSAL_AT = Date.now() + LISTENER_REFUSAL_AFTER_MS
 // Any scenario that changes what the listen endpoint answers
 const LISTENER_FAULTS =
   LISTENER_ERROR_PROBABILITY > 0 ||
   LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
-  WITHHOLD_WELCOME
+  WITHHOLD_WELCOME ||
+  LISTENER_REFUSAL !== undefined
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
@@ -447,6 +485,9 @@ const listenEndpointProxy = createSSEProxy((events$) =>
       ? tap()
       : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
     WITHHOLD_WELCOME ? withholdWelcome() : tap(),
+    LISTENER_REFUSAL === undefined
+      ? tap()
+      : refuseListener(LISTENER_REFUSAL, {startAt: LISTENER_REFUSAL_AT}),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
@@ -659,6 +700,20 @@ if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
 
 if (WITHHOLD_WELCOME) {
   console.info('Failing listeners: listen requests stay open and are never welcomed')
+}
+
+if (LISTENER_REFUSAL !== undefined) {
+  const how =
+    LISTENER_REFUSAL === 'dataset-not-found'
+      ? 'gets a channelError (namespaceNotFoundError)'
+      : 'is evicted (forced by provider)'
+  const when =
+    LISTENER_REFUSAL === 'dataset-not-found' ? 'instead of its welcome' : 'as it welcomes'
+  console.info(
+    LISTENER_REFUSAL_AFTER_MS === 0
+      ? `Refusing listeners: every listener ${how} ${when}`
+      : `Refusing listeners: after ${LISTENER_REFUSAL_AFTER_MS / 1000}s, every listener ${how}, including the open ones`,
+  )
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {

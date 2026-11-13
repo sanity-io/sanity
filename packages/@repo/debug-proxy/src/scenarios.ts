@@ -1,9 +1,12 @@
 import {partition, shuffle} from 'es-toolkit'
 import {
   bufferTime,
+  concat,
   concatMap,
   connect,
+  defer,
   delay,
+  EMPTY,
   filter,
   merge,
   mergeMap,
@@ -15,6 +18,9 @@ import {
   Subscription,
   take,
   takeUntil,
+  takeWhile,
+  tap,
+  timer,
 } from 'rxjs'
 
 import {type ProxyHandler} from './createDebugProxy'
@@ -137,6 +143,88 @@ export function channelErrorAfterWelcome<T extends SSEEvent>(
       passed$.pipe(takeUntil(failure$)),
       failure$.pipe(concatMap(() => CHANNEL_ERROR_EVENTS)),
     )
+  })
+}
+
+/** How `refuseListener` refuses a listener. */
+export type ListenerRefusal = 'dataset-not-found' | 'evicted'
+
+/**
+ * The events the API fails a listener with when its dataset does not exist: setting the listener up
+ * fails with a `namespaceNotFoundError`, sent as a `channelError` in place of the welcome, then a
+ * `disconnect`. The API's description names the dataset's namespace, which the proxy does not know.
+ */
+const DATASET_NOT_FOUND_EVENTS: SSEEvent[] = [
+  {
+    type: 'message',
+    message: {
+      event: 'channelError',
+      data: '{"error":{"type":"namespaceNotFoundError","description":"namespace does not exist"}}',
+    },
+  },
+  {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+]
+
+/** The event the API sends a listener it has evicted, after which it closes the stream. */
+const EVICTED_EVENT: SSEEvent = {
+  type: 'message',
+  message: {event: 'disconnect', data: '{"reason":"forced by provider"}'},
+}
+
+/** The events that end a listener that has already welcomed, by refusal. */
+const REFUSAL_EVENTS: Record<ListenerRefusal, SSEEvent[]> = {
+  'dataset-not-found': DATASET_NOT_FOUND_EVENTS,
+  'evicted': [EVICTED_EVENT],
+}
+
+/**
+ * Refuses every listener the way the API refuses one it will not serve, which reconnecting does
+ * not change (unlike `channelErrorAfterWelcome`, which a client recovers from by reconnecting):
+ * - `dataset-not-found`: the listener is never set up. A `namespaceNotFoundError` channel error and
+ *   a `disconnect` replace its welcome.
+ * - `evicted`: the listener is set up, then evicted as soon as it welcomes (a `disconnect` with the
+ *   reason `forced by provider`), so the client loads live first and loses the listener after.
+ *
+ * With `startAt` (a `Date.now()` timestamp), listeners work as usual until then, so a client can
+ * load before its listeners start failing. A listener that is open at `startAt` is refused there and
+ * then: one that has welcomed gets the events above in the middle of its stream (for
+ * `dataset-not-found`, the API only sends them while it sets a listener up), and one that has not
+ * is refused at its welcome, as is every listener opened later.
+ *
+ * Either way the stream closes after the `disconnect`.
+ */
+export function refuseListener<T extends SSEEvent>(
+  refusal: ListenerRefusal,
+  {startAt}: {startAt?: number} = {},
+): OperatorFunction<T, T | SSEEvent> {
+  // Replaces the welcome and closes the stream right after, so nothing behind it gets through.
+  const replaceWelcome = (welcome: SSEEvent): SSEEvent[] =>
+    refusal === 'dataset-not-found' ? DATASET_NOT_FOUND_EVENTS : [welcome, EVICTED_EVENT]
+  // Emits once refusals start: right away (synchronously) once `startAt` has passed.
+  const refusing$ = defer(() => {
+    const delayMs = startAt === undefined ? 0 : startAt - Date.now()
+    return delayMs > 0 ? timer(delayMs) : of(undefined)
+  })
+  // connect() sets up the inner subscriptions before it subscribes to the source.
+  return connect((events$) => {
+    let welcomed = false
+    let refused = false
+    const beforeRefusing$ = events$.pipe(
+      takeUntil(refusing$.pipe(tap(() => (refused = true)))),
+      tap((event) => {
+        if (isWelcome(event)) welcomed = true
+      }),
+    )
+    const refused$ = defer(() => {
+      // The stream ended before refusals started.
+      if (!refused) return EMPTY
+      if (welcomed) return of(...REFUSAL_EVENTS[refusal])
+      return events$.pipe(
+        takeWhile((event) => !isWelcome(event), true),
+        concatMap((event): SSEEvent[] => (isWelcome(event) ? replaceWelcome(event) : [event])),
+      )
+    })
+    return concat(beforeRefusing$, refused$)
   })
 }
 
