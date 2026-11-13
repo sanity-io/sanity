@@ -245,7 +245,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(value._id, documentType)
+  const {validation: validationRaw} = useValidationStatus(value._id, documentType, {
+    listener: 'document',
+  })
 
   // Validation is computed against the live editable document (draft/published/
   // version). When viewing a historical revision those markers don't describe
