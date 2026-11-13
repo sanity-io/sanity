@@ -8,13 +8,13 @@ import {
   type RefObject,
   useCallback,
   useEffect,
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
 } from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -104,7 +104,6 @@ function FlushOnUnmount({onUnmount}: {onUnmount: () => void}) {
     () => () => {
       onUnmountEvent()
     },
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
     [],
   )
   return null
@@ -373,6 +372,7 @@ export function RequestPanel(props: RequestPanelProps) {
   return (
     <SplitWithBottomPanel
       defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
           <ApiVersionButton onReveal={revealOption} resolved={resolved} />

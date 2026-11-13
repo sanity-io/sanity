@@ -7,7 +7,7 @@ import JSON5 from 'json5'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
@@ -3022,4 +3022,41 @@ describe('VisionRedesign', () => {
     fireEvent.keyDown(handle, {key: 'Enter'})
     expect(requestPane.style.flex).toBe('0 0 600px')
   })
+
+  it.each(['params', 'options', 'lint', 'functions'] as const)(
+    'fits the request panel to the %s tab on double-click, not on a single click',
+    async (id) => {
+      const offsetHeight = vi
+        .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          if (this.hasAttribute('data-vision-panel-content')) return 300
+          const panel = this.parentElement
+          return panel?.dataset.testid === 'vision-request-panel' &&
+            panel.firstElementChild === this
+            ? 35
+            : 0
+        })
+      const clientHeight = vi
+        .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          return this.dataset.testid === 'vision-request-column-split' ? 800 : 0
+        })
+      onTestFinished(() => {
+        offsetHeight.mockRestore()
+        clientHeight.mockRestore()
+      })
+      renderRedesign()
+      const split = await screen.findByTestId('vision-request-column-split')
+      const bottomPane = split.lastElementChild as HTMLElement
+      const initialFlex = bottomPane.style.flex
+      const tab = document.getElementById(`vision-request-${id}-tab`) as HTMLElement
+
+      fireEvent.click(tab)
+      expect(tab.getAttribute('aria-selected')).toBe('true')
+      expect(bottomPane.style.flex).toBe(initialFlex)
+
+      fireEvent.doubleClick(tab)
+      await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))
+    },
+  )
 })
