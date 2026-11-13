@@ -14,7 +14,6 @@ import {type WorkspaceOptions, type WorkspaceSummary} from '../../../../../confi
 import {_createLegacyAuthStore} from '../../../../../store/auth/legacy/createLegacyAuthStore'
 import {createMockAuthStore} from '../../../../../store/auth/mock/createMockAuthStore'
 import {type AuthStore} from '../../../../../store/auth/types'
-import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
 import {UnclaimedProjectProvider} from '../../../../unclaimedProject/UnclaimedProjectProvider'
 import {UserMenuAuthAction} from '../UserMenuAuthAction'
 
@@ -266,8 +265,6 @@ describe('UserMenuAuthAction', () => {
     async function clickSignOut() {
       renderAction('menu')
       await userEvent.click(screen.getByRole('menuitem', {name: 'Sign out'}))
-      // The active workspace signs out after the others have settled.
-      await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
     }
 
     function resolved() {
@@ -315,22 +312,21 @@ describe('UserMenuAuthAction', () => {
       expect(active).toHaveBeenCalledTimes(1)
     })
 
-    it('signs out of the active workspace after the others have settled', async () => {
-      const otherLogout = promiseWithResolvers<void>()
-      const other = vi.fn(() => otherLogout.promise)
-      const active = resolved()
+    it('starts signing out of the active workspace first', async () => {
+      // Another store on the same project would otherwise tell the active store about its sign-out
+      // before the active store has marked its own, and a `redirectOnSingle` login screen would
+      // then send the user back to the provider.
+      const [active, other] = [resolved(), resolved()]
       setWorkspaces(
         createWorkspace('active', {auth: createStore(active)}),
         createWorkspace('other', {auth: createStore(other)}),
       )
 
       await clickSignOut()
-      expect(other).toHaveBeenCalledTimes(1)
-      expect(active).not.toHaveBeenCalled()
-
-      await act(async () => otherLogout.resolve())
 
       expect(active).toHaveBeenCalledTimes(1)
+      expect(other).toHaveBeenCalledTimes(1)
+      expect(active.mock.invocationCallOrder[0]).toBeLessThan(other.mock.invocationCallOrder[0])
     })
 
     it.each([
