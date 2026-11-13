@@ -8,10 +8,10 @@ import {useObservable, useObservableSubject} from 'react-rx'
 import {distinctUntilChanged, filter, map, merge, type Observable, of, scan, tap} from 'rxjs'
 
 import {
-  followListenerQuery,
-  type ListenerQueryEvent,
-  type ListenerQueryStatusEvent,
-} from '../../store/sharedListener/followListenerQuery'
+  type AddonDatasetQueryEvent,
+  type AddonDatasetQueryStatusEvent,
+  followAddonDatasetQuery,
+} from '../../store/addonDatasetListener/createAddonDatasetListenerStore'
 import {getPublishedId, isDraftId} from '../../util/draftUtils'
 import {type CommentDocument, type CommentsType, type Loadable} from '../types'
 import {buildCommentsQuery, matchesCommentsQuery} from './buildCommentsQuery'
@@ -60,7 +60,7 @@ interface CommentsStoreState extends CommentsReducerState {
   error: Error | null
 }
 
-type CommentsStoreAction = CommentsReducerAction | ListenerQueryStatusEvent
+type CommentsStoreAction = CommentsReducerAction | AddonDatasetQueryStatusEvent
 
 const LOADING_STATE: CommentsStoreState = {comments: {}, loading: true, error: null}
 const IDLE_STATE: CommentsStoreState = {comments: {}, loading: false, error: null}
@@ -142,7 +142,7 @@ function mutationToOutcome(
  * store.
  */
 function queryEventToOutcome(
-  event: ListenerQueryEvent<CommentDocument, CollaborationCommentDocument>,
+  event: AddonDatasetQueryEvent<CommentDocument, CollaborationCommentDocument>,
   scope: CommentsQueryScope,
   transactionsIdMap: Map<DocumentId, TransactionId>,
 ): QueryEventOutcome | null {
@@ -235,7 +235,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       params,
     )
     const remoteActions$ = listenerStore.events.pipe(
-      followListenerQuery(fetchComments),
+      followAddonDatasetQuery<CommentDocument, CollaborationCommentDocument>(fetchComments),
       map((event) => queryEventToOutcome(event, scope, transactionsIdMap)),
       filter((outcome) => outcome !== null),
       tap(({latestTransactionReceivedFor}) => {
