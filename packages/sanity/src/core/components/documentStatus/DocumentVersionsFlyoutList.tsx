@@ -24,6 +24,16 @@ const MAX_AUDIENCES = 5
 /** The trailing column of status marks: as wide on every row, so the marks line up at the right edge. */
 const MARK_COLUMN_WIDTH = 25
 
+/**
+ * The version the pane is viewing: UI 5's low-emphasis selected tone, the one the inventory uses to
+ * hint at the open version inside a collapsed group. Hover and focus replace it with the menu's
+ * selected tone.
+ */
+const VIEWED_STYLE: CSSProperties = {
+  backgroundColor: 'var(--active-background-normal)',
+  color: 'var(--active-foreground-normal)',
+}
+
 /** ui5 icons declare their own colour variable, so on the active row it is set on the icon itself. */
 function activeIconStyle(active: boolean): CSSProperties | undefined {
   return active ? ({'--icon-color': 'var(--card-fg-color)'} as CSSProperties) : undefined
@@ -41,30 +51,38 @@ function FlyoutRow(props: {
    */
   renderTrailing?: (active: boolean) => ReactNode
   onClick: () => void
-  /** The version the pane is viewing: the list's selected-but-inactive tint, until the row is hovered or focused. */
+  /** The version the pane is viewing: a low-emphasis selected tone, until the row is hovered or focused. */
   viewed?: boolean
 }) {
   // Hover and keyboard focus are the menus' active state: the selected fill and text colours.
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const active = hovered || focused
+  const viewedTone = Boolean(props.viewed) && !active
 
   return (
     <PreviewCard
       __unstable_focusRing
+      aria-current={props.viewed ? 'true' : undefined}
       as="button"
       data-testid={props.testId}
+      data-viewed={props.viewed ? '' : undefined}
       onBlur={() => setFocused(false)}
       onClick={props.onClick}
       onFocus={() => setFocused(true)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      pressed={Boolean(props.viewed) && !active}
       radius={2}
       role="menuitem"
       selected={active}
       sizing="border"
-      style={{display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer'}}
+      style={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        cursor: 'pointer',
+        ...(viewedTone ? VIEWED_STYLE : undefined),
+      }}
       tabIndex={-1}
       tone="inherit"
       type="button"
@@ -91,7 +109,7 @@ function FlyoutRow(props: {
                 as="div"
                 muted
                 size={1}
-                style={{color: 'var(--card-muted-fg-color)'}}
+                style={{color: viewedTone ? 'inherit' : 'var(--card-muted-fg-color)'}}
                 trim
                 truncate={1}
               >
@@ -233,7 +251,10 @@ export function DocumentVersionsFlyoutList(props: {
             group={group}
             key={group.variantId ?? 'default'}
             onClick={() => onPick(group.variantId ?? null)}
-            viewed={viewingDocument && (group.variantId ?? undefined) === viewedVariantId}
+            viewed={
+              viewingDocument &&
+              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId
+            }
           />
         ))}
         <FlyoutRow
