@@ -26,11 +26,11 @@ export const DOCUMENT_GROUP_INSPECTOR_NAME = 'sanity/structure/document-group'
  *
  * - The document list's versions flyout writes it when the picked variant has no version in the
  *   release in view.
- * - Manage versions reads it: it opens the Create variant form pre-filled (Variant = the param,
+ * - The document inventory reads it: it opens the Create variant form pre-filled (Variant = the param,
  *   Add to = the current release, Start from = the nearest version) with focus on Create. Creating
  *   or cancelling removes the param, replacing the history entry.
- * - The variant banner reads it: while it is set and Manage versions is open, the banner keeps its
- *   sentence but drops its Create action, and points to the form instead.
+ * - The variant banner reads it: while it is set and the document inventory is open, the banner
+ *   keeps its sentence but drops its Create action, and points to the form instead.
  *
  * Without the param, all three behave as before.
  */
