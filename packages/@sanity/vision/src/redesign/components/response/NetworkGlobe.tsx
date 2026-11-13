@@ -3,6 +3,7 @@ import {type COBEOptions, type Marker} from 'cobe'
 import {useEffect, useRef} from 'react'
 
 import {type ApproximateLocation} from '../../util/timeZoneLocation'
+import * as styles from './NetworkGlobe.module.css'
 
 const SIZE = 168
 const SETTLE_MS = 1200
@@ -89,6 +90,11 @@ export interface NetworkGlobeProps {
   api: ApproximateLocation | undefined
   /** The query went all the way to the API, rather than being answered by the CDN near you */
   reachedApi: boolean
+  /**
+   * groq-store-wasm answered on this device: the query went nowhere, so there is no region or
+   * arc, and a crab stands in for your dot
+   */
+  local?: boolean
 }
 
 /**
@@ -98,7 +104,8 @@ export interface NetworkGlobeProps {
  * its canvas around in the DOM and a destroyed globe leaves it unusable, so each picture gets a
  * canvas of its own that React does not manage.
  */
-export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
+export function NetworkGlobe({you, api: apiProp, reachedApi, local = false}: NetworkGlobeProps) {
+  const api = local ? undefined : apiProp
   const containerRef = useRef<HTMLDivElement>(null)
   const dark = useThemeV2().color._dark
 
@@ -115,7 +122,10 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
     const devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2)
     const focus = you && api ? midpoint(you, api) : (you ?? api)
     const markers: Marker[] = []
-    if (you) markers.push({location: [you.latitude, you.longitude], size: 0.06, color: YOU_COLOR})
+    // The crab is drawn over the canvas in place of your dot
+    if (you && !local) {
+      markers.push({location: [you.latitude, you.longitude], size: 0.06, color: YOU_COLOR})
+    }
     if (api) markers.push({location: [api.latitude, api.longitude], size: 0.08})
     void loadCobe()
       .then(({default: createGlobe}) => {
@@ -172,14 +182,21 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
       destroy?.()
       container.replaceChildren()
     }
-  }, [api, dark, reachedApi, you])
+  }, [api, dark, local, reachedApi, you])
 
   return (
     <div
       aria-hidden
+      className={styles.globe}
       data-testid="vision-network-globe"
-      ref={containerRef}
       style={{width: SIZE, height: SIZE, flexShrink: 0}}
-    />
+    >
+      <div ref={containerRef} style={{width: SIZE, height: SIZE}} />
+      {local && you && (
+        <span className={styles.crab} data-testid="vision-network-crab">
+          🦀
+        </span>
+      )}
+    </div>
   )
 }

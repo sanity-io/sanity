@@ -6,7 +6,7 @@ import {
   QUERY_URL_SIZE_LIMIT,
   queryRequestMethod,
 } from '../../util/queryRequestMethod'
-import {fetchWithNetwork} from './queryNetwork'
+import {fetchWithNetwork, parseServerTiming, readLocalAnswer} from './queryNetwork'
 
 function respond(body: unknown, headers: Record<string, string>, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -156,5 +156,87 @@ describe('fetchWithNetwork', () => {
         message: expect.stringContaining('GROQ query parse error'),
       },
     )
+  })
+})
+
+describe('parseServerTiming', () => {
+  it('reads names, durations and quoted descriptions', () => {
+    expect(
+      parseServerTiming(
+        'wasm;dur=1.84;desc="Query in WebAssembly", route;dur=3.10;desc="Service worker to store and back"',
+      ),
+    ).toEqual([
+      {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
+      {name: 'route', dur: 3.1, desc: 'Service worker to store and back'},
+    ])
+  })
+
+  it('tolerates spacing, case, unquoted values, escapes, separators in quotes and junk', () => {
+    expect(
+      parseServerTiming(
+        ' cache ; DESC=Hit ; DUR = 2 ,, ;dur=1, "bad";dur=1, db;dur=abc;desc="a, \\"b\\"; c", total',
+      ),
+    ).toEqual([
+      {name: 'cache', dur: 2, desc: 'Hit'},
+      {name: 'db', desc: 'a, "b"; c'},
+      {name: 'total'},
+    ])
+  })
+
+  it('keeps the first of repeated params, and reads nothing from an empty header', () => {
+    expect(parseServerTiming('a;dur=1;dur=2;desc=x;desc=y')).toEqual([
+      {name: 'a', dur: 1, desc: 'x'},
+    ])
+    expect(parseServerTiming('')).toEqual([])
+    expect(parseServerTiming(null)).toEqual([])
+  })
+})
+
+describe('readLocalAnswer', () => {
+  it('reads nothing from an answer groq-store-wasm did not give', () => {
+    expect(readLocalAnswer(new Headers({'server-timing': 'wasm;dur=1'}))).toBeUndefined()
+    expect(readLocalAnswer(new Headers({'x-groq-wasm': 'miss'}))).toBeUndefined()
+  })
+
+  it('reads a hit without the 0.3.1 headers', () => {
+    expect(readLocalAnswer(new Headers({'x-groq-wasm': 'hit'}))).toEqual({
+      documents: undefined,
+      memoryBytes: undefined,
+      timings: [],
+    })
+  })
+
+  it('reads the size of the store and its timings in order, ignoring unknown names', () => {
+    expect(
+      readLocalAnswer(
+        new Headers({
+          'x-groq-wasm': 'HIT',
+          'x-groq-wasm-documents': '51226',
+          'x-groq-wasm-memory': '302841856',
+          'server-timing':
+            'route;dur=3.1;desc="Service worker to store and back", other;dur=9, execute;dur=1.2, wasm;dur=1.84;desc="Query in WebAssembly", parse;desc="no duration"',
+        }),
+      ),
+    ).toEqual({
+      documents: 51226,
+      memoryBytes: 302841856,
+      timings: [
+        {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
+        {name: 'execute', dur: 1.2},
+        {name: 'route', dur: 3.1, desc: 'Service worker to store and back'},
+      ],
+    })
+  })
+
+  it('ignores counts that are not numbers', () => {
+    expect(
+      readLocalAnswer(
+        new Headers({
+          'x-groq-wasm': 'hit',
+          'x-groq-wasm-documents': 'lots',
+          'x-groq-wasm-memory': '',
+        }),
+      ),
+    ).toEqual({documents: undefined, memoryBytes: undefined, timings: []})
   })
 })

@@ -186,4 +186,80 @@ describe('NetworkTab', () => {
       })}`,
     )
   })
+
+  const wasmHit: QueryNetwork = {
+    method: 'GET',
+    viaCdn: true,
+    cacheHit: false,
+    shard: undefined,
+    traceId: undefined,
+    cacheControl: 'private, max-age=60',
+    local: {
+      documents: 51226,
+      memoryBytes: 302841856,
+      timings: [
+        {name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'},
+        {name: 'route', dur: 3.1, desc: 'Service worker to store and back'},
+      ],
+    },
+  }
+
+  it('shows an answer groq-store-wasm gave on this device, with a crab for you and no way anywhere', async () => {
+    await renderTab({
+      meta: meta(wasmHit),
+      resolved: {useCdn: false, isCdnBlockedByPerspective: true},
+    })
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.getByTestId('vision-network-region').textContent).toBe(
+      'vision.network.region.local',
+    )
+    expect(screen.getByTestId('vision-network-local-copy').textContent).toBe(
+      `vision.network.region.local-copy:${JSON.stringify({
+        documents: new Intl.NumberFormat().format(51226),
+        memory: '289 MiB',
+      })}`,
+    )
+    expect(screen.getByTestId('vision-network-cache').textContent).toBe(
+      'vision.network.cache.local',
+    )
+    expect(screen.queryByText('Cache-Control: private, max-age=60')).toBeNull()
+    expect(screen.getByTestId('vision-network-timing').textContent).toBe(
+      'vision.network.timing.local:{"e2e":90}',
+    )
+    expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","ms":1.84}',
+    )
+    expect(screen.getByTestId('vision-network-timing-route')).toBeTruthy()
+    expect(screen.queryByTestId('vision-network-hint')).toBeNull()
+    expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {arcs: unknown[]; markers: unknown[]},
+    ]
+    expect(options.arcs).toHaveLength(0)
+    expect(options.markers).toHaveLength(0)
+  })
+
+  it('shows a local answer from before groq-store-wasm reported its size and timings', async () => {
+    await renderTab({meta: meta({...wasmHit, local: {timings: []}})})
+    expect(screen.getByTestId('vision-network-endpoint').textContent).toBe(
+      'vision.network.endpoint.service-worker',
+    )
+    expect(screen.queryByTestId('vision-network-local-copy')).toBeNull()
+    expect(screen.queryByTestId('vision-network-timing-wasm')).toBeNull()
+    expect(screen.getByTestId('vision-network-crab')).toBeTruthy()
+  })
+
+  it('keeps the blue dot for answers from the API', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.queryByTestId('vision-network-crab')).toBeNull()
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {markers: unknown[]},
+    ]
+    expect(options.markers).toHaveLength(2)
+  })
 })
