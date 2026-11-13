@@ -14,10 +14,8 @@ import {createRetryableLazy} from './util/createRetryableLazy'
 // The redesign (XState, groq-js type evaluation, its own UI) only loads once someone opts in,
 // and a failed load can be retried from the error boundary. Its formatter loads WebAssembly on
 // first use from the `@sanity-labs/groq-wasm/lazy` entry; do not import the package entry here.
-const visionRedesign = createRetryableLazy<ComponentProps<typeof VisionRedesign>>(() =>
-  import('./redesign/components/VisionRedesign').then((module) => ({
-    default: module.VisionRedesign,
-  })),
+const visionRedesign = createRetryableLazy<ComponentProps<typeof VisionRedesign>>(
+  () => import('./redesign/components/VisionRedesign.lazy'),
 )
 const VisionRedesignLoader = visionRedesign.Component
 
