@@ -761,6 +761,78 @@ describe('Preview URL machine', () => {
 
         const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
         expect(snapshot.context.previewMode).toBeNull()
+        expect(snapshot.context.previewBlockedByGrants).toBe(true)
+        expect(snapshot.context.previewUrl).toBeNull()
+        expect(notify).toHaveBeenCalled()
+      })
+
+      test('blocks the preview when the user can read but sharing is off', async () => {
+        const notify = vi.fn()
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actions: {'notify preview will likely fail': notify},
+            actors: {
+              ...mockActors({
+                allowOption: ['http://localhost:*'],
+                previewUrlOption: {
+                  initial: 'http://localhost:3000',
+                  previewMode: {enable: '/api/draft-mode/enable'},
+                },
+              }),
+              'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(
+                ({input}) =>
+                  of(
+                    input.checkPermissionName === 'read'
+                      ? {granted: true, reason: 'Matching grant'}
+                      : {granted: false, reason: 'No matching grants found'},
+                  ),
+              ),
+              'read shared preview secret': fromPromise<string | null>(() => Promise.resolve(null)),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.hasTag('error')).toBe(false)
+        expect(snapshot.matches('success')).toBe(true)
+        expect(snapshot.context.previewBlockedByGrants).toBe(true)
+        expect(snapshot.context.previewUrl).toBeNull()
+        expect(snapshot.context.previewUrlSecret).toBeNull()
+        expect(notify).toHaveBeenCalled()
+      })
+
+      test('blocks the preview when reading the shared secret is forbidden', async () => {
+        const notify = vi.fn()
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actions: {'notify preview will likely fail': notify},
+            actors: {
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/draft-mode/enable'}},
+              }),
+              'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(
+                ({input}) =>
+                  of(
+                    input.checkPermissionName === 'read'
+                      ? {granted: true, reason: 'Matching grant'}
+                      : {granted: false, reason: 'No matching grants found'},
+                  ),
+              ),
+              'read shared preview secret': fromPromise<string | null>(() =>
+                Promise.reject(
+                  Object.assign(new Error('Insufficient permissions'), {statusCode: 403}),
+                ),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.hasTag('error')).toBe(false)
+        expect(snapshot.context.previewBlockedByGrants).toBe(true)
+        expect(snapshot.context.previewUrl).toBeNull()
         expect(notify).toHaveBeenCalled()
       })
 
@@ -844,10 +916,55 @@ describe('Preview URL machine', () => {
           },
         ).start()
         const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewBlockedByGrants).toBe(false)
         expect(context.previewUrlSecret).toEqual({
           secret: expect.any(String),
           expiresAt: expect.any(Date),
         })
+      })
+
+      test('treats a permission error while creating the secret as a missing grant', async () => {
+        const notify = vi.fn()
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actions: {'notify preview will likely fail': notify},
+            actors: {
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              }),
+              'create preview secret': fromPromise(() =>
+                Promise.reject(
+                  Object.assign(new Error('Insufficient permissions'), {statusCode: 403}),
+                ),
+              ),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(snapshot.hasTag('error')).toBe(false)
+        expect(snapshot.context.previewBlockedByGrants).toBe(true)
+        expect(snapshot.context.previewUrl).toBeNull()
+        expect(notify).toHaveBeenCalled()
+      })
+
+      test('still fails when creating the secret fails for another reason', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: {
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              }),
+              'create preview secret': fromPromise(() => Promise.reject(new Error('network down'))),
+            },
+          }),
+          {input: {previewSearchParam: null}},
+        ).start()
+
+        const snapshot = await waitFor(actor, (state) => state.hasTag('error'))
+        expect(snapshot.context.previewBlockedByGrants).toBe(false)
+        expect(snapshot.context.error?.message).toBe('network down')
       })
 
       test('sets the selected variant on the preview mode enable url', async () => {
@@ -1031,10 +1148,12 @@ describe('Preview URL machine', () => {
           },
         ).start()
         const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewBlockedByGrants).toBe(false)
         expect(context.previewUrlSecret).toEqual({
           secret: 'dfg456',
           expiresAt: expect.any(Date),
         })
+        expect(context.previewUrl?.searchParams.get('sanity-preview-secret')).toBe('dfg456')
       })
     })
 

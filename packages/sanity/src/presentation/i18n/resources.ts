@@ -112,9 +112,12 @@ export default defineLocalesResources('presentation', {
   'share-url.clipboard.status_unsupported': 'Clipboard not supported',
   /** The share URL menu item text for opening a preview window */
   'share-url.menu-item.open.text': 'Open preview',
-  /** Error toast that notifies that URL Preview Secrets can't be generated as the user lacks ACL grants */
+  /** Shown in place of the preview when the current role cannot create a preview URL secret and sharing is off */
   'preview-url-secret.missing-grants':
-    "You don't have permission to create URL Preview Secrets. This will likely cause the preview to fail loading.",
+    "You don't have permission to open the preview. Ask a project administrator for a role that can edit.",
+  /** Shown in place of the preview when the current role cannot create a preview URL secret and sharing is off. {{roles}} is the role title, or several titles joined with a comma */
+  'preview-url-secret.missing-grants_with-role':
+    "Your role ({{roles}}) can't open the preview. Ask a project administrator for a role that can edit.",
   /** The `aria-label` for the button that opens the share menu */
   'preview-frame.share-button.aria-label': 'Share this preview',
   /** The <title> for the QR Code SVG that shows a link to the current preview */
