@@ -9,7 +9,7 @@ import {Button} from '../../../ui-components/button/Button'
 import {useClient} from '../../hooks/useClient'
 import {useConditionalToast} from '../../hooks/useConditionalToast'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {isUsingLegacyHttp} from '../../network/isUsingLegacyHttp'
+import {isUsingLegacyHttp, PROTOCOL_CHECK_API_VERSION} from '../../network/isUsingLegacyHttp'
 
 const HTTP_HELP_URL = generateHelpUrl('http1-performance-issues')
 
@@ -23,7 +23,7 @@ const SNOOZE_DURATION_HOURS = 24
  */
 export function useNetworkProtocolCheck(): undefined {
   const {t} = useTranslation()
-  const client = useClient({apiVersion: '2025-03-01'})
+  const client = useClient({apiVersion: PROTOCOL_CHECK_API_VERSION})
   const title = t('network-check.slow-protocol-warning.title')
 
   const [warningSnoozedAtRaw, setWarningSnoozedAt] = useSessionStorageState(

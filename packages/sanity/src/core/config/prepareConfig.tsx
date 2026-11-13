@@ -27,6 +27,7 @@ import {
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
@@ -124,6 +125,8 @@ import {
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 const debug = createDebug('sanity:config')
+
+const isBrowser = typeof window === 'object'
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -579,6 +582,7 @@ function getAuthStore(
     clientFactory: (config) => {
       let client: SanityClient
       client = clientFactory({
+        ...(isBrowser ? {resolveFetch: resolveListenerCountingFetch} : {}),
         ...config,
         ...(createStudioRequestHandler
           ? {

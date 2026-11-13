@@ -13,6 +13,7 @@ import {
   switchMap,
 } from 'rxjs'
 
+import {openListener} from '../../network/listenerCount'
 import {clientAuth} from '../../util/clientAuth'
 import {AGENT_BUNDLE_PREFIX} from './constants'
 
@@ -127,6 +128,7 @@ function listenToBundles(
         switchMap(
           (es) =>
             new Observable<AgentBundlesState>((subscriber) => {
+              const releaseListener = openListener()
               es.addEventListener('bundles', ((event: MessageEvent) => {
                 try {
                   const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
@@ -137,11 +139,13 @@ function listenToBundles(
               }) as EventListener)
 
               es.addEventListener('error', (() => {
-                // EventSource auto-reconnects on transient errors.
+                // EventSource auto-reconnects on transient errors; CLOSED means it gave up.
+                if (es.readyState === EventSource.CLOSED) releaseListener()
               }) as EventListener)
 
               return () => {
                 es.close()
+                releaseListener()
               }
             }),
         ),
