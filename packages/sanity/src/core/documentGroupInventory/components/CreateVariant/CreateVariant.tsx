@@ -35,6 +35,12 @@ interface Props {
   sets: VariantSet[]
   /** The title of the document the variant is created for, shown in the header. */
   documentTitle: ReactNode
+  /**
+   * Whether focus goes to the Create button when the form opens, instead of the Variant select:
+   * for a form that opens already filled in, so one Enter or click creates the variant. Create is
+   * focused as soon as it can be pressed.
+   */
+  focusCreate?: boolean
 }
 
 const NO_RELEASES: ReadonlyMap<string, ReleaseDocument> = new Map()
@@ -50,18 +56,24 @@ const DocumentTitle: ComponentType<{children?: ReactNode; documentTitle?: ReactN
  * (Variant, Add to, Start from). Only Variant starts empty; Add to starts on the current
  * perspective and Start from on the nearest version. Cancel and Escape close it.
  */
-export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, documentTitle}) => {
+export const CreateVariant: ComponentType<Props> = ({
+  variantCreationRef,
+  sets,
+  documentTitle,
+  focusCreate = false,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const {selectedPerspective, selectedVariants} = usePerspective()
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (focusCreate) return
     // The header button that opened the form is gone, so focus would fall to the page and Escape
     // would not reach the form. Focus moves to the first select instead.
     cardRef.current
       ?.querySelector<HTMLElement>('[data-testid="create-variant-variant-menu-button"]')
       ?.focus({preventScroll: true})
-  }, [])
+  }, [focusCreate])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -188,6 +200,22 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
         }
       : undefined
 
+  const canCreate =
+    typeof variantDefinition !== 'undefined' &&
+    typeof bundle !== 'undefined' &&
+    !isVariantCreationPending
+
+  // A form that opens filled in focuses Create once it can be pressed: the variant definitions
+  // and releases it is filled in from may still be loading when it opens.
+  const createFocused = useRef(false)
+  useEffect(() => {
+    if (!focusCreate || createFocused.current || !canCreate) return
+    createFocused.current = true
+    cardRef.current
+      ?.querySelector<HTMLElement>('[data-testid="create-variant-confirm"]')
+      ?.focus({preventScroll: true})
+  }, [canCreate, focusCreate])
+
   const handleSelectBundle = (bundleKey: string) => {
     const option = bundleOptions.find((candidate) => getBundleKey(candidate) === bundleKey)
 
@@ -278,11 +306,7 @@ export const CreateVariant: ComponentType<Props> = ({variantCreationRef, sets, d
               data-testid="create-variant-confirm"
               text={t('document-group.create-variant.confirm')}
               loading={isVariantCreationPending}
-              disabled={
-                typeof variantDefinition === 'undefined' ||
-                typeof bundle === 'undefined' ||
-                isVariantCreationPending
-              }
+              disabled={!canCreate}
               onClick={handleCreate}
             />
           </div>
