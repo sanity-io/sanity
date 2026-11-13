@@ -1,7 +1,8 @@
 import {takeSnapshot} from '@chromatic-com/vitest'
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
-import {type ReactNode, useMemo} from 'react'
+import {ThemeColorProvider} from '@sanity/ui'
+import {type ReactNode, useMemo, useState} from 'react'
 import {BehaviorSubject} from 'rxjs'
 import type * as SanityExports from 'sanity'
 import {
@@ -38,6 +39,7 @@ import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {ArchivedReleaseDocumentBanner} from '../ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from '../CanvasLinkedBanner'
@@ -55,6 +57,7 @@ import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
+import {backgroundBehind, contrastRatio} from './contrast'
 
 vi.mock('sanity', async (importOriginal) => {
   const actual = await importOriginal<typeof SanityExports>()
@@ -438,6 +441,108 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  it('follows the document inventory opening and closing while it is on screen', async () => {
+    function Toggling() {
+      const [open, setOpen] = useState(false)
+      return (
+        <BannerHarness router={{params: open ? {inspect: DOCUMENT_GROUP_INSPECTOR_NAME} : {}}}>
+          <div data-testid="banner-host">
+            <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+          </div>
+          <button type="button" onClick={() => setOpen((current) => !current)}>
+            Toggle inventory
+          </button>
+        </BannerHarness>
+      )
+    }
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <div style={{width: 640}}>
+          <Toggling />
+        </div>
+      </TestWrapper>,
+    )
+
+    const $button = page.getByRole('button', {name: 'Add to release'})
+    const host = () => page.getByTestId('banner-host').element()
+    // A filled button's fill stands out from the banner; a ghost button's barely departs from it
+    const filled = () => {
+      const element = $button.element()
+      return (
+        contrastRatio(
+          getComputedStyle(element).backgroundColor,
+          backgroundBehind(element.parentElement ?? element),
+        ) >= 3
+      )
+    }
+
+    const heights: Record<string, number> = {}
+    for (const [step, open] of [
+      ['closed', false],
+      ['open', true],
+      ['closed again', false],
+      ['open again', true],
+    ] as const) {
+      if (step !== 'closed') await page.getByRole('button', {name: 'Toggle inventory'}).click()
+      await expect.poll(filled, {message: step}).toBe(!open)
+      await expect.element($button).toBeEnabled()
+      heights[step] = host().getBoundingClientRect().height
+    }
+    // The same banner stays mounted, and swapping the button's mode does not move the form below
+    expect(new Set(Object.values(heights)).size, JSON.stringify(heights)).toBe(1)
+    await settleChromaticEndState()
+  })
+
+  it('steps Add to release down to a secondary button while the document inventory is open', async () => {
+    const inventoryOpen = {params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <div data-testid="closed">
+          <BannerHarness>
+            <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+          </BannerHarness>
+        </div>
+        {(['light', 'dark'] as const).map((scheme) => (
+          <ThemeColorProvider key={scheme} scheme={scheme}>
+            <div data-testid={`open-${scheme}`}>
+              <BannerHarness router={inventoryOpen}>
+                <DocumentNotInReleaseBanner
+                  documentId={DOCUMENT_ID}
+                  currentRelease={springRelease}
+                />
+              </BannerHarness>
+            </div>
+          </ThemeColorProvider>
+        ))}
+      </TestWrapper>,
+    )
+
+    const button = (testId: string) =>
+      page.getByTestId(testId).getByRole('button', {name: 'Add to release'})
+    await expect.element(button('closed')).toBeEnabled()
+    // How far a button's fill stands out from the banner behind it
+    const fillContrast = (element: Element) =>
+      contrastRatio(
+        getComputedStyle(element).backgroundColor,
+        backgroundBehind(element.parentElement ?? element),
+      )
+    // Closed: the filled default primary, a solid block against the banner
+    expect(fillContrast(button('closed').element())).toBeGreaterThanOrEqual(3)
+
+    for (const scheme of ['light', 'dark'] as const) {
+      const element = button(`open-${scheme}`).element()
+      await expect.element(button(`open-${scheme}`)).toBeEnabled()
+      // Open: a ghost (outlined) button: its fill barely departs from the banner, it has an
+      // outline, and its text keeps at least 3:1 (it reaches 4.5:1)
+      expect(fillContrast(element), `${scheme} fill`).toBeLessThan(1.5)
+      expect(getComputedStyle(element).boxShadow, `${scheme} outline`).not.toBe('none')
+      const label = element.querySelector('[data-ui="Text"]') ?? element
+      const ratio = contrastRatio(getComputedStyle(label).color, backgroundBehind(element))
+      expect(ratio, `${scheme} text`).toBeGreaterThanOrEqual(4.5)
+    }
+    await settleChromaticEndState()
+  })
+
   it('offers to add the document to the selected variant', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
@@ -494,6 +599,30 @@ describe('document panel banners', () => {
 
     await expect.poll(() => page.getByTestId('live-edit-type-banner').elements().length).toBe(2)
     await expect.element(page.getByRole('button', {name: 'Compare draft'}).first()).toBeEnabled()
+
+    // The outlined Compare and Discard and the filled Publish (wrapped in BannerPrimaryAction) are
+    // one row of identical boxes: same height, same top, same vertical centre, same font size.
+    for (const banner of page.getByTestId('live-edit-type-banner').elements()) {
+      const buttons = ['Compare draft', 'Publish draft', 'Discard draft'].map((name) => {
+        const button = [...banner.querySelectorAll('button')].find(
+          (element) => element.textContent?.trim() === name,
+        )
+        expect(button, name).toBeDefined()
+        return button!
+      })
+      const boxes = buttons.map((button) => button.getBoundingClientRect())
+      const fontSizes = buttons.map(
+        (button) => getComputedStyle(button.querySelector('[data-ui="Text"]') ?? button).fontSize,
+      )
+      const [first] = boxes
+      for (const box of boxes) {
+        expect(box.height).toBeCloseTo(first.height, 1)
+        expect(box.top).toBeCloseTo(first.top, 1)
+        expect(box.top + box.height / 2).toBeCloseTo(first.top + first.height / 2, 1)
+      }
+      expect(new Set(fontSizes).size).toBe(1)
+    }
+
     await settleChromaticEndState()
   })
 
