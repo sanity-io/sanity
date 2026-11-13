@@ -682,10 +682,6 @@ export {
   type AgentVersionDisplay,
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
-export {
-  _createLegacyAuthStore as _createAuthStore,
-  type AuthStoreOptions,
-} from '../core/store/auth/legacy/createLegacyAuthStore'
 export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
 export {
   createMockAuthStore,

@@ -3,8 +3,6 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
-import {createLegacyAuthStore as _createAuthStorePublic} from '../core/store/auth/legacy/createLegacyAuthStore'
-
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
@@ -1254,17 +1252,7 @@ export {
   type AgentVersionDisplay,
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
-export {
-  _createLegacyAuthStore as _createAuthStore,
-  type AuthStoreOptions,
-  type CreateAuthStoreOptions,
-} from '../core/store/auth/legacy/createLegacyAuthStore'
 export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
-/**
- * @internal
- * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
- */
-export const createAuthStore = _createAuthStorePublic
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
