@@ -4,10 +4,8 @@ import {useToast} from '@sanity/ui/toast'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {format as dateFnsFormat} from 'date-fns/format'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useSyncObservable} from 'react-rx'
-import {startWith} from 'rxjs/operators'
 
-import {useKeyValueStore} from '../store/datastores'
+import {useStudioPreference} from '../store/preferences/useStudioPreference'
 import {DATE_FORMAT} from '../studio/timezones/constants'
 import ToastDescription from '../studio/timezones/toastDescription/ToastDescription'
 import {type NormalizedTimeZone} from '../studio/timezones/types'
@@ -54,8 +52,6 @@ type InputScope = {
 export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
-
-export const timeZoneLocalStorageNamespace = 'studio.timezone.'
 
 const timeZoneCache = new Map<string, NormalizedTimeZone[]>()
 const offsetCache = new Map<
@@ -158,10 +154,10 @@ function getGloballyCachedTimeZones(locale: string, relativeDate?: Date): Normal
   return computedTimeZones
 }
 
-export const TIME_ZONE_SCOPE_TYPE = {
-  scheduledPublishing: 'scheduled-publishing',
-  contentReleases: 'content-releases',
-  input: 'input',
+function preferenceKeyFor(scope: TimeZoneScope) {
+  if (scope.type === 'input') return `studio.timezone.input.${scope.id}` as const
+  if (scope.type === 'scheduledPublishing') return 'studio.timezone.scheduled-publishing'
+  return 'studio.timezone.content-releases'
 }
 
 /**
@@ -172,16 +168,12 @@ export const TIME_ZONE_SCOPE_TYPE = {
  */
 export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()
-  const keyValueStore = useKeyValueStore()
+  const {value: storedTimeZone, set: setStoredTimeZone} = useStudioPreference(
+    preferenceKeyFor(scope),
+  )
   const currentLocale = navigator.language
   const {defaultTimeZone} = scope
 
-  // used for the key to match formatting in cellar
-  const type = TIME_ZONE_SCOPE_TYPE[scope.type]
-  const keyStoreId =
-    'id' in scope
-      ? `${timeZoneLocalStorageNamespace}${type}.${scope.id}`
-      : `${timeZoneLocalStorageNamespace}${type}`
   const relativeDate = 'relativeDate' in scope ? scope.relativeDate : undefined
 
   // Check for legacy localStorage key and migrate if needed
@@ -193,15 +185,14 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       const legacyValue = localStorage.getItem(legacyKey)
 
       if (legacyValue) {
-        // Migrate the value to key-value store
         const scheduledPublishingValue = JSON.parse(legacyValue)
-        void keyValueStore.setKey(keyStoreId, scheduledPublishingValue.name)
+        void setStoredTimeZone(scheduledPublishingValue.name)
         // Remove the legacy key
         localStorage.removeItem(legacyKey)
       }
     }
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [scope.type, keyValueStore, keyStoreId, currentLocale, relativeDate])
+  }, [scope.type, setStoredTimeZone, currentLocale, relativeDate])
 
   const allTimeZones: NormalizedTimeZone[] = useMemo(() => {
     return getGloballyCachedTimeZones(currentLocale, relativeDate)
@@ -213,16 +204,6 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       : undefined
     return normalizedDefaultTimezone
   }, [allTimeZones, defaultTimeZone])
-
-  const keyValueTimeZone$ = useMemo(
-    () => keyValueStore.getKey(keyStoreId).pipe(startWith(null)),
-    [keyValueStore, keyStoreId],
-  )
-
-  // Kept synchronous: `getStoredTimeZone` migrates legacy values by writing
-  // back to the key-value store, so a deferred snapshot could trigger stale or
-  // redundant writes after the store has already advanced.
-  const storedTimeZone = useSyncObservable(keyValueTimeZone$, null)
 
   const getStoredTimeZone = useCallback((): NormalizedTimeZone | undefined => {
     if (!storedTimeZone) return undefined
@@ -240,7 +221,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
 
       const fallbackTimeZone = allTimeZones.find((tz) => tz.offset === wholeTimeZone?.offset)
       if (fallbackTimeZone) {
-        void keyValueStore.setKey(keyStoreId, fallbackTimeZone.name)
+        void setStoredTimeZone(fallbackTimeZone.name)
         return fallbackTimeZone
       }
       return undefined
@@ -250,7 +231,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     } catch {
       return undefined
     }
-  }, [allTimeZones, keyStoreId, keyValueStore, storedTimeZone])
+  }, [allTimeZones, setStoredTimeZone, storedTimeZone])
 
   const getLocalTimeZone = useCallback((): NormalizedTimeZone => {
     const localTzName = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -331,7 +312,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         // The try/catch wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
         const run = () => {
           if (prevTz?.name !== tz.name) {
-            void keyValueStore.setKey(keyStoreId, tz.name)
+            void setStoredTimeZone(tz.name)
             window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
 
@@ -364,7 +345,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         return tz
       })
     },
-    [keyStoreId, toast, keyValueStore],
+    [setStoredTimeZone, toast],
   )
 
   const utcToCurrentZoneDate = useCallback(

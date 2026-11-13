@@ -111,10 +111,7 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements is loading', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([
-        of({loading: true, value: null, error: null}),
-        vi.fn(),
-      ])
+      seenAnnouncementsMock.mockReturnValue([undefined, vi.fn()])
       mockClient(mockAnnouncements)
     })
     test('returns empty unseen announcements ', () => {
@@ -134,10 +131,7 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements failed', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([
-        of({loading: false, value: null, error: new Error('something went wrong')}),
-        vi.fn(),
-      ])
+      seenAnnouncementsMock.mockReturnValue([undefined, vi.fn()])
       mockClient(mockAnnouncements)
     })
     test('returns empty unseen announcements ', () => {
@@ -156,7 +150,7 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements is not loading and has no values', () => {
     beforeEach(() => {
       vi.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([of({value: [], error: null, loading: false}), vi.fn()])
+      seenAnnouncementsMock.mockReturnValue([[], vi.fn()])
       mockClient(mockAnnouncements)
     })
     test('returns unseen announcements', () => {
@@ -177,10 +171,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: ['studioAnnouncement-1'], error: null, loading: false}),
-        vi.fn(),
-      ])
+      seenAnnouncementsMock.mockReturnValue([['studioAnnouncement-1'], vi.fn()])
 
       mockClient(mockAnnouncements)
     })
@@ -202,10 +193,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: ['studioAnnouncement-1'], error: null, loading: false}),
-        vi.fn(),
-      ])
+      seenAnnouncementsMock.mockReturnValue([['studioAnnouncement-1'], vi.fn()])
 
       mockClient(mockAnnouncements)
     })
@@ -387,7 +375,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([of({value: [], error: null, loading: false}), vi.fn()])
+      seenAnnouncementsMock.mockReturnValue([[], vi.fn()])
     })
 
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
@@ -585,10 +573,7 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test('when the card is dismissed, and only 1 announcement received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [], error: null, loading: false}),
-        saveSeenAnnouncementsMock,
-      ])
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
       mockClient([mockAnnouncements[0]])
 
       render(null, {wrapper})
@@ -599,10 +584,7 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test('when the card is dismissed, and 2 announcements are received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [], error: null, loading: false}),
-        saveSeenAnnouncementsMock,
-      ])
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
       mockClient(mockAnnouncements)
 
       render(null, {wrapper})
@@ -614,10 +596,7 @@ describe('StudioAnnouncementsProvider', () => {
     test("when the card is dismissed, doesn't persist previous stored values", async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: ['not-to-be-persisted'], error: null, loading: false}),
-        saveSeenAnnouncementsMock,
-      ])
+      seenAnnouncementsMock.mockReturnValue([['not-to-be-persisted'], saveSeenAnnouncementsMock])
       mockClient(mockAnnouncements)
       render(null, {wrapper})
 
@@ -628,10 +607,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('when the card is dismissed, persist previous stored values', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [mockAnnouncements[0]._id], error: null, loading: false}),
-        saveSeenAnnouncementsMock,
-      ])
+      seenAnnouncementsMock.mockReturnValue([[mockAnnouncements[0]._id], saveSeenAnnouncementsMock])
       mockClient(mockAnnouncements)
 
       render(null, {wrapper})
@@ -642,10 +618,7 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test('when the dialog is closed', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [], error: null, loading: false}),
-        saveSeenAnnouncementsMock,
-      ])
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
       mockClient(mockAnnouncements)
 
       render(null, {wrapper})

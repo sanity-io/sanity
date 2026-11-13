@@ -124,7 +124,6 @@ import type {
   createGrantsStore,
   createHistoryStore,
   createHookFromObservableFactory,
-  createKeyValueStore,
   createMockAuthStore,
   createObservableBufferedDocument,
   createPatchChannel,
@@ -450,8 +449,6 @@ import type {
   isVariantId,
   ItemDiff,
   joinPath,
-  KeyValueStore,
-  KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
   LegacyLayerProvider,
@@ -785,7 +782,6 @@ import type {
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
   useIsReleaseActive,
-  useKeyValueStore,
   useLoadable,
   useLocale,
   useManageFavorite,
@@ -836,6 +832,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -1270,9 +1268,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('createHookFromObservableFactory', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof createHookFromObservableFactory>().toBeFunction()
-  })
-  test('createKeyValueStore', () => {
-    expectTypeOf<typeof createKeyValueStore>().toBeFunction()
   })
   test('createMockAuthStore', () => {
     expectTypeOf<typeof createMockAuthStore>().toBeFunction()
@@ -2249,12 +2244,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('joinPath', () => {
     expectTypeOf<typeof joinPath>().not.toBeNever()
-  })
-  test('KeyValueStore', () => {
-    expectTypeOf<KeyValueStore>().toBeObject()
-  })
-  test('KeyValueStoreValue', () => {
-    expectTypeOf<KeyValueStoreValue>().not.toBeNever()
   })
   test('LatencyReportEvent', () => {
     expectTypeOf<LatencyReportEvent>().toBeObject()
@@ -3256,9 +3245,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
   })
-  test('useKeyValueStore', () => {
-    expectTypeOf<typeof useKeyValueStore>().toBeFunction()
-  })
   test('useLoadable', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useLoadable>().toBeFunction()
@@ -3410,6 +3396,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
+  })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
   })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()

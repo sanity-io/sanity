@@ -1,12 +1,11 @@
 import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
-import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
+import {useClient, useCurrentUser} from 'sanity'
+import {useStudioPreferenceList} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
 
-const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
 const SHARED_QUERY_DOCUMENT_TYPE = 'vision.sharedQuery'
 const SHARED_QUERIES_QUERY = `*[_type == $sharedQueryType]{
   _id,
@@ -21,7 +20,7 @@ const SHARED_QUERY_LISTEN_OPTIONS: ListenOptions = {
   visibility: 'query',
 }
 
-export interface QueryConfig {
+export type QueryConfig = {
   _key: string
   url: string
   savedAt: string
@@ -31,15 +30,6 @@ export interface QueryConfig {
   isOwnedByCurrentUser?: boolean
 }
 
-export interface StoredQueries {
-  queries: QueryConfig[]
-}
-
-const defaultValue = {
-  queries: [],
-}
-const keyValueStoreKey = STORED_QUERIES_NAMESPACE
-
 interface SharedQueryDocument {
   _id: string
   _type?: string
@@ -47,38 +37,6 @@ interface SharedQueryDocument {
   savedAt: string
   title?: string
   url: string
-}
-
-/** What one hook instance has written to the personal list since the list it last took from the store */
-interface OwnWrites {
-  /** The list the store holds as far as the hook knows: its last write that went through */
-  latest: QueryConfig[]
-  /** The keys its writes changed, or tried to; an emission has to show them as in `latest` */
-  keys: Set<string>
-}
-
-/** The keys whose entry differs between two lists */
-function changedKeys(before: QueryConfig[], after: QueryConfig[]): string[] {
-  const was = new Map(before.map((query) => [query._key, query]))
-  const is = new Map(after.map((query) => [query._key, query]))
-  return [...new Set([...was.keys(), ...is.keys()])].filter(
-    (key) => !isEqual(was.get(key), is.get(key)),
-  )
-}
-
-/**
- * Whether `queries` shows every entry the hook's writes touched as the hook last wrote it, or
- * as the store kept it when a write failed. The store's initial read predates the writes and
- * never does, and neither does an echo of a write that failed; an own echo of a write that went
- * through, or another instance's write built on it, does.
- */
-function reflectsOwnWrites(queries: QueryConfig[], {latest, keys}: OwnWrites): boolean {
-  const shown = new Map(queries.map((query) => [query._key, query]))
-  const wanted = new Map(latest.map((query) => [query._key, query]))
-  for (const key of keys) {
-    if (!isEqual(shown.get(key), wanted.get(key))) return false
-  }
-  return true
 }
 
 /** The error for a failed move whose rollback failed too: the query is now in both lists */
@@ -110,11 +68,14 @@ export function useSavedQueries(): {
   deleteQueryError: Error | undefined
   error: Error | undefined
 } {
-  const keyValueStore = useKeyValueStore()
+  const {
+    items: personalItems,
+    error: personalError,
+    set: setPersonalQuery,
+  } = useStudioPreferenceList('studio.vision-tool.saved-queries')
   const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
 
-  const [value, setValue] = useState<StoredQueries>(defaultValue)
   const [sharedQueries, setSharedQueries] = useState<QueryConfig[]>([])
   // Saves and updates may overlap (a share's save next to a user's own), so `saving` is derived
   // from how many are in flight rather than cleared by whichever one settles first
@@ -125,34 +86,16 @@ export function useSavedQueries(): {
   const [deleteQueryError, setDeleteQueryError] = useState<Error | undefined>()
   const [error, setError] = useState<Error | undefined>()
 
-  // The personal list is one key-value entry that every mutation rewrites whole, so the writes
-  // are queued and each one starts from the list the previous write produced rather than from a
-  // render's snapshot: overlapping saves, deletes and moves cannot lose each other's changes
-  const latestQueriesRef = useRef<QueryConfig[]>(defaultValue.queries)
-  const personalWritesRef = useRef<Promise<unknown>>(Promise.resolve())
-  // The store's emissions are not that base while a write is pending: the write's outcome is.
-  // Nor is a server read from before this hook's writes: the store forwards writes (this hook's,
-  // and those of another Vision instance kept mounted under `<Activity>`, which shares it) only
-  // after a subscription's initial read is done, so a write made before has its events dropped
-  // for that subscriber and the read arrives afterwards with the list from before the write; and
-  // the read of a subscription started while a write is in flight (a hidden tool shown again) is
-  // the same request the write raced. Such a read is the one emission that does not reflect the
-  // writes this hook has made since the list it last took from the store, so those are kept
-  // until an emission reflects them (an own echo, another instance's write built on them), which
-  // proves the read is done and every later emission a live write and the base the next one
-  // starts from. Each subscription has its own read to wait out
-  const pendingPersonalWritesRef = useRef(0)
-  const ownWritesRef = useRef<OwnWrites | null>(null)
-  const storeEventsLiveRef = useRef(false)
-  const loadedPersonalQueriesRef = useRef(false)
   // The moves in progress, by the key of the query being moved. A move copies the query first
   // and removes the original last, so until it settles the original is still there to be moved
   // again; a second share or unshare of it joins the pending move instead of making another copy
   const movesRef = useRef(new Map<string, Promise<void>>())
 
-  const personalQueries = useMemo(() => {
-    return keyValueStore.getKey(keyValueStoreKey)
-  }, [keyValueStore])
+  const personalQueries: QueryConfig[] = useMemo(
+    // Older lists had `_key`s with `:`, which an item's ID can't have, so the ID is the key now
+    () => personalItems.map(({itemId, value}) => ({...value, _key: itemId})),
+    [personalItems],
+  )
 
   const mapSharedQueries = useCallback(
     (docs: SharedQueryDocument[]): QueryConfig[] => {
@@ -170,46 +113,6 @@ export function useSavedQueries(): {
     },
     [currentUser],
   )
-
-  useEffect(() => {
-    // The store emits its localStorage copy synchronously (`null` without one), the server's
-    // list once read, and then every write. Nothing is prepended: this effect runs again when a
-    // hidden `<Activity>` shows the tool again, and an initial value would reset the list, and
-    // with it the base the next write starts from, to empty. Each subscription starts a new
-    // server read, and the store's events reach it only once that read is done
-    storeEventsLiveRef.current = false
-    let subscribing = true
-    const sub = personalQueries.subscribe({
-      next: (data) => {
-        const stored = data ? (data as unknown as StoredQueries) : null
-        const ownWrites = ownWritesRef.current
-        if (ownWrites && !storeEventsLiveRef.current) {
-          if (!reflectsOwnWrites(stored?.queries ?? defaultValue.queries, ownWrites)) return
-          // The localStorage copy comes synchronously while subscribing, ahead of the read;
-          // anything after it is the read or an event, both of which mean the read is done
-          if (!subscribing) storeEventsLiveRef.current = true
-        }
-        if (pendingPersonalWritesRef.current > 0) return
-        // A list taken from the store while its events are live is the store's own, with nothing
-        // of this hook's left to see reflected
-        if (storeEventsLiveRef.current) ownWritesRef.current = null
-        if (!stored) {
-          // No localStorage copy; the server's answer follows, and a list already shown stays
-          if (loadedPersonalQueriesRef.current) return
-          latestQueriesRef.current = defaultValue.queries
-          setValue(defaultValue)
-          return
-        }
-        loadedPersonalQueriesRef.current = true
-        latestQueriesRef.current = stored.queries
-        setValue(stored)
-      },
-      error: (err) => setError(err as Error),
-    })
-    subscribing = false
-
-    return () => sub.unsubscribe()
-  }, [personalQueries])
 
   useEffect(() => {
     let cancelled = false
@@ -259,79 +162,11 @@ export function useSavedQueries(): {
     }
   }, [workspaceClient, mapSharedQueries])
 
-  /** Runs `task` after every personal write queued so far, whatever their outcome */
-  const enqueuePersonalWrite = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
-    pendingPersonalWritesRef.current += 1
-    const run = () =>
-      task().finally(() => {
-        pendingPersonalWritesRef.current -= 1
-      })
-    const result = personalWritesRef.current.then(run, run)
-    personalWritesRef.current = result.catch(() => undefined)
-    return result
-  }, [])
-
-  /**
-   * Records a write of `attempted` over `before`, and `kept` as the list the store holds as a
-   * result: `attempted` itself, or `before` again once the write has failed
-   */
-  const recordOwnWrite = useCallback(
-    (before: QueryConfig[], attempted: QueryConfig[], kept: QueryConfig[]) => {
-      const keys = new Set(ownWritesRef.current?.keys)
-      for (const key of changedKeys(before, attempted)) keys.add(key)
-      ownWritesRef.current = {latest: kept, keys}
-    },
-    [],
-  )
-
-  /**
-   * Writes the personal list to the store. A failed server write does not reject there: the
-   * store logs it and resolves `null`, which is turned back into an error here so callers can
-   * roll back and report it.
-   */
-  const storePersonalQueries = useCallback(
-    async (queries: QueryConfig[]) => {
-      const stored = await keyValueStore.setKey(keyValueStoreKey, {
-        queries,
-      } as unknown as KeyValueStoreValue)
-      if (stored === null) {
-        throw new Error('The saved queries could not be stored.')
-      }
-    },
-    [keyValueStore],
-  )
-
-  /**
-   * Replaces the personal list with `update(latest)`, optimistically in the UI and then in the
-   * store; a failed store write puts the previous list back. Resolves with the written list.
-   */
-  const writePersonalQueries = useCallback(
-    (update: (queries: QueryConfig[]) => QueryConfig[]): Promise<QueryConfig[]> =>
-      enqueuePersonalWrite(async () => {
-        const before = latestQueriesRef.current
-        const next = update(before)
-        recordOwnWrite(before, next, next)
-        latestQueriesRef.current = next
-        setValue({queries: next})
-        try {
-          await storePersonalQueries(next)
-        } catch (err) {
-          // The store kept the previous list, so the UI shows it again
-          recordOwnWrite(before, next, before)
-          latestQueriesRef.current = before
-          setValue({queries: before})
-          throw err
-        }
-        return next
-      }),
-    [enqueuePersonalWrite, recordOwnWrite, storePersonalQueries],
-  )
-
   const queries = useMemo(() => {
-    return [...sharedQueries, ...value.queries].sort((a, b) => {
+    return [...sharedQueries, ...personalQueries].sort((a, b) => {
       return new Date(b.savedAt || 0).getTime() - new Date(a.savedAt || 0).getTime()
     })
-  }, [sharedQueries, value.queries])
+  }, [sharedQueries, personalQueries])
 
   /**
    * Runs a save or update as one of the saves in flight (`saving` holds until the last of them
@@ -369,10 +204,10 @@ export function useSavedQueries(): {
         }
 
         const newQuery = {...query, _key: uuid()}
-        await writePersonalQueries((queries) => [newQuery, ...queries])
+        await setPersonalQuery(newQuery._key, newQuery)
         return newQuery._key
       }),
-    [currentUser, workspaceClient, mapSharedQueries, runSave, writePersonalQueries],
+    [currentUser, workspaceClient, mapSharedQueries, runSave, setPersonalQuery],
   )
 
   const updateQuery = useCallback(
@@ -400,11 +235,9 @@ export function useSavedQueries(): {
           return
         }
 
-        await writePersonalQueries((queries) =>
-          queries.map((q) => (q._key === query._key ? {...q, ...query} : q)),
-        )
+        await setPersonalQuery(query._key, query)
       }),
-    [workspaceClient, currentUser, mapSharedQueries, runSave, writePersonalQueries],
+    [workspaceClient, currentUser, mapSharedQueries, runSave, setPersonalQuery],
   )
 
   // Rejects when the document could not be deleted; `deleteQuery` turns that into state
@@ -423,12 +256,9 @@ export function useSavedQueries(): {
     [currentUser, sharedQueries, workspaceClient],
   )
 
-  // Optimistic like the other personal mutations; rejects when the store write fails
   const deletePersonalQuery = useCallback(
-    async (key: string) => {
-      await writePersonalQueries((queries) => queries.filter((q) => q._key !== key))
-    },
-    [writePersonalQueries],
+    (key: string) => setPersonalQuery(key, undefined),
+    [setPersonalQuery],
   )
 
   const deleteQuery = useCallback(
@@ -487,7 +317,7 @@ export function useSavedQueries(): {
   const shareQuery = useCallback(
     (key: string) =>
       runMove(key, async (alsoMoving) => {
-        const query = latestQueriesRef.current.find((q) => q._key === key)
+        const query = personalQueries.find((q) => q._key === key)
         if (!query) {
           throw new Error(`No personal saved query with key "${key}"`)
         }
@@ -510,7 +340,7 @@ export function useSavedQueries(): {
           throw err
         }
       }),
-    [deletePersonalQuery, runMove, saveQuery, workspaceClient],
+    [deletePersonalQuery, personalQueries, runMove, saveQuery, workspaceClient],
   )
 
   const unshareQuery = useCallback(
@@ -541,23 +371,9 @@ export function useSavedQueries(): {
     [deletePersonalQuery, deleteSharedQuery, runMove, saveQuery, sharedQueries],
   )
 
-  const clearQueries = useCallback(
-    () =>
-      enqueuePersonalWrite(async () => {
-        // Nothing disappears from the list until the store confirms the write
-        const before = latestQueriesRef.current
-        recordOwnWrite(before, defaultValue.queries, defaultValue.queries)
-        try {
-          await storePersonalQueries(defaultValue.queries)
-        } catch (err) {
-          recordOwnWrite(before, defaultValue.queries, before)
-          throw err
-        }
-        latestQueriesRef.current = defaultValue.queries
-        setValue(defaultValue)
-      }),
-    [enqueuePersonalWrite, recordOwnWrite, storePersonalQueries],
-  )
+  const clearQueries = useCallback(async () => {
+    await Promise.all(personalQueries.map((query) => deletePersonalQuery(query._key)))
+  }, [deletePersonalQuery, personalQueries])
 
   return {
     queries,
@@ -572,6 +388,6 @@ export function useSavedQueries(): {
     moving,
     saveQueryError,
     deleteQueryError,
-    error,
+    error: error ?? (personalError instanceof Error ? personalError : undefined),
   }
 }
