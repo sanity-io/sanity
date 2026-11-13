@@ -74,7 +74,8 @@ vi.mock('@sanity-labs/groq-wasm/lazy', () => {
   return {}
 })
 
-function renderTool(options: Partial<VisionConfig>) {
+// Untyped options, so a test can pass keys VisionConfig no longer declares
+function renderTool(options: object) {
   const tool = {name: 'vision', title: 'Vision', options} as unknown as Tool<VisionConfig>
   return render(
     <ThemeProvider theme={theme}>
@@ -102,22 +103,29 @@ describe('SanityVision experience switch', () => {
     expect(loadedModules.has('@sanity-labs/groq-wasm/lazy')).toBe(false)
   })
 
-  it('renders the classic tool without an invitation when the beta flag is off', () => {
+  it('invites through a toast and offers the switch without any configuration', async () => {
     renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByText('vision.redesign.toast.title')).toBeNull()
-    expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
+    expect(screen.getByTestId('classic-try-redesign')).toBeTruthy()
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+    expect(screen.getByText('vision.redesign.toast.title')).toBeTruthy()
   })
 
-  it('renders the classic tool even for a stored opt-in when the beta flag is off', () => {
-    writeRedesignPreference('switch-project', {optedIn: true})
-    renderTool({beta: {redesign: {enabled: false}}})
+  it('ignores the removed beta.redesign option', async () => {
+    // Configs written for v6 may still pass it; it no longer gates or hides anything
+    const legacyOptions = {beta: {redesign: {enabled: false}}}
+    renderTool(legacyOptions)
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByTestId('vision')).toBeNull()
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+
+    cleanup()
+    writeRedesignPreference('switch-project', {optedIn: true})
+    renderTool(legacyOptions)
+    expect(await screen.findByTestId('vision')).toBeTruthy()
   })
 
   it('invites through a toast and switches to the redesign when accepted', async () => {
-    renderTool({beta: {redesign: {enabled: true}}})
+    renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
 
     const accept = await screen.findByTestId('vision-redesign-accept')
@@ -138,7 +146,7 @@ describe('SanityVision experience switch', () => {
   })
 
   it('remembers a dismissed invitation', async () => {
-    renderTool({beta: {redesign: {enabled: true}}})
+    renderTool({})
     const dismiss = await screen.findByTestId('vision-redesign-dismiss')
     await act(async () => {
       fireEvent.click(dismiss)
@@ -148,14 +156,14 @@ describe('SanityVision experience switch', () => {
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
 
     cleanup()
-    renderTool({beta: {redesign: {enabled: true}}})
+    renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
     expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
   })
 
   it('keeps the redesign one click away in the classic tool after the invitation is dismissed', async () => {
     writeRedesignPreference('switch-project', {dismissed: true})
-    renderTool({beta: {redesign: {enabled: true}}})
+    renderTool({})
     expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
 
     await act(async () => {
@@ -176,7 +184,7 @@ describe('SanityVision experience switch', () => {
 
   it('opens the redesign directly for an opted-in project and can switch back', async () => {
     writeRedesignPreference('switch-project', {optedIn: true})
-    renderTool({beta: {redesign: {enabled: true}}})
+    renderTool({})
     const visionRedesign = await screen.findByTestId('vision')
 
     await act(async () => {
