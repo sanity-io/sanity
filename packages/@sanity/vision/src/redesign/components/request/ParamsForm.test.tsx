@@ -101,14 +101,16 @@ describe('ParamsForm', () => {
     const types = ['type', 'status', 'featured', 'id', 'limit', 'extra'].map(
       (name) => screen.getByTestId(`vision-params-form-${name}-type`).textContent,
     )
-    expect(types).toEqual([
-      'vision.params-form.type.document-type',
-      'vision.params-form.type.options:{"type":"vision.params-form.type.string","count":2}',
-      'vision.params-form.type.boolean',
-      'vision.params-form.type.document-id',
-      'vision.params-form.type.integer',
-      'vision.params-form.type.any',
-    ])
+    expect(types).toEqual(
+      [
+        'vision.params-form.type.document-type',
+        'vision.params-form.type.options:{"type":"vision.params-form.type.string","count":2}',
+        'vision.params-form.type.boolean',
+        'vision.params-form.type.document-id',
+        'vision.params-form.type.integer',
+        'vision.params-form.type.any',
+      ].map((type) => `vision.params-form.type-detail:${JSON.stringify({type})}`),
+    )
     // The document types are suggested; the input points at the list
     const typeInput = within(field('type')).getByRole('combobox')
     const list = document.getElementById(typeInput.getAttribute('list') || '')
@@ -116,8 +118,26 @@ describe('ParamsForm', () => {
       'author',
       'post',
     ])
-    expect(within(field('type')).getByText('vision.params-form.missing')).toBeTruthy()
-    expect(within(field('type')).getByText('_type == $type')).toBeTruthy()
+    // The details live in the info icon's tooltip, the missing value is flagged like a required field
+    expect(
+      within(screen.getByTestId('vision-params-form-type-details-content')).getByText(
+        '_type == $type',
+      ),
+    ).toBeTruthy()
+    expect(within(field('type')).getByTestId('vision-params-form-type-required')).toBeTruthy()
+    expect(
+      (within(field('type')).getByRole('combobox') as HTMLInputElement).validationMessage,
+    ).toBe('vision.params-form.required')
+  })
+
+  it('stops flagging a param once it has a value', () => {
+    const {field} = renderForm('*[_type == "post" && title == $title]')
+    expect(within(field('title')).getByTestId('vision-params-form-title-required')).toBeTruthy()
+    fireEvent.change(within(field('title')).getByRole('textbox'), {target: {value: 'x'}})
+    expect(within(field('title')).queryByTestId('vision-params-form-title-required')).toBeNull()
+    expect((within(field('title')).getByRole('textbox') as HTMLInputElement).validity.valid).toBe(
+      true,
+    )
   })
 
   it('writes what is typed into the params, and removes a param that is cleared', () => {
@@ -204,6 +224,13 @@ describe('ParamsForm', () => {
     expect(unused.textContent).toContain('$stale')
     fireEvent.click(within(unused).getByText('vision.params-form.remove'))
     expect(params()).toEqual({type: 'post'})
+  })
+
+  it('removes every param the query does not use at once', () => {
+    const {params} = renderForm('*[_type == $type]', '{"type": "post", "a": 1, "b": [2]}')
+    fireEvent.click(screen.getByTestId('vision-params-form-remove-all'))
+    expect(params()).toEqual({type: 'post'})
+    expect(screen.queryByTestId('vision-params-form-unused')).toBeNull()
   })
 
   it('does not edit params that are not valid JSON', () => {
