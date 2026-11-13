@@ -634,22 +634,34 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Turn on Use the API CDN in Options to send queries through the CDN.',
   /** Label of the browser's marker on the Network panel's globe, placed from its time zone */
   'vision.network.you': 'You',
-  /** Hint under the dataset field while the tab follows the workspace's dataset */
+  /** Heading of the dataset menu's entry for the dataset the current workspace uses */
+  'vision.options.dataset.current-workspace': 'Current workspace',
+  /** In the pin button's tooltip while the tab follows the workspace's dataset */
   'vision.options.dataset.follows-workspace': 'Follows the workspace',
+  /** Shown in the dataset menu when the search matches no dataset */
+  'vision.options.dataset.no-matches': 'No datasets match',
   /** Button that pins the current dataset so the tab stops following the workspace */
   'vision.options.dataset.pin': 'Pin a dataset',
-  /** Hint under the dataset field while a dataset is pinned */
+  /** In the pin button's tooltip while a dataset is pinned */
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
+  /** Placeholder of the search field at the top of the dataset menu */
+  'vision.options.dataset.search-placeholder': 'Search datasets',
+  /** Heading of the dataset menu's group of datasets other workspaces of this project use */
+  'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
+  /** Heading of the dataset menu's group of datasets no workspace of this project uses */
+  'vision.options.dataset.unused': 'Not used by any workspaces',
   /** Button that makes the tab follow the workspace's dataset again */
   'vision.options.dataset.use-workspace': 'Use the workspace dataset',
   /** Label for the "Include content source map" switch */
   'vision.options.include-source-map': 'Include content source map',
-  /** Description for the "Include content source map" switch */
+  /** Description for the "Include content source map" switch, in its info tooltip */
   'vision.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
+  /** The short line under the "Include content source map" switch; the rest is in its tooltip */
+  'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',
-  /** Note under the API CDN switch while the studio signs in with a cookie */
+  /** Note in the API CDN switch's info tooltip while the studio signs in with a cookie */
   'vision.options.use-cdn.anonymous':
     'This studio signs you in with a cookie, which the API CDN never receives: it answers as it would an anonymous visitor, with what a public dataset shows.',
   /**
@@ -660,9 +672,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The API CDN does not serve drafts or releases, so queries with the {{perspective}} perspective go to the API. With published or raw they use the CDN.',
   /** Heading of the notice shown while the perspective keeps queries off the API CDN */
   'vision.options.use-cdn.blocked.title': 'Queries go to the API, not the CDN',
-  /** Description of the API CDN switch */
+  /** Description of the API CDN switch, in its info tooltip */
   'vision.options.use-cdn.description':
     'Sends the query to the API CDN, like useCdn: true in @sanity/client, with the published and raw perspectives: drafts and releases always go to the API. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
+  /** The short line under the API CDN switch; the rest is in its tooltip */
+  'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
   'vision.options.use-cdn.use-published': 'Use the published perspective',
   /** Perspective option following the studio navbar; the name is the release, published or drafts */

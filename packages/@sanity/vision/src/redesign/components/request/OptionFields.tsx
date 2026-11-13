@@ -1,6 +1,4 @@
-import {PinIcon} from '@sanity/icons/Pin'
-import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
-import {Button, Select, Stack, TextInput} from '@sanity/ui'
+import {Select, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, useCallback, useId} from 'react'
 import {
@@ -17,11 +15,7 @@ import {API_VERSIONS, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
-import {
-  type VisionDatasetMode,
-  type VisionPerspective,
-  type VisionVariantMode,
-} from '../../store/types'
+import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {getEffectivePerspective} from '../../util/tabPerspective'
 import {SwitchField} from '../SwitchField'
 
@@ -35,94 +29,6 @@ function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
 
 /** The perspectives a tab can pick by hand, in menu order; `global` and the API default come first */
 const OWN_PERSPECTIVES = ['raw', 'published', 'drafts'] as const
-
-interface DatasetFieldProps {
-  id: string
-  mode: VisionDatasetMode
-  /** The pinned dataset, shown (and pinned from) while following the workspace */
-  dataset: string
-  workspaceDataset: string
-  datasets: readonly string[]
-  onChange: (options: {datasetMode: VisionDatasetMode; dataset: string}) => void
-}
-
-/**
- * The dataset follows the workspace until one is pinned: pinning starts from the workspace's
- * dataset and enables the select, unpinning follows the workspace again.
- */
-export function DatasetField({
-  id,
-  mode,
-  dataset,
-  workspaceDataset,
-  datasets,
-  onChange,
-}: DatasetFieldProps) {
-  const {t} = useTranslation(visionLocaleNamespace)
-  const following = mode === 'workspace'
-  const toggleLabel = following
-    ? t('vision.options.dataset.pin')
-    : t('vision.options.dataset.use-workspace')
-
-  return (
-    <Stack gap={2}>
-      <FieldLabel htmlFor={id}>{t('settings.dataset-label')}</FieldLabel>
-      <Flex gap={1}>
-        <Box flexBasis="0%" flexGrow={1} minWidth="0">
-          <Select
-            data-testid={`${id}-select`}
-            disabled={following}
-            fontSize={1}
-            id={id}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-              onChange({datasetMode: 'pinned', dataset: event.currentTarget.value})
-            }
-            padding={2}
-            value={following ? workspaceDataset : dataset}
-          >
-            {datasets.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </Select>
-        </Box>
-        <Tooltip
-          animate
-          content={
-            <Text size={1} as="div" trim={true}>
-              {toggleLabel}
-            </Text>
-          }
-          placement="bottom"
-          portal
-        >
-          <Button
-            aria-label={toggleLabel}
-            aria-pressed={!following}
-            data-testid={`${id}-${following ? 'pin' : 'follow'}`}
-            fontSize={1}
-            icon={following ? PinIcon : PinRemovedIcon}
-            mode="ghost"
-            onClick={() =>
-              onChange(
-                following
-                  ? {datasetMode: 'pinned', dataset: workspaceDataset}
-                  : {datasetMode: 'workspace', dataset},
-              )
-            }
-            padding={2}
-          />
-        </Tooltip>
-      </Flex>
-      <Text muted size={0} as="div" trim={true}>
-        {following
-          ? t('vision.options.dataset.follows-workspace')
-          : t('vision.options.dataset.pinned')}
-      </Text>
-    </Stack>
-  )
-}
 
 interface ApiVersionFieldProps {
   id: string
@@ -306,17 +212,12 @@ export function UseCdnField({testId, checked, onChange, notes = []}: UseCdnField
   return (
     <SwitchField
       checked={checked}
-      description={t('vision.options.use-cdn.description')}
+      description={t('vision.options.use-cdn.summary')}
+      info={[t('vision.options.use-cdn.description'), ...notes]}
       onChange={onChange}
       testId={testId}
       title={t('vision.options.use-cdn')}
-    >
-      {notes.map((note) => (
-        <Text data-testid={`${testId}-note`} key={note} size={1} as="div" trim={true}>
-          {note}
-        </Text>
-      ))}
-    </SwitchField>
+    />
   )
 }
 
