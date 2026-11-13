@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
 
-import {clearKeyValueKey} from '../../helpers/clearKeyValueKey'
+import {clearPreference, isPreferenceWrite} from '../../helpers/preferences'
 import {test} from '../../studio-test'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'
@@ -20,32 +20,32 @@ test('clicking default sort order and direction sets value in storage', async ({
   // stored per user (shared across CI runs), and the studio only PUTs when the
   // selected sort order actually changes — leftover state from another run
   // would make the click below a no-op and time out waiting for the PUT.
-  await clearKeyValueKey(sanityClient, SORT_KEY)
+  await clearPreference(sanityClient, SORT_KEY)
 
   await page.goto('/content/author')
 
-  const keyValueRequest = page.waitForResponse(async (response) => {
-    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  const preferenceWrite = page.waitForResponse(async (response) => {
+    return isPreferenceWrite(response)
   })
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
-  const responseBody = await (await keyValueRequest).json()
+  const responseBody = await (await preferenceWrite).json()
 
-  expect(responseBody[0]).toMatchObject({
+  expect(responseBody).toMatchObject({
     key: SORT_KEY,
     value: {
       by: [{field: 'name', direction: 'asc'}],
     },
   })
 
-  const keyValueRequest2 = page.waitForResponse(async (response) => {
-    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  const preferenceWrite2 = page.waitForResponse(async (response) => {
+    return isPreferenceWrite(response)
   })
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
-  const responseBody2 = await (await keyValueRequest2).json()
+  const responseBody2 = await (await preferenceWrite2).json()
 
-  expect(responseBody2[0]).toMatchObject({
+  expect(responseBody2).toMatchObject({
     key: SORT_KEY,
     value: {
       by: [{field: '_updatedAt', direction: 'desc'}],
@@ -63,13 +63,13 @@ test('clicking custom sort order and direction sets value in storage', async ({
 
   // Clear any existing sort order key BEFORE the studio loads, so the click
   // below always changes the selected sort order and issues a PUT
-  await clearKeyValueKey(sanityClient, CUSTOM_SORT_KEY)
+  await clearPreference(sanityClient, CUSTOM_SORT_KEY)
 
   await page.goto('/content/book')
 
-  const keyValueRequest = page.waitForResponse(
+  const preferenceWrite = page.waitForResponse(
     async (response) => {
-      return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+      return isPreferenceWrite(response)
     },
     {timeout: 30000},
   )
@@ -84,9 +84,9 @@ test('clicking custom sort order and direction sets value in storage', async ({
   await expect(sortMenuItem).toBeVisible()
   await sortMenuItem.click({force: true})
 
-  const responseBody = await (await keyValueRequest).json()
+  const responseBody = await (await preferenceWrite).json()
 
-  expect(responseBody[0]).toMatchObject({
+  expect(responseBody).toMatchObject({
     key: CUSTOM_SORT_KEY,
     value: {
       // located in dev/test-studio/schema/book.ts
@@ -104,7 +104,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
 
   // Clear any existing layout key BEFORE the studio loads, so the clicks
   // below always change the layout and issue a PUT
-  await clearKeyValueKey(sanityClient, LAYOUT_KEY)
+  await clearPreference(sanityClient, LAYOUT_KEY)
 
   await page.goto('/content/author')
 
@@ -118,16 +118,12 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
 
   // Use Promise.all to ensure we catch the response
   const [response1] = await Promise.all([
-    page.waitForResponse(
-      (response) =>
-        response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT',
-      {timeout: 30000},
-    ),
+    page.waitForResponse((response) => isPreferenceWrite(response), {timeout: 30000}),
     detailedViewMenuItem.click({force: true}),
   ])
 
   const responseBody = await response1.json()
-  expect(responseBody[0]).toMatchObject({
+  expect(responseBody).toMatchObject({
     key: LAYOUT_KEY,
     value: 'detail',
   })
@@ -140,16 +136,12 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
 
   // Use Promise.all to ensure we catch the response
   const [response2] = await Promise.all([
-    page.waitForResponse(
-      (response) =>
-        response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT',
-      {timeout: 30000},
-    ),
+    page.waitForResponse((response) => isPreferenceWrite(response), {timeout: 30000}),
     compactViewMenuItem.click({force: true}),
   ])
 
   const responseBody2 = await response2.json()
-  expect(responseBody2[0]).toMatchObject({
+  expect(responseBody2).toMatchObject({
     key: LAYOUT_KEY,
     value: 'default',
   })

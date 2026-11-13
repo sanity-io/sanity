@@ -1773,8 +1773,6 @@ import type {
   useSource,
   useStudioErrorHandler,
   useStudioFeedbackTags,
-  useStudioPreference,
-  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -7220,12 +7218,6 @@ describe('sanity', () => {
   })
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
-  })
-  test('useStudioPreference', () => {
-    expectTypeOf<typeof useStudioPreference>().toBeFunction()
-  })
-  test('useStudioPreferenceList', () => {
-    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
   })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()

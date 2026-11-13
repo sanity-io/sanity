@@ -1,5 +1,6 @@
 import {expect, type Request} from '@playwright/test'
 
+import {isPreferenceWrite} from '../../helpers/preferences'
 import {test} from '../../studio-test'
 
 function getListenEventType(request: Request): string | null | undefined {
@@ -68,7 +69,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
     {timeout: 30000},
   )
-  const keyValueRequest = page.waitForResponse((response) => response.url().includes('keyvalue'), {
+  const preferenceWrite = page.waitForResponse((response) => isPreferenceWrite(response), {
     timeout: 30000,
   })
 
@@ -82,7 +83,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
   // We change the sort order to not be default, to ensure that the listener is not re-created
   await page.getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
-  await keyValueRequest
+  await preferenceWrite
 
   const bookRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('book'),
