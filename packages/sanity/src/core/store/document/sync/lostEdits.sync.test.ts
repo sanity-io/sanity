@@ -137,8 +137,7 @@ describe('lost edits', () => {
     ])
   })
 
-  // A save with no net change leaves the client inconsistent, so the world never settles.
-  test.fails('EDIT-SUPERSEDED-LOCALLY: an edit undone by a later edit before saving is accounted for', async () => {
+  test('EDIT-SUPERSEDED-LOCALLY: an edit undone by a later edit before saving is accounted for', async () => {
     const syncTest: SyncTestDefinition = {
       id: 'EDIT-SUPERSEDED-LOCALLY',
       title: 'A saves "one", then types "two" and back to "one" before saving again',

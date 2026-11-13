@@ -376,7 +376,7 @@ function setTitle(title: string) {
   return new Mutation({mutations: [{patch: {id: 'a', set: {title}}}]})
 }
 
-test.fails('NO-NET-CHANGE-COMMIT (B3, L2): committing a local edit with no net change reports the document consistent again', async () => {
+test('NO-NET-CHANGE-COMMIT (B3, L2): committing a local edit with no net change reports the document consistent again', async () => {
   const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
   const consistency = observeConsistency(doc)
   doc.commitHandler = () => {
@@ -385,6 +385,7 @@ test.fails('NO-NET-CHANGE-COMMIT (B3, L2): committing a local edit with no net c
 
   doc.add(setTitle('Hello!'))
   doc.add(setTitle('Hello'))
+  expect(consistency.latest).toBe(true)
   await doc.commit()
 
   expect(consistency.latest).toBe(true)
