@@ -123,6 +123,19 @@ function initialMode(): {enabled: true} | {enabled: false; reason: string} {
   return {enabled: true}
 }
 
+const DEBUG_BAR_KEY = 'groq-store-wasm:debug-bar'
+
+/**
+ * Whether the debug bar shows in this browser (`?groqDebugBar=on|off`, remembered like
+ * `?groqStore`). Hiding it only hides the bar: the store, its service worker and the metrics run
+ * as before. Shown unless turned off.
+ */
+export function isGroqDebugBarVisible(): boolean {
+  const override = searchParam('groqDebugBar')
+  if (override === 'on' || override === 'off') writeStorage('localStorage', DEBUG_BAR_KEY, override)
+  return readStorage('localStorage', DEBUG_BAR_KEY) !== 'off'
+}
+
 function initialGuardOff(): boolean {
   const override = searchParam('groqGuard')
   if (override === 'off') writeStorage('localStorage', GUARD_KEY, 'off')

@@ -24,6 +24,7 @@ import {
   restingAnchor,
 } from '../style-outline/corners'
 import {
+  isGroqDebugBarVisible,
   getGroqStoreStatus,
   setGroqStoreEnabled,
   storeRows,
@@ -455,10 +456,12 @@ function GroqStoreDebugBar() {
 
 /** Studio layout that adds the debug bar on top of the layout it wraps. */
 export function GroqStoreDebugLayout(props: LayoutProps) {
+  // Read once per page load: `?groqDebugBar=off|on` comes with a full navigation
+  const [visible] = useState(isGroqDebugBarVisible)
   return (
     <>
       {props.renderDefault(props)}
-      <GroqStoreDebugBar />
+      {visible && <GroqStoreDebugBar />}
     </>
   )
 }
