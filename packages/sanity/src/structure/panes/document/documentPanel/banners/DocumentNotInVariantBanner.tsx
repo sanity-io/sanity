@@ -53,7 +53,7 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   const {t: tCore} = useTranslation()
   const {value, documentId, schemaType, inspector} = useDocumentPane()
   const {params} = usePaneRouter()
-  // Manage versions has its Create variant form open (see CREATE_VARIANT_PARAM). That form's Create
+  // The document inventory has its Create variant form open (see CREATE_VARIANT_PARAM). That form's Create
   // is the view's one filled button, so the banner drops its own and points to the form.
   const createsInManageVersions =
     Boolean(params?.[CREATE_VARIANT_PARAM]) && inspector?.name === DOCUMENT_GROUP_INSPECTOR_NAME
@@ -244,7 +244,7 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
             <>
               {' '}
               <span data-testid="document-not-in-variant-banner-hand-off">
-                {t('banners.variant.finish-in-manage-versions')}
+                {t('banners.variant.finish-in-document-inventory')}
               </span>
             </>
           ) : null}

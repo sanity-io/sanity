@@ -575,7 +575,7 @@ describe('DocumentNotInVariantBanner', () => {
     })
   })
 
-  describe('while Manage versions creates the variant', () => {
+  describe('while the document inventory creates the variant', () => {
     const CREATE_IN_RELEASE: NotInVariantBannerCase = {kind: 'create', perspective: 'release'}
     const CREATING = {
       inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
@@ -591,11 +591,11 @@ describe('DocumentNotInVariantBanner', () => {
       } as unknown as ReturnType<typeof useDocumentPane>)
     })
 
-    it('keeps its sentence, drops Create variant and points to Manage versions', async () => {
+    it('keeps its sentence, drops Create variant and points to the document inventory', async () => {
       await renderBanner(CREATE_IN_RELEASE, CREATING)
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing. Finish creating it in Manage versions.',
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing. Finish creating it in the document inventory.',
       )
       expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
       expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
@@ -618,7 +618,7 @@ describe('DocumentNotInVariantBanner', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('keeps Create variant while Manage versions is closed, even with the param', async () => {
+    it('keeps Create variant while the document inventory is closed, even with the param', async () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: DOCUMENT_ID,
         value: existingDocumentValue,

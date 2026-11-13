@@ -294,10 +294,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Toast title in case an error occurs when adding a document to a variant */
   'banners.variant.error.title': 'Error adding document to variant',
   /**
-   * Added after the variant banner's sentence while the Create variant form in Manage versions is
-   * open for the variant: the banner drops its own Create action and points to the form instead
+   * Added after the variant banner's sentence while the Create variant form in the document
+   * inventory is open for the variant: the banner drops its own Create action and points to the
+   * form instead
    */
-  'banners.variant.finish-in-manage-versions': 'Finish creating it in Manage versions.',
+  'banners.variant.finish-in-document-inventory': 'Finish creating it in the document inventory.',
   /** The word before a variant's chip in the variant banners ("the variant [Alpha]"), kept on one line with the chip */
   'banners.variant.lead.variant': 'variant',
   /**
