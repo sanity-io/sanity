@@ -22,7 +22,7 @@ import {
  * feature. The content is a `journey` document like the ones of comments, tasks and releases,
  * and this is the one place that names it.
  */
-const AI_CREDITS_UPSELL = {dataUri: '/journey/ai-credits', feature: 'ai-credits'} as const
+const AI_CREDITS_UPSELL = {dataUri: '/journey/ai-credits', feature: 'ai_credits'} as const
 
 /** What the content request settles to where there is nothing to upsell; stable, so it is cached once */
 const NO_UPSELL_DATA$ = of(NO_UPSELL_DATA)

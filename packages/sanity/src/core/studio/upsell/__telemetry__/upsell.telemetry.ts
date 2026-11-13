@@ -1,7 +1,7 @@
 import {defineEvent} from '@sanity/telemetry'
 
 interface UpsellDialogActionsInfo {
-  feature: 'comments' | 'scheduled_publishing' | 'ai_assist' | 'tasks'
+  feature: 'comments' | 'scheduled_publishing' | 'ai_assist' | 'tasks' | 'ai_credits'
   type: 'modal' | 'inspector'
 }
 
