@@ -5,7 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ConnectionStatus} from '../connection-status/connection-status-store'
 import {type UserStore} from '../user/userStore'
-import {createPresenceStore, type PresenceStore, SESSION_ID} from './presence-store'
+import {createPresenceStore, getSessionId, type PresenceStore} from './presence-store'
 import {type DocumentPresence, type GlobalPresence, type PresenceLocation} from './types'
 
 // Own location announcements are audited at this interval
@@ -267,7 +267,7 @@ describe('presence-store', () => {
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
       // Alone, the own session yields no presence at all
-      incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      incoming$.next(stateEvent('me', getSessionId(), [location('doc-1')]))
       await settle()
       expect(latest()).toEqual([])
 
@@ -402,7 +402,7 @@ describe('presence-store', () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<GlobalPresence[]>(store.globalPresence$)
 
-      incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      incoming$.next(stateEvent('me', getSessionId(), [location('doc-1')]))
       await settle()
       expect(latest()).toEqual([])
 
@@ -424,7 +424,7 @@ describe('presence-store', () => {
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
       expect(requests.at(-1)).toEqual({
         name: 'presence_announce',
-        params: {data: {locations: [], sessionId: SESSION_ID}},
+        params: {data: {locations: [], sessionId: getSessionId()}},
       })
       subscription.unsubscribe()
     })
@@ -440,7 +440,7 @@ describe('presence-store', () => {
 
       expect(requests.at(-1)).toEqual({
         name: 'presence_announce',
-        params: {data: {locations, sessionId: SESSION_ID}},
+        params: {data: {locations, sessionId: getSessionId()}},
       })
       subscription.unsubscribe()
     })
@@ -466,7 +466,7 @@ describe('presence-store', () => {
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
       const announcementsBefore = requests.filter((r) => r.name === 'presence_announce').length
 
-      incoming$.next(rollCallEvent('me', SESSION_ID))
+      incoming$.next(rollCallEvent('me', getSessionId()))
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
 
       expect(requests.filter((r) => r.name === 'presence_announce').length).toBe(

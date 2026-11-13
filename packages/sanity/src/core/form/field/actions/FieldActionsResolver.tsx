@@ -1,11 +1,11 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import isEqual from 'react-fast-compare'
 
 import {
   type DocumentFieldAction,
   type DocumentFieldActionNode,
 } from '../../../config/document/fieldActions/types'
-import {useUnique} from '../../../util/useUnique'
 import {filterActions} from './helpers'
 
 /** @internal */
@@ -51,6 +51,11 @@ export const FieldActionsResolver = memo(function FieldActionsResolver(props: Fi
 
   const setFieldAction = useCallback((index: number, node: DocumentFieldActionNode) => {
     setFieldActions((prev) => {
+      // A deep-equal node keeps its previous identity so a `useAction` hook that builds its node
+      // inline does not republish on every render. The comparison belongs here, not in
+      // `FieldAction`'s render: a render-phase `setState` there (`useUnique`) loops until React
+      // throws "Too many re-renders" when the hook returns a new `onAction` function each render.
+      if (isEqual(prev[index], node)) return prev
       const next = [...prev]
       next[index] = node
       return next
@@ -124,14 +129,12 @@ function defineFieldActionComponent({
 }) {
   const {useAction} = action
   return memo(function FieldAction() {
-    const _action = useAction({
+    const node = useAction({
       documentId,
       documentType,
       path,
       schemaType,
     })
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    const node = useUnique(_action)
 
     useEffect(() => {
       setFieldAction(index, node)

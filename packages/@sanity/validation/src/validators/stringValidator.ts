@@ -5,6 +5,22 @@ import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
 const isRelativeUrl = (url: string) => /^\.*\//.test(url)
+
+// WHATWG "special" schemes, whose hosts are domains rather than opaque strings
+const SPECIAL_SCHEMES = new Set(['http:', 'https:', 'ws:', 'wss:', 'ftp:', 'file:'])
+// WHATWG "forbidden domain code point"
+const FORBIDDEN_DOMAIN_CODE_POINT = /[\p{Cc} #/:<>?@[\\\]^|%]/u
+
+// Node follows the spec and fails to parse a domain that percent-decodes to a forbidden code point,
+// but Chrome keeps `%20` in `hostname` and accepts it, so check the decoded host ourselves
+function hasInvalidDomain(url: URL): boolean {
+  if (!SPECIAL_SCHEMES.has(url.protocol) || url.hostname.startsWith('[')) return false
+  try {
+    return FORBIDDEN_DOMAIN_CODE_POINT.test(decodeURIComponent(url.hostname))
+  } catch {
+    return true
+  }
+}
 const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -58,16 +74,22 @@ export const stringValidators: Validators = {
     const {allowCredentials, relativeOnly} = options
     const allowRelative = options.allowRelative || relativeOnly
 
+    const invalidUrl = {
+      code: validationMarkerCodes.stringUrlInvalid,
+      message: message || i18n.t('validation:string.url.invalid'),
+    }
+
     let url
     try {
       // WARNING: Safari checks for a given `base` param by looking at the length of arguments passed
       // to new URL(str, base), and will fail if invoked with new URL(strValue, undefined)
       url = allowRelative ? new URL(strValue, DUMMY_ORIGIN) : new URL(strValue)
     } catch {
-      return {
-        code: validationMarkerCodes.stringUrlInvalid,
-        message: message || i18n.t('validation:string.url.invalid'),
-      }
+      return invalidUrl
+    }
+
+    if (hasInvalidDomain(url)) {
+      return invalidUrl
     }
 
     if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
