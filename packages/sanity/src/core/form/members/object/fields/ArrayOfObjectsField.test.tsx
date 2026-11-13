@@ -1,10 +1,14 @@
+import {type SanityClient} from '@sanity/client'
 import {
+  type AssetFromSource,
   type AssetSource,
   type AssetSourceComponentProps,
   type AssetSourceUploader,
 } from '@sanity/types'
+import {getCroppedImageDimensions} from '@sanity/util/image'
 import {act, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
+import {of} from 'rxjs'
 import {FormBuilderContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -13,10 +17,13 @@ import {type FIXME} from '../../../../FIXME'
 import {createSchema} from '../../../../schema/createSchema'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {type FormBuilderContextValue} from '../../../FormBuilderContext'
+import {applyAll} from '../../../patch/applyPatch'
 import {insert, setIfMissing, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
+import {createDatasetUploader} from '../../../studio/assetSourceDataset/uploader'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
@@ -40,6 +47,11 @@ const schema = createSchema({
           name: 'items',
           type: 'array',
           of: [{type: 'object', name: 'thing', fields: [{name: 'title', type: 'string'}]}],
+        },
+        {
+          name: 'photos',
+          type: 'array',
+          of: [{type: 'image', options: {hotspot: true, aspectRatio: 16 / 9}}],
         },
       ],
     },
@@ -122,7 +134,93 @@ describe('ArrayOfObjectsField', () => {
   })
 })
 
-async function setupTest(fieldName: 'body' | 'items', value?: {_key: string; _type: string}[]) {
+const PORTRAIT_ASSET_ID = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1200x1800-jpg'
+
+function NoopUploadComponent() {
+  return null
+}
+
+const datasetClient = {
+  observable: {
+    fetch: () => of(null),
+    assets: {
+      upload: () => of({type: 'response', body: {document: {_id: PORTRAIT_ASSET_ID}}}),
+    },
+  },
+} as unknown as SanityClient
+
+function storedPhoto(onChange: FormCallbacksValue['onChange']) {
+  const patches: FormPatch[] = vi
+    .mocked(onChange)
+    .mock.calls.flatMap(([event]) => PatchEvent.from(event).patches)
+  return applyAll({}, patches)?.photos?.[0]
+}
+
+function storedRatio(onChange: FormCallbacksValue['onChange']): number {
+  const dimensions = getCroppedImageDimensions(storedPhoto(onChange))
+  return dimensions ? dimensions.width / dimensions.height : Number.NaN
+}
+
+describe('ArrayOfObjectsField image uploads', () => {
+  it('crops an image dropped into an array of 16:9 images to 16:9', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
+    const assetSource = {
+      name: 'dataset',
+      title: 'Uploaded images',
+      component: NoopUploadComponent,
+      Uploader: createDatasetUploader({client: datasetClient}),
+    } as unknown as AssetSource
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    await vi.waitFor(() =>
+      expect(storedPhoto(formCallbacks.onChange)?.asset?._ref).toBe(PORTRAIT_ASSET_ID),
+    )
+    expect(storedRatio(formCallbacks.onChange)).toBeCloseTo(16 / 9, 2)
+  })
+
+  it('crops an image picked from the asset source into an array of 16:9 images to 16:9', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
+
+    let selectAssets: ((assets: AssetFromSource[]) => void) | undefined
+    const SelectingUploadComponent = (props: AssetSourceComponentProps) => {
+      selectAssets = props.onSelect
+      return null
+    }
+    const assetSource = {
+      name: 'mock-source',
+      title: 'Mock source',
+      component: SelectingUploadComponent,
+      Uploader: MediaLibraryUploader,
+    } as unknown as AssetSource
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    if (!selectAssets) throw new Error('asset source component was never mounted')
+    act(() => {
+      selectAssets?.([{kind: 'assetDocumentId', value: PORTRAIT_ASSET_ID}])
+    })
+
+    expect(storedRatio(formCallbacks.onChange)).toBeCloseTo(16 / 9, 2)
+  })
+})
+
+async function setupTest(
+  fieldName: 'body' | 'items' | 'photos',
+  value?: {_key: string; _type: string}[],
+) {
   const docType = schema.get('doc') as FIXME
   const schemaType = docType.fields.find((field: {name: string}) => field.name === fieldName)?.type
 

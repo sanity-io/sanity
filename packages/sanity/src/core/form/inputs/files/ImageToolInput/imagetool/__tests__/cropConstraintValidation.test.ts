@@ -1,5 +1,5 @@
 import {type ImageOptions, type SanityDocument} from '@sanity/types'
-import {pixelRectToCrop, resolveAspectRatio} from '@sanity/util/image'
+import {getDefaultImageCrop, pixelRectToCrop, resolveAspectRatio} from '@sanity/util/image'
 import {getFallbackLocaleSource, validateDocumentInternal} from '@sanity/validation/_internal'
 import {describe, expect, test} from 'vitest'
 
@@ -193,25 +193,42 @@ describe('crops written by the constrained crop tool pass the inferred validatio
     expect(failing.every((count) => count > 0)).toBe(true)
   })
 
-  test('the starting crop clears the error for every field on every source that holds its minimum', async () => {
-    const results = await Promise.all(
-      FIELD_NAMES.flatMap((fieldName) =>
-        SOURCES.filter((source) => sourceHoldsMinimum(FIELD_OPTIONS[fieldName], source)).map(
-          async (source) => {
-            const {aspectRatio, minDimensions} = constraintsFor(FIELD_OPTIONS[fieldName])
-            const crop = getInitialToolCrop(imageValue(source), aspectRatio, minDimensions)
-            const errors = await errorsFor(fieldName, source, crop)
-            return {
-              label: `${fieldName} ${source.width}x${source.height}`,
-              crop,
-              errors: errors.map((error) => error.message),
-            }
-          },
+  test.each([
+    {
+      name: 'the crop tool starts from',
+      getCrop: (source: Size, options: ImageOptions) =>
+        getInitialToolCrop(
+          imageValue(source),
+          constraintsFor(options).aspectRatio,
+          options.minDimensions,
         ),
-      ),
-    )
-    expect(results.filter((result) => result.errors.length > 0)).toEqual([])
-  })
+    },
+    {
+      name: 'an upload writes',
+      getCrop: (source: Size, options: ImageOptions) =>
+        getDefaultImageCrop(assetRef(source), options.aspectRatio, options.minDimensions),
+    },
+  ])(
+    'the crop $name clears the error for every field on every source that holds its minimum',
+    async ({getCrop}) => {
+      const results = await Promise.all(
+        FIELD_NAMES.flatMap((fieldName) =>
+          SOURCES.filter((source) => sourceHoldsMinimum(FIELD_OPTIONS[fieldName], source)).map(
+            async (source) => {
+              const crop = getCrop(source, FIELD_OPTIONS[fieldName])
+              const errors = await errorsFor(fieldName, source, crop)
+              return {
+                label: `${fieldName} ${source.width}x${source.height}`,
+                crop,
+                errors: errors.map((error) => error.message),
+              }
+            },
+          ),
+        ),
+      )
+      expect(results.filter((result) => result.errors.length > 0)).toEqual([])
+    },
+  )
 
   test('one handle drag from the uncropped image clears the error for every field', async () => {
     const results = await Promise.all(

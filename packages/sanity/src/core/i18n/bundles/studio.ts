@@ -1083,6 +1083,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.imagetool.crop-only.description': 'Adjust the rectangle to crop image.',
   /** Title of the crop tool for an image field without a hotspot */
   'inputs.imagetool.crop-only.title': 'Crop',
+  /** The size of the current crop in pixels of the original image */
+  'inputs.imagetool.crop-size.dimensions': '{{width}} × {{height}} px',
+  /** Shown under the crop size when the crop tool proposes a crop the document does not have yet */
+  'inputs.imagetool.crop-size.unsaved': 'Not saved yet. Edit the crop to save it.',
+  /** Shown under the crop size when a read-only field shows a crop the document does not have */
+  'inputs.imagetool.crop-size.unsaved-read-only': 'Not saved.',
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.imagetool.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',

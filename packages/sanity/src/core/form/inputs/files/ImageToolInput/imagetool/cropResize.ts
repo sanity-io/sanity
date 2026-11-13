@@ -1,5 +1,6 @@
 import {
   type ImagePixelRect,
+  largestSizeForRatio,
   nearestAllowedRatio,
   type ResolvedImageAspectRatio,
 } from '@sanity/util/image'
@@ -158,7 +159,10 @@ export function resizeCropRect(
   })
 
   const targetWidth = direction.dx === 0 ? pointerHeight * ratio : pointerWidth
-  const fitted = fitToAvailable(targetWidth, ratio, availableWidth, availableHeight)
+  const fitted = largestSizeForRatio(
+    {width: Math.min(targetWidth, availableWidth), height: availableHeight},
+    ratio,
+  )
 
   const requiredWidth = Math.min(
     Math.max(minimum.width, minimum.height * ratio),
@@ -227,17 +231,4 @@ function getAskedRatio(params: {
   if (direction.dx === 0) return rect.width / pointerHeight
   if (direction.dy === 0) return pointerWidth / rect.height
   return pointerWidth / pointerHeight
-}
-
-function fitToAvailable(
-  targetWidth: number,
-  ratio: number,
-  availableWidth: number,
-  availableHeight: number,
-): Size {
-  const width = Math.min(targetWidth, availableWidth)
-  const height = width / ratio
-  return height > availableHeight
-    ? {width: availableHeight * ratio, height: availableHeight}
-    : {width, height}
 }

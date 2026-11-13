@@ -1,7 +1,17 @@
 import {isHotspotEnabled} from '@sanity/schema/_internal'
-import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
+import {
+  type Image,
+  type ImageCropDimensions,
+  type ImageOptions,
+  type ImageSchemaType,
+} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {getImageRefDimensions, isSvgImageRef, resolveAspectRatio} from '@sanity/util/image'
+import {
+  getCroppedImageDimensions,
+  getImageRefDimensions,
+  isSvgImageRef,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {
   type ReactNode,
   useCallback,
@@ -16,6 +26,7 @@ import {Text, Box, Flex, Grid, VStack} from 'ui5'
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {validationLocaleNamespace} from '../../../../i18n/localeNamespaces'
 import {Translate} from '../../../../i18n/Translate'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {Details} from '../../../components/Details'
@@ -30,7 +41,14 @@ import {ImageTool} from './imagetool/ImageTool'
 import {type CropConstraints} from './imagetool/types'
 import {constrainHotspotToCrop} from './imagetool/utils'
 import {placeholder} from './ImageToolInput.css'
-import {getImageToolPath, getInitialToolCrop} from './imageToolOptions'
+import {
+  getCropAspectRatioMessageOptions,
+  getCropSizeStatus,
+  getHotspotPreviews,
+  getImageToolPath,
+  getInitialToolCrop,
+  hasCropSizeReadout,
+} from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -51,13 +69,6 @@ function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
     </a>
   )
 }
-
-const DEFAULT_PREVIEWS: HotspotPreview[] = [
-  {title: '3:4', aspectRatio: 3 / 4},
-  {title: 'Square', aspectRatio: 1 / 1},
-  {title: '16:9', aspectRatio: 16 / 9},
-  {title: 'Panorama', aspectRatio: 4 / 1},
-] as const
 
 const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
@@ -90,6 +101,58 @@ function LoadStatus(props: {children: ReactNode}) {
       style={{overflowWrap: 'break-word'}}
     >
       {props.children}
+    </Flex>
+  )
+}
+
+function CropSize(props: {
+  dimensions: ImageCropDimensions
+  options: ImageOptions | undefined
+  unsaved: boolean
+  readOnly: boolean | undefined
+}) {
+  const {dimensions, options, unsaved, readOnly} = props
+  const {t} = useTranslation()
+  const {t: tValidation} = useTranslation(validationLocaleNamespace)
+  const {tone, threshold} = getCropSizeStatus(dimensions, options)
+  const aspectRatioMessage = getCropAspectRatioMessageOptions(options)
+  const minDimensions = options?.minDimensions
+  const minimumTone = tone === 'critical' ? tone : undefined
+
+  return (
+    <Flex
+      marginTop={2}
+      gap={2}
+      alignItems="center"
+      flexWrap="wrap"
+      data-testid="image-tool-crop-size"
+      data-tone={tone ?? 'default'}
+    >
+      <Text size={1} weight="medium" tone={tone}>
+        {t('inputs.imagetool.crop-size.dimensions', {...dimensions})}
+      </Text>
+      {aspectRatioMessage ? (
+        <Text size={1} muted>
+          {tValidation('object.image-aspect-ratio-mismatch', aspectRatioMessage)}
+        </Text>
+      ) : null}
+      {minDimensions ? (
+        <Text size={1} muted={minimumTone === undefined} tone={minimumTone}>
+          {tValidation('object.image-below-min-dimensions', {...minDimensions})}
+        </Text>
+      ) : null}
+      {tone === 'caution' ? (
+        <Text size={1} tone={tone}>
+          {tValidation('object.image-below-recommended-dimensions', {...threshold})}
+        </Text>
+      ) : null}
+      {unsaved ? (
+        <Text size={1} muted>
+          {readOnly
+            ? t('inputs.imagetool.crop-size.unsaved-read-only')
+            : t('inputs.imagetool.crop-size.unsaved')}
+        </Text>
+      ) : null}
     </Flex>
   )
 }
@@ -144,11 +207,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   const hasFocus = focusPath[0] === imageToolPath[0]
 
-  const hotspotPreviews =
-    (hotspotEnabled &&
-      typeof schemaType.options?.hotspot === 'object' &&
-      schemaType.options.hotspot.previews) ||
-    DEFAULT_PREVIEWS
+  const hotspotPreviews = getHotspotPreviews(schemaType.options)
+
+  const isCropProposed = getInitialToolCrop(value, cropConstraints.aspectRatio) !== value?.crop
+
+  const cropSize = hasCropSizeReadout(schemaType.options)
+    ? getCroppedImageDimensions({asset: value?.asset, crop: localValue.crop})
+    : undefined
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
@@ -284,11 +349,20 @@ export function ImageToolInput(props: ImageToolInputProps) {
           </ChangeIndicator>
         </Card>
 
+        {cropSize ? (
+          <CropSize
+            dimensions={cropSize}
+            options={schemaType.options}
+            unsaved={isCropProposed}
+            readOnly={readOnly}
+          />
+        ) : null}
+
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
             <Grid gridTemplateColumns="repeat(4, minmax(0, 1fr))" gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
-                <Box key={title} marginTop={2}>
+                <Box key={`${title}-${aspectRatio}`} marginTop={2}>
                   <Heading as="h4" size={0}>
                     {title}
                   </Heading>

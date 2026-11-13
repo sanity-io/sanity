@@ -146,6 +146,21 @@ function NullHotspotImageToolInputHarness() {
   )
 }
 
+function WideImageToolInputHarness({options}: {options: ImageValueOptions}) {
+  return (
+    <TestWrapper schemaTypes={createImageSchema(options)}>
+      <TestForm document={CROP_ONLY_DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
+const UNSAVED_HINT = 'Not saved yet. Edit the crop to save it.'
+const UNSAVED_READ_ONLY_HINT = 'Not saved.'
+
+function getCropSize() {
+  return page.getByTestId('image-tool-crop-size')
+}
+
 describe('image tool input', () => {
   test('renders the hotspot and crop tool', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -186,6 +201,11 @@ describe('image tool input', () => {
     )
     expect(document.querySelector('[data-handle="hotspot"]')).toBeNull()
 
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        `1000 × 1000 pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px${UNSAVED_HINT}`,
+      )
     ;(cropRect.element() as SVGRectElement).focus()
     const modifier = getModifierKey()
     await userEvent.keyboard(`{${modifier}>}{ArrowLeft}{/${modifier}}`)
@@ -196,6 +216,85 @@ describe('image tool input', () => {
     expect(dimensions.width).toBeLessThan(1000)
     expect(dimensions.width).toBeGreaterThanOrEqual(600)
     expect(state.image.hotspot).toBeUndefined()
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        `${dimensions.width} × ${dimensions.height} pxCropped image aspect ratio must be 1:1Cropped image must be at least 600 × 600 px`,
+      )
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'default')
+    await settleChromaticEndState()
+  })
+
+  test('shows no crop size without a size or ratio option', async () => {
+    void render(<ImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    expect(document.querySelector('[data-testid="image-tool-crop-size"]')).toBeNull()
+  })
+
+  test('flags a crop below the recommended size', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{hotspot: true, recommendedDimensions: {width: 2400, height: 1200}}}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'caution')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent('2000 × 1000 pxCropped image should be at least 2400 × 1200 px')
+    await settleChromaticEndState()
+  })
+
+  test('flags a crop below the minimum size over the recommended size', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{
+          hotspot: true,
+          minDimensions: {width: 2400, height: 600},
+          recommendedDimensions: {width: 2400, height: 1200},
+        }}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent('2000 × 1000 pxCropped image must be at least 2400 × 600 px')
+    await settleChromaticEndState()
+  })
+
+  test('states the aspect ratio and flags the minimum when the crop is below it', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{hotspot: true, aspectRatio: 2, minDimensions: {width: 2400, height: 1200}}}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        '2000 × 1000 pxCropped image aspect ratio must be 2:1Cropped image must be at least 2400 × 1200 px',
+      )
+    await settleChromaticEndState()
+  })
+
+  test('previews the ratios the field allows', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<WideImageToolInputHarness options={{hotspot: true, aspectRatio: [1, 16 / 9]}} />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByRole('heading', {name: '1:1', exact: true})).toBeVisible()
+    await expect.element(page.getByRole('heading', {name: '16:9', exact: true})).toBeVisible()
+    expect(page.getByText('Panorama').query()).toBeNull()
     await settleChromaticEndState()
   })
 
@@ -216,7 +315,7 @@ describe('image tool input', () => {
       minDimensions: {width: 800, height: 450},
     })
 
-    function PortraitHarness(props: {crop?: ImageValue['crop']}) {
+    function PortraitHarness(props: {crop?: ImageValue['crop']; readOnly?: boolean}) {
       const document: SanityDocument = {
         ...DOCUMENT,
         image: {
@@ -227,7 +326,7 @@ describe('image tool input', () => {
       }
       return (
         <TestWrapper schemaTypes={WIDESCREEN_SCHEMA}>
-          <TestForm document={document} focusPath={HOTSPOT_FOCUS_PATH} />
+          <TestForm document={document} focusPath={HOTSPOT_FOCUS_PATH} readOnly={props.readOnly} />
         </TestWrapper>
       )
     }
@@ -271,6 +370,28 @@ describe('image tool input', () => {
 
       await waitForFixtureImage()
       expect(await readDrawnSourceRatio()).toBeCloseTo(16 / 9, 2)
+    })
+
+    test('says the crop it proposes is not saved until the editor edits it', async () => {
+      const {waitForDocumentState} = testHelpers()
+      void render(<PortraitHarness />)
+
+      await waitForFixtureImage()
+      await expect.element(getCropSize()).toMatchTextContent(UNSAVED_HINT)
+
+      const cropRect = await findCropRect()
+      cropRect.focus()
+      await userEvent.keyboard('{ArrowDown}')
+      await waitForDocumentState((documentState) => Boolean(documentState?.image?.crop))
+      await expect.element(getCropSize()).not.toMatchTextContent(UNSAVED_HINT)
+    })
+
+    test('says the crop it proposes is not saved, without offering to save it, when read-only', async () => {
+      void render(<PortraitHarness readOnly />)
+
+      await waitForFixtureImage()
+      await expect.element(getCropSize()).toMatchTextContent(UNSAVED_READ_ONLY_HINT)
+      await expect.element(getCropSize()).not.toMatchTextContent(UNSAVED_HINT)
     })
 
     test('commits a crop that passes the ratio when the editor moves the box', async () => {
