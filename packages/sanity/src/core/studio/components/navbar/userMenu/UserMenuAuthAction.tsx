@@ -2,15 +2,19 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {Card} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
+import {useCallback, useMemo} from 'react'
 import {VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {isDev} from '../../../../environment'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {isDashboardAuthStore} from '../../../../store/auth/legacy/createLegacyAuthStore'
+import {type AuthStore} from '../../../../store/auth/types'
 import {useUnclaimedProjectContext} from '../../../unclaimedProject/UnclaimedProjectProvider'
 import {useUnclaimedProjectClock} from '../../../unclaimedProject/useUnclaimedProjectClock'
 import {useWorkspace} from '../../../workspace'
+import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 
 interface UserMenuAuthActionProps {
   layout: 'drawer' | 'menu'
@@ -37,10 +41,10 @@ function UserMenuAuthActionInner({
   layout,
   onClaim,
 }: UserMenuAuthActionProps & {claimUrl?: string; onClaim?: () => void}) {
-  const {auth} = useWorkspace()
+  const signOut = useSignOutOfAllWorkspaces()
   const {t} = useTranslation()
 
-  if (!claimUrl && !auth.logout) return null
+  if (!claimUrl && !signOut) return null
 
   const text = claimUrl ? t('user-menu.action.claim-project') : t('user-menu.action.sign-out')
   const icon = claimUrl ? LaunchIcon : LeaveIcon
@@ -52,8 +56,7 @@ function UserMenuAuthActionInner({
         rel: 'noopener noreferrer',
         target: '_blank',
       }
-    : // Called without arguments: `logout` takes options, not the click event.
-      {onClick: () => void auth.logout?.()}
+    : {onClick: signOut}
 
   if (layout === 'drawer') {
     return (
@@ -78,4 +81,61 @@ function UserMenuAuthActionInner({
       <MenuItem iconRight={icon} text={text} {...actionProps} />
     </>
   )
+}
+
+/**
+ * Returns a function that signs out of every workspace in the Studio, hidden ones included, or
+ * `undefined` when the active workspace cannot be signed out of.
+ *
+ * Several workspaces can share one auth store (stores are memoized per config), so each store is
+ * signed out once. A store's `logout` clears its own credentials, tells other tabs and revokes
+ * them on the server, so this only has to call each one.
+ *
+ * Stores of a Studio hosted in the dashboard are skipped: the dashboard owns sign-in, and their
+ * `logout` only asks the dashboard for a new token, which signs no one out.
+ */
+function useSignOutOfAllWorkspaces(): (() => void) | undefined {
+  const {auth: activeStore} = useWorkspace()
+  const workspaces = useWorkspaces()
+  const otherStores = useMemo(
+    () =>
+      getSignOutStores(workspaces.map(({auth}) => auth)).filter((store) => store !== activeStore),
+    [activeStore, workspaces],
+  )
+
+  const signOut = useCallback(async () => {
+    if (!canSignOut(activeStore)) return
+    // The active store starts first. Stores on the same project tell each other when they sign
+    // out, also within a tab, and a store that hears it before its own `logout` has started
+    // treats it as a sign-out elsewhere: with `redirectOnSingle`, its login screen sends the user
+    // straight back to the provider. `logout` marks the sign-out before its first `await`, so
+    // starting the active store first marks it before any other store can tell it.
+    const results = await Promise.allSettled([activeStore, ...otherStores].map(callLogout))
+    for (const result of results) {
+      if (result.status === 'rejected') console.warn('[sanity] Sign out failed:', result.reason)
+    }
+  }, [activeStore, otherStores])
+
+  // Only offer sign out when it signs the user out of the workspace they are looking at.
+  if (!canSignOut(activeStore)) return undefined
+  return () => void signOut()
+}
+
+type SignOutStore = AuthStore & Required<Pick<AuthStore, 'logout'>>
+
+function getSignOutStores(stores: AuthStore[]): SignOutStore[] {
+  return [...new Set(stores.filter(canSignOut))]
+}
+
+function canSignOut(store: AuthStore): store is SignOutStore {
+  return typeof store.logout === 'function' && !isDashboardAuthStore(store)
+}
+
+/**
+ * Calls `logout` without arguments: it takes options, and a click event is not one of them. Being
+ * `async`, it turns a custom store's synchronous throw into a rejection, so one failing store does
+ * not keep the others signed in.
+ */
+async function callLogout(store: SignOutStore): Promise<void> {
+  await store.logout()
 }

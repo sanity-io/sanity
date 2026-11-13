@@ -4,8 +4,16 @@ import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
+import {of} from 'rxjs'
+import {WorkspacesContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../../../test/mocks/mockSanityClient'
+import {prepareConfig} from '../../../../../config/prepareConfig'
+import {type WorkspaceOptions, type WorkspaceSummary} from '../../../../../config/types'
+import {_createLegacyAuthStore} from '../../../../../store/auth/legacy/createLegacyAuthStore'
+import {createMockAuthStore} from '../../../../../store/auth/mock/createMockAuthStore'
+import {type AuthStore} from '../../../../../store/auth/types'
 import {UnclaimedProjectProvider} from '../../../../unclaimedProject/UnclaimedProjectProvider'
 import {UserMenuAuthAction} from '../UserMenuAuthAction'
 
@@ -33,10 +41,63 @@ const theme = buildTheme()
 const CLAIM_URL = 'https://www.sanity.io/manage/claim/claim-token'
 const PROJECT_ID = 'test-project'
 const SECOND_PROJECT_ID = 'second-project'
+
+let workspaces: WorkspaceSummary[] = []
+
+function createStore(logout?: AuthStore['logout']): AuthStore {
+  const store = createMockAuthStore({client: createMockSanityClientAsClient(), currentUser: null})
+  return logout ? {...store, logout} : store
+}
+
+/** The store a Studio hosted in the dashboard gets: the dashboard hands it its token. */
+function createDashboardStore(projectId: string, refreshDashboardToken?: () => void): AuthStore {
+  return _createLegacyAuthStore({
+    projectId,
+    dataset: 'production',
+    getSessionId: () => undefined,
+    consumeHashToken: () => undefined,
+    observeWorkbenchToken: () => of('dashboard-token'),
+    refreshWorkbenchToken: refreshDashboardToken,
+  })
+}
+
+/**
+ * Each workspace gets its own project unless a test says otherwise: workspaces on one project with
+ * different stores are a misconfiguration that `prepareConfig` warns about.
+ */
+function createWorkspace(name: string, overrides: Partial<WorkspaceOptions>): WorkspaceOptions {
+  return {
+    name,
+    basePath: `/${name}`,
+    projectId: `${name}-project`,
+    dataset: 'production',
+    ...overrides,
+  }
+}
+
+/**
+ * Resolves the workspaces the way the Studio does, so each summary carries the store it gets. The
+ * first one is the active workspace.
+ */
+function setWorkspaces(...options: WorkspaceOptions[]) {
+  workspaces = prepareConfig(options).workspaces
+  setActiveWorkspace(workspaces[0].projectId)
+}
+
+function setActiveWorkspace(projectId: string) {
+  mockUseWorkspace.mockReturnValue({
+    auth: workspaces[0].auth,
+    currentUser: {provider: 'sanity-token'},
+    projectId,
+  })
+}
+
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={theme}>
     <LayerProvider>
-      <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+      <WorkspacesContext.Provider value={workspaces}>
+        <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+      </WorkspacesContext.Provider>
     </LayerProvider>
   </ThemeProvider>
 )
@@ -58,11 +119,9 @@ describe('UserMenuAuthAction', () => {
   beforeEach(() => {
     mockEnvironment.isDev = true
     mockUseUnclaimedProject.mockReturnValue(undefined)
-    mockUseWorkspace.mockReturnValue({
-      auth: {logout: mockLogout},
-      currentUser: {provider: 'sanity-token'},
-      projectId: PROJECT_ID,
-    })
+    setWorkspaces(
+      createWorkspace('default', {auth: createStore(mockLogout), projectId: PROJECT_ID}),
+    )
   })
 
   afterEach(() => {
@@ -173,11 +232,7 @@ describe('UserMenuAuthAction', () => {
       claimAttemptedAt: expect.any(Number),
     })
 
-    mockUseWorkspace.mockReturnValue({
-      auth: {logout: mockLogout},
-      currentUser: {provider: 'sanity-token'},
-      projectId: SECOND_PROJECT_ID,
-    })
+    setActiveWorkspace(SECOND_PROJECT_ID)
     await userEvent.click(claimAction)
 
     expect(mockUseUnclaimedProject).toHaveBeenLastCalledWith({claimAttemptedAt: undefined})
@@ -199,14 +254,140 @@ describe('UserMenuAuthAction', () => {
   })
 
   it('renders no action when neither claim nor sign out is available', () => {
-    mockUseWorkspace.mockReturnValue({
-      auth: {},
-      currentUser: {provider: 'sanity-token'},
-      projectId: PROJECT_ID,
-    })
+    setWorkspaces(createWorkspace('default', {auth: createStore()}))
 
     const {container} = render(<UserMenuAuthAction layout="drawer" />, {wrapper})
 
     expect(container).toBeEmptyDOMElement()
+  })
+
+  describe('sign out', () => {
+    async function clickSignOut() {
+      renderAction('menu')
+      await userEvent.click(screen.getByRole('menuitem', {name: 'Sign out'}))
+    }
+
+    function resolved() {
+      return vi.fn(() => Promise.resolve())
+    }
+
+    it('signs out of every workspace, hidden ones and other projects included', async () => {
+      const [active, other, hidden] = [resolved(), resolved(), resolved()]
+      setWorkspaces(
+        createWorkspace('active', {auth: createStore(active)}),
+        createWorkspace('other', {auth: createStore(other)}),
+        createWorkspace('hidden', {auth: createStore(hidden), hidden: true}),
+      )
+
+      await clickSignOut()
+
+      for (const logout of [active, other, hidden]) {
+        expect(logout).toHaveBeenCalledTimes(1)
+        // `logout` takes options; the click event must not reach it.
+        expect(logout).toHaveBeenCalledWith()
+      }
+    })
+
+    it('signs out of a store that several workspaces share once', async () => {
+      const shared = createStore(resolved())
+      setWorkspaces(
+        createWorkspace('first', {auth: shared, projectId: PROJECT_ID}),
+        createWorkspace('second', {auth: shared, projectId: PROJECT_ID}),
+      )
+
+      await clickSignOut()
+
+      expect(shared.logout).toHaveBeenCalledTimes(1)
+    })
+
+    it('skips other stores without logout', async () => {
+      const active = resolved()
+      setWorkspaces(
+        createWorkspace('active', {auth: createStore(active)}),
+        createWorkspace('without-logout', {auth: createStore()}),
+      )
+
+      await clickSignOut()
+
+      expect(active).toHaveBeenCalledTimes(1)
+    })
+
+    it('starts signing out of the active workspace first', async () => {
+      // Another store on the same project would otherwise tell the active store about its sign-out
+      // before the active store has marked its own, and a `redirectOnSingle` login screen would
+      // then send the user back to the provider.
+      const [active, other] = [resolved(), resolved()]
+      setWorkspaces(
+        createWorkspace('active', {auth: createStore(active)}),
+        createWorkspace('other', {auth: createStore(other)}),
+      )
+
+      await clickSignOut()
+
+      expect(active).toHaveBeenCalledTimes(1)
+      expect(other).toHaveBeenCalledTimes(1)
+      expect(active.mock.invocationCallOrder[0]).toBeLessThan(other.mock.invocationCallOrder[0])
+    })
+
+    it.each([
+      ['rejects', () => Promise.reject(new Error('revoke failed'))],
+      [
+        'throws',
+        () => {
+          throw new Error('revoke failed')
+        },
+      ],
+    ] as const)('signs out of the other stores when one of them %s', async (_, fail) => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const failing = vi.fn(fail)
+      const [active, other] = [resolved(), resolved()]
+      setWorkspaces(
+        createWorkspace('active', {auth: createStore(active)}),
+        createWorkspace('failing', {auth: createStore(failing)}),
+        createWorkspace('other', {auth: createStore(other)}),
+      )
+
+      await clickSignOut()
+
+      expect(failing).toHaveBeenCalledTimes(1)
+      expect(other).toHaveBeenCalledTimes(1)
+      expect(active).toHaveBeenCalledTimes(1)
+      expect(warn).toHaveBeenCalledWith('[sanity] Sign out failed:', new Error('revoke failed'))
+      warn.mockRestore()
+    })
+
+    it('leaves stores of a dashboard-hosted workspace alone', async () => {
+      const refreshDashboardToken = vi.fn()
+      const active = resolved()
+      setWorkspaces(
+        createWorkspace('active', {auth: createStore(active)}),
+        createWorkspace('dashboard', {
+          auth: createDashboardStore('dashboard-project', refreshDashboardToken),
+        }),
+      )
+
+      await clickSignOut()
+
+      expect(active).toHaveBeenCalledTimes(1)
+      expect(refreshDashboardToken).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      ['has no logout', () => createStore()],
+      ['is hosted in the dashboard', () => createDashboardStore('active-project')],
+    ])(
+      'renders no sign out when the active workspace %s, even if another can sign out',
+      (_, createActiveStore) => {
+        const other = resolved()
+        setWorkspaces(
+          createWorkspace('active', {auth: createActiveStore()}),
+          createWorkspace('other', {auth: createStore(other)}),
+        )
+
+        const {container} = render(<UserMenuAuthAction layout="drawer" />, {wrapper})
+
+        expect(container).toBeEmptyDOMElement()
+      },
+    )
   })
 })
