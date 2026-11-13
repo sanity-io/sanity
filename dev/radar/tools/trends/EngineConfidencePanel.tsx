@@ -1,7 +1,7 @@
 import {CATALOGUE_SUITE_IDS, type CatalogueSuiteStatus} from '@repo/utils/engine-confidence'
-import {Badge, Card, Spinner, Text} from '@sanity/ui'
+import {Badge, Card, Spinner} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Flex, Grid, VStack} from 'ui5'
 
 import {type TrendSeries, type TrendTag} from './data'
 import {
@@ -49,10 +49,10 @@ function NotMeasuredCard(props: {title: string; reason: string}) {
   return (
     <Card border padding={3} radius={2} tone="transparent" data-testid="engine-not-measured">
       <VStack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {props.title}
         </Text>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           Not measured: {props.reason}
         </Text>
       </VStack>
@@ -68,27 +68,31 @@ function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
     <Card border padding={3} radius={2} data-testid="engine-latest-week">
       <VStack gap={3}>
         <Flex alignItems="center" gap={2} flexWrap="wrap">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             Latest week {run.isoWeek}
           </Text>
           <Badge fontSize={0} tone="primary">
             config v{run.config.version}
           </Badge>
         </Flex>
-        <Text size={1}>Total engine {percentLabel(score.ratio)}</Text>
-        <Text size={1}>Core Studio engine {percentLabel(studioScore?.ratio)}</Text>
+        <Text size={1} as="div" trim={true}>
+          Total engine {percentLabel(score.ratio)}
+        </Text>
+        <Text size={1} as="div" trim={true}>
+          Core Studio engine {percentLabel(studioScore?.ratio)}
+        </Text>
         {score.status === 'not-measured' && (
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             Not measured: {score.reason ?? 'no reason recorded'}
           </Text>
         )}
         {score.counts ? (
-          <Text size={1} muted data-testid="engine-mutant-exclusions">
+          <Text size={1} muted data-testid="engine-mutant-exclusions" as="div" trim={true}>
             Mutants left out of the score: {NUMBER_FORMAT.format(score.counts.ignored)} ignored by
             rule, {NUMBER_FORMAT.format(score.counts.excluded)} excluded after review
           </Text>
         ) : null}
-        <Text size={1} muted data-testid="engine-known-bugs">
+        <Text size={1} muted data-testid="engine-known-bugs" as="div" trim={true}>
           Known bugs caught:{' '}
           {knownBugs.status === 'measured'
             ? `${knownBugs.caughtEntries} of ${knownBugs.activeEntries}`
@@ -97,11 +101,11 @@ function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
         </Text>
         {targets.length > 0 && (
           <VStack gap={2}>
-            <Text size={0} muted weight="medium">
+            <Text size={0} muted weight="medium" as="div" trim={true}>
               Stryker
             </Text>
             {targets.map((target) => (
-              <Text key={target.target} size={1} muted>
+              <Text key={target.target} size={1} muted as="div" trim={true}>
                 {target.target}: {target.mode}
                 {target.mode === 'incremental'
                   ? `, ${NUMBER_FORMAT.format(target.reusedMutants)} mutants reused`
@@ -126,7 +130,7 @@ function CellText(props: {align?: 'left' | 'right'; children: ReactNode}) {
 function HeaderText(props: {align?: 'left' | 'right'; children: ReactNode}) {
   return (
     <th style={{padding: '6px 8px', textAlign: props.align ?? 'left', fontWeight: 'normal'}}>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         {props.children}
       </Text>
     </th>
@@ -136,7 +140,9 @@ function HeaderText(props: {align?: 'left' | 'right'; children: ReactNode}) {
 function NumberCell(props: {children: ReactNode}) {
   return (
     <CellText align="right">
-      <Text size={1}>{props.children}</Text>
+      <Text size={1} as="div" trim={true}>
+        {props.children}
+      </Text>
     </CellText>
   )
 }
@@ -147,7 +153,7 @@ function WorstFilesTable(props: {detail: EngineConfidenceDetail}) {
   const files = worstFiles(props.detail)
   if (files.length === 0) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         The latest week recorded no per-file results.
       </Text>
     )
@@ -172,7 +178,9 @@ function WorstFilesTable(props: {detail: EngineConfidenceDetail}) {
               <td style={{padding: '6px 8px'}}>
                 <Flex alignItems="center" gap={2}>
                   <Badge fontSize={0}>{file.target}</Badge>
-                  <Text size={1}>{file.path.replace(/^packages\//, '')}</Text>
+                  <Text size={1} as="div" trim={true}>
+                    {file.path.replace(/^packages\//, '')}
+                  </Text>
                 </Flex>
               </td>
               <NumberCell>{file.counts.killed + file.counts.timeout}</NumberCell>
@@ -196,7 +204,7 @@ function CatalogueRowTitle(props: {row: CatalogueGridRow}) {
       <Badge fontSize={0} tone={row.severity === 'S1' ? 'critical' : 'caution'}>
         {row.severity}
       </Badge>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         {row.id}
       </Text>
       {row.sourceUrl ? (
@@ -206,10 +214,14 @@ function CatalogueRowTitle(props: {row: CatalogueGridRow}) {
           rel="noreferrer"
           aria-label={`${row.id} ${row.title} (opens in a new tab)`}
         >
-          <Text size={1}>{row.title}</Text>
+          <Text size={1} as="div" trim={true}>
+            {row.title}
+          </Text>
         </a>
       ) : (
-        <Text size={1}>{row.title}</Text>
+        <Text size={1} as="div" trim={true}>
+          {row.title}
+        </Text>
       )}
     </Flex>
   )
@@ -219,7 +231,7 @@ function CatalogueTable(props: {detail: EngineConfidenceDetail}) {
   const grid = catalogueGrid(props.detail)
   if (grid.rows.length === 0) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         The latest week recorded no catalogue results.
       </Text>
     )
@@ -267,10 +279,10 @@ function CatalogueTable(props: {detail: EngineConfidenceDetail}) {
 function SectionHeader(props: {title: string; note: string}) {
   return (
     <Flex alignItems="baseline" gap={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="semibold" as="div" trim={true}>
         {props.title}
       </Text>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {props.note}
       </Text>
     </Flex>
@@ -294,7 +306,9 @@ export function EngineConfidencePanel(props: {
   if (error) {
     return (
       <Card tone="critical" border padding={3} radius={2}>
-        <Text size={1}>Couldn&apos;t load engine confidence runs: {error}.</Text>
+        <Text size={1} as="div" trim={true} tone="critical">
+          Couldn&apos;t load engine confidence runs: {error}.
+        </Text>
       </Card>
     )
   }
@@ -308,7 +322,7 @@ export function EngineConfidencePanel(props: {
   if (latest === undefined) {
     return (
       <Card tone="transparent" border padding={4} radius={2}>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           No engine confidence runs in this range. The score is computed once a week from main; try
           a longer range, or use <code>?source=demo</code> to see the tab with sample data.
         </Text>

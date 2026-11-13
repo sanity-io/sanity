@@ -93,14 +93,14 @@ export function VisionGuiControls({
                   animate
                   content={
                     <Text size={1} as="div" trim={true}>
-                      {t('vista.redesign.try.description')}
+                      {t('vision.redesign.try.description')}
                     </Text>
                   }
                   placement="top"
                   portal
                 >
                   <Button
-                    aria-label={t('vista.redesign.try')}
+                    aria-label={t('vision.redesign.try')}
                     data-testid="vision-try-redesign"
                     icon={RocketIcon}
                     mode="bleed"

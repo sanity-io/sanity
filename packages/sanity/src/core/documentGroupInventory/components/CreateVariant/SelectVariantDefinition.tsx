@@ -1,69 +1,46 @@
-import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
-// oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control.
-import {Button} from '@sanity/ui'
-import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
-import {Text, VStack, Flex, Icon} from 'ui5'
-import {type ActorRefFromLogic} from 'xstate'
 
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {RhombusIcon, RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
-import {type variantCreationMachine} from '../../machines/variantCreationMachine'
-import {Body} from '../Body'
-import {Header} from '../Header'
-import {TextButton} from '../TextButton'
+import {CreateVariantPicker, type CreateVariantPickerOption} from './CreateVariantPicker'
 
 interface Props {
-  variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
+  variantDefinitions: SystemVariant[]
+  value: SystemVariant | undefined
+  onChange: (variantId: string) => void
+  disabled: boolean
 }
 
-export const SelectVariantDefinition: ComponentType<Props> = ({variantCreationRef}) => {
+export const SelectVariantDefinition: ComponentType<Props> = ({
+  variantDefinitions,
+  value,
+  onChange,
+  disabled,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
-
-  const variantDefinitions = useSelector(
-    variantCreationRef,
-    ({context}) => context.variants?.variants ?? new Map<string, SystemVariant>(),
-  )
+  const options = variantDefinitions.map(toOption)
 
   return (
-    <>
-      <Header>
-        <TextButton
-          title={t('document-group.create-variant')}
-          onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
-        >
-          <Text size={1} weight="medium" as="div" trim={true}>
-            <Flex gap={2} alignItems="center">
-              <Icon icon={ChevronLeftIcon} size={1} />
-              {t('document-group.create-variant')}
-            </Flex>
-          </Text>
-        </TextButton>
-      </Header>
-      <Body>
-        <VStack gap={1}>
-          {[...variantDefinitions.entries()].map(([id, variantDefinition]) => (
-            <Button
-              key={id}
-              mode="bleed"
-              justify="flex-start"
-              paddingX={3}
-              paddingY={3}
-              icon={RhombusIcon}
-              text={getVariantTitle(variantDefinition)}
-              onClick={() =>
-                variantCreationRef.send({
-                  type: 'createVariant.selectVariant',
-                  variantId: id,
-                })
-              }
-            />
-          ))}
-        </VStack>
-      </Body>
-    </>
+    <CreateVariantPicker
+      icon={RhombusIconLarge}
+      label={t('document-group.create-variant.variant-label')}
+      description={t('document-group.create-variant.variant-description')}
+      testId="create-variant-variant-menu"
+      options={options}
+      value={typeof value === 'undefined' ? undefined : toOption(value)}
+      onChange={onChange}
+      disabled={disabled}
+    />
   )
+}
+
+function toOption(variantDefinition: SystemVariant): CreateVariantPickerOption {
+  return {
+    key: variantDefinition._id,
+    text: getVariantTitle(variantDefinition),
+    icon: RhombusIcon,
+  }
 }

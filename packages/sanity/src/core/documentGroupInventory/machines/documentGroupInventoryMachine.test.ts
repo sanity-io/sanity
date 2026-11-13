@@ -143,7 +143,10 @@ function createTestActor(
   }: {
     requestDeletionConfirmation?: () => void
     deleteVariants?: () => Promise<unknown>
-    createVariant?: (options: {signal: AbortSignal}) => Promise<unknown>
+    createVariant?: (options: {
+      signal: AbortSignal
+      input: {baseId?: string; variantDefinition?: unknown}
+    }) => Promise<unknown>
     meta?: Meta | Observable<Meta>
     variantsEnabled?: boolean
     readOnly?: boolean
@@ -178,11 +181,11 @@ function createTestActor(
           actors: {
             variants: fromObservable(() => of(creationVariants)),
             releases: fromObservable(() => of(creationReleases)),
-            createVariant: fromPromise(async ({signal}) => {
+            createVariant: fromPromise(async ({signal, input}) => {
               // Defaults to a resolving no-op; tests override to exercise
               // outcomes. The signal is forwarded so tests can observe
               // cancellation aborting the in-flight creation.
-              if (createVariant) await createVariant({signal})
+              if (createVariant) await createVariant({signal, input})
             }),
           },
         }),
@@ -764,6 +767,34 @@ describe('documentGroupInventoryMachine', () => {
     // Abandoned or completed selections are not carried into the next flow.
     expect(variantCreationRef.getSnapshot().context.selectedVariantId).toBeUndefined()
     expect(variantCreationRef.getSnapshot().context.selectedBundle).toBeUndefined()
+  })
+
+  it('creates the variant from the picked version, and from the nearest one when none is picked', async () => {
+    const createVariant = vi.fn().mockResolvedValue(undefined)
+    const {variantCreationRef} = createTestActor(loading, {createVariant, variantsEnabled: true})
+
+    variantCreationRef.send({type: 'createVariant.request'})
+    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: 'variant-a'})
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.selectBase', baseId: 'foo'})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true))
+    expect(createVariant).toHaveBeenLastCalledWith(
+      expect.objectContaining({input: expect.objectContaining({baseId: 'foo'})}),
+    )
+    expect(variantCreationRef.getSnapshot().context.selectedBaseId).toBeUndefined()
+
+    // The picked version is not carried into the next flow either.
+    variantCreationRef.send({type: 'createVariant.request'})
+    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: 'variant-a'})
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(createVariant).toHaveBeenCalledTimes(2))
+    expect(createVariant).toHaveBeenLastCalledWith(
+      expect.objectContaining({input: expect.objectContaining({baseId: undefined})}),
+    )
   })
 
   it('captures the thrown value and enters the error state when variant creation fails', async () => {
