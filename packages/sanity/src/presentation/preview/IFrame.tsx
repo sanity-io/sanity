@@ -9,7 +9,7 @@ import {
 import {createGlobalStyle, styled} from 'styled-components'
 import {Box} from 'ui5'
 
-import {useId} from '../useId'
+import {useId} from '../../core/util/useId'
 
 interface IFrameProps {
   animate: VariantLabels
