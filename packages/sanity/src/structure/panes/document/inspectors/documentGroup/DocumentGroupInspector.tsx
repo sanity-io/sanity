@@ -12,7 +12,6 @@ import {
   readVersionType,
   useClient,
   useDocumentStore,
-  useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
@@ -25,6 +24,7 @@ import {DocTitle} from '../../../../components/DocTitle'
 import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../../constants'
 import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspectiveList'
+import {usePerspectiveNavigator} from '../../../../hooks/usePerspectiveNavigator'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -53,7 +53,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
     [documentId, client, documentStore],
   )
 
-  const setVariant = useSetVariant()
+  const {setVariant} = usePerspectiveNavigator()
 
   const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
 

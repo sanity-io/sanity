@@ -2,7 +2,7 @@ import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
-import {useSetVariant} from '../useSetVariant'
+import {getVariantStickyParams, useSetVariant} from '../useSetVariant'
 
 const mockNavigate = vi.fn()
 
@@ -136,5 +136,24 @@ describe('useSetVariant', () => {
         perspective: 'rSomeRelease',
       },
     })
+  })
+})
+
+describe('getVariantStickyParams', () => {
+  it('applies the selection to the given variant param without navigating', () => {
+    expect(
+      getVariantStickyParams(
+        {variantId: variantAlphaAudience._id, perspective: 'drafts'},
+        'language:Fr12',
+        'drafts',
+      ),
+    ).toEqual({
+      variant: 'language:Fr12,variant:alpha-audience',
+      excludedPerspectives: null,
+      perspective: '',
+    })
+    expect(
+      getVariantStickyParams({variantId: undefined}, 'variant:alpha-audience', 'drafts'),
+    ).toEqual({variant: null})
   })
 })

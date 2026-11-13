@@ -1049,7 +1049,11 @@ export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspec
 export {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 export {usePerspective} from '../core/perspective/usePerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
-export {useSetVariant} from '../core/perspective/useSetVariant'
+export {
+  getVariantStickyParams,
+  type SetVariant,
+  useSetVariant,
+} from '../core/perspective/useSetVariant'
 export {
   DocumentPreviewPresence,
   type DocumentPreviewPresenceProps,

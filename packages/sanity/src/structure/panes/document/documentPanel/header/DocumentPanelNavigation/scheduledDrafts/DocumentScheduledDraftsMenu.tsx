@@ -47,7 +47,7 @@ function ScheduledDraftMenuItem(props: {
   return (
     <MenuItem
       data-testid={`document-scheduled-draft-${getReleaseIdFromReleaseDocumentId(release._id)}`}
-      icon={<ReleaseAvatar padding={2} release={release} />}
+      icon={<ReleaseAvatar padding={0} release={release} />}
       iconRight={isPausedCardinalityOneRelease(release) ? UnlockIcon : undefined}
       onClick={handleClick}
       pressed={isSelected}

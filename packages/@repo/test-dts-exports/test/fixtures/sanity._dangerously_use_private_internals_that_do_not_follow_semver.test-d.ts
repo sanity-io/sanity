@@ -371,6 +371,7 @@ import type {
   getValueAtPath,
   getValueError,
   getVariantPublishedSibling,
+  getVariantStickyParams,
   getVariantTitle,
   getVariantType,
   getVersionInlineBadge,
@@ -649,6 +650,7 @@ import type {
   Session,
   SetActiveGroupOperation,
   setAtPath,
+  SetVariant,
   shallowIntentChecker,
   SingleDocReleaseProvider,
   Size,
@@ -2013,6 +2015,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getVariantPublishedSibling', () => {
     expectTypeOf<typeof getVariantPublishedSibling>().toBeFunction()
   })
+  test('getVariantStickyParams', () => {
+    expectTypeOf<typeof getVariantStickyParams>().toBeFunction()
+  })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
@@ -2847,6 +2852,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('setAtPath', () => {
     expectTypeOf<typeof setAtPath>().toBeFunction()
+  })
+  test('SetVariant', () => {
+    expectTypeOf<SetVariant>().not.toBeNever()
   })
   test('shallowIntentChecker', () => {
     expectTypeOf<typeof shallowIntentChecker>().not.toBeNever()
