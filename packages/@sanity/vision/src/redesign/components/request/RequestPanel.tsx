@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
-import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Button, Hotkeys, Label, Tab, TabList} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -35,6 +34,7 @@ import {CollapsibleSection} from '../CollapsibleSection'
 import * as styles from '../redesign.module.css'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {GenerateQueryBar} from './GenerateQueryBar'
+import {GenerateQueryButton} from './GenerateQueryButton'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
 import {ParamsForm} from './ParamsForm'
@@ -219,15 +219,10 @@ export function RequestPanel(props: RequestPanelProps) {
                 <Box flexBasis="0%" flexGrow={1} />
                 <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   {!generatorOpen && (
-                    <AgentActionsTooltip title={t('vision.generate.button')}>
-                      <Button
-                        aria-label={t('vision.generate.button')}
-                        data-testid="vision-generate-query"
-                        fontSize={1}
-                        icon={SparklesIcon}
-                        mode="bleed"
+                    <AgentActionsTooltip>
+                      <GenerateQueryButton
                         onClick={() => setGeneratorOpen(true)}
-                        padding={2}
+                        text={t('vision.generate.button')}
                       />
                     </AgentActionsTooltip>
                   )}

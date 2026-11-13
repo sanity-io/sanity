@@ -1286,13 +1286,13 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(notes()).toHaveLength(2))
     fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
     await waitFor(() => expect(notes()).toHaveLength(3))
-    // The icon-only controls keep their name as the tooltip's first line; the Explain button
-    // says what it does itself
+    // Labelled controls (Generate, Explain) say what they do themselves; the icon-only
+    // Generate mutations control keeps its name as the tooltip's first line
     const tooltipTexts = notes().map((note) =>
       text(note.closest<HTMLElement>('[data-ui="Tooltip"]') as HTMLElement),
     )
     expect(tooltipTexts).toEqual([
-      'vision.generate.buttonvision.agent-actions.credits',
+      'vision.agent-actions.credits',
       'vision.agent-actions.credits',
       'vision.mutate.generate.buttonvision.agent-actions.credits',
     ])
