@@ -1,3 +1,4 @@
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {renderHook, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
@@ -10,7 +11,7 @@ describe('documentGroupInspector', () => {
     expect(documentGroupInspector.name).toBe(DOCUMENT_GROUP_INSPECTOR_NAME)
   })
 
-  it('offers a visible "Manage versions" menu item for opening the inspector', async () => {
+  it('offers a visible "Document inventory" menu item, with the documents icon, for opening the inspector', async () => {
     const {useMenuItem} = documentGroupInspector
 
     if (typeof useMenuItem === 'undefined') {
@@ -23,8 +24,8 @@ describe('documentGroupInspector', () => {
       {wrapper},
     )
 
-    await waitFor(() => expect(result.current?.title).toBe('Manage versions'))
+    await waitFor(() => expect(result.current?.title).toBe('Document inventory'))
     expect(result.current.hidden).not.toBe(true)
-    expect(result.current.icon).toBeDefined()
+    expect(result.current.icon).toBe(DocumentsIcon)
   })
 })
