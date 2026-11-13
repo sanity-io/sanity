@@ -11,10 +11,10 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -53,6 +53,7 @@ import {OptionsPanel} from './OptionsPanel'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
+import {RequestOverrideChips} from './RequestOverrideChips'
 
 /** The request column's bottom panel starts about as tall as a short params document */
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
@@ -104,7 +105,6 @@ function FlushOnUnmount({onUnmount}: {onUnmount: () => void}) {
     () => () => {
       onUnmountEvent()
     },
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
     [],
   )
   return null
@@ -215,15 +215,16 @@ export function RequestPanel(props: RequestPanelProps) {
   // The API version button shows the field that changes what it says: the Options tab opens if
   // another was showing, the panel expands if it was collapsed, and once its fields have mounted
   // the API version field (or, while a variant locks it, the wrapper that stands in for it) takes
-  // focus, or the perspective while that keeps the queries off the API CDN
+  // focus, or the perspective while that keeps the queries off the API CDN. The override chips
+  // next to it show the dataset, perspective or variant field they name.
   const revealOption = useCallback(
     (option: RevealedOption) => {
       setPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
       requestAnimationFrame(() => {
         const options = document.getElementById('vision-request-options-panel')
         const field =
-          option === 'perspective'
-            ? options?.querySelector<HTMLElement>('#vision-option-perspective')
+          option !== 'apiVersion'
+            ? options?.querySelector<HTMLElement>(`#vision-option-${option}`)
             : (options?.querySelector<HTMLElement>(
                 'input[data-testid="vision-option-api-version-custom"], [data-testid="vision-option-api-version-custom"] input',
               ) ??
@@ -376,6 +377,7 @@ export function RequestPanel(props: RequestPanelProps) {
       footer={
         <ActionRail testId="vision-query-actions">
           <ApiVersionButton onReveal={revealOption} resolved={resolved} />
+          <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved} />
           <Box flexBasis="0%" flexGrow={1} />
           <LiveButton
             active={tab.autoRefetch}
