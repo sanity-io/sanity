@@ -137,6 +137,8 @@ minimumReleaseAgeExclude:
   - 'react-rx'
   # Fresh patch; exclude so 0.28.0 can install before the age gate
   - 'scheduler@0.28.0'
+  # Fresh release; exclude so 3.2.0 can install before the age gate
+  - 'scroll-into-view-if-needed@3.2.0'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
