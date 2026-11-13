@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-13)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.3.0 ([#16010](https://github.com/sanity-io/sanity/issues/16010)) ([d55268c](https://github.com/sanity-io/sanity/commit/d55268cfd8cf0a76d1fada5daae1df00e2c674ee))
+* **deps:** update dependency motion to ^14.12.0 ([#15961](https://github.com/sanity-io/sanity/issues/15961)) ([b06551e](https://github.com/sanity-io/sanity/commit/b06551ee1a48c310e9c213f75f511dd4b1f55f39))
+* **deps:** update dependency motion to ^14.13.0 ([#16054](https://github.com/sanity-io/sanity/issues/16054)) ([dd1106a](https://github.com/sanity-io/sanity/commit/dd1106af21de8d21661ed9e6016a21eb81350280))
+* **deps:** update dependency xstate to ^5.33.4 ([#15938](https://github.com/sanity-io/sanity/issues/15938)) ([91510b1](https://github.com/sanity-io/sanity/commit/91510b17258eec4a18e8ba2d1baf8c34b004ca69))
+* **vision:** match gutter background to editor and only highlight active line number ([#15577](https://github.com/sanity-io/sanity/issues/15577)) ([ca01867](https://github.com/sanity-io/sanity/commit/ca01867f20199060315a2a77405ab92c7877c383))
 ## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
 
 ### Features

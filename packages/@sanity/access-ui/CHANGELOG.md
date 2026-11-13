@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-13)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.3.0 ([#16010](https://github.com/sanity-io/sanity/issues/16010)) ([d55268c](https://github.com/sanity-io/sanity/commit/d55268cfd8cf0a76d1fada5daae1df00e2c674ee))
+* **deps:** update storybook monorepo to ^10.6.7 ([#15940](https://github.com/sanity-io/sanity/issues/15940)) ([164f567](https://github.com/sanity-io/sanity/commit/164f56780047f010a5ce038ce676f008c8e2b1d9))
 ## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
 
 ### Features

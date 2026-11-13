@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-13)
+
+### Bug Fixes
+
+* **validation:** keep rule levels when adding the unknown-fields check ([#15876](https://github.com/sanity-io/sanity/issues/15876)) ([042ba2f](https://github.com/sanity-io/sanity/commit/042ba2fb419673c9025d669b8737830e876e16de))
+* **validation:** match stored asset extensions in accept rules ([#15781](https://github.com/sanity-io/sanity/issues/15781)) ([ca01bab](https://github.com/sanity-io/sanity/commit/ca01babd7ea1b91fccfebd6f03ad041a1ebc978a))
+* **validation:** reject uri() hosts that percent-decode to forbidden characters ([#15815](https://github.com/sanity-io/sanity/issues/15815)) ([a83d5ba](https://github.com/sanity-io/sanity/commit/a83d5ba7f67ae01665634978085ce6a71b429b6d))
 ## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
 
 ### Features
