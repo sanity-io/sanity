@@ -104,22 +104,21 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockResolveIntentLink, mockResolvePathFromState, mockRouterReturn} =
-  vi.hoisted(() => {
-    const mockNavigate = vi.fn()
-    const mockResolveIntentLink = vi.fn(() => '/test')
-    const mockResolvePathFromState = vi.fn((nextState: {releaseId?: string} | null) =>
-      nextState?.releaseId ? `/releases/${nextState.releaseId}` : '/releases',
-    )
-    // Stable reference so the `[router]` effect dependency doesn't fire on every render
-    const mockRouterReturn = {
-      state: {},
-      navigate: mockNavigate,
-      resolveIntentLink: mockResolveIntentLink,
-      resolvePathFromState: mockResolvePathFromState,
-    }
-    return {mockNavigate, mockResolveIntentLink, mockResolvePathFromState, mockRouterReturn}
-  })
+const {mockNavigate, mockNavigateUrl, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
+  const mockNavigate = vi.fn()
+  const mockNavigateUrl = vi.fn()
+  const mockResolveIntentLink = vi.fn((intent: string, params?: {id?: string}) =>
+    intent === 'release' && params?.id ? `/intent/release/id=${params.id}/` : '/test',
+  )
+  // Stable reference so the `[router]` effect dependency doesn't fire on every render
+  const mockRouterReturn = {
+    state: {},
+    navigate: mockNavigate,
+    navigateUrl: mockNavigateUrl,
+    resolveIntentLink: mockResolveIntentLink,
+  }
+  return {mockNavigate, mockNavigateUrl, mockResolveIntentLink, mockRouterReturn}
+})
 
 // Mock the router at module level
 vi.mock('sanity/router', async (importOriginal) => {
@@ -784,7 +783,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('should navigate to release when row clicked', async () => {
-      mockNavigate.mockClear()
+      mockNavigateUrl.mockClear()
 
       // Row 1 is activeASAPRelease (row 0 is activeScheduledRelease)
       const releaseRows = screen.getAllByTestId('table-row')
@@ -795,13 +794,16 @@ describe('ReleasesOverview', () => {
       expect(asapReleaseRow).toBeDefined()
 
       const link = within(asapReleaseRow!).getByRole('link', {name: 'active asap Release'})
-      expect(link).toHaveAttribute('href', '/releases/rASAP')
+      expect(link).toHaveAttribute('href', '/intent/release/id=rASAP/')
 
       await userEvent.click(link)
 
       await waitFor(
         () => {
-          expect(mockNavigate).toHaveBeenCalledWith({releaseId: 'rASAP'})
+          expect(mockNavigateUrl).toHaveBeenCalledWith({
+            path: '/intent/release/id=rASAP/',
+            replace: false,
+          })
         },
         {timeout: 3000},
       )
@@ -1412,7 +1414,6 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
-        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const wrapper = await createTestProvider({
@@ -1443,7 +1444,6 @@ describe('ReleasesOverview', () => {
         state: {_searchParams: [['view', 'drafts']]},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
-        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
@@ -1465,7 +1465,6 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
-        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       await mountAndFlush(<TestComponent />, {wrapper})
@@ -1487,7 +1486,6 @@ describe('ReleasesOverview', () => {
         state: {},
         navigate: mockNavigate,
         resolveIntentLink: mockResolveIntentLink,
-        resolvePathFromState: mockResolvePathFromState,
       } as unknown as ReturnType<typeof useRouter>)
 
       const wrapper = await createTestProvider({

@@ -1,8 +1,8 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, it, vi} from 'vitest'
 
-import {mockUseRouterReturn} from '../../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
   mockUsePerspective,
@@ -23,19 +23,20 @@ vi.mock('../../../../../perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
-vi.mock('sanity/router', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useRouter: () => mockUseRouterReturn,
-}))
+const onNavigate = vi.fn()
+const intentRouter = route.create('/', [route.intents('/intent')])
 
 const renderTest = async (release: TableRelease) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
 
-  render(<ReleaseNameCell cellProps={{} as InjectedTableProps} datum={release} sorting={false} />, {
-    wrapper,
-  })
+  render(
+    <RouterProvider onNavigate={onNavigate} router={intentRouter} state={{}}>
+      <ReleaseNameCell cellProps={{} as InjectedTableProps} datum={release} sorting={false} />
+    </RouterProvider>,
+    {wrapper},
+  )
 
   await waitFor(() => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
@@ -90,20 +91,23 @@ describe('ReleaseNameCell', () => {
   })
 
   it('links the release title to its detail page', async () => {
-    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
     await renderTest(activeASAPRelease)
 
-    const link = screen.getByRole('link', {name: 'active asap Release'})
-    expect(link).toHaveAttribute('href', '/releases/rASAP')
+    expect(screen.getByRole('link', {name: 'active asap Release'})).toHaveAttribute(
+      'href',
+      '/intent/release/id=rASAP/',
+    )
   })
 
   it('navigates to the release detail page on click', async () => {
-    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
     await renderTest(activeASAPRelease)
 
     await userEvent.click(screen.getByRole('link', {name: 'active asap Release'}))
 
-    expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({releaseId: 'rASAP'})
+    expect(onNavigate).toHaveBeenCalledWith({
+      path: '/intent/release/id=rASAP/',
+      replace: false,
+    })
   })
 
   it.each([
@@ -112,7 +116,6 @@ describe('ReleaseNameCell', () => {
     ['shift-click', {shiftKey: true}],
     ['middle-click', {button: 1}],
   ])('leaves a %s to the browser so the release can open in a new tab', async (_, init) => {
-    mockUseRouterReturn.resolvePathFromState.mockReturnValue('/releases/rASAP')
     await renderTest(activeASAPRelease)
 
     const link = screen.getByRole('link', {name: 'active asap Release'})
@@ -128,8 +131,8 @@ describe('ReleaseNameCell', () => {
     document.removeEventListener('click', stopNavigation)
 
     expect(followedLink).toBe(true)
-    expect(mockUseRouterReturn.navigate).not.toHaveBeenCalled()
-    expect(link).toHaveAttribute('href', '/releases/rASAP')
+    expect(onNavigate).not.toHaveBeenCalled()
+    expect(link).toHaveAttribute('href', '/intent/release/id=rASAP/')
   })
 
   it('does not link a deleted release', async () => {
