@@ -34,8 +34,19 @@ interface BannerProps {
   paddingY?: number
 }
 
-/** The card that resets a banner's tint around its action: no fill, no shadow of its own. */
-const NEUTRAL_ACTION_STYLE = {background: 'transparent', boxShadow: 'none', flex: 'none'} as const
+/**
+ * The card that resets a banner's tint around its action: no fill, no shadow of its own, and no
+ * box of its own either. It is a flex box so the button is a flex item, not inline content: as a
+ * block, the card set the button on a text line, which made the card taller than the button and
+ * dropped the button to the text baseline, out of line with the buttons beside it.
+ */
+const NEUTRAL_ACTION_STYLE = {
+  background: 'transparent',
+  boxShadow: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  flex: 'none',
+} as const
 
 /**
  * Wraps a filled (primary) button in a banner's `actions` so it is the default primary (black in

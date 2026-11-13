@@ -599,6 +599,30 @@ describe('document panel banners', () => {
 
     await expect.poll(() => page.getByTestId('live-edit-type-banner').elements().length).toBe(2)
     await expect.element(page.getByRole('button', {name: 'Compare draft'}).first()).toBeEnabled()
+
+    // The outlined Compare and Discard and the filled Publish (wrapped in BannerPrimaryAction) are
+    // one row of identical boxes: same height, same top, same vertical centre, same font size.
+    for (const banner of page.getByTestId('live-edit-type-banner').elements()) {
+      const buttons = ['Compare draft', 'Publish draft', 'Discard draft'].map((name) => {
+        const button = [...banner.querySelectorAll('button')].find(
+          (element) => element.textContent?.trim() === name,
+        )
+        expect(button, name).toBeDefined()
+        return button!
+      })
+      const boxes = buttons.map((button) => button.getBoundingClientRect())
+      const fontSizes = buttons.map(
+        (button) => getComputedStyle(button.querySelector('[data-ui="Text"]') ?? button).fontSize,
+      )
+      const [first] = boxes
+      for (const box of boxes) {
+        expect(box.height).toBeCloseTo(first.height, 1)
+        expect(box.top).toBeCloseTo(first.top, 1)
+        expect(box.top + box.height / 2).toBeCloseTo(first.top + first.height / 2, 1)
+      }
+      expect(new Set(fontSizes).size).toBe(1)
+    }
+
     await settleChromaticEndState()
   })
 
