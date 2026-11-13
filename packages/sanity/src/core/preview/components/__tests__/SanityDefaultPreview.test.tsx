@@ -5,7 +5,10 @@ import {
   tryGetImageDimensions,
 } from '@sanity/asset-utils'
 import {createImageUrlBuilder} from '@sanity/image-url'
-import {render} from '@testing-library/react'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {render, screen, waitFor} from '@testing-library/react'
+import {type ComponentType} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type PreviewMediaDimensions, type PreviewProps} from '../../../components/previews/types'
@@ -19,6 +22,28 @@ vi.mock('../../../hooks/useClient')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
 
+const theme = buildTheme()
+
+const playbackInfo = {
+  id: 'playback-id',
+  thumbnail: {url: 'https://image.example/thumbnail.jpg'},
+  animated: {url: ''},
+  storyboard: {url: ''},
+  stream: {url: ''},
+  duration: 1,
+  aspectRatio: 2,
+}
+
+function createMockClient() {
+  return {
+    request: vi.fn().mockResolvedValue(playbackInfo),
+    observable: {
+      request: vi.fn(),
+    },
+  }
+}
+
+let mockClient = createMockClient()
 let capturedMedia: unknown
 let capturedMediaDimensions: PreviewMediaDimensions | undefined
 
@@ -40,9 +65,10 @@ beforeEach(() => {
   vi.clearAllMocks()
   capturedMedia = undefined
   capturedMediaDimensions = undefined
+  mockClient = createMockClient()
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  vi.mocked(useClient).mockReturnValue({} as ReturnType<typeof useClient>)
+  // oxlint-disable-next-line typescript/no-deprecated -- test mock of useClient return type
+  vi.mocked(useClient).mockReturnValue(mockClient as unknown as ReturnType<typeof useClient>)
   vi.mocked(createImageUrlBuilder).mockReturnValue({} as ReturnType<typeof createImageUrlBuilder>)
   vi.mocked(useImageUrl).mockReturnValue({
     url: 'https://cdn.sanity.io/transformed.jpg',
@@ -50,8 +76,8 @@ beforeEach(() => {
   })
 })
 
-function renderPreview(media: PreviewProps['media']): void {
-  render(<SanityDefaultPreview layout="default" media={media} title="Test" />)
+function renderPreview(media: PreviewProps['media'], title = 'Test'): void {
+  render(<SanityDefaultPreview layout="default" media={media} title={title} />)
 }
 
 function renderBlockImagePreview(
@@ -122,6 +148,78 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
 
     expect(typeof capturedMedia).toBe('function')
     expect(parseImageAssetUrl).toHaveBeenCalledTimes(0)
+  })
+})
+
+describe('SanityDefaultPreview - video media', () => {
+  const asset = {
+    _type: 'globalDocumentReference' as const,
+    _ref: 'media-library:library-id:video-asset-instance-id',
+    _resource: {type: 'media-library' as const, id: 'library-id'},
+  }
+  const media = {
+    _type: 'globalDocumentReference' as const,
+    _ref: 'media-library:library-id:asset-container-id',
+    _resource: {type: 'media-library' as const, id: 'library-id'},
+  }
+
+  it('renders a thumbnail for a normalized sanity.video media value', async () => {
+    const video = {_type: 'sanity.video' as const, asset, media}
+    const dimensions = {width: 160, height: 90, fit: 'crop' as const, dpr: 2}
+
+    renderPreview(video)
+
+    expect(typeof capturedMedia).toBe('function')
+    const VideoMediaPreview = capturedMedia as ComponentType<{
+      dimensions: PreviewMediaDimensions
+    }>
+    render(
+      <ThemeProvider theme={theme}>
+        <VideoMediaPreview dimensions={dimensions} />
+      </ThemeProvider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('video-thumbnail-image')).toHaveAttribute(
+        'src',
+        'https://image.example/thumbnail.jpg',
+      )
+    })
+    expect(mockClient.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: '/media-libraries/library-id/video/video-asset-instance-id/playback-info',
+      }),
+    )
+  })
+
+  it('keeps the video media renderer stable across unrelated title updates', () => {
+    const video = {_type: 'sanity.video' as const, asset, media}
+
+    const {rerender} = render(
+      <SanityDefaultPreview layout="default" media={video} title="Title A" />,
+    )
+    const firstMedia = capturedMedia
+
+    rerender(
+      <SanityDefaultPreview
+        layout="default"
+        media={{_type: 'sanity.video' as const, asset: {...asset}, media: {...media}}}
+        title="Title B"
+      />,
+    )
+
+    expect(capturedMedia).toBe(firstMedia)
+  })
+
+  it('does not treat a bare media library reference as a video', () => {
+    renderPreview(asset)
+
+    expect(typeof capturedMedia).toBe('function')
+    const FallbackMedia = capturedMedia as ComponentType
+    render(<FallbackMedia />)
+    expect(mockClient.request).not.toHaveBeenCalled()
+    expect(screen.queryByTestId('video-thumbnail-image')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('video-thumbnail-loading')).not.toBeInTheDocument()
   })
 })
 
