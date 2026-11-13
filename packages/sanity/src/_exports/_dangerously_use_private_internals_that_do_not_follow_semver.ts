@@ -795,7 +795,7 @@ export {
 } from '../core/store/history/useTimelineStore'
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-export {createPresenceStore, SESSION_ID} from '../core/store/presence/presence-store'
+export {createPresenceStore, getSessionId} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
   type GlobalPresence,

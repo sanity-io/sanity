@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
+
+### Features
+
+* **access-ui:** render advisory access-request states in shared card ([#15611](https://github.com/sanity-io/sanity/issues/15611)) ([90fa7fd](https://github.com/sanity-io/sanity/commit/90fa7fd2823867516d08311e6ca17132dfdfc680))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Bug Fixes

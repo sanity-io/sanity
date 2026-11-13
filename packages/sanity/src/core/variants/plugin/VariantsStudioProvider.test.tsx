@@ -8,6 +8,8 @@ import type * as UpsellDataModule from '../../hooks/useUpsellData'
 import {useVariantsMode} from '../contexts/mode/useVariantsMode'
 import {variants} from './index'
 
+const {useUpsellDataMock} = vi.hoisted(() => ({useUpsellDataMock: vi.fn()}))
+
 vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
   ...(await importOriginal()),
   useFeatureEnabledObservable: vi.fn(),
@@ -33,9 +35,10 @@ vi.mock('../../hooks/useUpsellData', async (importOriginal) => {
     panelPrimaryClicked: () => null,
     panelSecondaryClicked: () => null,
   }
+  useUpsellDataMock.mockImplementation(() => ({upsellData$, telemetryLogs}))
   return {
     ...original,
-    useUpsellData: () => ({upsellData$, telemetryLogs}),
+    useUpsellData: useUpsellDataMock,
   }
 })
 
@@ -70,6 +73,17 @@ describe('VariantsStudioProvider', () => {
     await renderProvider({enabled: true})
 
     expect(useFeatureEnabledObservableMock).toHaveBeenCalledWith('contentVariants')
+  })
+
+  it('loads upsell content from the content variants journey endpoint', async () => {
+    await renderProvider({enabled: true})
+
+    expect(useUpsellDataMock).toHaveBeenCalledWith({
+      dataUri: '/journey/content-variants',
+      feature: 'content-variants',
+      enabled: undefined,
+      fallbackData: undefined,
+    })
   })
 
   it('settles the default mode when the plan has content variants', async () => {

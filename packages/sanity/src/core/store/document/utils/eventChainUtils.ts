@@ -1,6 +1,7 @@
-import {type MutationEvent} from '../types'
-
-export function discardChainTo(chain: MutationEvent[], revision: string | undefined) {
+export function discardChainTo<T extends {resultRev: string}>(
+  chain: T[],
+  revision: string | undefined,
+) {
   const revisionIndex = chain.findIndex((event) => event.resultRev === revision)
 
   return split(chain, revisionIndex + 1)

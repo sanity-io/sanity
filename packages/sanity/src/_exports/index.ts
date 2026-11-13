@@ -1448,11 +1448,7 @@ export {
 /* oxlint-enable no-deprecated */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-export {
-  createPresenceStore,
-  type PresenceStore,
-  SESSION_ID,
-} from '../core/store/presence/presence-store'
+export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
   type GlobalPresence,
