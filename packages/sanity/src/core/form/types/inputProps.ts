@@ -1,11 +1,7 @@
 import {
   type EditorSelection,
-  type HotkeyOptions,
   type InvalidValueResolution,
-  type OnCopyFn,
-  type OnPasteResultOrPromise,
   type Patch,
-  type PasteData as EditorPasteData,
   type PortableTextEditor,
   type RangeDecoration,
 } from '@portabletext/editor'
@@ -22,12 +18,15 @@ import {
   type ObjectSchemaType,
   type Path,
   type PortableTextBlock,
+  type TypedObject,
   type ReferenceValue,
   type SchemaType,
   type SlugValue,
   type StringSchemaType,
 } from '@sanity/types'
 import {
+  type BaseSyntheticEvent,
+  type ClipboardEvent as ReactClipboardEvent,
   type ClipboardEventHandler,
   type ComponentType,
   type CSSProperties,
@@ -546,10 +545,47 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   hideToolbar?: boolean
   /**
    * Assign hotkeys that can be attached to custom editing functions
-   * @deprecated Register a `keyboard.keydown` Behavior instead, with `BehaviorPlugin` from
-   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * {@link https://www.portabletext.org/concepts/behavior/ | Behaviors} can listen to
+   * `keyboard.keydown` and raise any editor event.
+   * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
+   * compete, and the first one registered wins.
+   *
+   * @example Toggle bold with Ctrl+Shift+B
+   * ```tsx
+   * import {defineBehavior, raise} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {createKeyboardShortcut} from '@portabletext/keyboard-shortcuts'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const boldShortcut = createKeyboardShortcut({
+   *   default: [{code: 'KeyB', ctrl: true, shift: true}],
+   * })
+   *
+   * const boldBehavior = defineBehavior({
+   *   on: 'keyboard.keydown',
+   *   guard: ({event}) => boldShortcut.guard(event.originEvent),
+   *   actions: [() => [raise({type: 'decorator.toggle', decorator: 'strong'})]],
+   * })
+   *
+   * function HotkeyPlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[boldBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: HotkeyPlugins}},
+   * })
+   * ```
    */
-  // oxlint-disable-next-line no-deprecated -- the deprecated prop keeps the editor's type until it is removed
   hotkeys?: HotkeyOptions
   /**
    * Whether the input is activated and should receive events on mount.
@@ -580,15 +616,91 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   onFullScreenChange?: (isFullScreen: boolean) => void
   /**
    * Custom copy function
-   * @deprecated Register a `clipboard.copy` Behavior instead, with `BehaviorPlugin` from
-   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * A {@link https://www.portabletext.org/concepts/behavior/ | Behavior} on `clipboard.copy`
+   * can write to `event.originEvent.dataTransfer`. A Behavior whose guard passes replaces the
+   * editor's copy.
+   * Render the plugin before `props.renderDefault(props)`: Behaviors for the same event
+   * compete, and the first one registered wins.
+   *
+   * @example Copy the selection as plain text only
+   * ```tsx
+   * import {defineBehavior, effect} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {getSelectionText} from '@portabletext/editor/selectors'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const copyBehavior = defineBehavior({
+   *   on: 'clipboard.copy',
+   *   actions: [
+   *     ({snapshot, event}) => [
+   *       effect(() => {
+   *         event.originEvent.dataTransfer.setData('text/plain', getSelectionText(snapshot))
+   *       }),
+   *     ],
+   *   ],
+   * })
+   *
+   * function CopyPlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[copyBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: CopyPlugins}},
+   * })
+   * ```
    */
-  // oxlint-disable-next-line no-deprecated -- the deprecated prop keeps the editor's type until it is removed
   onCopy?: OnCopyFn
   /**
    * Custom paste function
-   * @deprecated Register a `clipboard.paste` Behavior instead, with `BehaviorPlugin` from
-   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
+   *
+   * @deprecated Use a Behavior in a `components.portableText.plugins` component instead.
+   * A {@link https://www.portabletext.org/concepts/behavior/ | Behavior} on `clipboard.paste`
+   * can read `event.originEvent.dataTransfer` and raise `insert.blocks` or `insert.text`.
+   * Pastes that no Behavior handles fall through to the editor's paste.
+   * Render the plugin before `props.renderDefault(props)`: rendered after it, Studio's own
+   * URL paste handling runs first and wins.
+   *
+   * @example Paste the clipboard as plain text only
+   * ```tsx
+   * import {defineBehavior, raise} from '@portabletext/editor/behaviors'
+   * import {BehaviorPlugin} from '@portabletext/editor/plugins'
+   * import {defineField, type PortableTextPluginsProps} from 'sanity'
+   *
+   * const pasteBehavior = defineBehavior({
+   *   on: 'clipboard.paste',
+   *   guard: ({event}) => {
+   *     const text = event.originEvent.dataTransfer.getData('text/plain')
+   *     return text ? {text} : false
+   *   },
+   *   actions: [(_, {text}) => [raise({type: 'insert.text', text})]],
+   * })
+   *
+   * function PastePlugins(props: PortableTextPluginsProps) {
+   *   return (
+   *     <>
+   *       <BehaviorPlugin behaviors={[pasteBehavior]} />
+   *       {props.renderDefault(props)}
+   *     </>
+   *   )
+   * }
+   *
+   * defineField({
+   *   name: 'body',
+   *   type: 'array',
+   *   of: [{type: 'block'}],
+   *   components: {portableText: {plugins: PastePlugins}},
+   * })
+   * ```
    */
   onPaste?: OnPasteFn
   /**
@@ -630,6 +742,44 @@ export type InputProps =
   | StringInputProps
 
 /**
+ * Hotkeys for the deprecated `hotkeys` prop of the Portable Text input in Sanity Studio.
+ *
+ * @beta
+ * @remarks
+ * This is Studio's own version of the editor's `HotkeyOptions` type, with the same shape.
+ */
+export type HotkeyOptions = {
+  marks?: Record<string, string>
+  // oxlint-disable-next-line no-deprecated -- the legacy editor class is part of the callback signature
+  custom?: Record<string, (event: BaseSyntheticEvent, editor: PortableTextEditor) => void>
+}
+
+/**
+ * Custom copy handler for the deprecated `onCopy` prop of the Portable Text input in Sanity Studio.
+ *
+ * @beta
+ * @remarks
+ * This is Studio's own version of the editor's `OnCopyFn` type, with the same shape.
+ */
+export type OnCopyFn = (
+  event: ReactClipboardEvent<HTMLDivElement | HTMLSpanElement>,
+) => undefined | unknown
+
+/**
+ * What an `onPaste` handler can return.
+ *
+ * @beta
+ * @remarks
+ * This is Studio's own version of the editor's `OnPasteResult` type, with the same shape.
+ */
+export type OnPasteResult =
+  | {
+      insert?: TypedObject[]
+      path?: Path
+    }
+  | undefined
+
+/**
  * Data passed to the `onPaste` handler when content is pasted into a
  * Portable Text editor in Sanity Studio.
  *
@@ -639,9 +789,11 @@ export type InputProps =
  * The `schemaTypes` field contains Sanity-specific
  * `PortableTextMemberSchemaTypes` instead of the editor's `EditorSchema`.
  */
-// oxlint-disable-next-line no-deprecated -- mirrors the editor's deprecated paste data for the deprecated `onPaste` prop
-export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
+export type PasteData = {
+  event: ReactClipboardEvent
+  path: Path
   schemaTypes: PortableTextMemberSchemaTypes
+  value: PortableTextBlock[] | undefined
 }
 
 /**
@@ -653,8 +805,7 @@ export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
  * a mechanism to fall back to the native paste behaviour. This doesn't work in
  * all cases. Always return plain `undefined` if possible.
  */
-// oxlint-disable-next-line no-deprecated -- mirrors the editor's deprecated paste result for the deprecated `onPaste` prop
-export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
+export type OnPasteFn = (data: PasteData) => OnPasteResult | Promise<OnPasteResult>
 
 /**
  * Studio-owned change types emitted by the Portable Text editor.

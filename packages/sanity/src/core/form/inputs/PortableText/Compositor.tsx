@@ -52,7 +52,7 @@ import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMem
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
-import {type PortableTextInputHotkeys, useHotkeys} from './hooks/useHotKeys'
+import {EMPTY_HOTKEYS, type PortableTextInputHotkeys, useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
@@ -167,19 +167,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onToggleFullscreen()
   }, [onToggleFullscreen])
 
-  const hotkeysWithFullscreenToggle = useMemo(
-    () => ({
-      ...hotkeys,
-      custom: {
-        'mod+enter': onToggleFullscreen,
-        ...hotkeys?.custom,
-      },
-    }),
-
-    [hotkeys, onToggleFullscreen],
-  )
-
-  const editorHotkeys = useHotkeys(hotkeysWithFullscreenToggle)
+  // The Toolbar reads the decorator hotkeys for its hints. The keys themselves run as Behaviors
+  // in `useHandlerBehaviors`.
+  const editorHotkeys = useHotkeys(hotkeys ?? EMPTY_HOTKEYS)
 
   const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
