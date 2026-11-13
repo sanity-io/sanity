@@ -36,6 +36,7 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../panes/document/constants'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
+import {paneItemChevron} from './PaneItem.css'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
@@ -131,7 +132,7 @@ export function PaneItem(props: PaneItemProps) {
             {typeof count === 'number' && (
               <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
             )}
-            <Box style={{opacity: 0.5}}>
+            <Box className={paneItemChevron}>
               <Icon muted size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
             </Box>
           </Flex>

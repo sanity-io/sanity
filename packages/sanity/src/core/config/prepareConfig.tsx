@@ -1,6 +1,5 @@
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
-import {studioTheme} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
@@ -46,6 +45,7 @@ import {
   type Template,
   type TemplateItem,
 } from '../templates/types'
+import {getStudioDefaultTheme} from '../theme'
 import {canonicalHash} from '../util/canonicalHash'
 import {getPublishedId, isPublishedId} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
@@ -532,8 +532,7 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      theme: rootSource.theme || studioTheme,
+      theme: rootSource.theme || getStudioDefaultTheme(),
       title,
       subtitle: rootSource.subtitle,
       hidden: rootSource.hidden,
