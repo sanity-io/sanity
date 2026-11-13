@@ -1,3 +1,4 @@
+import {storeLabel} from '@sanity/groq-store-wasm/boot'
 import {animate, motion, useDragControls, useMotionValue, useReducedMotion} from 'motion/react'
 import {
   type CSSProperties,
@@ -25,8 +26,10 @@ import {
 import {
   getGroqStoreStatus,
   setGroqStoreEnabled,
+  storeRows,
   subscribeGroqStoreStatus,
   type GroqStoreStatus,
+  type StoreRow,
 } from './groqStore'
 
 // The bar can be thrown between the four corners the same way the style outline
@@ -92,12 +95,56 @@ const toggle: CSSProperties = {
 const dot = (color: string): CSSProperties => ({color, marginRight: 4})
 const mib = (bytes?: number): string => ((bytes ?? 0) / 1024 / 1024).toFixed(1)
 
+const seconds = (ms?: number): string => `${((ms ?? 0) / 1000).toFixed(1)} s`
+
 /** Why the store can't accelerate this tab at all, if it can't. */
 function blocker(status: GroqStoreStatus): string | undefined {
   if (!status.boot.started) return status.boot.reason
-  if (status.store === 'failed') return `wasm store failed: ${status.storeError ?? ''}`
   if (!status.controlled) return 'no service worker controls this tab (reload)'
   return undefined
+}
+
+/** "2 stores · 1 live", or the state of the only store. Failed stores are always called out. */
+function storesSummary(rows: StoreRow[]): string {
+  if (rows.length === 0) return 'no stores'
+  if (rows.length === 1) return `store ${rows[0]!.phase}`
+  const count = (phase: string) => rows.filter((row) => row.phase === phase).length
+  const failed = count('failed')
+  return `${rows.length} stores · ${count('live')} live${failed ? ` · ${failed} failed` : ''}`
+}
+
+function StoreLine({row, latest}: {row: StoreRow; latest: boolean}) {
+  const facts = [
+    row.documents === undefined ? undefined : `${row.documents} docs`,
+    row.readyMs === undefined ? undefined : `live in ${seconds(row.readyMs)}`,
+    row.phase === 'building' && row.exportBytes !== undefined
+      ? `export ${mib(row.exportBytes)} MiB`
+      : undefined,
+    `listener ${row.applied}/${row.stale} applied/stale`,
+    `this tab ${row.answered} wasm / ${row.passthrough} passthrough`,
+  ].filter((fact) => fact !== undefined)
+  return (
+    <div style={{marginTop: 2}}>
+      <div>
+        {latest ? '▸ ' : '  '}
+        <span style={{color: row.phase === 'live' ? '#4ade80' : '#facc15'}}>{row.phase}</span>{' '}
+        {row.label}
+      </div>
+      {row.reason === undefined ? null : (
+        <div>
+          {'    '}
+          {row.reason}
+        </div>
+      )}
+      <div>
+        {'    '}
+        {facts.join(' · ')}
+      </div>
+      <div>
+        {'    '}host {row.host}
+      </div>
+    </div>
+  )
 }
 
 function Latency({status}: {status: GroqStoreStatus}) {
@@ -116,6 +163,7 @@ function Details({status}: {status: GroqStoreStatus}) {
   const fenceMix = Object.entries(status.fences.how)
     .map(([how, count]) => `${how} ${count}`)
     .join(', ')
+  const rows = storeRows(status)
   return (
     <div style={{marginTop: 4, whiteSpace: 'pre-wrap'}}>
       <div>
@@ -124,11 +172,24 @@ function Details({status}: {status: GroqStoreStatus}) {
       </div>
       {status.enabled ? (
         <>
-          <div>store: {status.store}</div>
+          <div>
+            stores ({storesSummary(rows)}
+            {status.memoryBytes === undefined ? '' : `, ${mib(status.memoryBytes)} MiB wasm shared`}
+            ):
+          </div>
+          {rows.map((row) => (
+            <StoreLine
+              key={`${row.host} ${row.key}`}
+              row={row}
+              latest={row.key === status.lastStore}
+            />
+          ))}
+          {rows.length > 0 ? <div>{"  ▸ = the store this tab's latest query went to"}</div> : null}
           {status.lastStopped === undefined ? null : (
             <div>
-              last run: reached {mib(status.lastStopped.exportBytes)} MiB export /{' '}
-              {mib(status.lastStopped.memoryBytes)} MiB wasm, then stopped
+              previous page load: {storeLabel(status.lastStopped.key)} stopped while{' '}
+              {status.lastStopped.phase} at {mib(status.lastStopped.exportBytes)} MiB export /{' '}
+              {mib(status.lastStopped.memoryBytes)} MiB wasm
             </div>
           )}
           {status.storeError === undefined ? null : <div>error: {status.storeError}</div>}
@@ -237,6 +298,7 @@ function GroqStoreDebugBar() {
   // to change in the same Motion render or the bar would draw a corner away for a frame.
   const anchorCornerRef = useRef(corner)
   const blocked = status.enabled ? blocker(status) : undefined
+  const rows = storeRows(status)
 
   useEffect(() => writeCorner(corner), [corner])
 
@@ -377,15 +439,9 @@ function GroqStoreDebugBar() {
           </>
         )}
         <Latency status={status} />
-        {status.enabled && status.store === 'building' && status.progress ? (
-          <span>
-            {' · '}export {mib(status.progress.exportBytes)} MiB · wasm{' '}
-            {mib(status.progress.memoryBytes)} MiB
-          </span>
-        ) : status.enabled &&
-          status.store.startsWith('live') &&
-          status.progress?.memoryBytes !== undefined ? (
-          <span> · wasm {mib(status.progress.memoryBytes)} MiB</span>
+        {status.enabled ? <span> · {storesSummary(rows)}</span> : null}
+        {status.enabled && status.memoryBytes !== undefined ? (
+          <span> · wasm {mib(status.memoryBytes)} MiB</span>
         ) : null}
         {status.enabled && status.guardOff ? (
           <span style={{color: '#f59e0b'}}> · guard off</span>

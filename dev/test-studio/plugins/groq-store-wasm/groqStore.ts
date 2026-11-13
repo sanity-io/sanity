@@ -1,10 +1,31 @@
-import {bootGroqStore, type BootResult, type Metric} from '@sanity/groq-store-wasm/boot'
+import {
+  bootGroqStore,
+  type BootResult,
+  type Metric,
+  storeLabel,
+  type StoresMetric,
+} from '@sanity/groq-store-wasm/boot'
 
 /**
  * Boots `@sanity/groq-store-wasm` (a service worker that routes Content Lake `/data/query`
  * requests to a SharedWorker holding the dataset in a wasm GROQ engine) and keeps the counters
  * the debug bar shows. Ported from the test studio in sanity-labs/groq-wasm.
  */
+
+type StoreSummary = StoresMetric['stores'][number]
+
+/** One store in the debug bar: the host's view of it plus this tab's routing counts for its key. */
+export type StoreRow = StoreSummary & {
+  /** `projectId:dataset:identity`, token identities cut to `token:` + 6 hex digits. */
+  label: string
+  /** The host that holds it (`name#id`). */
+  host: string
+  /** Export progress while it builds. */
+  exportBytes?: number
+  /** This tab's queries routed to the store, by outcome. */
+  answered: number
+  passthrough: number
+}
 
 export type GroqStoreStatus = {
   /** Whether the service worker and the SharedWorker were started at all. */
@@ -21,11 +42,19 @@ export type GroqStoreStatus = {
   unaccelerated: number
   answerMs: number
   reasons: Record<string, number>
-  /** Latest store event from the shared host, for every tab. */
-  store: string
+  /** Every store the hosts hold, by host then key. Keys are shared by every tab. */
+  stores: Record<string, Record<string, StoreSummary>>
+  /** This tab's routing counts per store key. */
+  routed: Record<string, {answered: number; passthrough: number}>
+  /** Export progress per store key, while it builds. */
+  exportBytes: Record<string, number>
+  /** The store key the latest routed query in this tab went to. */
+  lastStore?: string
+  /** Linear memory of the host's wasm instance, shared by all of its stores. */
+  memoryBytes?: number
+  /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
   storeError?: string
   guardOff: boolean
-  progress?: {exportBytes?: number; memoryBytes?: number; documents?: number}
   lastStopped?: LastRun
   mutations: {applied: number; stale: number}
   fences: {count: number; lifted: number; ms: number; how: Record<string, number>}
@@ -133,7 +162,9 @@ let status: GroqStoreStatus = {
   unaccelerated: 0,
   answerMs: 0,
   reasons: {},
-  store: 'idle',
+  stores: {},
+  routed: {},
+  exportBytes: {},
   guardOff: initialGuardOff(),
   lastStopped:
     previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
@@ -172,12 +203,55 @@ const bump = (reason: string): Record<string, number> => ({
   [reason]: (status.reasons[reason] ?? 0) + 1,
 })
 
+/** Every store across hosts, with this tab's counts for each. */
+export function storeRows(current: GroqStoreStatus): StoreRow[] {
+  return Object.entries(current.stores).flatMap(([host, stores]) =>
+    Object.values(stores).map((store) => {
+      const row: StoreRow = Object.assign({}, store, {
+        label: storeLabel(store.key),
+        host,
+        answered: current.routed[store.key]?.answered ?? 0,
+        passthrough: current.routed[store.key]?.passthrough ?? 0,
+      })
+      const exportBytes = current.exportBytes[store.key]
+      if (exportBytes !== undefined) row.exportBytes = exportBytes
+      return row
+    }),
+  )
+}
+
+function route(store: string | undefined, outcome: 'answered' | 'passthrough') {
+  if (store === undefined) return {}
+  const counts = status.routed[store] ?? {answered: 0, passthrough: 0}
+  return {
+    lastStore: store,
+    routed: {...status.routed, [store]: {...counts, [outcome]: counts[outcome] + 1}},
+  }
+}
+
 function onMetric(metric: Metric): void {
+  if (metric.type === 'stores') {
+    update({
+      stores: {
+        ...status.stores,
+        [metric.host]: Object.fromEntries(metric.stores.map((store) => [store.key, store])),
+      },
+    })
+    return
+  }
   if (metric.type === 'route') {
     if (metric.outcome === 'answer') {
-      update({answered: status.answered + 1, answerMs: status.answerMs + metric.ms})
+      update({
+        answered: status.answered + 1,
+        answerMs: status.answerMs + metric.ms,
+        ...route(metric.store, 'answered'),
+      })
     } else if (metric.outcome === 'passthrough') {
-      update({passthrough: status.passthrough + 1, reasons: bump(metric.reason ?? 'unknown')})
+      update({
+        passthrough: status.passthrough + 1,
+        reasons: bump(metric.reason ?? 'unknown'),
+        ...route(metric.store, 'passthrough'),
+      })
     } else {
       update({unaccelerated: status.unaccelerated + 1, reasons: bump(metric.outcome)})
     }
@@ -185,30 +259,22 @@ function onMetric(metric: Metric): void {
   }
   if (metric.type !== 'store') return
   switch (metric.event) {
+    // Phases come from the host's `stores` summaries; these events only add what they lack.
     case 'building':
-      update({store: 'building'})
       persist(metric, 'building')
       break
     case 'progress':
       update({
-        store: 'building',
-        progress: {
-          exportBytes: metric.exportBytes,
-          memoryBytes: metric.memoryBytes,
-          documents: metric.documents,
-        },
+        exportBytes: {...status.exportBytes, [metric.key]: metric.exportBytes ?? 0},
+        memoryBytes: metric.memoryBytes ?? status.memoryBytes,
       })
       persist(metric, 'building')
       break
     case 'export':
-      update({store: `loaded ${metric.documents ?? '?'} docs in ${Math.round(metric.ms ?? 0)} ms`})
       persist(metric, 'building')
       break
     case 'live':
-      update({
-        store: `live${status.store.startsWith('loaded') ? `, ${status.store}` : ''}`,
-        progress: {...status.progress, memoryBytes: metric.memoryBytes},
-      })
+      update({memoryBytes: metric.memoryBytes ?? status.memoryBytes})
       persist(metric, 'live')
       break
     case 'drafts-parity':
@@ -217,21 +283,16 @@ function onMetric(metric: Metric): void {
       }
       break
     case 'reconnect':
-      update({store: 'reconnecting'})
-      break
     case 'dropped':
-      update({store: 'dropped (not authorized)'})
       break
     case 'guarded':
-      update({store: 'guarded', storeError: metric.reason ?? 'memory limit reached'})
       persist(metric, 'guarded')
       break
     case 'poisoned':
-      update({store: 'restarting', storeError: metric.reason ?? 'wasm instance poisoned'})
+      update({storeError: metric.reason ?? 'wasm instance poisoned'})
       persist(metric, 'poisoned')
       break
     case 'failed':
-      update({store: 'failed', storeError: metric.error ?? 'unknown error'})
       persist(metric, 'failed')
       break
     case 'mutation':
