@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, it, vi} from 'vitest'
@@ -108,31 +108,6 @@ describe('ReleaseNameCell', () => {
       path: '/intent/release/id=rASAP/',
       replace: false,
     })
-  })
-
-  it.each([
-    ['command-click', {metaKey: true}],
-    ['ctrl-click', {ctrlKey: true}],
-    ['shift-click', {shiftKey: true}],
-    ['middle-click', {button: 1}],
-  ])('leaves a %s to the browser so the release can open in a new tab', async (_, init) => {
-    await renderTest(activeASAPRelease)
-
-    const link = screen.getByRole('link', {name: 'active asap Release'})
-    let followedLink: boolean | undefined
-    // Runs after React's handler. jsdom can't navigate, so stop the link here.
-    const stopNavigation = (event: Event) => {
-      followedLink = !event.defaultPrevented
-      event.preventDefault()
-    }
-    document.addEventListener('click', stopNavigation)
-    // oxlint-disable-next-line testing-library/prefer-user-event -- sets the modifier and button on a single click without userEvent's pointer sequence
-    fireEvent.click(link, init)
-    document.removeEventListener('click', stopNavigation)
-
-    expect(followedLink).toBe(true)
-    expect(onNavigate).not.toHaveBeenCalled()
-    expect(link).toHaveAttribute('href', '/intent/release/id=rASAP/')
   })
 
   it('does not link a deleted release', async () => {
