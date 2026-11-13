@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {render, screen, within} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -34,8 +34,35 @@ describe('FormHeader', () => {
       {wrapper},
     )
 
-    // Check if the description tooltip is present
-    expect(screen.getByTestId('schema-description-icon')).toBeInTheDocument()
+    const button = screen.getByRole('button', {name: 'Test description'})
+    expect(button).toContainElement(screen.getByTestId('schema-description-icon'))
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('opens the schema description tooltip from keyboard focus', async () => {
+    const user = userEvent.setup()
+    const schemaTypeWithDescription = {
+      ...mockSchemaType,
+      description: 'Test description',
+    }
+
+    const wrapper = await createTestProvider()
+
+    render(
+      <FormHeader documentId="test-id" schemaType={schemaTypeWithDescription} title="Test Title" />,
+      {wrapper},
+    )
+
+    // The tooltip stays mounted while closed. Focusing the button is what reveals it.
+    expect(screen.getByText('Test description')).not.toBeVisible()
+
+    await user.tab()
+
+    expect(screen.getByRole('button', {name: 'Test description'})).toHaveFocus()
+    // The tooltip waits out its open delay before revealing the description.
+    await waitFor(() => {
+      expect(screen.getByText('Test description')).toBeVisible()
+    })
   })
 
   it('does not render description when not provided', async () => {
