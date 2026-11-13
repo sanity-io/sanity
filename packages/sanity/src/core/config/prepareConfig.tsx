@@ -85,6 +85,7 @@ import {
   partialIndexingEnabledReducer,
   reactActivityModeEnabledReducer,
   releaseActionsReducer,
+  releaseDetailReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
@@ -971,6 +972,7 @@ function resolveSource({
     resolveReleaseMetadataFields(config),
     schema,
   )
+  const releaseDetail = releaseDetailReducer({config, initialValue: undefined})
 
   const source: Source = {
     type: 'source',
@@ -1238,9 +1240,10 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          detail: releaseDetail,
           metadata: {fields: releaseMetadataFields},
         }
-      : {enabled: true, metadata: {fields: releaseMetadataFields}},
+      : {enabled: true, detail: releaseDetail, metadata: {fields: releaseMetadataFields}},
   }
 
   return source

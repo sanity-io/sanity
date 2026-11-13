@@ -57,6 +57,7 @@ import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
+import {ReleaseDetailExample} from './releases/ReleaseDetailExample'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
@@ -350,8 +351,26 @@ const defaultWorkspace = defineConfig({
       }
       return prev
     },
+    detail: ReleaseDetailExample,
     metadata: {
       fields: [
+        defineField({
+          name: 'category',
+          title: 'Category',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Product launch', value: 'productLaunch'},
+              {title: 'Campaign', value: 'campaign'},
+            ],
+          },
+        }),
+        defineField({
+          name: 'launchAt',
+          title: 'Launch date',
+          type: 'datetime',
+          hidden: ({document}) => document?.category !== 'productLaunch',
+        }),
         defineField({
           name: 'legalReview',
           title: 'Legal review',
