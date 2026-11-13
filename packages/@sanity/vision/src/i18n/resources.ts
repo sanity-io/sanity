@@ -625,15 +625,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body, since the API limits the length of a URL. The options stay in the URL.',
   /** In the Network panel: the region the query ran in */
   'vision.network.region': 'Query ran in',
-  /** groq-store-wasm ran the query in this browser */
-  'vision.network.region.local': 'Your device',
-  /** Under "Your device": the size of the copy of the dataset the query ran against */
+  /** groq-store-wasm ran the query in this browser's memory: "Query ran in: memory" */
+  'vision.network.region.local': 'memory',
+  /** Under "memory": the size of the copy of the dataset the query ran against */
   'vision.network.region.local-copy':
-    'A local copy of {{documents}} documents in {{memory}} of WebAssembly memory',
-  /** Under "Your device", when only the document count is known */
-  'vision.network.region.local-copy-documents': 'A local copy of {{documents}} documents',
-  /** Under "Your device", when only the memory is known */
-  'vision.network.region.local-copy-memory': 'A local copy in {{memory}} of WebAssembly memory',
+    '{{documents}} documents in {{memory}} of WebAssembly, on this device',
+  /** Under "memory", when only the document count is known */
+  'vision.network.region.local-copy-documents': '{{documents}} documents, on this device',
+  /** Under "memory", when only the memory is known */
+  'vision.network.region.local-copy-memory': '{{memory}} of WebAssembly, on this device',
   /** The response did not say where the query ran */
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
