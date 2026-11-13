@@ -22,6 +22,7 @@ import {type DocumentInspector} from './document/inspector'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type ReleaseDetailComponent} from './releases/detail'
+import {type ReleasePropertiesContext, type ReleasePropertyComponent} from './releases/properties'
 import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
@@ -275,6 +276,28 @@ export const releaseActionsReducer: ConfigPropertyReducer<
       releaseActions,
     )}`,
   )
+}
+
+export const releasePropertiesReducer: ConfigPropertyReducer<
+  ReleasePropertyComponent[],
+  ReleasePropertiesContext
+> = (prev, {releases}, context) => {
+  const releaseProperties = releases?.properties
+  if (!releaseProperties) return prev
+
+  if (typeof releaseProperties === 'function') return releaseProperties(prev, context)
+  if (Array.isArray(releaseProperties)) return [...prev, ...releaseProperties]
+
+  throw new Error(
+    `Expected \`releases.properties\` to be an array or a function, but received ${getPrintableType(
+      releaseProperties,
+    )}`,
+  )
+}
+
+/** Whether any config defines `releases.properties`, which may read the release documents. */
+export function hasReleasePropertiesConfig(config: PluginOptions): boolean {
+  return flattenConfig(config, []).some(({config: entry}) => Boolean(entry.releases?.properties))
 }
 
 export const releaseDetailReducer = ({

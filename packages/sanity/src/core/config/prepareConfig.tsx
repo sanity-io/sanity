@@ -70,6 +70,7 @@ import {
   draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
+  hasReleasePropertiesConfig,
   imageAssetSourceResolver,
   initialCollapseArrayItems,
   initialDocumentActions,
@@ -86,6 +87,7 @@ import {
   reactActivityModeEnabledReducer,
   releaseActionsReducer,
   releaseDetailReducer,
+  releasePropertiesReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
@@ -973,6 +975,17 @@ function resolveSource({
     schema,
   )
   const releaseDetail = releaseDetailReducer({config, initialValue: undefined})
+  const releaseProperties: NonNullable<Source['releases']>['properties'] =
+    hasReleasePropertiesConfig(config)
+      ? (partialContext, defaultProperties) =>
+          resolveConfigProperty({
+            config,
+            context: {...context, ...partialContext},
+            initialValue: defaultProperties,
+            propertyName: 'releases.properties',
+            reducer: releasePropertiesReducer,
+          })
+      : undefined
 
   const source: Source = {
     type: 'source',
@@ -1241,9 +1254,15 @@ function resolveSource({
               reducer: releaseActionsReducer,
             }),
           detail: releaseDetail,
+          properties: releaseProperties,
           metadata: {fields: releaseMetadataFields},
         }
-      : {enabled: true, detail: releaseDetail, metadata: {fields: releaseMetadataFields}},
+      : {
+          enabled: true,
+          detail: releaseDetail,
+          properties: releaseProperties,
+          metadata: {fields: releaseMetadataFields},
+        },
   }
 
   return source

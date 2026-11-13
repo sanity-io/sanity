@@ -57,6 +57,7 @@ import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
+import {LaunchCountdownRow} from './releases/LaunchCountdownRow'
 import {ReleaseDetailExample} from './releases/ReleaseDetailExample'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -352,6 +353,7 @@ const defaultWorkspace = defineConfig({
       return prev
     },
     detail: ReleaseDetailExample,
+    properties: (prev) => [...prev, LaunchCountdownRow],
     metadata: {
       fields: [
         defineField({
