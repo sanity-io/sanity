@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {isVariantId, useSetVariant} from 'sanity'
+import {COMMAND_LIST_ACTIVATE_ITEM_EVENT, isVariantId, useSetVariant} from 'sanity'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -33,8 +33,26 @@ const STALL_DELAY = 250
 export interface PaneItemVersionsFlyoutActions {
   /** Opens the document with the document group inventory beside it, in the version it shows. */
   onOpenInventory: () => void
-  /** Opens the document in the picked audience (`null` for the default one), with the inventory beside it. */
-  onPick: (variantId: string | null) => void
+  /**
+   * Opens the document in the picked audience (`null` for the default one), with the inventory
+   * beside it. `paneParams` are added to the document pane's params, next to `inspect` (the
+   * `createVariant` param, see `CREATE_VARIANT_PARAM`).
+   */
+  onPick: (variantId: string | null, paneParams?: Record<string, string>) => void
+}
+
+/** The flyout that is open, across every row and list: opening one closes the one before. */
+let openFlyout: {row: HTMLElement; close: () => void} | null = null
+
+/** Whether a key event comes from the list (or the row itself) that the row is in. */
+function isFromListOf(event: globalThis.KeyboardEvent, row: HTMLElement): boolean {
+  const target = event.target
+  return target instanceof HTMLElement && target.contains(row)
+}
+
+/** The flyout's rows, in order. */
+function menuItems(flyout: HTMLElement | null): HTMLElement[] {
+  return [...(flyout?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])]
 }
 
 /**
@@ -99,10 +117,12 @@ export function PaneItemVersionsFlyout(props: {
     setOpen(false)
   }, [clearTimers])
 
-  // After a keyboard close, focus goes back to what had it when the keyboard opened the flyout:
-  // the list, which still has this row as its active item, or the row itself.
+  // After a keyboard close, focus goes back to what had it when the keyboard entered the flyout:
+  // the list, which has this row as its active item, or the row itself. When the keyboard came
+  // from nowhere in particular (the pointer opened it), focus goes to the row's list.
   const restoreFocus = useCallback(() => {
-    const target = returnFocus.current?.isConnected ? returnFocus.current : row
+    const list = row?.closest<HTMLElement>('[aria-activedescendant], [tabindex="0"]') ?? row
+    const target = returnFocus.current?.isConnected ? returnFocus.current : list
     returnFocus.current = null
     target?.focus()
   }, [row])
@@ -169,14 +189,22 @@ export function PaneItemVersionsFlyout(props: {
       closeSoon()
     }
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'ArrowRight') return
-      if (event.target !== row && !isActiveRowOfFocusedList(event, row)) return
+      if (event.key !== 'ArrowRight' || !isFromListOf(event, row)) return
+      const isOpen = openFlyout?.row === row
+      // An open flyout wins over the list's active row: the keyboard enters the flyout the pointer
+      // opened. Another row's open flyout in this list takes the key instead of this one.
+      if (!isOpen) {
+        if (openFlyout && (event.target as HTMLElement).contains(openFlyout.row)) return
+        if (event.target !== row && !isActiveRowOfFocusedList(event, row)) return
+      }
       event.preventDefault()
       event.stopPropagation()
       clearTimers()
       returnFocus.current = event.target as HTMLElement
+      // The list's active row follows the flyout, so the two agree
+      row.dispatchEvent(new Event(COMMAND_LIST_ACTIVATE_ITEM_EVENT, {bubbles: true}))
       // Already open (hover opened it): the open effect will not run again, so focus it here
-      const first = flyoutRef.current?.querySelector<HTMLElement>('[role="menuitem"]')
+      const [first] = menuItems(flyoutRef.current)
       if (first) {
         first.focus()
         return
@@ -238,6 +266,52 @@ export function PaneItemVersionsFlyout(props: {
     event.stopPropagation()
   }, [])
 
+  // Only one flyout is open at a time: this one opening closes any other, by hover or keyboard. A
+  // flyout closed that way gives focus back to the list if it had it.
+  useEffect(() => {
+    if (!open || !row) return undefined
+    const self = {
+      row,
+      close: () => {
+        const hadFocus = flyoutRef.current?.contains(document.activeElement) ?? false
+        close()
+        if (hadFocus) restoreFocus()
+      },
+    }
+    if (openFlyout && openFlyout.row !== row) openFlyout.close()
+    openFlyout = self
+    return () => {
+      if (openFlyout === self) openFlyout = null
+    }
+  }, [close, open, restoreFocus, row])
+
+  // With the pointer over the open flyout and focus elsewhere, ArrowDown and ArrowUp move focus into
+  // it: to its first and its last row. Hover itself never takes focus.
+  useEffect(() => {
+    if (!open) return undefined
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      const flyout = flyoutRef.current
+      if (!flyout?.matches(':hover') || flyout.contains(document.activeElement)) return
+      const items = menuItems(flyout)
+      const next = event.key === 'ArrowDown' ? items[0] : items[items.length - 1]
+      if (!next) return
+      event.preventDefault()
+      event.stopPropagation()
+      clearTimers()
+      const focused = document.activeElement
+      returnFocus.current =
+        focused instanceof HTMLElement && focused !== document.body ? focused : null
+      if (focused instanceof HTMLElement && row && focused.contains(row)) {
+        row.dispatchEvent(new Event(COMMAND_LIST_ACTIVATE_ITEM_EVENT, {bubbles: true}))
+      }
+      next.focus()
+    }
+    // Capture: before the focused list moves its own active row
+    document.addEventListener('keydown', handleKeyDown, true)
+    return () => document.removeEventListener('keydown', handleKeyDown, true)
+  }, [clearTimers, open, row])
+
   // Escape and scrolling close it.
   useEffect(() => {
     if (!open) return undefined
@@ -283,10 +357,10 @@ export function PaneItemVersionsFlyout(props: {
   // The row's own link opens the document in the next pane; these open it there too, with the
   // document group inventory beside it.
   const documentWithInventory = useCallback(
-    () => ({
+    (paneParams?: Record<string, string>) => ({
       panes: [
         ...routerPanesState.slice(0, groupIndex + 1),
-        [{id: childId, params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
+        [{id: childId, params: {...paneParams, inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
       ],
     }),
     [childId, groupIndex, routerPanesState],
@@ -301,12 +375,12 @@ export function PaneItemVersionsFlyout(props: {
   // A pick also switches to the picked audience, in the same navigation, so the document opens in
   // the version the row stands for.
   const pick = useCallback(
-    (variantId: string | null) => {
+    (variantId: string | null, paneParams?: Record<string, string>) => {
       close()
       returnFocus.current = null
       setVariant({
         variantId: isVariantId(variantId) ? variantId : undefined,
-        state: documentWithInventory(),
+        state: documentWithInventory(paneParams),
       })
     },
     [close, documentWithInventory, setVariant],

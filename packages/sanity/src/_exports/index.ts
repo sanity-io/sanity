@@ -98,7 +98,10 @@ export {
   type CollapseMenuButtonProps,
   type CommonProps,
 } from '../core/components/collapseMenu/CollapseMenuButton'
-export {CommandList} from '../core/components/commandList/CommandList'
+export {
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
+  CommandList,
+} from '../core/components/commandList/CommandList'
 export {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,

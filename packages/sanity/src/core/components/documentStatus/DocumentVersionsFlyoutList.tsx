@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Card} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
 import {VariantMark} from '../../../ui-components/variantMark'
@@ -25,48 +25,62 @@ const MAX_AUDIENCES = 5
 const MARK_COLUMN_WIDTH = 25
 
 /**
- * The version the pane is viewing: UI 5's low-emphasis selected tone, the one the inventory uses to
- * hint at the open version inside a collapsed group. Hover and focus replace it with the menu's
- * selected tone.
+ * The flyout's colours: the ones the document list and the version inventory use. Grey is for
+ * moving through the rows (hover and keyboard focus), the strong blue is for the version that is
+ * open, and the open version stays blue when it is hovered or focused. UI 5 declares these
+ * variables on `:root`; where a token is only defined per tone (`.sui-tone-*`), the value is the
+ * palette steps that token resolves to, as in the inventory.
  */
-const VIEWED_STYLE: CSSProperties = {
-  backgroundColor: 'var(--active-background-normal)',
-  color: 'var(--active-foreground-normal)',
-}
-
-/** ui5 icons declare their own colour variable, so on the active row it is set on the icon itself. */
-function activeIconStyle(active: boolean): CSSProperties | undefined {
-  return active ? ({'--icon-color': 'var(--card-fg-color)'} as CSSProperties) : undefined
-}
+const COLORS = {
+  /** The open version's row: `--active-background-emphasized` (blue-600 / blue-400). */
+  viewedBackground: 'var(--active-background-emphasized)',
+  /** Its title: `--active-foreground-emphasized` (white / black). */
+  viewedTitle: 'var(--active-foreground-emphasized)',
+  /** Its subtitle: the low-emphasis selected foreground step of the blue (blue-100 / blue-900). */
+  viewedSubtitle: 'light-dark(var(--blue-100), var(--blue-900))',
+  /** Its variant diamond: the suggest tone's `--foreground-low-emphasized` (purple-100 / purple-900). */
+  viewedMark: 'light-dark(var(--purple-100), var(--purple-900))',
+  /**
+   * A hovered or focused row: `--background-low` (gray-50) in light. In dark that token is gray-950,
+   * the panel's own background, so dark takes the next step, gray-900.
+   */
+  hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
+  /** Keyboard focus, on any row: UI 5's focus outline, drawn just outside the row. */
+  focusOutline: 'var(--focus-outline)',
+} as const
 
 function FlyoutRow(props: {
   testId: string
   title: ReactNode
   subtitle?: string
-  renderMedia?: (active: boolean) => ReactNode
+  renderMedia?: () => ReactNode
   /**
    * The row's status marks (the variant diamond), in a column at the right edge that is as wide on
    * every row, so the marks line up like the document list's and the inventory's. Rows without a
    * mark keep the empty column.
    */
-  renderTrailing?: (active: boolean) => ReactNode
+  renderTrailing?: (viewed: boolean) => ReactNode
   onClick: () => void
-  /** The version the pane is viewing: a low-emphasis selected tone, until the row is hovered or focused. */
+  /** The version the pane is viewing: the strong selected blue, also while hovered or focused. */
   viewed?: boolean
 }) {
-  // Hover and keyboard focus are the menus' active state: the selected fill and text colours.
+  const viewed = Boolean(props.viewed)
+  // Hover and keyboard focus are the grey of moving through the rows; the open version keeps its
+  // blue, and focus also draws the focus outline, so it shows on the blue row too.
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
-  const active = hovered || focused
-  const viewedTone = Boolean(props.viewed) && !active
+  let backgroundColor: string | undefined
+  if (viewed) backgroundColor = COLORS.viewedBackground
+  else if (hovered || focused) backgroundColor = COLORS.hoverBackground
 
   return (
     <PreviewCard
-      __unstable_focusRing
-      aria-current={props.viewed ? 'true' : undefined}
+      aria-current={viewed ? 'true' : undefined}
       as="button"
       data-testid={props.testId}
-      data-viewed={props.viewed ? '' : undefined}
+      data-focused={focused ? '' : undefined}
+      data-hovered={hovered ? '' : undefined}
+      data-viewed={viewed ? '' : undefined}
       onBlur={() => setFocused(false)}
       onClick={props.onClick}
       onFocus={() => setFocused(true)}
@@ -74,14 +88,17 @@ function FlyoutRow(props: {
       onMouseLeave={() => setHovered(false)}
       radius={2}
       role="menuitem"
-      selected={active}
       sizing="border"
       style={{
         display: 'block',
         width: '100%',
         textAlign: 'left',
         cursor: 'pointer',
-        ...(viewedTone ? VIEWED_STYLE : undefined),
+        backgroundColor,
+        color: viewed ? COLORS.viewedTitle : undefined,
+        outline: focused ? COLORS.focusOutline : undefined,
+        // Outside the row, on the panel, so it shows on the blue of the open version too
+        outlineOffset: focused ? 2 : undefined,
       }}
       tabIndex={-1}
       tone="inherit"
@@ -99,7 +116,7 @@ function FlyoutRow(props: {
               justifyContent="center"
               style={{width: 33, height: 33}}
             >
-              {props.renderMedia(active)}
+              {props.renderMedia()}
             </Flex>
           ) : null}
           <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} style={{minWidth: 0}}>
@@ -109,7 +126,7 @@ function FlyoutRow(props: {
                 as="div"
                 muted
                 size={1}
-                style={{color: viewedTone ? 'inherit' : 'var(--card-muted-fg-color)'}}
+                style={{color: viewed ? COLORS.viewedSubtitle : 'var(--card-muted-fg-color)'}}
                 trim
                 truncate={1}
               >
@@ -127,7 +144,7 @@ function FlyoutRow(props: {
             justifyContent="center"
             style={{width: MARK_COLUMN_WIDTH}}
           >
-            {props.renderTrailing?.(active)}
+            {props.renderTrailing?.(viewed)}
           </Flex>
         </Flex>
       </Flex>
@@ -171,12 +188,15 @@ function AudienceRow({
       subtitle={subtitle}
       viewed={viewed}
       testId="document-versions-flyout-row"
-      renderTrailing={(active) => (
+      renderTrailing={(isViewed) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
           {group.variantId ? (
             <VariantMark
               size="row"
-              style={{marginInline: '-0.375rem', ...(active ? {color: 'inherit'} : undefined)}}
+              style={{
+                marginInline: '-0.375rem',
+                ...(isViewed ? {color: COLORS.viewedMark} : undefined),
+              }}
             />
           ) : null}
         </span>
@@ -227,8 +247,6 @@ export function DocumentVersionsFlyoutList(props: {
     )
   }
 
-  const total = groups.reduce((count, group) => count + group.items.length, 0)
-
   return (
     <Card
       aria-label={t('document-group.flyout.title')}
@@ -250,21 +268,15 @@ export function DocumentVersionsFlyoutList(props: {
           />
         ))}
         <FlyoutRow
-          renderMedia={(active) => (
-            <Icon icon={DocumentsIcon} size={2} style={activeIconStyle(active)} />
-          )}
+          renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
           onClick={onOpenInventory}
           testId="document-versions-flyout-inventory"
           title={
             <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-              {total > 1
-                ? t('document-group.flyout.see-all', {count: total})
-                : t('document-group.flyout.manage-versions')}
+              {t('document-group.flyout.see-all-versions')}
             </Text>
           }
-          renderTrailing={(active) => (
-            <Icon icon={ChevronRightIcon} size={1} style={activeIconStyle(active)} />
-          )}
+          renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
         />
       </div>
     </Card>

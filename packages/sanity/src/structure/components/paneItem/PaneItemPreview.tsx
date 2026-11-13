@@ -27,6 +27,7 @@ import {PreviewCardContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {getCreateVariantPaneParams} from './getCreateVariantPaneParams'
 import {PaneItemVersionsFlyout, type PaneItemVersionsFlyoutActions} from './PaneItemVersionsFlyout'
 
 export interface PaneItemPreviewProps {
@@ -66,16 +67,23 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
   const rowSelected = useContext(PreviewCardContext)?.selected
+  const {perspectiveStack, selectedPerspective, selectedVariantNames} = usePerspective()
+  // A variant with no version in the release in view opens with Manage versions ready to create it
+  // there, instead of the document falling back to another version.
   const renderFlyoutList = (actions: PaneItemVersionsFlyoutActions) => (
     <DocumentVersionsFlyoutList
       documentGroupId={publishedId}
       viewingDocument={Boolean(rowSelected)}
       onOpenInventory={actions.onOpenInventory}
-      onPick={actions.onPick}
+      onPick={(variantId) =>
+        actions.onPick(
+          variantId,
+          getCreateVariantPaneParams({variantId, selectedPerspective, versions}),
+        )
+      }
     />
   )
 
-  const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined

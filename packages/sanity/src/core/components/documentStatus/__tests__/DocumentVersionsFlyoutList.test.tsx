@@ -60,14 +60,16 @@ describe('DocumentVersionsFlyoutList footer', () => {
     })
   })
 
-  it('offers to manage versions for a single version', async () => {
+  it('offers to see all versions for a single version, with the same words', async () => {
     await renderList([version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByText('Manage versions in inventory')).toBeTruthy()
+    expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
+    expect(screen.queryByText('Manage versions in inventory')).toBeNull()
   })
 
-  it('counts the versions, resolving the plural, for more than one', async () => {
+  it('offers to see all versions, without a count, for more than one', async () => {
     await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByText('See all 2 versions in inventory')).toBeTruthy()
+    expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
+    expect(screen.queryByText(/\d versions/)).toBeNull()
   })
 
   it('shows a loading state, not an empty panel, while the versions load', async () => {

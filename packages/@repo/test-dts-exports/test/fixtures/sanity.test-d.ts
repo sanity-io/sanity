@@ -188,6 +188,7 @@ import type {
   ColorSchemeProvider,
   ColorSchemeProviderProps,
   CombinedDocument,
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
   CommandList,
   CommandListElementType,
   CommandListGetItemDisabledCallback,
@@ -2444,6 +2445,9 @@ describe('sanity', () => {
   })
   test('CombinedDocument', () => {
     expectTypeOf<CombinedDocument>().toBeObject()
+  })
+  test('COMMAND_LIST_ACTIVATE_ITEM_EVENT', () => {
+    expectTypeOf<typeof COMMAND_LIST_ACTIVATE_ITEM_EVENT>().not.toBeNever()
   })
   test('CommandList', () => {
     expectTypeOf<typeof CommandList>().not.toBeNever()
