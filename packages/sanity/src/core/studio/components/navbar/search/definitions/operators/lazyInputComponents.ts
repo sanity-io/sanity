@@ -5,13 +5,23 @@ import {lazy} from 'react'
 // are only rendered when a filter is edited in the search UI, so they load at that point.
 // `FilterForm` provides the Suspense boundary.
 
+// One shared lazy per asset type so equal / not-equal / references operators of the same type
+// reuse the same component identity (a fresh lazy() would re-suspend even after the chunk loads).
+const SearchFilterAssetFileInput = lazy(() =>
+  import('../../components/filters/filter/inputs/asset/Asset.lazy').then((module) => ({
+    default: module.default('file'),
+  })),
+)
+
+const SearchFilterAssetImageInput = lazy(() =>
+  import('../../components/filters/filter/inputs/asset/Asset.lazy').then((module) => ({
+    default: module.default('image'),
+  })),
+)
+
 // A factory like its eager counterpart: each operator gets a component bound to its asset type
 export function SearchFilterAssetInput(type?: 'file' | 'image') {
-  return lazy(() =>
-    import('../../components/filters/filter/inputs/asset/Asset.lazy').then((module) => ({
-      default: module.default(type),
-    })),
-  )
+  return type === 'image' ? SearchFilterAssetImageInput : SearchFilterAssetFileInput
 }
 
 export const SearchFilterBooleanInput = lazy(
