@@ -33,8 +33,12 @@ const STALL_DELAY = 250
 export interface PaneItemVersionsFlyoutActions {
   /** Opens the document with the document group inventory beside it, in the version it shows. */
   onOpenInventory: () => void
-  /** Opens the document in the picked audience (`null` for the default one), with the inventory beside it. */
-  onPick: (variantId: string | null) => void
+  /**
+   * Opens the document in the picked audience (`null` for the default one), with the inventory
+   * beside it. `paneParams` are added to the document pane's params, next to `inspect` (the
+   * `createVariant` param, see `CREATE_VARIANT_PARAM`).
+   */
+  onPick: (variantId: string | null, paneParams?: Record<string, string>) => void
 }
 
 /**
@@ -283,10 +287,10 @@ export function PaneItemVersionsFlyout(props: {
   // The row's own link opens the document in the next pane; these open it there too, with the
   // document group inventory beside it.
   const documentWithInventory = useCallback(
-    () => ({
+    (paneParams?: Record<string, string>) => ({
       panes: [
         ...routerPanesState.slice(0, groupIndex + 1),
-        [{id: childId, params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
+        [{id: childId, params: {...paneParams, inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}],
       ],
     }),
     [childId, groupIndex, routerPanesState],
@@ -301,12 +305,12 @@ export function PaneItemVersionsFlyout(props: {
   // A pick also switches to the picked audience, in the same navigation, so the document opens in
   // the version the row stands for.
   const pick = useCallback(
-    (variantId: string | null) => {
+    (variantId: string | null, paneParams?: Record<string, string>) => {
       close()
       returnFocus.current = null
       setVariant({
         variantId: isVariantId(variantId) ? variantId : undefined,
-        state: documentWithInventory(),
+        state: documentWithInventory(paneParams),
       })
     },
     [close, documentWithInventory, setVariant],
