@@ -587,6 +587,9 @@ describe('CreateVariant', () => {
     await userEvent.hover(page.getByRole('heading', {name: 'Create version'}))
 
     const openFromKeyboard = async (key: string) => {
+      // Focus the trigger explicitly: whether closing the menu hands focus back to it is the menu's
+      // behaviour, and Firefox does not always do it. This test is about what keyboard opening does.
+      $targetTrigger.element().focus()
       await expect.element($targetTrigger).toHaveFocus()
       await userEvent.keyboard(key)
       await expect.element($filter).toHaveFocus()
