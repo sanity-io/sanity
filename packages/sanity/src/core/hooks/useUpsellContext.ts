@@ -2,12 +2,16 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, preloadObservablePromise, useObservablePromise} from 'react-rx'
 
 import {type UpsellDialogViewedInfo} from '../studio/upsell/__telemetry__/upsell.telemetry'
-import {type UpsellDataResult} from '../studio/upsell/types'
+import {type UpsellData, type UpsellDataResult} from '../studio/upsell/types'
 import {type UpsellTelemetryLogs, useUpsellData} from './useUpsellData'
 
 interface UseUpsellContextOptions {
   dataUri: string
   feature: string
+  /** When `false`, the request is skipped and the upsellData$ observable settles with `fallbackData`. */
+  enabled?: boolean
+  /** Content used while `enabled` is `false`. */
+  fallbackData?: UpsellData
 }
 
 export interface UpsellContextValue {
@@ -37,11 +41,19 @@ export interface UpsellContextValue {
  * does that for the release-limit guard, the misconfiguration dialog, and `{{releaseLimit}}` in
  * the copy.
  *
+ * Pass `enabled: false` with `fallbackData` to settle that fixture. A leaf reads it the same way
+ * it will read the endpoint once that is published.
+ *
  * @internal
  */
-export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): UpsellContextValue {
+export function useUpsellContext({
+  dataUri,
+  feature,
+  enabled,
+  fallbackData,
+}: UseUpsellContextOptions): UpsellContextValue {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const {upsellData$, telemetryLogs} = useUpsellData({dataUri, feature})
+  const {upsellData$, telemetryLogs} = useUpsellData({dataUri, feature, enabled, fallbackData})
   const upsellDataPromise = useObservablePromise(upsellData$)
   useEffect(() => {
     void preloadObservablePromise(upsellData$)

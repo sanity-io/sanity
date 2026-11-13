@@ -1,5 +1,5 @@
 import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
+import {concat, defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -524,8 +524,73 @@ describe('getPairListener', () => {
       return {client: mockClient, connect}
     }
 
-    test('a 401 completes the stream — no error rethrow, no retry', async () => {
-      const {client: mockClient, connect} = createFailingClient(() => rejectedConnection(401))
+    // A 401 on the listener means the credential it was opened with was refused. That can be a
+    // token that a rotation has just replaced (the reconnect went out before the new pair
+    // landed), or a token the store still believes valid (revoked, clock skew). Either way the
+    // stream must not die quietly: the last event the form saw was `reconnect`, so a completed
+    // stream leaves the editor read-only for good. Instead, one ordinary request through the
+    // client lets the auth store sort the credential out (it renews once, or ends the session),
+    // and the listener reconnects with whatever credential the client holds afterwards.
+    function createReconnectingClient(
+      connectImpl: () => Observable<unknown>,
+      requestImpl: () => Observable<unknown>,
+    ) {
+      const connect = vi.fn(connectImpl)
+      const request = vi.fn(requestImpl)
+      const mockClient = {
+        observable: {
+          listen: vi.fn(() => defer(connect)),
+          getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
+          request,
+        },
+        withConfig: vi.fn(function (this: unknown) {
+          return this
+        }),
+      } as unknown as SanityClient
+      return {client: mockClient, connect, request}
+    }
+
+    test('a 401 reconnects once a request through the client has restored the credential', async () => {
+      const second$ = new Subject<ListenerEvent>()
+      let attempt = 0
+      const {
+        client: mockClient,
+        connect,
+        request,
+      } = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : second$),
+        () => of({}),
+      )
+
+      const events: {type: string}[] = []
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        next: (e) => events.push(e),
+        error: (e) => errors.push(e),
+      })
+      await nextTick()
+      await nextTick()
+
+      expect(request).toHaveBeenCalledTimes(1)
+      expect(request).toHaveBeenCalledWith(expect.objectContaining({url: '/users/me'}))
+      expect(connect).toHaveBeenCalledTimes(2)
+      // The form learns the connection is being re-established while the credential is checked.
+      expect(events.map((e) => e.type)).toContain('reconnect')
+
+      second$.next({type: 'welcome'} as ListenerEvent)
+      await nextTick()
+      await nextTick()
+      expect(events.some((e) => e.type === 'snapshot')).toBe(true)
+      expect(errors).toEqual([])
+      second$.complete()
+      sub.unsubscribe()
+    })
+
+    test('a 401 completes the stream when the credential cannot be restored', async () => {
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => rejectedConnection(401),
+        () => throwError(() => new ConnectionFailedError('still rejected', {status: 401})),
+      )
 
       const errors: unknown[] = []
       let completed = false
@@ -536,16 +601,85 @@ describe('getPairListener', () => {
         },
       })
       await nextTick()
+      await nextTick()
 
-      // The listen endpoint only 401s on an invalid/expired session, so the
-      // connection is terminal: the stream completes (not errors — an errored
-      // stream would be rethrown by `useSyncObservable` and crash the tool)
-      // and is not retried. Recovery is driven by the studio's request handler
-      // on ordinary requests, not by this stream.
+      // Completes rather than errors: an errored stream is rethrown by `useSyncObservable` and
+      // crashes the tool. The session ending is handled by the auth store, not here.
       expect(errors).toEqual([])
       expect(completed).toBe(true)
       expect(connect).toHaveBeenCalledTimes(1)
+      sub.unsubscribe()
+    })
 
+    test('a 401 reconnects when the credential check fails for another reason', async () => {
+      // A network error, a timeout or a 5xx says nothing about the credential. Completing here
+      // would leave the editor read-only while the user is still signed in.
+      const second$ = new Subject<ListenerEvent>()
+      let attempt = 0
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : second$),
+        () => throwError(() => new Error('network error')),
+      )
+
+      const errors: unknown[] = []
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        error: (e) => errors.push(e),
+        complete: () => {
+          completed = true
+        },
+      })
+      await nextTick()
+      await nextTick()
+
+      expect(connect).toHaveBeenCalledTimes(2)
+      expect(completed).toBe(false)
+      expect(errors).toEqual([])
+      second$.complete()
+      sub.unsubscribe()
+    })
+
+    test('gives up after repeated 401s even when the credential check keeps passing', async () => {
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => rejectedConnection(401),
+        () => of({}),
+      )
+
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        complete: () => {
+          completed = true
+        },
+      })
+      for (let i = 0; i < 12; i++) await nextTick()
+
+      expect(completed).toBe(true)
+      expect(connect.mock.calls.length).toBeLessThanOrEqual(4)
+      sub.unsubscribe()
+    })
+
+    test('keeps recovering from 401s as long as each reconnect is welcomed', async () => {
+      // A long session rotates its token many times. Only 401s in a row count towards the limit.
+      const open$ = new Subject<ListenerEvent>()
+      const {client: mockClient, connect} = createReconnectingClient(
+        () =>
+          connect.mock.calls.length <= 4
+            ? concat(of({type: 'welcome'} as ListenerEvent), rejectedConnection(401))
+            : open$,
+        () => of({}),
+      )
+
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        complete: () => {
+          completed = true
+        },
+      })
+      for (let i = 0; i < 12; i++) await nextTick()
+
+      expect(connect).toHaveBeenCalledTimes(5)
+      expect(completed).toBe(false)
+      open$.complete()
       sub.unsubscribe()
     })
 
@@ -556,6 +690,22 @@ describe('getPairListener', () => {
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
       // Non-session errors are not swallowed and still surface to the caller.
+      expect(errors).toEqual([error])
+      sub.unsubscribe()
+    })
+
+    test('other listener errors still propagate after recovering from a 401', async () => {
+      const error = new Error('channel error')
+      let attempt = 0
+      const {client: mockClient} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : throwError(() => error)),
+        () => of({}),
+      )
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+      await nextTick()
+      await nextTick()
+
       expect(errors).toEqual([error])
       sub.unsubscribe()
     })
