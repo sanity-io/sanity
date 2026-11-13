@@ -2,13 +2,19 @@ import {partition, shuffle} from 'es-toolkit'
 import {
   bufferTime,
   concatMap,
+  connect,
   delay,
   filter,
+  merge,
   mergeMap,
   type MonoTypeOperatorFunction,
   of,
+  type OperatorFunction,
   pipe,
+  share,
   Subscription,
+  take,
+  takeUntil,
 } from 'rxjs'
 
 import {type ProxyHandler} from './createDebugProxy'
@@ -87,6 +93,60 @@ export function shuffleEventDelivery<T extends SSEEvent>(
       return [...welcome, ...shuffle(rest)]
     }),
   )
+}
+
+/**
+ * The events a listener can open its connection with, all of which a client takes as its welcome: a
+ * new listener gets `welcome`, and one resuming from a `Last-Event-ID` (`enableResume`) gets
+ * `welcomeback`, or `reset` when it can no longer be resumed.
+ */
+const WELCOME_EVENTS = new Set(['welcome', 'welcomeback', 'reset'])
+
+const isWelcome = (event: SSEEvent) =>
+  event.type === 'message' && WELCOME_EVENTS.has(event.message.event ?? '')
+
+/**
+ * The events the API sends when it fails to set a listener up or to keep it running (an
+ * unclassified error): a `channelError` with `Internal error`, then a `disconnect`, after which it
+ * closes the stream.
+ */
+const CHANNEL_ERROR_EVENTS: SSEEvent[] = [
+  {
+    type: 'message',
+    message: {event: 'channelError', data: '{"error":{"description":"Internal error"}}'},
+  },
+  {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+]
+
+/**
+ * Ends the listener the way the API ends one it fails to keep running: `afterMs` after its welcome
+ * (`welcome`, `welcomeback` or `reset`, whichever the listener opens with), it sends a
+ * `channelError` and a `disconnect` and closes the stream. With `afterMs` 0 they replace the
+ * welcome, which is how the API fails a listener it cannot set up.
+ */
+export function channelErrorAfterWelcome<T extends SSEEvent>(
+  afterMs: number,
+): OperatorFunction<T, T | SSEEvent> {
+  // connect() sets up every inner subscription before subscribing to the source once, so this
+  // also holds for a source that emits synchronously.
+  return connect((events$) => {
+    // Fires once, `afterMs` after the welcome.
+    const failure$ = events$.pipe(filter(isWelcome), take(1), delay(afterMs), share())
+    const passed$ = afterMs > 0 ? events$ : events$.pipe(filter((event) => !isWelcome(event)))
+    return merge(
+      passed$.pipe(takeUntil(failure$)),
+      failure$.pipe(concatMap(() => CHANNEL_ERROR_EVENTS)),
+    )
+  })
+}
+
+/**
+ * Withholds the events a listener opens its connection with (`welcome`, `welcomeback`, `reset`),
+ * keeping the stream open: the listener is connected but never set up, as when the API hangs while
+ * setting it up. Mutations never reach a listener in that state, so they are withheld too.
+ */
+export function withholdWelcome<T extends SSEEvent>(): MonoTypeOperatorFunction<T> {
+  return filter((event: T) => event.type !== 'message')
 }
 
 /**

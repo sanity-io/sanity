@@ -35,6 +35,8 @@ const variantsLocaleStrings = {
     'You do not have permission to delete this variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
+  /** Accessible name of the documentation link, which opens in a new tab. */
+  'overview.action.documentation.aria-label': 'Documentation (opens in a new tab)',
   /** Description for the Variants overview empty state. */
   'overview.empty-state.description':
     'Variant definitions describe how content is personalized for audiences, locales, segments, and more.',
@@ -49,6 +51,8 @@ const variantsLocaleStrings = {
   'overview.filter.clear-all': 'Clear filters',
   /** Accessible label / tooltip for removing a single active filter value chip. */
   'overview.filter.remove-value': 'Remove filter',
+  /** Accessible name of a filter chip's remove button; `title` is "Dimension: value". */
+  'overview.filter.remove-value.aria-label': 'Remove filter {{title}}',
   /** The button that opens the add-filter menu. */
   'overview.filter.add': 'Add filter',
   /** Placeholder for the searchable dimension list in the add-filter menu. */
@@ -152,6 +156,8 @@ const variantsLocaleStrings = {
   'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
   'dialog.create.remove-condition': 'Remove condition',
+  /** Accessible name for a condition row's remove button; `position` is the 1-based row number. */
+  'dialog.create.remove-condition.aria-label': 'Remove condition {{position}}',
   /** Label for the variant title field in the create variant dialog. */
   'dialog.create.variant-title.label': 'Title',
   /** Placeholder for the variant title field in the create variant dialog. */
@@ -171,7 +177,7 @@ const variantsLocaleStrings = {
   'dialog.create.type.placeholder': 'Choose type',
   /** Label for the priority field in the variant dialog. */
   'dialog.create.priority.label': 'Priority',
-  /** Tooltip explaining how priority affects variant matching. */
+  /** Help text under the priority field explaining how priority affects variant matching. */
   'dialog.create.priority.tooltip':
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
   /** Validation message when priority is not a valid number. */
