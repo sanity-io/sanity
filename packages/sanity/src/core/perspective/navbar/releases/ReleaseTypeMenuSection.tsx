@@ -53,7 +53,7 @@ export function ReleaseTypeMenuSection({
   const labelWithinStack = showStackLine && releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset
 
   return (
-    <Card padding={1} borderBottom>
+    <Card paddingX={2} paddingY={1} borderBottom>
       <VStack gap={1}>
         <ReleasesMenuLabelIndicator
           $withinRange={labelWithinStack}
