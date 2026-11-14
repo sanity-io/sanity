@@ -986,6 +986,7 @@ export {
   type UserWithPermission,
   useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'

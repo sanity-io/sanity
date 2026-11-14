@@ -506,6 +506,7 @@ export {
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
 export {useTimeZone} from '../core/hooks/useTimeZone'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'

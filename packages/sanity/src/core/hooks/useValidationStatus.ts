@@ -2,24 +2,55 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
+import {type ValidationListener} from '../store/document/document-pair/validation'
 import {type ValidationStatus} from '../validation'
 
-const INITIAL: ValidationStatus = {validation: [], isValidating: false}
+// The validation stream has not emitted yet. `isValidating: false` with no markers would read as a
+// finished, valid result to a consumer that does not also check `revision`.
+const INITIAL: ValidationStatus = {validation: [], isValidating: true}
 
 /** @internal */
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
-  /**
-   * @deprecated Ignored. Whether references must be published is decided by `validationTargetId`.
-   */
-  _requirePublishedReferences?: boolean,
+  options?: {
+    /**
+     * `global` follows the document through the document preview store's shared global listener
+     * instead of checking out the document pair, which opens a listener for every document
+     * validated. Changes are then validated only once the server has them, so use it where nobody
+     * edits the document, like a list or a board of documents. Defaults to `document`.
+     *
+     * `document` checks out the document pair and has the risk of creating a new listener for every document validated.
+     *  Use it only if you are already listening to the document pair while editing the document.
+     *
+     */
+    listener?: ValidationListener
+  },
+): ValidationStatus
+
+/**
+ * @internal
+ * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
+ * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
+ */
+export function useValidationStatus(
+  validationTargetId: string,
+  docTypeName: string,
+  requirePublishedReferences?: boolean,
+): ValidationStatus
+
+/** @internal */
+export function useValidationStatus(
+  validationTargetId: string,
+  docTypeName: string,
+  options?: {listener?: ValidationListener} | boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
+  const listener = typeof options === 'object' ? (options.listener ?? 'document') : 'document'
 
   const observable = useMemo(
-    () => documentStore.pair.validation(validationTargetId, docTypeName, false),
-    [docTypeName, documentStore.pair, validationTargetId],
+    () => documentStore.pair.validation(validationTargetId, docTypeName, false, {listener}),
+    [docTypeName, documentStore.pair, listener, validationTargetId],
   )
 
   // Kept synchronous: consumers use this as a write-side gate, not just for
