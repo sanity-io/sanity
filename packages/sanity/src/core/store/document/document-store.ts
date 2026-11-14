@@ -37,7 +37,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validation} from './document-pair/validation'
+import {validation, type ValidationListener} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -131,11 +131,21 @@ export interface DocumentStore {
         /**
          * `immediate` validates without waiting for idle callbacks while a user waits on the
          * result, and speeds up a run already in flight rather than starting it over.
-         * Scheduling is shared per document: it stays `immediate` until the last immediate
-         * subscription unsubscribes, and idle subscribers on the same stream get those results
-         * too.
+         * Scheduling is shared per document and `listener`: it stays `immediate` until the last
+         * immediate subscription with that listener unsubscribes, and idle subscribers on the
+         * same stream get those results too. Subscribers with the other listener keep
+         * validating in idle time.
          */
         scheduling?: ValidationScheduling
+        /**
+         * Where the validated document comes from. `global`, the default, follows the document
+         * through the document preview store's shared global listener, so it opens no listener
+         * of its own, but validates a change only once the server has it. `document` checks out
+         * the document pair instead: that opens a listener for the document, and validates local
+         * edits as they are made. Use it where the document is edited and the pair is checked out
+         * already, like the document pane.
+         */
+        listener?: ValidationListener
       },
     ) => Observable<ValidationStatus>
   }
@@ -191,6 +201,7 @@ export function createDocumentStore({
     client,
     getClient,
     observeDocumentPairAvailability,
+    observeDocument: documentPreviewStore.unstable_observeDocument,
     historyStore,
     schema,
     i18n,
@@ -312,7 +323,15 @@ export function createDocumentStore({
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, undefined, options?.scheduling)
+        return validation(
+          ctx,
+          idPair,
+          type,
+          validationTarget,
+          undefined,
+          options?.scheduling,
+          options?.listener,
+        )
       },
     },
   }
