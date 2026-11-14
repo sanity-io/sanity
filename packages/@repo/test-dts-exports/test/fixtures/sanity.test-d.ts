@@ -1044,6 +1044,8 @@ import type {
   MediaLibraryConfig,
   MediaLibraryFilter,
   MediaLibraryOptions,
+  MediaLibraryResolver,
+  MediaLibraryResolverContext,
   MediaPreview,
   MediaPreviewProps,
   MediaValidationValue,
@@ -5023,6 +5025,12 @@ describe('sanity', () => {
   })
   test('MediaLibraryOptions', () => {
     expectTypeOf<MediaLibraryOptions>().toBeObject()
+  })
+  test('MediaLibraryResolver', () => {
+    expectTypeOf<MediaLibraryResolver<any>>().not.toBeNever()
+  })
+  test('MediaLibraryResolverContext', () => {
+    expectTypeOf<MediaLibraryResolverContext>().toBeObject()
   })
   test('MediaPreview', () => {
     expectTypeOf<typeof MediaPreview>().toBeFunction()

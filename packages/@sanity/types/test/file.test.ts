@@ -2,7 +2,12 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {type FileDefinition, type StringDefinition} from '@sanity/types'
+import {
+  type FileDefinition,
+  type MediaLibraryResolver,
+  type MediaLibraryResolverContext,
+  type StringDefinition,
+} from '@sanity/types'
 import {describe, it} from 'vitest'
 
 import {defineField, defineType} from '../src/schema/types'
@@ -152,5 +157,32 @@ describe('file types', () => {
 
     let assignableToFile: FileDefinition = fileDef
     assignableToFile = defineType(assignableToFile)
+  })
+
+  describe('media library resolvers', () => {
+    it('should accept sync and async resolver functions', () => {
+      const syncResolver: MediaLibraryResolver<string> = (context) => context.libraryId
+      const asyncResolver: MediaLibraryResolver<string> = async (context) => {
+        const client = context.getMediaLibraryClient({apiVersion: '2025-02-19'})
+        return client.config().projectId ?? context.libraryId
+      }
+
+      // @ts-expect-error a resolver must resolve the declared type
+      const wrongReturnType: MediaLibraryResolver<string> = () => 42
+
+      const resolvers: MediaLibraryResolver<string>[] = [syncResolver, asyncResolver]
+    })
+
+    it('should expose the connected library id as a string on the context', () => {
+      // compiles only while `libraryId` is a `string`
+      const readLibraryId = (context: MediaLibraryResolverContext): string => context.libraryId
+
+      const readLibraryIdAsNumber = (context: MediaLibraryResolverContext): number =>
+        // @ts-expect-error libraryId is a string, not a number
+        context.libraryId
+
+      // @ts-expect-error libraryId is required on the context
+      const missingLibraryId: Pick<MediaLibraryResolverContext, 'libraryId'> = {}
+    })
   })
 })
