@@ -34,12 +34,9 @@ const PUBLIC_ENTRIES = {
  * deprecated utilities that studios should stop using. The `@internal @deprecated` tags on the
  * `sanity` export are the message to customers (see #14842), and not re-exporting them here keeps
  * the deprecated import the only one; their removal is governed by the deprecation, not by the
- * internals moving. `createAuthStore` (deprecated since v3.15.0) and its options type are the only
- * ones today.
+ * internals moving. There are none today.
  */
-const PUBLIC_BY_USAGE: Record<string, readonly string[]> = {
-  sanity: ['createAuthStore', 'CreateAuthStoreOptions'],
-}
+const PUBLIC_BY_USAGE: Record<string, readonly string[]> = {}
 
 function isInternal(declaration: ExportedDeclarations): boolean {
   const docs = Node.isVariableDeclaration(declaration)

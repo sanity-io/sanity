@@ -364,7 +364,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Button of a function the query declares differently from the library's version */
   'vision.functions.update': 'Update library',
   /** Button over the query editor that opens the bar writing a query from a description */
-  'vision.generate.button': 'Generate query',
+  'vision.generate.button': 'Generate',
   /** Closes the generate query bar */
   'vision.generate.close': 'Close',
   /** Explanation under the generate query field */
@@ -625,8 +625,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /** The round trip and the server's time for the query, in milliseconds */
-  'vision.network.timing.value': '{{e2e}}ms round trip, {{server}}ms on the server',
+  /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
+  'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Network panel: the trace of the request, for Sanity support */
   'vision.network.trace': 'Trace ID',
   /** Hint in the Network panel while queries go to the API */
@@ -634,22 +634,34 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Turn on Use the API CDN in Options to send queries through the CDN.',
   /** Label of the browser's marker on the Network panel's globe, placed from its time zone */
   'vision.network.you': 'You',
-  /** Hint under the dataset field while the tab follows the workspace's dataset */
+  /** Heading of the dataset menu's entry for the dataset the current workspace uses */
+  'vision.options.dataset.current-workspace': 'Current workspace',
+  /** In the pin button's tooltip while the tab follows the workspace's dataset */
   'vision.options.dataset.follows-workspace': 'Follows the workspace',
+  /** Shown in the dataset menu when the search matches no dataset */
+  'vision.options.dataset.no-matches': 'No datasets match',
   /** Button that pins the current dataset so the tab stops following the workspace */
   'vision.options.dataset.pin': 'Pin a dataset',
-  /** Hint under the dataset field while a dataset is pinned */
+  /** In the pin button's tooltip while a dataset is pinned */
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
+  /** Placeholder of the search field at the top of the dataset menu */
+  'vision.options.dataset.search-placeholder': 'Search datasets',
+  /** Heading of the dataset menu's group of datasets other workspaces of this project use */
+  'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
+  /** Heading of the dataset menu's group of datasets no workspace of this project uses */
+  'vision.options.dataset.unused': 'Not used by any workspaces',
   /** Button that makes the tab follow the workspace's dataset again */
   'vision.options.dataset.use-workspace': 'Use the workspace dataset',
   /** Label for the "Include content source map" switch */
   'vision.options.include-source-map': 'Include content source map',
-  /** Description for the "Include content source map" switch */
+  /** Description for the "Include content source map" switch, in its info tooltip */
   'vision.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
+  /** The short line under the "Include content source map" switch; the rest is in its tooltip */
+  'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',
-  /** Note under the API CDN switch while the studio signs in with a cookie */
+  /** Note in the API CDN switch's info tooltip while the studio signs in with a cookie */
   'vision.options.use-cdn.anonymous':
     'This studio signs you in with a cookie, which the API CDN never receives: it answers as it would an anonymous visitor, with what a public dataset shows.',
   /**
@@ -660,9 +672,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The API CDN does not serve drafts or releases, so queries with the {{perspective}} perspective go to the API. With published or raw they use the CDN.',
   /** Heading of the notice shown while the perspective keeps queries off the API CDN */
   'vision.options.use-cdn.blocked.title': 'Queries go to the API, not the CDN',
-  /** Description of the API CDN switch */
+  /** Description of the API CDN switch, in its info tooltip */
   'vision.options.use-cdn.description':
     'Sends the query to the API CDN, like useCdn: true in @sanity/client, with the published and raw perspectives: drafts and releases always go to the API. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
+  /** The short line under the API CDN switch; the rest is in its tooltip */
+  'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
   'vision.options.use-cdn.use-published': 'Use the published perspective',
   /** Perspective option following the studio navbar; the name is the release, published or drafts */
@@ -675,13 +689,30 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.variant.none': 'None',
   /** Label of the variant field */
   'vision.options.variant-label': 'Variant',
+  /** Chip in the request column's action bar while the tab queries another dataset than the workspace */
+  'vision.overrides.dataset.button': 'Dataset {{dataset}}',
+  /** Tooltip of the dataset override chip */
+  'vision.overrides.dataset.tooltip':
+    'Dataset {{dataset}} differs from the workspace dataset {{workspaceDataset}}. Select to change it in Options.',
+  /** Chip in the request column's action bar while the tab's perspective differs from the navbar's */
+  'vision.overrides.perspective.button': 'Perspective {{perspective}}',
+  /** Tooltip of the perspective override chip; both names as the perspective select shows them */
+  'vision.overrides.perspective.tooltip':
+    'Perspective {{perspective}} differs from the global perspective {{globalPerspective}}. Select to change it in Options.',
+  /** Chip in the request column's action bar while the tab sends no variant but the navbar has one */
+  'vision.overrides.variant.button': 'No variant',
+  /** Tooltip of the variant override chip */
+  'vision.overrides.variant.tooltip':
+    'Queries send no variant, which differs from the global variant {{variant}}. Select to change it in Options.',
   /** Accessible label for collapsing a bottom panel */
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vision.panel.expand': 'Expand panel',
+  /** Tooltip of a control that sizes its bottom panel to the open tab */
+  'vision.panel.fit-content': 'Double-click to fit the panel to its content',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vision.panel.explain': 'Explain',
-  /** Label of the Functions tab in the response panel */
+  /** Label of the Functions tab in the request panel */
   'vision.panel.functions': 'Functions',
   /** Label of the Network tab in the response panel */
   'vision.panel.network': 'Network',
@@ -691,8 +722,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.mutate': 'Mutate',
   /** Label of the "History" tab in the response panel */
   'vision.panel.history': 'History',
-  /** Label of the "Lint" tab in the response panel, listing the query's lint findings */
+  /** Label of the "Lint" tab in the request panel, listing the query's lint findings */
   'vision.panel.lint': 'Lint',
+  /** Label of the Lint tab when the query has findings. `count` is how many */
+  'vision.panel.lint-count': 'Lint ({{count}})',
   /** Label of the "Options" panel in the request column */
   'vision.panel.options': 'Options',
   /** Label of the "Response" tab in the response panel */
@@ -703,6 +736,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.add-item': 'Add item',
   /** Placeholder of a params form field that takes any JSON value */
   'vision.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
+  /** Accessible label of the info icon showing a params form field's type and usages */
+  'vision.params-form.details': 'About ${{name}}',
   /** Shown in the params form when the query uses no params */
   'vision.params-form.empty': 'The query uses no params. Each $name in it gets a field here.',
   /** Shown in the params form while the params JSON cannot be parsed */
@@ -726,7 +761,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.item-label': '${{name}}, item {{index}}',
   /** Placeholder of an item input of a list param in the params form */
   'vision.params-form.item-placeholder': 'Item',
-  /** Under a params form field whose param has no value */
+  /**
+   * Under a params form field whose param has no value
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params-form.missing': 'Not set: the query fails until it has a value',
   /** Shown in the params form when the workspace schema could not be read */
   'vision.params-form.no-schema':
@@ -737,8 +776,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
   'vision.params-form.remove': 'Remove',
+  /** Button removing every param the query does not use from the params */
+  'vision.params-form.remove-all': 'Remove all',
   /** Accessible label of the button removing an item from a list param */
   'vision.params-form.remove-item': 'Remove item',
+  /** Tooltip of the alert icon of a params form field whose param has no value */
+  'vision.params-form.required': 'The query fails until this param has a value',
   /** Shown in the params form when the query does not parse */
   'vision.params-form.syntax-error':
     'The query does not parse, so its params are listed without types.',
@@ -762,13 +805,25 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.type.options': '{{type}}, one of {{count}} values',
   /** Type hint of a params form field: text */
   'vision.params-form.type.string': 'text',
+  /** In the details tooltip of a params form field: the type of value the query expects */
+  'vision.params-form.type-detail': 'type: {{type}}',
+  /** Accessible label of the info icon by the unused params heading, about where types come from */
+  'vision.params-form.types-details': 'About the param types',
   /** Heading of the params the query does not use, listed in the params form */
   'vision.params-form.unused': 'Not used by the query',
   /** Before the expressions that use a param, in the params form */
   'vision.params-form.used-in': 'Used in',
-  /** Value announced for the params resize handle while the panel sizes itself to its content */
+  /**
+   * Value announced for the params resize handle while the panel sizes itself to its content
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.fit-height': 'Sized to the content, {{height}} pixels',
-  /** Accessible label and tooltip of the handle for resizing the params panel */
+  /**
+   * Accessible label and tooltip of the handle for resizing the params panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
   /** Tab showing the params as a form inferred from the query */

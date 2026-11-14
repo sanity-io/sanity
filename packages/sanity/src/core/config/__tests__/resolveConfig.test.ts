@@ -171,7 +171,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/singleDocRelease'},
     ])
   })
-  it('still registers the comments plugin as sanity/comments when v2 is enabled', async () => {
+  it('still registers the comments plugin as sanity/comments when legacy is enabled', async () => {
     const projectId = 'ppsg7ml5'
     const dataset = 'production'
     const client = createClient({
@@ -188,7 +188,7 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [mockPlugin()],
-        beta: {comments: {v2: true}},
+        comments: {legacy: true},
       }),
     )
     const commentsPlugins =
@@ -646,83 +646,49 @@ describe('beta variants config', () => {
   })
 })
 
-describe('beta comments config', () => {
+describe('comments.legacy config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults comments v2 to false', async () => {
-    const source = await createSourceFromConfig({projectId, dataset})
+  it('defaults comments.legacy to false on the workspace', async () => {
+    const workspace = await createWorkspaceFromConfig({projectId, dataset})
 
-    expect(source.beta?.comments?.v2).toBe(false)
+    expect(workspace.comments.legacy).toBe(false)
   })
 
-  it('resolves comments v2 from root config', async () => {
-    const source = await createSourceFromConfig({
+  it('resolves comments.legacy from root config', async () => {
+    const workspace = await createWorkspaceFromConfig({
       projectId,
       dataset,
-      beta: {comments: {v2: true}},
+      comments: {legacy: true},
     })
 
-    expect(source.beta?.comments?.v2).toBe(true)
+    expect(workspace.comments.legacy).toBe(true)
   })
 
-  it('resolves comments v2 from plugin config', async () => {
-    const source = await createSourceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        definePlugin({
-          name: 'sanity/beta-comments-v2',
-          beta: {comments: {v2: true}},
-        })(),
-      ],
-    })
-
-    expect(source.beta?.comments?.v2).toBe(true)
-  })
-
-  it('lets root config override plugin comments config', async () => {
-    const source = await createSourceFromConfig({
-      projectId,
-      dataset,
-      plugins: [
-        definePlugin({
-          name: 'sanity/beta-comments-v2',
-          beta: {comments: {v2: false}},
-        })(),
-      ],
-      beta: {comments: {v2: true}},
-    })
-
-    expect(source.beta?.comments?.v2).toBe(true)
-  })
-
-  it('throws when comments is not an object', async () => {
+  it('throws when comments.legacy is not a boolean', async () => {
     await expect(
-      createSourceFromConfig({
+      createWorkspaceFromConfig({
         projectId,
         dataset,
-        beta: {
-          // @ts-expect-error should be an object
-          comments: 'v2',
+        comments: {
+          // @ts-expect-error should be a boolean
+          legacy: 'yes',
         },
       }),
-    ).rejects.toThrow('Expected `beta.comments` to be an object, but received string')
+    ).rejects.toThrow('Expected `comments.legacy` to be a boolean, but received string')
   })
 
-  it('throws when comments v2 is not a boolean', async () => {
-    await expect(
-      createSourceFromConfig({
-        projectId,
-        dataset,
-        beta: {
-          comments: {
-            // @ts-expect-error should be a boolean
-            v2: 'enabled',
-          },
-        },
-      }),
-    ).rejects.toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
+  it('ignores a leftover beta.comments.v2 flag', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      beta: {
+        comments: {v2: true},
+      } as never,
+    })
+
+    expect(workspace.comments.legacy).toBe(false)
   })
 })
 

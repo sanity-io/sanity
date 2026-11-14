@@ -234,9 +234,9 @@ describe('visionMachine', () => {
     expect(selectOpenDrawer(harness.snapshot())).toBeNull()
 
     // One drawer at a time: the tab's tools and the settings open in it like the query lists
-    harness.actor.send({type: 'drawer.toggle', drawer: 'lint'})
-    expect(selectOpenDrawer(harness.snapshot())).toBe('lint')
-    expect(selectOpenTabDrawer(harness.snapshot())).toBe('lint')
+    harness.actor.send({type: 'drawer.toggle', drawer: 'delta'})
+    expect(selectOpenDrawer(harness.snapshot())).toBe('delta')
+    expect(selectOpenTabDrawer(harness.snapshot())).toBe('delta')
     harness.actor.send({type: 'drawer.toggle', drawer: 'settings'})
     expect(selectOpenDrawer(harness.snapshot())).toBe('settings')
     expect(selectOpenTabDrawer(harness.snapshot())).toBeNull()

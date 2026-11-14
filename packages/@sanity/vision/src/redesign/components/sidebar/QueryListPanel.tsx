@@ -25,8 +25,10 @@ import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VisionDrawer, type VisionTab} from '../../store/types'
 import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
+import {cx} from '../../util/cx'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
+import * as sidebarStyles from './sidebar.module.css'
 
 interface QueryListPanelProps {
   mode: VisionDrawer
@@ -255,6 +257,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           >
             <Button
               aria-label={t('vision.saved.save-current')}
+              className={sidebarStyles.pressable}
               data-testid="vision-save-current-query"
               disabled={!canSave}
               icon={AddIcon}
@@ -286,6 +289,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
               return (
                 <Card
                   borderBottom
+                  className={sidebarStyles.queryRow}
                   data-testid="vision-saved-query"
                   key={query._key}
                   padding={1}
@@ -310,7 +314,11 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={styles.listItemButton}
+                          className={cx(
+                            styles.listItemButton,
+                            sidebarStyles.pressable,
+                            sidebarStyles.pressableRow,
+                          )}
                           data-testid="vision-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -340,7 +348,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Button>
                       )}
                     </Box>
-                    <Box paddingTop={1}>
+                    <Box className={sidebarStyles.queryRowMenu} paddingTop={1}>
                       <MenuButton
                         button={<ContextMenuButton />}
                         id={`vision-saved-query-menu-${query._key}`}

@@ -1,5 +1,4 @@
-import {useEffect, useRef} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useEffect, useRef, useEffectEvent} from 'react'
 
 /**
  * Calls `onChange` after a render in which `value` differs from the previous render, but not on
@@ -14,6 +13,5 @@ export function useOnValueChange<T>(value: T, onChange: (value: T, previous: T) 
     const before = previous.current
     previous.current = value
     handleChange(value, before)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [value])
 }

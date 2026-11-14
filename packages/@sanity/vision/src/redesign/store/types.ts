@@ -62,7 +62,7 @@ export type VisionTabInit = Partial<Omit<VisionTab, 'options'>> & {
 export type VisionSettings = VisionTabOptions
 
 /** The active tab's tools, which the tab renders into the drawer (see `TabDrawerSlot`) */
-export type VisionTabDrawer = 'lint' | 'functions' | 'delta' | 'mutate'
+export type VisionTabDrawer = 'delta' | 'mutate'
 
 /** What the sidebar opens next to it: the query lists, the active tab's tools and the settings */
 export type VisionDrawer = 'saved' | 'shared' | VisionTabDrawer | 'settings'

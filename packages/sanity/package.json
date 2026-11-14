@@ -244,7 +244,6 @@
     "ui5": "catalog:",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
-    "use-effect-event": "^2.0.4",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.7.0",
     "uuid": "^14.0.3",
@@ -297,8 +296,8 @@
     "vitest-package-exports": "^1.2.0"
   },
   "peerDependencies": {
-    "react": "^19.2.2",
-    "react-dom": "^19.2.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "styled-components": "^6.1.15"
   },
   "browserslist": [

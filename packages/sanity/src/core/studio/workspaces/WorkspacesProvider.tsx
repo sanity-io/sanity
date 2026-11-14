@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
 import {useSyncObservable, useObservableSubject} from 'react-rx'
 import {firstValueFrom} from 'rxjs'
@@ -20,7 +21,6 @@ import {
   StudioErrorHandlerContext,
   WorkspacesContext,
 } from 'sanity/_singletons'
-import {useEffectEvent} from 'use-effect-event'
 
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
@@ -370,7 +370,6 @@ function WorkspacesClaimProvider({
     if (hasLoggedOutClaim(claim)) return
     rememberLoggedOutClaim(claim)
     handleLogout(claim)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [claim, hasLoggedOutClaim, rememberLoggedOutClaim])
 
   return (

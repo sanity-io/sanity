@@ -9,7 +9,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {usePerspectiveOptionName} from './OptionFields'
 
 /** The fields of the Options panel the button can show */
-export type RevealedOption = 'apiVersion' | 'perspective'
+export type RevealedOption = 'apiVersion' | 'dataset' | 'perspective' | 'variant'
 
 export interface ApiVersionButtonProps {
   resolved: Pick<

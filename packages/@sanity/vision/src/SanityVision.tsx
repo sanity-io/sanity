@@ -32,9 +32,8 @@ function SanityVision(props: SanityVisionProps) {
     ...props.tool.options,
   }
   const projectId = client.config().projectId || 'default'
-  const redesignEnabled = config.beta?.redesign?.enabled === true
   const preference = useRedesignPreference(projectId)
-  const showRedesign = redesignEnabled && preference.optedIn
+  const showRedesign = preference.optedIn
 
   const optIn = useCallback(
     () => writeRedesignPreference(projectId, {optedIn: true, dismissed: false}),
@@ -56,16 +55,11 @@ function SanityVision(props: SanityVisionProps) {
           showRedesign ? (
             <VisionRedesignLoader {...loaded} config={config} onSwitchToClassic={switchToClassic} />
           ) : (
-            <VisionGui
-              {...loaded}
-              client={client}
-              config={config}
-              onSwitchToRedesign={redesignEnabled ? optIn : undefined}
-            />
+            <VisionGui {...loaded} client={client} config={config} onSwitchToRedesign={optIn} />
           )
         }
       </VisionContainer>
-      {redesignEnabled && !showRedesign && !preference.dismissed && (
+      {!showRedesign && !preference.dismissed && (
         <RedesignToast onAccept={optIn} onDismiss={dismiss} />
       )}
     </VisionErrorBoundary>

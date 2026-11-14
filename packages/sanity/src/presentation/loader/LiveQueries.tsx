@@ -18,7 +18,15 @@ import {
   type LoaderNodeMsg,
 } from '@sanity/presentation-comlink'
 import {dequal as isEqual} from 'dequal/lite'
-import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
+import {
+  memo,
+  startTransition,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  useEffectEvent,
+} from 'react'
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
@@ -29,7 +37,6 @@ import {
   useProjectId,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {variantsApiClient} from '../../core/store/document/document-pair/utils/variantsApiClient'
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
@@ -261,7 +268,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       handleQueryChange(comlink, perspective, variant, query, params, result, resultSourceMap, tags)
     }
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [comlink, params, perspective, query, result, resultSourceMap, tags, variant])
 
   return null

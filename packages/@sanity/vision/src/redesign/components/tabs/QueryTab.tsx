@@ -2,10 +2,9 @@ import {Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import debounce from 'lodash-es/debounce.js'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState, useEffectEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
@@ -26,12 +25,7 @@ import {
   useVisionSelector,
   type VisionLayout,
 } from '../../store/VisionActorContext'
-import {
-  isPanelExpanded,
-  selectDatasets,
-  selectOpenDrawer,
-  selectParamsView,
-} from '../../store/visionMachine'
+import {selectDatasets, selectOpenDrawer, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
@@ -43,6 +37,7 @@ import {
 } from '../../util/groqWasm'
 import {addMissingParams, missingParamNames} from '../../util/paramsPrefill'
 import {parseQueryPaste} from '../../util/parseQueryPaste'
+import {isQueryParamName} from '../../util/queryParamName'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
 import * as styles from '../redesign.module.css'
@@ -68,8 +63,11 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
-/** How long a query goes unedited before its referenced params are prefilled into the JSON editor */
-const PARAMS_PREFILL_DEBOUNCE_MS = 333
+/**
+ * How long a query goes unedited before its referenced params are written into the JSON editor.
+ * Shorter than this, a `$` being typed would land as `""` and then `"f"` before the name exists.
+ */
+const PARAMS_PREFILL_IDLE_MS = 3_000
 /**
  * A tab opened for a generated query lays out over its first frames (the split measures its
  * container), so the editor's width counts once it has stayed the same this many frames
@@ -108,7 +106,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
-  // The query editor's diagnostics, listed in the response column's Lint panel
+  // The query editor's diagnostics, listed in the request column's Lint tab
   const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
@@ -129,12 +127,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   // debounce before they read the tab, as Run does
   const pendingEdits = usePendingEdits()
   useEffect(() => pendingEdits.register(() => setParams.flush()), [pendingEdits, setParams])
-  // Collapsing the Params panel unmounts its editor, and expanding it seeds a new one from the
-  // tab; an edit still waiting in the debounce is committed first so the new editor shows it
-  const paramsExpanded = useVisionSelector((snapshot) => isPanelExpanded(snapshot, 'params'))
-  useOnValueChange(paramsExpanded, (expanded) => {
-    if (!expanded) setParams.flush()
-  })
+  const flushParams = useCallback(() => setParams.flush(), [setParams])
   // Switching between the editor and the form unmounts one and mounts the other from the tab
   const paramsView = useVisionSelector(selectParamsView)
   useOnValueChange(paramsView, () => setParams.flush())
@@ -148,10 +141,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [setParams, setParamsNow],
   )
 
-  // A query that stops changing for a moment has the params it references ($foo, $bar)
-  // prefilled into the JSON params editor, as empty placeholders, without touching any key
-  // already there. The form view has its own, richer inference (groq-js based, with types) and
-  // is unaffected: paramsEditorRef is only set while the JSON view is mounted
+  // Params a query references ($foo, $bar) are written into the JSON params editor once the
+  // query field blurs, or once it has been idle, without touching any key already there. Writing
+  // on each keystroke turns a `$` that is still being typed into `""` and then `"f"`. A bare `$`
+  // parses as an empty name, which is not a key. The form view has its own, richer inference
+  // (groq-js based, with types) and is unaffected: paramsEditorRef is only set while the JSON
+  // view is mounted
   const prefillParams = useEffectEvent(async (query: string) => {
     if (!paramsEditorRef.current) return
     let referenced: GroqQueryParam[]
@@ -160,7 +155,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     } catch {
       return // the query does not parse yet; nothing reliable to prefill from
     }
-    if (referenced.length === 0) return
+    const referencedNames = referenced.map((param) => param.name).filter(isQueryParamName)
+    if (referencedNames.length === 0) return
     // The wasm module loads lazily; re-check everything that could have changed meanwhile: the
     // query may have moved on, or the params panel may have collapsed or switched to the form.
     // An edit still waiting in the params debounce is committed first, so a key just typed in
@@ -169,11 +165,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     setParams.flush()
     const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
     if (!latest || latest.query !== query) return
-    const missing = missingParamNames(
-      referenced.map((param) => param.name),
-      latest.rawParams,
-      t,
-    )
+    const missing = missingParamNames(referencedNames, latest.rawParams, t)
     if (!missing || missing.length === 0) return
     const nextRawParams = addMissingParams(latest.rawParams, missing)
     if (nextRawParams === latest.rawParams) return
@@ -181,10 +173,21 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     setParamsNow(nextRawParams)
   })
   useEffect(() => {
-    const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_DEBOUNCE_MS)
-    return () => clearTimeout(timeoutId)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [tab.query])
+    const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_IDLE_MS)
+    // Focus leaving the editor writes immediately. Focus moving inside it (the gutter, a
+    // completion) is not leaving it
+    const editor = rootElement?.querySelector('[data-testid="vision-query-editor"]')
+    const handleFocusOut = (event: Event) => {
+      const next = event instanceof FocusEvent ? event.relatedTarget : null
+      if (next instanceof Node && editor?.contains(next)) return
+      void prefillParams(tab.query)
+    }
+    editor?.addEventListener('focusout', handleFocusOut)
+    return () => {
+      clearTimeout(timeoutId)
+      editor?.removeEventListener('focusout', handleFocusOut)
+    }
+  }, [rootElement, tab.query])
 
   // The request a fetch of the tab's own query should carry right now: params typed within the
   // debounce window belong to it, so they are committed first and the request is built from what
@@ -274,10 +277,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
-  // A lint finding or a function declaration picked on a phone, from the response pane or from the
-  // sidebar's drawer: the editor is `display: none` behind the one, and inert under the other,
-  // which covers the tool, so it cannot take focus until the request pane shows and the drawer
-  // has closed
+  // A lint finding or a function declaration picked on a phone, where the editor is `display: none`
+  // behind the response pane, or inert under a sidebar drawer, which covers the tool: it cannot
+  // take focus until the request pane shows and the drawer has closed
   const pendingRevealRef = useRef<TextRange | null>(null)
   const drawerOpen = useVisionSelector((snapshot) => selectOpenDrawer(snapshot) !== null)
   const revealRange = useCallback(
@@ -371,11 +373,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   })
   useEffect(() => {
     resumeAutoRefetch()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- a tab opened with fetch-on-open runs its query once, when it mounts
     if (fetchOnOpen) void fetchOpenedQuery()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [fetchOnOpen])
 
   // While refetching automatically, a request that changed outside the editors is fetched right
@@ -487,10 +488,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}
+      lintFindings={lintFindings}
+      onEditQuery={editQuery}
       onLintFindings={setLintFindings}
       onOptionsChange={setOptions}
       onParamsChange={setParams}
+      onParamsFlush={flushParams}
       onParamsReplace={replaceParams}
+      onRevealRange={revealRange}
       onPrettify={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
@@ -505,10 +510,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   const responsePanel = (
     <ResponsePanel
-      lintFindings={lintFindings}
-      onEditQuery={editQuery}
       onMutationsApplied={refetchAfterMutations}
-      onRevealRange={revealRange}
       request={request}
       resolved={resolved}
       runnerRef={runnerRef}
@@ -583,7 +585,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   // Both panes keep the minimum: the divider stops short of either, and a size dragged in a
   // wider window is clamped by the split for as long as the window is narrower (the request
-  // pane, with its three panels, wins when there is no room for both)
+  // pane wins when there is no room for both)
   return (
     <Box {...panelProps} className={styles.splitPaneContainer} ref={setSplitContainer}>
       <ResizableSplit

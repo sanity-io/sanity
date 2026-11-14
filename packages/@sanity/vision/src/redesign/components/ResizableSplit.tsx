@@ -12,7 +12,7 @@ import {cx} from '../util/cx'
 import * as styles from './redesign.module.css'
 
 /** The divider's own extent along the axis; the rest of its hit area overlaps the panes */
-const SPLIT_HANDLE_SIZE = 1
+export const SPLIT_HANDLE_SIZE = 1
 /** A keyboard step, five with Shift */
 const KEYBOARD_STEP = 16
 

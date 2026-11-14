@@ -1,5 +1,4 @@
-import {useEffect} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useEffect, useEffectEvent} from 'react'
 
 import {isVisionPasteTarget} from '../../util/isVisionPasteTarget'
 import {matchVisionShortcut, type VisionShortcutId} from '../util/shortcuts'
@@ -51,6 +50,5 @@ export function useVisionDocumentEvents({
       document.removeEventListener('keydown', onKeyDown)
       document.removeEventListener('paste', onPasteEvent)
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [])
 }

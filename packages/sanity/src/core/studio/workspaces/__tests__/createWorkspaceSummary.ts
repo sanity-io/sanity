@@ -25,7 +25,7 @@ export function createWorkspaceSummary(
     theme: THEME,
     schema: workspace.schema,
     i18n: workspace.i18n,
-    comments: {v2: false},
+    comments: workspace.comments,
     tasks: {enabled: false},
     scheduledDrafts: {enabled: false},
     variants: {enabled: false},

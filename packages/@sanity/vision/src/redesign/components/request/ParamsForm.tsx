@@ -1,11 +1,14 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
-import {useId, useState} from 'react'
+import {type ReactNode, useId, useState} from 'react'
 import {InlineCode, type TFunction, useTranslation} from 'sanity'
-import {Text, Box, Flex, Code} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -132,12 +135,14 @@ interface ValueInputProps {
   /** What an emptied input sends: nothing for a param, an empty string for a list item */
   empty: unknown
   disabled: boolean
+  /** Why the input is invalid, shown like a required Structure field */
+  invalid?: string
   placeholder: string
   onChange: (value: unknown) => void
 }
 
 function ValueInput(props: ValueInputProps) {
-  const {id, label, kind, listId, value, empty, disabled, placeholder, onChange} = props
+  const {id, label, kind, listId, value, empty, disabled, invalid, placeholder, onChange} = props
   // The text as typed, for as long as it is what the param holds: "1." or "02" read as numbers,
   // and showing the number instead would rewrite the text under the caret
   const [draft, setDraft] = useState<{text: string; value: unknown}>()
@@ -146,6 +151,7 @@ function ValueInput(props: ValueInputProps) {
   return (
     <TextInput
       aria-label={label}
+      customValidity={invalid}
       disabled={disabled}
       fontSize={1}
       id={id}
@@ -168,15 +174,17 @@ function BooleanInput(props: {
   value: unknown
   isSet: boolean
   disabled: boolean
+  invalid: string | undefined
   onChange: (value: unknown) => void
 }) {
-  const {id, value, isSet, disabled, onChange} = props
+  const {id, value, isSet, disabled, invalid, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   let selected = ''
   if (typeof value === 'boolean') selected = String(value)
   else if (isSet) selected = 'other'
   return (
     <Select
+      customValidity={invalid}
       disabled={disabled}
       fontSize={1}
       id={id}
@@ -255,9 +263,11 @@ function ParamField(props: {
   value: unknown
   isSet: boolean
   disabled: boolean
+  /** Whether the details say the types come from the query alone */
+  schemaNote: boolean
   onChange: (value: unknown) => void
 }) {
-  const {param, value, isSet, disabled, onChange} = props
+  const {param, value, isSet, disabled, schemaNote, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const inputId = useId()
   const listId = useId()
@@ -265,12 +275,15 @@ function ParamField(props: {
   const options = type.options && type.options.length > 0 ? type.options : undefined
   const problem = isSet ? describeProblem(type, value, t) : undefined
 
+  const required = isSet ? undefined : t('vision.params-form.required')
+
   let input
   if (type.kind === 'boolean' && !type.array) {
     input = (
       <BooleanInput
         disabled={disabled}
         id={inputId}
+        invalid={required}
         isSet={isSet}
         onChange={onChange}
         value={value}
@@ -294,6 +307,7 @@ function ParamField(props: {
             disabled={disabled}
             empty={undefined}
             id={inputId}
+            invalid={required}
             kind={type.array ? 'any' : type.kind}
             listId={options && listId}
             onChange={onChange}
@@ -321,19 +335,53 @@ function ParamField(props: {
 
   return (
     <Stack data-testid={`vision-params-form-${param.name}`} gap={2}>
-      <Flex alignItems="center" flexWrap="wrap" gap={2}>
+      <Flex alignItems="center" gap={1}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
         </Text>
-        <Text
-          data-testid={`vision-params-form-${param.name}-type`}
-          muted
-          size={1}
-          as="div"
-          trim={true}
+        <InfoTip
+          label={t('vision.params-form.details', {name: param.name})}
+          testId={`vision-params-form-${param.name}-details`}
         >
-          {describeType(type, t)}
-        </Text>
+          <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
+            {t('vision.params-form.type-detail', {type: describeType(type, t)})}
+          </Text>
+          {param.usages.length > 0 && (
+            <Text size={1} as="div" trim={true}>
+              {t('vision.params-form.used-in')}{' '}
+              {param.usages.map((usage, index) => (
+                <span key={usage}>
+                  {index > 0 && ', '}
+                  <InlineCode>{usage}</InlineCode>
+                </span>
+              ))}
+            </Text>
+          )}
+          {schemaNote && (
+            <Text muted size={1} as="div" trim={true}>
+              {t('vision.params-form.no-schema')}
+            </Text>
+          )}
+        </InfoTip>
+        {required && (
+          <Tooltip
+            animate
+            content={
+              <Flex alignItems="center" gap={2}>
+                <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
+                <Text size={1} as="div" trim={true}>
+                  {required}
+                </Text>
+              </Flex>
+            }
+            placement="top"
+            portal
+          >
+            <Box data-testid={`vision-params-form-${param.name}-required`} paddingX={1}>
+              <Icon aria-label={required} icon={ErrorOutlineIcon} size={1} tone="critical" />
+            </Box>
+          </Tooltip>
+        )}
       </Flex>
       {input}
       {options && (
@@ -355,23 +403,33 @@ function ParamField(props: {
           </Text>
         </Card>
       )}
-      {!isSet && (
-        <Text muted size={1} as="div" trim={true}>
-          {t('vision.params-form.missing')}
-        </Text>
-      )}
-      {param.usages.length > 0 && (
-        <Text muted size={0} as="div" trim={true}>
-          {t('vision.params-form.used-in')}{' '}
-          {param.usages.map((usage, index) => (
-            <span key={usage}>
-              {index > 0 && ', '}
-              <InlineCode>{usage}</InlineCode>
-            </span>
-          ))}
-        </Text>
-      )}
     </Stack>
+  )
+}
+
+/** A pressable info icon, with the details in its tooltip */
+function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
+  const {label, testId, children} = props
+  return (
+    <Tooltip
+      animate
+      content={
+        <Stack data-testid={`${testId}-content`} gap={2}>
+          {children}
+        </Stack>
+      }
+      placement="top"
+      portal
+    >
+      <Button
+        aria-label={label}
+        data-testid={testId}
+        fontSize={1}
+        icon={InfoOutlineIcon}
+        mode="bleed"
+        padding={1}
+      />
+    </Tooltip>
   )
 }
 
@@ -395,6 +453,14 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
         : {...values, [name]: value}
     onChange(JSON.stringify(next, null, 2))
   }
+  const removeUnused = () => {
+    const next = Object.fromEntries(Object.entries(values).filter(([key]) => known.has(key)))
+    onChange(JSON.stringify(next, null, 2))
+  }
+
+  const schemaUnavailable = inference.params.length > 0 && inference.schemaUnavailable
+  // The note sits by the unused heading when there is one, and in each param's details otherwise
+  const schemaNoteInDetails = schemaUnavailable && unused.length === 0
 
   return (
     <Stack data-testid="vision-params-form" gap={4} padding={3}>
@@ -422,14 +488,36 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
           key={param.name}
           onChange={(value) => setValue(param.name, value)}
           param={param}
+          schemaNote={schemaNoteInDetails}
           value={values[param.name]}
         />
       ))}
       {unused.length > 0 && (
         <Stack data-testid="vision-params-form-unused" gap={2}>
-          <Text muted size={1} weight="medium" as="div" trim={true}>
-            {t('vision.params-form.unused')}
-          </Text>
+          <Flex alignItems="center" gap={1}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              {t('vision.params-form.unused')}
+            </Text>
+            {schemaUnavailable && (
+              <InfoTip
+                label={t('vision.params-form.types-details')}
+                testId="vision-params-form-no-schema"
+              >
+                <Text size={1} as="div" trim={true}>
+                  {t('vision.params-form.no-schema')}
+                </Text>
+              </InfoTip>
+            )}
+            <Box flexGrow={1} />
+            <Button
+              data-testid="vision-params-form-remove-all"
+              fontSize={1}
+              mode="bleed"
+              onClick={removeUnused}
+              padding={2}
+              text={t('vision.params-form.remove-all')}
+            />
+          </Flex>
           {unused.map((name) => (
             <Flex alignItems="center" gap={2} key={name}>
               <Text size={1} as="div" trim={true}>
@@ -450,11 +538,6 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
             </Flex>
           ))}
         </Stack>
-      )}
-      {inference.params.length > 0 && inference.schemaUnavailable && (
-        <Text muted size={0} as="div" trim={true}>
-          {t('vision.params-form.no-schema')}
-        </Text>
       )}
     </Stack>
   )

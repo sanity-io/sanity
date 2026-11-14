@@ -1,17 +1,15 @@
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
-import {CodeIcon} from '@sanity/icons/Code'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {EditIcon} from '@sanity/icons/Edit'
-import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef, useSyncExternalStore} from 'react'
+import {Button} from '@sanity/ui'
+import {Tooltip, TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
+import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -19,8 +17,6 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {type VisionDrawer} from '../../store/types'
 import {
-  type SidebarBadge,
-  useSidebarBadges,
   useVisionActor,
   useVisionExperience,
   useVisionSelector,
@@ -28,37 +24,41 @@ import {
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
+
+/**
+ * The collapsed rail's tooltips wait before the first one opens, so a pointer crossing the rail
+ * on its way elsewhere opens nothing; once one is open, its neighbours open at once
+ */
+const RAIL_TOOLTIP_DELAY = {open: 400}
 
 interface SidebarItemProps {
   icon: ComponentType
   label: string
   expanded: boolean
   selected?: boolean
-  /** A count, such as the active tab's lint findings */
-  badge?: SidebarBadge
   testId: string
   onClick: (event: MouseEvent<HTMLElement>) => void
 }
 
-function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: SidebarItemProps) {
-  const name = badge ? `${label} (${badge.count})` : label
-  const count = badge && (
-    <Badge
-      aria-hidden
-      className={cx(styles.sidebarItemBadge, expanded && styles.sidebarItemBadgeExpanded)}
-      data-testid={`${testId}-badge`}
-      fontSize={0}
-      tone={badge.tone}
-    >
-      {badge.count}
-    </Badge>
-  )
+function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
+  const delayGroup = useTooltipDelayGroup()
+  // Only the tooltip that opens after the wait animates in. Moving along the rail swaps the
+  // content right away instead, which an animation on every one would only slow down. Decided
+  // when the pointer or focus arrives, before the tooltip opens: the group turns instant in the
+  // same update that opens its first tooltip, which must not change its mind halfway through
+  const [animateTooltip, setAnimateTooltip] = useState(true)
+  const decideTooltipAnimation = useCallback(() => {
+    setAnimateTooltip(!delayGroup || delayGroup.openDelay >= RAIL_TOOLTIP_DELAY.open)
+  }, [delayGroup])
+
   if (expanded) {
     return (
-      <div className={styles.sidebarItem}>
+      <div className={cx(styles.sidebarItem, sidebarStyles.railItemExpanded)}>
         <Button
-          aria-label={name}
+          aria-label={label}
+          className={cx(sidebarStyles.pressable, sidebarStyles.pressableRow)}
           data-testid={testId}
           icon={icon}
           justify="flex-start"
@@ -68,25 +68,29 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
           text={label}
           width="fill"
         />
-        {count}
       </div>
     )
   }
 
   return (
-    <div className={styles.sidebarItem}>
+    <div
+      className={styles.sidebarItem}
+      onFocusCapture={decideTooltipAnimation}
+      onMouseEnter={decideTooltipAnimation}
+    >
       <Tooltip
-        animate
+        animate={animateTooltip}
         content={
           <Text size={1} as="div" trim={true}>
-            {name}
+            {label}
           </Text>
         }
         placement="right"
         portal
       >
         <Button
-          aria-label={name}
+          aria-label={label}
+          className={sidebarStyles.pressable}
           data-testid={testId}
           icon={icon}
           mode="bleed"
@@ -94,7 +98,6 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
           selected={selected}
         />
       </Tooltip>
-      {count}
     </div>
   )
 }
@@ -105,8 +108,6 @@ export function VisionSidebar() {
   const {layout, switchToClassic} = useVisionExperience()
   const expanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVisionSelector(selectOpenDrawer)
-  const sidebarBadges = useSidebarBadges()
-  const badges = useSyncExternalStore(sidebarBadges.subscribe, sidebarBadges.get)
   const isMobile = layout === 'mobile'
 
   // The rail button that opened the drawer, remembered from its click: the drawer is a modal
@@ -137,6 +138,7 @@ export function VisionSidebar() {
       borderRight
       className={cx(
         styles.sidebarRail,
+        sidebarStyles.rail,
         expanded ? styles.sidebarRailExpanded : styles.sidebarRailCollapsed,
         isMobile && expanded && styles.sidebarRailOverlay,
       )}
@@ -168,24 +170,6 @@ export function VisionSidebar() {
         />
         <Box borderTop marginTop={1} paddingTop={1}>
           <Flex flexDirection="column" gap={1}>
-            <SidebarItem
-              badge={badges.lint}
-              expanded={expanded}
-              icon={ErrorOutlineIcon}
-              label={t('vision.panel.lint')}
-              onClick={(event) => toggleDrawer('lint', event)}
-              selected={drawer === 'lint'}
-              testId="vision-sidebar-lint"
-            />
-            <SidebarItem
-              badge={badges.functions}
-              expanded={expanded}
-              icon={CodeIcon}
-              label={t('vision.panel.functions')}
-              onClick={(event) => toggleDrawer('functions', event)}
-              selected={drawer === 'functions'}
-              testId="vision-sidebar-functions"
-            />
             <SidebarItem
               expanded={expanded}
               icon={TransferIcon}
@@ -242,8 +226,10 @@ export function VisionSidebar() {
   )
 
   return (
-    <Flex flexShrink={0} height="100%" minHeight="0">
-      {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
+    <Flex className={sidebarStyles.sidebar} flexShrink={0} height="100%" minHeight="0">
+      <TooltipDelayGroupProvider delay={RAIL_TOOLTIP_DELAY}>
+        {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
+      </TooltipDelayGroupProvider>
       {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
     </Flex>
   )

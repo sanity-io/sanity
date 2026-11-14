@@ -1,7 +1,8 @@
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Button, Card, Dialog, Stack, Tab, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
@@ -12,8 +13,12 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {useVisionSelector} from '../../store/VisionActorContext'
 import {selectProjectId} from '../../store/visionMachine'
+import {cx} from '../../util/cx'
 import {buildExportSnippets, type ExportSnippetId} from '../../util/exportSnippets'
+import * as overlays from '../overlays.module.css'
 import * as styles from '../redesign.module.css'
+
+const COPIED_FEEDBACK_MS = 1500
 
 export interface ExportQueryDialogProps {
   tab: VisionTab
@@ -27,6 +32,15 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
   const copyToClipboard = useCopyToClipboard()
   const projectId = useVisionSelector(selectProjectId)
   const [activeId, setActiveId] = useState<ExportSnippetId>('client')
+  // The snippet the copy button last copied, which it confirms with a checkmark for a moment. A
+  // new object per copy restarts the moment when the same snippet is copied again.
+  const [lastCopy, setLastCopy] = useState<{id: ExportSnippetId} | null>(null)
+
+  useEffect(() => {
+    if (lastCopy === null) return undefined
+    const timeout = setTimeout(() => setLastCopy(null), COPIED_FEEDBACK_MS)
+    return () => clearTimeout(timeout)
+  }, [lastCopy])
 
   const snippets = useMemo(
     () =>
@@ -45,6 +59,14 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
     [projectId, request, resolved, tab.options.includeSourceMap],
   )
   const active = snippets.find((snippet) => snippet.id === activeId) || snippets[0]
+  const copied = lastCopy?.id === active.id
+
+  const copy = async () => {
+    const snippetId = active.id
+    if (await copyToClipboard(active.code, t('vision.export-query.copied'))) {
+      setLastCopy({id: snippetId})
+    }
+  }
 
   return (
     <Dialog
@@ -80,7 +102,8 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
           >
             <Card
               border
-              className={styles.codeBlock}
+              className={cx(styles.codeBlock, overlays.snippet)}
+              key={active.id}
               overflow="auto"
               padding={3}
               radius={2}
@@ -108,9 +131,12 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
               )}
             </Stack>
             <Button
-              icon={CopyIcon}
+              className={cx(styles.pressable, overlays.copyButton)}
+              data-copied={copied ? 'true' : undefined}
+              data-testid="vision-export-query-copy"
+              icon={copied ? CheckmarkIcon : CopyIcon}
               mode="ghost"
-              onClick={() => void copyToClipboard(active.code, t('vision.export-query.copied'))}
+              onClick={() => void copy()}
               text={t('vision.export-query.copy')}
             />
           </Flex>

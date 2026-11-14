@@ -4,8 +4,9 @@ import {useCallback} from 'react'
 /**
  * Copies text to the clipboard and confirms with a toast. Falls back to a hidden textarea and
  * `execCommand` where the async clipboard API is unavailable (insecure contexts, some webviews).
+ * Resolves whether the text was copied.
  */
-export function useCopyToClipboard(): (text: string, successTitle: string) => Promise<void> {
+export function useCopyToClipboard(): (text: string, successTitle: string) => Promise<boolean> {
   const toast = useToast()
 
   return useCallback(
@@ -17,12 +18,14 @@ export function useCopyToClipboard(): (text: string, successTitle: string) => Pr
           copyWithTextarea(text)
         }
         toast.push({closable: true, status: 'success', title: successTitle})
+        return true
       } catch (err) {
         toast.push({
           closable: true,
           status: 'error',
           title: err instanceof Error ? err.message : String(err),
         })
+        return false
       }
     },
     [toast],

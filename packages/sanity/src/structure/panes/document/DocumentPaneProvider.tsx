@@ -14,6 +14,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffectEvent,
 } from 'react'
 import {
   DivergencesProvider,
@@ -50,7 +51,6 @@ import {
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
@@ -756,7 +756,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     pathRef.current = paramPath
 
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paramPath, ready])
 
   // Disable when `formState` or `schemaType` is transiently absent
@@ -794,18 +793,14 @@ const DivergenceAutofocus: ComponentType<
     ? divergenceNavigator.state.focusedDivergence
     : undefined
 
-  const focusDivergentPath = useEffectEvent(() => {
-    if (
-      divergenceNavigator.enabled &&
-      typeof divergenceNavigator.state.focusedDivergence !== 'undefined'
-    ) {
-      onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
+  const focusDivergentPath = useEffectEvent((divergence: typeof focusedDivergence) => {
+    if (typeof divergence !== 'undefined') {
+      onProgrammaticFocus(pathFromString(divergence))
     }
   })
 
   useEffect(() => {
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-    focusDivergentPath()
+    focusDivergentPath(focusedDivergence)
   }, [focusedDivergence])
 
   return null

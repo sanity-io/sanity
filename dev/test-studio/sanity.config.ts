@@ -270,7 +270,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
-        beta: {redesign: {enabled: true}},
       }),
       themerTool(),
       routerDebugTool(),
@@ -459,13 +458,12 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
-    name: 'comments-v2',
-    title: 'Comments v2',
-    subtitle: 'Default workspace with the comments v2 beta enabled',
-    basePath: '/comments-v2',
-    beta: {
-      ...defaultWorkspace.beta,
-      comments: {v2: true},
+    name: 'comments-legacy',
+    title: 'Comments legacy',
+    subtitle: 'Default workspace with legacy comments enabled',
+    basePath: '/comments-legacy',
+    comments: {
+      legacy: true,
     },
   },
   {
@@ -840,7 +838,7 @@ export default defineConfig([
           unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
         },
       }),
-      visionTool({beta: {redesign: {enabled: true}}}),
+      visionTool(),
     ],
     mediaLibrary: {
       enabled: true,
@@ -867,7 +865,7 @@ export default defineConfig([
           previewMode: {enable: '/api/draft-mode/enable'},
         },
       }),
-      visionTool({beta: {redesign: {enabled: true}}}),
+      visionTool(),
     ],
     mediaLibrary: {
       enabled: true,

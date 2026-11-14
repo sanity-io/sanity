@@ -8,9 +8,8 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {validateItem} from '@sanity/validation/_internal'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState, useEffectEvent} from 'react'
 import {styled} from 'styled-components'
-import {useEffectEvent} from 'use-effect-event'
 
 import {ChangeIndicatorsTracker} from '../../../changeIndicators/tracker'
 import {SuppressFormRowGutter} from '../../../form/components/layout/FormRow'
@@ -258,12 +257,10 @@ function ReleaseMetadataFieldsForm(
     return () => {
       active = false
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- reportValidity is a useEffectEvent and must stay out of the dependency array
   }, [client, compiled.schema, compiled.schemaType, currentUser, fieldNames, formValue, i18n])
 
   useEffect(() => {
     reportValidity(valid)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- reportValidity is a useEffectEvent and must stay out of the dependency array
   }, [valid])
 
   const handleChange = useFormPatchHandler(formValue, (next) => {

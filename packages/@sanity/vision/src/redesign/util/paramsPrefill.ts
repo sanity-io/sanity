@@ -2,6 +2,7 @@ import {type TFunction} from 'sanity'
 
 import {parseParams} from '../../components/ParamsEditor'
 import {type visionLocaleNamespace} from '../../i18n'
+import {isQueryParamName} from './queryParamName'
 
 function buildParamsInsertion(names: readonly string[]): string {
   return names.map((name) => `  ${JSON.stringify(name)}: "",\n`).join('')
@@ -12,11 +13,13 @@ function buildParamsInsertion(names: readonly string[]): string {
  * of its existing text (so comments, formatting and values survive untouched). `rawParams` is
  * returned unchanged when its root is not a `{...}` object, since there is then nowhere
  * unambiguous to insert into; an empty or whitespace-only `rawParams` is treated as `{}`.
+ * A name that is not a GROQ param name, including the empty name a bare `$` parses as, is skipped.
  */
 export function addMissingParams(rawParams: string, missingNames: readonly string[]): string {
-  if (missingNames.length === 0) return rawParams
+  const names = missingNames.filter(isQueryParamName)
+  if (names.length === 0) return rawParams
   const trimmed = rawParams.trim()
-  if (trimmed === '') return `{\n${buildParamsInsertion(missingNames)}}`
+  if (trimmed === '') return `{\n${buildParamsInsertion(names)}}`
   if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return rawParams
 
   // Insert right before the object's closing brace. Nothing before it is rewritten, only
@@ -29,7 +32,7 @@ export function addMissingParams(rawParams: string, missingNames: readonly strin
   const hasTrailingComma = /,\s*$/.test(before)
   const needsComma = !isEmptyObject && !hasTrailingComma
   const separator = needsComma ? ',\n' : before.endsWith('\n') ? '' : '\n'
-  return `${before}${separator}${buildParamsInsertion(missingNames)}${after}`
+  return `${before}${separator}${buildParamsInsertion(names)}${after}`
 }
 
 /**

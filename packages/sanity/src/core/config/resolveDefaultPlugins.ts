@@ -1,13 +1,14 @@
 import {MEDIA_LIBRARY_NAME, mediaLibrary} from '../../media-library/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
-import {comments as commentsV2} from '../comments-v2/plugin'
-import {comments as commentsCurrent} from '../comments/plugin'
+import {comments} from '../comments-v2/plugin'
+import {comments as commentsLegacy} from '../comments/plugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
 import {schedules, SCHEDULES_NAME} from '../schedules/plugin'
 import {SINGLE_DOC_RELEASE_NAME, singleDocRelease} from '../singleDocRelease/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
+import {getPrintableType} from '../util/getPrintableType'
 import {variants, VARIANTS_NAME} from '../variants/plugin'
 import {scheduledDraftsEnabledReducer} from './configPropertyReducers'
 import {
@@ -20,7 +21,7 @@ import {
 
 const defaultPlugins = (options: DefaultPluginsOptions) => [
   variants(),
-  options.comments.v2 ? commentsV2() : commentsCurrent(),
+  options.comments.legacy ? commentsLegacy() : comments(),
   tasks(),
   scheduledPublishing(),
   releases(),
@@ -67,13 +68,28 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
   })
 }
 
+function resolveCommentsLegacy(workspace: WorkspaceOptions | SingleWorkspace): boolean {
+  const legacy = workspace.comments?.legacy
+
+  if (typeof legacy === 'undefined') {
+    return false
+  }
+
+  if (typeof legacy === 'boolean') {
+    return legacy
+  }
+
+  throw new Error(
+    `Expected \`comments.legacy\` to be a boolean, but received ${getPrintableType(legacy)}`,
+  )
+}
+
 export function getDefaultPluginsOptions(
   workspace: WorkspaceOptions | SingleWorkspace,
 ): DefaultPluginsOptions {
   return {
     comments: {
-      v2: false,
-      ...workspace.beta?.comments,
+      legacy: resolveCommentsLegacy(workspace),
     },
     tasks: {
       enabled: true,

@@ -17,9 +17,9 @@ import {
 } from '../../store/VisionActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
 import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/visionStorage'
+import {DatasetField} from '../request/DatasetField'
 import {
   ApiVersionField,
-  DatasetField,
   PerspectiveSelect,
   UseCdnField,
   VariantSelect,

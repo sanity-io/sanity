@@ -16,8 +16,8 @@ export interface VisionGuiControlsProps {
   onQueryExecution: () => void
   onListenExecution: () => void
   /**
-   * Opens the redesigned Vision. Offered here for good while the beta flag is on, since the
-   * invitation toast stays away once dismissed
+   * Opens the redesigned Vision. Offered here for good, since the invitation toast stays away
+   * once dismissed
    */
   onSwitchToRedesign?: () => void
 }

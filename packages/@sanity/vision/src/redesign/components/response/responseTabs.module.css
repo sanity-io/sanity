@@ -1,0 +1,83 @@
+/*
+ * Motion inside the response panel's tabs. Only content that arrives on request moves: a history
+ * entry's changes, the explanation and the plan. Live history entries and tab changes do not.
+ */
+
+.pressable {
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pressable:active {
+  transform: scale(0.97);
+}
+
+/* Points right when closed and turns down to open */
+.chevron {
+  display: inline-block;
+  transition: transform 200ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+[aria-expanded='true'] .chevron {
+  transform: rotate(90deg);
+}
+
+/*
+ * Rises a few pixels into place. It rests without a transform, which would make it the
+ * containing block of anything fixed in it.
+ */
+.reveal {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Follows a sibling that arrives with it */
+.revealSecond {
+  transition-delay: 40ms;
+}
+
+@starting-style {
+  .reveal {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* The globe fades in once cobe has drawn it, instead of popping in after its script loads */
+.globe {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 300ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.globe[data-ready] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressable:active {
+    transform: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+
+  .reveal {
+    transition: opacity 200ms ease;
+  }
+
+  @starting-style {
+    .reveal {
+      transform: none;
+    }
+  }
+
+  .globe {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+}

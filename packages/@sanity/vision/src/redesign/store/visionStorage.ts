@@ -213,15 +213,7 @@ function sanitizeTab(
   })
 }
 
-const DRAWERS: readonly VisionDrawer[] = [
-  'saved',
-  'shared',
-  'lint',
-  'functions',
-  'delta',
-  'mutate',
-  'settings',
-]
+const DRAWERS: readonly VisionDrawer[] = ['saved', 'shared', 'delta', 'mutate', 'settings']
 
 function sanitizeSidebar(value: unknown): VisionSidebarState {
   if (!isPlainObject(value)) {

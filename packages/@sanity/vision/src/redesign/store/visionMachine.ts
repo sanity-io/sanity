@@ -590,7 +590,7 @@ export function selectOpenDrawer(snapshot: VisionSnapshot): VisionDrawer | null 
   return snapshot.matches({drawer: 'open'}) ? snapshot.context.drawer : null
 }
 
-const TAB_DRAWERS: readonly VisionTabDrawer[] = ['lint', 'functions', 'delta', 'mutate']
+const TAB_DRAWERS: readonly VisionTabDrawer[] = ['delta', 'mutate']
 
 /** The open drawer while it shows one of the active tab's tools */
 export function selectOpenTabDrawer(snapshot: VisionSnapshot): VisionTabDrawer | null {

@@ -1,11 +1,5 @@
 import {shallowEqual, useActorRef, useSelector} from '@xstate/react'
-import {
-  useCallback,
-  useEffect,
-  // oxlint-disable-next-line no-restricted-imports -- useSearchMachine is only called from plain function components, so facebook/react#34818 does not apply
-  useEffectEvent,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useEffectEvent, useState} from 'react'
 import {type Observable} from 'rxjs'
 import {fromObservable} from 'xstate'
 

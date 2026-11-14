@@ -1,8 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {useToast} from '@sanity/ui/toast'
-import {useEffect} from 'react'
+import {useEffect, useEffectEvent} from 'react'
 import {Text} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
@@ -90,7 +89,6 @@ export function ResetArchivedReleasePerspective() {
 
   useEffect(() => {
     resetIfArchived(loading, selectedPerspectiveName, archivedReleases)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [archivedReleases, loading, selectedPerspectiveName])
 
   return null

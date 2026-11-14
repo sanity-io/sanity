@@ -23,6 +23,11 @@ describe('addMissingParams', () => {
     expect(addMissingParams('{\n  "a": 1\n}', [])).toBe('{\n  "a": 1\n}')
   })
 
+  it('does not add an empty placeholder key', () => {
+    expect(addMissingParams('{}', [''])).toBe('{}')
+    expect(addMissingParams('{\n  "foo": 1\n}', [''])).toBe('{\n  "foo": 1\n}')
+  })
+
   it('fills in an empty object', () => {
     expect(addMissingParams('{}', ['foo'])).toBe('{\n  "foo": "",\n}')
   })

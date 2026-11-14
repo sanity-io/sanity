@@ -40,7 +40,7 @@ vi.mock('../../activity/TasksActivityLog', () => ({
 vi.mock('../../../../studio/workspace', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useWorkspace: vi.fn(() => ({
-    beta: {comments: {v2: false}},
+    comments: {legacy: false},
   })),
 }))
 
@@ -60,12 +60,14 @@ describe('TasksCommentsActivity', () => {
     capturedCommentsProviderV2Props = undefined
 
     mockUseWorkspace.mockReturnValue({
-      beta: {comments: {v2: false}},
+      comments: {legacy: false},
     })
   })
 
-  describe('beta.comments.v2', () => {
-    it('mounts the v1 provider when the flag is off', () => {
+  describe('comments.legacy', () => {
+    it('mounts the v1 provider when legacy is on', () => {
+      mockUseWorkspace.mockReturnValue({comments: {legacy: true}})
+
       renderWithTheme(<TasksCommentsActivity value={task} onChange={vi.fn()} activityData={[]} />)
 
       expect(capturedCommentsProviderProps).toEqual(
@@ -81,11 +83,7 @@ describe('TasksCommentsActivity', () => {
       expect(capturedCommentsProviderV2Props).toBeUndefined()
     })
 
-    it('mounts the v2 provider when the flag is on', () => {
-      mockUseWorkspace.mockReturnValue({
-        beta: {comments: {v2: true}},
-      })
-
+    it('mounts the v2 provider when legacy is off', () => {
       renderWithTheme(<TasksCommentsActivity value={task} onChange={vi.fn()} activityData={[]} />)
 
       expect(capturedCommentsProviderV2Props).toEqual(

@@ -595,12 +595,7 @@ Rules that follow from this:
   symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
   studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
   `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
-  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
-  deliberate exception is `createAuthStore` (deprecated since v3.15.0): it keeps its
-  `@internal @deprecated` tags because those tell customers to stop using it, it stays off the
-  entry so the deprecated `sanity` import remains the only one, and it is listed in
-  `PUBLIC_BY_USAGE` in the completeness test; its removal is governed by the deprecation, not by
-  the internals moving. Do not retag it.
+  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
@@ -645,13 +640,19 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
-### Effect events: use `use-effect-event`, not React's native hook
+### Effect events: native `useEffectEvent`, never in dependency arrays
 
-Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
-returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
-([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
-`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one.
+Import `useEffectEvent` from `react`. The studio requires React `^19.3.1`: that is the first
+release where the native hook is safe to call, including from `forwardRef` and `memo` components
+([facebook/react#34818](https://github.com/facebook/react/issues/34818)).
+`core/hooks/useEffectEvent.test.tsx` guards that, and CI's React minimum run installs 19.3.1 from
+the `sanity` peer range. The `use-effect-event` ponyfill is gone.
+
+Unlike the ponyfill, the native hook returns a new function on every render. Call it only from
+inside effects or from callbacks an effect creates, and never list it in a dependency array, pass it
+as a prop or key anything on its identity: an effect that depends on it re-runs on every render.
+An older copy of the function still calls the latest callback, so a closure that captured one stays
+correct.
 
 ### react-rx: stable observables, explicit initial values
 
