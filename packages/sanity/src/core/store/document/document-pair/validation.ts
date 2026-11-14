@@ -32,6 +32,8 @@ function shareLatestWithRefCount<T>() {
  * Where the validated document comes from: `document` checks out the document pair, which opens a
  * listener for it, and `global` follows the document through the document preview store's shared
  * global listener.
+ *
+ * @beta
  */
 export type ValidationListener = 'document' | 'global'
 

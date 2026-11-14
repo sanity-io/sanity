@@ -1830,6 +1830,7 @@ import type {
   ValidationError,
   ValidationErrorClass,
   ValidationErrorOptions,
+  ValidationListener,
   ValidationLocaleResourceKeys,
   ValidationMarker,
   Validator,
@@ -7395,6 +7396,9 @@ describe('sanity', () => {
   })
   test('ValidationErrorOptions', () => {
     expectTypeOf<ValidationErrorOptions>().toBeObject()
+  })
+  test('ValidationListener', () => {
+    expectTypeOf<ValidationListener>().not.toBeNever()
   })
   test('ValidationLocaleResourceKeys', () => {
     expectTypeOf<ValidationLocaleResourceKeys>().not.toBeNever()

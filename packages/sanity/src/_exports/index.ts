@@ -1304,7 +1304,7 @@ export {
   type DocumentVersionSnapshots,
   snapshotPair,
 } from '../core/store/document/document-pair/snapshotPair'
-export {validation} from '../core/store/document/document-pair/validation'
+export {type ValidationListener, validation} from '../core/store/document/document-pair/validation'
 export {
   createDocumentStore,
   type DocumentStore,
