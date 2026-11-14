@@ -178,7 +178,7 @@ export function validation(
    */
   _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
-  listener: ValidationListener = 'document',
+  listener: ValidationListener = 'global',
 ): Observable<ValidationStatus> {
   const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget, listener)
   return scheduling === 'immediate' ? immediate$ : status$

@@ -15,14 +15,14 @@ export function useValidationStatus(
   docTypeName: string,
   options?: {
     /**
-     * `global` follows the document through the document preview store's shared global listener
-     * instead of checking out the document pair, which opens a listener for every document
-     * validated. Changes are then validated only once the server has them, so use it where nobody
-     * edits the document, like a list or a board of documents. Defaults to `document`.
+     * `global`, the default, follows the document through the document preview store's shared
+     * global listener, so it opens no listener of its own. Changes are validated only once the
+     * server has them, which suits places where nobody edits the document, like a list or a board
+     * of documents.
      *
-     * `document` checks out the document pair and has the risk of creating a new listener for every document validated.
-     *  Use it only if you are already listening to the document pair while editing the document.
-     *
+     * `document` checks out the document pair, which opens a listener for every document
+     * validated, and validates edits as soon as the pair's listener reports them. Use it only
+     * where the document pair is checked out already, like the document pane.
      */
     listener?: ValidationListener
   },
@@ -46,7 +46,7 @@ export function useValidationStatus(
   options?: {listener?: ValidationListener} | boolean,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
-  const listener = typeof options === 'object' ? (options.listener ?? 'document') : 'document'
+  const listener = typeof options === 'object' ? (options.listener ?? 'global') : 'global'
 
   const observable = useMemo(
     () => documentStore.pair.validation(validationTargetId, docTypeName, false, {listener}),

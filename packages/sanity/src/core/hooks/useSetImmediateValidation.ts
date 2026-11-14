@@ -21,9 +21,9 @@ import {type ValidationListener} from '../store/document/document-pair/validatio
  * hold ends, and `useValidationStatus` reports the failure.
  *
  * Each listener validates the document on its own, so a hold only speeds up the validation of its
- * own `listener`: one with the default, `document`, leaves a
- * `useValidationStatus(id, type, {listener: 'global'})` validating in idle time, and the other way
- * around. A hold on a listener that no `useValidationStatus` reads validates through it anyway,
+ * own `listener`: one with the default, `global`, leaves a
+ * `useValidationStatus(id, type, {listener: 'document'})` validating in idle time, and the other
+ * way around. A hold on a listener that no `useValidationStatus` reads validates through it anyway,
  * and with `document` that checks out the document pair.
  *
  * @beta
@@ -37,11 +37,11 @@ export function useSetImmediateValidation(
   _requirePublishedReferences: boolean,
   {
     enabled,
-    listener = 'document',
+    listener = 'global',
   }: {
     enabled: boolean
     /**
-     * The `listener` of the `useValidationStatus` to speed up. Defaults to `document`.
+     * The `listener` of the `useValidationStatus` to speed up. Defaults to `global`.
      */
     listener?: ValidationListener
   },

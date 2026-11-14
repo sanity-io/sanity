@@ -12,7 +12,7 @@ import {useValidationStatus} from '../useValidationStatus'
 // the store replays the latest status to every new subscriber
 let validationSubject: ReplaySubject<ValidationStatus>
 const immediateHolds = new Map<string, number>()
-const holds = (validationTargetId: string, listener: ValidationListener = 'document') =>
+const holds = (validationTargetId: string, listener: ValidationListener = 'global') =>
   immediateHolds.get(`${validationTargetId}:${listener}`) ?? 0
 
 // Referentially stable, like the real store: the hooks memoize on `documentStore.pair`.
@@ -25,7 +25,7 @@ const mockDocumentStore = {
       options?: {scheduling?: ValidationScheduling; listener?: ValidationListener},
     ) => {
       if (options?.scheduling !== 'immediate') return validationSubject.asObservable()
-      const listener = options.listener ?? 'document'
+      const listener = options.listener ?? 'global'
       return defer(() => {
         immediateHolds.set(
           `${validationTargetId}:${listener}`,
@@ -92,12 +92,12 @@ describe('useSetImmediateValidation', () => {
     unmount()
   })
 
-  it('holds the validation of the listener it is given, the document pair by default', () => {
+  it('holds the validation of the listener it is given, the global listener by default', () => {
     const {rerender, unmount} = render(<Hold enabled />)
-    expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([1, 0])
-
-    rerender(<Hold enabled listener="global" />)
     expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([0, 1])
+
+    rerender(<Hold enabled listener="document" />)
+    expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([1, 0])
 
     unmount()
     expect([holds('doc-1', 'document'), holds('doc-1', 'global')]).toEqual([0, 0])

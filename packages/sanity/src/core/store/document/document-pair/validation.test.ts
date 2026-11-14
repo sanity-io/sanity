@@ -89,7 +89,8 @@ function createSubscription(
     typeName = 'movie',
     currentUser,
     documentId = 'example-id',
-    listener,
+    // most cases drive the document through the mocked `editState` of the document pair
+    listener = 'document',
     observeDocument = () => EMPTY,
   } = options
 
@@ -171,6 +172,9 @@ function createVersionSubscription(
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
     'movie',
     'version',
+    undefined,
+    undefined,
+    'document',
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
@@ -964,7 +968,7 @@ describe('validation', () => {
       },
     )
 
-    it('keeps the document pair and the global listener in separate cache entries', () => {
+    it('keeps the document pair and the global listener in separate cache entries, the global one by default', () => {
       const client = getMockClient()
       mockEditState.mockImplementation(() => EMPTY)
       const publishedId = `movie-${Math.random().toString(36).slice(2)}`
@@ -979,23 +983,23 @@ describe('validation', () => {
         currentUser: null,
       }
 
-      const pairValidation = validation(ctx, idPair, 'movie', 'draft')
-      const globalValidation = validation(
+      const globalValidation = validation(ctx, idPair, 'movie', 'draft')
+      const pairValidation = validation(
         ctx,
         idPair,
         'movie',
         'draft',
         undefined,
         undefined,
-        'global',
+        'document',
       )
 
-      expect(globalValidation).not.toBe(pairValidation)
-      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'document')).toBe(
-        pairValidation,
-      )
+      expect(pairValidation).not.toBe(globalValidation)
       expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'global')).toBe(
         globalValidation,
+      )
+      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'document')).toBe(
+        pairValidation,
       )
     })
   })

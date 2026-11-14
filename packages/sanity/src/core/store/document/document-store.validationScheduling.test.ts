@@ -144,22 +144,22 @@ describe('documentStore.pair.validation listener', () => {
     return {draftId, store, observeDocument}
   }
 
-  it('follows the document through the preview store with the global listener', () => {
+  it.each([
+    {name: 'the global listener', options: {listener: 'global' as const}},
+    {name: 'no listener option', options: undefined},
+  ])('follows the document through the preview store with $name', ({options}) => {
     const {draftId, store, observeDocument} = setupListener()
 
-    store.pair.validation(draftId, 'movie', false, {listener: 'global'})
+    store.pair.validation(draftId, 'movie', false, options)
 
     expect(observeDocument).toHaveBeenCalledExactlyOnceWith(draftId)
     expect(editState).not.toHaveBeenCalled()
   })
 
-  it.each([
-    {name: 'the document listener', options: {listener: 'document' as const}},
-    {name: 'no listener option', options: undefined},
-  ])('checks out the document pair with $name', ({options}) => {
+  it('checks out the document pair with the document listener', () => {
     const {draftId, store, observeDocument} = setupListener()
 
-    store.pair.validation(draftId, 'movie', false, options)
+    store.pair.validation(draftId, 'movie', false, {listener: 'document'})
 
     expect(editState).toHaveBeenCalledExactlyOnceWith(
       expect.anything(),

@@ -197,15 +197,15 @@ describe('usePublishAction', () => {
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
   })
 
-  it('validates immediately while a publish waits', async () => {
+  it('validates immediately, through the document listener it reads, while a publish waits', async () => {
     const state = keystroke('1')
     applyKeystroke(state, {isValidating: true})
     const {result} = await renderPublishAction(state.props)
     const immediate = () => vi.mocked(useSetImmediateValidation).mock.lastCall?.[3]
-    expect(immediate()).toEqual({enabled: false})
+    expect(immediate()).toEqual({enabled: false, listener: 'document'})
 
     act(() => result.current?.onHandle?.())
     expect(operations.publish.execute).not.toHaveBeenCalled()
-    expect(immediate()).toEqual({enabled: true})
+    expect(immediate()).toEqual({enabled: true, listener: 'document'})
   })
 })
