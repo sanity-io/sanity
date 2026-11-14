@@ -78,12 +78,6 @@ linkWorkspacePackages: deep
 minimumReleaseAge: 1440
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
-  # Fresh patch; @babel/parser 7.29.13 fails to parse a typed async arrow in a conditional
-  # (`p ? async (): T => {} : x`), which breaks the Storybook build. Exclude the 7.29.14 fix and the
-  # @babel/types and @babel/helper-string-parser releases it requires so they install before the age gate
-  - '@babel/helper-string-parser@7.29.14'
-  - '@babel/parser@7.29.14'
-  - '@babel/types@7.29.14'
   - '@boundaries/elements'
   - '@oxfmt/*'
   - '@oxlint/*'
