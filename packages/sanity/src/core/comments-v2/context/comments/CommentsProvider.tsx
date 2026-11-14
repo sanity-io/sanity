@@ -17,6 +17,7 @@ import {
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
 import {useCommentsClient} from '../../hooks/useCommentsClient'
+import {useCommentsApiListenerStore} from '../../store/useCommentsApiListenerStore'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
@@ -130,6 +131,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     dataset: commentsClientDataset,
     loading: type === 'task' && !addonDataset.ready,
   })
+  const commentsListenerStore = useCommentsApiListenerStore(commentsClient)
 
   const documentValue = useMemo(() => {
     if (scopeId) return editState.version
@@ -159,6 +161,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     versionId,
     type,
     client: commentsClient,
+    listenerStore: commentsListenerStore,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
     ready: commentsReady,

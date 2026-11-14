@@ -105,6 +105,11 @@ export function commentsReducer(
     }
 
     case 'COMMENT_DELETED': {
+      const isInStore =
+        Object.hasOwn(state.comments, action.id) ||
+        Object.values(state.comments).some((comment) => comment.parentCommentId === action.id)
+      if (!isInStore) return state
+
       const {[action.id]: _, ...restComments} = state.comments
 
       // Delete all replies to the deleted comment

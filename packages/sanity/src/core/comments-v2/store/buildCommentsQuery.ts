@@ -1,5 +1,5 @@
 import {getDraftId, getPublishedId, isDraftId, isPublishedId} from '../../util/draftUtils'
-import {type CommentsType} from '../types'
+import {type CommentDocument, type CommentsType} from '../types'
 
 const BASE_FILTERS = [`_type == "sanity.comment"`, `target.document._ref == $gdr`]
 
@@ -66,4 +66,34 @@ export function buildCommentsQuery(options: {
       ...source.params,
     },
   }
+}
+
+/**
+ * Whether a comment is one that {@link buildCommentsQuery} would return for the same options: the
+ * query's filters, applied to a comment the shared listener reports.
+ */
+export function matchesCommentsQuery(
+  comment: CommentDocument,
+  options: {
+    gdr: string | null
+    versionId: string
+    type: CommentsType
+  },
+): boolean {
+  const {gdr, versionId, type} = options
+  const {target} = comment
+
+  if (comment._type !== 'sanity.comment' || target?.document?._ref !== gdr) return false
+  // GROQ's `defined()` is false for `null` too
+  if (type === 'field' && (target.path?.field ?? null) === null) return false
+
+  if (isDraftId(versionId) || isPublishedId(versionId)) {
+    const publishedDocumentId = getPublishedId(versionId)
+    return (
+      target.sourceDocumentId === publishedDocumentId ||
+      target.sourceDocumentId === getDraftId(publishedDocumentId)
+    )
+  }
+
+  return target.sourceDocumentId === versionId
 }
