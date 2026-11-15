@@ -23,6 +23,7 @@ import {
 } from '../../store/VisionActorContext'
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {DRAWER_TRANSITION, startLayoutTransition} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
@@ -125,7 +126,13 @@ export function VisionSidebar() {
     },
     [actorRef, drawer],
   )
-  useOnValueChange(drawer, (next, previous) => {
+  // The machine's state is read through an external store, which React always renders at once;
+  // the drawer it shows follows in a transition, which the drawer and the tabs area animate
+  const [shownDrawer, setShownDrawer] = useState(drawer)
+  useOnValueChange(drawer, (next) => {
+    startLayoutTransition(DRAWER_TRANSITION, () => setShownDrawer(next))
+  })
+  useOnValueChange(shownDrawer, (next, previous) => {
     if (previous === null || next !== null) return
     openerRef.current?.focus()
     openerRef.current = null
@@ -230,7 +237,7 @@ export function VisionSidebar() {
       <TooltipDelayGroupProvider delay={RAIL_TOOLTIP_DELAY}>
         {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
       </TooltipDelayGroupProvider>
-      {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
+      {shownDrawer && <SidebarDrawer drawer={shownDrawer} overlay={isMobile} />}
     </Flex>
   )
 }

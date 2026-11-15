@@ -1,6 +1,6 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {useMemo, useState} from 'react'
+import {useMemo, useState, ViewTransition} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
@@ -20,6 +20,7 @@ import {
 } from '../store/VisionActorContext'
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
+import {TABS_AREA} from './panelTransitions'
 import * as styles from './redesign.module.css'
 import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -107,20 +108,22 @@ export function VisionRedesign(props: VisionRedesignProps) {
                   ref={setRootElement}
                 >
                   <VisionSidebar />
-                  <Flex
-                    flexBasis="0%"
-                    flexDirection="column"
-                    flexGrow={1}
-                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                    inert={layout === 'mobile' && openDrawer !== null}
-                    minWidth="0"
-                    overflow="hidden"
-                  >
-                    <QueryTabBar />
-                    <RequestBottomPanelProvider>
-                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                    </RequestBottomPanelProvider>
-                  </Flex>
+                  <ViewTransition default={TABS_AREA}>
+                    <Flex
+                      flexBasis="0%"
+                      flexDirection="column"
+                      flexGrow={1}
+                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                      inert={layout === 'mobile' && openDrawer !== null}
+                      minWidth="0"
+                      overflow="hidden"
+                    >
+                      <QueryTabBar />
+                      <RequestBottomPanelProvider>
+                        <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                      </RequestBottomPanelProvider>
+                    </Flex>
+                  </ViewTransition>
                 </Flex>
                 <VisionDialogs />
                 <VisionUrlState tab={activeTab} />
