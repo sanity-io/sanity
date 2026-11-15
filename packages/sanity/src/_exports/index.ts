@@ -12,10 +12,6 @@ export {
   type TrackedArea,
   type TrackedChange,
 } from '../core/changeIndicators/types'
-export {CommentDeleteDialog} from '../core/comments-v2/components/CommentDeleteDialog'
-export {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../core/comments/components/CommentDeleteDialog'
-export {CommentsList} from '../core/comments-v2/components/list/CommentsList'
-export {CommentsList as CommentsListLegacy} from '../core/comments/components/list/CommentsList'
 export {
   type CommentInputHandle,
   type CommentInputProps,
@@ -24,22 +20,9 @@ export {
   type CommentInputHandle as CommentInputHandleLegacy,
   type CommentInputProps as CommentInputPropsLegacy,
 } from '../core/comments/components/pte/comment-input/CommentInput'
-export {CommentsAuthoringPathProvider} from '../core/comments-v2/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsAuthoringPathProvider as CommentsAuthoringPathProviderLegacy} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsProvider} from '../core/comments-v2/context/comments/CommentsProvider'
-export {CommentsProvider as CommentsProviderLegacy} from '../core/comments/context/comments/CommentsProvider'
-export {CommentsEnabledProvider} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
-export {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../core/comments/context/enabled/CommentsEnabledProvider'
-export {
-  CommentsIntentProvider,
-  type CommentsIntentProviderProps,
-} from '../core/comments/context/intent/CommentsIntentProvider'
+export {type CommentsIntentProviderProps} from '../core/comments/context/intent/CommentsIntentProvider'
 export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
 export {type CommentsSelectedPath as CommentsSelectedPathLegacy} from '../core/comments/context/selected-path/types'
-export {useComments} from '../core/comments-v2/hooks/useComments'
-export {useComments as useCommentsLegacy} from '../core/comments/hooks/useComments'
-export {useCommentsEnabled} from '../core/comments-v2/hooks/useCommentsEnabled'
-export {useCommentsEnabled as useCommentsEnabledLegacy} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
 export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
 export {
@@ -514,8 +497,7 @@ export {
   type ObjectInputMemberProps,
 } from '../core/form/members/object/ObjectInputMember'
 export {
-  ObjectInputMembers,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  ObjectInputMembers, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ObjectMembers,
   type ObjectMembersProps,
 } from '../core/form/members/object/ObjectInputMembers'
@@ -652,19 +634,14 @@ export {
   type UploadProgressEvent,
 } from '../core/form/studio/uploads/types'
 export {
-  type ArrayInputFunctionsProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type ArrayInputFunctionsProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FormBuilderCustomMarkersComponent,
   type FormBuilderFilterFieldFn,
   type FormBuilderInputComponentMap,
-  type FormBuilderMarkersComponent,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type PortableTextMarker,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type RenderBlockActionsCallback,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type RenderBlockActionsProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type FormBuilderMarkersComponent, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type PortableTextMarker, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type RenderBlockActionsCallback, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type RenderBlockActionsProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type RenderCustomMarkers,
 } from '../core/form/types/_transitional'
 export {
@@ -696,8 +673,7 @@ export {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
   type BaseFieldProps,
-  type BooleanFieldProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type BooleanFieldProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
   type FieldProps,
   type NumberFieldProps,
@@ -800,8 +776,7 @@ export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation
 export {InlineCode} from '../core/i18n/components/InlineCode'
 export {
   defineLocale,
-  defineLocaleResourceBundle,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  defineLocaleResourceBundle, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   defineLocalesResources,
   removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
@@ -835,8 +810,7 @@ export {
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
-  type ReleasesNavMenuItemPropsGetter,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type ReleasesNavMenuItemPropsGetter, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type SelectedPerspective,
   type TargetPerspective,
 } from '../core/perspective/types'
@@ -849,8 +823,7 @@ export {
 } from '../core/presence/DocumentPreviewPresence'
 export {
   type FieldPresenceInnerProps,
-  type FieldPresenceProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type FieldPresenceProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   FieldPresenceWithOverlay,
 } from '../core/presence/FieldPresence'
 export {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
@@ -1161,8 +1134,7 @@ export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProv
 export {type AddonDatasetContextValue} from '../core/studio/addonDataset/types'
 export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 export {
-  type ColorSchemeProviderProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type ColorSchemeProviderProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useColorScheme,
   useColorSchemeOptions,
   useColorSchemeSetValue,
@@ -1194,8 +1166,7 @@ export {
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
-  type SearchPartialIndexSettings,
-  // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
+  type SearchPartialIndexSettings, // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'

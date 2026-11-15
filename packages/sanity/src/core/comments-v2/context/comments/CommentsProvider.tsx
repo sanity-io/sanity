@@ -77,7 +77,7 @@ type DocumentId = string
 type TransactionId = string
 
 /**
- * @beta
+ * @internal
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
   const {

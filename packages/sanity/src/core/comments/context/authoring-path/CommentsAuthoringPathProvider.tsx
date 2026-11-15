@@ -8,8 +8,7 @@ interface CommentsAuthoringPathProviderProps {
 }
 
 /**
- * @beta
- * @hidden
+ * @internal
  * This provider keeps track of the path that the user is currently authoring a comment for.
  * This is needed to make sure that we consistently keep the editor open when the user is
  * authoring a comment. The state is kept in a context to make sure that it is preserved
