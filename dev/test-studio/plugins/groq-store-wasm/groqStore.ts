@@ -306,7 +306,8 @@ function onMetric(metric: Metric): void {
     return
   }
   if (metric.type === 'route') {
-    if (metric.outcome === 'answer') {
+    // A late answer is still a wasm answer: it won the race against the network hedge.
+    if (metric.outcome === 'answer' || metric.outcome === 'late-answer') {
       update({
         answered: status.answered + 1,
         answerMs: status.answerMs + metric.ms,
