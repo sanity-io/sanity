@@ -7,10 +7,22 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
+import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {type FederatedAssetSourceView} from '../federatedAssetSource/types'
-import {FederatedMediaLibraryAssetSource} from './federated/FederatedMediaLibraryAssetSource'
-import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
+
+// Same as the dataset asset source: the picker dialogs (iframe, comlink, the federated view)
+// load when opened. The federated source imports the shared dialog itself, so both are split.
+// These two facades are what an asset source's `component` renders, so they are also the handle
+// on which dialog a resolved config wired.
+export const MediaLibraryAssetSource = createLazyComponent(
+  () => import('./shared/MediaLibraryAssetSource.lazy'),
+  {fallback: null},
+)
+export const FederatedMediaLibraryAssetSource = createLazyComponent(
+  () => import('./federated/FederatedMediaLibraryAssetSource.lazy'),
+  {fallback: null},
+)
 
 // Default name for the Media Library asset source
 // This is used to identify assets created from the Media Library in the openInSource function,

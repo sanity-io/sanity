@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {defineLocaleResourceBundle} from '../../core/i18n/helpers'
 
 /**
  * The locale namespace for the presentation tool

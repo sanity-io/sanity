@@ -229,6 +229,24 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       hub.connect(res, [], corsHeaders(req))
       return
     }
+    if (path === '/collaboration/comments/listen') {
+      // Comments listener — the comments API is the default since #15817, so every document
+      // the bench opens subscribes. Park it on an empty event stream: a 404 leaves the store
+      // in an error state (and logs a console error, which fails the session) for a dataset
+      // that has no comments anyway.
+      record('comments', 0)
+      hub.connect(res, [], corsHeaders(req))
+      return
+    }
+    if (path === '/collaboration/comments/query') {
+      // The same store's initial fetch. No scenario authors comments, so the honest answer
+      // is an empty result rather than a 404 the store would surface as an error.
+      record(
+        'comments',
+        json(req, res, 200, {ms: 0, query: url.searchParams.get('query') ?? '', result: []}),
+      )
+      return
+    }
 
     // --- data ----------------------------------------------------------------
     const eventsMatch = path.match(/^\/data\/history\/([^/]+)\/events\/documents\//)
