@@ -132,7 +132,10 @@ function persistenceFacts(row: StoreRow): string | undefined {
     if (snapshot.backend !== undefined) facts.push(snapshot.backend)
     const size = `${mib(snapshot.bytes)} MiB`
     if (snapshot.state === 'saved') {
-      facts.push(`snapshot ${size} saved, queries frozen ${duration(snapshot.ms)}`)
+      // `ms` is how long queries were frozen; `writeMs` (0.5.2+) is the whole save.
+      facts.push(
+        `snapshot ${size} saved in ${duration(snapshot.writeMs ?? snapshot.ms)}, queries frozen ${duration(snapshot.ms)}`,
+      )
     } else if (snapshot.state === 'restored') {
       facts.push(`snapshot ${size} restored in ${duration(snapshot.ms)}`)
     } else if (snapshot.state === 'skipped') {
