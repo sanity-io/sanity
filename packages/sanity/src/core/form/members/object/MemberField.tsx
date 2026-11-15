@@ -47,7 +47,9 @@ function FieldBestEffortFallback() {
   )
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   const {member} = props
   return (

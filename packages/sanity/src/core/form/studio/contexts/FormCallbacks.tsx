@@ -18,7 +18,9 @@ export interface FormCallbacksValue {
   onFieldGroupSelect: (path: Path, fieldGroupName: string) => void
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   props: FormCallbacksValue & {children: ReactNode},
 ) {
@@ -87,7 +89,9 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   )
 })
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useFormCallbacks(): FormCallbacksValue {
   const ctx = useContext(FormCallbacksContext)
   if (!ctx) {

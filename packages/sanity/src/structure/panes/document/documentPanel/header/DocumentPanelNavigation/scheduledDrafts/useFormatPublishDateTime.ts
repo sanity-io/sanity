@@ -1,6 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
-import {CONTENT_RELEASES_TIME_ZONE_SCOPE, useDateTimeFormat, useTimeZone} from 'sanity'
+import {useDateTimeFormat} from 'sanity'
+
+import {useTimeZone} from '../../../../../../../core/hooks/useTimeZone'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../../../../core/studio/constants'
 
 /** When a release goes out, or `undefined` when it has no date yet. */
 export function getPublishDate(release: ReleaseDocument): string | undefined {

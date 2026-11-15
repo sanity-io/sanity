@@ -1,7 +1,6 @@
 import {
   type ConfigContext,
   createSchema,
-  defaultLocale,
   type DocumentBadgeComponent,
   type DocumentBadgesContext,
   type DocumentInspector,
@@ -10,6 +9,7 @@ import {
 } from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {defaultLocale} from '../core/i18n/locales'
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
 import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {documentGroupInspector} from './panes/document/inspectors/documentGroup'

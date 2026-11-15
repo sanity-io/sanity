@@ -1,6 +1,7 @@
 import {useSelector} from '@xstate/react'
-import {LoadingBlock, type Tool} from 'sanity'
+import {type Tool} from 'sanity'
 
+import {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 import PresentationTool from './PresentationTool'
 import {type PresentationPluginOptions} from './types'
 import {usePreviewUrlActorRef} from './usePreviewUrlActorRef'

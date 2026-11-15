@@ -1,17 +1,13 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {
-  defineConfig,
-  type SanityClient,
-  useActiveReleases,
-  useArchivedReleases,
-  useDocumentVersions,
-  useValuePreview,
-} from 'sanity'
+import {defineConfig, type SanityClient, useDocumentVersions} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useValuePreview} from '../../../../../../../core/preview/useValuePreview'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {useArchivedReleases} from '../../../../../../../core/releases/store/useArchivedReleases'
 import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {
@@ -56,11 +52,14 @@ vi.mock('../../../../useDocumentTitle', () => ({
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
-    useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
+vi.mock('../../../../../../../core/preview/useValuePreview', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useValuePreview: vi.fn(),
+}))
 
 vi.mock('sanity/router')
 

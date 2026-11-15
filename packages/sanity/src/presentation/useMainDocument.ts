@@ -1,8 +1,9 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {use, useEffect, useRef, useState, useEffectEvent} from 'react'
-import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {useClient} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
 
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 import {API_VERSION} from './constants'
 import {
   type DocumentResolver,

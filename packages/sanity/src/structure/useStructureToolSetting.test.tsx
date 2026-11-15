@@ -16,7 +16,9 @@ const keyValueStore = {
   getKey: (key: string) => merge(of(stored.get(key) ?? null), NEVER),
   setKey,
 }
-vi.mock('sanity', () => ({
+// The hook imports the store relatively (it is an internal), so the source module is mocked
+vi.mock('../core/store/datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
   useKeyValueStore: () => keyValueStore,
 }))
 

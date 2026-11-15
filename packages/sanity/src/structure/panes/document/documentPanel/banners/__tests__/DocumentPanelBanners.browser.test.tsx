@@ -3,23 +3,16 @@ import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useMemo} from 'react'
 import {BehaviorSubject} from 'rxjs'
-import type * as SanityExports from 'sanity'
 import {
   type EditStateFor,
   type PerspectiveContextValue,
   type SystemVariant,
-  type TargetDocumentState,
-  useActiveReleases,
-  useArchivedReleases,
   useCanvasCompanionDoc,
-  useCanvasNavigate,
   useDocumentStore,
   useDocumentVersions,
   useOnlyHasVersions,
   useSchema,
-  type VersionInfoDocumentStub,
   useWorkspace,
-  type WorkspaceSummary,
 } from 'sanity'
 import {
   ActiveWorkspaceMatcherContext,
@@ -35,6 +28,12 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {useCanvasNavigate} from '../../../../../../core/canvas/useCanvasNavigate'
+import {type WorkspaceSummary} from '../../../../../../core/config/types'
+import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import {useArchivedReleases} from '../../../../../../core/releases/store/useArchivedReleases'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
@@ -56,18 +55,35 @@ import {ScheduledReleaseBanner} from '../ScheduledReleaseBanner'
 import {SeeDraftBanner} from '../SeeDraftBanner'
 import {UnpublishedDocumentBanner} from '../UnpublishedDocumentBanner'
 
-vi.mock('sanity', async (importOriginal) => {
-  const actual = await importOriginal<typeof SanityExports>()
-  return {
-    ...actual,
-    useActiveReleases: vi.fn(actual.useActiveReleases),
-    useArchivedReleases: vi.fn(actual.useArchivedReleases),
-    useCanvasCompanionDoc: vi.fn(actual.useCanvasCompanionDoc),
-    useCanvasNavigate: vi.fn(actual.useCanvasNavigate),
-    useDocumentStore: vi.fn(actual.useDocumentStore),
-    useDocumentVersions: vi.fn(actual.useDocumentVersions),
-    useOnlyHasVersions: vi.fn(actual.useOnlyHasVersions),
-  }
+// Mocked at the source modules: the banners import the internals among these relatively, and the
+// `sanity` barrel re-exports the public ones from the same modules, so both paths see the fixtures.
+vi.mock('../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => {
+  const actual = await importOriginal<{useActiveReleases: typeof useActiveReleases}>()
+  return {...actual, useActiveReleases: vi.fn(actual.useActiveReleases)}
+})
+vi.mock('../../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => {
+  const actual = await importOriginal<{useArchivedReleases: typeof useArchivedReleases}>()
+  return {...actual, useArchivedReleases: vi.fn(actual.useArchivedReleases)}
+})
+vi.mock('../../../../../../core/canvas/actions/useCanvasCompanionDoc', async (importOriginal) => {
+  const actual = await importOriginal<{useCanvasCompanionDoc: typeof useCanvasCompanionDoc}>()
+  return {...actual, useCanvasCompanionDoc: vi.fn(actual.useCanvasCompanionDoc)}
+})
+vi.mock('../../../../../../core/canvas/useCanvasNavigate', async (importOriginal) => {
+  const actual = await importOriginal<{useCanvasNavigate: typeof useCanvasNavigate}>()
+  return {...actual, useCanvasNavigate: vi.fn(actual.useCanvasNavigate)}
+})
+vi.mock('../../../../../../core/store/datastores', async (importOriginal) => {
+  const actual = await importOriginal<{useDocumentStore: typeof useDocumentStore}>()
+  return {...actual, useDocumentStore: vi.fn(actual.useDocumentStore)}
+})
+vi.mock('../../../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => {
+  const actual = await importOriginal<{useDocumentVersions: typeof useDocumentVersions}>()
+  return {...actual, useDocumentVersions: vi.fn(actual.useDocumentVersions)}
+})
+vi.mock('../../../../../../core/releases/hooks/useOnlyHasVersions', async (importOriginal) => {
+  const actual = await importOriginal<{useOnlyHasVersions: typeof useOnlyHasVersions}>()
+  return {...actual, useOnlyHasVersions: vi.fn(actual.useOnlyHasVersions)}
 })
 
 const {settleChromaticEndState} = testHelpers()
@@ -586,8 +602,9 @@ describe('document panel banners', () => {
     }
 
     const parentEditState$ = new BehaviorSubject(editStateFor('article-2'))
-    const {useDocumentStore: useRealDocumentStore} =
-      await vi.importActual<typeof SanityExports>('sanity')
+    const {useDocumentStore: useRealDocumentStore} = await vi.importActual<{
+      useDocumentStore: typeof useDocumentStore
+    }>('../../../../../../core/store/datastores')
     vi.mocked(useDocumentStore).mockImplementation(function useDocumentStoreWithParent() {
       const store = useRealDocumentStore()
       return useMemo(

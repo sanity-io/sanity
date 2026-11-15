@@ -1,7 +1,8 @@
 import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {useTranslation, useValuePreview} from 'sanity'
+import {useTranslation} from 'sanity'
 
+import {useValuePreview} from '../../../core/preview/useValuePreview'
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers/useResolvedPanes'

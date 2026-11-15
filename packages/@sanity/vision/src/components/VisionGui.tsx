@@ -21,18 +21,21 @@ import {
   useEffectEvent,
 } from 'react'
 import {
-  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
   type PerspectiveStack,
-  sortReleases,
-  useActiveReleases,
   useClient,
   usePerspective,
-  useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
 } from 'sanity'
+import {
+  getDefaultVariant,
+  isCardinalityOneRelease,
+  sortReleases,
+  useActiveReleases,
+  useScheduledDraftsEnabled,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'

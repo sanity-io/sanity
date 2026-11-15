@@ -4,7 +4,8 @@ import {type PerspectiveStack} from '../../perspective/types'
 import {PreviewLoader} from './PreviewLoader'
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export function Preview(
   props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack; variant?: string},

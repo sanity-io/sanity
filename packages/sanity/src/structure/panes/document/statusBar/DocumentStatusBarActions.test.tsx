@@ -11,10 +11,14 @@ import {type DocumentPaneContextValue} from '../DocumentPaneContext'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
-}))
+// The component imports the hook relatively (it is an internal), so the source module is mocked
+vi.mock(
+  '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
+  }),
+)
 
 vi.mock('../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

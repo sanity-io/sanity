@@ -3,9 +3,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
-  getPairTarget,
-  getTargetScopeId,
-  getTargetSiblings,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -14,6 +11,11 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
+} from '../../core/hooks/useTargetDocumentState'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

@@ -28,7 +28,9 @@ export interface FormFieldValidationStatusProps {
 
 const EMPTY_ARRAY: never[] = []
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 

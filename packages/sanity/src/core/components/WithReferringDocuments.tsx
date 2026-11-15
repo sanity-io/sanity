@@ -6,7 +6,8 @@ import {type DocumentStore} from '../store/document/document-store'
 const EMPTY: never[] = []
 
 /**
- * @internal
+ * @hidden
+ * @beta
  * @deprecated - Will be removed in 4.0.0, use the `useReferringDocuments(<documentId>)` hook instead
  */
 export function WithReferringDocuments({

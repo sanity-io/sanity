@@ -1,11 +1,12 @@
 import {
-  getDocumentVersionVariantId,
-  isAgentBundleName,
   isDraftVersion,
   isPublishedVersion,
   isReleaseVersion,
   type VersionInfoDocumentStub,
 } from 'sanity'
+
+import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'
+import {getDocumentVersionVariantId} from '../../../../../../../core/util/getDocumentVersionVariant'
 
 /** @internal */
 export interface NavigationBadgesState {

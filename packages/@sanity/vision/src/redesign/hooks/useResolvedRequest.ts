@@ -1,18 +1,20 @@
 import {type ClientPerspective, type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {
-  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
   type PerspectiveContextValue,
   type PerspectiveStack,
-  sortReleases,
-  useActiveReleases,
   useClient,
   usePerspective,
-  useScheduledDraftsEnabled,
   useWorkspace,
 } from 'sanity'
+import {
+  getDefaultVariant,
+  isCardinalityOneRelease,
+  sortReleases,
+  useActiveReleases,
+  useScheduledDraftsEnabled,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../apiVersions'
 import {useVariantsEnabled} from '../../hooks/useVariantsEnabled'

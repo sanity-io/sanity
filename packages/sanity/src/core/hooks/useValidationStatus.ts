@@ -6,7 +6,9 @@ import {type ValidationStatus} from '../validation'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
