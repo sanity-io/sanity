@@ -1,13 +1,9 @@
 import {useCallback} from 'react'
-import {
-  getTargetSiblings,
-  usePerspective,
-  useSetPerspective,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+import {usePerspective, useTranslation, useWorkspace} from 'sanity'
 import {Text} from 'ui5'
 
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {shouldShowSeeDraftBanner} from '../../../../shouldShowSeeDraftBanner'

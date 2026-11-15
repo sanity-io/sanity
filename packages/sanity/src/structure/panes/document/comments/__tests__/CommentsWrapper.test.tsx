@@ -1,7 +1,8 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, useDocumentVersions, usePerspective, useWorkspace} from 'sanity'
+import {useDocumentVersions, usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
@@ -15,20 +16,7 @@ let capturedCommentsProviderProps: Record<string, unknown> | undefined
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  CommentsEnabledProviderLegacy: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  CommentsProviderLegacy: (props: Record<string, unknown>) => {
-    capturedCommentsProviderLegacyProps = props
-    return <>{props.children}</>
-  },
-  CommentsProvider: (props: Record<string, unknown>) => {
-    capturedCommentsProviderProps = props
-    return <>{props.children}</>
-  },
-  getTargetScopeId: vi.fn(() => undefined),
   useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
-  useCommentsEnabled: vi.fn(() => true),
-  useCommentsEnabledLegacy: vi.fn(() => true),
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
@@ -40,6 +28,56 @@ vi.mock('sanity', async (importOriginal) => ({
   useWorkspace: vi.fn(() => ({
     comments: {legacy: false},
   })),
+}))
+
+// The comments providers and hooks moved off the `sanity` root, so they are mocked where they
+// are now implemented.
+vi.mock(
+  '../../../../../core/comments/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderLegacyProps = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderProps = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock('../../../../../core/comments/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => true),
+}))
+vi.mock('../../../../../core/comments-v2/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => true),
+}))
+
+vi.mock('../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getTargetScopeId: vi.fn(() => undefined),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({

@@ -1,9 +1,10 @@
 import {LayerProvider} from '@sanity/ui'
 import {lazy, memo, Suspense, use, useEffect, useMemo, useState} from 'react'
-import {Hotkeys, isSanityDefinedAction, usePausedScheduledDraft, usePerspective} from 'sanity'
+import {Hotkeys, isSanityDefinedAction, usePerspective} from 'sanity'
 import {TasksModePromiseContext} from 'sanity/_singletons'
 import {Text, Flex, VStack} from 'ui5'
 
+import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
@@ -21,9 +22,7 @@ import {ActionStateDialog} from './ActionStateDialog'
 // private to `src/core/tasks` rather than becoming an entry point other plugins could reach.
 // Loading the module here, instead of through the plugin's `__internal_tasks` config, keeps
 // that access inside the package while still deferring the chunk until tasks are known to be on.
-const loadTasksFooterOpenTasks = () =>
-  // oxlint-disable-next-line boundaries/dependencies -- deliberately bypasses the `sanity` entry: exporting this component would make it an entry point other plugins could reach, which is what the direct import avoids. A proper API for footer actions is the long-term alternative.
-  import('../../../../core/tasks/plugin/TasksFooterOpenTasks')
+const loadTasksFooterOpenTasks = () => import('../../../../core/tasks/plugin/TasksFooterOpenTasks')
 
 const TasksFooterOpenTasks = lazy(loadTasksFooterOpenTasks)
 

@@ -1,12 +1,12 @@
 import {Card, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {useCallback} from 'react'
-import {CommandList} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {cleanup, render} from 'vitest-browser-react'
 import {page, server} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../test/browser/testHelpers'
+import {CommandList} from '../../../../core/components/commandList/CommandList'
 import {Pane} from '../Pane'
 import {paneCommandList} from '../PaneCommandList.css'
 import {PaneContent} from '../PaneContent'

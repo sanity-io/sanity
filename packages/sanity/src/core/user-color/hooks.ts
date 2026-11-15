@@ -5,7 +5,9 @@ import {UserColorManagerContext} from 'sanity/_singletons'
 
 import {type UserColor, type UserColorManager} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useUserColorManager(): UserColorManager {
   const userColorManager = useContext(UserColorManagerContext)
 

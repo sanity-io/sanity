@@ -51,7 +51,8 @@ export function sliceString(str: string, start: number, end: number): string {
  * @param str - String to truncate
  * @param maxLength - Maximum length in "characters"
  * @returns The truncated string
- * @internal
+ * @hidden
+ * @beta
  */
 export function truncateString(str: string, maxLength: number): string {
   const truncated = sliceString(str, 0, maxLength)

@@ -3,13 +3,9 @@ import {ClockIcon} from '@sanity/icons/Clock'
 import {UnlockIcon} from '@sanity/icons/Unlock'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  DEFAULT_VARIANT_TYPE_KEY,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   isCardinalityOneRelease,
-  isPausedCardinalityOneRelease,
-  isReleaseDocument,
   ReleaseAvatar,
   useActiveReleases,
   useDocumentVersions,
@@ -18,6 +14,10 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
+import {isPausedCardinalityOneRelease} from '../../../../../../../core/util/releaseUtils'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'

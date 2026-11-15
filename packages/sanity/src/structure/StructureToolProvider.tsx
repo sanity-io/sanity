@@ -1,13 +1,10 @@
 import {type ReactNode, useMemo, useState} from 'react'
-import {
-  getDefaultVariant,
-  useConfigContextFromSource,
-  useDocumentStore,
-  usePerspective,
-  useSource,
-} from 'sanity'
+import {useDocumentStore, usePerspective} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
+import {useConfigContextFromSource} from '../core/config/useConfigContextFromSource'
+import {getDefaultVariant} from '../core/perspective/getDefaultVariant'
+import {useSource} from '../core/studio/source'
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
 import {type DefaultDocumentNodeResolver} from './structureBuilder/types'
 import {

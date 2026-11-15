@@ -6,7 +6,9 @@ import {type DocumentPresence} from './types'
 
 const initial: DocumentPresence[] = []
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
   const presenceStore = usePresenceStore()
   const presence$ = useMemo(

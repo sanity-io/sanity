@@ -2,31 +2,34 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Text} from '@sanity/ui'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 'react'
 import {
-  DEFAULT_VARIANT_TYPE_KEY,
-  filterVariantsForSearch,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVariantTitle,
-  getVariantType,
   getVersionFromId,
   getVersionId,
-  isAgentBundleName,
-  isDefaultVariant,
-  LATEST,
-  PUBLISHED,
   type SystemVariant,
   useActiveReleases,
-  useAgentVersionDisplay,
-  useAllVariants,
   useDocumentVersions,
   useListFormat,
   usePerspective,
-  useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {useSetVariant} from '../../../../../../../core/perspective/useSetVariant'
+import {LATEST, PUBLISHED} from '../../../../../../../core/releases/util/const'
+import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'
+import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
+import {
+  filterVariantsForSearch,
+  isDefaultVariant,
+} from '../../../../../../../core/variants/tool/util'
+import {
+  DEFAULT_VARIANT_TYPE_KEY,
+  getVariantType,
+} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../../../i18n'

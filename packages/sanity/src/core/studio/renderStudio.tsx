@@ -10,7 +10,7 @@ interface RenderStudioOptions {
 }
 
 /**
- * @internal
+ * @public
  * @deprecated Use `renderStudio(rootElement, config, {reactStrictMode: true})` instead
  */
 export function renderStudio(
@@ -19,17 +19,17 @@ export function renderStudio(
   options: boolean,
 ): () => void
 
-/** @internal */
+/** @public */
 export function renderStudio(rootElement: HTMLElement | null, config: Config): () => void
 
-/** @internal */
+/** @public */
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,
   options: RenderStudioOptions,
 ): () => void
 
-/** @internal */
+/** @public */
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,

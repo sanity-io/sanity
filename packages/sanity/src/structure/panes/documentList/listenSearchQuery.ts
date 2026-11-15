@@ -16,19 +16,17 @@ import {
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {scan} from 'rxjs/operators'
+import {type SanityDocumentLike, type Schema, type SearchStrategy} from 'sanity'
+
+import {compileFieldPath} from '../../../core/search/common/compileFieldPath'
+import {getSearchableTypes} from '../../../core/search/common/getSearchableTypes'
 import {
-  compileFieldPath,
-  createSearch,
-  createSWR,
-  getSearchableTypes,
-  type SanityDocumentLike,
-  type Schema,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
-  type SearchStrategy,
-} from 'sanity'
-
+} from '../../../core/search/common/types'
+import {createSearch} from '../../../core/search/search'
+import {createSWR} from '../../../core/util/rxSwr'
 import {toStaticSortOrder} from './helpers'
 import {type SortOrder} from './types'
 

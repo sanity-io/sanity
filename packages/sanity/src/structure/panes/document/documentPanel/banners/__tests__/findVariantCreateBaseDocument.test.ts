@@ -1,6 +1,7 @@
-import {type VersionInfoDocumentStub, type SystemVariant} from 'sanity'
+import {type SystemVariant} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
 import {findVariantCreateBaseDocument} from '../findVariantCreateBaseDocument'
 
 const PUBLISHED_ID = 'article-1'

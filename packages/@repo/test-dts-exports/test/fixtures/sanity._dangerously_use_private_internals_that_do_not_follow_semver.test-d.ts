@@ -77,6 +77,8 @@ import type {
   CommandListItemContext,
   CommandListProps,
   CommandListRenderItemCallback,
+  CommentDeleteDialog,
+  CommentDeleteDialogLegacy,
   CommentDisabledIcon,
   CommentDisabledIconLegacy,
   CommentInlineHighlightSpan,
@@ -89,6 +91,15 @@ import type {
   CommentInputPropsLegacy,
   COMMENTS_INSPECTOR_NAME,
   COMMENTS_INSPECTOR_NAME_LEGACY,
+  CommentsAuthoringPathProvider,
+  CommentsAuthoringPathProviderLegacy,
+  CommentsEnabledProvider,
+  CommentsEnabledProviderLegacy,
+  CommentsIntentProvider,
+  CommentsList,
+  CommentsListLegacy,
+  CommentsProvider,
+  CommentsProviderLegacy,
   CommentsSelectedPath,
   CommentsSelectedPathLegacy,
   CommentsSelectedPathProvider,
@@ -99,6 +110,7 @@ import type {
   CommonProps,
   compileFieldPath,
   component,
+  ConcreteRuleClass,
   ConfigErrorClassification,
   ConfigErrorGate,
   ConfigPropertyError,
@@ -746,6 +758,10 @@ import type {
   useColorSchemeInternalValue,
   useColorSchemeOptions,
   useComlinkStore,
+  useComments,
+  useCommentsEnabled,
+  useCommentsEnabledLegacy,
+  useCommentsLegacy,
   useCommentsSelectedPath,
   useCommentsSelectedPathLegacy,
   useCommentsTelemetry,
@@ -884,6 +900,7 @@ import type {
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
+  ValidationContext,
   ValueError,
   VariantConditionMap,
   VariantConditions,
@@ -1142,6 +1159,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommandListRenderItemCallback', () => {
     expectTypeOf<CommandListRenderItemCallback<any>>().not.toBeNever()
   })
+  test('CommentDeleteDialog', () => {
+    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
+  })
+  test('CommentDeleteDialogLegacy', () => {
+    expectTypeOf<typeof CommentDeleteDialogLegacy>().toBeFunction()
+  })
   test('CommentDisabledIcon', () => {
     expectTypeOf<typeof CommentDisabledIcon>().toBeFunction()
   })
@@ -1178,6 +1201,33 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('COMMENTS_INSPECTOR_NAME_LEGACY', () => {
     expectTypeOf<typeof COMMENTS_INSPECTOR_NAME_LEGACY>().not.toBeNever()
   })
+  test('CommentsAuthoringPathProvider', () => {
+    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
+  })
+  test('CommentsAuthoringPathProviderLegacy', () => {
+    expectTypeOf<typeof CommentsAuthoringPathProviderLegacy>().toBeFunction()
+  })
+  test('CommentsEnabledProvider', () => {
+    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
+  })
+  test('CommentsEnabledProviderLegacy', () => {
+    expectTypeOf<typeof CommentsEnabledProviderLegacy>().not.toBeNever()
+  })
+  test('CommentsIntentProvider', () => {
+    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
+  })
+  test('CommentsList', () => {
+    expectTypeOf<typeof CommentsList>().not.toBeNever()
+  })
+  test('CommentsListLegacy', () => {
+    expectTypeOf<typeof CommentsListLegacy>().not.toBeNever()
+  })
+  test('CommentsProvider', () => {
+    expectTypeOf<typeof CommentsProvider>().not.toBeNever()
+  })
+  test('CommentsProviderLegacy', () => {
+    expectTypeOf<typeof CommentsProviderLegacy>().not.toBeNever()
+  })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
   })
@@ -1207,6 +1257,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('component', () => {
     expectTypeOf<typeof component>().not.toBeNever()
+  })
+  test('ConcreteRuleClass', () => {
+    expectTypeOf<typeof ConcreteRuleClass>().not.toBeNever()
   })
   test('ConfigErrorClassification', () => {
     expectTypeOf<ConfigErrorClassification>().not.toBeNever()
@@ -3152,6 +3205,18 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useComlinkStore', () => {
     expectTypeOf<typeof useComlinkStore>().toBeFunction()
   })
+  test('useComments', () => {
+    expectTypeOf<typeof useComments>().toBeFunction()
+  })
+  test('useCommentsEnabled', () => {
+    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
+  })
+  test('useCommentsEnabledLegacy', () => {
+    expectTypeOf<typeof useCommentsEnabledLegacy>().toBeFunction()
+  })
+  test('useCommentsLegacy', () => {
+    expectTypeOf<typeof useCommentsLegacy>().toBeFunction()
+  })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
   })
@@ -3567,6 +3632,10 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('validation', () => {
     expectTypeOf<typeof validation>().toBeFunction()
+  })
+  test('ValidationContext', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<ValidationContext>().toBeObject()
   })
   test('ValueError', () => {
     expectTypeOf<typeof ValueError>().toBeFunction()

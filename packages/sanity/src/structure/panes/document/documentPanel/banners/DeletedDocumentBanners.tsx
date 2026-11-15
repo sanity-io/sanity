@@ -2,9 +2,6 @@ import {DocumentRemoveIcon} from '@sanity/icons/DocumentRemove'
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useCallback} from 'react'
 import {
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
@@ -14,6 +11,8 @@ import {
 import {useRouter} from 'sanity/router'
 import {Text} from 'ui5'
 
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

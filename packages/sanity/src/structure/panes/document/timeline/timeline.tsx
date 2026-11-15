@@ -1,13 +1,8 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  type Chunk,
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-  useTranslation,
-} from 'sanity'
+import {type Chunk, CommandList, LoadingBlock, useTranslation} from 'sanity'
 import {Text, Box} from 'ui5'
 
+import {type CommandListRenderItemCallback} from '../../../../core/components/commandList/types'
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'

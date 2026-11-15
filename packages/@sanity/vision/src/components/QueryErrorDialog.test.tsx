@@ -20,10 +20,16 @@ vi.mock('sanity', () => ({
       values?.apiVersion ? `${key}:${values.apiVersion}` : key,
   }),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+    RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
+    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},
+  }),
+)
 
 function clientError(statusCode: number, message: string) {
   return new ClientError({

@@ -4,8 +4,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DuplicateDocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -15,6 +13,7 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

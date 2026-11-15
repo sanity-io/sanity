@@ -2,19 +2,19 @@ import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
   getVersionFromId,
-  isAgentBundleName,
   type SystemVariant,
   useActiveReleases,
-  useAgentVersionDisplay,
-  useAllVariants,
   useDocumentVersions,
   usePerspective,
-  useSetVariant,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useSetVariant} from '../../../../../../../../core/perspective/useSetVariant'
+import {isAgentBundleName} from '../../../../../../../../core/store/agent/createAgentBundlesStore'
+import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../../../../../../../core/variants/store/useAllVariants'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
@@ -30,13 +30,19 @@ import {DocumentVariantsMenu} from '../DocumentVariantsMenu'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn(),
-  useAgentVersionDisplay: vi.fn(),
-  useAllVariants: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
-  useSetVariant: vi.fn(),
 }))
 
+vi.mock('../../../../../../../../core/perspective/useSetVariant', () => ({
+  useSetVariant: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/store/agent/useAgentVersionDisplay', () => ({
+  useAgentVersionDisplay: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/variants/store/useAllVariants', () => ({
+  useAllVariants: vi.fn(),
+}))
 vi.mock('../../../../../useDocumentPane')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>

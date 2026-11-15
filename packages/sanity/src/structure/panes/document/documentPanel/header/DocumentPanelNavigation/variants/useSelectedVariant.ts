@@ -1,4 +1,6 @@
-import {getVariantType, type SystemVariant, usePerspective} from 'sanity'
+import {type SystemVariant, usePerspective} from 'sanity'
+
+import {getVariantType} from '../../../../../../../core/variants/util/variantType'
 
 /**
  * The selected variant of the given type, or `undefined` when that type is on Default. Also

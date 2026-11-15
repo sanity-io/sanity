@@ -3,16 +3,16 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
-  EMPTY_ARRAY,
-  getDocumentIdForCanvasLink,
-  GetHookCollectionState,
   getReleaseIdFromReleaseDocumentId,
-  useActiveReleases,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
+import {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
+import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
+import {useActiveReleases} from '../core/releases/store/useActiveReleases'
+import {EMPTY_ARRAY} from '../core/util/empty'
 import {structureLocaleNamespace} from './i18n'
 import {useDocumentPane} from './panes/document/useDocumentPane'
 

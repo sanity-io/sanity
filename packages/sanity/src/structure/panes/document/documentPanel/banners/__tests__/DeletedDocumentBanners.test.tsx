@@ -1,14 +1,11 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {
-  LATEST,
-  type ReleaseDocument,
-  useActiveReleases,
-  usePerspective,
-  useReleasesIds,
-} from 'sanity'
+import {type ReleaseDocument, usePerspective} from 'sanity'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import {useReleasesIds} from '../../../../../../core/releases/store/useReleasesIds'
+import {LATEST} from '../../../../../../core/releases/util/const'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
@@ -21,12 +18,21 @@ vi.mock('sanity', async () => {
   const sanity = await vi.importActual('sanity')
   return {
     ...sanity,
-    useReleasesIds: vi.fn(),
-    useActiveReleases: vi.fn(),
     usePerspective: vi.fn(),
-    useArchivedReleases: vi.fn(),
   }
 })
+vi.mock('../../../../../../core/releases/store/useReleasesIds', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useReleasesIds: vi.fn(),
+}))
+vi.mock('../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(),
+}))
+vi.mock('../../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useArchivedReleases: vi.fn(),
+}))
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>

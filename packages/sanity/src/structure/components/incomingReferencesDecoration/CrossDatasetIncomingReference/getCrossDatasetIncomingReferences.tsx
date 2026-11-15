@@ -5,13 +5,13 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentAvailability,
   type DocumentPreviewStore,
-  getPreviewPaths,
   getPublishedId,
-  isNonNullable,
-  prepareForPreview,
   type SanityClient,
 } from 'sanity'
 
+import {getPreviewPaths} from '../../../../core/preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../core/preview/utils/prepareForPreview'
+import {isNonNullable} from '../../../../core/util/isNonNullable'
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
 

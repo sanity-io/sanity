@@ -1,13 +1,13 @@
 import {useMemo} from 'react'
 import {
   getDefaultVariant,
-  getDocumentVersionVariantId,
   getPublishedId,
   useDocumentVersions,
   usePerspective,
   type VersionInfoDocumentStub,
 } from 'sanity'
 
+import {getDocumentVersionVariantId} from '../../../core/util/getDocumentVersionVariant'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 
 /**

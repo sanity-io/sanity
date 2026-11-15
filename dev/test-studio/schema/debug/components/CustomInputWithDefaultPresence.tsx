@@ -1,6 +1,10 @@
 import range from 'lodash-es/range.js'
 import {useCallback, type RefAttributes} from 'react'
-import {FieldPresence, type ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
+import {type ObjectInputProps, set, setIfMissing} from 'sanity'
+import {
+  FieldPresence,
+  PresenceScope,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function CustomInputWithDefaultPresence(
   props: ObjectInputProps & RefAttributes<HTMLDivElement>,

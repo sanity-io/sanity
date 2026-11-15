@@ -3,21 +3,21 @@ import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
-  ChangeConnectorRoot,
   type DocumentFieldActionNode,
   type DocumentInspectorMenuItem,
-  FieldActionsProvider,
-  FieldActionsResolver,
-  GetFormValueProvider,
   type Path,
-  useDocumentIdStack,
-  useGlobalCopyPasteElementHandler,
   useTranslation,
-  useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 
+import {ChangeConnectorRoot} from '../../../../core/changeIndicators/overlay/ChangeConnectorRoot'
+import {useZIndex} from '../../../../core/components/zOffsets/useZIndex'
+import {GetFormValueProvider} from '../../../../core/form/contexts/GetFormValue'
+import {FieldActionsProvider} from '../../../../core/form/field/actions/FieldActionsProvider'
+import {FieldActionsResolver} from '../../../../core/form/field/actions/FieldActionsResolver'
+import {useDocumentIdStack} from '../../../../core/hooks/useDocumentIdStack'
+import {useGlobalCopyPasteElementHandler} from '../../../../core/hooks/useGlobalCopyPasteElementHandler'
 import {Pane} from '../../../components/pane/Pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'

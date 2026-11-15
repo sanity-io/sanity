@@ -46,7 +46,7 @@ export interface RelativeTimeOptions {
   timeZone?: string
 }
 
-/** @internal */
+/** @public */
 export function useRelativeTime(time: Date | string, options: RelativeTimeOptions = {}): string {
   const [now, updateNow] = useNow()
   const resolved = useFormatRelativeTime(time, options.relativeTo || now, options)
