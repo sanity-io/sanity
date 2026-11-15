@@ -55,7 +55,7 @@ export type GroqStoreStatus = {
   /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
   storeError?: string
   guardOff: boolean
-  /** Local snapshots for warm starts (`?groqPersist=on`). */
+  /** Local snapshots for warm starts (on unless `?groqPersist=off`). */
   persistence: boolean
   /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
   persistedStorage?: boolean
@@ -153,7 +153,7 @@ function initialGuardOff(): boolean {
 }
 
 /**
- * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, off by default.
+ * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, on by default.
  * `?groqPersistMaxMB=<n>|off` overrides the host's 512 MiB snapshot cap (empty resets it).
  * `?groqPersistBackend=opfs|idb` pins the snapshot storage; `auto` (the default) prefers OPFS
  * and falls back to IndexedDB.
@@ -161,8 +161,8 @@ function initialGuardOff(): boolean {
  */
 function initialPersistence(): {enabled: boolean; maxMb: string; backend: string} {
   const override = searchParam('groqPersist')
-  if (override === 'on') writeStorage('localStorage', PERSIST_KEY, 'on')
-  if (override === 'off') writeStorage('localStorage', PERSIST_KEY, null)
+  if (override === 'on') writeStorage('localStorage', PERSIST_KEY, null)
+  if (override === 'off') writeStorage('localStorage', PERSIST_KEY, 'off')
   const maxOverride = searchParam('groqPersistMaxMB')
   if (maxOverride !== null) {
     writeStorage('localStorage', PERSIST_MAX_KEY, maxOverride === '' ? null : maxOverride)
@@ -175,7 +175,7 @@ function initialPersistence(): {enabled: boolean; maxMb: string; backend: string
     writeStorage('localStorage', PERSIST_BACKEND_KEY, null)
   }
   return {
-    enabled: readStorage('localStorage', PERSIST_KEY) === 'on',
+    enabled: readStorage('localStorage', PERSIST_KEY) !== 'off',
     maxMb: readStorage('localStorage', PERSIST_MAX_KEY) ?? '',
     backend: readStorage('localStorage', PERSIST_BACKEND_KEY) ?? 'auto',
   }
