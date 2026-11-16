@@ -45,10 +45,14 @@ describe('CollapseMenu', () => {
       )
     })
 
+    expect(screen.getByTestId('fallback')).toBeInTheDocument()
+    expect(screen.getByTestId('collapse-menu')).not.toBeVisible()
+
     await act(async () => {
       load()
     })
 
+    expect(screen.queryByTestId('fallback')).not.toBeInTheDocument()
     expect(screen.getByTestId('collapse-menu')).toBeVisible()
     expect(screen.getAllByTestId('lazy-icon').length).toBeGreaterThan(0)
   })
