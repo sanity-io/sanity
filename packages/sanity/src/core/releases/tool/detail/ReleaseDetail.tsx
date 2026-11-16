@@ -7,7 +7,7 @@ import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../../studio/workspace'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -29,8 +29,8 @@ export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
-  // Behind beta.variants the action cluster moves to the top rail and the footer is dropped.
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  // In the redesigned layout the action cluster moves to the top rail and the footer is dropped.
+  const redesign = useReleasesRedesign()
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
@@ -144,7 +144,7 @@ export function ReleaseDetail() {
 
             {/* In beta the footer's action cluster moved to the top rail and its Created status
                 moved into the properties panel, so the footer is dropped entirely. */}
-            {!variantsEnabled && (
+            {!redesign && (
               <ReleaseDashboardFooter
                 documents={results}
                 release={releaseInDetail}
@@ -154,7 +154,7 @@ export function ReleaseDetail() {
           </Flex>
 
           {/* Production: activity is an in-flow panel that pushes the content column aside. */}
-          {!variantsEnabled && (
+          {!redesign && (
             <ReleaseDashboardActivityPanel
               events={releaseEvents}
               release={releaseInDetail}
@@ -165,7 +165,7 @@ export function ReleaseDetail() {
 
         {/* Beta: activity floats as a right-anchored drawer over the entire pane (covering the
             rail), rather than pushing the layout. */}
-        {variantsEnabled && (
+        {redesign && (
           <ReleaseDashboardActivityPanel
             events={releaseEvents}
             release={releaseInDetail}

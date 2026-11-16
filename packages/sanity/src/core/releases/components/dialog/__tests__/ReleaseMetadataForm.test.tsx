@@ -522,8 +522,8 @@ describe('ReleaseForm metadata fields', () => {
     expect(onValidityChange).not.toHaveBeenCalledWith(true)
   })
 
-  it('does not render configured fields when variants are off', async () => {
-    const onChange = vi.fn()
+  it('renders configured fields without the variants flag', async () => {
+    // Release metadata ships to every project in Studio v6, outside the variants flag.
     const value: EditableReleaseDocument = {
       _id: 'very-random',
       metadata: asReleaseMetadata({
@@ -535,16 +535,11 @@ describe('ReleaseForm metadata fields', () => {
 
     await renderWithFields(
       [legalReviewField],
-      <ControlledReleaseForm initial={value} onChange={onChange} />,
+      <ControlledReleaseForm initial={value} onChange={vi.fn()} />,
       false,
     )
 
-    expect(screen.queryByTestId('field-legalReview')).toBeNull()
-    expect(onChange).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        metadata: expect.objectContaining({legalReview: 'notReviewed'}),
-      }),
-    )
+    expect(await screen.findByTestId('field-legalReview')).toBeInTheDocument()
   })
 
   it('includes the configured field on the release passed to onChange', async () => {

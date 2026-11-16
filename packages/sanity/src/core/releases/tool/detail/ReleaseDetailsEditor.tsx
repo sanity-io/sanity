@@ -4,10 +4,10 @@ import {useCallback, useRef, useState} from 'react'
 
 import {DetailIdentity} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../../studio/workspace'
 import {getDescriptionText} from '../../../util/getDescriptionText'
 import {ReleaseDescriptionSet} from '../../__telemetry__/releases.telemetry'
 import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
 import {useCanEditRelease} from './useCanEditRelease'
@@ -91,9 +91,9 @@ function ReleaseDetailsEditorVariants({release}: {release: ReleaseDocument}): Re
 }
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const redesign = useReleasesRedesign()
 
-  if (variantsEnabled) {
+  if (redesign) {
     return <ReleaseDetailsEditorVariants release={release} />
   }
 

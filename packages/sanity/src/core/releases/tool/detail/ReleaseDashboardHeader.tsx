@@ -11,7 +11,7 @@ import {Box, Container, Flex, Icon, Text} from 'ui5'
 
 import {DetailBackButton} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../../studio/workspace'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {CopyReleaseActions} from './CopyReleaseActions'
@@ -31,10 +31,9 @@ export function ReleaseDashboardHeader(props: {
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
   const router = useRouter()
 
-  // Behind beta.variants the Share/Activity actions move into the table's command lane (one action
+  // In the redesigned layout the Share/Activity actions move into the table's command lane (one action
   // lane). Production keeps them in the header until the flag flips.
-  const {beta} = useWorkspace()
-  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const redesign = useReleasesRedesign()
 
   const handleNavigateToReleasesList = useCallback(() => {
     const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
@@ -52,7 +51,7 @@ export function ReleaseDashboardHeader(props: {
     <Box padding={3}>
       <Flex alignItems="flex-start">
         <Flex flexBasis="0%" flexGrow={1} alignItems="center">
-          {variantsEnabled ? (
+          {redesign ? (
             // A single back affordance — the release title already headlines the pane below, so
             // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
             <DetailBackButton
@@ -91,10 +90,10 @@ export function ReleaseDashboardHeader(props: {
           )}
         </Flex>
 
-        {variantsEnabled ? (
+        {redesign ? (
           // The F-pattern action rail: the release's primary action (Run release / Publish /
           // Schedule / …) and its overflow menu sit top-right, where the eye lands first, instead
-          // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail). Copy + Activity
+          // of in a bottom footer. The footer is dropped in the redesigned layout (see ReleaseDetail). Copy + Activity
           // sit alongside it here rather than in the table's command lane: the header always renders,
           // so they stay reachable even when the table is loading, errored, or an empty
           // cardinality-one release (where the command lane is not mounted).
@@ -130,10 +129,10 @@ export function ReleaseDashboardHeader(props: {
     </Box>
   )
 
-  // Only the beta layout constrains the header to the width={3} gutter shared with the new
+  // Only the redesigned layout constrains the header to the width={3} gutter shared with the new
   // details/table panes below. With variants off the details and table stay on the old full-bleed
   // path, so the header must too — otherwise a centered/constrained header sits over a full-width
   // table, the hybrid layout flagged in review. Production padding is preserved by the inner Box
   // (on main the parent Card supplied padding={3}; the redesign moved it here).
-  return variantsEnabled ? <Container size={3}>{headerContent}</Container> : headerContent
+  return redesign ? <Container size={3}>{headerContent}</Container> : headerContent
 }

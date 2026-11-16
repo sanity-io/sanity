@@ -79,24 +79,20 @@ describe('release metadata on create and edit', () => {
     useReleaseOperationsMockReturn.updateRelease.mockClear()
   })
 
-  it('does not show metadata fields on create or edit when variants are off', async () => {
+  it('shows metadata fields on create and edit without the variants flag', async () => {
+    // Release metadata ships to every project in Studio v6, outside the variants flag.
     const {unmount} = await renderDialog(
       <CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />,
       false,
     )
-
-    expect(screen.queryByTestId('field-reviewNote')).toBeNull()
-    expect(await screen.findByTestId('submit-release-button')).toBeEnabled()
+    expect(await screen.findByTestId('field-reviewNote')).toBeInTheDocument()
     unmount()
 
     await renderDialog(
       <EditReleaseDialog release={releaseWithUnknownKey()} onClose={vi.fn()} />,
       false,
     )
-    expect(screen.queryByTestId('field-reviewNote')).toBeNull()
-    await waitFor(() => {
-      expect(screen.getByTestId('save-release-details-button')).toBeEnabled()
-    })
+    expect(await screen.findByTestId('field-reviewNote')).toBeInTheDocument()
   })
 
   it('keeps create blocked when the value changes before validation settles', async () => {
