@@ -155,6 +155,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
+  // Ignores the detach: the editor renders through a portal into this element, and when something
+  // in it suspends (a lazy schema type icon in the toolbar), the field's boundary hides it and
+  // detaches its refs. Dropping the element would unmount the editor, so the boundary would reveal
+  // it, the ref would mount the editor again, and it would suspend again, until "Maximum update
+  // depth exceeded". The element survives the hiding.
+  const setWrapperRef = useCallback((element: HTMLDivElement | null) => {
+    if (element) setWrapperElement(element)
+  }, [])
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
   // In fullscreen the editor covers the pane's content area and its own scroll element is the
@@ -736,7 +744,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                       data-focused={editorFocused ? '' : undefined}
                       data-read-only={readOnly ? '' : undefined}
                     >
-                      <Box data-wrapper="" ref={setWrapperElement}>
+                      <Box data-wrapper="" ref={setWrapperRef}>
                         <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                           {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
                           <AnnotationObjectEditModal
