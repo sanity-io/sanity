@@ -211,6 +211,20 @@ function hostUrl(guardOff: boolean, globalSearch: boolean): string {
   return `/groq-host.js?${params}`
 }
 
+/**
+ * A SharedWorker name is bound to one URL for the life of the worker, so each hostUrl variant
+ * needs its own name — including persist options, not only guard and global-search.
+ */
+function hostName(guardOff: boolean, globalSearch: boolean): string | undefined {
+  const suffix =
+    (guardOff ? '-guard-off' : '') +
+    (globalSearch ? '-global-search' : '') +
+    (persistence.enabled ? '' : '-persist-off') +
+    (persistence.enabled && persistence.maxMb !== '' ? `-persist-max-${persistence.maxMb}` : '') +
+    (persistence.enabled && persistence.backend !== 'auto' ? `-persist-${persistence.backend}` : '')
+  return suffix === '' ? undefined : `groq-store-wasm${suffix}`
+}
+
 function isLastRun(value: unknown): value is LastRun {
   return (
     typeof value === 'object' &&
@@ -277,8 +291,11 @@ export function subscribeGroqStoreStatus(listener: () => void): () => void {
 export function setGroqStoreEnabled(enabled: boolean): void {
   writeStorage('localStorage', ENABLED_KEY, enabled ? 'on' : 'off')
   const url = new URL(location.href)
+  const hadOverride = url.searchParams.has('groqStore')
   url.searchParams.delete('groqStore')
-  location.replace(url)
+  // Same-URL replace often no-ops; reload when stripping the param left the href unchanged.
+  if (hadOverride) location.replace(url)
+  else location.reload()
 }
 
 const bump = (reason: string): Record<string, number> => ({
@@ -521,11 +538,7 @@ export function startGroqStore(): void {
     const boot = bootGroqStore({
       serviceWorkerUrl: SERVICE_WORKER_PATH,
       hostUrl: hostUrl(status.guardOff, status.globalSearch),
-      // A SharedWorker name is bound to one URL, so each host variant gets its own name.
-      hostName:
-        status.guardOff || status.globalSearch
-          ? `groq-store-wasm${status.guardOff ? '-guard-off' : ''}${status.globalSearch ? '-global-search' : ''}`
-          : undefined,
+      hostName: hostName(status.guardOff, status.globalSearch),
       // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
       requestPersistentStorage: persistence.enabled,
       onMetric,
