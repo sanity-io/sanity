@@ -17,6 +17,11 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
 
+      # The v7 export map test compares this branch's export map with main's copy
+      - name: Fetch main
+        if: steps.changes.outputs.has_changes == 'true'
+        run: git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+
       - name: Check export conditions in native node ESM and CJS, and TypeScript DTS
         if: steps.changes.outputs.has_changes == 'true'
         run: pnpm test:exports
