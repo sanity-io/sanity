@@ -260,15 +260,14 @@ describe('documentCommentsEnabledReducer', () => {
     ).toBe(true)
   })
 
-  it('reads the last configured value, preferring document.comments over unstable_comments', () => {
+  it('reads document.comments.enabled', () => {
     expect(
       documentCommentsEnabledReducer({
         config: {
           name: 'test',
           document: {
             comments: {enabled: true},
-            unstable_comments: {enabled: false},
-          } as never,
+          },
         },
         context: {documentId: 'doc1', documentType: 'article'},
         initialValue: false,
@@ -276,7 +275,7 @@ describe('documentCommentsEnabledReducer', () => {
     ).toBe(true)
   })
 
-  it('falls back to document.unstable_comments.enabled when comments is absent', () => {
+  it('ignores leftover document.unstable_comments config', () => {
     expect(
       documentCommentsEnabledReducer({
         config: {
@@ -286,7 +285,7 @@ describe('documentCommentsEnabledReducer', () => {
         context: {documentId: 'doc1', documentType: 'article'},
         initialValue: true,
       }),
-    ).toBe(false)
+    ).toBe(true)
   })
 
   it('invokes a function resolver with the document context', () => {
