@@ -7,6 +7,7 @@ import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {noVersionsLiveEditType, noVersionsType} from './debug/allowVersions'
 import {
   annotationCustomTypeTest,
   ctaType,
@@ -302,6 +303,8 @@ export function createSchemaTypes(projectId: string) {
     sdkProjectionWrapped,
     locationResolverTest,
     liveEdit,
+    noVersionsLiveEditType,
+    noVersionsType,
     localeString,
     manyFieldsTest,
     manyViewsType,

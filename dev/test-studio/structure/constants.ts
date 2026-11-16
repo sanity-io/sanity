@@ -107,6 +107,8 @@ export const DEBUG_INPUT_TYPES = [
   'arrayCapabilities',
   'simpleReferences',
   'thesis',
+  'noVersionsLiveEdit',
+  'noVersions',
   'typeWithNoToplevelStrings',
   'uploadsTest',
   'validationTest',
