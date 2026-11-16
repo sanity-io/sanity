@@ -1591,6 +1591,23 @@ describe('Document', () => {
       })
     })
   })
+
+  describe('allowVersions', () => {
+    test.each([
+      ['undefined', undefined, undefined],
+      ['true', true, undefined],
+      ['false', false, false],
+      ['non-boolean', 0 as unknown as boolean, undefined],
+    ])('%s', async (_label, allowVersions, expected) => {
+      const {typeDef} = await convertType({
+        name: 'foo',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+        allowVersions,
+      })
+      expect(typeDef.allowVersions).toBe(expected)
+    })
+  })
 })
 
 describe('Object', () => {

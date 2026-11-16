@@ -249,6 +249,7 @@ function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Option
     readOnly: conditionalTrue(ownProps.readOnly),
     hidden: conditionalTrue(ownProps.hidden),
     liveEdit: maybeTrue(ownProps.liveEdit),
+    allowVersions: maybeFalse(ownProps.allowVersions),
     options: convertUnknown(ownProps.options),
     initialValue: convertUnknown(ownProps.initialValue),
     deprecated: typeof reason === 'string' ? {reason} : undefined,
@@ -393,6 +394,11 @@ function maybeNumberAsString(val: unknown): string | undefined {
 /** Returns `true` for `true` and undefined for everything else. */
 function maybeTrue(val: unknown): true | undefined {
   return val === true ? true : undefined
+}
+
+/** Returns `false` for `false` and undefined for everything else. */
+function maybeFalse(val: unknown): false | undefined {
+  return val === false ? false : undefined
 }
 
 function conditionalTrue(val: unknown): true | undefined | FunctionMarker {

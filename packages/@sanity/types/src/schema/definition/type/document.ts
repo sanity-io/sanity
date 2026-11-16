@@ -18,6 +18,14 @@ export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   type: 'document'
   liveEdit?: boolean
+  /**
+   * Set to `false` to keep documents of this type out of releases and variants. Combine with
+   * `liveEdit: true` to also skip drafts, so the document is only ever edited in place.
+   *
+   * @defaultValue true
+   * @beta
+   */
+  allowVersions?: boolean
   /** @beta */
   orderings?: SortOrdering[]
   options?: DocumentOptions

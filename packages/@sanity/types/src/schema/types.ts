@@ -230,6 +230,12 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   description?: string
   type?: SchemaType
   liveEdit?: boolean
+  /**
+   * `false` when documents of this type can't be added to releases or variants.
+   *
+   * @beta
+   */
+  allowVersions?: boolean
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   icon?: ComponentType
