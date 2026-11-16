@@ -3,7 +3,9 @@ import {createRemoteInstance} from '@sanity/sdk-react/dashboard'
 import {
   type FederatedAssetSourceModule,
   type FederatedAssetSourceRef,
-  SUPPORTED_VIEW_CONTRACT_VERSIONS,
+  type FederatedAssetSourceViewProps,
+  SUPPORTED_VIEW_CONTRACT_VERSION,
+  V1_VIEW_CONTRACT_VERSION,
 } from './types'
 
 /**
@@ -36,10 +38,22 @@ export function loadFederatedAssetSourceModule(
     if (typeof module?.render !== 'function') {
       throw new Error(`Loaded ${moduleId} but it does not export a render() function`)
     }
-    if (!SUPPORTED_VIEW_CONTRACT_VERSIONS.includes(module.version)) {
+
+    // TODO(SDK-3210): remove this branch with `unstable_defineView`. A v1 view has no `view` prop.
+    if (module.version === V1_VIEW_CONTRACT_VERSION) {
+      const v1Module: FederatedAssetSourceModule = {
+        version: module.version,
+        render: (rootElement, {view: _view, ...props}, renderOptions) =>
+          module.render(rootElement, props as FederatedAssetSourceViewProps, renderOptions),
+      }
+
+      return v1Module
+    }
+
+    if (module.version !== SUPPORTED_VIEW_CONTRACT_VERSION) {
       throw new Error(
         `${moduleId} implements view contract version ${module.version}, ` +
-          `but this Studio supports versions ${SUPPORTED_VIEW_CONTRACT_VERSIONS.join(', ')}`,
+          `but this Studio supports version ${SUPPORTED_VIEW_CONTRACT_VERSION}`,
       )
     }
     return module

@@ -108,18 +108,24 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
 }
 
 /**
- * The view contract versions this Studio supports. The federated view artifact
- * exports its own `version`; any other version means the render contract may
- * have changed shape, so the host falls back to the iframe dialog instead of
- * mounting it. Both versions take the same `render()` props: a v2 artifact
- * hands them to the view through `useAssetSource()` instead of component props.
+ * The view contract version this Studio supports. The federated view artifact
+ * exports its own `version`; a mismatch means the render contract may have
+ * changed shape, so the host falls back to the iframe dialog instead of
+ * mounting it.
  *
  * Keep in sync with `VIEW_CONTRACT_VERSION` in `@sanity/workbench-cli`.
- * TODO(SDK-3210): drop version 1 when `unstable_defineView` is removed.
  *
  * @internal
  */
-export const SUPPORTED_VIEW_CONTRACT_VERSIONS: readonly number[] = [1, 2]
+export const SUPPORTED_VIEW_CONTRACT_VERSION = 2
+
+/**
+ * The view contract `unstable_defineView` builds.
+ * TODO(SDK-3210): remove with `unstable_defineView`, with every branch that reads it.
+ *
+ * @internal
+ */
+export const V1_VIEW_CONTRACT_VERSION = 1
 
 /**
  * The handle returned by a federated view's `render()`.
@@ -133,7 +139,7 @@ export interface FederatedAssetSourceViewHandle {
 
 /**
  * The module shape of a federated `asset_source` view expose, as built by
- * `@sanity/workbench-cli` from an `asset_source` view file. The
+ * `@sanity/workbench-cli` from `unstable_defineView('asset_source', …)`. The
  * artifact bundles all of its dependencies (empty federation share scope) and
  * owns a private React root under `rootElement`; calling `render()` again
  * with the same root element updates the mounted view's props in place.
@@ -154,11 +160,7 @@ export interface FederatedAssetSourceModule {
   version: number
 }
 
-/**
- * An `asset_source` interface record from the workbench's application list.
- *
- * @internal
- */
+/** @internal */
 export type AssetSourceInterface = Extract<ApplicationInterface, {type: 'asset_source'}>
 
 /**
@@ -190,6 +192,5 @@ export interface FederatedAssetSourceView extends FederatedAssetSourceRef {
   name: string
   /** Human-readable view title. */
   title: string
-  /** The interface record the view was discovered from. */
   interface: AssetSourceInterface
 }

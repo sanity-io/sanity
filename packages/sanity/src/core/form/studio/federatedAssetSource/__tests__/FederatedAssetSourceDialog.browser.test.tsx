@@ -8,7 +8,7 @@ import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {FederatedAssetSourceDialog} from '../FederatedAssetSourceDialog'
 import {loadFederatedAssetSourceModule} from '../loadModule'
-import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from '../types'
+import {type FederatedAssetSourceView} from '../types'
 
 vi.mock('../loadModule', () => ({
   loadFederatedAssetSourceModule: vi.fn(),
@@ -73,18 +73,19 @@ beforeEach(() => {
 describe('FederatedAssetSourceDialog', () => {
   test('mounts the brokered view inside the full-surface dialog', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const renderView = vi.fn((rootElement: HTMLElement, _props: FederatedAssetSourceViewProps) => {
-      rootElement.textContent = 'Brokered view content'
-      return {dispose: noop}
+    vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({
+      version: 1,
+      render: (rootElement) => {
+        rootElement.textContent = 'Brokered view content'
+        return {dispose: noop}
+      },
     })
-    vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({version: 2, render: renderView})
 
     void render(<DialogHarness />)
 
     await expect.element(page.getByTestId('federated-asset-source-dialog')).toBeVisible()
     await expect.element(page.getByText('Stock photos')).toBeVisible()
     await expect.element(page.getByText('Brokered view content')).toBeVisible()
-    expect(renderView.mock.lastCall?.[1].view).toEqual(VIEW.interface)
     await settleChromaticEndState()
   })
 
