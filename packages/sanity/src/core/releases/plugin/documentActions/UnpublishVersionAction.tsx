@@ -51,6 +51,7 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
     type,
     version: scopeId,
     permission: 'unpublish',
+    listener: 'document',
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)

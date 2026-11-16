@@ -103,6 +103,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     type,
     version: scopeId,
     permission: 'publish',
+    listener: 'document',
   })
 
   const currentUser = useCurrentUser()

@@ -174,6 +174,7 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
       id,
       type: 'book',
       permission: 'publish',
+      listener: 'document',
     })
 
     const subscriberCount = 5
@@ -215,6 +216,7 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
       id,
       type: 'book',
       permission: 'publish',
+      listener: 'document',
     }).subscribe((result) => results.push(result))
 
     const draftDoc: SanityDocument = {
@@ -393,24 +395,30 @@ describe('getDocumentPairPermissions global listener', () => {
     }
   })
 
-  it('errors without an `observeDocument` to follow the documents through', async () => {
-    const id = `book-${Math.random().toString(36).slice(2)}`
+  it.each([
+    {name: 'no listener', listener: undefined},
+    {name: 'the global listener', listener: 'global'},
+  ] as const)(
+    'errors without an `observeDocument` to follow the documents through, given $name',
+    async ({listener}) => {
+      const id = `book-${Math.random().toString(36).slice(2)}`
 
-    await expect(
-      firstValueFrom(
-        getDocumentPairPermissions({
-          client,
-          schema,
-          grantsStore: createGrantsStore(),
-          id,
-          type: 'book',
-          permission: 'publish',
-          listener: 'global',
-        }),
-      ),
-    ).rejects.toThrow('needs `observeDocument`')
-    expect(mockedSnapshotPair).not.toHaveBeenCalled()
-  })
+      await expect(
+        firstValueFrom(
+          getDocumentPairPermissions({
+            client,
+            schema,
+            grantsStore: createGrantsStore(),
+            id,
+            type: 'book',
+            permission: 'publish',
+            listener,
+          }),
+        ),
+      ).rejects.toThrow('needs `observeDocument`')
+      expect(mockedSnapshotPair).not.toHaveBeenCalled()
+    },
+  )
 
   it('keeps the document pair and the global listener in separate cache entries', () => {
     createSnapshotPairMock()
@@ -418,15 +426,16 @@ describe('getDocumentPairPermissions global listener', () => {
     const id = `book-${Math.random().toString(36).slice(2)}`
     const shared = {client, schema, grantsStore, id, type: 'book', permission: 'publish'} as const
 
-    const withoutListener = getDocumentPairPermissions(shared)
+    const observeDocument = () => of(undefined)
+    const withoutListener = getDocumentPairPermissions({...shared, observeDocument})
     const documentListener = getDocumentPairPermissions({...shared, listener: 'document'})
     const globalListener = getDocumentPairPermissions({
       ...shared,
       listener: 'global',
-      observeDocument: () => of(undefined),
+      observeDocument,
     })
 
-    expect(documentListener).toBe(withoutListener)
+    expect(globalListener).toBe(withoutListener)
     expect(globalListener).not.toBe(documentListener)
   })
 })
@@ -437,7 +446,7 @@ describe('useDocumentPairPermissions', () => {
   })
 
   it.each([
-    {name: 'no listener', listener: undefined, global: false},
+    {name: 'no listener', listener: undefined, global: true},
     {name: 'the document listener', listener: 'document', global: false},
     {name: 'the global listener', listener: 'global', global: true},
   ] as const)(

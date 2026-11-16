@@ -148,6 +148,7 @@ export function GroupChange(
     type: schemaType.name,
     version: scopeId,
     permission: 'update',
+    listener: 'document',
   })
 
   const handleRevertChanges = useCallback(() => {

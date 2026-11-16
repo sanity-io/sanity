@@ -191,17 +191,17 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   /**
-   * Where the documents the permissions are checked against come from. `document`, the default,
-   * checks out the document pair: that opens a listener for the document, and sees local edits as
-   * they are made. `global` follows the draft, published and version documents through the
-   * document preview store's shared global listener instead, so it opens no listener of its own,
-   * but sees a change only once the server has it. Use it where nobody edits the document, like a
-   * list or a table of documents.
+   * Where the documents the permissions are checked against come from. `global`, the default,
+   * follows the draft, published and version documents through the document preview store's
+   * shared global listener, so it opens no listener of its own, but sees a change only once the
+   * server has it. `document` checks out the document pair instead: that opens a listener for the
+   * document, and sees local edits as they are made. Pass `document` where the document is being
+   * edited, like the document actions of the document pane.
    */
   listener?: DocumentPairPermissionsListener
   /**
    * Follows a document through the global listener, `unstable_observeDocument` of the document
-   * preview store. Required when `listener` is `global`. `useDocumentPairPermissions` takes it
+   * preview store. Required unless `listener` is `document`. `useDocumentPairPermissions` takes it
    * from the studio's document preview store.
    */
   observeDocument?: (id: string) => Observable<SanityDocument | undefined>
@@ -235,7 +235,7 @@ function getDocumentPairPermissionsUncached({
   type,
   version: v,
   pairListenerOptions,
-  listener = 'document',
+  listener = 'global',
   observeDocument,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
@@ -332,7 +332,7 @@ export const getDocumentPairPermissions = memoize(
     version,
     permission,
     userId,
-    listener = 'document',
+    listener = 'global',
   }: DocumentPairPermissionsOptions): string => {
     // Keyed by the credential: this captures `client` and issues grants
     // requests through it, so a re-login must build a fresh entry instead of
@@ -400,7 +400,7 @@ export function useDocumentPairPermissions({
   schema: overrideSchema,
   grantsStore: overrideGrantsStore,
   pairListenerOptions,
-  listener = 'document',
+  listener = 'global',
 }: PartialExcept<
   Omit<DocumentPairPermissionsOptions, 'observeDocument'>,
   'id' | 'type' | 'permission'

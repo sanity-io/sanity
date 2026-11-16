@@ -70,6 +70,7 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     id,
     type,
     permission: 'publish',
+    listener: 'document',
   })
   const {createSchedule} = useScheduleOperation()
   const modePromise = use(ScheduledPublishingModePromiseContext)
