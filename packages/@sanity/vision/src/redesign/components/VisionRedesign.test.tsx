@@ -218,7 +218,8 @@ vi.mock('sanity/i18n', () => ({
 }))
 
 // Internals that Vision imports from the internals entry; mocked without the real barrel so the
-// structure modules it re-exports do not load against the partial `sanity` mock above
+// structure modules it re-exports do not load against the partial `sanity` mock above. The upsell
+// content request and dialog are stood in for here too: a test can answer and read them back.
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   useActiveReleases: vi.fn(() => ({data: [], loading: false})),
   useScheduledDraftsEnabled: vi.fn(() => false),
@@ -235,16 +236,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
   ],
   ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
-}))
-
-vi.mock('sanity/router', () => ({
-  IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
-  useRouter: () => sanityMocks.router,
-}))
-
-// The upsell content request and the dialog that shows the content: the studio's, stood in for
-// by what a test can answer and read back. The dialog's own rendering is the studio's to test.
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   NO_UPSELL_DATA: {upsellData: null, hasError: false},
   useUpsellData: () => ({
     upsellData$: upsellMocks.content$,
@@ -264,6 +255,11 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
         </button>
       </div>
     ) : null,
+}))
+
+vi.mock('sanity/router', () => ({
+  IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
+  useRouter: () => sanityMocks.router,
 }))
 
 vi.mock('../../hooks/useSavedQueries', () => ({
