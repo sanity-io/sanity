@@ -3,6 +3,7 @@
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ElementType, type HTMLProps, type RefAttributes} from 'react'
 
+import {withIconSuspense} from '../icon/IconSuspense'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 import {tooltipButtonWrapper} from './Button.css'
 
@@ -65,6 +66,8 @@ export function Button({
   paddingLeft,
   tone = 'default',
   tooltipProps,
+  icon,
+  iconRight,
   ...rest
 }: ButtonProps &
   Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'> &
@@ -74,6 +77,8 @@ export function Button({
   const children = (
     <UIButton
       {...rest}
+      icon={withIconSuspense(icon)}
+      iconRight={withIconSuspense(iconRight)}
       {...sizeProps}
       paddingY={paddingY}
       paddingLeft={paddingLeft}

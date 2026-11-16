@@ -5,6 +5,7 @@ import {type ElementType, type ReactNode, useMemo} from 'react'
 import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
+import {withIconSuspense} from '../icon/IconSuspense'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 import {previewWrapper, subtitleText} from './MenuItem.css'
 
@@ -91,7 +92,7 @@ export function MenuItem<E extends ElementType = 'button'>({
           <Box paddingRight={1}>
             <Icon
               size={FONT_SIZE}
-              icon={IconComponent as IconProps['icon']}
+              icon={withIconSuspense(IconComponent) as IconProps['icon']}
               style={{
                 marginInline: '-0.375rem',
                 marginBlock: '-0.5rem',
@@ -146,7 +147,7 @@ export function MenuItem<E extends ElementType = 'button'>({
             {IconRightComponent && (
               <Icon
                 size={FONT_SIZE}
-                icon={IconRightComponent as IconProps['icon']}
+                icon={withIconSuspense(IconRightComponent) as IconProps['icon']}
                 style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
               />
             )}

@@ -18,6 +18,7 @@ import get from 'lodash-es/get.js'
 import {type ComponentType, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 
+import {IconSuspense} from '../../../../../ui-components/icon/IconSuspense'
 import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
 import {CustomIcon} from './CustomIcon'
 import {
@@ -246,7 +247,9 @@ export function getActionIcon(action: PTEToolbarAction, active: boolean) {
 
     return (
       <span data-sanity-icon style={{display: 'contents'}}>
-        <ActionIcon action={action} />
+        <IconSuspense>
+          <ActionIcon action={action} />
+        </IconSuspense>
       </span>
     )
   }
