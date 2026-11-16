@@ -1,5 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {type PopoverUpdateCallback} from '@sanity/ui/popover'
 import {useCallback, useMemo, useReducer, useRef} from 'react'
 
 import {
@@ -33,6 +34,7 @@ export function useInsertMenuPopover(props: {
 }) {
   const [state, send] = useReducer(popoverReducer, {open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
+  const popoverUpdateRef = useRef<PopoverUpdateCallback | undefined>(undefined)
   const referenceElement = props.popoverProps.referenceElement ?? null
 
   useClickOutsideEvent(
@@ -61,6 +63,10 @@ export function useInsertMenuPopover(props: {
     [onSelect],
   )
 
+  const handleGroupChange = useCallback(() => {
+    popoverUpdateRef.current?.()
+  }, [])
+
   // Dialogs constrain their descendant popovers to the dialog's scroll container. The
   // insert menu is allowed to overflow the dialog, so it uses the boundary declared by the
   // hosting surface (the document pane's scroll container, keeping the menu below the sticky
@@ -76,11 +82,25 @@ export function useInsertMenuPopover(props: {
         overflow="hidden"
         portal
         floatingBoundary={floatingBoundary}
-        content={<InsertMenu {...insertMenuProps} onSelect={handleOnSelect} />}
+        updateRef={popoverUpdateRef}
+        content={
+          <InsertMenu
+            {...insertMenuProps}
+            onSelect={handleOnSelect}
+            onGroupChange={handleGroupChange}
+          />
+        }
         {...props.popoverProps}
       />
     ),
-    [floatingBoundary, handleOnSelect, insertMenuProps, props.popoverProps, state],
+    [
+      floatingBoundary,
+      handleGroupChange,
+      handleOnSelect,
+      insertMenuProps,
+      props.popoverProps,
+      state,
+    ],
   )
 
   return {

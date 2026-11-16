@@ -53,6 +53,11 @@ const gridStyle: CSSProperties = {
 export type InsertMenuProps = InsertMenuOptions & {
   schemaTypes: Array<SchemaType>
   onSelect: (schemaType: SchemaType) => void
+  /**
+   * Called when the selected group (tab) changes, allowing the hosting popover
+   * to recalculate its position based on the new content size.
+   */
+  onGroupChange?: () => void
   labels: {
     'insert-menu.filter.all-items': string
     'insert-menu.search.no-results': string
@@ -156,6 +161,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
                     selected={group.selected}
                     onClick={() => {
                       send({type: 'select group', name: group.name})
+                      props.onGroupChange?.()
                     }}
                   />
                 ))}

@@ -10,18 +10,21 @@
  * portal than the one the boundary was declared for, it keeps using the ambient boundary.
  */
 import {BoundaryElementProvider, PortalProvider} from '@sanity/ui'
+import {type PopoverUpdateCallback} from '@sanity/ui/popover'
 import {render, waitFor} from '@testing-library/react'
-import {type ReactNode, type RefAttributes, useLayoutEffect, useState} from 'react'
+import {type ReactNode, type RefAttributes, type RefObject, useLayoutEffect, useState} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type PopoverProps as UIPopoverProps} from '../../../../../ui-components/popover/Popover'
 import {PortalBoundaryProvider} from '../../../../components/portalBoundary/PortalBoundaryProvider'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
-type PopoverBoundaryCapture = Pick<UIPopoverProps, 'floatingBoundary'>
+type PopoverCapture = Pick<UIPopoverProps, 'floatingBoundary'> & {
+  updateRef?: RefObject<PopoverUpdateCallback | undefined>
+}
 
 /** Last props passed from the insert menu popover to Popover. */
-let lastPopoverProps: PopoverBoundaryCapture | null = null
+let lastPopoverProps: PopoverCapture | null = null
 
 vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
@@ -30,10 +33,10 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
 vi.mock('../../../../../ui-components/popover/Popover', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
   function PopoverCapture(props: UIPopoverProps & RefAttributes<HTMLDivElement>) {
-    const {ref, floatingBoundary} = props
+    const {ref, floatingBoundary, updateRef} = props
     useLayoutEffect(() => {
-      lastPopoverProps = {floatingBoundary}
-    }, [floatingBoundary])
+      lastPopoverProps = {floatingBoundary, updateRef: updateRef as PopoverCapture['updateRef']}
+    }, [floatingBoundary, updateRef])
     return <div ref={ref} data-testid="popover-capture" />
   }
   return {...mod, Popover: PopoverCapture}
@@ -138,5 +141,15 @@ describe('useInsertMenuPopover floating boundary', () => {
     await waitFor(() => {
       expect(lastPopoverProps?.floatingBoundary).toBe(paneBoundary)
     })
+  })
+
+  test('passes updateRef to Popover for position recalculation on content changes', async () => {
+    render(<Harness />)
+
+    await waitFor(() => {
+      expect(lastPopoverProps).not.toBeNull()
+    })
+    expect(lastPopoverProps?.updateRef).toBeDefined()
+    expect(lastPopoverProps?.updateRef?.current).toBeUndefined()
   })
 })
