@@ -87,18 +87,34 @@ describe('planPrDatasetCleanup', () => {
     expect(open).toMatchObject({open: true, latestRunId: 1, delete: []})
   })
 
-  it('deletes the latest run once it is 5 days old, even while the pull request is open', () => {
+  it('deletes the latest run once it is 3 days old, even while the pull request is open', () => {
     const plans = plan(
       [
-        dataset('pr-5-chromium-10', null, '2026-11-04T12:00:00.000Z'),
-        dataset('pr-5-firefox-10', null, '2026-11-04T12:00:00.000Z'),
-        dataset('pr-5-chromium-10-comments', 'pr-5-chromium-10', '2026-11-04T12:00:00.000Z'),
+        dataset('pr-5-chromium-10', null, '2026-11-06T12:00:00.000Z'),
+        dataset('pr-5-firefox-10', null, '2026-11-06T12:00:00.000Z'),
+        dataset('pr-5-chromium-10-comments', 'pr-5-chromium-10', '2026-11-06T12:00:00.000Z'),
       ],
       [5],
     )
 
     expect(plans[0].keep).toEqual([])
     expect(plans[0].delete.map((entry) => entry.name).toSorted()).toEqual([
+      'pr-5-chromium-10',
+      'pr-5-firefox-10',
+    ])
+  })
+
+  it('keeps the latest run while it is younger than 3 days', () => {
+    const plans = plan(
+      [
+        dataset('pr-5-chromium-10', null, '2026-11-06T12:00:01.000Z'),
+        dataset('pr-5-firefox-10', null, '2026-11-06T12:00:01.000Z'),
+      ],
+      [5],
+    )
+
+    expect(plans[0].delete).toEqual([])
+    expect(plans[0].keep.map((entry) => entry.name).toSorted()).toEqual([
       'pr-5-chromium-10',
       'pr-5-firefox-10',
     ])
