@@ -151,10 +151,10 @@ export function DocumentGroupInventory(
   const components = props.mode === 'readOnly' ? undefined : props.components
 
   const {beta} = useWorkspace()
-  const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
+  const variantsEnabled = beta?.variants?.enabled && schema?.allowVersions !== false
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()

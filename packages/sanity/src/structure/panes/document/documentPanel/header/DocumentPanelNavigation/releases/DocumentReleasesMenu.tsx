@@ -76,7 +76,8 @@ export function DocumentReleasesMenu() {
   const {t: tStudio} = useTranslation()
   const isReleasesEnabled = Boolean(useWorkspace().releases?.enabled)
   const isReleasesToolAvailable = useReleasesToolAvailable()
-  const {documentId} = useDocumentPane()
+  const {documentId, schemaType} = useDocumentPane()
+  const versionsAllowed = schemaType?.allowVersions !== false
   const {versions} = useDocumentVersions({documentId: getPublishedId(documentId)})
   const {data: activeReleases} = useActiveReleases()
   const {selectedPerspective, selectedReleaseId} = usePerspective()
@@ -155,6 +156,12 @@ export function DocumentReleasesMenu() {
       button={
         <DropdownButton
           data-testid="document-releases-menu-button"
+          disabled={!versionsAllowed}
+          tooltipProps={
+            versionsAllowed
+              ? null
+              : {content: t('document-panel-navigation.releases.button.versions-not-supported')}
+          }
           icon={selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} /> : DotIcon}
           onClear={selectedRelease ? handleClear : undefined}
           tone={selectedRelease ? getReleaseTone(selectedRelease) : undefined}

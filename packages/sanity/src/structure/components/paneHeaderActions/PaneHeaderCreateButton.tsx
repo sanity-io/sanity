@@ -8,6 +8,7 @@ import {
   type TemplatePermissionsResult,
   useGetI18nText,
   usePerspective,
+  useSchema,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
@@ -56,7 +57,14 @@ interface PaneHeaderCreateButtonProps {
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const templates = useTemplates()
-  const {selectedReleaseId} = usePerspective()
+  const schema = useSchema()
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const isVersionSelected = Boolean(selectedReleaseId) || selectedVariantNames.length > 0
+  const versionsNotSupported = (item: InitialValueTemplateItem) => {
+    if (!isVersionSelected) return false
+    const typeName = templates.find((template) => template.id === item.templateId)?.schemaType
+    return typeName ? schema.get(typeName)?.allowVersions === false : false
+  }
 
   const {t} = useTranslation(structureLocaleNamespace)
   const getI18nText = useGetI18nText([...templateItems, ...templates])
@@ -109,13 +117,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
   if (templateItems.length === 1) {
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
-    const disabled = !permissions?.granted
+    const isVersionBlocked = versionsNotSupported(firstItem)
+    const disabled = !permissions?.granted || isVersionBlocked
     const intent = getIntentProps(templates, firstItem, selectedReleaseId)
     if (!intent) return null
 
     return (
       <InsufficientPermissionsMessageTooltip
-        reveal={disabled}
+        reveal={disabled && !isVersionBlocked}
         loading={isTemplatePermissionsLoading}
         context="create-document-type"
       >
@@ -126,7 +135,11 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
-          tooltipProps={{content: t('pane-header.create-new-button.tooltip')}}
+          tooltipProps={{
+            content: isVersionBlocked
+              ? t('pane-header.create-new-button.versions-not-supported')
+              : t('pane-header.create-new-button.tooltip'),
+          }}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -147,7 +160,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         <Menu>
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
-            const disabled = !permissions?.granted
+            const isVersionBlocked = versionsNotSupported(item)
+            const disabled = !permissions?.granted || isVersionBlocked
             const intent = getIntentProps(templates, item, selectedReleaseId)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
@@ -162,7 +176,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
               <InsufficientPermissionsMessageTooltip
                 key={item.id}
                 context="create-document-type"
-                reveal={disabled}
+                reveal={disabled && !isVersionBlocked}
                 loading={isTemplatePermissionsLoading}
               >
                 {disabled ? (
@@ -171,9 +185,18 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                     data-as="button"
                     icon={item.icon}
                     text={title}
-                    aria-label={t('pane-header.disabled-created-button.aria-label')}
+                    aria-label={
+                      isVersionBlocked
+                        ? t('pane-header.create-new-button.versions-not-supported')
+                        : t('pane-header.disabled-created-button.aria-label')
+                    }
                     disabled
                     data-testid={`action-intent-button-${itemIndex}`}
+                    tooltipProps={
+                      isVersionBlocked
+                        ? {content: t('pane-header.create-new-button.versions-not-supported')}
+                        : undefined
+                    }
                   />
                 ) : (
                   <MenuItem

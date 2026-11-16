@@ -7,6 +7,7 @@ import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
 import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
@@ -66,8 +67,9 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const versionsAllowed = useSchema().get(documentType)?.allowVersions !== false
 
-  const showCopyToReleaseMenuItem = isReleasesEnabled || hasCopyToDraftOption
+  const showCopyToReleaseMenuItem = versionsAllowed && (isReleasesEnabled || hasCopyToDraftOption)
 
   return (
     <Menu>

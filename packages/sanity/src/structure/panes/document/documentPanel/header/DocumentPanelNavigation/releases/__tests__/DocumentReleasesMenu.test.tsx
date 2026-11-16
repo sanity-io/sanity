@@ -17,6 +17,7 @@ import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
 import {
+  createNoVersionsSchemaType,
   createPerspective,
   createRelease,
   createVariant,
@@ -134,6 +135,19 @@ describe('DocumentReleasesMenu', () => {
 
     expect(screen.getByTestId('document-releases-menu-button')).toHaveTextContent('Releases')
     expect(screen.queryByTestId('dropdown-button-clear')).toBeNull()
+  })
+
+  it('disables the trigger when the document type does not allow versions', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      documentId: GROUP_ID,
+      schemaType: createNoVersionsSchemaType(),
+    })
+    await renderMenu()
+
+    const trigger = screen.getByTestId('document-releases-menu-button')
+    expect(trigger).toBeDisabled()
+    await userEvent.click(trigger, {pointerEventsCheck: 0})
+    expect(screen.getByTestId('document-releases-menu')).not.toBeVisible()
   })
 
   it('names the selected release on the trigger and clears it to the default perspective', async () => {

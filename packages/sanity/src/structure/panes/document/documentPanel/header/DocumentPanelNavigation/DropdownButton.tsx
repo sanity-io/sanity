@@ -6,6 +6,7 @@ import {type ComponentProps, type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Button, type ButtonProps} from '../../../../../../ui-components/button/Button'
+import {type TooltipProps} from '../../../../../../ui-components/tooltip/Tooltip'
 import {
   dropdownButtonCard,
   dropdownButtonClear,
@@ -29,6 +30,8 @@ export type DropdownButtonProps = Omit<
    * shows beside the trigger.
    */
   onClear?: () => void
+  /** Explains a disabled trigger. */
+  tooltipProps?: TooltipProps | null
 }
 
 /**
@@ -39,7 +42,16 @@ export type DropdownButtonProps = Omit<
  * @internal
  */
 export function DropdownButton(props: DropdownButtonProps) {
-  const {className, icon, onClear, ref, text, tone = 'default', ...triggerProps} = props
+  const {
+    className,
+    icon,
+    onClear,
+    ref,
+    text,
+    tone = 'default',
+    tooltipProps = null,
+    ...triggerProps
+  } = props
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const hasSelection = onClear !== undefined
@@ -74,6 +86,7 @@ export function DropdownButton(props: DropdownButtonProps) {
         mode="ghost"
         ref={ref}
         text={text}
+        tooltipProps={tooltipProps}
       />
       {hasSelection ? (
         <>

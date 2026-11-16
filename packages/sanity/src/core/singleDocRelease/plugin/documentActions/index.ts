@@ -22,6 +22,11 @@ export default function resolveDocumentActions(
     ]
   }
 
+  // Scheduling a draft creates a release version of it.
+  if (context.schema.get(context.schemaType)?.allowVersions === false) {
+    return existingActions
+  }
+
   // Add SchedulePublishAction only for draft documents
   if (context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(

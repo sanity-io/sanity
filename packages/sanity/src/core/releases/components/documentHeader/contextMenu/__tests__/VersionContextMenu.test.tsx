@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {defineType} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -258,6 +259,32 @@ describe('VersionContextMenu', () => {
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
+  })
+
+  it('hides copying to a release and keeps discard when the type does not allow versions', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider({
+      config: {
+        schema: {
+          types: [
+            defineType({
+              name: 'settings',
+              type: 'document',
+              allowVersions: false,
+              fields: [{name: 'title', type: 'string'}],
+            }),
+          ],
+        },
+        document: {actions: (prev) => [...prev, discardChangesAction]},
+      },
+    })
+
+    render(<VersionContextMenu {...draftChipProps} type="settings" />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.queryByTestId('copy-version-to-release-button-group')).not.toBeInTheDocument()
+    expect(screen.getByText('Discard version')).toBeInTheDocument()
   })
 
   it('shows every scheduled draft action when document.actions is unfiltered', async () => {

@@ -6,7 +6,9 @@ import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useI18nText} from '../../../../i18n/hooks/useI18nText'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 
@@ -25,7 +27,13 @@ interface NewDocumentListOptionProps {
 
 export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const {t} = useTranslation()
+  const schema = useSchema()
+  const isVersionSelected = Boolean(selectedReleaseId) || selectedVariantNames.length > 0
+  const versionsNotSupported =
+    isVersionSelected && schema.get(option.schemaType)?.allowVersions === false
+  const canCreate = option.hasPermission && !versionsNotSupported
   const params = useMemo(
     () => ({template: option.templateId, type: option.schemaType, version: selectedReleaseId}),
     [option.schemaType, option.templateId, selectedReleaseId],
@@ -55,7 +63,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
             size={preview === 'inline' ? 1 : 2}
             style={{
               margin: preview === 'inline' ? '-0.375rem' : '-0.4375rem',
-              ...(!option.hasPermission && {
+              ...(!canCreate && {
                 color: 'var(--card-fg-color)',
               }),
             }}
@@ -66,7 +74,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
         size={preview === 'inline' ? 1 : undefined}
         as="div"
         trim={true}
-        style={option.hasPermission ? {} : {color: 'var(--card-fg-color)'}}
+        style={canCreate ? {} : {color: 'var(--card-fg-color)'}}
       >
         {title}
       </Text>
@@ -76,14 +84,18 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   return (
     <Tooltip
       key={option.id}
-      disabled={option.hasPermission}
+      disabled={canCreate}
       portal
       content={
-        <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
+        versionsNotSupported ? (
+          t('new-document.versions-not-supported')
+        ) : (
+          <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
+        )
       }
     >
       <div>
-        {option.hasPermission ? (
+        {canCreate ? (
           <Card
             as="a"
             data-testid={`create-new-${option.templateId}`}

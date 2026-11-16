@@ -243,10 +243,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // target transitions while the pane is mounted (initial mounts are gated in DocumentPane).
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
+  // Types that don't allow versions are read-only whenever a variant is selected.
+  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantNames))
   const isVariantTargetReadOnly =
-    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
-    targetDocumentState.status !== 'ready' &&
-    !getCreatableVariantTarget(targetDocumentState)
+    isVariantSelected &&
+    (schemaType?.allowVersions === false ||
+      (targetDocumentState.status !== 'ready' && !getCreatableVariantTarget(targetDocumentState)))
 
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {

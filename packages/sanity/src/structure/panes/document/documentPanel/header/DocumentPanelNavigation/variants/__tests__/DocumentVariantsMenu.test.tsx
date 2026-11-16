@@ -19,6 +19,7 @@ import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
 import {
+  createNoVersionsSchemaType,
   createPerspective,
   createRelease,
   createVariant,
@@ -137,6 +138,19 @@ describe('DocumentVariantsMenu', () => {
     const trigger = await screen.findByTestId('document-variants-menu-button')
     expect(trigger).toHaveTextContent('Variants')
     expect(screen.queryByTestId('dropdown-button-clear')).toBeNull()
+  })
+
+  it('disables the trigger when the document type does not allow versions', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      documentId: GROUP_ID,
+      schemaType: createNoVersionsSchemaType(),
+    })
+    render(<DocumentVariantsMenu />, {wrapper})
+
+    const trigger = await screen.findByTestId('document-variants-menu-button')
+    expect(trigger).toBeDisabled()
+    await userEvent.click(trigger, {pointerEventsCheck: 0})
+    expect(screen.getByTestId('document-variants-menu')).not.toBeVisible()
   })
 
   it('names the selected variant on the trigger and clears it with the remove control', async () => {

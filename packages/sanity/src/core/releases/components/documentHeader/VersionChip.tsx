@@ -9,6 +9,7 @@ import {useObservable} from 'react-rx'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanionDocsStore'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
+import {useSchema} from '../../../hooks/useSchema'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
@@ -117,7 +118,11 @@ export const VersionChip = memo(function VersionChip(props: {
     onCopyToDraftsComplete,
   })
 
-  const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
+  // Copying to a release is the only option on the published chip.
+  const versionsAllowed = useSchema().get(documentType)?.allowVersions !== false
+  const hasContextMenu = versionsAllowed || bundleId !== 'published'
+  const contextMenuHandler =
+    disabled || !releasesToolAvailable || !hasContextMenu ? undefined : handleContextMenu
 
   const isPaused = isPausedCardinalityOneRelease(release)
   // Draft chips may act on the published document when no draft exists (so "add

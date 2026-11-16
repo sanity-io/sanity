@@ -12,12 +12,13 @@ export type PerspectiveNotWriteableReason =
   | 'RELEASE_NOT_ACTIVE'
   | 'PUBLISHED_NOT_WRITEABLE'
   | 'DRAFTS_NOT_WRITEABLE'
+  | 'VERSIONS_NOT_SUPPORTED'
 
 /**
  * Check whether the provided schema type can be written to the provided perspective. This depends
- * on factors such as whether the schema type supports live-editing, whether the perspective
- * represents an inactive release, and whether the perspective represents a special group (e.g.
- * published documents).
+ * on factors such as whether the schema type supports live-editing or versions, whether the
+ * perspective represents an inactive release, and whether the perspective represents a special
+ * group (e.g. published documents).
  *
  * @internal
  */
@@ -34,6 +35,17 @@ export function isPerspectiveWriteable({
     return {
       result: false,
       reason: 'INSUFFICIENT_DATA',
+    }
+  }
+
+  if (
+    schemaType.allowVersions === false &&
+    !isPublishedPerspective(selectedPerspective) &&
+    !isDraftPerspective(selectedPerspective)
+  ) {
+    return {
+      result: false,
+      reason: 'VERSIONS_NOT_SUPPORTED',
     }
   }
 

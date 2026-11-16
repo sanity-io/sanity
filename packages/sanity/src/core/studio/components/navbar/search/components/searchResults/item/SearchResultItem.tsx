@@ -79,8 +79,10 @@ export function SearchResultItem({
   const existsInRelease = state.disabledDocumentIds?.some((id) =>
     id.includes(getPublishedId(documentId)),
   )
+  const versionsNotSupported = state.canDisableAction && type?.allowVersions === false
   // should the search items be disasabled
-  const disabledAction = (!hasCreatePermission && state.canDisableAction) || existsInRelease
+  const disabledAction =
+    (!hasCreatePermission && state.canDisableAction) || existsInRelease || versionsNotSupported
 
   const documentStub = useMemo(
     () => ({_id: documentId, _type: documentType}),
@@ -135,9 +137,12 @@ export function SearchResultItem({
     </Box>
   )
 
-  const tooltipContent = existsInRelease
-    ? t('release.action.already-exists-in-release')
-    : t('release.action.permission.error')
+  let tooltipContent = t('release.action.permission.error')
+  if (versionsNotSupported) {
+    tooltipContent = t('release.action.versions-not-supported')
+  } else if (existsInRelease) {
+    tooltipContent = t('release.action.already-exists-in-release')
+  }
 
   return disabledAction ? (
     <Tooltip content={tooltipContent} placement="top">

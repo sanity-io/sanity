@@ -133,6 +133,7 @@ export function DocumentNotInVariantBanner() {
 
   // TODO: Use machine.
   const isActionAllowed = selectedPerspective === defaultPerspective || selectedReleaseId
+  const versionsAllowed = schemaType?.allowVersions !== false
   return (
     <Banner
       tone="suggest"
@@ -154,9 +155,12 @@ export function DocumentNotInVariantBanner() {
           ? {
               text: t('banners.variant.action.add-to-variant'),
               tone: 'suggest',
-              disabled: status === 'in-progress' || status === 'success',
+              disabled: !versionsAllowed || status === 'in-progress' || status === 'success',
               onClick: handleAddToVariant,
               mode: 'default',
+              tooltipProps: versionsAllowed
+                ? undefined
+                : {content: t('banners.variant.action.versions-not-supported')},
             }
           : undefined
       }
