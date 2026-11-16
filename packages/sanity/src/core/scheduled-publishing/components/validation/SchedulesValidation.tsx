@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
-import {type ValidationListener} from '../../../store/document/document-pair/validation'
+import {type DocumentPairPermissionsListener} from '../../../store/document/types'
 import {getDraftId} from '../../../util/draftUtils'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule, type ValidationStatus} from '../../types'
@@ -10,7 +10,7 @@ import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
 interface Props {
   schedule: Schedule
   updateValidation: (status: ValidationStatus) => void
-  listener: ValidationListener
+  listener: DocumentPairPermissionsListener
 }
 
 // Duration to wait before validating (after this component has mounted)
@@ -43,7 +43,7 @@ interface ValidationRunnerProps {
   id: string
   schemaName: string
   updateValidation: (status: ValidationStatus) => void
-  listener: ValidationListener
+  listener: DocumentPairPermissionsListener
 }
 
 function DelayedValidationRunner({

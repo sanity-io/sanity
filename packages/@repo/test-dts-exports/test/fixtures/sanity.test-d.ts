@@ -491,6 +491,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -3358,6 +3359,9 @@ describe('sanity', () => {
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
+  })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()

@@ -1345,6 +1345,7 @@ export {
 } from '../core/store/document/listenQuery'
 export {selectUpstreamVersion} from '../core/store/document/selectUpstreamVersion'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,

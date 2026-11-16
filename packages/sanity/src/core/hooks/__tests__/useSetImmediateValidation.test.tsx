@@ -4,7 +4,7 @@ import {config, defer, ReplaySubject} from 'rxjs'
 import {finalize} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type ValidationListener} from '../../store/document/document-pair/validation'
+import {type DocumentPairPermissionsListener} from '../../store/document/types'
 import {type ValidationStatus} from '../../validation'
 import {useSetImmediateValidation} from '../useSetImmediateValidation'
 import {useValidationStatus} from '../useValidationStatus'
@@ -12,8 +12,10 @@ import {useValidationStatus} from '../useValidationStatus'
 // the store replays the latest status to every new subscriber
 let validationSubject: ReplaySubject<ValidationStatus>
 const immediateHolds = new Map<string, number>()
-const holds = (validationTargetId: string, listener: ValidationListener = 'document') =>
-  immediateHolds.get(`${validationTargetId}:${listener}`) ?? 0
+const holds = (
+  validationTargetId: string,
+  listener: DocumentPairPermissionsListener = 'document',
+) => immediateHolds.get(`${validationTargetId}:${listener}`) ?? 0
 
 // Referentially stable, like the real store: the hooks memoize on `documentStore.pair`.
 const mockDocumentStore = {
@@ -22,7 +24,7 @@ const mockDocumentStore = {
       validationTargetId: string,
       _type: string,
       _validatePublishedReferences: boolean,
-      options?: {scheduling?: ValidationScheduling; listener?: ValidationListener},
+      options?: {scheduling?: ValidationScheduling; listener?: DocumentPairPermissionsListener},
     ) => {
       if (options?.scheduling !== 'immediate') return validationSubject.asObservable()
       const listener = options.listener ?? 'document'
@@ -56,7 +58,7 @@ function Probe({id, enabled}: {id: string; enabled: boolean}) {
   return null
 }
 
-function Hold({enabled, listener}: {enabled: boolean; listener?: ValidationListener}) {
+function Hold({enabled, listener}: {enabled: boolean; listener?: DocumentPairPermissionsListener}) {
   useSetImmediateValidation('doc-1', 'author', false, {enabled, listener})
   return null
 }
