@@ -1388,6 +1388,7 @@ export {
 } from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
   getDocumentPairPermissions,

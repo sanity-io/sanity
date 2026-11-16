@@ -754,6 +754,7 @@ export {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
 export {type DocumentVersionEventType, type EventsStore} from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
   useDocumentPairPermissions,
