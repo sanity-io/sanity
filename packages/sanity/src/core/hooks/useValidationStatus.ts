@@ -31,7 +31,8 @@ export function useValidationStatus(
 ): ValidationStatus
 
 /**
- * @internal
+ * @hidden
+ * @beta
  * @deprecated `requirePublishedReferences` is ignored: whether references must be published is
  * decided by `validationTargetId`. Leave it out, or pass `{listener}` options instead.
  */
