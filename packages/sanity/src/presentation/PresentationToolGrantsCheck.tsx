@@ -1,6 +1,7 @@
 import {useSelector} from '@xstate/react'
 import {LoadingBlock, type Tool} from 'sanity'
 
+import {MissingPreviewGrants} from './MissingPreviewGrants'
 import PresentationTool from './PresentationTool'
 import {type PresentationPluginOptions} from './types'
 import {usePreviewUrlActorRef} from './usePreviewUrlActorRef'
@@ -32,12 +33,14 @@ export default function PresentationToolGrantsCheck({
     (state) => state.context.previewUrlSecretPermission,
   )
   const url = useSelector(previewUrlRef, (state) => state.context.previewUrl)
+  const previewBlockedByGrants = useSelector(
+    previewUrlRef,
+    (state) => state.context.previewBlockedByGrants,
+  )
   // @TODO the vercel protection bypass can be moved to the iframe level
   const [vercelProtectionBypass, vercelProtectionBypassReadyState] = useVercelBypassSecret()
 
   if (
-    !url ||
-    vercelProtectionBypassReadyState === 'loading' ||
     !previewAccessSharingCreatePermission ||
     typeof previewAccessSharingCreatePermission.granted === 'undefined' ||
     !previewAccessSharingUpdatePermission ||
@@ -47,6 +50,16 @@ export default function PresentationToolGrantsCheck({
     typeof previewAccessSharingReadPermission.granted === 'undefined' ||
     typeof previewUrlSecretPermission.granted === 'undefined'
   ) {
+    return <LoadingBlock showText />
+  }
+
+  // Don't wait on the bypass secret: a role that can't read it would sit on the loader, and the
+  // message below doesn't load the preview.
+  if (previewBlockedByGrants) {
+    return <MissingPreviewGrants />
+  }
+
+  if (!url || vercelProtectionBypassReadyState === 'loading') {
     return <LoadingBlock showText />
   }
 
