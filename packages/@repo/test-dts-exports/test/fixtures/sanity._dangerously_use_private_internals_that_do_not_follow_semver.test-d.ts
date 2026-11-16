@@ -212,7 +212,6 @@ import type {
   DocumentListPaneNode,
   DocumentListPaneProps,
   DocumentPairLoadedEvent,
-  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPane,
@@ -1535,9 +1534,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
-  })
-  test('DocumentPairPermissionsListener', () => {
-    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()

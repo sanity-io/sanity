@@ -14,6 +14,7 @@ import {shallowEquals} from '../../util/shallowEquals'
 import {useDocumentPreviewStore, useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
+import {type DocumentPairPermissionsListener} from '../document/types'
 import {memoize} from '../document/utils/createMemoizer'
 import {createMemoKey, getClientCredentialSegments} from '../document/utils/memoKey'
 import {retryGlobalDocumentLoad} from '../document/utils/retryGlobalDocumentLoad'
@@ -179,15 +180,6 @@ export type DocumentPermission =
   | 'unpublish'
   | 'update'
   | 'duplicate'
-
-/**
- * Where the documents the permissions are checked against come from: `document` checks out the
- * document pair, which opens a listener for it, and `global` follows the documents through the
- * document preview store's shared global listener.
- *
- * @internal
- */
-export type DocumentPairPermissionsListener = 'document' | 'global'
 
 /** @internal */
 export interface DocumentPairPermissionsOptions {
