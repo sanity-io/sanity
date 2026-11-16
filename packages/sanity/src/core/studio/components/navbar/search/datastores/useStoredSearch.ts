@@ -24,9 +24,12 @@ const defaultValue: StoredSearch = {
   recentSearches: [],
 }
 
+const ignoreWrite = () => {}
+
 export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void] {
   const {dataset} = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS).config()
-  const {value, set} = useStudioPreference(`studio.search.recent.${dataset}`)
+  const {value, status, set} = useStudioPreference(`studio.search.recent.${dataset}`)
   const stored = value?.version === RECENT_SEARCH_VERSION ? value : defaultValue
-  return [stored, set]
+  // Callers write the whole list back, so until the stored one is read a write would replace it
+  return [stored, status === 'success' ? set : ignoreWrite]
 }

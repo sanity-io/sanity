@@ -72,6 +72,7 @@ export function useSavedQueries(): {
     items: personalItems,
     error: personalError,
     set: setPersonalQuery,
+    clear: clearQueries,
   } = useStudioPreferenceList('studio.vision-tool.saved-queries')
   const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
@@ -370,10 +371,6 @@ export function useSavedQueries(): {
       }),
     [deletePersonalQuery, deleteSharedQuery, runMove, saveQuery, sharedQueries],
   )
-
-  const clearQueries = useCallback(async () => {
-    await Promise.all(personalQueries.map((query) => deletePersonalQuery(query._key)))
-  }, [deletePersonalQuery, personalQueries])
 
   return {
     queries,

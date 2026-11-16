@@ -17,6 +17,7 @@ vi.mock('../../src/core/store/preferences/useStudioPreference', () => {
     items: [],
     error: undefined,
     set: vi.fn(() => Promise.resolve()),
+    clear: vi.fn(() => Promise.resolve()),
   } satisfies ReturnType<typeof useStudioPreferenceList>
   return {useStudioPreference: () => preference, useStudioPreferenceList: () => list}
 })

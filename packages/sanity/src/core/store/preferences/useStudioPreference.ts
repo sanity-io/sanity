@@ -48,8 +48,8 @@ export function useStudioPreference<K extends PreferenceKey>(key: K) {
 
 /**
  * The current user's items for a list key, like Vision's saved queries, with every page read.
- * `set(itemId, undefined)` removes an item. It resolves once `items` shows the change, and rejects
- * when the write fails.
+ * `set(itemId, undefined)` removes an item, and `clear()` removes them all, pages not read yet
+ * included. Both resolve once `items` shows the change, and reject when a write fails.
  *
  * @internal
  */
@@ -73,6 +73,23 @@ export function useStudioPreferenceList<K extends PreferenceListKey>(key: K) {
     },
     [instance, userId, key],
   )
+  const clear = useCallback(async () => {
+    let all = await userPreferenceList.resolveState(instance, userId, key)
+    while (all.at(-1)?.nextCursor) all = await userPreferenceList.loadMore(instance, userId, key)
+    await Promise.all(
+      all.flatMap((page) =>
+        page.data.map(({itemId}) =>
+          updateUserPreferenceListItem<PreferenceListKey>(instance, {
+            userId,
+            key,
+            itemId,
+            value: undefined,
+          }),
+        ),
+      ),
+    )
+    await userPreferenceList.refetch(instance, userId, key)
+  }, [instance, userId, key])
   const items = useMemo(
     // The fetcher cache holds every key's items in one type; `key` picks this one
     () =>
@@ -81,7 +98,7 @@ export function useStudioPreferenceList<K extends PreferenceListKey>(key: K) {
       ),
     [pages],
   )
-  return {items, error, set}
+  return {items, error, set, clear}
 }
 
 function usePreferenceOwner() {
