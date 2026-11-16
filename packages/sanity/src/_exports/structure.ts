@@ -18,7 +18,7 @@ export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRout
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
 export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
+export {DocumentPaneProvider} from '../structure/panes/document/LazyDocumentPaneProvider'
 export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
 export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {useDocumentTitle, type UseDocumentTitle} from '../structure/panes/document/useDocumentTitle'
