@@ -6,6 +6,7 @@ import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type VisionTab} from '../../store/types'
 import {useVisionActor} from '../../store/VisionActorContext'
@@ -81,9 +82,11 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
     [actorRef, formatForEditor, onClose, tab.id, tab.query, tab.title],
   )
 
+  const telemetry = useVisionTelemetry()
   const generate = useCallback(async () => {
     const description = request.trim()
     if (!description) return
+    telemetry.agentAction('generate-query')
     controllerRef.current?.abort()
     const controller = new AbortController()
     controllerRef.current = controller
@@ -109,7 +112,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         limit,
       })
     }
-  }, [client, open, request, schema])
+  }, [client, open, request, schema, telemetry])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined

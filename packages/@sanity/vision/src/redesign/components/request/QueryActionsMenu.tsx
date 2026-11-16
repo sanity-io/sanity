@@ -56,6 +56,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
         menu={
           <Menu>
             <MenuItem
+              data-testid="vision-copy-query"
               hotkeys={VISION_SHORTCUTS['copy-query'].keys}
               icon={CopyIcon}
               onClick={onCopyQuery}
