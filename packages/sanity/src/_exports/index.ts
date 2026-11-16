@@ -1009,6 +1009,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,

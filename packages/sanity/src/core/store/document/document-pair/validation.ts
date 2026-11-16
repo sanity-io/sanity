@@ -12,7 +12,7 @@ import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {shallowEquals} from '../../../util/shallowEquals'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
-import {type IdPair} from '../types'
+import {type DocumentPairPermissionsListener, type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {editState} from './editState'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -27,13 +27,6 @@ const MAX_GLOBAL_DOCUMENT_LOAD_RETRIES = 3
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
-
-/**
- * Where the validated document comes from: `document` checks out the document pair, which opens a
- * listener for it, and `global` follows the document through the document preview store's shared
- * global listener.
- */
-export type ValidationListener = 'document' | 'global'
 
 function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariantType) {
   if (validationTarget === 'draft') return idPair.draftId
@@ -61,7 +54,7 @@ const validationStreams = memoize(
     idPair: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
-    listener: ValidationListener,
+    listener: DocumentPairPermissionsListener,
   ) => {
     const documentId = getValidationTargetId(idPair, validationTarget)
     const target$: Observable<SanityDocument | null | undefined> =
@@ -178,7 +171,7 @@ export function validation(
    */
   _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
-  listener: ValidationListener = 'document',
+  listener: DocumentPairPermissionsListener = 'document',
 ): Observable<ValidationStatus> {
   const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget, listener)
   return scheduling === 'immediate' ? immediate$ : status$

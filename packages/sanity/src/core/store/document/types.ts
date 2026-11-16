@@ -32,6 +32,16 @@ export interface IdPair {
 }
 
 /**
+ * Where a document is read from: `document` checks out the document pair, which opens a listener
+ * for it and sees local edits as they are made, and `global` follows the document through the
+ * document preview store's shared global listener, which opens no listener of its own but sees a
+ * change only once the server has it.
+ *
+ * @beta
+ */
+export type DocumentPairPermissionsListener = 'document' | 'global'
+
+/**
  * The document targeted by the selected perspective and variant, as declared by a caller of the
  * document pair APIs. Callers resolve targets asynchronously (variant scope ids are opaque,
  * server-generated hashes discoverable only by lookup), so the union carries the unresolved and
