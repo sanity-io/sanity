@@ -4,6 +4,7 @@ import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type AiCredits, type AiCreditsClient, readAiCreditsLimit} from '../../util/aiCredits'
 import {
@@ -71,9 +72,11 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
+  const telemetry = useVisionTelemetry()
   const generate = useCallback(async () => {
     const description = request.trim()
     if (!description) return
+    telemetry.agentAction('generate-mutations')
     controllerRef.current?.abort()
     const controller = new AbortController()
     controllerRef.current = controller
@@ -107,7 +110,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
         limit,
       })
     }
-  }, [client, dataset, mutationOptions, onGenerated, request, result, schema])
+  }, [client, dataset, mutationOptions, onGenerated, request, result, schema, telemetry])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined

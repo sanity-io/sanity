@@ -2120,6 +2120,9 @@ importers:
       '@sanity/schema':
         specifier: workspace:*
         version: link:../schema
+      '@sanity/telemetry':
+        specifier: 'catalog:'
+        version: 1.1.0(react@19.3.1)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.4.12(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)

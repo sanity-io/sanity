@@ -6,6 +6,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type MouseEvent,
   type RefObject,
+  type SetStateAction,
   useCallback,
   useEffect,
   useEffectEvent,
@@ -20,6 +21,7 @@ import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {
@@ -46,7 +48,11 @@ import * as styles from '../redesign.module.css'
 import {useRequestBottomPanel} from '../requestBottomPanel'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
 import {LintTab} from '../response/LintTab'
-import {SplitWithBottomPanel, type SplitWithBottomPanelHandle} from '../SplitWithBottomPanel'
+import {
+  type BottomPanelState,
+  SplitWithBottomPanel,
+  type SplitWithBottomPanelHandle,
+} from '../SplitWithBottomPanel'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {GenerateQueryBar} from './GenerateQueryBar'
 import {GenerateQueryButton} from './GenerateQueryButton'
@@ -144,6 +150,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onEditQuery,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   // The GROQ editor setup, the diagnostics reporting to the Lint tab, and the documentation,
   // completions and extraction of functions, which know the library. Only the library's facet
   // changes when a function is saved; the rest of the setup stays as it is
@@ -161,8 +168,9 @@ export function RequestPanel(props: RequestPanelProps) {
         extract: t('vision.functions.editor.extract'),
         addFromLibrary: t('vision.functions.editor.add-from-library'),
         useSuggestion: (suggestion) => t('vision.lint.use-suggestion', {suggestion}),
+        onApplySuggestion: () => telemetry.lintUsed('fix'),
       }),
-    [t],
+    [t, telemetry],
   )
   const library = useVisionSelector(selectFunctionLibrary)
   const schema = useSchema() as Schema | undefined
@@ -186,6 +194,27 @@ export function RequestPanel(props: RequestPanelProps) {
   )
   const actorRef = useVisionActor()
   const {state: panelState, setState: setPanelState} = useRequestBottomPanel()
+  // Set while applying a panel update that reveals Lint. Logged after commit, so a click that
+  // selects the tab and expands the panel counts once, and the state update itself stays pure.
+  const lintOpenedRef = useRef(false)
+  const setRequestPanelState = useCallback(
+    (update: SetStateAction<BottomPanelState>) => {
+      setPanelState((current) => {
+        const next = typeof update === 'function' ? update(current) : update
+        const wasOpen = current.activeTabId === 'lint' && !current.collapsed
+        const isOpen = next.activeTabId === 'lint' && !next.collapsed
+        if (!wasOpen && isOpen) lintOpenedRef.current = true
+        return next
+      })
+    },
+    [setPanelState],
+  )
+  useEffect(() => {
+    if (!lintOpenedRef.current) return
+    if (panelState.activeTabId !== 'lint' || panelState.collapsed) return
+    lintOpenedRef.current = false
+    telemetry.lintUsed('open')
+  }, [panelState, telemetry])
   const panelRef = useRef<SplitWithBottomPanelHandle>(null)
   const paramsView = useVisionSelector(selectParamsView)
   const setParamsView = useCallback(
@@ -432,7 +461,7 @@ export function RequestPanel(props: RequestPanelProps) {
         </ActionRail>
       }
       id="vision-request"
-      onStateChange={setPanelState}
+      onStateChange={setRequestPanelState}
       ref={panelRef}
       state={panelState}
       tabs={panelTabs}

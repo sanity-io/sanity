@@ -57,10 +57,14 @@ const SCHEMA = createQuerySchema(
 describe('schema findings', () => {
   it('lints the types and fields the schema does not have, with an action writing the suggestion', async () => {
     const query = '*[_type == "athor"]{nmae, "f": bestFriend.name}'
+    const onApplySuggestion = vi.fn()
     const view = new EditorView({
       state: EditorState.create({
         doc: query,
-        extensions: [groqEditorLabels.of(EDITOR_LABELS), querySchema.of(SCHEMA)],
+        extensions: [
+          groqEditorLabels.of({...EDITOR_LABELS, onApplySuggestion}),
+          querySchema.of(SCHEMA),
+        ],
       }),
     })
     const diagnostics = await groqLintSource(view)
@@ -92,6 +96,7 @@ describe('schema findings', () => {
     if (!reference?.actions) throw new Error('expected a reference suggestion')
     reference.actions[0].apply(view, reference.from, reference.to)
     expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend->name}')
+    expect(onApplySuggestion).toHaveBeenCalledTimes(2)
     view.destroy()
   })
 
@@ -190,11 +195,15 @@ describe('groqLintSource', () => {
   })
 
   it('offers to declare a library function the query calls without declaring it', async () => {
+    const onApplySuggestion = vi.fn()
     const library = [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}]
     const view = new EditorView({
       state: EditorState.create({
         doc: '*{"author": ex::author(author)}',
-        extensions: [functionLibrary.of(library), groqEditorLabels.of(EDITOR_LABELS)],
+        extensions: [
+          functionLibrary.of(library),
+          groqEditorLabels.of({...EDITOR_LABELS, onApplySuggestion}),
+        ],
       }),
     })
     const diagnostics = await groqLintSource(view)
@@ -207,6 +216,7 @@ describe('groqLintSource', () => {
     expect(diagnostic.source).toBe('vision/unknown-function')
     expect(diagnostic.actions?.map((action) => action.name)).toEqual(['Declare it'])
     diagnostic.actions?.[0].apply(view, diagnostic.from, diagnostic.to)
+    expect(onApplySuggestion).toHaveBeenCalledTimes(1)
     expect(view.state.doc.toString()).toBe(
       'fn ex::author($ref) = $ref->{name};\n\n*{"author": ex::author(author)}',
     )
