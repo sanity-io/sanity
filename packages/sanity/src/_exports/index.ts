@@ -891,8 +891,6 @@ export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleas
 export {RELEASES_STUDIO_CLIENT_OPTIONS} from '../core/releases/util/releasesClient'
 export {getDocumentIsInPerspective} from '../core/releases/util/util'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
@@ -1168,7 +1166,7 @@ export {
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
+export {LazyStudioNavbar as StudioNavbar} from '../core/studio/components/navbar/LazyStudioNavbar'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'

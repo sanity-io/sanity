@@ -2,9 +2,10 @@ import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {type NavbarProps} from '../../../config/studio/types'
 
 // The navbar (search, releases menu, presence, user menu, help resources) is the heaviest part
-// of the studio shell, and nothing renders it before the user is authenticated. Exporting this
-// wrapper instead of the implementation keeps all of that out of the login screen's import
-// graph; `preloadStudioShell` fetches the chunk as soon as authentication succeeds.
+// of the studio shell, and nothing renders it before the user is authenticated. `sanity` exports
+// this wrapper as `StudioNavbar` instead of the implementation, which keeps all of that out of the
+// login screen's import graph; `preloadStudioShell` fetches the chunk as soon as authentication
+// succeeds.
 //
 // No boundary of its own, so it suspends to the one `StudioLayout` already has around the whole
 // layout. A navbar-shaped fallback cannot be made to match: the real navbar's root is a
@@ -15,7 +16,8 @@ import {type NavbarProps} from '../../../config/studio/types'
 /**
  * The default Studio navbar. Renders the actual navbar once its code has loaded.
  *
- * @internal
+ * @hidden
+ * @beta
  */
 export const LazyStudioNavbar = createLazyComponent<Omit<NavbarProps, 'renderDefault'>>(
   () => import('./StudioNavbar.lazy'),
