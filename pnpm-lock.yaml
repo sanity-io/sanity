@@ -287,6 +287,7 @@ overrides:
   vitest: ^5.1.0
 
 patchedDependencies:
+  '@sanity/document-internationalization@6.3.0': 54c757678d30b7d0781522da5ea8b116f55ec9825e835e00989401099823b961
   '@stryker-mutator/vitest-runner@10.0.0': 890316bd6edb446e7b450b23c08fe314a14cbba08ae7adedb1ce5614d07913e0
 
 importers:
@@ -961,7 +962,7 @@ importers:
         version: 2.0.23(@sanity/client@8.15.1)(react@19.3.1)(sanity@packages+sanity)
       '@sanity/document-internationalization':
         specifier: ^6.3.0
-        version: 6.3.0(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.6.0)
+        version: 6.3.0(patch_hash=54c757678d30b7d0781522da5ea8b116f55ec9825e835e00989401099823b961)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.6.0)
       '@sanity/google-maps-input':
         specifier: ^6.1.18
         version: 6.1.18(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
@@ -22760,7 +22761,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
 
-  '@sanity/document-internationalization@6.3.0(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.6.0)':
+  '@sanity/document-internationalization@6.3.0(patch_hash=54c757678d30b7d0781522da5ea8b116f55ec9825e835e00989401099823b961)(react-dom@19.3.1)(react@19.3.1)(sanity-plugin-internationalized-array@5.3.10)(sanity@packages+sanity)(styled-components@6.6.0)':
     dependencies:
       '@sanity/icons': 5.3.0(react@19.3.1)
       '@sanity/mutator': link:packages/@sanity/mutator
