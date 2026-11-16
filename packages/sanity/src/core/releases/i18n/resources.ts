@@ -116,7 +116,7 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'archive-info.title': 'This release is archived',
   /** Description for information card on a published or archived release to description retention effects */
   'archive-info.description':
-    'It will be available for {{retentionDays}} days, then automatically removed on {{removalDate}}. <Link>Learn about retention</Link>.',
+    'This release is kept for {{retentionDays}} days. You can open it until {{removalDate}}. After that, the release and its document versions are removed. Published documents stay as they are. <Link>Learn about retention</Link>.',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
