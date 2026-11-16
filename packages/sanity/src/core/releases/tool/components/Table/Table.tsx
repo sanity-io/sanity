@@ -45,6 +45,11 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
+  /**
+   * Let the rows use the full width of the table card, with the regular inline padding, instead of
+   * centring them in the `container[3]` column. For pages whose other content is full width too.
+   */
+  fullWidth?: boolean
 }
 
 const ITEM_HEIGHT = 59
@@ -101,6 +106,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowProps = () => ({}),
   scrollContainerRef,
   hideTableInlinePadding = false,
+  fullWidth = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort, rowActions} = useTableContext()
 
@@ -225,11 +231,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 
   const theme = useTheme()
-  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  const maxInlineSize =
+    (!hideTableInlinePadding && !fullWidth && theme.sanity.v2?.container[3]) || 0
   const paddingInline = rem(theme.sanity.v2?.space[3] ?? 0)
   const tableInlinePadding = hideTableInlinePadding
     ? '0px'
-    : `max(${paddingInline}, calc((100% - var(--maxInlineSize)) / 2))`
+    : fullWidth
+      ? paddingInline
+      : `max(${paddingInline}, calc((100% - var(--maxInlineSize)) / 2))`
 
   const renderLoadingRows = (
     rowRenderer: (

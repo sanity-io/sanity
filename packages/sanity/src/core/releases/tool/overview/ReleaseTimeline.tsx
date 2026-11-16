@@ -225,13 +225,16 @@ function Axis({
           top: BASELINE_TOP,
           height: height - BASELINE_TOP,
           borderLeft: '2px solid var(--card-badge-primary-icon-color)',
-          zIndex: 3,
+          // Under the pills, so the line never runs through a pill's title or date.
+          zIndex: 0,
         }}
       />
       <Box
         style={{
           position: 'absolute',
-          left: `calc(${nowX}% + 4px)`,
+          // Left of the line: upcoming releases sit to its right, and their diamonds would cover it.
+          left: `calc(${nowX}% - 4px)`,
+          transform: 'translateX(-100%)',
           top: AXIS_LABEL_TOP,
           backgroundColor: 'var(--card-bg-color)',
           borderRadius: 3,
@@ -409,8 +412,8 @@ function ReleaseTimelineMarker({
         border: '2px solid var(--card-bg-color)',
         boxShadow: '0 0 0 1px var(--card-border-color)',
         borderRadius: 2,
-        // Above the pills so the true-position diamond is never hidden behind a card label.
-        zIndex: 2,
+        // Above the pills and the "Now" label, so a release on or near today is never hidden.
+        zIndex: 4,
         cursor: interactive ? 'pointer' : undefined,
         padding: 0,
       }}

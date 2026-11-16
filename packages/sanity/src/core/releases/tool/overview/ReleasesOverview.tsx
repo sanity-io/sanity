@@ -594,6 +594,8 @@ export function ReleasesOverview() {
           defaultSort={defaultTableSort}
           emptyState={tableEmptyState}
           filterTabs={filterTabsNode}
+          // The toolbar and timeline above run full width; keep the table on the same left edge.
+          fullWidth
           getRowKey={getReleaseKey}
           id="releases-overview-table"
           loading={loadingTableData}

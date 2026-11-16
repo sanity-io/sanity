@@ -410,11 +410,14 @@ export const releasesOverviewColumnDefs: (
                 <ReleaseColumnValidationLoading releaseId={_id} />
               )}
               {!isDeleted && state === 'scheduled' && (
-                <Text size={1}>
-                  <Tooltip content={t('summary.all-documents-validated')}>
-                    <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-                  </Tooltip>
-                </Text>
+                // Same size and colour as the validation check on active rows.
+                <Tooltip content={t('summary.all-documents-validated')}>
+                  <Icon
+                    size={1}
+                    style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
+                    icon={CheckmarkCircleIcon}
+                  />
+                </Tooltip>
               )}
             </Flex>
           )

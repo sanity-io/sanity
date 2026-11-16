@@ -54,14 +54,21 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     </Flex>
   )
 
-  const content = isCardinalityOneRelease(release) ? (
-    <ReleaseDocumentNameContent release={release} />
-  ) : (
-    title
-  )
+  const isDocument = isCardinalityOneRelease(release)
+  // A document's preview is two lines with a thumbnail. With the full cell and card padding it is
+  // taller than the 59px row and paints over the row's bottom border, so it gets less padding.
+  const cardPaddingY = isDocument ? 1 : 2
+  const content = isDocument ? <ReleaseDocumentNameContent release={release} /> : title
 
   return (
-    <Box {...cellProps} paddingLeft={3} flexBasis="0%" flexGrow={1} paddingY={1} paddingRight={2}>
+    <Box
+      {...cellProps}
+      paddingLeft={3}
+      flexBasis="0%"
+      flexGrow={1}
+      paddingY={isDocument ? 0 : 1}
+      paddingRight={2}
+    >
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -72,7 +79,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       >
         <Flex alignItems="center" gap={3} style={{width: '100%'}}>
           {release.isDeleted ? (
-            <Card flex={1} padding={2} radius={2} tone="transparent">
+            <Card flex={1} paddingX={2} paddingY={cardPaddingY} radius={2} tone="transparent">
               {content}
             </Card>
           ) : (
@@ -81,7 +88,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               data-as="a"
               flex={1}
               intent={RELEASES_INTENT}
-              padding={2}
+              paddingX={2}
+              paddingY={cardPaddingY}
               params={{id: releaseId}}
               radius={2}
               tone="inherit"
