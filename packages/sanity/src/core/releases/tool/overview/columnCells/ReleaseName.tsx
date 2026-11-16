@@ -70,7 +70,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
           </Text>
         }
       >
-        <Flex alignItems="center" gap={3}>
+        <Flex alignItems="center" gap={3} style={{width: '100%'}}>
           {release.isDeleted ? (
             <Card flex={1} padding={2} radius={2} tone="transparent">
               {content}

@@ -66,10 +66,11 @@ export const releasesOverviewColumnDefs: (
   const variantsById = options?.variantsById
   const variantsLoading = Boolean(options?.variantsLoading)
 
-  // Variant: only for scheduled drafts, and only when variants are enabled (a scheduled draft can
-  // target one variant of a document).
+  // Variant: only in the Scheduled drafts view, and only when variants are enabled (a scheduled
+  // draft can target one variant of a document). Left out of the All view, where most rows are
+  // bundles and the column would take width from Name.
   const variantColumn =
-    variantsById && cardinalityView !== 'releases'
+    variantsById && cardinalityView === 'drafts'
       ? ({
           id: 'variant',
           sorting: false,
