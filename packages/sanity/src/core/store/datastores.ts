@@ -40,6 +40,10 @@ import {
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
+import {
+  createGlobalListenerStore,
+  type GlobalListenerStore,
+} from './globalListener/createGlobalListenerStore'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
@@ -144,27 +148,55 @@ export function useHistoryStore(): HistoryStore {
 }
 
 /**
+ * The workspace's shared listener on every document in its dataset. Prefer it to opening a
+ * listener of your own: every listener holds one of the browser's limited connections.
+ *
+ * @internal
+ */
+export function useGlobalListenerStore(): GlobalListenerStore {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const globalListenerStore =
+      resourceCache.get<GlobalListenerStore>({
+        namespace: 'globalListenerStore',
+        dependencies: [client],
+      }) || createGlobalListenerStore({client})
+
+    resourceCache.set({
+      namespace: 'globalListenerStore',
+      dependencies: [client],
+      value: globalListenerStore,
+    })
+
+    return globalListenerStore
+  }, [client, resourceCache])
+}
+
+/**
  * @hidden
  * @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const documentPreviewStore =
       resourceCache.get<DocumentPreviewStore>({
         namespace: 'documentPreviewStore',
-        dependencies: [client],
-      }) || createDocumentPreviewStore({client})
+        dependencies: [client, globalListenerStore],
+      }) || createDocumentPreviewStore({client, globalListenerStore})
 
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: documentPreviewStore,
     })
 
     return documentPreviewStore
-  }, [client, resourceCache])
+  }, [client, globalListenerStore, resourceCache])
 }
 
 /**

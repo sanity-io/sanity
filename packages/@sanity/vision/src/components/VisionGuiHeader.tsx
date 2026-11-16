@@ -74,6 +74,7 @@ export interface VisionGuiHeaderProps {
   url?: string
   perspective?: SupportedPerspective
   isScheduledDraftsEnabled: boolean
+  onCopyUrl: () => void
 }
 
 export function VisionGuiHeader({
@@ -90,6 +91,7 @@ export function VisionGuiHeader({
   url,
   perspective,
   isScheduledDraftsEnabled,
+  onCopyUrl,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const isVariantsEnabled = useVariantsEnabled()
@@ -113,10 +115,11 @@ export function VisionGuiHeader({
       el.select()
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('copy')
+      onCopyUrl()
     } catch {
       console.error('Unable to copy to clipboard :(')
     }
-  }, [])
+  }, [onCopyUrl])
 
   return (
     <Header paddingX={3} paddingY={2}>

@@ -8,6 +8,8 @@ import {createDocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {createSchema} from '../../schema/createSchema'
 import {validateDocumentWithReferences} from '../../validation'
 import {createHistoryStore} from '../history/createHistoryStore'
+import {editState} from './document-pair/editState'
+import {type ValidationListener} from './document-pair/validation'
 import {createDocumentStore} from './document-store'
 
 vi.mock('./document-pair/editState', () => ({editState: vi.fn(() => NEVER)}))
@@ -118,4 +120,79 @@ describe('documentStore.pair.validation immediate scheduling', () => {
     secondSubscription.unsubscribe()
     expect(second.scheduling.getValue()).toBe('idle')
   })
+})
+
+describe('documentStore.pair.validation listener', () => {
+  /**
+   * A document store, the preview store's `unstable_observeDocument` it reads global listener
+   * documents from, and a draft of its own to validate.
+   */
+  function setupListener() {
+    const draftId = `drafts.doc-${testId}`
+    testId += 1
+    const client = createMockSanityClientAsClient()
+    const documentPreviewStore = createDocumentPreviewStore({client})
+    const observeDocument = vi.spyOn(documentPreviewStore, 'unstable_observeDocument')
+    const store = createDocumentStore({
+      getClient: () => client,
+      documentPreviewStore,
+      historyStore: createHistoryStore({client}),
+      initialValueTemplates: [],
+      schema: createSchema({name: 'test', types: []}),
+      i18n: getFallbackLocaleSource(),
+    })
+    return {draftId, store, observeDocument}
+  }
+
+  it('follows the document through the preview store with the global listener', () => {
+    const {draftId, store, observeDocument} = setupListener()
+
+    store.pair.validation(draftId, 'movie', false, {listener: 'global'})
+
+    expect(observeDocument).toHaveBeenCalledExactlyOnceWith(draftId)
+    expect(editState).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    {name: 'the document listener', options: {listener: 'document' as const}},
+    {name: 'no listener option', options: undefined},
+  ])('checks out the document pair with $name', ({options}) => {
+    const {draftId, store, observeDocument} = setupListener()
+
+    store.pair.validation(draftId, 'movie', false, options)
+
+    expect(editState).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      expect.objectContaining({draftId}),
+      'movie',
+    )
+    expect(observeDocument).not.toHaveBeenCalled()
+  })
+
+  it.each(['document', 'global'] as const)(
+    'switches only the validation of the %s listener to immediate',
+    (listener) => {
+      const {draftId, store, observeDocument} = setupListener()
+      observeDocument.mockReturnValue(NEVER)
+      const schedulingOf = (validationListener: ValidationListener) => {
+        store.pair.validation(draftId, 'movie', false, {listener: validationListener})
+        const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[2]
+        if (!(scheduling instanceof BehaviorSubject)) {
+          throw new Error('validation was not handed a scheduling that runs can follow')
+        }
+        return scheduling
+      }
+      const scheduling = {document: schedulingOf('document'), global: schedulingOf('global')}
+      const other = listener === 'document' ? 'global' : 'document'
+
+      const hold = store.pair
+        .validation(draftId, 'movie', false, {scheduling: 'immediate', listener})
+        .subscribe()
+      expect(scheduling[listener].getValue()).toBe('immediate')
+      expect(scheduling[other].getValue()).toBe('idle')
+
+      hold.unsubscribe()
+      expect(scheduling[listener].getValue()).toBe('idle')
+    },
+  )
 })

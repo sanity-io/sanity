@@ -20,8 +20,9 @@ import {
 } from 'rxjs'
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
+import {isReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -74,17 +75,18 @@ export const INITIAL_RELEASES_STATE: ReleasesReducerState = {
 
 /**
  * The releases store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of releases and create a listener to keep the locally held state fresh.
+ * fetch a list of releases, and fetch it again whenever the global listener reports a change to a
+ * release document.
  *
  * The store is not disposed of when all subscriptions are closed. After it has been initialised,
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
 export function createReleaseStore(context: {
-  previewStore: DocumentPreviewStore
+  globalListenerStore: GlobalListenerStore
   client: SanityClient
 }): ReleaseStore {
-  const {client} = context
+  const {client, globalListenerStore} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -106,7 +108,11 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
+      listenQueryOnGlobalListener<ReleaseDocument[]>(client, QUERY, {
+        invalidationChannel: globalListenerStore.invalidationChannel,
+        shouldRefetch: ({documentId}) => isReleaseDocumentId(documentId),
+        fetchTag: 'releases.store.fetch',
+      }).pipe(
         tap(() => fetchPending$.next(false)),
         map((releases) => ({response: releases})),
       ),
