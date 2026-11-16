@@ -515,6 +515,9 @@ function GroqStoreDebugBar() {
         {status.enabled && status.guardOff ? (
           <span style={{color: '#f59e0b'}}> · guard off</span>
         ) : null}
+        {status.enabled && status.globalSearch ? (
+          <span style={{color: '#38bdf8'}}> · global search on</span>
+        ) : null}
         {status.enabled && status.persistence ? <span> · snapshots on</span> : null}
         {blocked === undefined ? null : <span style={{color: '#f87171'}}> · {blocked}</span>}
       </button>

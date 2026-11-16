@@ -55,6 +55,8 @@ export type GroqStoreStatus = {
   /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
   storeError?: string
   guardOff: boolean
+  /** Answers prefix-only global searches in the browser (`?groqGlobalSearch=on`). */
+  globalSearch: boolean
   /** Local snapshots for warm starts (on unless `?groqPersist=off`). */
   persistence: boolean
   /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
@@ -83,6 +85,7 @@ type LastRun = {
 const SERVICE_WORKER_PATH = '/groq-sw.js'
 const ENABLED_KEY = 'groq-store-wasm:enabled'
 const GUARD_KEY = 'groq-store-wasm:guard'
+const GLOBAL_SEARCH_KEY = 'groq-store-wasm:global-search'
 const PERSIST_KEY = 'groq-store-wasm:persist'
 const PERSIST_MAX_KEY = 'groq-store-wasm:persist-max-mb'
 const PERSIST_BACKEND_KEY = 'groq-store-wasm:persist-backend'
@@ -153,6 +156,18 @@ function initialGuardOff(): boolean {
 }
 
 /**
+ * Local global search: `?groqGlobalSearch=on|off`, remembered per browser, off by default.
+ * When on, the store answers Studio's global search when every term is a prefix term (one typed
+ * word). Exact words and phrases still go to Content Lake, which ranks them with BM25.
+ */
+function initialGlobalSearch(): boolean {
+  const override = searchParam('groqGlobalSearch')
+  if (override === 'on') writeStorage('localStorage', GLOBAL_SEARCH_KEY, 'on')
+  if (override === 'off') writeStorage('localStorage', GLOBAL_SEARCH_KEY, null)
+  return readStorage('localStorage', GLOBAL_SEARCH_KEY) === 'on'
+}
+
+/**
  * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, on by default.
  * `?groqPersistMaxMB=<n>|off` overrides the host's 512 MiB snapshot cap (empty resets it).
  * `?groqPersistBackend=opfs|idb` pins the snapshot storage; `auto` (the default) prefers OPFS
@@ -184,9 +199,10 @@ function initialPersistence(): {enabled: boolean; maxMb: string; backend: string
 const persistence = initialPersistence()
 
 /** The store host's URL. Its parameters configure the host worker. */
-function hostUrl(guardOff: boolean): string {
+function hostUrl(guardOff: boolean, globalSearch: boolean): string {
   const params = new URLSearchParams({wasm: '/groq_wasm_bg.wasm'})
   if (guardOff) params.set('guard', 'off')
+  if (globalSearch) params.set('globalSearch', '1')
   params.set('persist', persistence.enabled ? '1' : '0')
   if (persistence.enabled && persistence.maxMb !== '') params.set('persistMaxMB', persistence.maxMb)
   if (persistence.enabled && persistence.backend !== 'auto') {
@@ -231,6 +247,7 @@ let status: GroqStoreStatus = {
   routed: {},
   exportBytes: {},
   guardOff: initialGuardOff(),
+  globalSearch: initialGlobalSearch(),
   persistence: persistence.enabled,
   lastStopped:
     previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
@@ -503,8 +520,12 @@ export function startGroqStore(): void {
     }
     const boot = bootGroqStore({
       serviceWorkerUrl: SERVICE_WORKER_PATH,
-      hostUrl: hostUrl(status.guardOff),
-      hostName: status.guardOff ? 'groq-store-wasm-guard-off' : undefined,
+      hostUrl: hostUrl(status.guardOff, status.globalSearch),
+      // A SharedWorker name is bound to one URL, so each host variant gets its own name.
+      hostName:
+        status.guardOff || status.globalSearch
+          ? `groq-store-wasm${status.guardOff ? '-guard-off' : ''}${status.globalSearch ? '-global-search' : ''}`
+          : undefined,
       // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
       requestPersistentStorage: persistence.enabled,
       onMetric,
