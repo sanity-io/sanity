@@ -8,7 +8,7 @@ import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {FederatedAssetSourceDialog} from '../FederatedAssetSourceDialog'
 import {loadFederatedAssetSourceModule} from '../loadModule'
-import {type FederatedAssetSourceView} from '../types'
+import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from '../types'
 
 vi.mock('../loadModule', () => ({
   loadFederatedAssetSourceModule: vi.fn(),
@@ -22,6 +22,15 @@ const VIEW: FederatedAssetSourceView = {
   title: 'Stock photos',
   remote: {name: 'stock-app', entry: 'https://stock.example/mf-manifest.json'},
   moduleId: 'stock-app/views/stock/asset_source',
+  interface: {
+    id: 'stock-app-stock',
+    type: 'asset_source',
+    name: 'stock',
+    title: 'Stock photos',
+    version: '1',
+    moduleId: 'views/stock',
+    metadata: null,
+  },
 }
 
 const ASSET_SOURCE: AssetSource = {
@@ -64,19 +73,18 @@ beforeEach(() => {
 describe('FederatedAssetSourceDialog', () => {
   test('mounts the brokered view inside the full-surface dialog', async () => {
     const {settleChromaticEndState} = testHelpers()
-    vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({
-      version: 1,
-      render: (rootElement) => {
-        rootElement.textContent = 'Brokered view content'
-        return {dispose: noop}
-      },
+    const renderView = vi.fn((rootElement: HTMLElement, _props: FederatedAssetSourceViewProps) => {
+      rootElement.textContent = 'Brokered view content'
+      return {dispose: noop}
     })
+    vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({version: 2, render: renderView})
 
     void render(<DialogHarness />)
 
     await expect.element(page.getByTestId('federated-asset-source-dialog')).toBeVisible()
     await expect.element(page.getByText('Stock photos')).toBeVisible()
     await expect.element(page.getByText('Brokered view content')).toBeVisible()
+    expect(renderView.mock.lastCall?.[1].view).toEqual(VIEW.interface)
     await settleChromaticEndState()
   })
 

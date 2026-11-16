@@ -1,3 +1,4 @@
+import {type ApplicationInterface} from '@sanity/sdk'
 import {type FederationRemote} from '@sanity/sdk-react/dashboard'
 import {
   type AssetFromSource,
@@ -73,6 +74,8 @@ import {
  * @internal
  */
 export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps {
+  /** The view's interface record, read in a v2 view through `useAssetSource().view`. */
+  view: AssetSourceInterface
   /** The Studio's resolved color scheme, so the view matches the host theme. */
   scheme?: 'light' | 'dark'
   /** The hosting workspace's project id, for project-scoped source APIs. */
@@ -152,6 +155,13 @@ export interface FederatedAssetSourceModule {
 }
 
 /**
+ * An `asset_source` interface record from the workbench's application list.
+ *
+ * @internal
+ */
+export type AssetSourceInterface = Extract<ApplicationInterface, {type: 'asset_source'}>
+
+/**
  * A brokered federated asset-source view: where to register the remote and
  * which expose to load from it.
  *
@@ -180,4 +190,6 @@ export interface FederatedAssetSourceView extends FederatedAssetSourceRef {
   name: string
   /** Human-readable view title. */
   title: string
+  /** The interface record the view was discovered from. */
+  interface: AssetSourceInterface
 }
