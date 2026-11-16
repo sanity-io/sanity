@@ -28,10 +28,6 @@ function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
   )
 }
 
-const TimeZoneEvents = {
-  update: 'timeZoneEventUpdate' as const,
-}
-
 export type TimeZoneScopeType = 'scheduledPublishing' | 'contentReleases' | 'input'
 
 type NoIdRequiredTypes = 'scheduledPublishing' | 'contentReleases'
@@ -256,17 +252,6 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 
-  useEffect(() => {
-    const handler = () => {
-      setTimeZone(getInitialTimeZone())
-    }
-
-    window.addEventListener(TimeZoneEvents.update, handler)
-    return () => {
-      window.removeEventListener(TimeZoneEvents.update, handler)
-    }
-  }, [getInitialTimeZone])
-
   const formatDateTz = useCallback(
     ({
       date,
@@ -313,7 +298,6 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         const run = () => {
           if (prevTz?.name !== tz.name) {
             void setStoredTimeZone(tz.name)
-            window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
 
           toast.push({

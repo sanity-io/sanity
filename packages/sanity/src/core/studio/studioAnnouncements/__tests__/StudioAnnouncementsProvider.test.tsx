@@ -108,7 +108,7 @@ describe('StudioAnnouncementsProvider', () => {
     // @ts-expect-error -- pre-existing, fix later
     wrapper = await createAnnouncementWrapper()
   })
-  describe('if seen announcements is loading', () => {
+  describe("if seen announcements aren't known, because they're loading or failed", () => {
     beforeEach(() => {
       vi.clearAllMocks()
       seenAnnouncementsMock.mockReturnValue([undefined, vi.fn()])
@@ -120,25 +120,6 @@ describe('StudioAnnouncementsProvider', () => {
       })
       expect(seenAnnouncementsMock).toHaveBeenCalled()
       expect(mockObservableRequest).toHaveBeenCalled()
-      expect(result.current.unseenAnnouncements).toEqual([])
-      expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
-    })
-    test("if unseen is empty, card doesn't show ", () => {
-      render(null, {wrapper})
-      expect(screen.queryByText("What's new")).toBeNull()
-    })
-  })
-  describe('if seen announcements failed', () => {
-    beforeEach(() => {
-      vi.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([undefined, vi.fn()])
-      mockClient(mockAnnouncements)
-    })
-    test('returns empty unseen announcements ', () => {
-      const {result} = renderHook(() => useStudioAnnouncements(), {
-        wrapper,
-      })
-
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })

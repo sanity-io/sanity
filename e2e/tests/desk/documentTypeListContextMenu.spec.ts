@@ -24,9 +24,7 @@ test('clicking default sort order and direction sets value in storage', async ({
 
   await page.goto('/content/author')
 
-  const preferenceWrite = page.waitForResponse(async (response) => {
-    return isPreferenceWrite(response)
-  })
+  const preferenceWrite = page.waitForResponse((response) => isPreferenceWrite(response, SORT_KEY))
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   const responseBody = await (await preferenceWrite).json()
@@ -38,9 +36,7 @@ test('clicking default sort order and direction sets value in storage', async ({
     },
   })
 
-  const preferenceWrite2 = page.waitForResponse(async (response) => {
-    return isPreferenceWrite(response)
-  })
+  const preferenceWrite2 = page.waitForResponse((response) => isPreferenceWrite(response, SORT_KEY))
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
   const responseBody2 = await (await preferenceWrite2).json()
@@ -68,10 +64,10 @@ test('clicking custom sort order and direction sets value in storage', async ({
   await page.goto('/content/book')
 
   const preferenceWrite = page.waitForResponse(
-    async (response) => {
-      return isPreferenceWrite(response)
+    (response) => isPreferenceWrite(response, CUSTOM_SORT_KEY),
+    {
+      timeout: 30000,
     },
-    {timeout: 30000},
   )
 
   // Click context menu button and wait for menu to appear
@@ -118,7 +114,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
 
   // Use Promise.all to ensure we catch the response
   const [response1] = await Promise.all([
-    page.waitForResponse((response) => isPreferenceWrite(response), {timeout: 30000}),
+    page.waitForResponse((response) => isPreferenceWrite(response, LAYOUT_KEY), {timeout: 30000}),
     detailedViewMenuItem.click({force: true}),
   ])
 
@@ -136,7 +132,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
 
   // Use Promise.all to ensure we catch the response
   const [response2] = await Promise.all([
-    page.waitForResponse((response) => isPreferenceWrite(response), {timeout: 30000}),
+    page.waitForResponse((response) => isPreferenceWrite(response, LAYOUT_KEY), {timeout: 30000}),
     compactViewMenuItem.click({force: true}),
   ])
 

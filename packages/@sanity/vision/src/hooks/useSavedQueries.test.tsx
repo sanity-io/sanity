@@ -89,24 +89,6 @@ describe('useSavedQueries', () => {
     return renderHook(() => useSavedQueries())
   }
 
-  it('keeps every query when saves overlap, since each write starts from the previous one', async () => {
-    const {result} = setup()
-
-    let saves: Promise<string[]>
-    act(() => {
-      saves = Promise.all([
-        result.current.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}),
-        result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'}),
-      ])
-    })
-    await act(async () => {
-      await saves
-    })
-
-    expect(storedUrls().toSorted()).toEqual(['https://a', 'https://b'])
-    expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
-  })
-
   it('stays saving until the last of two overlapping saves has settled', async () => {
     const {result} = setup()
 

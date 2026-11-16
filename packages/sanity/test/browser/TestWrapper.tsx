@@ -1,13 +1,11 @@
 import {type SanityClient} from '@sanity/client'
-import {createSanityInstance} from '@sanity/sdk'
-import {SanityInstanceProvider} from '@sanity/sdk-react'
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {clsx} from 'clsx'
 import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
-import {type ComponentProps, type ReactNode, use, useState} from 'react'
+import {type ComponentProps, type ReactNode, Suspense, use, useState} from 'react'
 import {
   ChangeConnectorRoot,
   ColorSchemeProvider,
@@ -98,11 +96,9 @@ const getCachedMockWorkspace = memoize(
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures, i18nBundles, plugins} = props
   const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
-  // The Studio mounts one per workspace; preferences and other App SDK hooks read through it
-  const [instance] = useState(() => createSanityInstance({projectId: 'test', dataset: 'test'}))
 
   return (
-    <SanityInstanceProvider instance={instance} fallback={null}>
+    <Suspense fallback={null}>
       <TestWrapperContents
         client={client}
         schemaTypes={schemaTypes}
@@ -112,7 +108,7 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
       >
         {children}
       </TestWrapperContents>
-    </SanityInstanceProvider>
+    </Suspense>
   )
 }
 
