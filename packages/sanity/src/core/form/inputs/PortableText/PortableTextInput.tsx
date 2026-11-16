@@ -121,20 +121,20 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
-    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see useHandlerBehaviors
+    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see HotkeysPlugin
     hotkeys,
     initialActive,
     initialFullscreen,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers = EMPTY_ARRAY,
     onChange,
-    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see useHandlerBehaviors
+    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see CopyPlugin
     onCopy,
     onEditorChange,
     onFullScreenChange,
     onInsert,
     onItemRemove,
-    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see useHandlerBehaviors
+    // oxlint-disable-next-line no-deprecated -- run as Behaviors, see PastePlugin
     onPaste,
     onPathFocus,
     path,

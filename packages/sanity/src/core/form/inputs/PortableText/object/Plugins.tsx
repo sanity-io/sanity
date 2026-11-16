@@ -13,9 +13,13 @@ import {pickPortableTextEditorPluginsComponent} from '../../../form-components-h
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
 import {type OnCopyFn, type OnPasteFn} from '../../../types/inputProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {CopyPlugin} from '../CopyPlugin'
 import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
-import {useHandlerBehaviors} from '../useHandlerBehaviors'
+import {HotkeysPlugin} from '../HotkeysPlugin'
+import {PastePlugin} from '../PastePlugin'
 import {PortableTextTablePlugin} from './TablePlugin'
+
+const softBreakBehaviors = [defineBehavior({on: 'insert.soft break', actions: []})]
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({context: {schema}}) =>
@@ -43,7 +47,6 @@ export const PortableTextEditorPlugins = (props: {
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
 }) => {
-  const handlerBehaviors = useHandlerBehaviors(props)
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
@@ -122,19 +125,14 @@ export const PortableTextEditorPlugins = (props: {
 
   return (
     <>
-      <BehaviorPlugin behaviors={handlerBehaviors} />
+      <HotkeysPlugin hotkeys={props.hotkeys} onToggleFullscreen={props.onToggleFullscreen} />
+      <PastePlugin onPaste={props.onPaste} />
+      <CopyPlugin onCopy={props.onCopy} />
       <BehaviorPlugin behaviors={htmlPasteBehaviors} />
       {isOneLineEditor && (
         <>
           <OneLinePlugin />
-          <BehaviorPlugin
-            behaviors={[
-              defineBehavior({
-                on: 'insert.soft break',
-                actions: [],
-              }),
-            ]}
-          />
+          <BehaviorPlugin behaviors={softBreakBehaviors} />
         </>
       )}
       {CustomComponent ? (

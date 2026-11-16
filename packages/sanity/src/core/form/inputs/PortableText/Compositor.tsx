@@ -167,8 +167,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onToggleFullscreen()
   }, [onToggleFullscreen])
 
-  // The Toolbar reads the decorator hotkeys for its hints. The keys themselves run as Behaviors
-  // in `useHandlerBehaviors`.
+  // The Toolbar reads the decorator hotkeys for its hints.
+  // The keys themselves run as Behaviors in HotkeysPlugin.
   const editorHotkeys = useHotkeys(hotkeys ?? EMPTY_HOTKEYS)
 
   const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined

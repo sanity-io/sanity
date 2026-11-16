@@ -2,7 +2,15 @@
 import {configure} from '@chromatic-com/vitest'
 import {type Editor, PortableTextEditor} from '@portabletext/editor'
 import {EditorRefPlugin} from '@portabletext/editor/plugins'
-import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  isArraySchemaType,
+  isBlockSchemaType,
+  isSpanSchemaType,
+  type SanityDocument,
+} from '@sanity/types'
 import {
   type ClipboardEvent as ReactClipboardEvent,
   createContext,
@@ -10,6 +18,9 @@ import {
   type RefObject,
   useCallback,
   useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react'
 import {type InputProps, type PortableTextInputProps, type PortableTextPluginsProps} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -422,3 +433,110 @@ describe.each(DEPTHS)('Portable Text Input handler props at %s', (depth) => {
     })
   })
 })
+
+// Synthetic clipboard events are not honoured by WebKit.
+it.skipIf(server.browser === 'webkit')(
+  "onPaste still runs before paste-link after the schema's decorators array is replaced",
+  async () => {
+    const {waitForDocumentState} = testHelpers()
+    const editorRef = createRef<PortableTextEditor>()
+    const onPaste = vi.fn<NonNullable<HandlerProps['onPaste']>>(() => ({
+      insert: [textBlock('inserted', 'inserted-span', 'from onPaste')],
+    }))
+    const document = {...DOCUMENT, body: [textBlock('a', 'b', 'Hello world')]}
+    let latestSchema: PortableTextInputProps['schemaType'] | undefined
+
+    function Input(inputProps: InputProps) {
+      const props = inputProps as PortableTextInputProps
+      const [replaceDecorators, setReplaceDecorators] = useState(false)
+      const schemaType = useMemo(
+        () =>
+          replaceDecorators
+            ? {
+                ...props.schemaType,
+                of: props.schemaType.of.map((block) =>
+                  !isBlockSchemaType(block)
+                    ? block
+                    : {
+                        ...block,
+                        fields: block.fields.map((field) =>
+                          field.name !== 'children' || !isArraySchemaType(field.type)
+                            ? field
+                            : {
+                                ...field,
+                                type: {
+                                  ...field.type,
+                                  of: field.type.of.map((span) =>
+                                    !isSpanSchemaType(span)
+                                      ? span
+                                      : {...span, decorators: [...span.decorators]},
+                                  ),
+                                },
+                              },
+                        ),
+                      },
+                ),
+              }
+            : props.schemaType,
+        [props.schemaType, replaceDecorators],
+      )
+      useEffect(() => {
+        latestSchema = schemaType
+      }, [schemaType])
+      return (
+        <>
+          <button type="button" onClick={() => setReplaceDecorators(true)}>
+            Replace decorators
+          </button>
+          {props.renderDefault({...props, schemaType, editorRef, onPaste})}
+        </>
+      )
+    }
+
+    const schemaTypes = [
+      defineType({
+        type: 'document',
+        name: 'test',
+        fields: [
+          defineField({
+            type: 'array',
+            name: 'body',
+            of: [defineArrayMember({type: 'block'})],
+            components: {input: Input},
+          }),
+        ],
+      }),
+    ]
+    const screen = await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <TestForm document={document} focusPath={['body']} />
+      </TestWrapper>,
+    )
+    await waitForDocumentState((state) => JSON.stringify(state) === JSON.stringify(document))
+    await vi.waitFor(() => expect(editorRef.current).toBeTruthy())
+    const mountedEditor = editorRef.current
+    const originalSchema = latestSchema
+
+    await screen.getByRole('button', {name: 'Replace decorators'}).click()
+    await vi.waitFor(() => expect(latestSchema).not.toBe(originalSchema))
+    expect(editorRef.current).toBe(mountedEditor)
+
+    const path = [{_key: 'a'}, 'children', {_key: 'b'}]
+    PortableTextEditor.focus(editorRef.current!)
+    PortableTextEditor.select(editorRef.current!, {
+      anchor: {path, offset: 6},
+      focus: {path, offset: 11},
+    })
+    await vi.waitFor(() => expect(window.getSelection()!.toString()).toBe('world'))
+    const editable = window.document.querySelector<HTMLElement>(
+      '[data-testid="field-body"] [contenteditable="true"]',
+    )!
+    const event = clipboardEvent('paste')
+    event.clipboardData!.setData('text/plain', 'https://example.com')
+    editable.dispatchEvent(event)
+
+    await waitForDocumentState((state) => documentIncludes(state, 'Hello from onPaste'))
+    expect(editable.textContent).toBe('Hello from onPaste')
+    expect(onPaste).toHaveBeenCalledTimes(1)
+  },
+)
