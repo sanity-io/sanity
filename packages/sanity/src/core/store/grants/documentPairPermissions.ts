@@ -201,7 +201,8 @@ export interface DocumentPairPermissionsOptions {
   listener?: DocumentPairPermissionsListener
   /**
    * Follows a document through the global listener, `unstable_observeDocument` of the document
-   * preview store. Required when `listener` is `global`.
+   * preview store. Required when `listener` is `global`. `useDocumentPairPermissions` takes it
+   * from the studio's document preview store.
    */
   observeDocument?: (id: string) => Observable<SanityDocument | undefined>
   /**
@@ -398,16 +399,15 @@ export function useDocumentPairPermissions({
   grantsStore: overrideGrantsStore,
   pairListenerOptions,
   listener = 'document',
-  observeDocument: overrideObserveDocument,
-}: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
-  typeof useDocumentPairPermissionsFromHookFactory
-> {
+}: PartialExcept<
+  Omit<DocumentPairPermissionsOptions, 'observeDocument'>,
+  'id' | 'type' | 'permission'
+>): ReturnType<typeof useDocumentPairPermissionsFromHookFactory> {
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
-  const documentPreviewStore = useDocumentPreviewStore()
+  const observeDocument = useDocumentPreviewStore().unstable_observeDocument
   const currentUser = useCurrentUser()
-  const observeDocument = overrideObserveDocument || documentPreviewStore.unstable_observeDocument
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])

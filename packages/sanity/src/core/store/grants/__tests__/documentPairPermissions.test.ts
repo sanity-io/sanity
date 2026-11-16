@@ -4,16 +4,26 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {defer, firstValueFrom, of, Subject, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
+import {
+  createMockSanityClient,
+  createMockSanityClientAsClient,
+} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {createSchema} from '../../../schema/createSchema'
+import {useDocumentPreviewStore} from '../../datastores'
 import {snapshotPair} from '../../document/document-pair/snapshotPair'
 import {getDocumentPairPermissions, useDocumentPairPermissions} from '../documentPairPermissions'
 import {type GrantsStore, type PermissionCheckResult} from '../types'
 
 vi.mock('../../document/document-pair/snapshotPair', () => ({snapshotPair: vi.fn()}))
+vi.mock('../../datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentPreviewStore: vi.fn(),
+}))
 
 const mockedSnapshotPair = vi.mocked(snapshotPair)
+const mockedUseDocumentPreviewStore = vi.mocked(useDocumentPreviewStore)
 
 const schema = createSchema({
   name: 'default',
@@ -434,7 +444,13 @@ describe('useDocumentPairPermissions', () => {
     'checks out the document pair only off the global listener, given $name',
     async ({listener, global}) => {
       createSnapshotPairMock()
-      const observeDocument = vi.fn((_id: string) => of(undefined))
+      const documentPreviewStore = createDocumentPreviewStore({
+        client: createMockSanityClientAsClient(),
+      })
+      const observeDocument = vi
+        .spyOn(documentPreviewStore, 'unstable_observeDocument')
+        .mockImplementation(() => of(undefined))
+      mockedUseDocumentPreviewStore.mockReturnValue(documentPreviewStore)
       const grantsStore = createGrantsStore()
       const id = `book-${Math.random().toString(36).slice(2)}`
       const wrapper = await createTestProvider({
@@ -454,7 +470,6 @@ describe('useDocumentPairPermissions', () => {
             permission: 'publish',
             grantsStore,
             listener,
-            observeDocument,
           }),
         {wrapper},
       )
