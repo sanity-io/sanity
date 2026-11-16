@@ -75,6 +75,9 @@ catalogMode: prefer
 dedupePeers: true
 linkWorkspacePackages: deep
 
+lockfile:
+  format: v13
+
 minimumReleaseAge: 1440
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:

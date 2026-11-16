@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && pnpm exec turbo run build --filter=studio-diagnostics-viewer",
+  "installCommand": "mkdir -p /tmp/pnpm-bin && corepack enable pnpm --install-directory /tmp/pnpm-bin && export PATH=/tmp/pnpm-bin:$PATH && pnpm install --frozen-lockfile",
+  "buildCommand": "mkdir -p /tmp/pnpm-bin && corepack enable pnpm --install-directory /tmp/pnpm-bin && export PATH=/tmp/pnpm-bin:$PATH && cd ../.. && pnpm exec turbo run build --filter=studio-diagnostics-viewer",
   "outputDirectory": "dist",
   "routes": [
     {

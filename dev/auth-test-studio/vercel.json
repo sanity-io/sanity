@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "installCommand": "mkdir -p /tmp/pnpm-bin && corepack enable pnpm --install-directory /tmp/pnpm-bin && export PATH=/tmp/pnpm-bin:$PATH && pnpm install --frozen-lockfile",
+  "buildCommand": "mkdir -p /tmp/pnpm-bin && corepack enable pnpm --install-directory /tmp/pnpm-bin && export PATH=/tmp/pnpm-bin:$PATH && cd ../.. && pnpm exec turbo run build --filter=auth-test-studio",
   "routes": [
     {
       "handle": "filesystem"
