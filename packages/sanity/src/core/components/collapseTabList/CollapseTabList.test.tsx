@@ -1,9 +1,10 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {render, screen} from '@testing-library/react'
-import {type CSSProperties} from 'react'
+import {act, render, screen} from '@testing-library/react'
+import {type ComponentType, type CSSProperties, lazy, Suspense} from 'react'
 import {expect, it} from 'vitest'
 
+import {Button} from '../../../ui-components/button/Button'
 import {CollapseTabList} from './CollapseTabList'
 
 const theme = buildTheme()
@@ -37,4 +38,42 @@ it('lets consumer style override overlapping layout keys', () => {
 
   expect(root.style.position).toBe('relative')
   expect(root.style.minWidth).toBe('40px')
+})
+
+// The measuring clones mount on an update, after the list has stored its row element. Suspending
+// past the list used to hide and reveal it in a loop until React threw "Maximum update depth
+// exceeded".
+it('renders the tabs with a placeholder while a lazy tab icon loads', async () => {
+  let load!: (module: {default: ComponentType}) => void
+  const Icon = lazy(
+    () =>
+      new Promise<{default: ComponentType}>((resolve) => {
+        load = resolve
+      }),
+  )
+
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the icon suspends during mount, and React only resumes work that suspended inside an awaited async `act`
+  await act(async () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={<div data-testid="fallback" />}>
+          <CollapseTabList data-testid="collapse-tab-list">
+            <Button data-testid="tab" icon={Icon} key="tab" mode="bleed" text="Tab" />
+          </CollapseTabList>
+        </Suspense>
+      </ThemeProvider>,
+    )
+  })
+
+  expect(screen.queryByTestId('fallback')).not.toBeInTheDocument()
+  for (const tab of screen.getAllByTestId('tab')) {
+    expect(tab.querySelector('[data-sanity-icon-placeholder]')).toBeInTheDocument()
+  }
+
+  await act(async () => {
+    load({default: () => <svg data-testid="lazy-icon" />})
+  })
+
+  expect(document.querySelector('[data-sanity-icon-placeholder]')).not.toBeInTheDocument()
+  expect(screen.getAllByTestId('lazy-icon')).toHaveLength(screen.getAllByTestId('tab').length)
 })

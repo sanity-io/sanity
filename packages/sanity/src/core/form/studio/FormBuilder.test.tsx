@@ -739,6 +739,111 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
     warn.mockRestore()
   })
+
+  // The `icons` map of `@sanity/icons` holds `React.lazy` components. The Portable Text toolbar
+  // renders block object, inline object, annotation and decorator icons in collapse menus, which
+  // mount their measuring rows on an update: an icon that suspended past them used to hide and
+  // reveal the field in a loop until React threw "Maximum update depth exceeded".
+  it(
+    'renders the Portable Text toolbar with placeholders while lazy schema icons load',
+    {timeout: 30_000},
+    async () => {
+      mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+      const blockIcon = deferredComponent<Record<string, never>>()
+      const inlineIcon = deferredComponent<Record<string, never>>()
+      const annotationIcon = deferredComponent<Record<string, never>>()
+      const decoratorIcon = deferredComponent<Record<string, never>>()
+
+      await renderFormBuilder({
+        documentValue: {_id: 'test', _type: 'test'},
+        config: {
+          schema: {
+            types: [
+              defineType({
+                type: 'document',
+                name: 'test',
+                title: 'Test',
+                fields: [
+                  {
+                    type: 'array',
+                    name: 'body',
+                    title: 'Body',
+                    of: [
+                      {
+                        type: 'block',
+                        marks: {
+                          decorators: [
+                            {title: 'Highlight', value: 'highlight', icon: decoratorIcon.Lazy},
+                          ],
+                          annotations: [
+                            {
+                              type: 'object',
+                              name: 'link',
+                              title: 'Link',
+                              icon: annotationIcon.Lazy,
+                              fields: [{type: 'url', name: 'href', title: 'URL'}],
+                            },
+                          ],
+                        },
+                        of: [
+                          {
+                            type: 'object',
+                            name: 'inlineVideo',
+                            title: 'Inline video',
+                            icon: inlineIcon.Lazy,
+                            fields: [{type: 'url', name: 'url', title: 'URL'}],
+                          },
+                        ],
+                      },
+                      {
+                        type: 'object',
+                        name: 'videoEmbed',
+                        title: 'Video embed',
+                        icon: blockIcon.Lazy,
+                        fields: [{type: 'url', name: 'url', title: 'URL'}],
+                      },
+                    ],
+                  },
+                ],
+              }),
+            ],
+          },
+        },
+        pane: true,
+      })
+
+      const testIds = [
+        'videoEmbed-insert-menu-button',
+        'inlineVideo-insert-menu-button',
+        'action-button-link',
+        'action-button-highlight',
+      ]
+      for (const testId of testIds) {
+        // The collapse menus render each option more than once to measure it
+        const buttons = await screen.findAllByTestId(testId, {}, {timeout: 10_000})
+        for (const button of buttons) {
+          expect(button.querySelector('[data-sanity-icon-placeholder]')).toBeInTheDocument()
+        }
+      }
+      expect(suspenseWarnings(warn)).toHaveLength(0)
+
+      await act(async () => {
+        blockIcon.resolve(() => <svg data-testid="loaded-icon" />)
+        inlineIcon.resolve(() => <svg data-testid="loaded-icon" />)
+        annotationIcon.resolve(() => <svg data-testid="loaded-icon" />)
+        decoratorIcon.resolve(() => <svg data-testid="loaded-icon" />)
+      })
+
+      for (const testId of testIds) {
+        for (const button of screen.getAllByTestId(testId)) {
+          expect(within(button).getByTestId('loaded-icon')).toBeInTheDocument()
+        }
+      }
+      expect(document.querySelector('[data-sanity-icon-placeholder]')).not.toBeInTheDocument()
+      warn.mockRestore()
+    },
+  )
 })
 
 function customComponentTestType(components: {
