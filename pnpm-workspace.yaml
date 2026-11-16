@@ -36,8 +36,8 @@ catalog:
   '@sanity/pandacss-tsdown-plugin': ^0.3.3
   '@sanity/schema-descriptor-utils': 1.4.0
   # The App SDK's preferences are only on its `next` tag until they're released
-  '@sanity/sdk': 3.13.0-next.20261113163341
-  '@sanity/sdk-react': 3.13.0-next.20261113163341
+  '@sanity/sdk': 3.13.0-next.20261116122420
+  '@sanity/sdk-react': 3.13.0-next.20261116122420
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.31.4
   '@sanity/ui': ^4.4.12
@@ -113,8 +113,8 @@ minimumReleaseAgeExclude:
   - 'lightningcss'
   - 'lightningcss-*'
   # The App SDK's preferences are only on its `next` tag until they're released
-  - '@sanity/sdk@3.13.0-next.20261113163341'
-  - '@sanity/sdk-react@3.13.0-next.20261113163341'
+  - '@sanity/sdk@3.13.0-next.20261116122420'
+  - '@sanity/sdk-react@3.13.0-next.20261116122420'
   # motion, framer-motion and motion-dom release in lockstep, often several times a week, so new
   # versions are routinely younger than minimumReleaseAge
   - 'framer-motion'
