@@ -1250,7 +1250,6 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
-  useKeyValueStore,
   usePresenceStore,
   useProjectStore,
   useRenderingContextStore,
@@ -1448,8 +1447,6 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
-export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
-export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

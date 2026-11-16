@@ -20,7 +20,7 @@ const SCOPE: TimeZoneScope = {
  * button. Chromatic sentinel for the dialog body: the scope description, the
  * label row with its "Select local time zone" link, and the autocomplete,
  * stacked with ui5 spacing. Rendered inside `TestWrapper` because `useTimeZone`
- * reads the workspace key-value store and the footer labels resolve through
+ * reads the user's preferences and the footer labels resolve through
  * the studio i18n instance.
  */
 const meta = {
