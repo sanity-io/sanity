@@ -11,8 +11,9 @@ const SESSION_ID = 'sid-abcdefghijklmnopqrstuvwxyz'
 const TOKEN = 'tok-abcdefghijklmnopqrstuvwxyz0123456789'
 const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
 
-// A field pointing at a type that does not exist: `prepareConfig` throws a
-// `SchemaError` while resolving the workspace, before it creates the auth store.
+// A field pointing at a type that does not exist. Schema compilation is deferred
+// until a source's schema is read, which is after `prepareConfig` has loaded the
+// auth modules that strip credentials from the URL.
 const brokenWorkspace: WorkspaceOptions = {
   name: 'broken',
   basePath: '/',
@@ -34,7 +35,13 @@ async function bootWithBrokenSchema() {
   // the hash is set, the way a page load after a redirect would.
   const {prepareConfig} = await import('../../../../config/prepareConfig')
   const {SchemaError} = await import('../../../../config/SchemaError')
-  expect(() => prepareConfig([brokenWorkspace])).toThrow(SchemaError)
+  const {workspaces} = prepareConfig([brokenWorkspace])
+  expect(() => {
+    for (const workspace of workspaces) {
+      // oxlint-disable-next-line no-deprecated -- nested sources are only reachable here
+      for (const source of workspace.__internal.sources) void source.schema
+    }
+  }).toThrow(SchemaError)
 }
 
 // Cold imports of the config modules are slow, and each test re-imports them.
