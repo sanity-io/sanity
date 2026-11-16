@@ -43,8 +43,11 @@ import {type PortableTextInputProps} from './types/inputProps'
 // The input components that `sanity` exports for custom inputs to compose with (`StringInput`,
 // `ObjectInput`, `ImageInput`, `ReferenceInput`, ...) are facades too. `StringInput` alone
 // statically reaches the Portable Text editor through its inline-changes mode, and the image,
-// file and reference inputs each carry their own dialogs and stores. Like the in-form facades
-// they have no boundary: they render inside a form, under `FormBuilder`'s.
+// file and reference inputs each carry their own dialogs and stores. They carry a `null`
+// fallback of their own so the first render of a custom input that wraps one does not suspend
+// to `FormNodeSuspense` (which would swap the field for the generic skeleton and log a
+// "wrap your custom input in Suspense" warning — the same pattern as `StudioVideoInput`).
+// Default inputs still import the implementations directly, so ordinary fields never hit these.
 //
 // Four components that `sanity` exports are *not* facaded, because the marginal gzip each keeps
 // off the entry's static closure does not pay for a suspension: `FormFieldValidationStatus`
@@ -126,6 +129,7 @@ export const FormProvider = createLazyComponent<ComponentProps<typeof FormProvid
  */
 export const StringInput = createLazyComponent<ComponentProps<typeof StringInputImplementation>>(
   () => import('./inputs/StringInput/StringInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -134,6 +138,7 @@ export const StringInput = createLazyComponent<ComponentProps<typeof StringInput
  */
 export const BooleanInput = createLazyComponent<ComponentProps<typeof BooleanInputImplementation>>(
   () => import('./inputs/BooleanInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -141,6 +146,7 @@ export const BooleanInput = createLazyComponent<ComponentProps<typeof BooleanInp
  * @beta */
 export const DateInput = createLazyComponent<ComponentProps<typeof DateInputImplementation>>(
   () => import('./inputs/DateInputs/DateInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -148,13 +154,14 @@ export const DateInput = createLazyComponent<ComponentProps<typeof DateInputImpl
  * @beta */
 export const DateTimeInput = createLazyComponent<
   ComponentProps<typeof DateTimeInputImplementation>
->(() => import('./inputs/DateInputs/DateTimeInput.lazy'))
+>(() => import('./inputs/DateInputs/DateTimeInput.lazy'), {fallback: null})
 
 /**
  * @hidden
  * @beta */
 export const ObjectInput = createLazyComponent<ComponentProps<typeof ObjectInputImplementation>>(
   () => import('./inputs/ObjectInput/ObjectInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -163,6 +170,7 @@ export const ObjectInput = createLazyComponent<ComponentProps<typeof ObjectInput
  */
 export const SelectInput = createLazyComponent<ComponentProps<typeof SelectInputImplementation>>(
   () => import('./inputs/SelectInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -171,6 +179,7 @@ export const SelectInput = createLazyComponent<ComponentProps<typeof SelectInput
  */
 export const SlugInput = createLazyComponent<ComponentProps<typeof SlugInputImplementation>>(
   () => import('./inputs/Slug/SlugInput.lazy'),
+  {fallback: null},
 )
 
 /**
@@ -179,21 +188,21 @@ export const SlugInput = createLazyComponent<ComponentProps<typeof SlugInputImpl
  */
 export const TagsArrayInput = createLazyComponent<
   ComponentProps<typeof TagsArrayInputImplementation>
->(() => import('./inputs/TagsArrayInput.lazy'))
+>(() => import('./inputs/TagsArrayInput.lazy'), {fallback: null})
 
 /**
  * @hidden
  * @beta */
 export const StudioImageInput = createLazyComponent<
   ComponentProps<typeof StudioImageInputImplementation>
->(() => import('./studio/inputs/StudioImageInput.lazy'))
+>(() => import('./studio/inputs/StudioImageInput.lazy'), {fallback: null})
 
 /**
  * @hidden
  * @beta */
 export const StudioFileInput = createLazyComponent<
   ComponentProps<typeof StudioFileInputImplementation>
->(() => import('./studio/inputs/StudioFileInput.lazy'))
+>(() => import('./studio/inputs/StudioFileInput.lazy'), {fallback: null})
 
 /**
  * @hidden
@@ -201,7 +210,7 @@ export const StudioFileInput = createLazyComponent<
  */
 export const StudioReferenceInput = createLazyComponent<
   ComponentProps<typeof StudioReferenceInputImplementation>
->(() => import('./studio/inputs/reference/StudioReferenceInput.lazy'))
+>(() => import('./studio/inputs/reference/StudioReferenceInput.lazy'), {fallback: null})
 
 /**
  * @hidden
@@ -209,4 +218,6 @@ export const StudioReferenceInput = createLazyComponent<
  */
 export const StudioCrossDatasetReferenceInput = createLazyComponent<
   ComponentProps<typeof StudioCrossDatasetReferenceInputImplementation>
->(() => import('./studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput.lazy'))
+>(() => import('./studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput.lazy'), {
+  fallback: null,
+})
